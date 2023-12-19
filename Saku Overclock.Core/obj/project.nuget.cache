@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "xDS1A2E6XHdVZ+Ll+sRLK1iARW7VHhCWligaijx9EjBITkdrdm0NAqMxJ0AsnF3+Q0CNZ+YlqQLmaa4CUtB14Q==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Sakura\\source\\repos\\Saku Overclock\\Saku Overclock.Core\\Saku Overclock.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Sakura\\.nuget\\packages\\newtonsoft.json\\13.0.2\\newtonsoft.json.13.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}
