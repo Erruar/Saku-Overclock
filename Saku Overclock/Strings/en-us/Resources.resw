@@ -1,0 +1,465 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>Saku Overclock</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Saku Overclock</value>
+  </data>
+  <data name="Shell_Главная.Content" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Shell_Пресеты.Content" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="Shell_Параметры.Content" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="Shell_Информация.Content" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Settings_Personalization.Text" xml:space="preserve">
+    <value>Personalization</value>
+  </data>
+  <data name="Settings_Theme.Text" xml:space="preserve">
+    <value>Theme of the application</value>
+  </data>
+  <data name="Settings_Theme_Light.Content" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Settings_Theme_Dark.Content" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Settings_Theme_Default.Content" xml:space="preserve">
+    <value>System default</value>
+  </data>
+  <data name="Settings_About.Text" xml:space="preserve">
+    <value>© Serzhik Sakura</value>
+  </data>
+  <data name="Settings_AboutDescription.Text" xml:space="preserve">
+    <value>Application for overclocking Ryzen processors on laptops</value>
+  </data>
+  <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
+    <value>Discord link</value>
+  </data>
+  <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
+    <value>https://discord.gg/yVsKxqAaa7</value>
+  </data>
+  <data name="AppNotificationSamplePayload" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;Overclock started!&lt;/text&gt;
+      &lt;text&gt;&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="Settings" arguments="action=Settings"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="Shell_Settings.Content" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Shell_Кулер.Content" xml:space="preserve">
+    <value>Cooler</value>
+  </data>
+  <data name="AppNotificationEco" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;Eco mode applyed!&lt;/text&gt;
+      &lt;text&gt;&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/noteco.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="Settings" arguments="action=Settings"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="Cooler_Config.Text" xml:space="preserve">
+    <value>Saved configs:</value>
+  </data>
+  <data name="Cooler_Current_Fan.Text" xml:space="preserve">
+    <value>Current speed: Unavaivable</value>
+  </data>
+  <data name="Cooler_Fan.Header" xml:space="preserve">
+    <value>Target speed:</value>
+  </data>
+  <data name="Cooler_Name.Text" xml:space="preserve">
+    <value>Cooler tweaks</value>
+  </data>
+  <data name="Cooler_Service.Text" xml:space="preserve">
+    <value>Fan control service status:</value>
+  </data>
+  <data name="Cooler_Service_Disabled.Text" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="Cooler_Service_Enabled.Text" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Cooler_Service_Read.Text" xml:space="preserve">
+    <value>Read only</value>
+  </data>
+  <data name="Cooler_Temp.Text" xml:space="preserve">
+    <value>Current CPU temperature: Unavaivable</value>
+  </data>
+  <data name="Info_Autoupdate.Content" xml:space="preserve">
+    <value>Refresh every (Milliseconds)</value>
+  </data>
+  <data name="Info_Name.Text" xml:space="preserve">
+    <value>CPU Information</value>
+  </data>
+  <data name="Info_Refresh.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Info_Text.Text" xml:space="preserve">
+    <value>- Setted sustained power limit CPU (W)
+- Current sustained power limit CPU (W)
+- Setted actual power limit CPU (W)
+- Current actual power limit CPU (W)  
+- Setted average power limit CPU (W) 
+- Current average power limit CPU (W) 
+- Time of fast frequency rise (S) 
+- Time of slow frequency rise (S) 
+- Average power limit of fast frequency rise (W) 
+- Average power limit of slow frequency rise (W) 
+- Setted VRM Max TDC (A)
+- Current VRM Max TDC (A)
+- Setted SoC Max TDC (A)
+- Current SoC Max TDC (A)
+- Setted VRM Max EDC (A) 
+- Current VRM Max EDC (A) 
+- Setted VRM SoC Max EDC (A) 
+- Current VRM SoC Max EDC (A) 
+- Setted maximum CPU temperature (C) 
+- Current CPU temperature (C) 
+- Setted maximum iGPU temperature (C) 
+- Current maximum iGPU temperature (C) 
+- Setted maximum dGPU temperature (C)  
+- Current maximum dGPU temperature(C) 
+- The percentage of CPU usage when frequency reduction begins (%)  
+- Current CPU usage (%)</value>
+  </data>
+  <data name="Param_CPU.Text" xml:space="preserve">
+    <value>CPU Overclocking</value>
+  </data>
+  <data name="Param_CPU_c2.Text" xml:space="preserve">
+    <value>Sustained Power Limit (W)</value>
+  </data>
+  <data name="Param_CPU_c3.Text" xml:space="preserve">
+    <value>Actual Power Limit (W)</value>
+  </data>
+  <data name="Param_CPU_c4.Text" xml:space="preserve">
+    <value>Awerage Power Limit (W)</value>
+  </data>
+  <data name="Param_CPU_c5.Text" xml:space="preserve">
+    <value>Time of fast frequency rise (S)</value>
+  </data>
+  <data name="Param_Name.Text" xml:space="preserve">
+    <value>Custom preset parameters</value>
+  </data>
+  <data name="Param_Preset.Text" xml:space="preserve">
+    <value>Saved presets:</value>
+  </data>
+  <data name="Settings_Apply_Start.Content" xml:space="preserve">
+    <value>Autoapply latest settings when opening</value>
+  </data>
+  <data name="Settings_Auto_Reapply.Content" xml:space="preserve">
+    <value>Reapply latest setting every (S)</value>
+  </data>
+  <data name="Settings_Auto_Updates.Content" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="Settings_Name.Text" xml:space="preserve">
+    <value>Settings page</value>
+  </data>
+  <data name="Settings_Start_Boot.Content" xml:space="preserve">
+    <value>Autostart with windows</value>
+  </data>
+  <data name="Settings_Start_Mini.Content" xml:space="preserve">
+    <value>Close to tray when opening</value>
+  </data>
+  <data name="Main_Disc.Text" xml:space="preserve">
+    <value>Discord</value>
+  </data>
+  <data name="Main_Info.Text" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Main_Param.Text" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="Main_Preset.Text" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="Main_Welcome.Text" xml:space="preserve">
+    <value>Welcome to</value>
+  </data>
+  <data name="Main_Welcome_1.Text" xml:space="preserve">
+    <value>For those who want real performance!</value>
+  </data>
+  <data name="Param_Apply.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Param_CPU_c1.Text" xml:space="preserve">
+    <value>Maximum CPU temperature (C)</value>
+  </data>
+  <data name="Param_CPU_c6.Text" xml:space="preserve">
+    <value>Time of slow frequency rise (S)</value>
+  </data>
+  <data name="Param_CPU_Recommend.Text" xml:space="preserve">
+    <value>Recommendation:     Balance                 Performance</value>
+  </data>
+  <data name="Param_Delete.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Param_GPU_g1.Text" xml:space="preserve">
+    <value>Minimum SoC clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g10.Text" xml:space="preserve">
+    <value>Maximum iGPU clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g2.Text" xml:space="preserve">
+    <value>Maximum SoC clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g3.Text" xml:space="preserve">
+    <value>Minimum Infinity Fabric clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g4.Text" xml:space="preserve">
+    <value>Maximum Infinity Fabric clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g5.Text" xml:space="preserve">
+    <value>Minimum VCE clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g6.Text" xml:space="preserve">
+    <value>Maximum VCE clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g7.Text" xml:space="preserve">
+    <value>Minimum Data Latch clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g8.Text" xml:space="preserve">
+    <value>Maximum Data Latch clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g9.Text" xml:space="preserve">
+    <value>Minimum iGPU clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_Ram.Text" xml:space="preserve">
+    <value>                                       Your RAM frequency</value>
+  </data>
+  <data name="Param_GPU_Recommend.Text" xml:space="preserve">
+    <value>Recommendation:    Balance                Performance</value>
+  </data>
+  <data name="Param_GPU_Text.Text" xml:space="preserve">
+    <value>GPU and CPU subsystem clocks</value>
+  </data>
+  <data name="Param_New.Text" xml:space="preserve">
+    <value>Create new preset:</value>
+  </data>
+  <data name="Param_Save_Preset.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Save to preset</value>
+  </data>
+  <data name="Param_VRM_desc.Text" xml:space="preserve">
+    <value>Recommendation:     Balance                 Performance</value>
+  </data>
+  <data name="Param_VRM_Name.Text" xml:space="preserve">
+    <value>VRM Tuning</value>
+  </data>
+  <data name="Param_VRM_v1.Text" xml:space="preserve">
+    <value>VRM Maximum EDC (A)</value>
+  </data>
+  <data name="Param_VRM_v2.Text" xml:space="preserve">
+    <value>VRM Maximum TDC (A)</value>
+  </data>
+  <data name="Param_VRM_v3.Text" xml:space="preserve">
+    <value>SoC Maximum EDC (A)</value>
+  </data>
+  <data name="Param_VRM_v4.Text" xml:space="preserve">
+    <value>SoC Maximum TDC (A)</value>
+  </data>
+  <data name="Param_VRM_v5.Text" xml:space="preserve">
+    <value>PCI VDD Maximum EDC (A)</value>
+  </data>
+  <data name="Param_VRM_v6.Text" xml:space="preserve">
+    <value>PCI SoC Maximum EDC (A)</value>
+  </data>
+  <data name="Param_VRM_v7.Text" xml:space="preserve">
+    <value>Disable BD Prochot timings every (S)</value>
+  </data>
+  <data name="Preset_Balance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Preset_Balance_Desc" xml:space="preserve">
+    <value>This preset will allow your
+processor to be powerful without
+wasting many percent of the
+battery</value>
+  </data>
+  <data name="Preset_Balance_Name.Text" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Preset_Eco" xml:space="preserve">
+    <value>Eco</value>
+  </data>
+  <data name="Preset_Eco_Desc" xml:space="preserve">
+    <value>This preset will save you battery
+percentage, without significant
+loss of performance.</value>
+  </data>
+  <data name="Preset_Eco_Name.Text" xml:space="preserve">
+    <value>Eco</value>
+  </data>
+  <data name="Preset_Max" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="Preset_Max_Desc" xml:space="preserve">
+    <value>This preset will unlock the maximum
+of your processor and remove all it`s
+limitations!</value>
+  </data>
+  <data name="Preset_Max_Name.Text" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="Preset_Min" xml:space="preserve">
+    <value>Minimum</value>
+  </data>
+  <data name="Preset_Min_Desc" xml:space="preserve">
+    <value>This preset will allow your
+processor to be really cold!</value>
+  </data>
+  <data name="Preset_Min_Name.Text" xml:space="preserve">
+    <value>Minimum</value>
+  </data>
+  <data name="Preset_Name.Text" xml:space="preserve">
+    <value>Premaded presets</value>
+  </data>
+  <data name="Preset_Speed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="Preset_Speed_Desc" xml:space="preserve">
+    <value>This preset will allow you to be
+more productive due to improved
+performance</value>
+  </data>
+  <data name="Preset_Speed_Name.Text" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+</root>
