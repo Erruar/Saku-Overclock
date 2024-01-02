@@ -74,7 +74,7 @@
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#Projects used:">Projects used:</a></li>
+    <li><a href="projects-used">Projects used:</a></li>
   </ol>
 </details>
 
