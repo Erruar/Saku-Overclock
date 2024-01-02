@@ -250,7 +250,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/othneildrew
 [product-screenshot]: images/screenshot.png
-[Dotnet.com]: https://img.shields.io/badge/%20-Dotnet-%23512BD4?style=flat-square&logo=dotnet&logoColor=%23FFFFFF&link=https%3A%2F%2Fdotnet.microsoft.com%2F
+[Dotnet.com]: https://img.shields.io/badge/%20-Dotnet-%23512BD4?style=for-the-badge&logo=dotnet&logoColor=%23FFFFFF&link=https%3A%2F%2Fdotnet.microsoft.com%2F
 [Dotnet-url]: https://dotnet.microsoft.com/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
