@@ -1,0 +1,366 @@
+﻿<Page
+    x:Class="Saku_Overclock.Views.ПараметрыPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid x:Name="ContentArea">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="70"></RowDefinition>
+            </Grid.RowDefinitions>
+            
+            <!-- Начало -->
+            <TextBlock x:Uid="Param_Name" Text="Параметры процессора" FontSize="30" Margin="0,-65,0,0"></TextBlock>
+            <TextBlock x:Uid="Param_Preset" Text="Сохранённые пресеты:" FontSize="20" Margin="0,-10,0,0"></TextBlock>
+            <ComboBox Height="30" Width="200" Margin="230,-10,0,0" SelectedIndex="0">
+                <ComboBoxItem>Unsaved</ComboBoxItem>
+                <ComboBoxItem>Пресет 1</ComboBoxItem>
+                <ComboBoxItem>Пресет 2</ComboBoxItem>
+                <ComboBoxItem>Пресет 3</ComboBoxItem>
+                <ComboBoxItem>Пресет 4</ComboBoxItem>
+                <ComboBoxItem>Пресет 5</ComboBoxItem>
+            </ComboBox>
+            
+            <!-- Середина -->
+            <ScrollViewer Grid.Row="1" Padding="0,0,36,0" IsTabStop="False"
+         UseSystemFocusVisuals="False"
+         VerticalScrollBarVisibility="Auto"
+         VerticalScrollMode="Auto" Margin="0,0,-50,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <!-- От 0 до 6 -->
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions> 
+                    <Expander Grid.Row="0" IsExpanded="False">
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <SymbolIcon Symbol="SelectAll" HorizontalAlignment="Left" Margin="0,0,9,0"/>
+                                <TextBlock Margin="30,0,0,0" VerticalAlignment="Center" x:Uid="Param_CPU"  Text="Мощность процессора"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
+                            <!-- Монтируем секции -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <!-- Первая секция -->
+                            
+                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c2"  Text="Лимит CPU (W)" FontSize="15"></TextBlock>
+                                <CheckBox  Margin="0,20,0,0" x:Name="c2" Checked="c2_Checked" Unchecked="c2_Checked"></CheckBox>
+                                <Slider x:Name="c2v" ValueChanged="c2_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="20">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    20(W)                        30(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c3" Text="Реальный CPU (W)" FontSize="15"></TextBlock>
+                                <CheckBox  Margin="0,20,0,0" x:Name="c3" Checked="c3_Checked" Unchecked="c3_Checked"></CheckBox>
+                                <Slider x:Name="c3v" ValueChanged="c3_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c4" Text="Средний CPU (W)" FontSize="15"></TextBlock>
+                                <CheckBox  Margin="0,20,0,0" x:Name="c4" Checked="c4_Checked" Unchecked="c4_Checked"></CheckBox>
+                                <Slider x:Name="c4v" ValueChanged="c4_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c5" Text="Тик быстрого разгона (S)" FontSize="15"></TextBlock>
+                                <CheckBox  Margin="0,20,0,0" x:Name="c5" Checked="c5_Checked" Unchecked="c5_Checked"></CheckBox>
+                                <Slider x:Name="c5v" ValueChanged="c5_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="300" Value="128">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c6" Text="Тик медленного разгона (S)" FontSize="15"></TextBlock>
+                                <CheckBox  Margin="0,20,0,0" x:Name="c6" Checked="c6_Checked" Unchecked="c6_Checked"></CheckBox>
+                                <Slider x:Name="c6v" ValueChanged="c6_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="120" Value="64">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                     64(S)                         48(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c1" Text="Максимальная температура CPU (C)" FontSize="15"></TextBlock>
+                                <CheckBox  Margin="0,20,0,0" x:Name="c1" Checked="c1_Checked" Unchecked="c1_Checked"></CheckBox>
+                                <Slider x:Name="c1v" ValueChanged="c1_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100" Value="90">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock x:Uid="Param_CPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
+                                <TextBlock Text="                                    75(С)                         90(С)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                        </Grid>
+                    </Expander>
+
+
+                    <Expander x:Name="Exp1" Grid.Row="1" Expanding="Expander_Expanding">
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <SymbolIcon Symbol="Library" HorizontalAlignment="Left" Margin="0,0,9,0"/>
+                                <TextBlock x:Uid="Param_VRM_Name" Margin="30,0,0,0" VerticalAlignment="Center" Text="VRM Система питания CPU"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
+                            <!-- Монтируем секции -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <!-- Первая секция -->
+                            
+                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_VRM_v2" Text="Лимит по току VRM (A)" FontSize="15"></TextBlock>
+                                <CheckBox x:Name="V2" Checked="v2_Checked" Unchecked="v2_Checked" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="V2V" ValueChanged="v2v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="55">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    55(A)                         70(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_VRM_v3" Text="Максимальный ток SoC (A)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="v3_Checked" Unchecked="v3_Checked" x:Name="V3" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="V3V" ValueChanged="v3v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    13(A)                         25(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_VRM_v4" Text="Лимит по току SoC (A)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="v4_Checked" Unchecked="v4_Checked" x:Name="V4" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="V4V" ValueChanged="v4v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="120">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    10(A)                         15(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_VRM_v5" Text="Максимальный ток PCI VDD (A)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="v5_Checked" Unchecked="v5_Checked" x:Name="V5" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="V5V" ValueChanged="v5v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    13(A)                         20(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_VRM_v6" Text="Максимальный ток PCI SoC (A)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="v6_Checked" Unchecked="v6_Checked" x:Name="V6" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="V6V" ValueChanged="v6v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="5" Maximum="120">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                     5(A)                          10(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock  x:Uid="Param_VRM_v7" Text="Отключить троттлинг на время (S)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="v7_Checked" Unchecked="v7_Checked" x:Name="V7" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="V7V" ValueChanged="v7v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="900" Value="2">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                     2(S)                            2(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock  x:Uid="Param_VRM_v1" Text="Максимальный ток VRM (A)" FontSize="15"></TextBlock>
+                                <CheckBox x:Name="V1" Margin="0,20,0,0" Checked="v1_Checked" Unchecked="v1_Checked"></CheckBox>
+                                <Slider x:Name="V1V" ValueChanged="v1v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="64">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock x:Uid="Param_VRM_desc" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
+                                <TextBlock Text="                                    64(A)                         75(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                        </Grid>
+                    </Expander>
+
+
+                    <Expander  Grid.Row="2" >
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <SymbolIcon Symbol="Next" HorizontalAlignment="Left" Margin="0,0,9,0"/>
+                                <TextBlock Margin="30,0,0,0" VerticalAlignment="Center" x:Uid="Param_GPU_Text" Text="Частоты GPU"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
+                            <!-- Монтируем секции -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <!-- Первая секция -->
+                            
+                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_GPU_g2" Text="Максимальная частота SoC (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="g2_Checked" Unchecked="g2_Checked" x:Name="g2" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="g2v" ValueChanged="g2v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="1">
+                                <TextBlock x:Uid="Param_GPU_Ram" Text="1                                Частота оперативной памяти" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g3" Text="Минимальная Infinity Fabric (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="g3_Checked" Unchecked="g3_Checked" x:Name="g3" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="g3v" ValueChanged="g3v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="1">
+                                <TextBlock Text="                                800(MHz)                 800(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g4" Text="Максимальная Infinity Fabric (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="g4_Checked" Unchecked="g4_Checked" x:Name="g4" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="g4v" ValueChanged="g4v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="1">
+                                <TextBlock x:Uid="Param_GPU_Ram" Text="                                Частота оперативной памяти" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g5" Text="Минимальная частота кодека VCE (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="g5_Checked" Unchecked="g5_Checked" x:Name="g5" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="g5v" ValueChanged="g5v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="1">
+                                <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="0">
+                                <TextBlock  x:Uid="Param_GPU_g6" Text="Максимальная частота кодека VCE (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="g6_Checked" Unchecked="g6_Checked" x:Name="g6" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="g6v" ValueChanged="g6v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="1">
+                                <TextBlock Text="                                1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="6" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g7" Text="Минимальная частота Data Latch (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="g7_Checked" Unchecked="g7_Checked" x:Name="g7" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="g7v" ValueChanged="g7v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="6" Grid.Column="1">
+                                <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="7" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g8" Text="Максимальная частота Data Latch (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="g8_Checked" Unchecked="g8_Checked" x:Name="g8" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="g8v" ValueChanged="g8v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="7" Grid.Column="1">
+                                <TextBlock Text="                                1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="8" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g9" Text="Минимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="g9_Checked" Unchecked="g9_Checked" x:Name="g9" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="g9v" ValueChanged="g9v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="100" Maximum="1600" Value="400">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="8" Grid.Column="1">
+                                <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="9" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g10" Text="Максимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="g10_Checked" Unchecked="g10_Checked" x:Name="g10" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="g10v" ValueChanged="g10v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="9" Grid.Column="1">
+                                <TextBlock Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_GPU_g1"  Text="Минимальная частота SoC (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="g1_Checked" Unchecked="g1_Checked" x:Name="g1" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="g1v" ValueChanged="g1v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
+                                </Slider>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="1">
+                                <TextBlock x:Uid="Param_GPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
+                                <TextBlock Text="                                800(MHz)                 800(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                        </Grid>
+                    </Expander>
+                </Grid>
+            </ScrollViewer>
+            
+            
+            <!-- Конец -->
+            <TextBlock Grid.Row="2" x:Uid="Param_New" Text="Название нового пресета:" Margin="0,16,0,0" FontSize="20"></TextBlock>
+            <TextBox Grid.Row="2" HorizontalAlignment="Left" Margin="260,0,0,0" Width="200" Height="40"></TextBox>
+            <Button x:Uid="Param_Apply" Grid.Row="2" HorizontalAlignment="Right" Click="Apply_Click" Height="40" Width="40" Margin="0,0,-13,0" ToolTipService.ToolTip="Применить">
+                <SymbolIcon Symbol="Play" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
+            </Button>
+            <Button x:Uid="Param_Delete" Grid.Row="2" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,0" ToolTipService.ToolTip="Удалить">
+                <SymbolIcon Symbol="Delete" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
+            </Button>
+            <Button x:Uid="Param_Save_Preset" Grid.Row="2" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,87,0" ToolTipService.ToolTip="Сохранить">
+                <SymbolIcon Symbol="Save" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
+            </Button>
+        </Grid>
+    </Grid>
+</Page>
