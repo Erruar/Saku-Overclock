@@ -1,0 +1,10 @@
+﻿{
+    "profiles": {
+      "Saku Overclock (Package)": {
+        "commandName": "MsixPackage"
+      },
+      "Saku Overclock (Unpackaged)": {
+        "commandName": "Project"
+      }
+    }
+}
