@@ -106,7 +106,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 * [![Dotnet][Dotnet.com]][Dotnet-url]
 * [![Json][Json.org]][Json-url]
-* [![Vue][Vue.js]][Vue-url]
+* [![Csharp][Csharp.org]][Csharp-url]
 * [![Angular][Angular.io]][Angular-url]
 * [![Svelte][Svelte.dev]][Svelte-url]
 * [![Laravel][Laravel.com]][Laravel-url]
@@ -254,8 +254,8 @@ Use this space to list resources you find helpful and would like to give credit 
 [Dotnet-url]: https://dotnet.microsoft.com/
 [Json.org]: https://img.shields.io/badge/%20-JSON-%23000000?style=for-the-badge&logo=json
 [Json-url]: https://www.json.org/json-en.html
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
+[Csharp.org]: https://img.shields.io/badge/%20-C%23%20app-%23512BD4?style=for-the-badge&logo=csharp
+[Csharp-url]: https://learn.microsoft.com/en-us/dotnet/csharp/
 [Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
 [Angular-url]: https://angular.io/
 [Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
