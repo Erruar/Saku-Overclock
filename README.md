@@ -18,11 +18,10 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-<div align="center">
 [![Discord][discord-shield]][discord-url]
 [![Donalerts][donalerts-shield]][donalerts-url]
 [![GPL License][license-shield]][license-url]
-</div>
+
 
 
 <!-- PROJECT LOGO -->
