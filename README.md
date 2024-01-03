@@ -99,6 +99,12 @@ Use the `README.md` to get started.
 
 
 
+### Pictures
+<details>
+  <summary>Main Window</summary>
+</details>
+
+
 ### Built With
 
 My program was built using Win UI 3.NET interface and is based on C#. She uses RyzenAdj which is written in C++
