@@ -37,7 +37,7 @@
   <h3 align="center">Saku Overclock</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    An awesome laptop overclock utility for all who want maximum!
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
     <br />
