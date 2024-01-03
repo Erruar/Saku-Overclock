@@ -213,16 +213,13 @@ My program was built using Win UI 3.NET interface and is based on C#. She uses R
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Let's figure out how to install my app!
+To get a copy of my app and running follow these simple steps.
 
 ### Requirements
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+In order for my app to work properly, you will first need to download Notebook fan controller
+[Link to download](https://github.com/hirschmann/nbfc/releases)
 
 ### Installation
 
@@ -316,8 +313,7 @@ Project Link: [https://github.com/Erruar/Saku-Overclock/](https://github.com/Err
 <!-- ACKNOWLEDGMENTS -->
 ## Projects used:
 
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
-
+Here you can see links to everything that was used in the development of the project:
 * [Notebook fan control](https://github.com/hirschmann/nbfc)
 * [Ryzen ADJ](https://github.com/FlyGoat/RyzenAdj)
 * [Freepik icons](https://www.freepik.com/)
