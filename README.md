@@ -148,6 +148,7 @@ Use the `README.md` to get started.
 <details>
   <summary>Custom presets</summary>
   <ol>
+    <h1 align="center">Custom presets page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/2.png"></img>
