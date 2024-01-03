@@ -107,7 +107,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 * [![Dotnet][Dotnet.com]][Dotnet-url]
 * [![Json][Json.org]][Json-url]
 * [![Csharp][Csharp.org]][Csharp-url]
-* [![Angular][Angular.io]][Angular-url]
+* [![Cplusplus][Cplusplus.com]][Cplusplus-url]
 * [![Svelte][Svelte.dev]][Svelte-url]
 * [![Laravel][Laravel.com]][Laravel-url]
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
@@ -256,8 +256,8 @@ Use this space to list resources you find helpful and would like to give credit 
 [Json-url]: https://www.json.org/json-en.html
 [Csharp.org]: https://img.shields.io/badge/%20-C%23%20app-%23512BD4?style=for-the-badge&logo=csharp
 [Csharp-url]: https://learn.microsoft.com/en-us/dotnet/csharp/
-[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[Angular-url]: https://angular.io/
+[Cplusplus.com]: https://img.shields.io/badge/%20-C%2B%2B%20app-%2300599C?style=for-the-badge&logo=cplusplus&logoColor=%23ffffff
+[Cplusplus-url]: https://learn.microsoft.com/en-us/cpp/?view=msvc-170
 [Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
 [Svelte-url]: https://svelte.dev/
 [Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
