@@ -128,15 +128,15 @@ Use the `README.md` to get started.
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/eco.png"></img>
     <p> </p>
     <p align="left">Eco preset will save your battery and keep performance</p>
-    <p> </p>
+    <h1 align="center"> </h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/balance.png"></img>
     <p> </p>
     <p align="left">Balance preset will allow you to play more without charging</p>
-    <p> </p>
+    <h1 align="center"> </h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/speed.png"></img>
     <p> </p>
     <p align="left">Speed preset will provide better performance than normal</p>
-    <p> </p>
+    <h1 align="center"> </h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/max.png"></img>
     <p> </p>
     <p align="left">Maximum preset will give you maximum performance of your cpu</p>
