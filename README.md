@@ -242,8 +242,8 @@ Let's install my app!
 4. Open app via Windows -> All apps
 5. Now you have installed my app!
 
-<h1 align="center">Video installation</h1>
-[![asciicast](https://asciinema.org/a/113463.png)](https://youtu.be/wi1nCkhE1pI)
+## Video installation
+[![asciicast](https://i.stack.imgur.com/gHrep.png)](https://youtu.be/wi1nCkhE1pI)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
