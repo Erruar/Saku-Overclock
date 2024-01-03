@@ -249,9 +249,13 @@ Let's install my app!
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+Using my program is pretty simple! Go to the presets tab and apply the desired one. 
+Or if you have a special case (for example, 0.4 GHz issue) or you want to get the most out of your laptop, then the Parameters tab is for you. 
+On it, you can set the values that you want, and if you don't know what to do, there are tips for balance and performance
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+If you have found the perfect settings for yourself, just click on the apply button at the bottom right, it looks like a Play Music icon. But before that, I RECOMMEND going to the settings page and making sure that you have enabled "Reapply latest settings every", after which, applying your settings, they will be updated every time, depending on what time you set
+
+<!--_For more examples, please refer to the [Documentation](https://example.com)_-->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -284,9 +288,9 @@ If you have a suggestion that would make this better, please fork the repo and c
 Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
+2. Create your Feature Branch 
+3. Commit your Changes 
+4. Push to the Branch 
 5. Open a Pull Request
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
