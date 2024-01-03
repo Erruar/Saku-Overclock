@@ -63,7 +63,7 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#requirements">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
@@ -120,11 +120,27 @@ Use the `README.md` to get started.
 <details>
   <summary>Premaded presets</summary>
   <ol>
+    <h1 align="center">All premaded presets</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/min.png"></img>
+    <p> </p>
+    <p align="left">Minimum preset will keep your processor cold, but I don`t recommend to use it under CPU load! Use it only if u have latest battery percent and it is important to be online right now</p>
+    <p> </p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/eco.png"></img>
+    <p> </p>
+    <p align="left">Eco preset will save your battery and keep performance</p>
+    <p> </p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/balance.png"></img>
+    <p> </p>
+    <p align="left">Balance preset will allow you to play more without charging</p>
+    <p> </p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/speed.png"></img>
+    <p> </p>
+    <p align="left">Speed preset will provide better performance than normal</p>
+    <p> </p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/max.png"></img>
+    <p> </p>
+    <p align="left">Maximum preset will give you maximum performance of your cpu</p>
+    <p> </p>
   </ol>
 </details>
 
@@ -187,7 +203,7 @@ My program was built using Win UI 3.NET interface and is based on C#. She uses R
 This is an example of how you may give instructions on setting up your project locally.
 To get a local copy up and running follow these simple example steps.
 
-### Prerequisites
+### Requirements
 
 This is an example of how to list things you need to use the software and how to install them.
 * npm
