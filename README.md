@@ -103,6 +103,9 @@ Use the `README.md` to get started.
 ### Pictures
 <details>
   <summary>Main Window</summary>
+  <ol>
+    [![Product Name Screen Shot][product-screenshot]](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png)
+  </ol>
 </details>
 
 
