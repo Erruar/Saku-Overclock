@@ -242,7 +242,7 @@ Let's install my app!
 4. Open app via Windows -> All apps
 5. Now you have installed my app!
 
-## Video installation
+## Video installation (Click to open)
 [![asciicast](https://i.stack.imgur.com/gHrep.png)](https://youtu.be/wi1nCkhE1pI)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
