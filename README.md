@@ -82,16 +82,18 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png)
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
+This program is designed to overclock Ryzen mobile processors on laptops. Initially, the program was created due to the frequent occurrence of 0.4 GHz processor freq. I came across a group of such people on the Internet, as a result of which I developed this program.
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
+What the program can do:
+* Control TDP, VRM current and on Picasso and up - Freq of CPU subsistems and iGPU freq
+* Get total info about TDP, VRM, Timings
+* Cooler tuning, custom cooler spin rate
+* EXPERIMENTAL can stop BD Prochot for time, just found value for your CPU
+* Helps to play at high FPS :smile:
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
+Of course, you can copy my program in your projects! So I'll be adding more in the near future. Thanks for using it!
 
-Use the `BLANK_README.md` to get started.
+Use the `README.md` to get started.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
