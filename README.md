@@ -104,7 +104,7 @@ Use the `README.md` to get started.
 <details>
   <summary>Main Window</summary>
   <ol>
-    <li><img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png"></img></li>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png"></img>
   </ol>
 </details>
 
