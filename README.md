@@ -111,6 +111,7 @@ Use the `README.md` to get started.
     <p> </p>
     <h1 align="center">White main page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main-white.png"></img>
+    <p> </p>
     <p align="left">Main page of my programm in white theme</p>
   </ol>
 </details>
