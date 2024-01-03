@@ -214,7 +214,7 @@ My program was built using Win UI 3.NET interface and is based on C#. She uses R
 ## Getting Started
 
 Let's figure out how to install my app!
-To get a copy of my app and running follow these simple steps.
+To get a copy of my app and running follow these simple steps:
 
 ### Requirements
 
@@ -223,21 +223,24 @@ In order for my app to work properly, you will first need to download Notebook f
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
+Let's install my app!
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/your_username_/Project-Name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+1. Get a `certificate.pfx` from releases: [Releases link](https://github.com/Erruar/Saku-Overclock/releases)
+2. Double click on certificate then click next, don`t use any passwords, press next, then IMPORTANT: choose "Place all certificates in the following store" (second) and click "browse", then choose "Trusted Root Certification Authorities" (second), click "OK" and "Next", then "Finish" and "Ok"
+   <details>
+     <summary>Installation in pictures:</summary>
+     <ol>
+       <h1 align="center">How to install certificate</h1>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+     </ol>
+   </details>
+3. Install `.appx` like normal `.exe` or `.msi` file
+4. Open app via Windows -> All apps
+5. Now you have installed my app!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
