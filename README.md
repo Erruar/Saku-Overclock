@@ -124,7 +124,7 @@ Use the `README.md` to get started.
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/min.png"></img>
     <p> </p>
     <p align="left">Minimum preset will keep your processor cold, but I don`t recommend to use it under CPU load! Use it only if u have latest battery percent and it is important to be online right now</p>
-    <p> </p>
+    <h1 align="center"> </h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/eco.png"></img>
     <p> </p>
     <p align="left">Eco preset will save your battery and keep performance</p>
