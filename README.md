@@ -18,12 +18,9 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![Discord][discord-shield]][discord-url]
+[![Donalerts][donalerts-shield]][donalerts-url]
+[![GPL License][license-shield]][license-url]
 
 
 
@@ -37,7 +34,7 @@
   <h3 align="center">Saku Overclock</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    An awesome laptop overclock utility for those who want real performance!
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
     <br />
@@ -59,6 +56,7 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
+        <li><a href="#pictures">Pictures</a></li>
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
@@ -83,35 +81,95 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png)
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
+This program is designed to overclock Ryzen mobile processors on laptops. Initially, the program was created due to the frequent occurrence of 0.4 GHz processor freq. I came across a group of such people on the Internet, as a result of which I developed this program.
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
+What the program can do:
+* Control TDP, VRM current and on Picasso and up - Freq of CPU subsistems and iGPU freq
+* Get total info about TDP, VRM, Timings
+* Cooler tuning, custom cooler spin rate
+* EXPERIMENTAL can stop BD Prochot for time, just found value for your CPU
+* Helps to play at high FPS :smile:
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
+Of course, you can copy my program in your projects! So I'll be adding more in the near future. Thanks for using it!
 
-Use the `BLANK_README.md` to get started.
+Use the `README.md` to get started.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
+### Pictures
+<details>
+  <summary>Main</summary>
+  <ol>
+    <h1 align="center">Main page</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png"></img>
+    <p align="left">Main page of my programm</p>
+  </ol>
+</details>
+
+
+<details>
+  <summary>Premaded presets</summary>
+  <ol>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/min.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/eco.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/balance.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/speed.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/max.png"></img>
+  </ol>
+</details>
+
+
+<details>
+  <summary>Custom presets</summary>
+  <ol>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/1.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/2.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/3.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/4.png"></img>
+  </ol>
+</details>
+
+
+
+<details>
+  <summary>Information page</summary>
+  <ol>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info.png"></img>
+  </ol>
+</details>
+
+
+
+
+<details>
+  <summary>Cooler page</summary>
+  <ol>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/fan.png"></img>
+  </ol>
+</details>
+
+
+
+
+<details>
+  <summary>Settings</summary>
+  <ol>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+  </ol>
+</details>
+
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-
+My program was built using Win UI 3.NET interface and is based on C#. She uses RyzenAdj which is written in C++
 * [![Dotnet][Dotnet.com]][Dotnet-url]
 * [![Json][Json.org]][Json-url]
 * [![Csharp][Csharp.org]][Csharp-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
+* [![Cplusplus][Cplusplus.com]][Cplusplus-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -176,7 +234,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
     - [x] Russian
     - [ ] More?
 
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/Erruar/Saku-Overclock/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -237,32 +295,18 @@ Use this space to list resources you find helpful and would like to give credit 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
-[product-screenshot]: images/screenshot.png
+[discord-shield]: https://img.shields.io/badge/Join%20our-discord-%23ff7f50?style=for-the-badge&logo=discord&logoColor=%23ff7f50
+[discord-url]: https://discord.gg/WzgsFvgTuh
+[donalerts-shield]: https://img.shields.io/badge/Support%20me-DonAlerts-%23f13a13?style=for-the-badge&logo=disqus&logoColor=%23f13a13
+[donalerts-url]: https://www.donationalerts.com/r/RubyTrack
+[license-shield]: https://img.shields.io/badge/LICENSE%20-GPL-%230ff99C?style=for-the-badge
+[license-url]: https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md
+[product-screenshot]: https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png
 [Dotnet.com]: https://img.shields.io/badge/%20-Dotnet-%23512BD4?style=for-the-badge&logo=dotnet&logoColor=%23FFFFFF&link=https%3A%2F%2Fdotnet.microsoft.com%2F
 [Dotnet-url]: https://dotnet.microsoft.com/
 [Json.org]: https://img.shields.io/badge/%20-JSON-%23000000?style=for-the-badge&logo=json
 [Json-url]: https://www.json.org/json-en.html
 [Csharp.org]: https://img.shields.io/badge/%20-C%23%20app-%23512BD4?style=for-the-badge&logo=csharp
 [Csharp-url]: https://learn.microsoft.com/en-us/dotnet/csharp/
-[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[Angular-url]: https://angular.io/
-[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
-[Svelte-url]: https://svelte.dev/
-[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
-[Laravel-url]: https://laravel.com
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
-[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[JQuery-url]: https://jquery.com 
+[Cplusplus.com]: https://img.shields.io/badge/%20-C%2B%2B%20app-%2300599C?style=for-the-badge&logo=cplusplus&logoColor=%23ffffff
+[Cplusplus-url]: https://learn.microsoft.com/en-us/cpp/?view=msvc-170
