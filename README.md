@@ -154,6 +154,9 @@ Use the `README.md` to get started.
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/2.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/3.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/4.png"></img>
+    <p> </p>
+    <p align="left">There you can easily adjust values of your CPU, GPU and VRM with recommendations for balance and performance. About Disable BD Prochot timings: in theory it can help with 0,4 GHz and stop throttling, you need to found value that works for you. Try with 0, 2, 4, 8, 10, e.t.c. More features soon!</p>
+    <p> </p>
   </ol>
 </details>
 
@@ -162,7 +165,10 @@ Use the `README.md` to get started.
 <details>
   <summary>Information page</summary>
   <ol>
+    <h1 align="center">Information page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info.png"></img>
+    <p> </p>
+    <p align="left">There you can see information of your CPU, VRM and timings. You can use it page to provide me in our discord</p>
   </ol>
 </details>
 
@@ -172,7 +178,10 @@ Use the `README.md` to get started.
 <details>
   <summary>Cooler page</summary>
   <ol>
+    <h1 align="center">Settings page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/fan.png"></img>
+    <p> </p>
+    <p align="left">There you can add app in autostart with windows, set close app to tray when it opening, set autoapply when opening, check for updates and I recommend to enable - Reapply latest setting every. Enable it and set to 1-7. This value is enough</p>
   </ol>
 </details>
 
