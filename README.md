@@ -231,11 +231,11 @@ Let's install my app!
      <summary>Installation in pictures:</summary>
      <ol>
        <h1 align="center">How to install certificate</h1>
-       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
-       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
-       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
-       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
-       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/install/1.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/install/2.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/install/3.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/install/4.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/install/5.png"></img>
      </ol>
    </details>
 3. Install `.appx` like normal `.exe` or `.msi` file
