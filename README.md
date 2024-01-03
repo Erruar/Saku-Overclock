@@ -107,12 +107,12 @@ Use the `README.md` to get started.
     <h1 align="center">Dark main page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png"></img>
     <p> </p>
-    <p align="left">Main page of my programm in dark theme</p>
+    <p align="left">The main page of my application will greet you at launch</p>
     <p> </p>
     <h1 align="center">White main page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main-white.png"></img>
     <p> </p>
-    <p align="left">Main page of my programm in white theme</p>
+    <p align="left">My application has two themes - dark and light, here you can see the light theme</p>
   </ol>
 </details>
 
