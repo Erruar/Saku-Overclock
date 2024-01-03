@@ -63,7 +63,7 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#requirements">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
@@ -104,9 +104,15 @@ Use the `README.md` to get started.
 <details>
   <summary>Main</summary>
   <ol>
-    <h1 align="center">Main page</h1>
+    <h1 align="center">Dark main page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png"></img>
-    <p align="left">Main page of my programm</p>
+    <p> </p>
+    <p align="left">The main page of my application will greet you at launch</p>
+    <p> </p>
+    <h1 align="center">White main page</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main-white.png"></img>
+    <p> </p>
+    <p align="left">My application has two themes - dark and light, here you can see the light theme</p>
   </ol>
 </details>
 
@@ -114,11 +120,27 @@ Use the `README.md` to get started.
 <details>
   <summary>Premaded presets</summary>
   <ol>
+    <h1 align="center">Minimum premaded presets</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/min.png"></img>
+    <p> </p>
+    <p align="left">Minimum preset will keep your processor cold, but I don`t recommend to use it under CPU load! Use it only if u have latest battery percent and it is important to be online right now</p>
+    <h1 align="center">Eco preset</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/eco.png"></img>
+    <p> </p>
+    <p align="left">Eco preset will save your battery and keep performance</p>
+    <h1 align="center">Balance preset</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/balance.png"></img>
+    <p> </p>
+    <p align="left">Balance preset will allow you to play more without charging</p>
+    <h1 align="center">Speed preset</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/speed.png"></img>
+    <p> </p>
+    <p align="left">Speed preset will provide better performance than normal</p>
+    <h1 align="center">Maximum preset</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/max.png"></img>
+    <p> </p>
+    <p align="left">Maximum preset will give you maximum performance of your cpu</p>
+    <p> </p>
   </ol>
 </details>
 
@@ -126,11 +148,15 @@ Use the `README.md` to get started.
 <details>
   <summary>Custom presets</summary>
   <ol>
+    <h1 align="center">Custom presets page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/2.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/3.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/4.png"></img>
+    <p> </p>
+    <p align="left">There you can easily adjust values of your CPU, GPU and VRM with recommendations for balance and performance. About Disable BD Prochot timings: in theory it can help with 0,4 GHz and stop throttling, you need to found value that works for you. Try with 0, 2, 4, 8, 10, e.t.c. More features soon!</p>
+    <p> </p>
   </ol>
 </details>
 
@@ -139,7 +165,10 @@ Use the `README.md` to get started.
 <details>
   <summary>Information page</summary>
   <ol>
+    <h1 align="center">Information page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info.png"></img>
+    <p> </p>
+    <p align="left">There you can see information of your CPU, VRM and timings. You can use it page to provide me in our discord</p>
   </ol>
 </details>
 
@@ -149,7 +178,10 @@ Use the `README.md` to get started.
 <details>
   <summary>Cooler page</summary>
   <ol>
+    <h1 align="center">Cooler tweaks page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/fan.png"></img>
+    <p> </p>
+    <p align="left">There you can adjust your cooler spinning, but only if you have Notebook fan controller app on your pc! Just download it and install. Then in my app set your laptop model at which Notebook fan controller is working for you and you can see and change values!</p>
   </ol>
 </details>
 
@@ -159,7 +191,10 @@ Use the `README.md` to get started.
 <details>
   <summary>Settings</summary>
   <ol>
+    <h1 align="center">Settings page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+    <p> </p>
+    <p align="left">There you can add app in autostart with windows, set close app to tray when it opening, set autoapply when opening, check for updates and I recommend to enable - Reapply latest setting every. Enable it and set to 1-7. This value is enough</p>
   </ol>
 </details>
 
@@ -178,34 +213,34 @@ My program was built using Win UI 3.NET interface and is based on C#. She uses R
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Let's figure out how to install my app!
+To get a copy of my app and running follow these simple steps:
 
-### Prerequisites
+### Requirements
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+In order for my app to work properly, you will first need to download Notebook fan controller
+[Link to download](https://github.com/hirschmann/nbfc/releases)
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
+Let's install my app!
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/your_username_/Project-Name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+1. Get a `certificate.pfx` from releases: [Releases link](https://github.com/Erruar/Saku-Overclock/releases)
+2. Double click on certificate then click next, don`t use any passwords, press next, then IMPORTANT: choose "Place all certificates in the following store" (second) and click "browse", then choose "Trusted Root Certification Authorities" (second), click "OK" and "Next", then "Finish" and "Ok"
+   <details>
+     <summary>Installation in pictures:</summary>
+     <ol>
+       <h1 align="center">How to install certificate</h1>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+     </ol>
+   </details>
+3. Install `.appx` like normal `.exe` or `.msi` file
+4. Open app via Windows -> All apps
+5. Now you have installed my app!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -281,8 +316,7 @@ Project Link: [https://github.com/Erruar/Saku-Overclock/](https://github.com/Err
 <!-- ACKNOWLEDGMENTS -->
 ## Projects used:
 
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
-
+Here you can see links to everything that was used in the development of the project:
 * [Notebook fan control](https://github.com/hirschmann/nbfc)
 * [Ryzen ADJ](https://github.com/FlyGoat/RyzenAdj)
 * [Freepik icons](https://www.freepik.com/)
