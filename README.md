@@ -36,7 +36,7 @@
   <p align="center">
     An awesome laptop overclock utility for those who want real performance!
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/Erruar/Saku-Overclock/releases"><strong>Explore the releases »</strong></a>
     <br />
     <br />
     <a href="https://youtu.be/wi1nCkhE1pI">View installation</a>
