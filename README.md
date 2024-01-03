@@ -102,12 +102,64 @@ Use the `README.md` to get started.
 
 ### Pictures
 <details>
-  <summary>Main Window</summary>
+  <summary>Main</summary>
   <ol>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png"></img>
   </ol>
 </details>
 
+
+<details>
+  <summary>Premaded presets</summary>
+  <ol>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/min.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/eco.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/balance.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/speed.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/max.png"></img>
+  </ol>
+</details>
+
+
+<details>
+  <summary>Custom presets</summary>
+  <ol>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/1.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/2.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/3.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/4.png"></img>
+  </ol>
+</details>
+
+
+
+<details>
+  <summary>Information page</summary>
+  <ol>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info.png"></img>
+  </ol>
+</details>
+
+
+
+
+<details>
+  <summary>Cooler page</summary>
+  <ol>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/fan.png"></img>
+  </ol>
+</details>
+
+
+
+
+<details>
+  <summary>Settings</summary>
+  <ol>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+  </ol>
+</details>
 
 ### Built With
 
