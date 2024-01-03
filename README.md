@@ -178,10 +178,10 @@ Use the `README.md` to get started.
 <details>
   <summary>Cooler page</summary>
   <ol>
-    <h1 align="center">Settings page</h1>
+    <h1 align="center">Cooler tweaks page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/fan.png"></img>
     <p> </p>
-    <p align="left">There you can add app in autostart with windows, set close app to tray when it opening, set autoapply when opening, check for updates and I recommend to enable - Reapply latest setting every. Enable it and set to 1-7. This value is enough</p>
+    <p align="left">There you can adjust your cooler spinning, but only if you have Notebook fan controller app on your pc! Just download it and install. Then in my app set your laptop model at which Notebook fan controller is working for you and you can see and change values!</p>
   </ol>
 </details>
 
@@ -191,7 +191,10 @@ Use the `README.md` to get started.
 <details>
   <summary>Settings</summary>
   <ol>
+    <h1 align="center">Settings page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+    <p> </p>
+    <p align="left">There you can add app in autostart with windows, set close app to tray when it opening, set autoapply when opening, check for updates and I recommend to enable - Reapply latest setting every. Enable it and set to 1-7. This value is enough</p>
   </ol>
 </details>
 
