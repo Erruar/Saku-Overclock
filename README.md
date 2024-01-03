@@ -39,7 +39,7 @@
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    <a href="https://youtu.be/wi1nCkhE1pI">View installation</a>
     ·
     <a href="https://github.com/Erruar/Saku-Overclock/issues">Report Bug</a>
     ·
@@ -241,6 +241,9 @@ Let's install my app!
 3. Install `.appx` like normal `.exe` or `.msi` file
 4. Open app via Windows -> All apps
 5. Now you have installed my app!
+
+<h1 align="center">Video installation</h1>
+[Link to watch](https://youtu.be/wi1nCkhE1pI)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
