@@ -328,7 +328,6 @@ Here you can see links to everything that was used in the development of the pro
 * [Ryzen ADJ](https://github.com/FlyGoat/RyzenAdj)
 * [Freepik icons](https://www.freepik.com/)
 * [Win UI](https://github.com/microsoft/WinUI-Gallery)
-* [Best README Template](https://github.com/othneildrew/Best-README-Template)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
