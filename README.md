@@ -243,7 +243,8 @@ Let's install my app!
 5. Now you have installed my app!
 
 <h1 align="center">Video installation</h1>
-[Link to watch](https://youtu.be/wi1nCkhE1pI)
+<video src='https://youtu.be/wi1nCkhE1pI' width=180/>
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
