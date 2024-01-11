@@ -15,14 +15,14 @@
         <ScrollViewer Margin="0,0,-50,0">
             <StackPanel
             x:Name="ContentArea">
-                <CheckBox IsEnabled="True" x:Uid="Settings_Start_Boot" Name="cbStartBoot" Unchecked="cbStartBoot_Click" Click="cbStartBoot_Click" >Автозапуск</CheckBox>
-                <CheckBox IsEnabled="True" x:Uid="Settings_Start_Mini" Name="cbStartMini" Unchecked="cbStartMini_Click" Click="cbStartMini_Click">Запускаться свёрнутым</CheckBox>
-            <CheckBox x:Uid="Settings_Apply_Start" Name="cbApplyStart" Unchecked="cbApplyStart_Click" Click="cbApplyStart_Click">Автоприменять разгон</CheckBox>
+                <CheckBox IsEnabled="True" x:Uid="Settings_Start_Boot" Name="CbStartBoot" Unchecked="cbStartBoot_Click" Click="cbStartBoot_Click" >Автозапуск</CheckBox>
+                <CheckBox IsEnabled="True" x:Uid="Settings_Start_Mini" Name="CbStartMini" Unchecked="cbStartMini_Click" Click="cbStartMini_Click">Запускаться свёрнутым</CheckBox>
+            <CheckBox x:Uid="Settings_Apply_Start" Name="CbApplyStart" Unchecked="cbApplyStart_Click" Click="cbApplyStart_Click">Автоприменять разгон</CheckBox>
             <StackPanel Orientation="Horizontal">
-                <CheckBox x:Uid="Settings_Auto_Reapply" Name="cbAutoReapply" Unchecked="cbAutoReapply_Click" Click="cbAutoReapply_Click">Автоприменять каждые (с)</CheckBox>
+                <CheckBox x:Uid="Settings_Auto_Reapply" Name="CbAutoReapply" Unchecked="cbAutoReapply_Click" Click="cbAutoReapply_Click">Автоприменять каждые (с)</CheckBox>
                 <NumberBox Name="nudAutoReapply" ValueChanged="nudAutoReapply_ValueChanged" Minimum="1" Value="3" Maximum="60" Margin="9,0,0,0"></NumberBox>
             </StackPanel>
-                <CheckBox IsEnabled="False" x:Uid="Settings_Auto_Updates" Name="cbAutoCheck" Unchecked="cbAutoCheck_Click" Click="cbAutoCheck_Click">Автообновления</CheckBox>
+                <CheckBox IsEnabled="False" x:Uid="Settings_Auto_Updates" Name="CbAutoCheck" Unchecked="cbAutoCheck_Click" Click="cbAutoCheck_Click">Автообновления</CheckBox>
             <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
                 <TextBlock x:Uid="Settings_Theme" />

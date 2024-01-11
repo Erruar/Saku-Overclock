@@ -3,30 +3,20 @@ using Microsoft.UI.Xaml;
 using Newtonsoft.Json;
 using Saku_Overclock.Helpers;
 using Windows.UI.ViewManagement;
-using Microsoft.UI.Xaml.Media.Imaging;
-using H.NotifyIcon;
-using Hardcodet.Wpf.TaskbarNotification;
 using System.Windows.Forms;
-using Microsoft.UI.Xaml.Controls;
-using System.Drawing;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.ViewModels;
-using System.Runtime.InteropServices;
-using Microsoft.Win32;
 namespace Saku_Overclock;
-
+#pragma warning disable IDE0044 // Добавить модификатор только для чтения
+#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
+#pragma warning disable CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).
 public sealed partial class MainWindow : WindowEx
 {
     private Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
-
     private UISettings settings;
-
-    private Config config = new Config();
-
-    private Devices devices = new Devices();
-
-    private Profile profile = new Profile();
-
+    private Config config = new();
+    private Devices devices = new();
+    private Profile profile = new();
     public MainWindow()
     {
         InitializeComponent();
@@ -52,26 +42,22 @@ public sealed partial class MainWindow : WindowEx
                     this.WindowState = WindowState.Normal;
                 };
         ni.ContextMenuStrip = new ContextMenuStrip();
-
-        
         System.Drawing.Image bmp = new System.Drawing.Bitmap(GetType(), "show.png");
         System.Drawing.Image bmp1 = new System.Drawing.Bitmap(GetType(), "exit.png");
         System.Drawing.Image bmp2 = new System.Drawing.Bitmap(GetType(), "WindowIcon.ico");
         System.Drawing.Image bmp3 = new System.Drawing.Bitmap(GetType(), "preset.png");
         System.Drawing.Image bmp4 = new System.Drawing.Bitmap(GetType(), "param.png");
         System.Drawing.Image bmp5 = new System.Drawing.Bitmap(GetType(), "info.png");
-        ni.ContextMenuStrip.Items.Add("Saku Overclock", bmp2, Menu_Show1);
+        ni.ContextMenuStrip.Items.Add("Tray_Saku_Overclock".GetLocalized(), bmp2, Menu_Show1);
         ni.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-        ni.ContextMenuStrip.Items.Add("Presets", bmp3, Open_Preset);
-        ni.ContextMenuStrip.Items.Add("Parameters", bmp4, Open_Param);
-        ni.ContextMenuStrip.Items.Add("Inforfation", bmp5, Open_Info);
+        ni.ContextMenuStrip.Items.Add("Tray_Presets".GetLocalized(), bmp3, Open_Preset);
+        ni.ContextMenuStrip.Items.Add("Tray_Parameters".GetLocalized(), bmp4, Open_Param);
+        ni.ContextMenuStrip.Items.Add("Tray_Inforfation".GetLocalized(), bmp5, Open_Info);
         ni.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-        ni.ContextMenuStrip.Items.Add("Show app", bmp, Menu_Show1);
-        ni.ContextMenuStrip.Items.Add("Quit", bmp1, Menu_Exit1);
+        ni.ContextMenuStrip.Items.Add("Tray_Show".GetLocalized(), bmp, Menu_Show1);
+        ni.ContextMenuStrip.Items.Add("Tray_Quit".GetLocalized(), bmp1, Menu_Exit1);
         ni.ContextMenuStrip.Items[0].Enabled = false;
-        
-        ni.Text = "Saku Overclock";   
-        // Theme change code picked from https://github.com/microsoft/WinUI-Gallery/pull/1239
+        ni.Text = "Saku Overclock";
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
@@ -116,7 +102,7 @@ public sealed partial class MainWindow : WindowEx
         this.Show();
         this.BringToFront();
     }
-    protected void Menu_Exit1(object sender, EventArgs e)
+    void Menu_Exit1(object sender, EventArgs e)
     {
         System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
         ni.Visible = false;
@@ -125,8 +111,7 @@ public sealed partial class MainWindow : WindowEx
     public class Applyer
     {
         public bool execute = false;
-
-        private Config config = new Config();
+        private Config config = new();
         public static void Apply()
         {
             
@@ -204,6 +189,166 @@ public sealed partial class MainWindow : WindowEx
                 
             }
         }
+        public static void FanInfo()
+        {
+            var mc = new Applyer();
+
+            void ConfigLoad()
+            {
+                mc.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
+            }
+            void ConfigSave()
+            {
+                Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(mc.config));
+            }
+
+            ConfigLoad();
+
+            if (mc.config.reapplytime == true)
+            {
+                DispatcherTimer timer = new DispatcherTimer();
+                try
+                {
+                    ConfigLoad();
+                    timer.Interval = TimeSpan.FromMilliseconds(mc.config.reapplytimer * 1000);
+                }
+                catch
+                {
+                    App.MainWindow.ShowMessageDialogAsync("Время автообновления разгона некорректно и было исправлено на 3000 мс", "Критическая ошибка!");
+                    mc.config.reapplytimer = 3000;
+                    ConfigLoad();
+                    timer.Interval = TimeSpan.FromMilliseconds(mc.config.reapplytimer);
+                }
+                ConfigLoad();
+                if (mc.config.fanex == false)
+                {
+                    mc.config.fanex = true;
+                    ConfigSave();
+                    timer.Tick += (sender, e) =>
+                    {
+
+                        // Запустите faninfo снова
+                        Process();
+                        
+                    };
+                    timer.Start();
+                }
+                else
+                {
+                    timer.Stop();
+                    mc.config.fanex = false;
+                    ConfigSave();
+                }
+
+            }
+            else
+            {
+                Process();
+            }
+            void Process()
+            {
+                ConfigLoad();
+                mc.config.fan1v = "";
+                ConfigSave();
+                Process p = new Process();
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.FileName = @"nbfc/nbfc.exe";
+                p.StartInfo.Arguments = " status --fan 0";
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.RedirectStandardError = true;
+                p.StartInfo.RedirectStandardInput = true;
+                p.StartInfo.RedirectStandardOutput = true;
+
+                p.Start();
+                StreamReader outputWriter = p.StandardOutput;
+                var line = outputWriter.ReadLine();
+                while (line != null)
+                {
+                    if (line != "")
+                    {
+                        mc.config.fan1v += line;
+                        ConfigSave();
+                    }
+                    line = outputWriter.ReadLine();
+                }
+                p.WaitForExit();
+                line = null;
+            }
+        }
+
+        /*public static void GetInfo()
+        {
+            var mc = new Applyer();
+            void ConfigLoad()
+            {
+                mc.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
+            }
+            void ConfigSave()
+            {
+                Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(mc.config));
+            }
+
+            ConfigLoad();
+            ConfigLoad();
+            if (mc.config.fanex == true)
+            {
+                mc.config.fan1v = "";
+                mc.config.fan2v = "";
+                ConfigSave();
+                Process p = new Process();
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.FileName = @"nbfc/nbfc.exe";
+                p.StartInfo.Arguments = " status --fan 0";
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.RedirectStandardError = true;
+                p.StartInfo.RedirectStandardInput = true;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.Start();
+                StreamReader outputWriter = p.StandardOutput;
+                var line = outputWriter.ReadLine();
+                while (line != null)
+                {
+
+                    if (line != "")
+                    {
+                        mc.config.fan1v += line;
+                        ConfigSave();
+                    }
+
+                    line = outputWriter.ReadLine();
+                }
+                line = null;
+                //p.WaitForExit();
+                //fan 2
+                Process p1 = new Process();
+                p1.StartInfo.UseShellExecute = false;
+                p1.StartInfo.FileName = @"nbfc/nbfc.exe";
+                p1.StartInfo.Arguments = " status --fan 1";
+                p1.StartInfo.CreateNoWindow = true;
+                p1.StartInfo.RedirectStandardError = true;
+                p1.StartInfo.RedirectStandardInput = true;
+                p1.StartInfo.RedirectStandardOutput = true;
+
+                p1.Start();
+                StreamReader outputWriter1 = p1.StandardOutput;
+                var line1 = outputWriter1.ReadLine();
+                while (line1 != null)
+                {
+
+                    if (line1 != "")
+                    {
+                        mc.config.fan2v += line1;
+                        ConfigSave();
+                    }
+
+                    line1 = outputWriter1.ReadLine();
+                }
+                line1 = null;
+                //p1.WaitForExit();
+            }
+        }*/
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed
@@ -216,7 +361,6 @@ public sealed partial class MainWindow : WindowEx
             TitleBarHelper.ApplySystemThemeToCaptionButtons();
         });
     }
-
     //Json
     public void JsonRepair(char file)
     {
@@ -259,7 +403,7 @@ public sealed partial class MainWindow : WindowEx
         {
             try
             {
-                for (int j = 0; j < 5; j++)
+                for (var j = 0; j < 5; j++)
                 {
                     devices = new Devices();
                 }
@@ -297,7 +441,7 @@ public sealed partial class MainWindow : WindowEx
         {
             try
             {
-                for (int j = 0; j < 5; j++)
+                for (var j = 0; j < 5; j++)
                 {
                     profile = new Profile();
                 }
@@ -363,10 +507,7 @@ public sealed partial class MainWindow : WindowEx
             Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
         }
-        catch (Exception ex)
-        {
-
-        }
+        catch { }
     }
 
     public void ConfigLoad()
@@ -388,10 +529,7 @@ public sealed partial class MainWindow : WindowEx
             Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
         }
-        catch (Exception ex)
-        {
-
-        }
+        catch { }
     }
 
     public void DeviceLoad()
@@ -413,10 +551,7 @@ public sealed partial class MainWindow : WindowEx
             Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
         }
-        catch (Exception ex)
-        {
-
-        }
+        catch { }
     }
 
     public void ProfileLoad()
@@ -430,5 +565,7 @@ public sealed partial class MainWindow : WindowEx
             JsonRepair('p');
         }
     }
-
 }
+#pragma warning restore IDE0044 // Добавить модификатор только для чтения
+#pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
+#pragma warning restore CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).

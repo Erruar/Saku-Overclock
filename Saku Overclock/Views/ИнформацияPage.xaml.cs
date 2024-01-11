@@ -1,25 +1,22 @@
-﻿using Microsoft.UI.Xaml;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Text;
-using System.IO;
-
-using Saku_Overclock.ViewModels;
-using System.Text;
-using System.Text.Unicode;
 using Newtonsoft.Json;
-
+using Saku_Overclock.ViewModels;
 namespace Saku_Overclock.Views;
-
+#pragma warning disable CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до тех пор, пока вызов не будет завершен
+#pragma warning disable CS8600 // Преобразование литерала, допускающего значение NULL или возможного значения NULL в тип, не допускающий значение NULL.
+#pragma warning disable IDE0059 // Ненужное присваивание значения
+#pragma warning disable IDE0044 // Ненужное присваивание значения
+#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 public sealed partial class ИнформацияPage : Page
 {
-    private Config config = new Config();
+    private Config config = new();
+    private DispatcherTimer timer = new();
     public ИнформацияViewModel ViewModel
     {
         get;
     }
-    
     public ИнформацияPage()
     {
         ViewModel = App.GetService<ИнформацияViewModel>();
@@ -27,8 +24,9 @@ public sealed partial class ИнформацияPage : Page
         desc();
         ConfigLoad();
         InitInf();
+        config.fanex = false;
+        ConfigSave();
     }
-
     public void InitInf()
     {
         ConfigLoad();
@@ -42,10 +40,7 @@ public sealed partial class ИнформацияPage : Page
             Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
         }
-        catch (Exception ex)
-        {
-
-        }
+        catch { }
     }
     public void ConfigLoad()
     {
@@ -64,14 +59,12 @@ public sealed partial class ИнформацияPage : Page
         if (richTextBox1.Text == "")
         {
             DescText.Opacity = 0;
-
         }
         else
         {
             DescText.Opacity = 1;
         }
     }
-
     private void xx_Click(object sender, RoutedEventArgs e)
     {
         richTextBox1.Text = "";
@@ -83,36 +76,27 @@ public sealed partial class ИнформацияPage : Page
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
         p.StartInfo.RedirectStandardOutput = true;
-
         p.Start();
-
         StreamReader outputWriter = p.StandardOutput;
-        String errorReader = p.StandardError.ReadToEnd();
-        String line = outputWriter.ReadLine();
+        var line = outputWriter.ReadLine();
         while (line != null)
         {
-
             if (line != "")
             {
                 richTextBox1.Text = richTextBox1.Text + "\n" + line;
                 DescText.Opacity = 1;
             }
-
             line = outputWriter.ReadLine();
         }
-
         p.WaitForExit();
         line = null;
-        
     }
-
     private async void CheckBox_Checked(object sender, RoutedEventArgs e)
     {
         await Task.Delay(20);
         if (Absc.IsChecked == true) { config.reapplyinfo = true; ConfigSave(); } else { config.reapplyinfo = false; ConfigSave(); }
-         
+
         // Обновите Textblock и скрипт через заданный интервал времени
-        DispatcherTimer timer = new DispatcherTimer();
         try
         {
             timer.Interval = TimeSpan.FromMilliseconds(numberBox.Value);
@@ -123,49 +107,53 @@ public sealed partial class ИнформацияPage : Page
             numberBox.Value = 100;
             timer.Interval = TimeSpan.FromMilliseconds(numberBox.Value);
         }
-        
+        ConfigLoad();
+        config.tempex = true;
+        ConfigSave();
         timer.Tick += (sender, e) =>
         {
             if (Absc.IsChecked == true)
             {
-               // Запустите ryzenadj снова
-               Process();
+                // Запустите ryzenadj снова
+                Process();
             }
-            
+
         };
         timer.Start();
-       
     }
     private void Process()
     {
-        richTextBox1.Text = "";
-        Process p = new Process();
-        p.StartInfo.UseShellExecute = false;
-        p.StartInfo.FileName = @"ryzenadj.exe";
-        p.StartInfo.Arguments = "-i";
-        p.StartInfo.CreateNoWindow = true;
-        p.StartInfo.RedirectStandardError = true;
-        p.StartInfo.RedirectStandardInput = true;
-        p.StartInfo.RedirectStandardOutput = true;
-
-        p.Start();
-
-        StreamReader outputWriter = p.StandardOutput;
-        String errorReader = p.StandardError.ReadToEnd();
-        String line = outputWriter.ReadLine();
-        while (line != null)
+        if (config.tempex == true)
         {
-
-            if (line != "")
+            richTextBox1.Text = "";
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.FileName = @"ryzenadj.exe";
+            p.StartInfo.Arguments = "-i";
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.Start();
+            StreamReader outputWriter = p.StandardOutput;
+            var errorReader = p.StandardError.ReadToEnd();
+            var line = outputWriter.ReadLine();
+            while (line != null)
             {
-                richTextBox1.Text = richTextBox1.Text + "\n" + line;
-                DescText.Opacity = 1;
+                if (line != "")
+                {
+                    richTextBox1.Text = richTextBox1.Text + "\n" + line;
+                    DescText.Opacity = 1;
+                }
+                line = outputWriter.ReadLine();
             }
-
-            line = outputWriter.ReadLine();
+            p.WaitForExit();
+            line = null;
         }
-
-        p.WaitForExit();
-        line = null;
+        else { timer.Stop(); }
     }
 }
+#pragma warning restore IDE0059 // Ненужное присваивание значения
+#pragma warning restore CS8600 // Преобразование литерала, допускающего значение NULL или возможного значения NULL в тип, не допускающий значение NULL.
+#pragma warning restore CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до тех пор, пока вызов не будет завершен
+#pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

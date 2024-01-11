@@ -3,6 +3,4 @@
 public interface IActivationService
 {
     Task ActivateAsync(object activationArgs);
-    bool Apply();
-    void ApplyT();
 }

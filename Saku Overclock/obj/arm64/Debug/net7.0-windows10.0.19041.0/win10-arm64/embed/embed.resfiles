@@ -1,0 +1,11 @@
+App.xbf
+MainWindow.xbf
+Styles\FontSizes.xbf
+Styles\TextBlock.xbf
+Styles\Thickness.xbf
+Views\SettingsPage.xbf
+Views\ShellPage.xbf
+Views\ГлавнаяPage.xbf
+Views\ИнформацияPage.xbf
+Views\ПараметрыPage.xbf
+Views\ПресетыPage.xbf

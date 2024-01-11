@@ -41,7 +41,7 @@
                 </Grid.RowDefinitions>
                 <ToggleButton x:Name="Min_btn" Grid.Row="0" Grid.Column="0" Height="40" Width="150" Checked="Min_btn_Checked">
                     <StackPanel Orientation="Horizontal">
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xe8be;"/>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xebc0;"/>
                         <TextBlock x:Uid="Preset_Min_Name" >Минимум</TextBlock>
                     </StackPanel>
                 </ToggleButton>

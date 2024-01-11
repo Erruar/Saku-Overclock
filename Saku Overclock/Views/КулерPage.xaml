@@ -205,27 +205,44 @@
                 <TextBlock FontSize="13" x:Uid="Cooler_Service_Enabled" Text="Включен" VerticalAlignment="Top" Margin="30,125,0,0"/>
             </Grid>
             <Grid>
-                <TextBlock FontSize="15" VerticalAlignment="Top" Margin="0,160,0,0" x:Uid="Cooler_Temp" x:Name="Temp" Text="Текущая температура: 59 C"/>
+                <TextBlock FontSize="15" VerticalAlignment="Top" Margin="0,160,0,0" x:Uid="Cooler_Temp" Text="Текущая температура: 59 C"/>
+                <Grid Height="20" Width="81" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="170,160,0,0">
+                    <Border Height="400" Margin="0,0,0,0">
+                        <TextBlock FontSize="15" FontFamily="Consolas" VerticalAlignment="Top" Margin="-200,-470,0,0" x:Name="Temp" Text="Undefined"/>
+                    </Border>
+                </Grid>
             </Grid>
             <ScrollViewer VerticalAlignment="Top" Margin="0,185,-50,0">
                 <Grid>
                     <Grid>
                         
                         <TextBlock VerticalAlignment="Top" x:Name="Fan1Val" Text="Auto" Margin="140,30,0,0"/>
+                        
+                        <TextBlock VerticalAlignment="Top" x:Name="Fan1Value" Opacity="0" Text="Auto" Margin="240,30,0,0"/>
+                        <TextBlock VerticalAlignment="Top" x:Name="Fan2Value" Opacity="0" Text="Auto" Margin="240,30,0,0"/>
                         <TextBlock Text="Fan #1"/>
-                        <Slider x:Uid="Cooler_Fan" x:Name="Fan1" ValueChanged="Fan1_ValueChanged" HorizontalAlignment="Left" Width="200" Header="Желаемая скорость вращения: " Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
-                        <TextBlock x:Uid="Cooler_Current_Fan" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
-                        <ProgressBar IsEnabled="False" Value="25" HorizontalAlignment="Left" Width="200" Margin="0,-50,0,0"></ProgressBar>
+                        <Slider x:Uid="Cooler_Fan" x:Name="Fan1" ValueChanged="Fan1_ValueChanged" HorizontalAlignment="Left" Width="200" Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
+                        <TextBlock x:Uid="Cooler_Current_Fan" x:Name="Fan1Cur" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
+                        <ProgressBar x:Name="Fan1Pr" Value="25" ValueChanged="Fan1Pr_ValueChanged" HorizontalAlignment="Left" Width="200" Margin="0,-50,0,0"></ProgressBar>
                     </Grid>
                     <Grid Margin="0,170,0,0">
                         <TextBlock VerticalAlignment="Top" x:Name="Fan2Val" Text="Auto" Margin="140,30,0,0"/>
                         <TextBlock Text="Fan #2"/>
-                        <Slider  x:Uid="Cooler_Fan" x:Name="Fan2" ValueChanged="Fan2_ValueChanged" HorizontalAlignment="Left" Width="200" Header="Желаемая скорость вращения:  " Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
-                        <TextBlock x:Uid="Cooler_Current_Fan" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
-                        <ProgressBar IsEnabled="False" Value="25" HorizontalAlignment="Left" Width="200" Margin="0,120,0,0"></ProgressBar>
+                        <Slider  x:Uid="Cooler_Fan" x:Name="Fan2" ValueChanged="Fan2_ValueChanged" HorizontalAlignment="Left" Width="200" Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
+                        <TextBlock x:Uid="Cooler_Current_Fan" x:Name="Fan2Cur" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
+                        <ProgressBar x:Name="Fan2Pr" Value="25" ValueChanged="Fan1Pr_ValueChanged" HorizontalAlignment="Left" Width="200" Margin="0,120,0,0"></ProgressBar>
                     </Grid>
                 </Grid>
             </ScrollViewer>
-		</Grid>
+            <ToggleButton VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-13,15" ToolTipService.ToolTip="Применить">
+                <Grid>
+                    <SymbolIcon Symbol="Flag" Margin="-3,0,0,0"/>
+                </Grid>
+                <!-- ec58 -->
+            </ToggleButton>
+            <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,15" ToolTipService.ToolTip="Применить">
+                <SymbolIcon Symbol="Play" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
+            </Button>
+        </Grid>
 	</Grid>
 </Page>

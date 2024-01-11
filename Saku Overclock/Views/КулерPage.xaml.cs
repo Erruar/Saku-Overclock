@@ -1,15 +1,15 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using System.Diagnostics;
+using System.Windows.Threading;
+using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+#pragma warning disable IDE0059 // Ненужное присваивание значения
+#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 namespace Saku_Overclock.Views;
-using System.Diagnostics;
-using System;
 public sealed partial class КулерPage : Page
 {
-    private Config config = new Config();
-
-    private string Ktext;
+    private Config config = new();
     public КулерViewModel ViewModel
     {
         get;
@@ -21,8 +21,11 @@ public sealed partial class КулерPage : Page
         InitializeComponent();
         ConfigLoad();
         FanInit();
+        Update();
+        GetTemp();
     }
-    
+
+
     //JSON форматирование
     public void ConfigSave()
     {
@@ -31,7 +34,7 @@ public sealed partial class КулерPage : Page
             Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
         }
-        catch (Exception ex)
+        catch
         {
 
         }
@@ -55,6 +58,33 @@ public sealed partial class КулерPage : Page
         if (config.fanenabled == true) { ConfigLoad(); Fan1.Value = config.fan1; Fan2.Value = config.fan2; Enabl.IsChecked = true; Readon.IsChecked = false; Disabl.IsChecked = false; Fan1Val.Text = Fan1.Value.ToString() + " %"; Fan2Val.Text = Fan2.Value.ToString() + " %"; if (Fan1.Value > 100) { Fan1Val.Text = "Auto"; }; if (Fan2.Value > 100) { Fan2Val.Text = "Auto"; }; };
         if (config.fanread == true) { Enabl.IsChecked = false; Readon.IsChecked = true; Disabl.IsChecked = false; };
         if (config.fandisabled == true) { Enabl.IsChecked = false; Readon.IsChecked = false; Disabl.IsChecked = true; };
+        //better fan init
+        if (Enabl.IsChecked == true)
+        {
+            NbfcFan1();
+            if (Fan1.Value > 100)
+            {
+                Fan1Val.Text = "Auto";
+                GetInfo0();
+                Update();
+                config.fan1 = 110.0;
+                ConfigSave();
+            }
+            else
+            {
+                Fan1Pr.Value = Fan1.Value;
+                Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan1.Value;
+                config.fanex = false;
+                ConfigSave();
+            }
+            ConfigSave();
+        }
+        if (Readon.IsChecked == true)
+        {
+            Fan1Val.Text = "Auto";
+            GetInfo0();
+            Update();
+        }
         FanInit2();
     }
     public void FanInit2()
@@ -799,7 +829,7 @@ public sealed partial class КулерPage : Page
     }
     private void Disabl_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        config.fandisabled=true; config.fanread = false; config.fanenabled = false;
+        config.fandisabled = true; config.fanread = false; config.fanenabled = false; config.fanex = false;
         ConfigSave();
         NbfcEnable();
     }
@@ -809,6 +839,9 @@ public sealed partial class КулерPage : Page
         config.fanread = true; config.fanenabled = false; config.fandisabled = false;
         ConfigSave();
         NbfcEnable();
+        Fan1Val.Text = "Auto";
+        GetInfo0();
+        Update();
     }
 
     private void Enabl_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -820,13 +853,70 @@ public sealed partial class КулерPage : Page
 
     private async void Fan1_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
-        if (Enabl.IsChecked == true) { NbfcFan1(); await Task.Delay(200); config.fan1 = Fan1.Value; Fan1Val.Text = Fan1.Value.ToString() + " %"; if (Fan1.Value > 100) { Fan1Val.Text = "Auto"; }; ConfigSave(); }
+        if (Enabl.IsChecked == true)
+        {
+            NbfcFan1();
+            await Task.Delay(200);
+            config.fan1 = Fan1.Value;
+            Fan1Val.Text = Fan1.Value.ToString() + " %";
+            if (Fan1.Value > 100)
+            {
+                Fan1Val.Text = "Auto";
+                GetInfo0();
+                Update();
+                config.fan1 = 110.0;
+                ConfigSave();
+            }
+            else
+            {
+                Fan1Pr.Value = Fan1.Value;
+                Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan1.Value;
+                config.fanex = false;
+                ConfigSave();
+            }
+            ConfigSave();
+        }
+        if (Readon.IsChecked == true)
+        {
+            Fan1Val.Text = "Auto";
+            GetInfo0();
+            Update();
+        }
         FanInit2();
     }
 
     private async void Fan2_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
-        if (Enabl.IsChecked == true) { NbfcFan2(); await Task.Delay(200); config.fan2 = Fan2.Value; Fan2Val.Text = Fan2.Value.ToString() + " %"; if (Fan2.Value > 100) { Fan2Val.Text = "Auto"; }; ConfigSave(); }
+        if (Enabl.IsChecked == true)
+        {
+            NbfcFan2();
+            await Task.Delay(200);
+            config.fan2 = Fan2.Value;
+            Fan2Val.Text = Fan2.Value.ToString() + " %";
+            if (Fan2.Value > 100)
+            {
+                Fan2Val.Text = "Auto";
+                GetInfo0();
+                Update();
+                config.fan2 = 110.0;
+                ConfigSave();
+                if (Fan1Pr.Value == 10) { Fan1Pr.Value = 100; }
+            }
+            else
+            {
+                Fan2Pr.Value = Fan2.Value;
+                Fan2Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan2.Value;
+                config.fanex = false;
+                ConfigSave();
+            }
+            ConfigSave();
+        }
+        if (Readon.IsChecked == true)
+        {
+            Fan2Val.Text = "Auto";
+            GetInfo0();
+            Update();
+        }
     }
 
     public void NbfcEnable()
@@ -865,7 +955,7 @@ public sealed partial class КулерPage : Page
         if (config.fanenabled == true)
         {
             if (Fan1.Value < 100) { p.StartInfo.Arguments = " set --fan 0 --speed " + Fan1.Value; }
-            else { p.StartInfo.Arguments = " set --fan 0 --auto";  }
+            else { p.StartInfo.Arguments = " set --fan 0 --auto"; }
         }
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
@@ -895,7 +985,7 @@ public sealed partial class КулерPage : Page
     public void NbfcFanState()
     {
         const string quote = "\"";
-        
+
         Process p = new Process();
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.FileName = @"nbfc/nbfc.exe";
@@ -931,32 +1021,268 @@ public sealed partial class КулерPage : Page
         ConfigSave();
         FanInit2();
         NbfcFanState();
-        
+
     }
     //set --fan 0 --speed 100
-
+    //Информация о текущей скорости вращения кулеров
     public void GetInfo0()
     {
-        Process p = new Process();
-        p.StartInfo.UseShellExecute = false;
-        p.StartInfo.FileName = @"nbfc/nbfc.exe";
-        p.StartInfo.Arguments = " status --fan 0";
-        p.StartInfo.CreateNoWindow = true;
-        p.StartInfo.RedirectStandardError = true;
-        p.StartInfo.RedirectStandardInput = true;
-        p.StartInfo.RedirectStandardOutput = true;
-
-        StreamReader outputWriter = p.StandardOutput;
-        String line = outputWriter.ReadLine();
-        while (line != null)
+        ConfigLoad();
+        DispatcherTimer timer = new DispatcherTimer();
+        timer.Interval = TimeSpan.FromMilliseconds(10000);
+        ConfigLoad();
+        if (config.fanex == false)
         {
-
-            if (line != "")
+            config.fanex = true;
+            ConfigSave();
+            timer.Tick += (sender, e) =>
             {
-                Ktext = Ktext + "\n" + line;
+                // Запустите faninfo снова
+                //MainWindow.Applyer.GetInfo();
+                Process();
+            };
+            timer.Start();
+        }
+        else
+        {
+            timer.Stop();
+            config.fanex = false;
+            ConfigSave();
+        }
+    }
+    public void Process()
+    {
+        ConfigLoad();
+        if (config.fanex == true)
+        {
+            config.fan1v = "";
+            config.fan2v = "";
+            ConfigSave();
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.FileName = @"nbfc/nbfc.exe";
+            p.StartInfo.Arguments = " status --fan 0";
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.Start();
+            StreamReader outputWriter = p.StandardOutput;
+            var line = outputWriter.ReadLine();
+            while (line != null)
+            {
+
+                if (line != "")
+                {
+                    config.fan1v += line;
+                    ConfigSave();
+                }
+
+                line = outputWriter.ReadLine();
+            }
+            line = null;
+            p.WaitForExit();
+
+            //fan 2
+            Process p1 = new Process();
+            p1.StartInfo.UseShellExecute = false;
+            p1.StartInfo.FileName = @"nbfc/nbfc.exe";
+            p1.StartInfo.Arguments = " status --fan 1";
+            p1.StartInfo.CreateNoWindow = true;
+            p1.StartInfo.RedirectStandardError = true;
+            p1.StartInfo.RedirectStandardInput = true;
+            p1.StartInfo.RedirectStandardOutput = true;
+
+            p1.Start();
+            StreamReader outputWriter1 = p1.StandardOutput;
+            var line1 = outputWriter1.ReadLine();
+            while (line1 != null)
+            {
+
+                if (line1 != "")
+                {
+                    config.fan2v += line1;
+                    ConfigSave();
+                }
+
+                line1 = outputWriter1.ReadLine();
+            }
+            line1 = null;
+            p1.WaitForExit();
+
+            //update an info
+            if (config.fan1v != null)
+            {
+                Fan1Value.Text = config.fan1v;
+                try
+                {
+                    Fan1Value.Text = Fan1Value.Text.Remove(0, 101);
+                    Fan1Value.Text = Fan1Value.Text.Remove(3);
+                    string Chara;
+                    Chara = Fan1Value.Text;
+                    try { Chara = Chara.Replace(".", ""); Fan1Value.Text = Chara; } catch { }
+                    if (Convert.ToInt32(Fan1Value.Text) > 1)
+                    {
+                        Fan1Pr.Value = Convert.ToInt32(Fan1Value.Text);
+                        if (Fan1Pr.Value == 10) { Fan1Pr.Value = 100; Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + " 100"; }
+                    }
+                    else { Fan1Pr.Value = 0; }
+                    Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan1Value.Text;
+                    if (Fan1Pr.Value == 100) { Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + " 100"; }
+                }
+                catch
+                {
+                    if (Fan1.Value < 100)
+                    {
+                        Fan1Pr.Value = Fan1.Value;
+                        Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan1.Value;
+                    }
+
+                }
             }
 
-            Ktext = outputWriter.ReadLine();
+            if (config.fan2v != null)
+            {
+                Fan2Value.Text = config.fan2v;
+                try
+                {
+                    Fan2Value.Text = Fan2Value.Text.Remove(0, 101);
+                    Fan2Value.Text = Fan2Value.Text.Remove(3);
+                    string Chara1;
+                    Chara1 = Fan2Value.Text;
+                    try { Chara1 = Chara1.Replace(".", ""); Fan2Value.Text = Chara1; } catch { }
+                    if (Convert.ToInt32(Fan2Value.Text) > 1)
+                    {
+                        Fan2Pr.Value = Convert.ToInt32(Fan2Value.Text);
+                    }
+                    else { Fan2Pr.Value = 0; }
+                    Fan2Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan2Value.Text;
+                }
+                catch
+                {
+                    if (Fan2.Value < 100)
+                    {
+                        Fan2Pr.Value = Fan2.Value;
+                        Fan2Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan2.Value;
+                    }
+
+                }
+            }
         }
+    }
+    public void GetTemp()
+    {
+
+        DispatcherTimer timer = new DispatcherTimer();
+        timer.Interval = TimeSpan.FromMilliseconds(100.0);
+        ConfigLoad();
+        config.tempex = true;
+        ConfigSave();
+        timer.Tick += (sender, e) =>
+        {
+            GetTemp1();
+        };
+        timer.Start();
+    }
+    public void GetTemp1()
+    {
+        if (config.tempex == true)
+        {
+            Temp.Text = "";
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.FileName = @"ryzenadj.exe";
+            p.StartInfo.Arguments = "-i";
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.RedirectStandardOutput = true;
+
+            p.Start();
+
+            StreamReader outputWriter = p.StandardOutput;
+            var line = outputWriter.ReadLine();
+            while (line != null)
+            {
+
+                if (line != "")
+                {
+                    Temp.Text = Temp.Text + "\n" + line;
+                }
+
+                line = outputWriter.ReadLine();
+            }
+
+            p.WaitForExit();
+#pragma warning disable IDE0059 // Ненужное присваивание значения
+            line = null;
+#pragma warning restore IDE0059 // Ненужное присваивание значения
+            //App.MainWindow.ShowMessageDialogAsync("Вы успешно выставили свои настройки! \n" + mc.config.adjline, "Применение успешно!");
+        }
+    }
+    private void Update()
+    {
+        ConfigLoad();
+        if (config.fan1v != null)
+        {
+            Fan1Value.Text = config.fan1v;
+            try
+            {
+                Fan1Value.Text = Fan1Value.Text.Remove(0, 101);
+                Fan1Value.Text = Fan1Value.Text.Remove(3);
+                string Chara;
+                Chara = Fan1Value.Text;
+                try { Chara = Chara.Replace(".", ""); Fan1Value.Text = Chara; } catch { }
+                if (Convert.ToInt32(Fan1Value.Text) > 1)
+                {
+                    Fan1Pr.Value = Convert.ToInt32(Fan1Value.Text);
+                    if (Fan1Pr.Value == 10) { Fan1Pr.Value = 100; }
+                }
+                else { Fan1Pr.Value = 0; }
+                Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan1Value.Text;
+                if (Fan1Pr.Value == 100) { Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + " 100"; }
+            }
+            catch
+            {
+                if (Fan1.Value < 100)
+                {
+                    Fan1Pr.Value = Fan1.Value;
+                    Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan1.Value;
+                }
+            }
+        }
+
+        if (config.fan2v != null)
+        {
+            Fan2Value.Text = config.fan2v;
+            try
+            {
+                Fan2Value.Text = Fan2Value.Text.Remove(0, 101);
+                Fan2Value.Text = Fan2Value.Text.Remove(3);
+                string Chara1;
+                Chara1 = Fan2Value.Text;
+                try { Chara1 = Chara1.Replace(".", ""); Fan2Value.Text = Chara1; } catch { }
+                if (Convert.ToInt32(Fan2Value.Text) > 1)
+                {
+                    Fan2Pr.Value = Convert.ToInt32(Fan2Value.Text);
+                }
+                else { Fan2Pr.Value = 0; }
+                Fan2Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan2Value.Text;
+            }
+            catch
+            {
+                if (Fan2.Value < 100)
+                {
+                    Fan2Pr.Value = Fan2.Value;
+                    Fan2Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan2.Value;
+                }
+
+            }
+        }
+    }
+
+    private void Fan1Pr_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (Fan1Pr.Value == 10) { Fan1Pr.Value = 100; }
     }
 }

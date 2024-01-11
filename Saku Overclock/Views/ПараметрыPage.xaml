@@ -17,13 +17,17 @@
             <!-- Начало -->
             <TextBlock x:Uid="Param_Name" Text="Параметры процессора" FontSize="30" Margin="0,-65,0,0"></TextBlock>
             <TextBlock x:Uid="Param_Preset" Text="Сохранённые пресеты:" FontSize="20" Margin="0,-10,0,0"></TextBlock>
-            <ComboBox Height="30" Width="200" Margin="230,-10,0,0" SelectedIndex="0">
+            <ComboBox Height="30" Width="200" Margin="230,-10,0,0" x:Name="ProfileCOM" SelectedIndex="0" SelectionChanged="ProfileCOM_SelectionChanged">
                 <ComboBoxItem>Unsaved</ComboBoxItem>
-                <ComboBoxItem>Пресет 1</ComboBoxItem>
-                <ComboBoxItem>Пресет 2</ComboBoxItem>
-                <ComboBoxItem>Пресет 3</ComboBoxItem>
-                <ComboBoxItem>Пресет 4</ComboBoxItem>
-                <ComboBoxItem>Пресет 5</ComboBoxItem>
+                <ComboBoxItem x:Name="ProfileCOM_1"  Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:Name="ProfileCOM_2" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:Name="ProfileCOM_3" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:Name="ProfileCOM_4" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:Name="ProfileCOM_5" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:Name="ProfileCOM_6" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:Name="ProfileCOM_7" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:Name="ProfileCOM_8" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:Name="ProfileCOM_9" Visibility="Collapsed"></ComboBoxItem>
             </ComboBox>
             
             <!-- Середина -->
@@ -75,6 +79,7 @@
                                 <CheckBox  Margin="0,20,0,0" x:Name="c2" Checked="c2_Checked" Unchecked="c2_Checked"></CheckBox>
                                 <Slider x:Name="c2v" ValueChanged="c2_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="20">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="c2t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    20(W)                        30(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -84,6 +89,7 @@
                                 <CheckBox  Margin="0,20,0,0" x:Name="c3" Checked="c3_Checked" Unchecked="c3_Checked"></CheckBox>
                                 <Slider x:Name="c3v" ValueChanged="c3_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="c3t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -93,6 +99,7 @@
                                 <CheckBox  Margin="0,20,0,0" x:Name="c4" Checked="c4_Checked" Unchecked="c4_Checked"></CheckBox>
                                 <Slider x:Name="c4v" ValueChanged="c4_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="c4t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -102,6 +109,7 @@
                                 <CheckBox  Margin="0,20,0,0" x:Name="c5" Checked="c5_Checked" Unchecked="c5_Checked"></CheckBox>
                                 <Slider x:Name="c5v" ValueChanged="c5_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="300" Value="128">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="c5t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -111,6 +119,7 @@
                                 <CheckBox  Margin="0,20,0,0" x:Name="c6" Checked="c6_Checked" Unchecked="c6_Checked"></CheckBox>
                                 <Slider x:Name="c6v" ValueChanged="c6_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="120" Value="64">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="c6t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                     64(S)                         48(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -120,6 +129,7 @@
                                 <CheckBox  Margin="0,20,0,0" x:Name="c1" Checked="c1_Checked" Unchecked="c1_Checked"></CheckBox>
                                 <Slider x:Name="c1v" ValueChanged="c1_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100" Value="90">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="c1t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock x:Uid="Param_CPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
@@ -129,7 +139,7 @@
                     </Expander>
 
 
-                    <Expander x:Name="Exp1" Grid.Row="1" Expanding="Expander_Expanding">
+                    <Expander x:Name="Exp1" Grid.Row="1">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <SymbolIcon Symbol="Library" HorizontalAlignment="Left" Margin="0,0,9,0"/>
@@ -160,6 +170,7 @@
                                 <CheckBox x:Name="V2" Checked="v2_Checked" Unchecked="v2_Checked" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V2V" ValueChanged="v2v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="55">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="v2t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    55(A)                         70(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -169,6 +180,7 @@
                                 <CheckBox Checked="v3_Checked" Unchecked="v3_Checked" x:Name="V3" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V3V" ValueChanged="v3v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="v3t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    13(A)                         25(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -178,6 +190,7 @@
                                 <CheckBox Checked="v4_Checked" Unchecked="v4_Checked" x:Name="V4" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V4V" ValueChanged="v4v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="120">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="v4t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    10(A)                         15(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -187,6 +200,7 @@
                                 <CheckBox Checked="v5_Checked" Unchecked="v5_Checked" x:Name="V5" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V5V" ValueChanged="v5v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="v5t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    13(A)                         20(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -196,6 +210,7 @@
                                 <CheckBox Checked="v6_Checked" Unchecked="v6_Checked" x:Name="V6" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V6V" ValueChanged="v6v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="5" Maximum="120">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="v6t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                     5(A)                          10(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -205,6 +220,7 @@
                                 <CheckBox Checked="v7_Checked" Unchecked="v7_Checked" x:Name="V7" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V7V" ValueChanged="v7v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="900" Value="2">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="v7t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                     2(S)                            2(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -214,6 +230,7 @@
                                 <CheckBox x:Name="V1" Margin="0,20,0,0" Checked="v1_Checked" Unchecked="v1_Checked"></CheckBox>
                                 <Slider x:Name="V1V" ValueChanged="v1v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="64">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="v1t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock x:Uid="Param_VRM_desc" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
@@ -257,6 +274,7 @@
                                 <CheckBox Checked="g2_Checked" Unchecked="g2_Checked" x:Name="g2" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g2v" ValueChanged="g2v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="g2t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="1">
                                 <TextBlock x:Uid="Param_GPU_Ram" Text="1                                Частота оперативной памяти" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -266,6 +284,7 @@
                                 <CheckBox Checked="g3_Checked" Unchecked="g3_Checked" x:Name="g3" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g3v" ValueChanged="g3v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="g3t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1">
                                 <TextBlock Text="                                800(MHz)                 800(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -275,6 +294,7 @@
                                 <CheckBox Checked="g4_Checked" Unchecked="g4_Checked" x:Name="g4" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g4v" ValueChanged="g4v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="g4t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="3" Grid.Column="1">
                                 <TextBlock x:Uid="Param_GPU_Ram" Text="                                Частота оперативной памяти" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -284,6 +304,7 @@
                                 <CheckBox Checked="g5_Checked" Unchecked="g5_Checked" x:Name="g5" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g5v" ValueChanged="g5v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="g5t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="4" Grid.Column="1">
                                 <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -293,6 +314,7 @@
                                 <CheckBox Checked="g6_Checked" Unchecked="g6_Checked" x:Name="g6" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g6v" ValueChanged="g6v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="g6t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="5" Grid.Column="1">
                                 <TextBlock Text="                                1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -302,6 +324,7 @@
                                 <CheckBox Checked="g7_Checked" Unchecked="g7_Checked" x:Name="g7" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g7v" ValueChanged="g7v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="g7t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="6" Grid.Column="1">
                                 <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -311,6 +334,7 @@
                                 <CheckBox Checked="g8_Checked" Unchecked="g8_Checked" x:Name="g8" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g8v" ValueChanged="g8v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="g8t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="7" Grid.Column="1">
                                 <TextBlock Text="                                1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -320,6 +344,7 @@
                                 <CheckBox Checked="g9_Checked" Unchecked="g9_Checked" x:Name="g9" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g9v" ValueChanged="g9v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="100" Maximum="1600" Value="400">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="g9t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="8" Grid.Column="1">
                                 <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -329,6 +354,7 @@
                                 <CheckBox Checked="g10_Checked" Unchecked="g10_Checked" x:Name="g10" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g10v" ValueChanged="g10v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="g10t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="9" Grid.Column="1">
                                 <TextBlock Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -338,6 +364,7 @@
                                 <CheckBox Checked="g1_Checked" Unchecked="g1_Checked" x:Name="g1" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g1v" ValueChanged="g1v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
                                 </Slider>
+                                <Button Height="30" Width="60" x:Name="g1t" Margin="245,20,0,0" Content="1"></Button>
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="1">
                                 <TextBlock x:Uid="Param_GPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
@@ -351,15 +378,19 @@
             
             <!-- Конец -->
             <TextBlock Grid.Row="2" x:Uid="Param_New" Text="Название нового пресета:" Margin="0,16,0,0" FontSize="20"></TextBlock>
-            <TextBox Grid.Row="2" HorizontalAlignment="Left" Margin="260,0,0,0" Width="200" Height="40"></TextBox>
+            <TextBox Grid.Row="2" x:Name="SaveName" HorizontalAlignment="Left" Margin="260,0,0,0" Width="200" Height="40"></TextBox>
             <Button x:Uid="Param_Apply" Grid.Row="2" HorizontalAlignment="Right" Click="Apply_Click" Height="40" Width="40" Margin="0,0,-13,0" ToolTipService.ToolTip="Применить">
                 <SymbolIcon Symbol="Play" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
             </Button>
             <Button x:Uid="Param_Delete" Grid.Row="2" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,0" ToolTipService.ToolTip="Удалить">
                 <SymbolIcon Symbol="Delete" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
             </Button>
-            <Button x:Uid="Param_Save_Preset" Grid.Row="2" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,87,0" ToolTipService.ToolTip="Сохранить">
-                <SymbolIcon Symbol="Save" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
+            <Button x:Uid="Param_Save_Preset" Grid.Row="2" Click="Save_Click" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,87,0" ToolTipService.ToolTip="Добавить">
+                <SymbolIcon Symbol="Add" HorizontalAlignment="Left" Margin="-1,0,0,0"/>
+            </Button>
+            <Button x:Uid="Param_Edit_Preset" Grid.Row="2" Click="Save_Click" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,137,0" ToolTipService.ToolTip="Изменить">
+                <!-- 	eb7e -->
+                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xeb7e;"/>
             </Button>
         </Grid>
     </Grid>

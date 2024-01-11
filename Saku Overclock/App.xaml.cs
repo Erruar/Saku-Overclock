@@ -1,13 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Diagnostics;
-using System;
-using System.IO;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Threading;
-using System.Diagnostics.Metrics;
-using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Newtonsoft.Json;
@@ -21,13 +12,10 @@ using Saku_Overclock.Notifications;
 using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
-using System.Threading.Tasks;
-using System.Windows.Interop;
 using Application = Microsoft.UI.Xaml.Application;
 using UIElement = Microsoft.UI.Xaml.UIElement;
-
 namespace Saku_Overclock;
-
+#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 // To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
 public partial class App : Application
 {
@@ -56,7 +44,7 @@ public partial class App : Application
 
     public static UIElement? AppTitlebar { get; set; }
 
-    private Config config = new Config();
+    private Config config = new();
 
     public App()
     {
@@ -75,7 +63,6 @@ public partial class App : Application
 
             // Services
             services.AddSingleton<IAppNotificationService, AppNotificationService>();
-            services.AddTransient<IApplyService, ApplyService>();
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
             services.AddTransient<INavigationViewService, NavigationViewService>();
@@ -130,4 +117,5 @@ public partial class App : Application
 
         await App.GetService<IActivationService>().ActivateAsync(args);
     }
+#pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 }

@@ -13,9 +13,9 @@
 	<Nullable>enable</Nullable>
 	<UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <AssemblyVersion>1.0.1.6</AssemblyVersion>
-    <FileVersion>1.0.1.6</FileVersion>
-    <Version>1.0.1-beta</Version>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion></FileVersion>
+    <Version></Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
     <UseWPF>False</UseWPF>
@@ -38,7 +38,6 @@
     <None Remove="preset.png" />
     <None Remove="show.png" />
     <None Remove="startup.lnk" />
-    <None Remove="Strings\backup\Resources.resw.bak" />
     <None Remove="Views\КулерPage.xaml" />
     <None Remove="WindowIcon.ico" />
   </ItemGroup>
@@ -73,9 +72,6 @@
   <ItemGroup>
     <PackageReference Include="Accord.Math" Version="3.8.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
-    <PackageReference Include="H.NotifyIcon" Version="2.0.123" />
-    <PackageReference Include="H.NotifyIcon.PopupMenus" Version="2.0.60" />
-    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.123" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="Hardcodet.Wpf.TaskbarNotification" Version="1.0.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
@@ -84,10 +80,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="TaskScheduler" Version="2.10.1" />
     <PackageReference Include="WinUIEx" Version="2.3.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PRIResource Include="Strings\backup\Resources.resw.bak" />
   </ItemGroup>
 
   <ItemGroup>
@@ -737,6 +729,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ryzenadj.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="temp.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="WinRing0x64.dll">

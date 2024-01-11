@@ -70,7 +70,7 @@
       }
     },
     "C:\\Users\\Sakura\\source\\repos\\Saku Overclock\\Saku Overclock\\Saku Overclock.csproj": {
-      "version": "1.0.1-beta",
+      "version": "1.0.0",
       "restore": {
         "projectUniqueName": "C:\\Users\\Sakura\\source\\repos\\Saku Overclock\\Saku Overclock\\Saku Overclock.csproj",
         "projectName": "Saku Overclock",
@@ -120,18 +120,6 @@
             "CommunityToolkit.Mvvm": {
               "target": "Package",
               "version": "[8.1.0, )"
-            },
-            "H.NotifyIcon": {
-              "target": "Package",
-              "version": "[2.0.123, )"
-            },
-            "H.NotifyIcon.PopupMenus": {
-              "target": "Package",
-              "version": "[2.0.60, )"
-            },
-            "H.NotifyIcon.Wpf": {
-              "target": "Package",
-              "version": "[2.0.123, )"
             },
             "Hardcodet.NotifyIcon.Wpf": {
               "target": "Package",

@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Perception.Spatial;
-
 namespace Saku_Overclock;
-
+#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
+#pragma warning disable CS0649 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 internal class Config
 {
     public bool Infoupdate;
@@ -31,4 +25,9 @@ internal class Config
     public bool Speed = false;
     public bool Max = true;
     public bool execute = false;
+    public bool fanex = false;
+    public bool tempex = false;
+    public string fan1v;
+    public string fan2v;
 }
+#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.

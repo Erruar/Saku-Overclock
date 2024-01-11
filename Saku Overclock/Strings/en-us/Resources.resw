@@ -200,7 +200,7 @@
     <value>Saved configs:</value>
   </data>
   <data name="Cooler_Current_Fan.Text" xml:space="preserve">
-    <value>Current speed: Unavaivable</value>
+    <value>Current speed: </value>
   </data>
   <data name="Cooler_Fan.Header" xml:space="preserve">
     <value>Target speed:</value>
@@ -221,7 +221,7 @@
     <value>Read only</value>
   </data>
   <data name="Cooler_Temp.Text" xml:space="preserve">
-    <value>Current CPU temperature: Unavaivable</value>
+    <value>Current CPU temperature: </value>
   </data>
   <data name="Info_Autoupdate.Content" xml:space="preserve">
     <value>Refresh every (Milliseconds)</value>
@@ -461,5 +461,38 @@ performance</value>
   </data>
   <data name="Preset_Speed_Name.Text" xml:space="preserve">
     <value>Speed</value>
+  </data>
+  <data name="Cooler_Current_Fan_Val" xml:space="preserve">
+    <value>Current speed:</value>
+  </data>
+  <data name="Cooler_Temp_Val" xml:space="preserve">
+    <value>Current CPU temperature:</value>
+  </data>
+  <data name="Info_Text.ToolTipService.ToolTip" xml:space="preserve">
+    <value>About the Setted and Current values: Setted is the value that you set in the program for the processor. Theoretically, the processor should reach it under load. Current is the value that shows the current value of this parameter right now</value>
+  </data>
+  <data name="Tray_Inforfation" xml:space="preserve">
+    <value>Inforfation</value>
+  </data>
+  <data name="Tray_Parameters" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="Tray_Presets" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="Tray_Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="Tray_Saku_Overclock" xml:space="preserve">
+    <value>Saku Overclock</value>
+  </data>
+  <data name="Tray_Show" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="Param_Edit_Preset.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Edit preset name
+To change it, just write the desired 
+value in the text field to save the new 
+preset and click on this button</value>
   </data>
 </root>

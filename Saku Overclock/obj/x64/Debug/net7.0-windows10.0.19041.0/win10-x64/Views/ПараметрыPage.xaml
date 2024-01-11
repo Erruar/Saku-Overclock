@@ -1,0 +1,398 @@
+﻿<Page
+    x:Class="Saku_Overclock.Views.ПараметрыPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid x:ConnectionId='2' x:Name="ContentArea">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="70"></RowDefinition>
+            </Grid.RowDefinitions>
+            
+            <!-- Начало -->
+            <TextBlock x:Uid="Param_Name" Text="Параметры процессора" FontSize="30" Margin="0,-65,0,0"></TextBlock>
+            <TextBlock x:Uid="Param_Preset" Text="Сохранённые пресеты:" FontSize="20" Margin="0,-10,0,0"></TextBlock>
+            <ComboBox x:ConnectionId='3' Height="30" Width="200" Margin="230,-10,0,0" x:Name="ProfileCOM" SelectedIndex="0"                                               >
+                <ComboBoxItem>Unsaved</ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='78' x:Name="ProfileCOM_1"  Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='79' x:Name="ProfileCOM_2" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='80' x:Name="ProfileCOM_3" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='81' x:Name="ProfileCOM_4" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='82' x:Name="ProfileCOM_5" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='83' x:Name="ProfileCOM_6" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='84' x:Name="ProfileCOM_7" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='85' x:Name="ProfileCOM_8" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='86' x:Name="ProfileCOM_9" Visibility="Collapsed"></ComboBoxItem>
+            </ComboBox>
+            
+            <!-- Середина -->
+            <ScrollViewer Grid.Row="1" Padding="0,0,36,0" IsTabStop="False"
+         UseSystemFocusVisuals="False"
+         VerticalScrollBarVisibility="Auto"
+         VerticalScrollMode="Auto" Margin="0,0,-50,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <!-- От 0 до 6 -->
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions> 
+                    <Expander Grid.Row="0" IsExpanded="False">
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <SymbolIcon Symbol="SelectAll" HorizontalAlignment="Left" Margin="0,0,9,0"/>
+                                <TextBlock Margin="30,0,0,0" VerticalAlignment="Center" x:Uid="Param_CPU"  Text="Мощность процессора"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
+                            <!-- Монтируем секции -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <!-- Первая секция -->
+                            
+                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c2"  Text="Лимит CPU (W)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='75'  Margin="0,20,0,0" x:Name="c2"                                            ></CheckBox>
+                                <Slider x:ConnectionId='76' x:Name="c2v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="20">
+                                </Slider>
+                                <Button x:ConnectionId='77' Height="30" Width="60" x:Name="c2t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    20(W)                        30(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c3" Text="Реальный CPU (W)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='72'  Margin="0,20,0,0" x:Name="c3"                                            ></CheckBox>
+                                <Slider x:ConnectionId='73' x:Name="c3v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
+                                </Slider>
+                                <Button x:ConnectionId='74' Height="30" Width="60" x:Name="c3t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c4" Text="Средний CPU (W)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='69'  Margin="0,20,0,0" x:Name="c4"                                            ></CheckBox>
+                                <Slider x:ConnectionId='70' x:Name="c4v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
+                                </Slider>
+                                <Button x:ConnectionId='71' Height="30" Width="60" x:Name="c4t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c5" Text="Тик быстрого разгона (S)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='66'  Margin="0,20,0,0" x:Name="c5"                                            ></CheckBox>
+                                <Slider x:ConnectionId='67' x:Name="c5v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="300" Value="128">
+                                </Slider>
+                                <Button x:ConnectionId='68' Height="30" Width="60" x:Name="c5t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c6" Text="Тик медленного разгона (S)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='63'  Margin="0,20,0,0" x:Name="c6"                                            ></CheckBox>
+                                <Slider x:ConnectionId='64' x:Name="c6v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="120" Value="64">
+                                </Slider>
+                                <Button x:ConnectionId='65' Height="30" Width="60" x:Name="c6t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                     64(S)                         48(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_CPU_c1" Text="Максимальная температура CPU (C)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='60'  Margin="0,20,0,0" x:Name="c1"                                            ></CheckBox>
+                                <Slider x:ConnectionId='61' x:Name="c1v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100" Value="90">
+                                </Slider>
+                                <Button x:ConnectionId='62' Height="30" Width="60" x:Name="c1t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock x:Uid="Param_CPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
+                                <TextBlock Text="                                    75(С)                         90(С)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                        </Grid>
+                    </Expander>
+
+
+                    <Expander x:ConnectionId='8' x:Name="Exp1" Grid.Row="1">
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <SymbolIcon Symbol="Library" HorizontalAlignment="Left" Margin="0,0,9,0"/>
+                                <TextBlock x:Uid="Param_VRM_Name" Margin="30,0,0,0" VerticalAlignment="Center" Text="VRM Система питания CPU"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
+                            <!-- Монтируем секции -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <!-- Первая секция -->
+                            
+                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_VRM_v2" Text="Лимит по току VRM (A)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='57' x:Name="V2"                                             Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='58' x:Name="V2V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="55">
+                                </Slider>
+                                <Button x:ConnectionId='59' Height="30" Width="60" x:Name="v2t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    55(A)                         70(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_VRM_v3" Text="Максимальный ток SoC (A)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='54'                                             x:Name="V3" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='55' x:Name="V3V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
+                                </Slider>
+                                <Button x:ConnectionId='56' Height="30" Width="60" x:Name="v3t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    13(A)                         25(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_VRM_v4" Text="Лимит по току SoC (A)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='51'                                             x:Name="V4" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='52' x:Name="V4V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="120">
+                                </Slider>
+                                <Button x:ConnectionId='53' Height="30" Width="60" x:Name="v4t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    10(A)                         15(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_VRM_v5" Text="Максимальный ток PCI VDD (A)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='48'                                             x:Name="V5" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='49' x:Name="V5V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
+                                </Slider>
+                                <Button x:ConnectionId='50' Height="30" Width="60" x:Name="v5t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                    13(A)                         20(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_VRM_v6" Text="Максимальный ток PCI SoC (A)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='45'                                             x:Name="V6" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='46' x:Name="V6V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="5" Maximum="120">
+                                </Slider>
+                                <Button x:ConnectionId='47' Height="30" Width="60" x:Name="v6t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                     5(A)                          10(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock  x:Uid="Param_VRM_v7" Text="Отключить троттлинг на время (S)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='42'                                             x:Name="V7" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='43' x:Name="V7V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="900" Value="2">
+                                </Slider>
+                                <Button x:ConnectionId='44' Height="30" Width="60" x:Name="v7t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock Text="                                     2(S)                            2(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock  x:Uid="Param_VRM_v1" Text="Максимальный ток VRM (A)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='39' x:Name="V1" Margin="0,20,0,0"                                            ></CheckBox>
+                                <Slider x:ConnectionId='40' x:Name="V1V"                                  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="64">
+                                </Slider>
+                                <Button x:ConnectionId='41' Height="30" Width="60" x:Name="v1t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                                <TextBlock x:Uid="Param_VRM_desc" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
+                                <TextBlock Text="                                    64(A)                         75(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                        </Grid>
+                    </Expander>
+
+
+                    <Expander  Grid.Row="2" >
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <SymbolIcon Symbol="Next" HorizontalAlignment="Left" Margin="0,0,9,0"/>
+                                <TextBlock Margin="30,0,0,0" VerticalAlignment="Center" x:Uid="Param_GPU_Text" Text="Частоты GPU"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
+                            <!-- Монтируем секции -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <!-- Первая секция -->
+                            
+                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_GPU_g2" Text="Максимальная частота SoC (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='36'                                             x:Name="g2" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='37' x:Name="g2v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                </Slider>
+                                <Button x:ConnectionId='38' Height="30" Width="60" x:Name="g2t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="1">
+                                <TextBlock x:Uid="Param_GPU_Ram" Text="1                                Частота оперативной памяти" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g3" Text="Минимальная Infinity Fabric (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='33'                                             x:Name="g3" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='34' x:Name="g3v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
+                                </Slider>
+                                <Button x:ConnectionId='35' Height="30" Width="60" x:Name="g3t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="1">
+                                <TextBlock Text="                                800(MHz)                 800(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g4" Text="Максимальная Infinity Fabric (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='30'                                             x:Name="g4" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='31' x:Name="g4v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                </Slider>
+                                <Button x:ConnectionId='32' Height="30" Width="60" x:Name="g4t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="1">
+                                <TextBlock x:Uid="Param_GPU_Ram" Text="                                Частота оперативной памяти" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g5" Text="Минимальная частота кодека VCE (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='27'                                             x:Name="g5" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='28' x:Name="g5v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
+                                </Slider>
+                                <Button x:ConnectionId='29' Height="30" Width="60" x:Name="g5t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="1">
+                                <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="0">
+                                <TextBlock  x:Uid="Param_GPU_g6" Text="Максимальная частота кодека VCE (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='24'                                             x:Name="g6" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='25' x:Name="g6v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                </Slider>
+                                <Button x:ConnectionId='26' Height="30" Width="60" x:Name="g6t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="1">
+                                <TextBlock Text="                                1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="6" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g7" Text="Минимальная частота Data Latch (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='21'                                             x:Name="g7" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='22' x:Name="g7v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
+                                </Slider>
+                                <Button x:ConnectionId='23' Height="30" Width="60" x:Name="g7t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="6" Grid.Column="1">
+                                <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="7" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g8" Text="Максимальная частота Data Latch (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='18'                                             x:Name="g8" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='19' x:Name="g8v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                </Slider>
+                                <Button x:ConnectionId='20' Height="30" Width="60" x:Name="g8t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="7" Grid.Column="1">
+                                <TextBlock Text="                                1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="8" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g9" Text="Минимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='15'                                             x:Name="g9" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='16' x:Name="g9v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="100" Maximum="1600" Value="400">
+                                </Slider>
+                                <Button x:ConnectionId='17' Height="30" Width="60" x:Name="g9t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="8" Grid.Column="1">
+                                <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="9" Grid.Column="0">
+                                <TextBlock x:Uid="Param_GPU_g10" Text="Максимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='12'                                               x:Name="g10" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='13' x:Name="g10v"                                  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                </Slider>
+                                <Button x:ConnectionId='14' Height="30" Width="60" x:Name="g10t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="9" Grid.Column="1">
+                                <TextBlock Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
+                                <TextBlock x:Uid="Param_GPU_g1"  Text="Минимальная частота SoC (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox x:ConnectionId='9'                                             x:Name="g1" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='10' x:Name="g1v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
+                                </Slider>
+                                <Button x:ConnectionId='11' Height="30" Width="60" x:Name="g1t" Margin="245,20,0,0" Content="1"></Button>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="1">
+                                <TextBlock x:Uid="Param_GPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
+                                <TextBlock Text="                                800(MHz)                 800(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                        </Grid>
+                    </Expander>
+                </Grid>
+            </ScrollViewer>
+            
+            
+            <!-- Конец -->
+            <TextBlock Grid.Row="2" x:Uid="Param_New" Text="Название нового пресета:" Margin="0,16,0,0" FontSize="20"></TextBlock>
+            <TextBox x:ConnectionId='4' Grid.Row="2" x:Name="SaveName" HorizontalAlignment="Left" Margin="260,0,0,0" Width="200" Height="40"></TextBox>
+            <Button x:ConnectionId='5' x:Uid="Param_Apply" Grid.Row="2" HorizontalAlignment="Right"                     Height="40" Width="40" Margin="0,0,-13,0" ToolTipService.ToolTip="Применить">
+                <SymbolIcon Symbol="Play" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
+            </Button>
+            <Button x:Uid="Param_Delete" Grid.Row="2" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,0" ToolTipService.ToolTip="Удалить">
+                <SymbolIcon Symbol="Delete" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
+            </Button>
+            <Button x:ConnectionId='6' x:Uid="Param_Save_Preset" Grid.Row="2"                    HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,87,0" ToolTipService.ToolTip="Добавить">
+                <SymbolIcon Symbol="Add" HorizontalAlignment="Left" Margin="-1,0,0,0"/>
+            </Button>
+            <Button x:ConnectionId='7' x:Uid="Param_Edit_Preset" Grid.Row="2"                    HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,137,0" ToolTipService.ToolTip="Изменить">
+                <!-- 	eb7e -->
+                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xeb7e;"/>
+            </Button>
+        </Grid>
+    </Grid>
+</Page>
+
