@@ -318,7 +318,12 @@
     <value>Для тех, кто желает максимум!</value>
   </data>
   <data name="Param_Apply.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Применить!</value>
+    <value>Применить параметры
+Применяет выбранные параметры.
+Если у вас включено "автоприменять
+каждые", то эти настройки будут
+переприменяться каждые несколько
+секунд</value>
   </data>
   <data name="Param_CPU_c1.Text" xml:space="preserve">
     <value>Максимальная температура CPU (C)</value>
@@ -330,7 +335,8 @@
     <value>Рекомендации:        Баланс          Производительность</value>
   </data>
   <data name="Param_Delete.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Удалить пресет</value>
+    <value>Удалить пресет
+Удалит ваш пресет после подтверждения</value>
   </data>
   <data name="Param_GPU_g1.Text" xml:space="preserve">
     <value>Минимальная частота SoC (MHz)</value>
@@ -375,7 +381,13 @@
     <value>Создать новый пресет:</value>
   </data>
   <data name="Param_Save_Preset.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Сохранить в пресет!</value>
+    <value>Добавить новый пресет
+Добавляет новый пресет для
+сохранения ваших настроек.
+После изменения параметров
+они сохраняются автоматически
+также вы можете иметь до
+9 таких пресетов</value>
   </data>
   <data name="Param_VRM_desc.Text" xml:space="preserve">
     <value>Рекомендации:        Баланс          Производительность</value>
@@ -495,5 +507,213 @@
 Для того, чтобы его изменить, в текстовом
 поле для сохранения нового пресета напишите 
 желаемое значение и нажмите на эту кнопку</value>
+  </data>
+  <data name="Param_c1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная температура
+Этим значением вы можете ограничить 
+процессор по температуре, выше
+этого значения он не будет греться
+будет начинаться троттлинг</value>
+  </data>
+  <data name="Param_c2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимит потребления
+Это значение ограничит процессор
+по теплопакету на то значение
+которое вы установили. Выше этого
+значения он не будет греться и
+разгоняться</value>
+  </data>
+  <data name="Param_c3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Реальное потребление
+Это значение отвечает за ограничение
+мощности при быстром тике
+разгона процессора</value>
+  </data>
+  <data name="Param_c4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Среднее потребление
+Это значение отвечает за ограничение
+мощности при медленном тике
+разгона процессора</value>
+  </data>
+  <data name="Param_c5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Тик быстрого разгона
+Это время, которое процессор будет
+увеличивать себе мощность, пока
+это будет необходимо или пока
+не достигнет максимума среднего
+потребления. Тик быстрого
+разгона чаще всего возникает при 
+недлительной нагрузке и повышает
+производительность процессора.
+Другими словами - это время за
+которое процессор повысит 
+частоты
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_c6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Тик медленного разгона
+Это время, которое процессор будет
+увеличивать себе мощность, пока
+это будет необходимо или пока
+не достигнет максимума реального
+потребления. Тик медленного 
+разгона чаще всего возникает при 
+длительной нагрузке и повышает
+производительность процессора.
+Другими словами - это время
+действия турбобуста
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_g10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная частота iGPU
+Максимальная частота встроенного
+видеоядра</value>
+  </data>
+  <data name="Param_g1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная частота SoC
+Минимальная частота передачи
+данных между всеми подсистемами
+процессора, то есть частота
+контроллера  памяти, контроллера PCI,
+контроллера Sata и т.д</value>
+  </data>
+  <data name="Param_g2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная частота SoC
+Максимальная частота передачи
+данных между всеми подсистемами
+процессора, то есть частота
+контроллера  памяти, контроллера PCI,
+контроллера Sata и т.д</value>
+  </data>
+  <data name="Param_g3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная Infinity Fabric
+Это частота передачи данных между
+процессором, ОЗУ и хабом, а также
+интегрированной графикой</value>
+  </data>
+  <data name="Param_g4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная Infinity Fabric
+Это частота передачи данных между
+процессором, ОЗУ и хабом, а также
+интегрированной графикой</value>
+  </data>
+  <data name="Param_g5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная частота кодека VCE
+Это частота видеокодека, который
+обрабатывает видеоконтент например
+в видео на ютуб, в проигрывателях, 
+в видеоредакторах, фотошопе и при
+стриминге</value>
+  </data>
+  <data name="Param_g6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная частота кодека VCE
+Это частота видеокодека, который
+обрабатывает видеоконтент например
+в видео на ютуб, в проигрывателях, 
+в видеоредакторах, фотошопе и при
+стриминге</value>
+  </data>
+  <data name="Param_g7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная частота Data Latch
+Минимальная частота тактового
+генератора процессора, от которого
+зависит правильная его работа
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_g8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная частота Data Latch
+Максимальная частота тактового
+генератора процессора, от которого
+зависит правильная его работа
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_g9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная частота iGPU
+Минимальная частота встроенного
+видеоядра</value>
+  </data>
+  <data name="Param_v1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальный ток VRM 
+Отвечает за максимально возможный
+ток питания процессора и его
+подсистем. Не рекоммендуется ставить
+значения выше 80 А, хотя всё равно
+процессор не достигнет таких значений</value>
+  </data>
+  <data name="Param_v2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимит по току VRM 
+Отвечает за максимально возможный
+ток питания процессора и его
+подсистем под воздействием температур
+и нагрузки. Не рекоммендуется ставить
+значения выше 80 А, хотя всё равно
+процессор не достигнет таких значений</value>
+  </data>
+  <data name="Param_v3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальный ток SoC
+Отвечает за максимальный ток,
+потребляемый всеми подсистемами
+процессора, кроме ядер. То есть
+контроллер памяти, контроллер PCI
+контроллера Sata и т.д</value>
+  </data>
+  <data name="Param_v4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимит по току SoC
+Отвечает за максимальный ток,
+потребляемый всеми подсистемами
+процессора, кроме ядер, под воздействием
+температур и нагрузки. То есть ток 
+контроллера  памяти, контроллера PCI,
+контроллера Sata и т.д</value>
+  </data>
+  <data name="Param_v5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальный ток PCI VDD
+Отвечает за потребляемый ядрами
+процессора ток под нагрузкой
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_v6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальный ток PCI SoC
+Отвечает за потребляемый подсистемами
+процессора ток под нагрузкой
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_v7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отключить троттлинг на время
+Отвечает за время продолжительности
+троттлинга процессора. Если у вас ситуация
+с 0,4 ГГц или вы хотите чтобы процессор
+стабильнее держал частоты и мощность
+найдите для себя значение этого параметра!
+Рекоммендуемые значения: 0, 2, 4, 8, 12,
+20, 26, 45, 60, 81, 90. Выше либо троттлинг
+постоянно возникает, либо не возникает
+вообще. Это может очень сильно 
+повлиять на производительность!
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
+    <value>Изменение мощности процессра</value>
+  </data>
+  <data name="Param_GPU_Pdesc.Text" xml:space="preserve">
+    <value>Изменение частот для процессоров Пикассо и выше</value>
+  </data>
+  <data name="Param_VRM_Pdesc.Text" xml:space="preserve">
+    <value>Изменение всех значений VRM</value>
+  </data>
+  <data name="Cooler_Autoupdate.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Автообновление информации
+Автоматически обновляет
+информацию о скорости
+кулера, раз в 6 секунд</value>
+  </data>
+  <data name="Cooler_Refresh.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Обновить информацию
+Выключает автообновление, 
+покажет текущую скорость
+вращения кулеров</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value />
   </data>
 </root>

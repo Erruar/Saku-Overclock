@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
+using Windows.Foundation.Metadata;
 #pragma warning disable IDE0059 // Ненужное присваивание значения
 #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 namespace Saku_Overclock.Views;
@@ -51,13 +52,14 @@ public sealed partial class КулерPage : Page
         }
     }
 
-    public void FanInit()
+    public async void FanInit()
     {
         ConfigLoad();
         Selfan.SelectedIndex = config.fanconfig;
         if (config.fanenabled == true) { ConfigLoad(); Fan1.Value = config.fan1; Fan2.Value = config.fan2; Enabl.IsChecked = true; Readon.IsChecked = false; Disabl.IsChecked = false; Fan1Val.Text = Fan1.Value.ToString() + " %"; Fan2Val.Text = Fan2.Value.ToString() + " %"; if (Fan1.Value > 100) { Fan1Val.Text = "Auto"; }; if (Fan2.Value > 100) { Fan2Val.Text = "Auto"; }; };
         if (config.fanread == true) { Enabl.IsChecked = false; Readon.IsChecked = true; Disabl.IsChecked = false; };
         if (config.fandisabled == true) { Enabl.IsChecked = false; Readon.IsChecked = false; Disabl.IsChecked = true; };
+        if (config.autofan == true) { await Task.Delay(20); Fanauto.IsChecked = true; }
         //better fan init
         if (Enabl.IsChecked == true)
         {
@@ -65,7 +67,6 @@ public sealed partial class КулерPage : Page
             if (Fan1.Value > 100)
             {
                 Fan1Val.Text = "Auto";
-                GetInfo0();
                 Update();
                 config.fan1 = 110.0;
                 ConfigSave();
@@ -82,7 +83,6 @@ public sealed partial class КулерPage : Page
         if (Readon.IsChecked == true)
         {
             Fan1Val.Text = "Auto";
-            GetInfo0();
             Update();
         }
         FanInit2();
@@ -840,7 +840,6 @@ public sealed partial class КулерPage : Page
         ConfigSave();
         NbfcEnable();
         Fan1Val.Text = "Auto";
-        GetInfo0();
         Update();
     }
 
@@ -862,7 +861,6 @@ public sealed partial class КулерPage : Page
             if (Fan1.Value > 100)
             {
                 Fan1Val.Text = "Auto";
-                GetInfo0();
                 Update();
                 config.fan1 = 110.0;
                 ConfigSave();
@@ -879,7 +877,6 @@ public sealed partial class КулерPage : Page
         if (Readon.IsChecked == true)
         {
             Fan1Val.Text = "Auto";
-            GetInfo0();
             Update();
         }
         FanInit2();
@@ -896,7 +893,6 @@ public sealed partial class КулерPage : Page
             if (Fan2.Value > 100)
             {
                 Fan2Val.Text = "Auto";
-                GetInfo0();
                 Update();
                 config.fan2 = 110.0;
                 ConfigSave();
@@ -914,7 +910,6 @@ public sealed partial class КулерPage : Page
         if (Readon.IsChecked == true)
         {
             Fan2Val.Text = "Auto";
-            GetInfo0();
             Update();
         }
     }
@@ -997,21 +992,6 @@ public sealed partial class КулерPage : Page
         p.StartInfo.RedirectStandardOutput = true;
 
         p.Start();
-
-        /*StreamReader outputWriter = p.StandardOutput;
-        String errorReader = p.StandardError.ReadToEnd();
-        String line = outputWriter.ReadLine();
-        while (line != null)
-        {
-
-            if (line != "")
-            {
-                Ktext = Ktext + "\n" + line;
-            }
-
-            Ktext = outputWriter.ReadLine();
-        }*/
-        //App.MainWindow.ShowMessageDialogAsync("Вы успешно выставили свои настройки! \n" + " config --apply " + quote + config.fanvalue + quote, "Применение успешно!");
     }
 
     private async void Selfan_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1029,7 +1009,7 @@ public sealed partial class КулерPage : Page
     {
         ConfigLoad();
         DispatcherTimer timer = new DispatcherTimer();
-        timer.Interval = TimeSpan.FromMilliseconds(10000);
+        timer.Interval = TimeSpan.FromMilliseconds(6000);
         ConfigLoad();
         if (config.fanex == false)
         {
@@ -1038,8 +1018,8 @@ public sealed partial class КулерPage : Page
             timer.Tick += (sender, e) =>
             {
                 // Запустите faninfo снова
-                //MainWindow.Applyer.GetInfo();
-                Process();
+                if (Fanauto.IsChecked == true) { Process(); }
+                else { timer.Stop(); }
             };
             timer.Start();
         }
@@ -1284,5 +1264,46 @@ public sealed partial class КулерPage : Page
     private void Fan1Pr_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
         if (Fan1Pr.Value == 10) { Fan1Pr.Value = 100; }
+    }
+
+    private async void Fanauto_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (Fanauto.IsChecked == true)
+        {
+            if (config.autofan == false)
+            {
+                ContentDialog AutoDialog = new ContentDialog
+                {
+                    Title = "Autoupdate info",
+                    Content = "Did you really want to enable auto update? \nThis will negatively affect the performance of the application",
+                    CloseButtonText = "Cancel",
+                    PrimaryButtonText = "Enable",
+                    DefaultButton = ContentDialogButton.Close
+                };
+
+                // Use this code to associate the dialog to the appropriate AppWindow by setting
+                // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
+                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+                {
+                    AutoDialog.XamlRoot = XamlRoot;
+                }
+                ContentDialogResult result = await AutoDialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    config.autofan = true; ConfigSave();
+                }
+                else { Fanauto.IsChecked = false; config.autofan = false; ConfigSave(); }
+            }
+            config.fanex = false; ConfigSave();
+            GetInfo0();
+        }
+        else { config.autofan = false; ConfigSave(); }
+    }
+
+    private void Update_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        config.fanex = true; ConfigSave();
+        Process();
+        Fanauto.IsChecked = false;
     }
 }

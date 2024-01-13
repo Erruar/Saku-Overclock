@@ -52,7 +52,8 @@
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <SymbolIcon Symbol="SelectAll" HorizontalAlignment="Left" Margin="0,0,9,0"/>
-                                <TextBlock Margin="30,0,0,0" VerticalAlignment="Center" x:Uid="Param_CPU"  Text="Мощность процессора"></TextBlock>
+                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_CPU_Text"  Text="Мощность процессора"></TextBlock>
+                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_CPU_Pdesc"  Text="Мощность процессора"></TextBlock>
                             </Grid>
                         </Expander.Header>
                         <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
@@ -80,6 +81,11 @@
                                 <Slider x:Name="c2v" ValueChanged="c2_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="20">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="c2t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c2_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    20(W)                        30(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -90,6 +96,11 @@
                                 <Slider x:Name="c3v" ValueChanged="c3_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="c3t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c3_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -100,29 +111,44 @@
                                 <Slider x:Name="c4v" ValueChanged="c4_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="c4t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c4_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left">
-                                <TextBlock x:Uid="Param_CPU_c5" Text="Тик быстрого разгона (S)" FontSize="15"></TextBlock>
+                                <TextBlock x:Uid="Param_CPU_c6" Text="Тик быстрого разгона (S)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c5" Checked="c5_Checked" Unchecked="c5_Checked"></CheckBox>
-                                <Slider x:Name="c5v" ValueChanged="c5_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="300" Value="128">
+                                <Slider x:Name="c5v" ValueChanged="c5_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="200" Value="64">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="c5t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c5_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
-                                <TextBlock Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                                <TextBlock Text="                                     64(S)                         48(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left">
-                                <TextBlock x:Uid="Param_CPU_c6" Text="Тик медленного разгона (S)" FontSize="15"></TextBlock>
+                                <TextBlock x:Uid="Param_CPU_c5" Text="Тик медленного разгона (S)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c6" Checked="c6_Checked" Unchecked="c6_Checked"></CheckBox>
-                                <Slider x:Name="c6v" ValueChanged="c6_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="120" Value="64">
+                                <Slider x:Name="c6v" ValueChanged="c6_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="400" Value="128">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="c6t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c6_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
-                                <TextBlock Text="                                     64(S)                         48(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                                <TextBlock Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
                                 <TextBlock x:Uid="Param_CPU_c1" Text="Максимальная температура CPU (C)" FontSize="15"></TextBlock>
@@ -130,6 +156,11 @@
                                 <Slider x:Name="c1v" ValueChanged="c1_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100" Value="90">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="c1t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock x:Uid="Param_CPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
@@ -143,7 +174,8 @@
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <SymbolIcon Symbol="Library" HorizontalAlignment="Left" Margin="0,0,9,0"/>
-                                <TextBlock x:Uid="Param_VRM_Name" Margin="30,0,0,0" VerticalAlignment="Center" Text="VRM Система питания CPU"></TextBlock>
+                                <TextBlock x:Uid="Param_VRM_Name" Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="VRM Система питания CPU"></TextBlock>
+                                <TextBlock Margin="35,30,0,0" VerticalAlignment="Top" FontWeight="Light" x:Uid="Param_VRM_Pdesc"  Text="Мощность процессора"></TextBlock>
                             </Grid>
                         </Expander.Header>
                         <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
@@ -171,6 +203,11 @@
                                 <Slider x:Name="V2V" ValueChanged="v2v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="55">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="v2t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v2_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    55(A)                         70(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -181,6 +218,11 @@
                                 <Slider x:Name="V3V" ValueChanged="v3v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="v3t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v3_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    13(A)                         25(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -191,6 +233,11 @@
                                 <Slider x:Name="V4V" ValueChanged="v4v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="120">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="v4t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v4_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    10(A)                         15(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -201,6 +248,11 @@
                                 <Slider x:Name="V5V" ValueChanged="v5v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="v5t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v5_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                    13(A)                         20(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -211,6 +263,11 @@
                                 <Slider x:Name="V6V" ValueChanged="v6v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="5" Maximum="120">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="v6t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v6_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                     5(A)                          10(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -221,6 +278,11 @@
                                 <Slider x:Name="V7V" ValueChanged="v7v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="900" Value="2">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="v7t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v7_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                     2(S)                            2(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
@@ -231,6 +293,11 @@
                                 <Slider x:Name="V1V" ValueChanged="v1v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="64">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="v1t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v1_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock x:Uid="Param_VRM_desc" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
@@ -243,8 +310,9 @@
                     <Expander  Grid.Row="2" >
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
-                                <SymbolIcon Symbol="Next" HorizontalAlignment="Left" Margin="0,0,9,0"/>
-                                <TextBlock Margin="30,0,0,0" VerticalAlignment="Center" x:Uid="Param_GPU_Text" Text="Частоты GPU"></TextBlock>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe9d9;"/>
+                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_GPU_Text" Text="Частоты GPU"></TextBlock>
+                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_GPU_Pdesc"  Text="Мощность процессора"></TextBlock>
                             </Grid>
                         </Expander.Header>
                         <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
@@ -275,8 +343,13 @@
                                 <Slider x:Name="g2v" ValueChanged="g2v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g2t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g2_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="1" Grid.Column="1">
+                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock x:Uid="Param_GPU_Ram" Text="1                                Частота оперативной памяти" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="0">
@@ -285,8 +358,13 @@
                                 <Slider x:Name="g3v" ValueChanged="g3v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g3t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g3_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="2" Grid.Column="1">
+                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                800(MHz)                 800(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="3" Grid.Column="0">
@@ -295,8 +373,13 @@
                                 <Slider x:Name="g4v" ValueChanged="g4v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g4t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g4_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="3" Grid.Column="1">
+                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock x:Uid="Param_GPU_Ram" Text="                                Частота оперативной памяти" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="4" Grid.Column="0">
@@ -305,8 +388,13 @@
                                 <Slider x:Name="g5v" ValueChanged="g5v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g5t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g5_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="4" Grid.Column="1">
+                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="5" Grid.Column="0">
@@ -315,8 +403,13 @@
                                 <Slider x:Name="g6v" ValueChanged="g6v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g6t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g6_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="5" Grid.Column="1">
+                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="6" Grid.Column="0">
@@ -325,8 +418,13 @@
                                 <Slider x:Name="g7v" ValueChanged="g7v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g7t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g7_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="6" Grid.Column="1">
+                            <Grid Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="7" Grid.Column="0">
@@ -335,8 +433,13 @@
                                 <Slider x:Name="g8v" ValueChanged="g8v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g8t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g8_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="7" Grid.Column="1">
+                            <Grid Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="8" Grid.Column="0">
@@ -345,8 +448,13 @@
                                 <Slider x:Name="g9v" ValueChanged="g9v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="100" Maximum="1600" Value="400">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g9t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g9_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="8" Grid.Column="1">
+                            <Grid Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="9" Grid.Column="0">
@@ -355,8 +463,13 @@
                                 <Slider x:Name="g10v" ValueChanged="g10v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g10t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g10_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="9" Grid.Column="1">
+                            <Grid Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
@@ -365,8 +478,13 @@
                                 <Slider x:Name="g1v" ValueChanged="g1v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g1t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g1_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="0" Grid.Column="1">
+                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
                                 <TextBlock x:Uid="Param_GPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
                                 <TextBlock Text="                                800(MHz)                 800(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
@@ -382,15 +500,15 @@
             <Button x:Uid="Param_Apply" Grid.Row="2" HorizontalAlignment="Right" Click="Apply_Click" Height="40" Width="40" Margin="0,0,-13,0" ToolTipService.ToolTip="Применить">
                 <SymbolIcon Symbol="Play" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
             </Button>
-            <Button x:Uid="Param_Delete" Grid.Row="2" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,0" ToolTipService.ToolTip="Удалить">
+            <Button x:Uid="Param_Delete" Click="Delete_Click" Grid.Row="2" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,0" ToolTipService.ToolTip="Удалить">
                 <SymbolIcon Symbol="Delete" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
             </Button>
             <Button x:Uid="Param_Save_Preset" Grid.Row="2" Click="Save_Click" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,87,0" ToolTipService.ToolTip="Добавить">
-                <SymbolIcon Symbol="Add" HorizontalAlignment="Left" Margin="-1,0,0,0"/>
+                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"   Margin="-3,0,0,0"  Glyph="&#xeccd;"/>
             </Button>
-            <Button x:Uid="Param_Edit_Preset" Grid.Row="2" Click="Save_Click" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,137,0" ToolTipService.ToolTip="Изменить">
-                <!-- 	eb7e -->
-                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xeb7e;"/>
+            <Button x:Uid="Param_Edit_Preset" Grid.Row="2" Click="Edit_Click"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,137,0" ToolTipService.ToolTip="Изменить">
+                <!-- eccd	eb7e -->
+                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xef15;"/>
             </Button>
         </Grid>
     </Grid>

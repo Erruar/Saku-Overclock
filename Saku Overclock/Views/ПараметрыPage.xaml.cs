@@ -1,6 +1,8 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 using Saku_Overclock.ViewModels;
+using Windows.Foundation.Metadata;
+using Windows.UI.Popups;
 namespace Saku_Overclock.Views;
 public sealed partial class ПараметрыPage : Page
 {
@@ -4982,9 +4984,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            c5t.Content = c5v.Value.ToString();
         }
+        await Task.Delay(20);
+        c5t.Content = c5v.Value.ToString();
     }
     //Тик медленного разгона (S)
     private async void c6_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
@@ -5034,9 +5036,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            c6t.Content = c6v.Value.ToString();
         }
+        await Task.Delay(20);
+        c6t.Content = c6v.Value.ToString();
     }
     //Параметры VRM
     private async void v1v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
@@ -5138,9 +5140,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            v2t.Content = V2V.Value.ToString();
         }
+        await Task.Delay(20);
+        v2t.Content = V2V.Value.ToString();
     }
     private async void v3v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5189,9 +5191,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            v3t.Content = V3V.Value.ToString();
         }
+        await Task.Delay(20);
+        v3t.Content = V3V.Value.ToString();
     }
     private async void v4v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5240,9 +5242,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            v4t.Content = V4V.Value.ToString();
         }
+        await Task.Delay(20);
+        v4t.Content = V4V.Value.ToString();
     }
     private async void v5v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5291,9 +5293,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            v5t.Content = V5V.Value.ToString();
         }
+        await Task.Delay(20);
+        v5t.Content = V5V.Value.ToString();
     }
     private async void v6v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5342,9 +5344,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            v6t.Content = V6V.Value.ToString();
         }
+        await Task.Delay(20);
+        v6t.Content = V6V.Value.ToString();
     }
     private async void v7v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5393,9 +5395,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            v7t.Content = V7V.Value.ToString();
         }
+        await Task.Delay(20);
+        v7t.Content = V7V.Value.ToString();
     }
     //Параметры GPU
     private async void g1v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
@@ -5445,9 +5447,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            g1t.Content = g1v.Value.ToString();
         }
+        await Task.Delay(20);
+        g1t.Content = g1v.Value.ToString();
     }
     private async void g2v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5496,9 +5498,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            g2t.Content = g2v.Value.ToString();
         }
+        await Task.Delay(20);
+        g2t.Content = g2v.Value.ToString();
     }
     private async void g3v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5547,9 +5549,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            g3t.Content = g3v.Value.ToString();
         }
+        await Task.Delay(20);
+        g3t.Content = g3v.Value.ToString();
     }
     private async void g4v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5598,9 +5600,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            g4t.Content = g4v.Value.ToString();
         }
+        await Task.Delay(20);
+        g4t.Content = g4v.Value.ToString();
     }
     private async void g5v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5649,9 +5651,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            g5t.Content = g5v.Value.ToString();
         }
+        await Task.Delay(20);
+        g5t.Content = g5v.Value.ToString();
     }
     private async void g6v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5700,9 +5702,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            g6t.Content = g6v.Value.ToString();
         }
+        await Task.Delay(20);
+        g6t.Content = g6v.Value.ToString();
     }
     private async void g7v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5751,9 +5753,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            g7t.Content = g7v.Value.ToString();
         }
+        await Task.Delay(20);
+        g7t.Content = g7v.Value.ToString();
     }
     private async void g8v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5802,9 +5804,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            g8t.Content = g8v.Value.ToString();
         }
+        await Task.Delay(20);
+        g8t.Content = g8v.Value.ToString();
     }
     private async void g9v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5853,9 +5855,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            g9t.Content = g9v.Value.ToString();
         }
+        await Task.Delay(20);
+        g9t.Content = g9v.Value.ToString();
     }
     private async void g10v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
@@ -5904,9 +5906,9 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
             ProfileSave();
-            await Task.Delay(20);
-            g10t.Content = g10v.Value.ToString();
         }
+        await Task.Delay(20);
+        g10t.Content = g10v.Value.ToString();
     }
     //Кнопка применить, итоговый выход, Ryzen ADJ
     private void Apply_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -6138,6 +6140,158 @@ public sealed partial class ПараметрыPage : Page
         }
         ProfileSave();
     }
+    private void Edit_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (SaveName.Text != "")
+        {
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 0:
+                    App.MainWindow.ShowMessageDialogAsync("You can't rename unsaved preset! \n", "Corrupted Name!");
+                    break;
+                case 1:
+                    ProfileCOM_1.Content = SaveName.Text;
+                    profile.pr1name = SaveName.Text;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM.SelectedIndex = 1;
+                    break;
+                case 2:
+                    ProfileCOM_2.Content = SaveName.Text;
+                    profile.pr2name = SaveName.Text;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM.SelectedIndex = 2;
+                    break;
+                case 3:
+                    ProfileCOM_3.Content = SaveName.Text;
+                    profile.pr3name = SaveName.Text;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM.SelectedIndex = 3;
+                    break;
+                case 4:
+                    ProfileCOM_4.Content = SaveName.Text;
+                    profile.pr4name = SaveName.Text;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM.SelectedIndex = 4;
+                    break;
+                case 5:
+                    ProfileCOM_5.Content = SaveName.Text;
+                    profile.pr5name = SaveName.Text;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM.SelectedIndex = 5;
+                    break;
+                case 6:
+                    ProfileCOM_6.Content = SaveName.Text;
+                    profile.pr6name = SaveName.Text;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM.SelectedIndex = 6;
+                    break;
+                case 7:
+                    ProfileCOM_7.Content = SaveName.Text;
+                    profile.pr7name = SaveName.Text;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM.SelectedIndex = 7;
+                    break;
+                case 8:
+                    ProfileCOM_8.Content = SaveName.Text;
+                    profile.pr8name = SaveName.Text;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM.SelectedIndex = 8;
+                    break;
+                case 9:
+                    ProfileCOM_9.Content = SaveName.Text;
+                    profile.pr9name = SaveName.Text;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM.SelectedIndex = 9;
+                    break;
+            }
+            ProfileSave();
+        }
+        else
+        {
+            App.MainWindow.ShowMessageDialogAsync("You can't edit profile without name! \n", "Corrupted Name!");
+        }
+    }
+    private async void Delete_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        ContentDialog DelDialog = new ContentDialog
+        {
+            Title = "Delete preset",
+            Content = "Did you really want to delete this preset?",
+            CloseButtonText = "Cancel",
+            PrimaryButtonText = "Delete",
+            DefaultButton = ContentDialogButton.Close
+        };
+
+        // Use this code to associate the dialog to the appropriate AppWindow by setting
+        // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+        {
+            DelDialog.XamlRoot = XamlRoot;
+        }
+
+        ContentDialogResult result = await DelDialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 0:
+                    await App.MainWindow.ShowMessageDialogAsync("You can't delete unsaved preset!", "Can't Delete!");
+                    break;
+                case 1:
+                    profile.pr1 = false;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM_1.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    break;
+                case 2:
+                    profile.pr2 = false;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM_2.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    break;
+                case 3:
+                    profile.pr3 = false;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM_3.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    break;
+                case 4:
+                    profile.pr4 = false;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM_4.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    break;
+                case 5:
+                    profile.pr5 = false;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM_5.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    break;
+                case 6:
+                    profile.pr6 = false;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM_6.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    break;
+                case 7:
+                    profile.pr7 = false;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM_7.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    break;
+                case 8:
+                    profile.pr8 = false;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM_8.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    break;
+                case 9:
+                    profile.pr9 = false;
+                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCOM_9.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    break;
+            }
+            ProfileSave();
+        }
+        else
+        {
+            
+        }
+        
+    }
+
 
 
 #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.

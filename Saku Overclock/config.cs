@@ -6,6 +6,7 @@ internal class Config
     public bool Infoupdate;
     public string fanvalue;
     public int fanconfig;
+    public bool autofan;
     public bool fandisabled;
     public bool fanread;
     public bool fanenabled = true;

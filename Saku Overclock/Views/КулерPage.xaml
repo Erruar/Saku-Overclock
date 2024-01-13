@@ -234,14 +234,17 @@
                     </Grid>
                 </Grid>
             </ScrollViewer>
-            <ToggleButton VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-13,15" ToolTipService.ToolTip="Применить">
+            <ToggleButton Checked="Fanauto_Checked" Unchecked="Fanauto_Checked" x:Name="Fanauto" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-13,15" x:Uid="Cooler_Autoupdate" ToolTipService.ToolTip="Автообновление">
                 <Grid>
-                    <SymbolIcon Symbol="Flag" Margin="-3,0,0,0"/>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe9d2;"/>
                 </Grid>
                 <!-- ec58 -->
             </ToggleButton>
-            <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,15" ToolTipService.ToolTip="Применить">
-                <SymbolIcon Symbol="Play" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
+            <Button VerticalAlignment="Bottom" Click="Update_Click" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,15" x:Uid="Cooler_Refresh" ToolTipService.ToolTip="Обновить">
+                <Grid>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe9f3;">
+                    </FontIcon>
+                </Grid>
             </Button>
         </Grid>
 	</Grid>

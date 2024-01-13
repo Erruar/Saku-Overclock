@@ -197,9 +197,9 @@
             </ComboBox>
 			<Grid>
 				<TextBlock x:Uid="Cooler_Service" Margin="0,30,0,0" Text="Сервис контроля скорости:" FontSize="16"/>
-                <RadioButton x:ConnectionId='15' x:Name="Disabl"                           VerticalAlignment="Top" Margin="0,60,0,0"/>
-                <RadioButton x:ConnectionId='16' x:Name="Readon"                           VerticalAlignment="Top" Margin="0,90,0,0"/>
-                <RadioButton x:ConnectionId='17' x:Name="Enabl"                         VerticalAlignment="Top" Margin="0,120,0,0"/>
+                <RadioButton x:ConnectionId='17' x:Name="Disabl"                           VerticalAlignment="Top" Margin="0,60,0,0"/>
+                <RadioButton x:ConnectionId='18' x:Name="Readon"                           VerticalAlignment="Top" Margin="0,90,0,0"/>
+                <RadioButton x:ConnectionId='19' x:Name="Enabl"                         VerticalAlignment="Top" Margin="0,120,0,0"/>
                 <TextBlock FontSize="13" x:Uid="Cooler_Service_Disabled" Text="Выключен" VerticalAlignment="Top" Margin="30,65,0,0"/>
                 <TextBlock FontSize="13" x:Uid="Cooler_Service_Read" Text="Только для чтения" VerticalAlignment="Top" Margin="30,95,0,0"/>
                 <TextBlock FontSize="13" x:Uid="Cooler_Service_Enabled" Text="Включен" VerticalAlignment="Top" Margin="30,125,0,0"/>
@@ -208,7 +208,7 @@
                 <TextBlock FontSize="15" VerticalAlignment="Top" Margin="0,160,0,0" x:Uid="Cooler_Temp" Text="Текущая температура: 59 C"/>
                 <Grid Height="20" Width="81" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="170,160,0,0">
                     <Border Height="400" Margin="0,0,0,0">
-                        <TextBlock x:ConnectionId='14' FontSize="15" FontFamily="Consolas" VerticalAlignment="Top" Margin="-200,-470,0,0" x:Name="Temp" Text="Undefined"/>
+                        <TextBlock x:ConnectionId='16' FontSize="15" FontFamily="Consolas" VerticalAlignment="Top" Margin="-200,-470,0,0" x:Name="Temp" Text="Undefined"/>
                     </Border>
                 </Grid>
             </Grid>
@@ -216,32 +216,35 @@
                 <Grid>
                     <Grid>
                         
-                        <TextBlock x:ConnectionId='8' VerticalAlignment="Top" x:Name="Fan1Val" Text="Auto" Margin="140,30,0,0"/>
+                        <TextBlock x:ConnectionId='10' VerticalAlignment="Top" x:Name="Fan1Val" Text="Auto" Margin="140,30,0,0"/>
                         
-                        <TextBlock x:ConnectionId='9' VerticalAlignment="Top" x:Name="Fan1Value" Opacity="0" Text="Auto" Margin="240,30,0,0"/>
-                        <TextBlock x:ConnectionId='10' VerticalAlignment="Top" x:Name="Fan2Value" Opacity="0" Text="Auto" Margin="240,30,0,0"/>
+                        <TextBlock x:ConnectionId='11' VerticalAlignment="Top" x:Name="Fan1Value" Opacity="0" Text="Auto" Margin="240,30,0,0"/>
+                        <TextBlock x:ConnectionId='12' VerticalAlignment="Top" x:Name="Fan2Value" Opacity="0" Text="Auto" Margin="240,30,0,0"/>
                         <TextBlock Text="Fan #1"/>
-                        <Slider x:ConnectionId='11' x:Uid="Cooler_Fan" x:Name="Fan1"                                  HorizontalAlignment="Left" Width="200" Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
-                        <TextBlock x:ConnectionId='12' x:Uid="Cooler_Current_Fan" x:Name="Fan1Cur" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
-                        <ProgressBar x:ConnectionId='13' x:Name="Fan1Pr" Value="25"                                    HorizontalAlignment="Left" Width="200" Margin="0,-50,0,0"></ProgressBar>
+                        <Slider x:ConnectionId='13' x:Uid="Cooler_Fan" x:Name="Fan1"                                  HorizontalAlignment="Left" Width="200" Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
+                        <TextBlock x:ConnectionId='14' x:Uid="Cooler_Current_Fan" x:Name="Fan1Cur" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
+                        <ProgressBar x:ConnectionId='15' x:Name="Fan1Pr" Value="25"                                    HorizontalAlignment="Left" Width="200" Margin="0,-50,0,0"></ProgressBar>
                     </Grid>
                     <Grid Margin="0,170,0,0">
-                        <TextBlock x:ConnectionId='4' VerticalAlignment="Top" x:Name="Fan2Val" Text="Auto" Margin="140,30,0,0"/>
+                        <TextBlock x:ConnectionId='6' VerticalAlignment="Top" x:Name="Fan2Val" Text="Auto" Margin="140,30,0,0"/>
                         <TextBlock Text="Fan #2"/>
-                        <Slider x:ConnectionId='5'  x:Uid="Cooler_Fan" x:Name="Fan2"                                  HorizontalAlignment="Left" Width="200" Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
-                        <TextBlock x:ConnectionId='6' x:Uid="Cooler_Current_Fan" x:Name="Fan2Cur" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
-                        <ProgressBar x:ConnectionId='7' x:Name="Fan2Pr" Value="25"                                    HorizontalAlignment="Left" Width="200" Margin="0,120,0,0"></ProgressBar>
+                        <Slider x:ConnectionId='7'  x:Uid="Cooler_Fan" x:Name="Fan2"                                  HorizontalAlignment="Left" Width="200" Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
+                        <TextBlock x:ConnectionId='8' x:Uid="Cooler_Current_Fan" x:Name="Fan2Cur" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
+                        <ProgressBar x:ConnectionId='9' x:Name="Fan2Pr" Value="25"                                    HorizontalAlignment="Left" Width="200" Margin="0,120,0,0"></ProgressBar>
                     </Grid>
                 </Grid>
             </ScrollViewer>
-            <ToggleButton VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-13,15" ToolTipService.ToolTip="Применить">
+            <ToggleButton x:ConnectionId='4'                                                       x:Name="Fanauto" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-13,15" x:Uid="Cooler_Autoupdate" ToolTipService.ToolTip="Автообновление">
                 <Grid>
-                    <SymbolIcon Symbol="Flag" Margin="-3,0,0,0"/>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe9d2;"/>
                 </Grid>
                 <!-- ec58 -->
             </ToggleButton>
-            <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,15" ToolTipService.ToolTip="Применить">
-                <SymbolIcon Symbol="Play" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
+            <Button x:ConnectionId='5' VerticalAlignment="Bottom"                      HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,15" x:Uid="Cooler_Refresh" ToolTipService.ToolTip="Обновить">
+                <Grid>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe9f3;">
+                    </FontIcon>
+                </Grid>
             </Button>
         </Grid>
 	</Grid>

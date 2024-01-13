@@ -270,7 +270,7 @@
     <value>Actual Power Limit (W)</value>
   </data>
   <data name="Param_CPU_c4.Text" xml:space="preserve">
-    <value>Awerage Power Limit (W)</value>
+    <value>Average Power Limit (W)</value>
   </data>
   <data name="Param_CPU_c5.Text" xml:space="preserve">
     <value>Time of fast frequency rise (S)</value>
@@ -318,7 +318,9 @@
     <value>For those who want real performance!</value>
   </data>
   <data name="Param_Apply.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Apply</value>
+    <value>Apply values
+You can apply all enabled
+values by clicking at this button</value>
   </data>
   <data name="Param_CPU_c1.Text" xml:space="preserve">
     <value>Maximum CPU temperature (C)</value>
@@ -330,7 +332,10 @@
     <value>Recommendation:     Balance                 Performance</value>
   </data>
   <data name="Param_Delete.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Delete</value>
+    <value>Delete preset
+You can easily delete
+preset by clicking
+at this button</value>
   </data>
   <data name="Param_GPU_g1.Text" xml:space="preserve">
     <value>Minimum SoC clock (MHz)</value>
@@ -369,13 +374,16 @@
     <value>Recommendation:    Balance                Performance</value>
   </data>
   <data name="Param_GPU_Text.Text" xml:space="preserve">
-    <value>GPU and CPU subsystem clocks</value>
+    <value>iGPU and CPU subsystem clocks</value>
   </data>
   <data name="Param_New.Text" xml:space="preserve">
     <value>Create new preset:</value>
   </data>
   <data name="Param_Save_Preset.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Save to preset</value>
+    <value>Add new preset
+You can add new preset
+and add in it your values.
+All presets are autosaving</value>
   </data>
   <data name="Param_VRM_desc.Text" xml:space="preserve">
     <value>Recommendation:     Balance                 Performance</value>
@@ -494,5 +502,200 @@ performance</value>
 To change it, just write the desired 
 value in the text field to save the new 
 preset and click on this button</value>
+  </data>
+  <data name="Param_c1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum temperature
+With this value, you can limit
+the processor by temperature, above
+this value it will not warm
+up, trottling will begin</value>
+  </data>
+  <data name="Param_c2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Sustained Power Limit 
+This value will limit
+the processor by the heat package to the value
+that you have set. Above this
+value, it will not warm up and
+accelerate</value>
+  </data>
+  <data name="Param_c3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Actual Power Limit
+This value is responsible for limiting
+the power during a fast frequency rise</value>
+  </data>
+  <data name="Param_c4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Average Power Limit
+This value is responsible for limiting
+the power at slow frequency rise of the processor</value>
+  </data>
+  <data name="Param_c5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Time of fast frequency rise
+This is the time that the processor will
+increase its power until
+it is needed or until
+it reaches the actual power limit. 
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_c6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Time of slow frequency rise
+This is the time that the processor will
+increase its power until
+it is needed or until
+it reaches the average power limit. A time of 
+frequency rise most often occurs under
+prolonged load and increases
+processor performance.
+In other words, this is the
+duration of the turbo boost
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum iGPU frequency
+Maximum frequency of iGPU video core</value>
+  </data>
+  <data name="Param_g1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimum SoC frequency
+The minimum frequency
+of data transfer between all
+processor subsystems, that is, the frequency
+of the memory controller, PCI
+controller, Sata controller, etc.</value>
+  </data>
+  <data name="Param_g2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum SoC frequency
+The maximum frequency
+of data transfer between all
+processor subsystems, that is, the frequency
+of the memory controller, PCI
+controller, Sata controller, etc.</value>
+  </data>
+  <data name="Param_g3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimum Infinity Fabric
+This is the frequency of data transfer between
+the processor, RAM and hub, as well
+as integrated graphics</value>
+  </data>
+  <data name="Param_g4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum Infinity Fabric
+This is the frequency of data transfer between
+the processor, RAM and hub, as well
+as integrated graphics</value>
+  </data>
+  <data name="Param_g5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimum VCE frequency
+This is the frequency of the video codec that
+processes video content, for example
+in YouTube videos, in players,
+in video editors, Photoshop and
+streaming</value>
+  </data>
+  <data name="Param_g6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum VCE frequency
+This is the frequency of the video codec that
+processes video content, for example
+in YouTube videos, in players,
+in video editors, Photoshop and
+streaming</value>
+  </data>
+  <data name="Param_g7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimum Data Latch Frequency
+The minimum frequency
+of the processor's clock generator, on which
+its correct operation depends
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum Data Latch Frequency
+The minimum frequency
+of the processor's clock generator, on which
+its correct operation depends
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimum iGPU frequency
+Minimum frequency of iGPU video core</value>
+  </data>
+  <data name="Param_v1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum VRM current EDC 
+It is responsible for the maximum possible
+power supply current of the processor and its
+subsystems. It is not recommended to set
+values above 80 A, although
+the processor will not reach such values anyway</value>
+  </data>
+  <data name="Param_v2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>VRM Current limit TDC 
+It is responsible for the maximum possible
+power supply current of the processor and its
+subsystems under the influence of temperatures
+and loads. It is not recommended to set
+values above 80 A, although
+the processor will not reach such values anyway</value>
+  </data>
+  <data name="Param_v3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum SoC current EDC
+It is responsible for the maximum current
+consumed by all
+processor subsystems except cores. That is
+a memory controller, a PCI
+controller, a Sata controller, etc</value>
+  </data>
+  <data name="Param_v4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>SoC current limit TDC
+It is responsible for the maximum current
+consumed by all
+processor subsystems, except cores, under the influence
+of temperatures and loads. That is, the current 
+memory controller, PCI
+controller, Sata controller, etc</value>
+  </data>
+  <data name="Param_v5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum PCI VDD current
+It is responsible for the current consumed 
+by the processor cores under load
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_v6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum PCI SoC current
+It is responsible for the current consumed 
+by the processor subsystems under load
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_v7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Disable BD Prochot timings every
+It is responsible for the duration
+of the cpu throttling. If you have a situation
+with 0.4 GHz or you want the processor
+to keep frequencies and power more stable
+find the value of this parameter for yourself!
+Recommended values: 0, 2, 4, 8, 12,
+20, 26, 45, 60, 81, 90. Above, either trottling
+constantly occurs, or it does not occur
+at all. This can have a huge
+impact on performance!
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
+    <value>Edit power of your CPU</value>
+  </data>
+  <data name="Param_CPU_Text.Text" xml:space="preserve">
+    <value>CPU Overclocking</value>
+  </data>
+  <data name="Param_GPU_Pdesc.Text" xml:space="preserve">
+    <value>Freq overclocking for every Ryzen Picasso and up processors</value>
+  </data>
+  <data name="Param_VRM_Pdesc.Text" xml:space="preserve">
+    <value>Edit all your VRM values</value>
+  </data>
+  <data name="Cooler_Autoupdate.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Autoupdate fan info
+Automatically updates
+info about fan speed</value>
+  </data>
+  <data name="Cooler_Refresh.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Refresh fan info
+Disable autoupdate
+and refresh fan info 
+once</value>
   </data>
 </root>
