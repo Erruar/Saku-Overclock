@@ -15,7 +15,9 @@ public sealed partial class ПараметрыPage : Page
     private Profile profile = new();
     public string adjline;
     private bool load = false;
+#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
     public ПараметрыPage()
+#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
     {
         ViewModel = App.GetService<ПараметрыViewModel>();
         InitializeComponent();
@@ -41,6 +43,7 @@ public sealed partial class ПараметрыPage : Page
     {
         try
         {
+#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
             config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
         }
         catch

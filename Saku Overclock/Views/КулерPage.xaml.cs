@@ -1008,91 +1008,94 @@ public sealed partial class КулерPage : Page
     public void GetInfo0()
     {
         ConfigLoad();
-        DispatcherTimer timer = new DispatcherTimer();
-        timer.Interval = TimeSpan.FromMilliseconds(6000);
         ConfigLoad();
         if (config.fanex == false)
         {
             config.fanex = true;
             ConfigSave();
-            timer.Tick += (sender, e) =>
-            {
                 // Запустите faninfo снова
-                if (Fanauto.IsChecked == true) { Process(); }
-                else { timer.Stop(); }
-            };
-            timer.Start();
+                if (Fanauto.IsChecked == true) 
+                {
+                   Process();
+                }
         }
         else
         {
-            timer.Stop();
             config.fanex = false;
             ConfigSave();
         }
     }
-    public void Process()
+    public async void Process()
     {
+        CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+        CancellationToken token = cancelTokenSource.Token;
         ConfigLoad();
         if (config.fanex == true)
         {
             config.fan1v = "";
             config.fan2v = "";
             ConfigSave();
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.FileName = @"nbfc/nbfc.exe";
-            p.StartInfo.Arguments = " status --fan 0";
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.Start();
-            StreamReader outputWriter = p.StandardOutput;
-            var line = outputWriter.ReadLine();
-            while (line != null)
-            {
-
-                if (line != "")
+            await Task.Run(() => {
+                Process p = new Process();
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.FileName = @"nbfc/nbfc.exe";
+                p.StartInfo.Arguments = " status --fan 0";
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.RedirectStandardError = true;
+                p.StartInfo.RedirectStandardInput = true;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.Start();
+                StreamReader outputWriter = p.StandardOutput;
+                var line = outputWriter.ReadLine();
+                while (line != null)
                 {
-                    config.fan1v += line;
-                    ConfigSave();
+
+                    if (line != "")
+                    {
+                        config.fan1v += line;
+                        ConfigSave();
+                    }
+
+                    line = outputWriter.ReadLine();
                 }
+                line = null;
+                p.WaitForExit();
 
-                line = outputWriter.ReadLine();
-            }
-            line = null;
-            p.WaitForExit();
+                //fan 2
+                Process p1 = new Process();
+                p1.StartInfo.UseShellExecute = false;
+                p1.StartInfo.FileName = @"nbfc/nbfc.exe";
+                p1.StartInfo.Arguments = " status --fan 1";
+                p1.StartInfo.CreateNoWindow = true;
+                p1.StartInfo.RedirectStandardError = true;
+                p1.StartInfo.RedirectStandardInput = true;
+                p1.StartInfo.RedirectStandardOutput = true;
 
-            //fan 2
-            Process p1 = new Process();
-            p1.StartInfo.UseShellExecute = false;
-            p1.StartInfo.FileName = @"nbfc/nbfc.exe";
-            p1.StartInfo.Arguments = " status --fan 1";
-            p1.StartInfo.CreateNoWindow = true;
-            p1.StartInfo.RedirectStandardError = true;
-            p1.StartInfo.RedirectStandardInput = true;
-            p1.StartInfo.RedirectStandardOutput = true;
-
-            p1.Start();
-            StreamReader outputWriter1 = p1.StandardOutput;
-            var line1 = outputWriter1.ReadLine();
-            while (line1 != null)
-            {
-
-                if (line1 != "")
+                p1.Start();
+                StreamReader outputWriter1 = p1.StandardOutput;
+                var line1 = outputWriter1.ReadLine();
+                while (line1 != null)
                 {
-                    config.fan2v += line1;
-                    ConfigSave();
+
+                    if (line1 != "")
+                    {
+                        config.fan2v += line1;
+                        ConfigSave();
+                    }
+
+                    line1 = outputWriter1.ReadLine();
                 }
-
-                line1 = outputWriter1.ReadLine();
-            }
-            line1 = null;
-            p1.WaitForExit();
-
+                line1 = null;
+                p1.WaitForExit();
+               
+            }, token);
+            cancelTokenSource.Cancel();
+            cancelTokenSource.Dispose();
             //update an info
             if (config.fan1v != null)
             {
+                ConfigLoad();
+                Fan1Value.Text = "Infinity";
                 Fan1Value.Text = config.fan1v;
                 try
                 {
@@ -1148,7 +1151,8 @@ public sealed partial class КулерPage : Page
 
                 }
             }
-        }
+            if (Fanauto.IsChecked == true && config.fanex == true) { await Task.Delay(3000); Process(); } else { return; }
+        } 
     }
     public void GetTemp()
     {

@@ -60,7 +60,7 @@ public sealed partial class MainWindow : WindowEx
         ni.Text = "Saku Overclock";
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
-        settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
+        settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event   
         DeviceLoad();
         ProfileLoad();
         Tray_Start();
@@ -68,6 +68,7 @@ public sealed partial class MainWindow : WindowEx
     private async void Tray_Start()
     {
         ConfigLoad();
+        if (config.autooverclock == true) { Applyer.Apply(); }
         if (config.traystart == true)
         {
             await Task.Delay(700);
@@ -135,17 +136,14 @@ public sealed partial class MainWindow : WindowEx
                 DispatcherTimer timer = new DispatcherTimer();
                 try
                 {
-                    ConfigLoad();
                     timer.Interval = TimeSpan.FromMilliseconds(mc.config.reapplytimer * 1000);
                 }
                 catch
                 {
                     App.MainWindow.ShowMessageDialogAsync("Время автообновления разгона некорректно и было исправлено на 3000 мс", "Критическая ошибка!");
                     mc.config.reapplytimer = 3000;
-                    ConfigLoad();
                     timer.Interval = TimeSpan.FromMilliseconds(mc.config.reapplytimer);
                 }
-                ConfigLoad();
                 if (mc.config.execute == false)
                 {
                     mc.config.execute = true;
@@ -177,7 +175,6 @@ public sealed partial class MainWindow : WindowEx
                 Process p = new Process();
                 p.StartInfo.UseShellExecute = false;
                 p.StartInfo.FileName = @"ryzenadj.exe";
-                ConfigLoad();
                 p.StartInfo.Arguments = mc.config.adjline;
                 p.StartInfo.CreateNoWindow = true;
                 p.StartInfo.RedirectStandardError = true;

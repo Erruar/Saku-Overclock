@@ -7,7 +7,7 @@
 
  Дополнительные сведения о файлах манифестов приложений см. по адресу http://go.microsoft.com/fwlink/?LinkID=241727
   -->
-  <Identity Name="129fe03a-4520-4c47-b74c-ba9210dc2f62" Publisher="CN=Sakura" Version="1.0.4.0" ProcessorArchitecture="x64" />
+  <Identity Name="129fe03a-4520-4c47-b74c-ba9210dc2f62" Publisher="CN=Sakura" Version="1.0.5.0" ProcessorArchitecture="x64" />
   <mp:PhoneIdentity PhoneProductId="129fe03a-4520-4c47-b74c-ba9210dc2f62" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Saku Overclock</DisplayName>

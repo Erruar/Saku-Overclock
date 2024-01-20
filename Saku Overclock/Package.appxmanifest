@@ -13,7 +13,7 @@
   <Identity
     Name="129fe03a-4520-4c47-b74c-ba9210dc2f62"
     Publisher="CN=Sakura"
-    Version="1.0.4.0" />
+    Version="1.0.5.0" />
     
   <mp:PhoneIdentity PhoneProductId="129fe03a-4520-4c47-b74c-ba9210dc2f62" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
     
