@@ -269,7 +269,7 @@ If you have found the perfect settings for yourself, just click on the apply but
 
 - [x] Add Readme
 - [x] Add back to top links
-- [ ] Add and create first Beta version
+- [x] Add and create first Beta version
 - [ ] Add and create first Release version
 - [ ] Multi-language Support
     - [x] English
