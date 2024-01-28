@@ -130,7 +130,7 @@
     <value>Пресеты</value>
   </data>
   <data name="Shell_Параметры.Content" xml:space="preserve">
-    <value>Параметры</value>
+    <value>Разгон</value>
   </data>
   <data name="Shell_Информация.Content" xml:space="preserve">
     <value>Показатели</value>
@@ -261,7 +261,7 @@
 - Текущая загрузка CPU (%)</value>
   </data>
   <data name="Param_CPU.Text" xml:space="preserve">
-    <value>Параметры разгона</value>
+    <value>Разгон</value>
   </data>
   <data name="Param_CPU_c2.Text" xml:space="preserve">
     <value>Лимит CPU (W)</value>
@@ -276,7 +276,7 @@
     <value>Тик медленного разгона (S)</value>
   </data>
   <data name="Param_Name.Text" xml:space="preserve">
-    <value>Параметры разгона</value>
+    <value>Разгон</value>
   </data>
   <data name="Param_Preset.Text" xml:space="preserve">
     <value>Сохранённые пресеты:</value>
@@ -306,7 +306,7 @@
     <value>Показатели</value>
   </data>
   <data name="Main_Param.Text" xml:space="preserve">
-    <value>Параметры</value>
+    <value>Разгон</value>
   </data>
   <data name="Main_Preset.Text" xml:space="preserve">
     <value>Пресеты</value>
@@ -488,7 +488,7 @@
     <value>Показатели</value>
   </data>
   <data name="Tray_Parameters" xml:space="preserve">
-    <value>Параметры</value>
+    <value>Разгон</value>
   </data>
   <data name="Tray_Presets" xml:space="preserve">
     <value>Пресеты</value>
@@ -693,7 +693,7 @@
 НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
   </data>
   <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
-    <value>Изменение мощности процессра</value>
+    <value>Изменение мощности процессора</value>
   </data>
   <data name="Param_GPU_Pdesc.Text" xml:space="preserve">
     <value>Изменение частот для процессоров Пикассо и выше</value>
@@ -713,7 +713,43 @@
 покажет текущую скорость
 вращения кулеров</value>
   </data>
-  <data name="String1" xml:space="preserve">
-    <value />
+  <data name="Param_States_Text.Text" xml:space="preserve">
+    <value>Состояния CPU</value>
+  </data>
+  <data name="Param_CPU_Text.Text" xml:space="preserve">
+    <value>Потребление CPU</value>
+  </data>
+  <data name="Param_enableps.Text" xml:space="preserve">
+    <value>Настройки состояний CPU</value>
+  </data>
+  <data name="Param_enableps_desc.Text" xml:space="preserve">
+    <value>Включить эти настройки изменения PState состояний</value>
+  </data>
+  <data name="Param_Ignore.Text" xml:space="preserve">
+    <value>Игнорировать предупреждение изменения</value>
+  </data>
+  <data name="Param_Ignorep0.Text" xml:space="preserve">
+    <value>Игнорировать предупреждение P0</value>
+  </data>
+  <data name="Param_Ignorep0_desc.Text" xml:space="preserve">
+    <value>Всегда применять параметры с состоянием P0, может привести к крашу системы!</value>
+  </data>
+  <data name="Param_Ignore_desc.Text" xml:space="preserve">
+    <value>Всегда применять параметры без предупреждений</value>
+  </data>
+  <data name="Param_reapplyps.Text" xml:space="preserve">
+    <value>Автоприменять параметры</value>
+  </data>
+  <data name="Param_reapplyps_desc.Text" xml:space="preserve">
+    <value>При запуске программа будет применять эти параметры, при включенном автоприменении</value>
+  </data>
+  <data name="Param_States_Pdesc.Text" xml:space="preserve">
+    <value>Производительные состояния процессора</value>
+  </data>
+  <data name="Param_turbo.Text" xml:space="preserve">
+    <value>Состояние Turbo Boost</value>
+  </data>
+  <data name="Param_turbo_desc.Text" xml:space="preserve">
+    <value>Позволяет вашему процессору разгоняться сильнее, но вызывает проблемы</value>
   </data>
 </root>

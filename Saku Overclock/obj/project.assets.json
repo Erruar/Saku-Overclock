@@ -733,6 +733,15 @@
           }
         }
       },
+      "OpenHardwareMonitor/0.9.6": {
+        "type": "package",
+        "compile": {
+          "lib/net45/OpenHardwareMonitorLib.dll": {}
+        },
+        "runtime": {
+          "lib/net45/OpenHardwareMonitorLib.dll": {}
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.0": {
         "type": "package",
         "dependencies": {
@@ -1674,6 +1683,15 @@
           }
         }
       },
+      "OpenHardwareMonitor/0.9.6": {
+        "type": "package",
+        "compile": {
+          "lib/net45/OpenHardwareMonitorLib.dll": {}
+        },
+        "runtime": {
+          "lib/net45/OpenHardwareMonitorLib.dll": {}
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.0": {
         "type": "package",
         "dependencies": {
@@ -2584,6 +2602,15 @@
           }
         }
       },
+      "OpenHardwareMonitor/0.9.6": {
+        "type": "package",
+        "compile": {
+          "lib/net45/OpenHardwareMonitorLib.dll": {}
+        },
+        "runtime": {
+          "lib/net45/OpenHardwareMonitorLib.dll": {}
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.0": {
         "type": "package",
         "dependencies": {
@@ -3492,6 +3519,15 @@
           "lib/net6.0/Newtonsoft.Json.dll": {
             "related": ".xml"
           }
+        }
+      },
+      "OpenHardwareMonitor/0.9.6": {
+        "type": "package",
+        "compile": {
+          "lib/net45/OpenHardwareMonitorLib.dll": {}
+        },
+        "runtime": {
+          "lib/net45/OpenHardwareMonitorLib.dll": {}
         }
       },
       "System.Diagnostics.DiagnosticSource/6.0.0": {
@@ -5402,6 +5438,19 @@
         "packageIcon.png"
       ]
     },
+    "OpenHardwareMonitor/0.9.6": {
+      "sha512": "vbx870Mi1nzz99VYx4yF0uaH2a8jtQ94Y+vT+0pRZz3alvCzaiJlbre7ArV8oP2YDNO1oVuvYxKZSoWSFUFj3Q==",
+      "type": "package",
+      "path": "openhardwaremonitor/0.9.6",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "OpenHardwareMonitor.png",
+        "lib/net45/OpenHardwareMonitorLib.dll",
+        "openhardwaremonitor.0.9.6.nupkg.sha512",
+        "openhardwaremonitor.nuspec"
+      ]
+    },
     "System.Diagnostics.DiagnosticSource/6.0.0": {
       "sha512": "frQDfv0rl209cKm1lnwTgFPzNigy2EKk1BS3uAvHvlBVKe5cymGyHO+Sj+NLv5VF/AhHsqPIUUwya5oV4CHMUw==",
       "type": "package",
@@ -5825,6 +5874,7 @@
       "Microsoft.WindowsAppSDK >= 1.4.231008000",
       "Microsoft.Xaml.Behaviors.WinUI.Managed >= 2.0.9",
       "Newtonsoft.Json >= 13.0.3",
+      "OpenHardwareMonitor >= 0.9.6",
       "Saku Overclock.Core >= 1.0.0",
       "TaskScheduler >= 2.10.1",
       "WinUIEx >= 2.3.2"
@@ -5910,6 +5960,10 @@
             "target": "Package",
             "version": "[13.0.3, )"
           },
+          "OpenHardwareMonitor": {
+            "target": "Package",
+            "version": "[0.9.6, )"
+          },
           "TaskScheduler": {
             "target": "Package",
             "version": "[2.10.1, )"
@@ -5994,5 +6048,17 @@
         "#import": []
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Пакет \"OpenHardwareMonitor 0.9.6\" был восстановлен с помощью \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\", а не целевой платформы проекта \"net7.0-windows10.0.19041\". Этот пакет может быть не полностью совместим с вашим проектом.",
+      "libraryId": "OpenHardwareMonitor",
+      "targetGraphs": [
+        "net7.0-windows10.0.19041"
+      ]
+    }
+  ]
 }

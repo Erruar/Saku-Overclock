@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "6oqC+lNZ+nr088vmbdNcGYG7OkLjpdRfdnoUDq2HsVQ23p2M9/Baew/ekqXEgyEEcHnV7TFZGollsGYbqP44EQ==",
+  "dgSpecHash": "H/EqEzgG30GIuY2VFJqASznhnYnvsFGcDpNoPyASfXAiGZRqDgMtExnVTZzOuBP2T3w24FWc6L1ehrF0i0dS0w==",
   "success": true,
   "projectFilePath": "C:\\Users\\Sakura\\source\\repos\\Saku Overclock\\Saku Overclock\\Saku Overclock.csproj",
   "expectedPackageFiles": [
@@ -40,6 +40,7 @@
     "C:\\Users\\Sakura\\.nuget\\packages\\microsoft.windowsappsdk\\1.4.231008000\\microsoft.windowsappsdk.1.4.231008000.nupkg.sha512",
     "C:\\Users\\Sakura\\.nuget\\packages\\microsoft.xaml.behaviors.winui.managed\\2.0.9\\microsoft.xaml.behaviors.winui.managed.2.0.9.nupkg.sha512",
     "C:\\Users\\Sakura\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\Sakura\\.nuget\\packages\\openhardwaremonitor\\0.9.6\\openhardwaremonitor.0.9.6.nupkg.sha512",
     "C:\\Users\\Sakura\\.nuget\\packages\\system.diagnostics.diagnosticsource\\6.0.0\\system.diagnostics.diagnosticsource.6.0.0.nupkg.sha512",
     "C:\\Users\\Sakura\\.nuget\\packages\\system.diagnostics.eventlog\\6.0.0\\system.diagnostics.eventlog.6.0.0.nupkg.sha512",
     "C:\\Users\\Sakura\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
@@ -60,5 +61,16 @@
     "C:\\Users\\Sakura\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\7.0.14\\microsoft.netcore.app.runtime.win-x64.7.0.14.nupkg.sha512",
     "C:\\Users\\Sakura\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x86\\7.0.14\\microsoft.windowsdesktop.app.runtime.win-x86.7.0.14.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Пакет \"OpenHardwareMonitor 0.9.6\" был восстановлен с помощью \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\", а не целевой платформы проекта \"net7.0-windows10.0.19041\". Этот пакет может быть не полностью совместим с вашим проектом.",
+      "libraryId": "OpenHardwareMonitor",
+      "targetGraphs": [
+        "net7.0-windows10.0.19041"
+      ]
+    }
+  ]
 }

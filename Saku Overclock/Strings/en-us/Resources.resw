@@ -698,4 +698,40 @@ Disable autoupdate
 and refresh fan info 
 once</value>
   </data>
+  <data name="Param_enableps.Text" xml:space="preserve">
+    <value>Pstates control</value>
+  </data>
+  <data name="Param_enableps_desc.Text" xml:space="preserve">
+    <value>Allow pstate changing on your CPU</value>
+  </data>
+  <data name="Param_Ignore.Text" xml:space="preserve">
+    <value>Ignore all warnings</value>
+  </data>
+  <data name="Param_Ignorep0.Text" xml:space="preserve">
+    <value>Ignore P0 warning</value>
+  </data>
+  <data name="Param_Ignorep0_desc.Text" xml:space="preserve">
+    <value>Always apply parameters with P0 State. It can crash your system!</value>
+  </data>
+  <data name="Param_Ignore_desc.Text" xml:space="preserve">
+    <value>Ignore all warnings with PStates. It can easily crash your system!</value>
+  </data>
+  <data name="Param_reapplyps.Text" xml:space="preserve">
+    <value>Reapply this settings</value>
+  </data>
+  <data name="Param_reapplyps_desc.Text" xml:space="preserve">
+    <value>App will reapply this settings while starting if reapply enabled in settings</value>
+  </data>
+  <data name="Param_States_Pdesc.Text" xml:space="preserve">
+    <value>Edit all CPU pstates</value>
+  </data>
+  <data name="Param_States_Text.Text" xml:space="preserve">
+    <value>CPU Power States</value>
+  </data>
+  <data name="Param_turbo.Text" xml:space="preserve">
+    <value>CPU Turbo boost state</value>
+  </data>
+  <data name="Param_turbo_desc.Text" xml:space="preserve">
+    <value>Allows your CPU use Turbo boost state, can broke this settings</value>
+  </data>
 </root>

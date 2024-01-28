@@ -29,21 +29,21 @@
     <AppXManifest Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2024-01-20T18:45:58.607</Modified>
+      <Modified>2024-01-28T18:57:14.664</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2024-01-20T18:45:56.795</Modified>
+      <Modified>2024-01-28T18:57:12.594</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.runtimeconfig.json">
       <PackagePath>Saku Overclock.runtimeconfig.json</PackagePath>
-      <Modified>2024-01-20T18:05:22.365</Modified>
+      <Modified>2024-01-25T15:30:39.008</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.dll">
       <PackagePath>Saku Overclock.dll</PackagePath>
-      <Modified>2024-01-20T18:45:56.040</Modified>
+      <Modified>2024-01-28T18:57:10.904</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\.nuget\packages\accord\3.8.0\build\Accord.dll.config">
       <PackagePath>Accord.dll.config</PackagePath>
@@ -943,11 +943,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\apphost.exe">
       <PackagePath>Saku Overclock.exe</PackagePath>
-      <Modified>2024-01-20T18:45:56.049</Modified>
+      <Modified>2024-01-28T18:57:10.988</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.deps.json">
       <PackagePath>Saku Overclock.deps.json</PackagePath>
-      <Modified>2024-01-20T18:45:56.671</Modified>
+      <Modified>2024-01-28T18:57:12.157</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\.nuget\packages\microsoft.netcore.app.runtime.win-x64\7.0.14\runtimes\win-x64\lib\net7.0\Microsoft.CSharp.dll">
       <PackagePath>Microsoft.CSharp.dll</PackagePath>
@@ -2981,6 +2981,10 @@
       <PackagePath>Newtonsoft.Json.dll</PackagePath>
       <Modified>2023-03-08T07:09:54.000</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Sakura\.nuget\packages\openhardwaremonitor\0.9.6\lib\net45\OpenHardwareMonitorLib.dll">
+      <PackagePath>OpenHardwareMonitorLib.dll</PackagePath>
+      <Modified>2021-05-02T09:26:00.000</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\.nuget\packages\taskscheduler\2.10.1\lib\net6.0-windows7.0\Microsoft.Win32.TaskScheduler.dll">
       <PackagePath>Microsoft.Win32.TaskScheduler.dll</PackagePath>
       <Modified>2022-02-10T23:07:24.000</Modified>
@@ -3028,6 +3032,14 @@
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock.Core\bin\x64\Debug\net7.0\Saku Overclock.Core.dll">
       <PackagePath>Saku Overclock.Core.dll</PackagePath>
       <Modified>2024-01-01T11:29:02.359</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Management.dll">
+      <PackagePath>System.Management.dll</PackagePath>
+      <Modified>2019-03-27T23:11:14.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\ZenStates-Core.dll">
+      <PackagePath>ZenStates-Core.dll</PackagePath>
+      <Modified>2023-12-17T22:39:09.000</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\.nuget\packages\microsoft.xaml.behaviors.winui.managed\2.0.9\lib\net5.0-windows10.0.17763.0\Microsoft.Xaml.Interactions.pri">
       <PackagePath>Microsoft.Xaml.Interactions.pri</PackagePath>

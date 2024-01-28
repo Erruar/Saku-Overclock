@@ -1,10 +1,12 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using System.Management;
+using System.Windows.Forms;
+using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
+using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
-using Windows.UI.Popups;
 namespace Saku_Overclock.Views;
-public sealed partial class ПараметрыPage : Page
+public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.Page
 {
     public ПараметрыViewModel ViewModel
     {
@@ -13,6 +15,20 @@ public sealed partial class ПараметрыPage : Page
     private Config config = new();
     private Devices devices = new();
     private Profile profile = new();
+    private readonly NUMAUtil _numaUtil;
+    private bool relay = false;
+    private Cpu cpu;
+    List<SmuAddressSet> matches;
+    private readonly string wmiAMDACPI = "AMD_ACPI";
+    private readonly string wmiScope = "root\\wmi";
+    private ManagementObject classInstance;
+    private string instanceName;
+    private ManagementBaseObject pack;
+    private const string filename = "co_profile.txt";
+    private const string profilesFolderName = "profiles";
+    private const string defaultsPath = profilesFolderName + @"\" + filename;
+    private readonly string[] args;
+    private readonly bool isApplyProfile;
     public string adjline;
     private bool load = false;
 #pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
@@ -28,6 +44,19 @@ public sealed partial class ПараметрыPage : Page
         config.fanex = false;
         config.tempex = false;
         ConfigSave();
+        _numaUtil = new NUMAUtil();
+        try
+        {
+            args = Environment.GetCommandLineArgs();
+            foreach (string arg in args)
+            {
+                isApplyProfile |= (arg.ToLower() == "--applyprofile");
+            }
+
+            cpu = new Cpu();
+        }
+        catch { }
+        cpu.Cpu_Init();
     }
     //JSON форматирование
     public void ConfigSave()
@@ -134,7 +163,7 @@ public sealed partial class ПараметрыPage : Page
                 ProfileCOM.SelectedIndex = 9;
                 break;
         }
-            
+
         if (profile.Unsaved == true && ProfileCOM.SelectedIndex == 0)
         {
             ProfileCOM.SelectedIndex = 0;
@@ -262,6 +291,27 @@ public sealed partial class ПараметрыPage : Page
                     g10v.Value = devices.g10v;
                     g10.IsChecked = true;
                 }
+                if (devices.enableps == true)
+                {
+                    EnablePstates.IsOn = true;
+                }
+                if (devices.turboboost == true)
+                {
+                    Turbo_boost.IsOn = true;
+                }
+                else { Turbo_boost.IsOn = false; }
+                if (devices.autopstate == true)
+                {
+                    Autoapply_1.IsOn = true;
+                }
+                if (devices.p0ignorewarn == true)
+                {
+                    Without_P0.IsOn = true;
+                }
+                if (devices.ignorewarn == true)
+                {
+                    IgnoreWarn.IsOn = true;
+                }
             }
             else
             {
@@ -353,6 +403,27 @@ public sealed partial class ПараметрыPage : Page
                     g10v.Value = devices.g10v;
                     g10.IsChecked = true;
                 }
+                if (devices.enableps == true)
+                {
+                    EnablePstates.IsOn = true;
+                }
+                if (devices.turboboost == true)
+                {
+                    Turbo_boost.IsOn = true;
+                }
+                else { Turbo_boost.IsOn = false; }
+                if (devices.autopstate == true)
+                {
+                    Autoapply_1.IsOn = true;
+                }
+                if (devices.p0ignorewarn == true)
+                {
+                    Without_P0.IsOn = true;
+                }
+                if (devices.ignorewarn == true)
+                {
+                    IgnoreWarn.IsOn = true;
+                }
             }
         }
         if (profile.pr1 == true)
@@ -375,30 +446,10 @@ public sealed partial class ПараметрыPage : Page
                     if (profile.v2pr1 == true) { V2V.Value = profile.v2pr1v; V2.IsChecked = true; } else { V2.IsChecked = false; }
                     if (profile.v3pr1 == true) { V3V.Value = profile.v3pr1v; V3.IsChecked = true; } else { V3.IsChecked = false; }
                     if (profile.v4pr1 == true) { V4V.Value = profile.v4pr1v; V4.IsChecked = true; } else { V4.IsChecked = false; }
-                    if (profile.v5pr1 == true)
-                    {
-                        V5V.Value = profile.v5pr1v;
-                        V5.IsChecked = true;
-                    }
-                    else { V5.IsChecked = false; }
-                    if (profile.v6pr1 == true)
-                    {
-                        V6V.Value = profile.v6pr1v;
-                        V6.IsChecked = true;
-                    }
-                    else { V6.IsChecked = false; }
-                    if (profile.v7pr1 == true)
-                    {
-                        V7V.Value = profile.v7pr1v;
-                        V7.IsChecked = true;
-                    }
-                    else { V7.IsChecked = false; }
-                    if (profile.g1pr1 == true)
-                    {
-                        g1v.Value = profile.g1pr1v;
-                        g1.IsChecked = true;
-                    }
-                    else { g1.IsChecked = false; }
+                    if (profile.v5pr1 == true) { V5V.Value = profile.v5pr1v; V5.IsChecked = true; } else { V5.IsChecked = false; }
+                    if (profile.v6pr1 == true) { V6V.Value = profile.v6pr1v; V6.IsChecked = true; } else { V6.IsChecked = false; }
+                    if (profile.v7pr1 == true) { V7V.Value = profile.v7pr1v; V7.IsChecked = true; } else { V7.IsChecked = false; }
+                    if (profile.g1pr1 == true) { g1v.Value = profile.g1pr1v; g1.IsChecked = true; } else { g1.IsChecked = false; }
                     if (profile.g2pr1 == true)
                     {
                         g2v.Value = profile.g2pr1v;
@@ -453,6 +504,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr1 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr1 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr1 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr1 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr1 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
                 else
                 {
@@ -560,6 +616,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr1 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr1 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr1 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr1 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr1 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
             }
         }
@@ -716,6 +777,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr2 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr2 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr2 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr2 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr2 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
                 else
                 {
@@ -824,6 +890,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr2 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr2 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr2 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr2 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr2 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
             }
         }
@@ -980,6 +1051,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr3 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr3 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr3 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr3 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr3 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
                 else
                 {
@@ -1088,6 +1164,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr3 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr3 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr3 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr3 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr3 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
             }
         }
@@ -1244,6 +1325,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr4 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr4 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr4 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr4 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr4 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
                 else
                 {
@@ -1352,6 +1438,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr4 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr4 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr4 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr4 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr4 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
             }
         }
@@ -1508,6 +1599,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr5 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr5 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr5 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr5 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr5 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
                 else
                 {
@@ -1616,6 +1712,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr5 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr5 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr5 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr5 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr5 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
             }
         }
@@ -1772,6 +1873,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr6 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr6 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr6 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr6 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr6 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
                 else
                 {
@@ -1880,6 +1986,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr6 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr6 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr6 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr6 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr6 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
             }
         }
@@ -2036,6 +2147,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr7 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr7 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr7 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr7 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr7 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
                 else
                 {
@@ -2144,6 +2260,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr7 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr7 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr7 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr7 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr7 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
             }
         }
@@ -2300,6 +2421,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr8 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr8 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr8 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr8 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr8 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
                 else
                 {
@@ -2408,6 +2534,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr8 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr8 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr8 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr8 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr8 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
             }
         }
@@ -2564,6 +2695,11 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr9 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr9 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr9 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr9 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr9 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
                 else
                 {
@@ -2672,11 +2808,16 @@ public sealed partial class ПараметрыPage : Page
                         g10.IsChecked = true;
                     }
                     else { g10.IsChecked = false; }
+                    if (profile.enablepspr9 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
+                    if (profile.turboboostpr9 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+                    if (profile.autopstatepr9 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
+                    if (profile.p0ignorewarnpr9 == true) { Without_P0.IsOn = true; } else { Without_P0.IsOn = false; }
+                    if (profile.ignorewarnpr9 == true) { IgnoreWarn.IsOn = true; } else { IgnoreWarn.IsOn = false; }
                 }
             }
         }
     }
-    private async void ProfileCOM_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void ProfileCOM_SelectionChanged(object sender, Microsoft.UI.Xaml.Controls.SelectionChangedEventArgs e)
     {
         await Task.Delay(100);
         switch (ProfileCOM.SelectedIndex)
@@ -4790,7 +4931,7 @@ public sealed partial class ПараметрыPage : Page
         {
             devices.c2 = true;
             devices.c2v = c2v.Value;
-            DeviceSave(); 
+            DeviceSave();
             switch (ProfileCOM.SelectedIndex)
             {
                 case 1:
@@ -6016,13 +6157,16 @@ public sealed partial class ПараметрыPage : Page
         adjline = "";
         ConfigSave();
         MainWindow.Applyer.Apply();
-
+        if (EnablePstates.IsOn == true)
+        {
+            BtnPstateWrite_Click();
+        }
+        else
+        {
+            ReadPstate();
+        }
         App.MainWindow.ShowMessageDialogAsync("You have successfully set your settings! \n" + config.adjline, "Setted successfully!");
-
-
     }
-
-
     private void Save_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         if (SaveName.Text != "")
@@ -6126,7 +6270,7 @@ public sealed partial class ПараметрыPage : Page
                                             }
                                             else
                                             {
-                                                App.MainWindow.ShowMessageDialogAsync("You can't add more than 9 profiles at one time! \n", "Profiles error!"); 
+                                                App.MainWindow.ShowMessageDialogAsync("You can't add more than 9 profiles at one time! \n", "Profiles error!");
                                             }
                                         }
                                     }
@@ -6288,14 +6432,1158 @@ public sealed partial class ПараметрыPage : Page
             }
             ProfileSave();
         }
+
+    }
+    public async void BtnPstateWrite_Click()
+    {
+        DeviceLoad();
+        if (devices.autopstate == true)
+        {
+            if (Without_P0.IsOn == true)
+            {
+                WritePstates();
+            }
+            else
+            {
+                WritePstatesWithoutP0();
+            }
+        }
         else
         {
-            
+            if (IgnoreWarn.IsOn == true)
+            {
+                if (Without_P0.IsOn == true)
+                {
+                    WritePstates();
+                }
+                else
+                {
+                    WritePstatesWithoutP0();
+                }
+            }
+            else
+            {
+                if (Without_P0.IsOn == true)
+                {
+                    ContentDialog WriteDialog = new ContentDialog
+                    {
+                        Title = "Change Pstates?",
+                        Content = "Did you really want to change pstates? \nThis can crash your system immediately. \nChanging P0 state have MORE chances to crash your system",
+                        CloseButtonText = "Cancel",
+                        PrimaryButtonText = "Change",
+                        DefaultButton = ContentDialogButton.Close
+                    };
+                    // Use this code to associate the dialog to the appropriate AppWindow by setting
+                    // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
+                    if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+                    {
+                        WriteDialog.XamlRoot = XamlRoot;
+                    }
+                    ContentDialogResult result1 = await WriteDialog.ShowAsync();
+                    if (result1 == ContentDialogResult.Primary)
+                    {
+                        WritePstates();
+                    }
+                }
+                else
+                {
+                    ContentDialog ApplyDialog = new ContentDialog
+                    {
+                        Title = "Change Pstates?",
+                        Content = "Did you really want to change pstates? \nThis can crash your system immediately. \nChanging P0 state have MORE chances to crash your system",
+                        CloseButtonText = "Cancel",
+                        PrimaryButtonText = "Change",
+                        SecondaryButtonText = "Without P0",
+                        DefaultButton = ContentDialogButton.Close
+                    };
+
+                    // Use this code to associate the dialog to the appropriate AppWindow by setting
+                    // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
+                    if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+                    {
+                        ApplyDialog.XamlRoot = XamlRoot;
+                    }
+                    ContentDialogResult result = await ApplyDialog.ShowAsync();
+                    if (result == ContentDialogResult.Primary)
+                    {
+                        WritePstates();
+                    }
+                    if (result == ContentDialogResult.Secondary)
+                    {
+                        WritePstatesWithoutP0();
+                    }
+                }
+            }
         }
         
     }
+    public void WritePstates()
+    {
+        if (devices.autopstate == true) 
+        {
+            if (profile.Unsaved == true || profile.pr1 == true || profile.pr2 == true || profile.pr3 == true || profile.pr4 == true || profile.pr5 == true || profile.pr6 == true || profile.pr7 == true || profile.pr8 == true || profile.pr9 == true) { DID_0.Text = devices.did0; DID_1.Text = devices.did1; DID_2.Text = devices.did2; FID_0.Text = devices.fid0; FID_1.Text = devices.fid1; FID_2.Text = devices.fid2; }
+        }
+        for (var p = 0; p < 3; p++)
+        {
+            if (string.IsNullOrEmpty(DID_0.Text) || string.IsNullOrEmpty(FID_0.Text) || string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) || string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text))
+            {
+                ReadPstate();
+            }
+            //Logic
+            var pstateId = p;
+            uint eax = default, edx = default;
+            uint IddDiv = 0x0;
+            uint IddVal = 0x0;
+            uint CpuVid = 0x0;
+            uint CpuDfsId = 0x0;
+            uint CpuFid = 0x0;
+            var Didtext = "12";
+            var Fidtext = "102";
+            if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+            {
+                MessageBox.Show("Error reading PState! ID = " + pstateId);
+                return;
+            }
+            CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
+            switch (p)
+            {
+                case 0:
+                    Didtext = DID_0.Text;
+                    Fidtext = FID_0.Text;
+                    break;
+                case 1:
+                    Didtext = DID_1.Text;
+                    Fidtext = FID_1.Text;
+                    break;
+                case 2:
+                    Didtext = DID_2.Text;
+                    Fidtext = FID_2.Text;
+                    break;
+            }
+            eax = (IddDiv & 0xFF) << 30 | (IddVal & 0xFF) << 22 | (CpuVid & 0xFF) << 14 | (uint.Parse(Didtext) & 0xFF) << 8 | uint.Parse(Fidtext) & 0xFF;
+            if (_numaUtil.HighestNumaNode > 0)
+            {
+                for (var i = 0; i <= 2; i++)
+                {
+                    if (!WritePstateClick(pstateId, eax, edx, i)) return;
+                }
+            }
+            else
+            {
+                if (!WritePstateClick(pstateId, eax, edx)) return;
+            }
+            if (!WritePstateClick(pstateId, eax, edx)) return;
+            if (!cpu.WriteMsrWN(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
+            {
+                MessageBox.Show("Error writing PState! ID = " + pstateId);
+            }
+        }
+        ReadPstate();
+    }
+    public void WritePstatesWithoutP0()
+    {
+        for (var p = 1; p < 3; p++)
+        {
+            if (string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) || string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text))
+            {
+                ReadPstate();
+            }
 
+            //Logic
+            var pstateId = p;
+            uint eax = default, edx = default;
+            uint IddDiv = 0x0;
+            uint IddVal = 0x0;
+            uint CpuVid = 0x0;
+            uint CpuDfsId = 0x0;
+            uint CpuFid = 0x0;
+            var Didtext = "12";
+            var Fidtext = "102";
+            if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+            {
+                MessageBox.Show("Error reading PState! ID = " + pstateId);
+                return;
+            }
+            CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
+            switch (p)
+            {
+                case 1:
+                    Didtext = DID_1.Text;
+                    Fidtext = FID_1.Text;
+                    break;
+                case 2:
+                    Didtext = DID_2.Text;
+                    Fidtext = FID_2.Text;
+                    break;
+            }
+            eax = (IddDiv & 0xFF) << 30 | (IddVal & 0xFF) << 22 | (CpuVid & 0xFF) << 14 | (uint.Parse(Didtext) & 0xFF) << 8 | uint.Parse(Fidtext) & 0xFF;
+            if (_numaUtil.HighestNumaNode > 0)
+            {
+                for (var i = 0; i <= 2; i++)
+                {
+                    if (!WritePstateClick(pstateId, eax, edx, i)) return;
+                }
+            }
+            else
+            {
+                if (!WritePstateClick(pstateId, eax, edx)) return;
+            }
+            if (!WritePstateClick(pstateId, eax, edx)) return;
+            if (!cpu.WriteMsrWN(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
+            {
+                MessageBox.Show("Error writing PState! ID = " + pstateId);
+            }
+        }
+        ReadPstate();
+    }
+    public static void CalculatePstateDetails(uint eax, ref uint IddDiv, ref uint IddVal, ref uint CpuVid, ref uint CpuDfsId, ref uint CpuFid)
+    {
+        IddDiv = eax >> 30;
+        IddVal = eax >> 22 & 0xFF;
+        CpuVid = eax >> 14 & 0xFF;
+        CpuDfsId = eax >> 8 & 0x3F;
+        CpuFid = eax & 0xFF;
+    }
 
+    // P0 fix C001_0015 HWCR[21]=1
+    // Fixes timer issues when not using HPET
+    public bool ApplyTscWorkaround()
+    {
+        uint eax = 0, edx = 0;
+
+        if (cpu.ReadMsr(0xC0010015, ref eax, ref edx))
+        {
+            eax |= 0x200000;
+            return cpu.WriteMsrWN(0xC0010015, eax, edx);
+        }
+
+        MessageBox.Show("Error applying TSC fix!");
+        return false;
+    }
+
+    private bool WritePstateClick(int pstateId, uint eax, uint edx, int numanode = 0)
+    {
+        if (_numaUtil.HighestNumaNode > 0) _numaUtil.SetThreadProcessorAffinity((ushort)(numanode + 1), Enumerable.Range(0, Environment.ProcessorCount).ToArray());
+
+        if (!ApplyTscWorkaround()) return false;
+
+        if (!cpu.WriteMsrWN(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
+        {
+            MessageBox.Show("Error writing PState! ID = " + pstateId);
+            return false;
+        }
+
+        return true;
+    }
+    private void ReadPstate()
+    {
+        for (var i = 0; i < 3; i++)
+        {
+            uint eax = default, edx = default;
+            var pstateId = i;
+            try
+            {
+                if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+                {
+                    MessageBox.Show("Error reading PState! ID = " + pstateId);
+                    return;
+                }
+            }
+            catch
+            {
+            }
+            uint IddDiv = 0x0;
+            uint IddVal = 0x0;
+            uint CpuVid = 0x0;
+            uint CpuDfsId = 0x0;
+            uint CpuFid = 0x0;
+
+            CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
+            switch (i)
+            {
+                case 0:
+                    int Mult_0_v;
+                    Mult_0_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
+                    Mult_0_v -= 4;
+                    if (Mult_0_v <= 0)
+                    {
+                        Mult_0_v = 0;
+                        App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
+                    }
+                    DID_0.Text = Convert.ToString(CpuDfsId, 10);
+                    FID_0.Text = Convert.ToString(CpuFid, 10);
+                    P0_Freq.Content = (CpuFid * 25 / (CpuDfsId * 12.5)) * 100;
+                    Mult_0.SelectedIndex = Mult_0_v;
+                    break;
+                case 1:
+                    int Mult_1_v;
+                    Mult_1_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
+                    Mult_1_v -= 4;
+                    if (Mult_1_v <= 0)
+                    {
+                        Mult_1_v = 0;
+                        App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
+                    }
+                    DID_1.Text = Convert.ToString(CpuDfsId, 10);
+                    FID_1.Text = Convert.ToString(CpuFid, 10);
+                    P1_Freq.Content = (CpuFid * 25 / (CpuDfsId * 12.5)) * 100;
+                    Mult_1.SelectedIndex = Mult_1_v;
+                    break;
+                case 2:
+                    int Mult_2_v;
+                    Mult_2_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
+                    Mult_2_v -= 4;
+                    if (Mult_2_v <= 0)
+                    {
+                        Mult_2_v = 0;
+                        App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
+                    }
+                    DID_2.Text = Convert.ToString(CpuDfsId, 10);
+                    FID_2.Text = Convert.ToString(CpuFid, 10);
+                    P2_Freq.Content = (CpuFid * 25 / (CpuDfsId * 12.5)) * 100;
+                    Mult_2.SelectedIndex = Mult_2_v;
+                    break;
+            }
+        }
+    }
+    private string GetWmiInstanceName()
+    {
+        try
+        {
+            instanceName = WMI.GetInstanceName(wmiScope, wmiAMDACPI);
+        }
+        catch
+        {
+            // ignored
+        }
+
+        return instanceName;
+    }
+    private void PopulateWmiFunctions()
+    {
+        try
+        {
+            instanceName = GetWmiInstanceName();
+            classInstance = new ManagementObject(wmiScope,
+                $"{wmiAMDACPI}.InstanceName='{instanceName}'",
+                null);
+
+            // Get function names with their IDs
+            string[] functionObjects = { "GetObjectID", "GetObjectID2" };
+            var index = 1;
+
+            foreach (var functionObject in functionObjects)
+            {
+                try
+                {
+                    pack = WMI.InvokeMethod(classInstance, functionObject, "pack", null, 0);
+
+                    if (pack != null)
+                    {
+                        var ID = (uint[])pack.GetPropertyValue("ID");
+                        var IDString = (string[])pack.GetPropertyValue("IDString");
+                        var Length = (byte)pack.GetPropertyValue("Length");
+
+                        for (var i = 0; i < Length; ++i)
+                        {
+                            if (IDString[i] == "")
+                                break;
+
+                            WmiCmdListItem item = new WmiCmdListItem($"{IDString[i] + ": "}{ID[i]:X8}", ID[i], !IDString[i].StartsWith("Get"));
+                        }
+                    }
+                }
+                catch
+                {
+                    // ignored
+                }
+
+                index++;
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    //Pstates section
+    private void Pstate_Expanding(Microsoft.UI.Xaml.Controls.Expander sender, ExpanderExpandingEventArgs args)
+    {
+        ReadPstate();
+    }
+    private void EnablePstates_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (EnablePstates.IsOn == true)
+        {
+            EnablePstates.IsOn = false;
+        }
+        else
+        {
+            EnablePstates.IsOn = true;
+        }
+        EnablePstatess();
+    }
+    private void TurboBoost_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (Turbo_boost.IsEnabled == true)
+        {
+            if (Turbo_boost.IsOn == true)
+            {
+                Turbo_boost.IsOn = false;
+            }
+            else
+            {
+                Turbo_boost.IsOn = true;
+            }
+        }
+        TurboBoost();
+    }
+
+    private void Autoapply_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (Autoapply_1.IsOn == true)
+        {
+            Autoapply_1.IsOn = false;
+        }
+        else
+        {
+            Autoapply_1.IsOn = true;
+        }
+        Autoapply();
+    }
+
+    private void WithoutP0_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (Without_P0.IsOn == true)
+        {
+            Without_P0.IsOn = false;
+        }
+        else
+        {
+            Without_P0.IsOn = true;
+        }
+        WithoutP0();
+    }
+    private void IgnoreWarn_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (IgnoreWarn.IsOn == true)
+        {
+            IgnoreWarn.IsOn = false;
+        }
+        else
+        {
+            IgnoreWarn.IsOn = true;
+        }
+        IgnoreWarning();
+    }
+    //Enable or disable pstate toggleswitches...
+    private void EnablePstatess()
+    {
+        if (EnablePstates.IsOn == true)
+        {
+            devices.enableps = true;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.enablepspr1 = true;
+                    break;
+                case 2:
+                    profile.enablepspr2 = true;
+                    break;
+                case 3:
+                    profile.enablepspr3 = true;
+                    break;
+                case 4:
+                    profile.enablepspr4 = true;
+                    break;
+                case 5:
+                    profile.enablepspr5 = true;
+                    break;
+                case 6:
+                    profile.enablepspr6 = true;
+                    break;
+                case 7:
+                    profile.enablepspr7 = true;
+                    break;
+                case 8:
+                    profile.enablepspr8 = true;
+                    break;
+                case 9:
+                    profile.enablepspr9 = true;
+                    break;
+            }
+            ProfileSave();
+        }
+        else
+        {
+            devices.enableps = false;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.enablepspr1 = false;
+                    break;
+                case 2:
+                    profile.enablepspr2 = false;
+                    break;
+                case 3:
+                    profile.enablepspr3 = false;
+                    break;
+                case 4:
+                    profile.enablepspr4 = false;
+                    break;
+                case 5:
+                    profile.enablepspr5 = false;
+                    break;
+                case 6:
+                    profile.enablepspr6 = false;
+                    break;
+                case 7:
+                    profile.enablepspr7 = false;
+                    break;
+                case 8:
+                    profile.enablepspr8 = false;
+                    break;
+                case 9:
+                    profile.enablepspr9 = false;
+                    break;
+            }
+            ProfileSave();
+        }
+    }
+    private void TurboBoost()
+    {
+        if (Turbo_boost.IsOn == true)
+        {
+            devices.turboboost = true;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.turboboostpr1 = true;
+                    break;
+                case 2:
+                    profile.turboboostpr2 = true;
+                    break;
+                case 3:
+                    profile.turboboostpr3 = true;
+                    break;
+                case 4:
+                    profile.turboboostpr4 = true;
+                    break;
+                case 5:
+                    profile.turboboostpr5 = true;
+                    break;
+                case 6:
+                    profile.turboboostpr6 = true;
+                    break;
+                case 7:
+                    profile.turboboostpr7 = true;
+                    break;
+                case 8:
+                    profile.turboboostpr8 = true;
+                    break;
+                case 9:
+                    profile.turboboostpr9 = true;
+                    break;
+            }
+            ProfileSave();
+        }
+        else
+        {
+            devices.turboboost = false;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.turboboostpr1 = false;
+                    break;
+                case 2:
+                    profile.turboboostpr2 = false;
+                    break;
+                case 3:
+                    profile.turboboostpr3 = false;
+                    break;
+                case 4:
+                    profile.turboboostpr4 = false;
+                    break;
+                case 5:
+                    profile.turboboostpr5 = false;
+                    break;
+                case 6:
+                    profile.turboboostpr6 = false;
+                    break;
+                case 7:
+                    profile.turboboostpr7 = false;
+                    break;
+                case 8:
+                    profile.turboboostpr8 = false;
+                    break;
+                case 9:
+                    profile.turboboostpr9 = false;
+                    break;
+            }
+            ProfileSave();
+        }
+    }
+    private void Autoapply()
+    {
+        if (Autoapply_1.IsOn == true)
+        {
+            devices.autopstate = true;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.autopstatepr1 = true;
+                    break;
+                case 2:
+                    profile.autopstatepr2 = true;
+                    break;
+                case 3:
+                    profile.autopstatepr3 = true;
+                    break;
+                case 4:
+                    profile.autopstatepr4 = true;
+                    break;
+                case 5:
+                    profile.autopstatepr5 = true;
+                    break;
+                case 6:
+                    profile.autopstatepr6 = true;
+                    break;
+                case 7:
+                    profile.autopstatepr7 = true;
+                    break;
+                case 8:
+                    profile.autopstatepr8 = true;
+                    break;
+                case 9:
+                    profile.autopstatepr9 = true;
+                    break;
+            }
+            ProfileSave();
+        }
+        else
+        {
+            devices.autopstate = false;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.autopstatepr1 = false;
+                    break;
+                case 2:
+                    profile.autopstatepr2 = false;
+                    break;
+                case 3:
+                    profile.autopstatepr3 = false;
+                    break;
+                case 4:
+                    profile.autopstatepr4 = false;
+                    break;
+                case 5:
+                    profile.autopstatepr5 = false;
+                    break;
+                case 6:
+                    profile.autopstatepr6 = false;
+                    break;
+                case 7:
+                    profile.autopstatepr7 = false;
+                    break;
+                case 8:
+                    profile.autopstatepr8 = false;
+                    break;
+                case 9:
+                    profile.autopstatepr9 = false;
+                    break;
+            }
+            ProfileSave();
+        }
+    }
+    private void WithoutP0()
+    {
+        if (Without_P0.IsOn == true)
+        {
+            devices.p0ignorewarn = true;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.p0ignorewarnpr1 = true;
+                    break;
+                case 2:
+                    profile.p0ignorewarnpr2 = true;
+                    break;
+                case 3:
+                    profile.p0ignorewarnpr3 = true;
+                    break;
+                case 4:
+                    profile.p0ignorewarnpr4 = true;
+                    break;
+                case 5:
+                    profile.p0ignorewarnpr5 = true;
+                    break;
+                case 6:
+                    profile.p0ignorewarnpr6 = true;
+                    break;
+                case 7:
+                    profile.p0ignorewarnpr7 = true;
+                    break;
+                case 8:
+                    profile.p0ignorewarnpr8 = true;
+                    break;
+                case 9:
+                    profile.p0ignorewarnpr9 = true;
+                    break;
+            }
+            ProfileSave();
+        }
+        else
+        {
+            devices.p0ignorewarn = false;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.p0ignorewarnpr1 = false;
+                    break;
+                case 2:
+                    profile.p0ignorewarnpr2 = false;
+                    break;
+                case 3:
+                    profile.p0ignorewarnpr3 = false;
+                    break;
+                case 4:
+                    profile.p0ignorewarnpr4 = false;
+                    break;
+                case 5:
+                    profile.p0ignorewarnpr5 = false;
+                    break;
+                case 6:
+                    profile.p0ignorewarnpr6 = false;
+                    break;
+                case 7:
+                    profile.p0ignorewarnpr7 = false;
+                    break;
+                case 8:
+                    profile.p0ignorewarnpr8 = false;
+                    break;
+                case 9:
+                    profile.p0ignorewarnpr9 = false;
+                    break;
+            }
+            ProfileSave();
+        }
+    }
+    private void IgnoreWarning()
+    {
+        if (IgnoreWarn.IsOn == true)
+        {
+            devices.ignorewarn = true;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.ignorewarnpr1 = true;
+                    break;
+                case 2:
+                    profile.ignorewarnpr2 = true;
+                    break;
+                case 3:
+                    profile.ignorewarnpr3 = true;
+                    break;
+                case 4:
+                    profile.ignorewarnpr4 = true;
+                    break;
+                case 5:
+                    profile.ignorewarnpr5 = true;
+                    break;
+                case 6:
+                    profile.ignorewarnpr6 = true;
+                    break;
+                case 7:
+                    profile.ignorewarnpr7 = true;
+                    break;
+                case 8:
+                    profile.ignorewarnpr8 = true;
+                    break;
+                case 9:
+                    profile.ignorewarnpr9 = true;
+                    break;
+            }
+            ProfileSave();
+        }
+        else
+        {
+            devices.ignorewarn = false;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.ignorewarnpr1 = false;
+                    break;
+                case 2:
+                    profile.ignorewarnpr2 = false;
+                    break;
+                case 3:
+                    profile.ignorewarnpr3 = false;
+                    break;
+                case 4:
+                    profile.ignorewarnpr4 = false;
+                    break;
+                case 5:
+                    profile.ignorewarnpr5 = false;
+                    break;
+                case 6:
+                    profile.ignorewarnpr6 = false;
+                    break;
+                case 7:
+                    profile.ignorewarnpr7 = false;
+                    break;
+                case 8:
+                    profile.ignorewarnpr8 = false;
+                    break;
+                case 9:
+                    profile.ignorewarnpr9 = false;
+                    break;
+            }
+            ProfileSave();
+        }
+    }
+    //Toggleswitches pstate
+    private void EnablePstates_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        EnablePstatess();
+    }
+    private void Without_P0_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        WithoutP0();
+    }
+
+    private void Autoapply_1_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        Autoapply();
+    }
+
+    private void Turbo_boost_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        TurboBoost();
+    }
+    private void Ignore_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        IgnoreWarning();
+    }
+
+    //Autochanging values
+    private async void FID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        if (relay == false)
+        {
+            await Task.Delay(20);
+            float Mult_0_v;
+            _ = int.TryParse(DID_0.Text, out var Did_value);
+            _ = int.TryParse(FID_0.Text, out var Fid_value);
+            Mult_0_v = (Fid_value / Did_value * 2);
+            if ((Fid_value / Did_value) % 2 == 5) { Mult_0_v -= 3; } else { Mult_0_v -= 4; }
+
+            if (Mult_0_v <= 0)
+            {
+                Mult_0_v = 0;
+            }
+            P0_Freq.Content = (Mult_0_v + 4) * 100;
+            Mult_0.SelectedIndex = (int)(Mult_0_v);
+        }
+        else { relay = false; }
+        Save_ID0();
+
+    }
+
+    private async void Mult_0_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        await Task.Delay(20);
+        int Fid_value;
+        _ = int.TryParse(DID_0.Text, out var Did_value);
+        if (DID_0.Text != "" || DID_0.Text != null)
+        {
+            Fid_value = (Mult_0.SelectedIndex + 4) * Did_value / 2;
+            relay = true;
+            FID_0.Text = Fid_value.ToString();
+            await Task.Delay(40);
+            FID_0.Text = Fid_value.ToString();
+            P0_Freq.Content = (Mult_0.SelectedIndex + 4) * 100;
+            Save_ID0();
+        }
+    }
+
+    private async  void DID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        await Task.Delay(20);
+        float Mult_0_v;
+        _ = int.TryParse(DID_0.Text, out var Did_value);
+        _ = int.TryParse(FID_0.Text, out var Fid_value);
+        Mult_0_v = (Fid_value / Did_value * 2);
+        if ((Fid_value / Did_value) % 2 == 5) { Mult_0_v -= 3; } else { Mult_0_v -= 4; }
+
+        if (Mult_0_v <= 0)
+        {
+            Mult_0_v = 0;
+        }
+        P2_Freq.Content = (Mult_0_v + 4) * 100;
+        Mult_2.SelectedIndex = (int)(Mult_0_v);
+        Save_ID0();
+
+    }
+
+    private async void FID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        if (relay == false)
+        {
+            await Task.Delay(20);
+            float Mult_1_v;
+            _ = int.TryParse(DID_1.Text, out var Did_value);
+            _ = int.TryParse(FID_1.Text, out var Fid_value);
+            Mult_1_v = (Fid_value / Did_value * 2);
+            if ((Fid_value / Did_value) % 2 == 5) { Mult_1_v -= 3; } else { Mult_1_v -= 4; }
+
+            if (Mult_1_v <= 0)
+            {
+                Mult_1_v = 0;
+            }
+            P1_Freq.Content = (Mult_1_v + 4) * 100;
+            Mult_1.SelectedIndex = (int)(Mult_1_v);
+        }
+        else { relay = false; }
+        Save_ID1();
+
+    }
+
+    private async void Mult_1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        await Task.Delay(20);
+        int Fid_value;
+        _ = int.TryParse(DID_1.Text, out var Did_value);
+        if (DID_1.Text != "" || DID_1.Text != null)
+        {
+            Fid_value = (Mult_1.SelectedIndex + 4) * Did_value / 2;
+            relay = true;
+            FID_1.Text = Fid_value.ToString();
+            await Task.Delay(40);
+            FID_1.Text = Fid_value.ToString();
+            P1_Freq.Content = (Mult_1.SelectedIndex + 4) * 100;
+            Save_ID1();
+        }
+    }
+
+    private async void DID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        await Task.Delay(20);
+        float Mult_2_v;
+        _ = int.TryParse(DID_2.Text, out var Did_value);
+        _ = int.TryParse(FID_2.Text, out var Fid_value);
+        Mult_2_v = (Fid_value / Did_value * 2);
+        if ((Fid_value / Did_value) % 2 == 5) { Mult_2_v -= 3; } else { Mult_2_v -= 4; }
+
+        if (Mult_2_v <= 0)
+        {
+            Mult_2_v = 0;
+        }
+        P2_Freq.Content = (Mult_2_v + 4) * 100;
+        Mult_2.SelectedIndex = (int)(Mult_2_v);
+        Save_ID1();
+
+    }
+
+    private async void Mult_2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        await Task.Delay(20);
+        int Fid_value;
+        _ = int.TryParse(DID_2.Text, out var Did_value);
+        if (DID_2.Text != "" || DID_2.Text != null)
+        {
+            Fid_value = (Mult_2.SelectedIndex + 4) * Did_value / 2;
+            relay = true;
+            FID_2.Text = Fid_value.ToString();
+            await Task.Delay(40);
+            FID_2.Text = Fid_value.ToString();
+            P2_Freq.Content = (Mult_2.SelectedIndex + 4) * 100;
+            Save_ID2();
+        }
+    }
+    private async void FID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        if (relay == false)
+        {
+        await Task.Delay(20);
+        float Mult_2_v;
+        _ = int.TryParse(DID_2.Text, out var Did_value);
+        _ = int.TryParse(FID_2.Text, out var Fid_value);
+        Mult_2_v = (Fid_value / Did_value * 2);
+        if ((Fid_value / Did_value) % 2 == 5) { Mult_2_v -= 3; } else { Mult_2_v -= 4; }
+        
+        if (Mult_2_v <= 0)
+        {
+            Mult_2_v = 0;
+        }
+        P2_Freq.Content = (Mult_2_v + 4) * 100;
+        Mult_2.SelectedIndex = (int)(Mult_2_v);
+        }
+        else { relay = false; }
+        Save_ID2();
+    }
+
+    private async void DID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        await Task.Delay(40);
+        int Mult_2_v;
+        _ = int.TryParse(DID_2.Text, out var Did_value);
+        _ = int.TryParse(FID_2.Text, out var Fid_value);
+        Mult_2_v = (Fid_value / Did_value * 2);
+        Mult_2_v -= 4;
+        if (Mult_2_v <= 0)
+        {
+            Mult_2_v = 0;
+        }
+        P2_Freq.Content = (Mult_2_v + 4) * 100;
+        Mult_2.SelectedIndex = Mult_2_v;
+        Save_ID2();
+    }
+    public void Save_ID0()
+    {
+        devices.did0 = DID_0.Text; devices.fid0 = FID_0.Text;
+        DeviceSave();
+        switch (ProfileCOM.SelectedIndex)
+        {
+            case 1:
+                profile.did0pr1 = DID_0.Text;
+                profile.fid0pr1 = FID_0.Text;
+                break;
+            case 2:
+                profile.did0pr2 = DID_0.Text;
+                profile.fid0pr2 = FID_0.Text;
+                break;
+            case 3:
+                profile.did0pr3 = DID_0.Text;
+                profile.fid0pr3 = DID_0.Text;
+                break;
+            case 4:
+                profile.did0pr4 = DID_0.Text;
+                profile.fid0pr4 = FID_0.Text;
+                break;
+            case 5:
+                profile.did0pr5 = DID_0.Text;
+                profile.fid0pr5 = FID_0.Text;
+                break;
+            case 6:
+                profile.did0pr6 = DID_0.Text;
+                profile.fid0pr6 = FID_0.Text;
+                break;
+            case 7:
+                profile.did0pr7 = DID_0.Text;
+                profile.fid0pr7 = FID_0.Text;
+                break;
+            case 8:
+                profile.did0pr8 = DID_0.Text;
+                profile.fid0pr8 = FID_0.Text;
+                break;
+            case 9:
+                profile.did0pr9 = DID_0.Text;
+                profile.fid0pr9 = FID_0.Text;
+                break;
+        }
+        ProfileSave();
+    }
+    public void Save_ID1()
+    {
+        devices.did1 = DID_1.Text; devices.fid1 = FID_1.Text;
+        DeviceSave();
+        switch (ProfileCOM.SelectedIndex)
+        {
+            case 1:
+                profile.did1pr1 = DID_1.Text;
+                profile.fid1pr1 = FID_1.Text;
+                break;
+            case 2:
+                profile.did1pr2 = DID_1.Text;
+                profile.fid1pr2 = FID_1.Text;
+                break;
+            case 3:
+                profile.did1pr3 = DID_1.Text;
+                profile.fid1pr3 = DID_1.Text;
+                break;
+            case 4:
+                profile.did1pr4 = DID_1.Text;
+                profile.fid1pr4 = FID_1.Text;
+                break;
+            case 5:
+                profile.did1pr5 = DID_1.Text;
+                profile.fid1pr5 = FID_1.Text;
+                break;
+            case 6:
+                profile.did1pr6 = DID_1.Text;
+                profile.fid1pr6 = FID_1.Text;
+                break;
+            case 7:
+                profile.did1pr7 = DID_1.Text;
+                profile.fid1pr7 = FID_1.Text;
+                break;
+            case 8:
+                profile.did1pr8 = DID_1.Text;
+                profile.fid1pr8 = FID_1.Text;
+                break;
+            case 9:
+                profile.did1pr9 = DID_1.Text;
+                profile.fid1pr9 = FID_1.Text;
+                break;
+        }
+        ProfileSave();
+    }
+    public void Save_ID2()
+    {
+        devices.did2 = DID_2.Text; devices.fid2 = FID_2.Text;
+        DeviceSave();
+        switch (ProfileCOM.SelectedIndex)
+        {
+            case 1:
+                profile.did2pr1 = DID_2.Text;
+                profile.fid2pr1 = FID_2.Text;
+                break;
+            case 2:
+                profile.did2pr2 = DID_2.Text;
+                profile.fid2pr2 = FID_2.Text;
+                break;
+            case 3:
+                profile.did2pr3 = DID_2.Text;
+                profile.fid2pr3 = DID_2.Text;
+                break;
+            case 4:
+                profile.did2pr4 = DID_2.Text;
+                profile.fid2pr4 = FID_2.Text;
+                break;
+            case 5:
+                profile.did2pr5 = DID_2.Text;
+                profile.fid2pr5 = FID_2.Text;
+                break;
+            case 6:
+                profile.did2pr6 = DID_2.Text;
+                profile.fid2pr6 = FID_2.Text;
+                break;
+            case 7:
+                profile.did2pr7 = DID_2.Text;
+                profile.fid2pr7 = FID_2.Text;
+                break;
+            case 8:
+                profile.did2pr8 = DID_2.Text;
+                profile.fid2pr8 = FID_2.Text;
+                break;
+            case 9:
+                profile.did2pr9 = DID_2.Text;
+                profile.fid2pr9 = FID_2.Text;
+                break;
+        }
+        ProfileSave();
+    }
 
 #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

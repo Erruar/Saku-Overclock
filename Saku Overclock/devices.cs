@@ -57,4 +57,16 @@ internal class Devices
     public double g8v;
     public double g9v;
     public double g10v;
+    //Pstates config
+    public string? did0;
+    public string? did1;
+    public string? did2;
+    public string? fid0;
+    public string? fid1;
+    public string? fid2;
+    public bool enableps;
+    public bool turboboost;
+    public bool autopstate;
+    public bool p0ignorewarn;
+    public bool ignorewarn;
 }

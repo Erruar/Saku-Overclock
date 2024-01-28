@@ -6,6 +6,8 @@ using Windows.UI.ViewManagement;
 using System.Windows.Forms;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.ViewModels;
+using Saku_Overclock.Views;
+using System.Runtime.InteropServices;
 namespace Saku_Overclock;
 #pragma warning disable IDE0044 // Добавить модификатор только для чтения
 #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
@@ -17,6 +19,28 @@ public sealed partial class MainWindow : WindowEx
     private Config config = new();
     private Devices devices = new();
     private Profile profile = new();
+    // The enum flag for DwmSetWindowAttribute's second parameter, which tells the function what attribute to set.
+    public enum DWMWINDOWATTRIBUTE
+    {
+        DWMWA_WINDOW_CORNER_PREFERENCE = 33
+    }
+
+    // The DWM_WINDOW_CORNER_PREFERENCE enum for DwmSetWindowAttribute's third parameter, which tells the function
+    // what value of the enum to set.
+    public enum DWM_WINDOW_CORNER_PREFERENCE
+    {
+        DWMWCP_DEFAULT = 0,
+        DWMWCP_DONOTROUND = 1,
+        DWMWCP_ROUND = 2,
+        DWMWCP_ROUNDSMALL = 3
+    }
+
+    // Import dwmapi.dll and define DwmSetWindowAttribute in C# corresponding to the native function.
+    [DllImport("dwmapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern long DwmSetWindowAttribute(IntPtr hwnd,
+                                                     DWMWINDOWATTRIBUTE attribute,
+                                                     ref DWM_WINDOW_CORNER_PREFERENCE pvAttribute,
+                                                     uint cbAttribute);
     public MainWindow()
     {
         InitializeComponent();
@@ -42,6 +66,9 @@ public sealed partial class MainWindow : WindowEx
                     this.WindowState = WindowState.Normal;
                 };
         ni.ContextMenuStrip = new ContextMenuStrip();
+        var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE;
+        var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND;
+        DwmSetWindowAttribute(ni.ContextMenuStrip.Handle, attribute, ref preference, sizeof(uint));
         System.Drawing.Image bmp = new System.Drawing.Bitmap(GetType(), "show.png");
         System.Drawing.Image bmp1 = new System.Drawing.Bitmap(GetType(), "exit.png");
         System.Drawing.Image bmp2 = new System.Drawing.Bitmap(GetType(), "WindowIcon.ico");
@@ -57,6 +84,9 @@ public sealed partial class MainWindow : WindowEx
         ni.ContextMenuStrip.Items.Add("Tray_Show".GetLocalized(), bmp, Menu_Show1);
         ni.ContextMenuStrip.Items.Add("Tray_Quit".GetLocalized(), bmp1, Menu_Exit1);
         ni.ContextMenuStrip.Items[0].Enabled = false;
+        ni.ContextMenuStrip.Opacity = 0.89;
+        ni.ContextMenuStrip.ForeColor = System.Drawing.Color.Purple;
+        ni.ContextMenuStrip.BackColor = System.Drawing.Color.White;
         ni.Text = "Saku Overclock";
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
@@ -68,7 +98,7 @@ public sealed partial class MainWindow : WindowEx
     private async void Tray_Start()
     {
         ConfigLoad();
-        if (config.autooverclock == true) { Applyer.Apply(); }
+        if (config.autooverclock == true) { Applyer.Apply(); if (devices.autopstate == true && devices.enableps == true) { var cpu = new ПараметрыPage(); cpu.BtnPstateWrite_Click(); } }
         if (config.traystart == true)
         {
             await Task.Delay(700);

@@ -2236,6 +2236,9 @@
     <AppxPackagedFile Include="C:\Users\Sakura\.nuget\packages\newtonsoft.json\13.0.3\lib\net6.0\Newtonsoft.Json.dll">
       <PackagePath>Newtonsoft.Json.dll</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Sakura\.nuget\packages\openhardwaremonitor\0.9.6\lib\net45\OpenHardwareMonitorLib.dll">
+      <PackagePath>OpenHardwareMonitorLib.dll</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\.nuget\packages\taskscheduler\2.10.1\lib\net6.0-windows7.0\Microsoft.Win32.TaskScheduler.dll">
       <PackagePath>Microsoft.Win32.TaskScheduler.dll</PackagePath>
     </AppxPackagedFile>
@@ -2271,6 +2274,12 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock.Core\bin\x64\Debug\net7.0\Saku Overclock.Core.dll">
       <PackagePath>Saku Overclock.Core.dll</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Management.dll">
+      <PackagePath>System.Management.dll</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\ZenStates-Core.dll">
+      <PackagePath>ZenStates-Core.dll</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\.nuget\packages\microsoft.xaml.behaviors.winui.managed\2.0.9\lib\net5.0-windows10.0.17763.0\Microsoft.Xaml.Interactions.pri">
       <PackagePath>Microsoft.Xaml.Interactions.pri</PackagePath>

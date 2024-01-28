@@ -19,15 +19,15 @@
             <TextBlock x:Uid="Param_Preset" Text="Сохранённые пресеты:" FontSize="20" Margin="0,-10,0,0"></TextBlock>
             <ComboBox x:ConnectionId='3' Height="30" Width="200" Margin="230,-10,0,0" x:Name="ProfileCOM" SelectedIndex="0"                                               >
                 <ComboBoxItem>Unsaved</ComboBoxItem>
-                <ComboBoxItem x:ConnectionId='79' x:Name="ProfileCOM_1"  Visibility="Collapsed"></ComboBoxItem>
-                <ComboBoxItem x:ConnectionId='80' x:Name="ProfileCOM_2" Visibility="Collapsed"></ComboBoxItem>
-                <ComboBoxItem x:ConnectionId='81' x:Name="ProfileCOM_3" Visibility="Collapsed"></ComboBoxItem>
-                <ComboBoxItem x:ConnectionId='82' x:Name="ProfileCOM_4" Visibility="Collapsed"></ComboBoxItem>
-                <ComboBoxItem x:ConnectionId='83' x:Name="ProfileCOM_5" Visibility="Collapsed"></ComboBoxItem>
-                <ComboBoxItem x:ConnectionId='84' x:Name="ProfileCOM_6" Visibility="Collapsed"></ComboBoxItem>
-                <ComboBoxItem x:ConnectionId='85' x:Name="ProfileCOM_7" Visibility="Collapsed"></ComboBoxItem>
-                <ComboBoxItem x:ConnectionId='86' x:Name="ProfileCOM_8" Visibility="Collapsed"></ComboBoxItem>
-                <ComboBoxItem x:ConnectionId='87' x:Name="ProfileCOM_9" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='102' x:Name="ProfileCOM_1"  Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='103' x:Name="ProfileCOM_2" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='104' x:Name="ProfileCOM_3" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='105' x:Name="ProfileCOM_4" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='106' x:Name="ProfileCOM_5" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='107' x:Name="ProfileCOM_6" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='108' x:Name="ProfileCOM_7" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='109' x:Name="ProfileCOM_8" Visibility="Collapsed"></ComboBoxItem>
+                <ComboBoxItem x:ConnectionId='110' x:Name="ProfileCOM_9" Visibility="Collapsed"></ComboBoxItem>
             </ComboBox>
             
             <!-- Середина -->
@@ -56,10 +56,10 @@
                                 <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_CPU_Pdesc"  Text="Мощность процессора"></TextBlock>
                             </Grid>
                         </Expander.Header>
-                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
+                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="2000">
                             <!-- Монтируем секции -->
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -74,95 +74,95 @@
                             </Grid.RowDefinitions>
 
                             <!-- Первая секция -->
-                            
-                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+
+                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c2"  Text="Лимит CPU (W)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='76'  Margin="0,20,0,0" x:Name="c2"                                            ></CheckBox>
-                                <Slider x:ConnectionId='77' x:Name="c2v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="20">
+                                <CheckBox x:ConnectionId='99'  Margin="0,20,0,0" x:Name="c2"                                            ></CheckBox>
+                                <Slider x:ConnectionId='100' x:Name="c2v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="20">
                                 </Slider>
-                                <Button x:ConnectionId='78' Height="30" Width="60" x:Name="c2t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='101' Height="30" Width="60" x:Name="c2t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c2_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                    20(W)                        30(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c3" Text="Реальный CPU (W)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='73'  Margin="0,20,0,0" x:Name="c3"                                            ></CheckBox>
-                                <Slider x:ConnectionId='74' x:Name="c3v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
+                                <CheckBox x:ConnectionId='96'  Margin="0,20,0,0" x:Name="c3"                                            ></CheckBox>
+                                <Slider x:ConnectionId='97' x:Name="c3v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
                                 </Slider>
-                                <Button x:ConnectionId='75' Height="30" Width="60" x:Name="c3t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='98' Height="30" Width="60" x:Name="c3t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c3_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c4" Text="Средний CPU (W)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='70'  Margin="0,20,0,0" x:Name="c4"                                            ></CheckBox>
-                                <Slider x:ConnectionId='71' x:Name="c4v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
+                                <CheckBox x:ConnectionId='93'  Margin="0,20,0,0" x:Name="c4"                                            ></CheckBox>
+                                <Slider x:ConnectionId='94' x:Name="c4v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="25">
                                 </Slider>
-                                <Button x:ConnectionId='72' Height="30" Width="60" x:Name="c4t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='95' Height="30" Width="60" x:Name="c4t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c4_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c6" Text="Тик быстрого разгона (S)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='67'  Margin="0,20,0,0" x:Name="c5"                                            ></CheckBox>
-                                <Slider x:ConnectionId='68' x:Name="c5v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="200" Value="64">
+                                <CheckBox x:ConnectionId='90'  Margin="0,20,0,0" x:Name="c5"                                            ></CheckBox>
+                                <Slider x:ConnectionId='91' x:Name="c5v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="200" Value="64">
                                 </Slider>
-                                <Button x:ConnectionId='69' Height="30" Width="60" x:Name="c5t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='92' Height="30" Width="60" x:Name="c5t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c5_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                     64(S)                         48(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c5" Text="Тик медленного разгона (S)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='64'  Margin="0,20,0,0" x:Name="c6"                                            ></CheckBox>
-                                <Slider x:ConnectionId='65' x:Name="c6v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="400" Value="128">
+                                <CheckBox x:ConnectionId='87'  Margin="0,20,0,0" x:Name="c6"                                            ></CheckBox>
+                                <Slider x:ConnectionId='88' x:Name="c6v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="400" Value="128">
                                 </Slider>
-                                <Button x:ConnectionId='66' Height="30" Width="60" x:Name="c6t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='89' Height="30" Width="60" x:Name="c6t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c6_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c1" Text="Максимальная температура CPU (C)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='61'  Margin="0,20,0,0" x:Name="c1"                                            ></CheckBox>
-                                <Slider x:ConnectionId='62' x:Name="c1v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100" Value="90">
+                                <CheckBox x:ConnectionId='84'  Margin="0,20,0,0" x:Name="c1"                                            ></CheckBox>
+                                <Slider x:ConnectionId='85' x:Name="c1v"                                Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100" Value="90">
                                 </Slider>
-                                <Button x:ConnectionId='63' Height="30" Width="60" x:Name="c1t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='86' Height="30" Width="60" x:Name="c1t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock x:Uid="Param_CPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
                                 <TextBlock Text="                                    75(С)                         90(С)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
@@ -178,10 +178,10 @@
                                 <TextBlock Margin="35,30,0,0" VerticalAlignment="Top" FontWeight="Light" x:Uid="Param_VRM_Pdesc"  Text="Мощность процессора"></TextBlock>
                             </Grid>
                         </Expander.Header>
-                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
+                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="2000">
                             <!-- Монтируем секции -->
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -196,110 +196,110 @@
                             </Grid.RowDefinitions>
 
                             <!-- Первая секция -->
-                            
-                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+
+                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_VRM_v2" Text="Лимит по току VRM (A)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='58' x:Name="V2"                                             Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='59' x:Name="V2V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="55">
+                                <CheckBox x:ConnectionId='81' x:Name="V2"                                             Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='82' x:Name="V2V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="55">
                                 </Slider>
-                                <Button x:ConnectionId='60' Height="30" Width="60" x:Name="v2t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='83' Height="30" Width="60" x:Name="v2t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v2_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                    55(A)                         70(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_VRM_v3" Text="Максимальный ток SoC (A)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='55'                                             x:Name="V3" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='56' x:Name="V3V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
+                                <CheckBox x:ConnectionId='78'                                             x:Name="V3" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='79' x:Name="V3V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
                                 </Slider>
-                                <Button x:ConnectionId='57' Height="30" Width="60" x:Name="v3t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='80' Height="30" Width="60" x:Name="v3t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v3_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                    13(A)                         25(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_VRM_v4" Text="Лимит по току SoC (A)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='52'                                             x:Name="V4" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='53' x:Name="V4V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="120">
+                                <CheckBox x:ConnectionId='75'                                             x:Name="V4" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='76' x:Name="V4V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="120">
                                 </Slider>
-                                <Button x:ConnectionId='54' Height="30" Width="60" x:Name="v4t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='77' Height="30" Width="60" x:Name="v4t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v4_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                    10(A)                         15(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_VRM_v5" Text="Максимальный ток PCI VDD (A)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='49'                                             x:Name="V5" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='50' x:Name="V5V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
+                                <CheckBox x:ConnectionId='72'                                             x:Name="V5" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='73' x:Name="V5V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="120">
                                 </Slider>
-                                <Button x:ConnectionId='51' Height="30" Width="60" x:Name="v5t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='74' Height="30" Width="60" x:Name="v5t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v5_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                    13(A)                         20(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_VRM_v6" Text="Максимальный ток PCI SoC (A)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='46'                                             x:Name="V6" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='47' x:Name="V6V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="5" Maximum="120">
+                                <CheckBox x:ConnectionId='69'                                             x:Name="V6" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='70' x:Name="V6V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="5" Maximum="120">
                                 </Slider>
-                                <Button x:ConnectionId='48' Height="30" Width="60" x:Name="v6t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='71' Height="30" Width="60" x:Name="v6t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v6_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                     5(A)                          10(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock  x:Uid="Param_VRM_v7" Text="Отключить троттлинг на время (S)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='43'                                             x:Name="V7" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='44' x:Name="V7V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="900" Value="2">
+                                <CheckBox x:ConnectionId='66'                                             x:Name="V7" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='67' x:Name="V7V"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="900" Value="2">
                                 </Slider>
-                                <Button x:ConnectionId='45' Height="30" Width="60" x:Name="v7t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='68' Height="30" Width="60" x:Name="v7t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v7_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                     2(S)                            2(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock  x:Uid="Param_VRM_v1" Text="Максимальный ток VRM (A)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='40' x:Name="V1" Margin="0,20,0,0"                                            ></CheckBox>
-                                <Slider x:ConnectionId='41' x:Name="V1V"                                  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="64">
+                                <CheckBox x:ConnectionId='63' x:Name="V1" Margin="0,20,0,0"                                            ></CheckBox>
+                                <Slider x:ConnectionId='64' x:Name="V1V"                                  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="120" Value="64">
                                 </Slider>
-                                <Button x:ConnectionId='42' Height="30" Width="60" x:Name="v1t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='65' Height="30" Width="60" x:Name="v1t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v1_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock x:Uid="Param_VRM_desc" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
                                 <TextBlock Text="                                    64(A)                         75(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
@@ -315,10 +315,10 @@
                                 <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_GPU_Pdesc"  Text="Мощность процессора"></TextBlock>
                             </Grid>
                         </Expander.Header>
-                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="1000">
+                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="2000">
                             <!-- Монтируем секции -->
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -336,157 +336,434 @@
                             </Grid.RowDefinitions>
 
                             <!-- Первая секция -->
-                            
-                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+
+                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_GPU_g2" Text="Максимальная частота SoC (MHz)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='37'                                             x:Name="g2" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='38' x:Name="g2v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                <CheckBox x:ConnectionId='60'                                             x:Name="g2" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='61' x:Name="g2v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
-                                <Button x:ConnectionId='39' Height="30" Width="60" x:Name="g2t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='62' Height="30" Width="60" x:Name="g2t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g2_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock x:Uid="Param_GPU_Ram" Text="1                                Частота оперативной памяти" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="2" Grid.Column="0">
+                            <Grid Grid.Row="2" Grid.Column="0" Width="2000">
                                 <TextBlock x:Uid="Param_GPU_g3" Text="Минимальная Infinity Fabric (MHz)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='34'                                             x:Name="g3" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='35' x:Name="g3v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
+                                <CheckBox x:ConnectionId='57'                                             x:Name="g3" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='58' x:Name="g3v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
                                 </Slider>
-                                <Button x:ConnectionId='36' Height="30" Width="60" x:Name="g3t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='59' Height="30" Width="60" x:Name="g3t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g3_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                800(MHz)                 800(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="3" Grid.Column="0">
+                            <Grid Grid.Row="3" Grid.Column="0" Width="2000">
                                 <TextBlock x:Uid="Param_GPU_g4" Text="Максимальная Infinity Fabric (MHz)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='31'                                             x:Name="g4" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='32' x:Name="g4v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                <CheckBox x:ConnectionId='54'                                             x:Name="g4" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='55' x:Name="g4v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
-                                <Button x:ConnectionId='33' Height="30" Width="60" x:Name="g4t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='56' Height="30" Width="60" x:Name="g4t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g4_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock x:Uid="Param_GPU_Ram" Text="                                Частота оперативной памяти" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="4" Grid.Column="0">
+                            <Grid Grid.Row="4" Grid.Column="0" Width="2000">
                                 <TextBlock x:Uid="Param_GPU_g5" Text="Минимальная частота кодека VCE (MHz)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='28'                                             x:Name="g5" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='29' x:Name="g5v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
+                                <CheckBox x:ConnectionId='51'                                             x:Name="g5" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='52' x:Name="g5v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
                                 </Slider>
-                                <Button x:ConnectionId='30' Height="30" Width="60" x:Name="g5t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='53' Height="30" Width="60" x:Name="g5t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g5_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="5" Grid.Column="0">
+                            <Grid Grid.Row="5" Grid.Column="0" Width="2000">
                                 <TextBlock  x:Uid="Param_GPU_g6" Text="Максимальная частота кодека VCE (MHz)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='25'                                             x:Name="g6" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='26' x:Name="g6v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                <CheckBox x:ConnectionId='48'                                             x:Name="g6" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='49' x:Name="g6v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
-                                <Button x:ConnectionId='27' Height="30" Width="60" x:Name="g6t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='50' Height="30" Width="60" x:Name="g6t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g6_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="6" Grid.Column="0">
+                            <Grid Grid.Row="6" Grid.Column="0" Width="2000">
                                 <TextBlock x:Uid="Param_GPU_g7" Text="Минимальная частота Data Latch (MHz)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='22'                                             x:Name="g7" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='23' x:Name="g7v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
+                                <CheckBox x:ConnectionId='45'                                             x:Name="g7" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='46' x:Name="g7v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="1600" Value="400">
                                 </Slider>
-                                <Button x:ConnectionId='24' Height="30" Width="60" x:Name="g7t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='47' Height="30" Width="60" x:Name="g7t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g7_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="7" Grid.Column="0">
+                            <Grid Grid.Row="7" Grid.Column="0" Width="2000">
                                 <TextBlock x:Uid="Param_GPU_g8" Text="Максимальная частота Data Latch (MHz)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='19'                                             x:Name="g8" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='20' x:Name="g8v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                <CheckBox x:ConnectionId='42'                                             x:Name="g8" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='43' x:Name="g8v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
-                                <Button x:ConnectionId='21' Height="30" Width="60" x:Name="g8t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='44' Height="30" Width="60" x:Name="g8t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g8_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="8" Grid.Column="0">
+                            <Grid Grid.Row="8" Grid.Column="0" Width="2000">
                                 <TextBlock x:Uid="Param_GPU_g9" Text="Минимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='16'                                             x:Name="g9" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='17' x:Name="g9v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="100" Maximum="1600" Value="400">
+                                <CheckBox x:ConnectionId='39'                                             x:Name="g9" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='40' x:Name="g9v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="100" Maximum="1600" Value="400">
                                 </Slider>
-                                <Button x:ConnectionId='18' Height="30" Width="60" x:Name="g9t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='41' Height="30" Width="60" x:Name="g9t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g9_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                 400(MHz)                400(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="9" Grid.Column="0">
+                            <Grid Grid.Row="9" Grid.Column="0" Width="2000">
                                 <TextBlock x:Uid="Param_GPU_g10" Text="Максимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='13'                                               x:Name="g10" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='14' x:Name="g10v"                                  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
+                                <CheckBox x:ConnectionId='36'                                               x:Name="g10" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='37' x:Name="g10v"                                  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="1200">
                                 </Slider>
-                                <Button x:ConnectionId='15' Height="30" Width="60" x:Name="g10t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='38' Height="30" Width="60" x:Name="g10t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g10_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
+                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_GPU_g1"  Text="Минимальная частота SoC (MHz)" FontSize="15"></TextBlock>
-                                <CheckBox x:ConnectionId='10'                                             x:Name="g1" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:ConnectionId='11' x:Name="g1v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
+                                <CheckBox x:ConnectionId='33'                                             x:Name="g1" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:ConnectionId='34' x:Name="g1v"                                 Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="1600" Value="800">
                                 </Slider>
-                                <Button x:ConnectionId='12' Height="30" Width="60" x:Name="g1t" Margin="245,20,0,0" Content="1"></Button>
+                                <Button x:ConnectionId='35' Height="30" Width="60" x:Name="g1t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g1_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="37,0,0,0">
+                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock x:Uid="Param_GPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
                                 <TextBlock Text="                                800(MHz)                 800(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                        </Grid>
+                    </Expander>
+
+                    <Expander x:ConnectionId='10'  Grid.Row="3"                             >
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xf8a6;"/>
+                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_States_Text" Text="Состояния CPU"></TextBlock>
+                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_States_Pdesc"  Text="Производительные состояния процессора"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button x:ConnectionId='31' Height="50" HorizontalContentAlignment="Stretch"                             HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xebd2;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_enableps" Text="Настройки состояний CPU"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_enableps_desc" Text="Включить эти настройки изменения PState состояний"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:ConnectionId='32'  OffContent="" OnContent="" Margin="0,0,-100,0" x:Name="EnablePstates"                                 VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="1" HorizontalAlignment="Left" Margin=" 30,20,0,0">
+                                <!-- Монтируем секции -->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <!-- От 0 до 6 -->
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <!-- Первая секция -->
+                                <Grid Grid.Row="0" Margin="0,0,0,0"  Width="2000">
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="15" Text="State"/>
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="51,0,0,0" FontSize="15" Text="CPU Freq"/>
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="146,0,0,0" FontSize="15" Text="FID"/>
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="205,0,0,0" FontSize="15" Text="Multiplier"/>
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="303,0,0,0" FontSize="15" Text="DID"/>
+                                </Grid>
+                                <Grid Grid.Row="1"  Margin="-7,10,0,0" Width="2000">
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P0"/>
+                                    <Button x:ConnectionId='27' Height="33" Width="60" Margin="55,1,0,0" x:Name="P0_Freq" Content="1700"></Button>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="130,-1,0,0">
+                                        <NumberBox x:ConnectionId='30' Minimum="16"                                   Maximum="180" x:Name="FID_0" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                    <ComboBox x:ConnectionId='28' x:Name="Mult_0"                                            SelectedIndex="0" Width="73" Height="33" Margin="205,1,0,0">
+                                        <ComboBoxItem Content="4"/>
+                                        <ComboBoxItem Content="5"/>
+                                        <ComboBoxItem Content="6"/>
+                                        <ComboBoxItem Content="7"/>
+                                        <ComboBoxItem Content="8"/>
+                                        <ComboBoxItem Content="9"/>
+                                        <ComboBoxItem Content="10"/>
+                                        <ComboBoxItem Content="11"/>
+                                        <ComboBoxItem Content="12"/>
+                                        <ComboBoxItem Content="13"/>
+                                        <ComboBoxItem Content="14"/>
+                                        <ComboBoxItem Content="15"/>
+                                        <ComboBoxItem Content="16"/>
+                                        <ComboBoxItem Content="17"/>
+                                        <ComboBoxItem Content="18"/>
+                                        <ComboBoxItem Content="19"/>
+                                        <ComboBoxItem Content="20"/>
+                                        <ComboBoxItem Content="21"/>
+                                        <ComboBoxItem Content="22"/>
+                                        <ComboBoxItem Content="23"/>
+                                        <ComboBoxItem Content="24"/>
+                                        <ComboBoxItem Content="25"/>
+                                        <ComboBoxItem Content="26"/>
+                                        <ComboBoxItem Content="27"/>
+                                        <ComboBoxItem Content="28"/>
+                                        <ComboBoxItem Content="29"/>
+                                        <ComboBoxItem Content="30"/>
+                                        <ComboBoxItem Content="31"/>
+                                        <ComboBoxItem Content="32"/>
+                                        <ComboBoxItem Content="33"/>
+                                        <ComboBoxItem Content="34"/>
+                                        <ComboBoxItem Content="35"/>
+                                        <ComboBoxItem Content="36"/>
+                                        <ComboBoxItem Content="37"/>
+                                        <ComboBoxItem Content="38"/>
+                                        <ComboBoxItem Content="39"/>
+                                        <ComboBoxItem Content="40"/>
+                                        <ComboBoxItem Content="41"/>
+                                        <ComboBoxItem Content="42"/>
+                                        <ComboBoxItem Content="43"/>
+                                        <ComboBoxItem Content="44"/>
+                                        <ComboBoxItem Content="45"/>
+                                    </ComboBox>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="290,-1,0,0">
+                                        <NumberBox x:ConnectionId='29' Minimum="8"                                   Maximum="45" x:Name="DID_0" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                </Grid>
+                                <Grid Grid.Row="2" Margin="-7,10,0,0" Width="2000">
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P1"/>
+                                    <Button x:ConnectionId='23' Height="33" Width="60" Margin="55,1,0,0" x:Name="P1_Freq" Content="1700"></Button>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="130,-1,0,0">
+                                        <NumberBox x:ConnectionId='26' Minimum="16"                                   Maximum="180" x:Name="FID_1" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                    <ComboBox x:ConnectionId='24' x:Name="Mult_1" SelectedIndex="0"                                            Width="73" Height="33" Margin="205,1,0,0">
+                                        <ComboBoxItem Content="4"/>
+                                        <ComboBoxItem Content="5"/>
+                                        <ComboBoxItem Content="6"/>
+                                        <ComboBoxItem Content="7"/>
+                                        <ComboBoxItem Content="8"/>
+                                        <ComboBoxItem Content="9"/>
+                                        <ComboBoxItem Content="10"/>
+                                        <ComboBoxItem Content="11"/>
+                                        <ComboBoxItem Content="12"/>
+                                        <ComboBoxItem Content="13"/>
+                                        <ComboBoxItem Content="14"/>
+                                        <ComboBoxItem Content="15"/>
+                                        <ComboBoxItem Content="16"/>
+                                        <ComboBoxItem Content="17"/>
+                                        <ComboBoxItem Content="18"/>
+                                        <ComboBoxItem Content="19"/>
+                                        <ComboBoxItem Content="20"/>
+                                        <ComboBoxItem Content="21"/>
+                                        <ComboBoxItem Content="22"/>
+                                        <ComboBoxItem Content="23"/>
+                                        <ComboBoxItem Content="24"/>
+                                        <ComboBoxItem Content="25"/>
+                                        <ComboBoxItem Content="26"/>
+                                        <ComboBoxItem Content="27"/>
+                                        <ComboBoxItem Content="28"/>
+                                        <ComboBoxItem Content="29"/>
+                                        <ComboBoxItem Content="30"/>
+                                        <ComboBoxItem Content="31"/>
+                                        <ComboBoxItem Content="32"/>
+                                        <ComboBoxItem Content="33"/>
+                                        <ComboBoxItem Content="34"/>
+                                        <ComboBoxItem Content="35"/>
+                                        <ComboBoxItem Content="36"/>
+                                        <ComboBoxItem Content="37"/>
+                                        <ComboBoxItem Content="38"/>
+                                        <ComboBoxItem Content="39"/>
+                                        <ComboBoxItem Content="40"/>
+                                        <ComboBoxItem Content="41"/>
+                                        <ComboBoxItem Content="42"/>
+                                        <ComboBoxItem Content="43"/>
+                                        <ComboBoxItem Content="44"/>
+                                        <ComboBoxItem Content="45"/>
+                                    </ComboBox>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="290,-1,0,0">
+                                        <NumberBox x:ConnectionId='25' Minimum="8"                                   Maximum="45" x:Name="DID_1"  HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                </Grid>
+                                <Grid Grid.Row="3"  Margin="-7,10,0,0" Width="2000">
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P2"/>
+                                    <Button x:ConnectionId='19' Height="33" Width="60" Margin="55,1,0,0" x:Name="P2_Freq" Content="1700"></Button>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="130,-1,0,0">
+                                        <NumberBox x:ConnectionId='22' Minimum="16"                                   Maximum="180" x:Name="FID_2" HorizontalAlignment="Left" Width="60" Height="32" Text=""></NumberBox>
+                                    </Border>
+                                    <ComboBox x:ConnectionId='20' x:Name="Mult_2"                                            SelectedIndex="0" Width="73" Height="33" Margin="205,1,0,0">
+                                        <ComboBoxItem Content="4"/>
+                                        <ComboBoxItem Content="5"/>
+                                        <ComboBoxItem Content="6"/>
+                                        <ComboBoxItem Content="7"/>
+                                        <ComboBoxItem Content="8"/>
+                                        <ComboBoxItem Content="9"/>
+                                        <ComboBoxItem Content="10"/>
+                                        <ComboBoxItem Content="11"/>
+                                        <ComboBoxItem Content="12"/>
+                                        <ComboBoxItem Content="13"/>
+                                        <ComboBoxItem Content="14"/>
+                                        <ComboBoxItem Content="15"/>
+                                        <ComboBoxItem Content="16"/>
+                                        <ComboBoxItem Content="17"/>
+                                        <ComboBoxItem Content="18"/>
+                                        <ComboBoxItem Content="19"/>
+                                        <ComboBoxItem Content="20"/>
+                                        <ComboBoxItem Content="21"/>
+                                        <ComboBoxItem Content="22"/>
+                                        <ComboBoxItem Content="23"/>
+                                        <ComboBoxItem Content="24"/>
+                                        <ComboBoxItem Content="25"/>
+                                        <ComboBoxItem Content="26"/>
+                                        <ComboBoxItem Content="27"/>
+                                        <ComboBoxItem Content="28"/>
+                                        <ComboBoxItem Content="29"/>
+                                        <ComboBoxItem Content="30"/>
+                                        <ComboBoxItem Content="31"/>
+                                        <ComboBoxItem Content="32"/>
+                                        <ComboBoxItem Content="33"/>
+                                        <ComboBoxItem Content="34"/>
+                                        <ComboBoxItem Content="35"/>
+                                        <ComboBoxItem Content="36"/>
+                                        <ComboBoxItem Content="37"/>
+                                        <ComboBoxItem Content="38"/>
+                                        <ComboBoxItem Content="39"/>
+                                        <ComboBoxItem Content="40"/>
+                                        <ComboBoxItem Content="41"/>
+                                        <ComboBoxItem Content="42"/>
+                                        <ComboBoxItem Content="43"/>
+                                        <ComboBoxItem Content="44"/>
+                                        <ComboBoxItem Content="45"/>
+                                    </ComboBox>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="290,-1,0,0">
+                                        <NumberBox x:ConnectionId='21' Minimum="8" Maximum="45"                                   x:Name="DID_2" HorizontalAlignment="Left" Width="60" Height="32" Text=""></NumberBox>
+                                    </Border>
+                                </Grid>
+                                
+                            </Grid>
+                            <Grid Grid.Row="4" HorizontalAlignment="Stretch" ToolTipService.ToolTip="Now you can't change it!" Margin="0,20,2,0">
+                                <Button x:ConnectionId='17' Height="50" HorizontalContentAlignment="Stretch"                          HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe8be;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_turbo" Text="Состояние Turbo Boost"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_turbo_desc" Text="Позволяет вашему процессору разгоняться сильнее, но вызывает проблемы"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:ConnectionId='18' x:Name="Turbo_boost"  OffContent="" OnContent=""                                Margin="0,0,-100,0" VerticalAlignment="Center" IsEnabled="False" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="5" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button x:ConnectionId='15' Height="50" HorizontalContentAlignment="Stretch"                         HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe792;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_reapplyps" Text="Автоприменять параметры"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_reapplyps_desc" Text="При запуске программа будет применять эти параметры, при включенном автоприменении"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:ConnectionId='16'  OffContent="" OnContent="" Margin="0,0,-100,0"                               x:Name="Autoapply_1" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="6" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button x:ConnectionId='13' Height="50" HorizontalContentAlignment="Stretch"                         HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe835;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_Ignorep0" Text="Игнорировать предупреждение P0"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_Ignorep0_desc" Text="Всегда применять параметры с состоянием P0, может привести к крашу системы!"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:ConnectionId='14'  OffContent="" OnContent="" Margin="0,0,-100,0" x:Name="Without_P0"                              VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="7" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button x:ConnectionId='11' Height="50" HorizontalContentAlignment="Stretch"                          HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xeb9d;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  x:Uid="Param_Ignore" Text="Игнорировать предупреждение изменения"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_Ignore_desc" Text="Всегда применять параметры без предупреждений"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:ConnectionId='12'  OffContent="" OnContent="" Margin="0,0,-100,0" x:Name="IgnoreWarn"                          VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Expander>

@@ -834,3 +834,6 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\preset.png
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\startup.lnk
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\temp.ps1
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\OpenHardwareMonitorLib.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ZenStates-Core.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Management.dll

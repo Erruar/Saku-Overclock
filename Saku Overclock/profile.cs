@@ -85,6 +85,18 @@ internal class Profile
     public double g8pr1v;
     public double g9pr1v;
     public double g10pr1v;
+    //Pstates preset 1
+    public string did0pr1;
+    public string did1pr1;
+    public string did2pr1;
+    public string fid0pr1;
+    public string fid1pr1;
+    public string fid2pr1;
+    public bool enablepspr1;
+    public bool turboboostpr1;
+    public bool autopstatepr1;
+    public bool p0ignorewarnpr1;
+    public bool ignorewarnpr1;
     //CPU config preset 2
     public bool c1pr2;
     public bool c2pr2;
@@ -134,6 +146,18 @@ internal class Profile
     public double g8pr2v;
     public double g9pr2v;
     public double g10pr2v;
+    //Pstates preset 2
+    public string did0pr2;
+    public string did1pr2;
+    public string did2pr2;
+    public string fid0pr2;
+    public string fid1pr2;
+    public string fid2pr2;
+    public bool enablepspr2;
+    public bool turboboostpr2;
+    public bool autopstatepr2;
+    public bool p0ignorewarnpr2;
+    public bool ignorewarnpr2;
     //CPU config preset 3
     public bool c1pr3;
     public bool c2pr3;
@@ -183,6 +207,18 @@ internal class Profile
     public double g8pr3v;
     public double g9pr3v;
     public double g10pr3v;
+    //Pstates preset 3
+    public string did0pr3;
+    public string did1pr3;
+    public string did2pr3;
+    public string fid0pr3;
+    public string fid1pr3;
+    public string fid2pr3;
+    public bool enablepspr3;
+    public bool turboboostpr3;
+    public bool autopstatepr3;
+    public bool p0ignorewarnpr3;
+    public bool ignorewarnpr3;
     //CPU config preset 4
     public bool c1pr4;
     public bool c2pr4;
@@ -232,6 +268,18 @@ internal class Profile
     public double g8pr4v;
     public double g9pr4v;
     public double g10pr4v;
+    //Pstates preset 4
+    public string did0pr4;
+    public string did1pr4;
+    public string did2pr4;
+    public string fid0pr4;
+    public string fid1pr4;
+    public string fid2pr4;
+    public bool enablepspr4;
+    public bool turboboostpr4;
+    public bool autopstatepr4;
+    public bool p0ignorewarnpr4;
+    public bool ignorewarnpr4;
     //CPU config preset 5
     public bool c1pr5;
     public bool c2pr5;
@@ -281,6 +329,18 @@ internal class Profile
     public double g8pr5v;
     public double g9pr5v;
     public double g10pr5v;
+    //Pstates preset 5
+    public string did0pr5;
+    public string did1pr5;
+    public string did2pr5;
+    public string fid0pr5;
+    public string fid1pr5;
+    public string fid2pr5;
+    public bool enablepspr5;
+    public bool turboboostpr5;
+    public bool autopstatepr5;
+    public bool p0ignorewarnpr5;
+    public bool ignorewarnpr5;
     //CPU config preset 6
     public bool c1pr6;
     public bool c2pr6;
@@ -330,6 +390,18 @@ internal class Profile
     public double g8pr6v;
     public double g9pr6v;
     public double g10pr6v;
+    //Pstates preset 6
+    public string did0pr6;
+    public string did1pr6;
+    public string did2pr6;
+    public string fid0pr6;
+    public string fid1pr6;
+    public string fid2pr6;
+    public bool enablepspr6;
+    public bool turboboostpr6;
+    public bool autopstatepr6;
+    public bool p0ignorewarnpr6;
+    public bool ignorewarnpr6;
     //CPU config preset 7
     public bool c1pr7;
     public bool c2pr7;
@@ -379,6 +451,18 @@ internal class Profile
     public double g8pr7v;
     public double g9pr7v;
     public double g10pr7v;
+    //Pstates preset 7
+    public string did0pr7;
+    public string did1pr7;
+    public string did2pr7;
+    public string fid0pr7;
+    public string fid1pr7;
+    public string fid2pr7;
+    public bool enablepspr7;
+    public bool turboboostpr7;
+    public bool autopstatepr7;
+    public bool p0ignorewarnpr7;
+    public bool ignorewarnpr7;
     //CPU config preset 8
     public bool c1pr8;
     public bool c2pr8;
@@ -428,6 +512,18 @@ internal class Profile
     public double g8pr8v;
     public double g9pr8v;
     public double g10pr8v;
+    //Pstates preset 8
+    public string did0pr8;
+    public string did1pr8;
+    public string did2pr8;
+    public string fid0pr8;
+    public string fid1pr8;
+    public string fid2pr8;
+    public bool enablepspr8;
+    public bool turboboostpr8;
+    public bool autopstatepr8;
+    public bool p0ignorewarnpr8;
+    public bool ignorewarnpr8;
     //CPU config preset 9
     public bool c1pr9;
     public bool c2pr9;
@@ -477,5 +573,17 @@ internal class Profile
     public double g8pr9v;
     public double g9pr9v;
     public double g10pr9v;
+    //Pstates preset 1
+    public string did0pr9;
+    public string did1pr9;
+    public string did2pr9;
+    public string fid0pr9;
+    public string fid1pr9;
+    public string fid2pr9;
+    public bool enablepspr9;
+    public bool turboboostpr9;
+    public bool autopstatepr9;
+    public bool p0ignorewarnpr9;
+    public bool ignorewarnpr9;
 }
 #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.

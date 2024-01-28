@@ -36,6 +36,7 @@
     <None Remove="info.png" />
     <None Remove="param.png" />
     <None Remove="preset.png" />
+    <None Remove="Services\Cpu.cs.bak.zip" />
     <None Remove="show.png" />
     <None Remove="startup.lnk" />
     <None Remove="Views\КулерPage.xaml" />
@@ -78,12 +79,22 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231008000" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="OpenHardwareMonitor" Version="0.9.6" />
     <PackageReference Include="TaskScheduler" Version="2.10.1" />
     <PackageReference Include="WinUIEx" Version="2.3.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Saku Overclock.Core\Saku Overclock.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Management">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Management.dll</HintPath>
+    </Reference>
+    <Reference Include="ZenStates-Core">
+      <HintPath>ZenStates-Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

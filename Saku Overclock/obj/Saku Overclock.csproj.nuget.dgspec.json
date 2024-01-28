@@ -145,6 +145,10 @@
               "target": "Package",
               "version": "[13.0.3, )"
             },
+            "OpenHardwareMonitor": {
+              "target": "Package",
+              "version": "[0.9.6, )"
+            },
             "TaskScheduler": {
               "target": "Package",
               "version": "[2.10.1, )"
