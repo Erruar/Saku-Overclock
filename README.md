@@ -86,7 +86,7 @@
 This program is designed to overclock Ryzen mobile processors on laptops. Initially, the program was created due to the frequent occurrence of 0.4 GHz processor freq. I came across a group of such people on the Internet, as a result of which I developed this program.
 
 What the program can do:
-* Control TDP, VRM current and on Picasso and up - Freq of CPU subsistems and iGPU freq
+* Control TDP, VRM current and on Picasso and up - Freq of CPU subsystems and iGPU freq
 * Read and change Power States of CPU with changing frequency 
 * Get total info about TDP, VRM, Timings
 * Cooler tuning, custom cooler spin rate
