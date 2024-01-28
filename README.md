@@ -87,6 +87,7 @@ This program is designed to overclock Ryzen mobile processors on laptops. Initia
 
 What the program can do:
 * Control TDP, VRM current and on Picasso and up - Freq of CPU subsistems and iGPU freq
+* Read and change Power States of CPU with changing frequency 
 * Get total info about TDP, VRM, Timings
 * Cooler tuning, custom cooler spin rate
 * EXPERIMENTAL can stop BD Prochot for time, just found value for your CPU
