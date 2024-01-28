@@ -153,7 +153,7 @@ Use the `README.md` to get started.
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/2.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/3.png"></img>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/4.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/5.png"></img>
     <p> </p>
     <p align="left">There you can easily adjust values of your CPU, GPU and VRM with recommendations for balance and performance. About Disable BD Prochot timings: in theory it can help with 0,4 GHz and stop throttling, you need to found value that works for you. Try with 0, 2, 4, 8, 10, e.t.c. More features soon!</p>
     <p> </p>
