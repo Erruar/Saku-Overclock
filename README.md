@@ -246,6 +246,7 @@ Let's install my app!
 4. Open app via Windows -> All apps
 5. Now you have installed my app!
 
+<a href="https://github.com/Erruar/Saku-Overclock/issues/2"><strong>Seems like app isn't working for me »</strong></a>
 ## Video installation (Click to open)
 [![asciicast](https://i.stack.imgur.com/gHrep.png)](https://youtu.be/wi1nCkhE1pI)
 
@@ -261,7 +262,7 @@ Or if you have a special case (for example, 0.4 GHz issue) or you want to get th
 On it, you can set the values that you want, and if you don't know what to do, there are tips for balance and performance
 
 If you have found the perfect settings for yourself, just click on the apply button at the bottom right, it looks like a Play Music icon. But before that, I RECOMMEND going to the settings page and making sure that you have enabled "Reapply latest settings every", after which, applying your settings, they will be updated every time, depending on what time you set
-
+<a href="https://github.com/Erruar/Saku-Overclock/issues/2"><strong>Seems like app isn't working for me »</strong></a>
 <!--_For more examples, please refer to the [Documentation](https://example.com)_-->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
