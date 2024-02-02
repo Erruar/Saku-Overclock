@@ -86,7 +86,8 @@
 This program is designed to overclock Ryzen mobile processors on laptops. Initially, the program was created due to the frequent occurrence of 0.4 GHz processor freq. I came across a group of such people on the Internet, as a result of which I developed this program.
 
 What the program can do:
-* Control TDP, VRM current and on Picasso and up - Freq of CPU subsistems and iGPU freq
+* Control TDP, VRM current and on Picasso and up - Freq of CPU subsystems and iGPU freq
+* Read and change Power States of CPU with changing frequency 
 * Get total info about TDP, VRM, Timings
 * Cooler tuning, custom cooler spin rate
 * EXPERIMENTAL can stop BD Prochot for time, just found value for your CPU
@@ -157,6 +158,9 @@ Use the `README.md` to get started.
     <p> </p>
     <p align="left">There you can easily adjust values of your CPU, GPU and VRM with recommendations for balance and performance. About Disable BD Prochot timings: in theory it can help with 0,4 GHz and stop throttling, you need to found value that works for you. Try with 0, 2, 4, 8, 10, e.t.c. More features soon!</p>
     <p> </p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/5.png"></img>
+    <p> </p>
+    <p align="left">There you can change PStates of your CPU. It can improve performance as well. Disable Turbo boost for better results. It can help with 0,4 GHz issue! Pls, don't try changing P0 State while you using battery right now. Change it while power adapter is connected. If you got system crash - don't worry, it won't break your CPU. Just restart. If you enabled reapply with ignoring warnings and got system crashing - boot into safe mode and disable it</p>
   </ol>
 </details>
 
@@ -242,6 +246,7 @@ Let's install my app!
 4. Open app via Windows -> All apps
 5. Now you have installed my app!
 
+<a href="https://github.com/Erruar/Saku-Overclock/issues/2"><strong>Seems like app isn't working for me »</strong></a>
 ## Video installation (Click to open)
 [![asciicast](https://i.stack.imgur.com/gHrep.png)](https://youtu.be/wi1nCkhE1pI)
 
@@ -257,7 +262,7 @@ Or if you have a special case (for example, 0.4 GHz issue) or you want to get th
 On it, you can set the values that you want, and if you don't know what to do, there are tips for balance and performance
 
 If you have found the perfect settings for yourself, just click on the apply button at the bottom right, it looks like a Play Music icon. But before that, I RECOMMEND going to the settings page and making sure that you have enabled "Reapply latest settings every", after which, applying your settings, they will be updated every time, depending on what time you set
-
+<a href="https://github.com/Erruar/Saku-Overclock/issues/2"><strong>Seems like app isn't working for me »</strong></a>
 <!--_For more examples, please refer to the [Documentation](https://example.com)_-->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
