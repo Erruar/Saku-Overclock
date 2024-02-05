@@ -255,20 +255,12 @@ Let's install my app!
 5. Now you have installed my app!
 
 ## If you have troubles with certificate
-<details>
-     <summary>Installation without certificate:</summary>
-     <ol>
-       <h1 align="center">How to install certificate</h1> 
-     
-       <a href="https://github.com/colinkiama/EasyCertInstall/releases"><strong>1. Download EasyCertInstall</strong></a>
-  
-       2. Put `EasyCertInstall.exe` into folder with my `.appx` app
-       
-       3. Run `EasyCertInstall.exe` as Administrator and wait for message from it
-       
-       4. Run my app from Windows button or from Windows Search and you can delete `EasyCertInstall.exe` and `.appx`!
-    </ol>     
-   </details>
+
+  <h1 align="center">How to install certificate</h1> 
+  <a href="https://github.com/colinkiama/EasyCertInstall/releases"><strong>1. Download EasyCertInstall</strong></a>
+  2. Put `EasyCertInstall.exe` into folder with my `.appx` app
+  3. Run `EasyCertInstall.exe` as Administrator and wait for message from it
+  4. Run my app from Windows button or from Windows Search and you can delete `EasyCertInstall.exe` and `.appx`!
 
 <a href="https://github.com/Erruar/Saku-Overclock/issues/2"><strong>Seems like app isn't working for me »</strong></a>
 ## Video installation (Click to open)
