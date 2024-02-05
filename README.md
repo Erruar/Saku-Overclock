@@ -254,8 +254,7 @@ Let's install my app!
 4. Open app via Windows -> All apps
 5. Now you have installed my app!
 
-## If you have troubles with certificate
-
+### If you have troubles with certificate
 <h2 align="center">How to install app without certificate</h2> 
 1. <a href="https://github.com/colinkiama/EasyCertInstall/releases"><strong>Download EasyCertInstall</strong></a>
 2. Put `EasyCertInstall.exe` into folder with my `.appx` app
