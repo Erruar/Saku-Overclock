@@ -260,9 +260,9 @@ Let's install my app!
      <ol>
        <h1 align="center">How to install certificate</h1> 
        <a href="https://github.com/colinkiama/EasyCertInstall/releases"><strong>1. Download EasyCertInstall</strong></a>
-       <h1 align="left">2. Put ```EasyCertInstall.exe``` into folder with my ```.appx``` app</h1>
-       <h1 align="left">3. Run ```EasyCertInstall.exe``` as Administrator and wait for message from it</h1>
-       <h1 align="left">4. Run my app from Windows button or from Windows Search and you can delete ```EasyCertInstall.exe``` and ```.appx```!</h1>
+       2. Put `EasyCertInstall.exe` into folder with my `.appx` app
+       3. Run `EasyCertInstall.exe` as Administrator and wait for message from it
+       4. Run my app from Windows button or from Windows Search and you can delete `EasyCertInstall.exe` and `.appx`!
      </ol>
    </details>
 
