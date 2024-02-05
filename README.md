@@ -115,7 +115,7 @@ Use the `README.md` to get started.
     <h1 align="center">White main page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main-white.png"></img>
     <p> </p>
-    <p align="left">My application has two themes - dark and light, here you can see the light theme</p>
+    <p align="left">My application has three themes - dark, light and blue, here you can see the light theme</p>
   </ol>
 </details>
 
