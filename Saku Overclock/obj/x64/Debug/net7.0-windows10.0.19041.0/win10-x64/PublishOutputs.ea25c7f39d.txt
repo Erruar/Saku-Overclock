@@ -735,6 +735,7 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-wind
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\Microsoft.Xaml.Interactions.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\Microsoft.Xaml.Interactivity.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\Newtonsoft.Json.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\OpenHardwareMonitorLib.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\Microsoft.Win32.TaskScheduler.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\WinUIEx.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\de\Microsoft.Win32.TaskScheduler.resources.dll
@@ -747,5 +748,7 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-wind
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\zh-Hant\Microsoft.Win32.TaskScheduler.resources.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\Microsoft.WindowsAppRuntime.Bootstrap.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\Saku Overclock.Core.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\System.Management.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\ZenStates-Core.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\Saku Overclock.Core.pdb
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\publish\resources.pri

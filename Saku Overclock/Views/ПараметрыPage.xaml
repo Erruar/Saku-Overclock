@@ -13,7 +13,7 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition Height="70"></RowDefinition>
             </Grid.RowDefinitions>
-            
+
             <!-- Начало -->
             <TextBlock x:Uid="Param_Name" Text="Параметры процессора" FontSize="30" Margin="0,-65,0,0"></TextBlock>
             <TextBlock x:Uid="Param_Preset" Text="Сохранённые пресеты:" FontSize="20" Margin="0,-10,0,0"></TextBlock>
@@ -29,13 +29,13 @@
                 <ComboBoxItem x:Name="ProfileCOM_8" Visibility="Collapsed"></ComboBoxItem>
                 <ComboBoxItem x:Name="ProfileCOM_9" Visibility="Collapsed"></ComboBoxItem>
             </ComboBox>
-            
+
             <!-- Середина -->
             <ScrollViewer Grid.Row="1" Padding="0,0,36,0" IsTabStop="False"
          UseSystemFocusVisuals="False"
          VerticalScrollBarVisibility="Auto"
          VerticalScrollMode="Auto" Margin="0,0,-50,0">
-                <Grid>
+                <Grid VerticalAlignment="Top">
                     <Grid.RowDefinitions>
                         <!-- От 0 до 6 -->
                         <RowDefinition></RowDefinition>
@@ -47,8 +47,8 @@
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
-                    </Grid.RowDefinitions> 
-                    <Expander Grid.Row="0" IsExpanded="False">
+                    </Grid.RowDefinitions>
+                    <Expander Grid.Row="0" IsExpanded="False" VerticalAlignment="Top">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <SymbolIcon Symbol="SelectAll" HorizontalAlignment="Left" Margin="0,0,9,0"/>
@@ -153,7 +153,7 @@
                             <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c1" Text="Максимальная температура CPU (C)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c1" Checked="c1_Checked" Unchecked="c1_Checked"></CheckBox>
-                                <Slider x:Name="c1v" ValueChanged="c1_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100" Value="90">
+                                <Slider x:Name="c1v" ValueChanged="c1_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="c1t" Margin="245,20,0,0" Content="1"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
@@ -170,7 +170,7 @@
                     </Expander>
 
 
-                    <Expander x:Name="Exp1" Grid.Row="1">
+                    <Expander x:Name="Exp1" Grid.Row="1" VerticalAlignment="Top">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <SymbolIcon Symbol="Library" HorizontalAlignment="Left" Margin="0,0,9,0"/>
@@ -307,7 +307,7 @@
                     </Expander>
 
 
-                    <Expander  Grid.Row="2" >
+                    <Expander  Grid.Row="2" VerticalAlignment="Top">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe9d9;"/>
@@ -491,7 +491,7 @@
                         </Grid>
                     </Expander>
 
-                    <Expander  Grid.Row="3" Expanding="Pstate_Expanding">
+                    <Expander  Grid.Row="4" Expanding="Pstate_Expanding" VerticalAlignment="Top">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xf8a6;"/>
@@ -552,6 +552,7 @@
                                     <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="146,0,0,0" FontSize="15" Text="FID"/>
                                     <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="205,0,0,0" FontSize="15" Text="Multiplier"/>
                                     <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="303,0,0,0" FontSize="15" Text="DID"/>
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="373,0,0,0" FontSize="15" Text="VID"/>
                                 </Grid>
                                 <Grid Grid.Row="1"  Margin="-7,10,0,0" Width="2000">
                                     <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P0"/>
@@ -605,6 +606,9 @@
                                     </ComboBox>
                                     <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="290,-1,0,0">
                                         <NumberBox Minimum="8" ValueChanged="DID_0_ValueChanged" Maximum="45" x:Name="DID_0" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="360,-1,0,0">
+                                        <NumberBox Minimum="725" x:Name="VID_0" ValueChanged="VID_0_ValueChanged" Maximum="1500" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
                                     </Border>
                                 </Grid>
                                 <Grid Grid.Row="2" Margin="-7,10,0,0" Width="2000">
@@ -660,6 +664,9 @@
                                     <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="290,-1,0,0">
                                         <NumberBox Minimum="8" ValueChanged="DID_1_ValueChanged" Maximum="45" x:Name="DID_1"  HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
                                     </Border>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="360,-1,0,0">
+                                        <NumberBox Minimum="725" x:Name="VID_1" ValueChanged="VID_1_ValueChanged" Maximum="1500"  HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
                                 </Grid>
                                 <Grid Grid.Row="3"  Margin="-7,10,0,0" Width="2000">
                                     <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P2"/>
@@ -714,10 +721,13 @@
                                     <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="290,-1,0,0">
                                         <NumberBox Minimum="8" Maximum="45" ValueChanged="DID_2_ValueChanged" x:Name="DID_2" HorizontalAlignment="Left" Width="60" Height="32" Text=""></NumberBox>
                                     </Border>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="360,-1,0,0">
+                                        <NumberBox Minimum="725" Maximum="1500" x:Name="VID_2" ValueChanged="VID_2_ValueChanged" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
                                 </Grid>
-                                
+
                             </Grid>
-                            <Grid Grid.Row="4" HorizontalAlignment="Stretch" ToolTipService.ToolTip="Now you can't change it!" Margin="0,20,2,0">
+                            <Grid Grid.Row="4" HorizontalAlignment="Stretch" Margin="0,20,2,0">
                                 <Button Height="50" HorizontalContentAlignment="Stretch" Click="TurboBoost_Click" HorizontalAlignment="Stretch">
                                     <Grid Height="50">
                                         <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe8be;"/>
@@ -726,7 +736,7 @@
                                     </Grid>
                                 </Button>
                                 <Grid HorizontalAlignment="Right">
-                                    <ToggleSwitch x:Name="Turbo_boost"  OffContent="" OnContent="" Toggled="Turbo_boost_Toggled"  Margin="0,0,-100,0" VerticalAlignment="Center" IsEnabled="False" IsOn="True"></ToggleSwitch>
+                                    <ToggleSwitch x:Name="Turbo_boost"  OffContent="" OnContent="" Toggled="Turbo_boost_Toggled"  Margin="0,0,-100,0" VerticalAlignment="Center" ></ToggleSwitch>
                                 </Grid>
                             </Grid>
                             <Grid Grid.Row="5" HorizontalAlignment="Stretch" Margin="0,10,2,0">
@@ -767,10 +777,402 @@
                             </Grid>
                         </Grid>
                     </Expander>
+
+                    <Expander  Grid.Row="3" x:Name="OC_Advanced">
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xecad;"/>
+                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_ADV_Text" Text="Advanced CPU parameters"></TextBlock>
+                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_ADV_Pdesc"  Text="Experimental parameters for every Ryzen Renoir and up processors"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="2000">
+                            <!-- Монтируем секции -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <!-- Первая секция -->
+
+                            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a2" Text="Лимит по току NPU (A)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a2_Checked" Unchecked="a2_Checked" x:Name="a2" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a2v" ValueChanged="a2v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="12" Maximum="180" Value="70">
+                                </Slider>
+                                <Button Height="30" Width="60" x:Name="a2t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a2_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock x:Uid="Param_ADV_Ram" Text="                                    70(A)                         70(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="0" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a3" Text="Максимальный ток iGPU (A)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a3_Checked" Unchecked="a3_Checked" x:Name="a3" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a3v" ValueChanged="a3v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="12" Maximum="180" Value="70">
+                                </Slider>
+                                <Button Height="30" Width="60" x:Name="a3t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a3_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock Text="                                    70(A)                         70(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="0" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a4" Text="Максимальный ток CPU по линии PCI (A)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a4_Checked" Unchecked="a4_Checked" x:Name="a4" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a4v" ValueChanged="a4v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="12" Maximum="180" Value="70">
+                                </Slider>
+                                <Button Height="30" Width="60" x:Name="a4t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a4_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock x:Uid="Param_ADV_Ram" Text="                                    70(A)                         70(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="0" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a5" Text="Максимальный ток GPU по линии PCI (A)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a5_Checked" Unchecked="a5_Checked" x:Name="a5" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a5v" ValueChanged="a5v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="12" Maximum="180" Value="70">
+                                </Slider>
+                                <Button Height="30" Width="60" x:Name="a5t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a5_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock Text="                                    70(A)                         70(A)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="0" Width="2000">
+                                <TextBlock  x:Uid="Param_ADV_a6" Text="Максимальная температура iGPU (C)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a6_Checked" Unchecked="a6_Checked" x:Name="a6" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a6v" ValueChanged="a6v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100" Value="90">
+                                </Slider>
+                                <Button Height="30" Width="60" x:Name="a6t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a6_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock Text="                                    75(C)                         90(C)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="6" Grid.Column="0" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a7" Text="Максимальная температура dGPU (C)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a7_Checked" Unchecked="a7_Checked" x:Name="a7" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a7v" ValueChanged="a7v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100" Value="90">
+                                </Slider>
+                                <Button Height="30" Width="60" x:Name="a7t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a7_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock Text="                                    75(C)                         90(C)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="7" Grid.Column="0" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a8" Text="Лимит потребления iGPU (W)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a8_Checked" Unchecked="a8_Checked" x:Name="a8" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a8v" ValueChanged="a8v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="25" Value="7">
+                                </Slider>
+                                <Button Height="30" Width="60" x:Name="a8t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a8_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="8" Grid.Column="0" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a9" Text="Общий лимит потребления (W)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a9_Checked" Unchecked="a9_Checked" x:Name="a9" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a9v" ValueChanged="a9v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="45">
+                                </Slider>
+                                <Button Height="30" Width="60" x:Name="a9t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a9_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <!--<TextBlock Text="                                        Не стоит зменять!!!" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>-->
+                                <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="9" Grid.Column="0" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a10" Text="Зафиксировать частоту iGPU (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a10_Checked" Unchecked="a10_Checked" x:Name="a10" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a10v" ValueChanged="a10v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="2500" Value="1200">
+                                </Slider>
+                                <Button Height="30" Width="60" x:Name="a10t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a10_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+
+                            <Grid Grid.Row="10" Grid.Column="0" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a11" Text="Зафиксировать частоту CPU (MHz)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a11_Checked" Unchecked="a11_Checked" x:Name="a11" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a11v" ValueChanged="a11v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="4500" Value="2500"/>
+                                <Button Height="30" Width="60" x:Name="a11t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a11_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="10" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+
+                            <Grid Grid.Row="11" Grid.Column="0" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a12" Text="Зафиксировать напряжение CPU (mV)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a12_Checked" Unchecked="a12_Checked" x:Name="a12" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a12v" ValueChanged="a12v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="750" Maximum="1500" Value="1200"/>
+                                <Button Height="30" Width="60" x:Name="a12t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a12_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+
+                            <Grid Grid.Row="12" Grid.Column="0" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a13" Text="Предпочтительный режим" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a13_Checked" Unchecked="a13_Checked" x:Name="a13" Margin="0,25,0,0"></CheckBox>
+                                <ComboBox x:Name="a13m" Margin="35,26,0,0" SelectedIndex="0" SelectionChanged="a13m_SelectedIndexChanged" VerticalAlignment="Top" Width="270" HorizontalAlignment="Left">
+                                    <ComboBoxItem>Keep auto</ComboBoxItem>
+                                    <ComboBoxItem>Ultra performance</ComboBoxItem>
+                                    <ComboBoxItem>Energy efficiency</ComboBoxItem>
+                                </ComboBox>
+                                <Button Visibility="Collapsed" Height="30" Width="60" x:Name="a13t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a13_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="12" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock x:Uid="ADV_Auto" Text="                                              Keep auto " Grid.Column="1" Margin="0,26,0,0" ></TextBlock>
+                            </Grid>
+                            <!-- Здесь начало... это нужно для фикса непрогрузки -->
+                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <TextBlock x:Uid="Param_ADV_a1"  Text="Лимит по току iGPU (A)" FontSize="15"></TextBlock>
+                                <CheckBox Checked="a1_Checked" Unchecked="a1_Checked" x:Name="a1" Margin="0,20,0,0"></CheckBox>
+                                <Slider x:Name="a1v" ValueChanged="a1v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="180" Value="50"/>
+                                <Button Height="30" Width="60" x:Name="a1t" Margin="245,20,0,0" Content="1"></Button>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a1_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                                <TextBlock x:Uid="Param_GPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
+                                <TextBlock Text="                                    50(А)                         50(А)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                        </Grid>
+                    </Expander>
+
+                    <Expander  Grid.Row="5" Visibility="Collapsed" IsEnabled="False">
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xee92;"/>
+                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Параметры GPU"></TextBlock>
+                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Расширенные настройки GPU"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xeba1;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  Text="Включить ULPS"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Включить состояние отключения видеокарты при ненадобности"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" HorizontalContentAlignment="Stretch"  HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xec46;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Состояние сна"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Включить состояния сна"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="2" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xee6f;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  Text="Троттлинг"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"   Text="При высоких температурах будет происходить программный троттлинг"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="3" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xec4a;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Управление напряжением"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Программное управление напряжением (в том числе и от троттлинга)"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="4" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xef1f;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  Text="Дизеринг экрана"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="На экранах с высокой герцовкой выключение спасает от мерцания"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0"  VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <!-- Эта секция нужна только для фикса automargin. Тут не будет ничего. Это для растягивания элементов -->
+                            <Grid Grid.Row="5" HorizontalAlignment="Left" Margin=" 30,20,0,0">
+                                <!-- Монтируем секции -->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <!-- От 0 до 6 -->
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <!-- Первая секция -->
+                                <Grid Grid.Row="1"  Margin="-7,10,0,0" Width="2000">
+                                </Grid>
+                                <Grid Grid.Row="2" Margin="-7,10,0,0" Width="2000">
+                                </Grid>
+                                <Grid Grid.Row="3"  Margin="-7,10,0,0" Width="2000">
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Expander>
                 </Grid>
             </ScrollViewer>
-            
-            
+
+            <TeachingTip x:Uid="Apply_Target" x:Name="Apply_tooltip" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0"
+            Title="Значения применены!"
+            Subtitle="Вы успешно применили разгон">
+                <TeachingTip.IconSource>
+                    <SymbolIconSource Symbol="Accept"/>
+                </TeachingTip.IconSource>
+            </TeachingTip>
+            <TeachingTip x:Uid="Edit_Target_Error" x:Name="Edit_tooltip_Error" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+                <TeachingTip.IconSource>
+                    <SymbolIconSource Symbol="Edit"/>
+                </TeachingTip.IconSource>
+            </TeachingTip>
+            <TeachingTip x:Uid="Edit_Target" x:Name="Edit_tooltip" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+                <TeachingTip.IconSource>
+                    <SymbolIconSource Symbol="Edit"/>
+                </TeachingTip.IconSource>
+            </TeachingTip>
+            <TeachingTip x:Uid="Add_Target_Error" x:Name="Add_tooltip_Error" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+                <TeachingTip.IconSource>
+                    <SymbolIconSource Symbol="Add"/>
+                </TeachingTip.IconSource>
+            </TeachingTip>
+            <TeachingTip x:Uid="Add_Target_Max" x:Name="Add_tooltip_Max" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+                <TeachingTip.IconSource>
+                    <SymbolIconSource Symbol="Add"/>
+                </TeachingTip.IconSource>
+            </TeachingTip>
+            <TeachingTip x:Uid="Unsaved_Target" x:Name="Unsaved_tooltip" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+                <TeachingTip.IconSource>
+                    <SymbolIconSource Symbol="Edit"/>
+                </TeachingTip.IconSource>
+            </TeachingTip>
+            <TeachingTip x:Uid="Delete_Target_Error" x:Name="Delete_tooltip_error" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+                <TeachingTip.IconSource>
+                    <SymbolIconSource Symbol="Delete"/>
+                </TeachingTip.IconSource>
+            </TeachingTip>
             <!-- Конец -->
             <TextBlock Grid.Row="2" x:Uid="Param_New" Text="Название нового пресета:" Margin="0,16,0,0" FontSize="20"></TextBlock>
             <TextBox Grid.Row="2" x:Name="SaveName" HorizontalAlignment="Left" Margin="260,0,0,0" Width="200" Height="40"></TextBox>

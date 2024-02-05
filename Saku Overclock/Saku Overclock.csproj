@@ -15,6 +15,7 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
+	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>  
     <Version></Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
@@ -80,6 +81,7 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenHardwareMonitor" Version="0.9.6" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="TaskScheduler" Version="2.10.1" />
     <PackageReference Include="WinUIEx" Version="2.3.2" />
   </ItemGroup>
@@ -740,6 +742,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ryzenadj.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ryzenps.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="temp.ps1">

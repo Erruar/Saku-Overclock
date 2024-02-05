@@ -27,6 +27,7 @@ public partial class SettingsViewModel : ObservableRecipient
     {
         get;
     }
+    
 
     public SettingsViewModel(IThemeSelectorService themeSelectorService)
     {

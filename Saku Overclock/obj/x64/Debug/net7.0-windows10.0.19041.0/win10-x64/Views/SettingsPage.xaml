@@ -19,8 +19,8 @@
                 <CheckBox x:ConnectionId='4' IsEnabled="True" x:Uid="Settings_Start_Mini" Name="CbStartMini"                                                        >Запускаться свёрнутым</CheckBox>
             <CheckBox x:ConnectionId='5' x:Uid="Settings_Apply_Start" Name="CbApplyStart"                                                          >Автоприменять разгон</CheckBox>
             <StackPanel Orientation="Horizontal">
-                <CheckBox x:ConnectionId='11' x:Uid="Settings_Auto_Reapply" Name="CbAutoReapply"                                                            >Автоприменять каждые (с)</CheckBox>
-                <NumberBox x:ConnectionId='12' Name="nudAutoReapply"                                            Minimum="1" Value="3" Maximum="60" Margin="9,0,0,0"></NumberBox>
+                <CheckBox x:ConnectionId='12' x:Uid="Settings_Auto_Reapply" Name="CbAutoReapply"                                                            >Автоприменять каждые (с)</CheckBox>
+                <NumberBox x:ConnectionId='13' Name="nudAutoReapply"                                            Minimum="1" Value="3" Maximum="60" Margin="9,0,0,0"></NumberBox>
             </StackPanel>
                 <CheckBox x:ConnectionId='6' IsEnabled="False" x:Uid="Settings_Auto_Updates" Name="CbAutoCheck"                                                        >Автообновления</CheckBox>
             <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
@@ -30,9 +30,11 @@
                 <StackPanel Margin="{StaticResource XSmallTopMargin}">
                    
                     <RadioButton x:ConnectionId='8'
+                        x:Name="Light_sel"
                         x:Uid="Settings_Theme_Light"
                                                                        
                                                                                                                                                              
+                                                   
                         FontSize="15"
                         GroupName="AppTheme">
                         <RadioButton.CommandParameter>
@@ -40,19 +42,32 @@
                         </RadioButton.CommandParameter>
                     </RadioButton>
                     <RadioButton x:ConnectionId='9'
+                        x:Name="Dark_sel"
                         x:Uid="Settings_Theme_Dark"
                                                                        
                                                                                                                                                             
+                                                  
                         FontSize="15"
                         GroupName="AppTheme">
                         <RadioButton.CommandParameter>
                             <xaml:ElementTheme>Dark</xaml:ElementTheme>
                         </RadioButton.CommandParameter>
                     </RadioButton>
+
                     <RadioButton x:ConnectionId='10'
+                        x:Uid="Settings_Theme_Blue"
+                        Content="Тёмно синяя"
+                        x:Name="Blue_sel"
+                                                  
+                        FontSize="15">
+                    </RadioButton>
+
+                    <RadioButton x:ConnectionId='11'
+                        x:Name="Default_sel"
                         x:Uid="Settings_Theme_Default"
                                                                        
                                                                                                                                                                
+                                                     
                         FontSize="15"
                         GroupName="AppTheme">
                         <RadioButton.CommandParameter>

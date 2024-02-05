@@ -57,6 +57,33 @@ internal class Devices
     public double g8v;
     public double g9v;
     public double g10v;
+    //ADVANCED config
+    public bool a1;
+    public bool a2;
+    public bool a3;
+    public bool a4;
+    public bool a5;
+    public bool a6;
+    public bool a7;
+    public bool a8;
+    public bool a9;
+    public bool a10;
+    public bool a11;
+    public bool a12;
+    public bool a13;
+    public double a1v;
+    public double a2v;
+    public double a3v;
+    public double a4v;
+    public double a5v;
+    public double a6v;
+    public double a7v;
+    public double a8v;
+    public double a9v;
+    public double a10v;
+    public double a11v;
+    public double a12v;
+    public int a13v;
     //Pstates config
     public string? did0;
     public string? did1;
@@ -64,6 +91,9 @@ internal class Devices
     public string? fid0;
     public string? fid1;
     public string? fid2;
+    public double vid0;
+    public double vid1;
+    public double vid2;
     public bool enableps;
     public bool turboboost;
     public bool autopstate;

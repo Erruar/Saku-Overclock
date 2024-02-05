@@ -9,26 +9,112 @@
     <Grid x:Name="ContentArea">
         <TextBlock x:Uid="Info_Name" Text="Информация" FontSize="30" Margin="0,-65,0,0"></TextBlock>
         <CheckBox x:Uid="Info_Autoupdate" Unchecked="CheckBox_Checked" Checked="CheckBox_Checked" x:Name="Absc" Content="Автообновление каждые (Мс)" Margin="0,30,0,0" VerticalAlignment="Top"></CheckBox>
-        <Button x:Uid="Info_Refresh" Grid.Column="1" Width="40" Height="40" VerticalAlignment="Top" Margin="360,28,0,0" x:Name="xx" Click="xx_Click" ToolTipService.ToolTip="Обновить информацию">
+        <Button x:Uid="Info_Refresh" Grid.Column="1" Width="40" Height="40" VerticalAlignment="Top" Margin="360,28,0,0" x:Name="xx" Click="xx_Click">
             <SymbolIcon Symbol="Refresh" HorizontalAlignment="Left" Margin="-3,0,0,0"/>
         </Button>
-        <NumberBox Width="100" Height="35" x:Name="numberBox" HorizontalAlignment="Left" VerticalAlignment="Top" Minimum="60" Maximum="10000" Value="300" Margin="250,30,0,0"/>
-        <ScrollViewer Margin="0,70,-50,0">
-            <Grid Margin="0,-110,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="70"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Border Width="70" Height="700" HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                    <StackPanel Height="450">
-                        <TextBlock x:Name="richTextBox1" FontSize="14" Height="580" HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                           Margin="-200, -120, 0,100" FontFamily="Consolas"
-                           Padding="2,2,0,2"  />
-                    </StackPanel>
-                </Border>
-                <TextBlock x:Uid="Info_Text" ToolTipService.ToolTip="About the Setted and Current values: Setted is the value that you set in the program for the processor. Theoretically, the processor should reach it under load. Current is the value that shows the current value of this parameter right now" Height="580" Grid.Column="1" x:Name="DescText" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14" FontFamily="Consolas" Text=" - Лимит CPU (W), Максимальное значение &#x0a; - Лимит CPU (W) Текущее значение &#x0a; - Реальный CPU (W), Максимальное значение &#x0a; - Реальный CPU (W) Текущее значение &#x0a; - Средний CPU (W), Максимальное значение &#x0a; - Средний CPU (W) Текущее значение &#x0a; - Тик быстрого разгона (S) &#x0a; - Тик медленного разгона (S) &#x0a; - Мощность при быстром разгоне (W) &#x0a; - Мощность при медленном разгоне (W) &#x0a; - Лимит по току VRM (A), Максимальное значение &#x0a; - Лимит по току VRM (A), Текущее значение &#x0a; - Лимит по току SoC (A), Максимальное значение &#x0a; - Лимит по току SoC (A), Текущее значение &#x0a; - Максимальный ток VRM (A) &#x0a; - Текущий ток VRM (A) &#x0a; - Максимальный ток SoC (A) &#x0a; - Текущий максимальный ток SoC (A) &#x0a; - Максимальная температура (C) &#x0a; - Текущая температура (C) &#x0a; - Максимальная температура iGPU (C) &#x0a; - Текущая температура iGPU (C) &#x0a; - Максимальная температура dGPU (C) &#x0a; - Текущая температура dGPU (C) &#x0a; - Процент начала троттлинга (Загрузка CPU %)  &#x0a; - Текущая загрузка CPU (%)" Margin=" 0,0, 0, -5"></TextBlock>
+        <NumberBox Width="100" Height="35" x:Name="numberBox" HorizontalAlignment="Left" ValueChanged="numberBox_ValueChanged" VerticalAlignment="Top" Minimum="60" Maximum="10000" Value="300" Margin="250,30,0,0"/>
+        <ScrollViewer Padding="0,0,36,0" IsTabStop="False"
+         UseSystemFocusVisuals="False"
+         VerticalScrollBarVisibility="Auto"
+         VerticalScrollMode="Auto" Margin="0,80,-50,0">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Expander Grid.Row="0" VerticalAlignment="Top">
+                    <Expander.Header>
+                        <Grid Height="65" Width="2000">
+                            <SymbolIcon Symbol="List" HorizontalAlignment="Left" Margin="0,0,9,0"/>
+                            <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top"   Text="Информация"></TextBlock>
+                            <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Информация о мощностях CPU"></TextBlock>
+                        </Grid>
+                    </Expander.Header>
+                    <Grid HorizontalAlignment="Left" Width="2000" >
+                        <Grid Margin="0,-110,0,0" VerticalAlignment="Top">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Border Width="66" Height="700" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                                    <StackPanel Height="450">
+                                        <TextBlock x:Name="richTextBox1" FontSize="14" Height="580" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+Margin="-200, -120, 0,100" FontFamily="Consolas"
+Padding="2,2,0,2"  />
+                                    </StackPanel>
+                                </Border>
+                                <TextBlock x:Uid="Info_Text" ToolTipService.ToolTip="About the Setted and Current values: Setted is the value that you set in the program for the processor. Theoretically, the processor should reach it under load. Current is the value that shows the current value of this parameter right now" Height="580" Grid.Column="1" x:Name="DescText" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="14" FontFamily="Consolas" Text=" - Лимит CPU (W), Максимальное значение &#x0a; - Лимит CPU (W) Текущее значение &#x0a; - Реальный CPU (W), Максимальное значение &#x0a; - Реальный CPU (W) Текущее значение &#x0a; - Средний CPU (W), Максимальное значение &#x0a; - Средний CPU (W) Текущее значение &#x0a; - Тик быстрого разгона (S) &#x0a; - Тик медленного разгона (S) &#x0a; - Мощность при быстром разгоне (W) &#x0a; - Мощность при медленном разгоне (W) &#x0a; - Лимит по току VRM (A), Максимальное значение &#x0a; - Лимит по току VRM (A), Текущее значение &#x0a; - Лимит по току SoC (A), Максимальное значение &#x0a; - Лимит по току SoC (A), Текущее значение &#x0a; - Максимальный ток VRM (A) &#x0a; - Текущий ток VRM (A) &#x0a; - Максимальный ток SoC (A) &#x0a; - Текущий максимальный ток SoC (A) &#x0a; - Максимальная температура (C) &#x0a; - Текущая температура (C) &#x0a; - Максимальная температура iGPU (C) &#x0a; - Текущая температура iGPU (C) &#x0a; - Максимальная температура dGPU (C) &#x0a; - Текущая температура dGPU (C) &#x0a; - Процент начала троттлинга (Загрузка CPU %)  &#x0a; - Текущая загрузка CPU (%)" Margin=" 0,0, 0, -6"></TextBlock>
+                                <!--TextBlock Grid.Row="1" x:Name="textBlockInfo" Height="580" Grid.Column="1" VerticalAlignment="Top"-->
+                            </Grid>
+                    </Grid>
+                </Expander>
+
+                <Expander x:Name="sdCPU"
+    IsEnabled="True" Grid.Row="1"
+    IsExpanded="True" VerticalAlignment="Top">
+                    <Expander.Header>
+                        <Grid Height="65" Width="2000">
+                            <SymbolIcon Symbol="List" HorizontalAlignment="Left" Margin="0,0,9,0"/>
+                            <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top"   Text="Процессор"></TextBlock>
+                            <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Свойства вашего процессора"></TextBlock>
+                        </Grid>
+                    </Expander.Header>
+                    <!--  CardExpander content  -->
+                    <Grid HorizontalAlignment="Left" Width="2000">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel Margin="24,0,12,0" Width="80">
+                                    <TextBlock FontWeight="SemiBold">Processor</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" Margin="0,8,0,0">Producer</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" Margin="0,8,0,0" x:Name="tbCode">Codename</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" Margin="0,8,0,0">Caption</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" Margin="0,8,0,0">Cores</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" Margin="0,8,0,0">Threads</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" Margin="0,8,0,0">Base Clock</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" Margin="0,8,0,0">L1 Cache</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" Margin="0,8,0,0">L2 Cache</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" Margin="0,8,0,0">L3 Cache</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" Margin="0,8,0,0">Instructions</TextBlock>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock  x:Name="tbProcessor"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbProducer"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbCodename"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbCaption"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbCores"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbThreads"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbBaseClock"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbL1Cache"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbL2Cache"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbL3Cache"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbInstructions"></TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Expander>
+
+                <Expander Grid.Row="2" VerticalAlignment="Top">
+                    <Expander.Header>
+                        <Grid Height="65" Width="2000">
+                            <SymbolIcon Symbol="List" HorizontalAlignment="Left" Margin="0,0,9,0"/>
+                            <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top"   Text="Коррекция"></TextBlock>
+                            <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Коррекция мощностей CPU...."></TextBlock>
+                        </Grid>
+                    </Expander.Header>
+                    <Grid HorizontalAlignment="Left" Width="2000" >
+                        <TextBlock x:Name="richTextBox2" FontSize="14" Height="580" HorizontalAlignment="Left" VerticalAlignment="Top"
+Margin="0,0,0,0" FontFamily="Consolas"
+Padding="2,2,0,2"  />
+                        <TextBlock Visibility="Collapsed" x:Uid="Info_Text" ToolTipService.ToolTip="About the Setted and Current values: Setted is the value that you set in the program for the processor. Theoretically, the processor should reach it under load. Current is the value that shows the current value of this parameter right now" Height="580" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="14" FontFamily="Consolas" Text=" - Лимит CPU (W), Максимальное значение &#x0a; - Лимит CPU (W) Текущее значение &#x0a; - Реальный CPU (W), Максимальное значение &#x0a; - Реальный CPU (W) Текущее значение &#x0a; - Средний CPU (W), Максимальное значение &#x0a; - Средний CPU (W) Текущее значение &#x0a; - Тик быстрого разгона (S) &#x0a; - Тик медленного разгона (S) &#x0a; - Мощность при быстром разгоне (W) &#x0a; - Мощность при медленном разгоне (W) &#x0a; - Лимит по току VRM (A), Максимальное значение &#x0a; - Лимит по току VRM (A), Текущее значение &#x0a; - Лимит по току SoC (A), Максимальное значение &#x0a; - Лимит по току SoC (A), Текущее значение &#x0a; - Максимальный ток VRM (A) &#x0a; - Текущий ток VRM (A) &#x0a; - Максимальный ток SoC (A) &#x0a; - Текущий максимальный ток SoC (A) &#x0a; - Максимальная температура (C) &#x0a; - Текущая температура (C) &#x0a; - Максимальная температура iGPU (C) &#x0a; - Текущая температура iGPU (C) &#x0a; - Максимальная температура dGPU (C) &#x0a; - Текущая температура dGPU (C) &#x0a; - Процент начала троттлинга (Загрузка CPU %)  &#x0a; - Текущая загрузка CPU (%)" Margin=" 0,10, 0, 0"></TextBlock>
+                    </Grid>
+                </Expander>
             </Grid>
         </ScrollViewer>
-        
     </Grid>
 </Page>

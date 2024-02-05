@@ -18,9 +18,9 @@
           "Microsoft.Xaml.Behaviors.WinUI.Managed": "2.0.9",
           "Newtonsoft.Json": "13.0.3",
           "OpenHardwareMonitor": "0.9.6",
+          "System.Management": "8.0.0",
           "TaskScheduler": "2.10.1",
           "WinUIEx": "2.3.2",
-          "System.Management": "4.0.0.0",
           "ZenStates-Core": "1.6.7.0",
           "runtimepack.Microsoft.NETCore.App.Runtime.win-x64": "7.0.14",
           "runtimepack.Microsoft.WindowsDesktop.App.Runtime.win-x64": "7.0.14",
@@ -824,10 +824,6 @@
             "assemblyVersion": "7.0.0.0",
             "fileVersion": "7.0.1423.52002"
           },
-          "System.CodeDom.dll": {
-            "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.0.1423.51910"
-          },
           "System.Configuration.ConfigurationManager.dll": {
             "assemblyVersion": "7.0.0.0",
             "fileVersion": "7.0.1423.51910"
@@ -1476,12 +1472,31 @@
           }
         }
       },
+      "System.CodeDom/8.0.0": {
+        "runtime": {
+          "lib/net7.0/System.CodeDom.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.0": {
         "dependencies": {
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
       },
       "System.Diagnostics.EventLog/6.0.0": {},
+      "System.Management/8.0.0": {
+        "dependencies": {
+          "System.CodeDom": "8.0.0"
+        },
+        "runtime": {
+          "runtimes/win/lib/net7.0/System.Management.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
       "System.Runtime.CompilerServices.Unsafe/6.0.0": {},
       "System.Security.AccessControl/5.0.0": {
         "dependencies": {
@@ -1557,14 +1572,6 @@
         },
         "runtime": {
           "Saku Overclock.Core.dll": {}
-        }
-      },
-      "System.Management/4.0.0.0": {
-        "runtime": {
-          "System.Management.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.8.3761.0"
-          }
         }
       },
       "ZenStates-Core/1.6.7.0": {
@@ -1857,6 +1864,13 @@
       "path": "openhardwaremonitor/0.9.6",
       "hashPath": "openhardwaremonitor.0.9.6.nupkg.sha512"
     },
+    "System.CodeDom/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WTlRjL6KWIMr/pAaq3rYqh0TJlzpouaQ/W1eelssHgtlwHAH25jXTkUphTYx9HaIIf7XA6qs/0+YhtLEQRkJ+Q==",
+      "path": "system.codedom/8.0.0",
+      "hashPath": "system.codedom.8.0.0.nupkg.sha512"
+    },
     "System.Diagnostics.DiagnosticSource/6.0.0": {
       "type": "package",
       "serviceable": true,
@@ -1870,6 +1884,13 @@
       "sha512": "sha512-lcyUiXTsETK2ALsZrX+nWuHSIQeazhqPphLfaRxzdGaG93+0kELqpgEHtwWOlQe7+jSFnKwaCAgL4kjeZCQJnw==",
       "path": "system.diagnostics.eventlog/6.0.0",
       "hashPath": "system.diagnostics.eventlog.6.0.0.nupkg.sha512"
+    },
+    "System.Management/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jrK22i5LRzxZCfGb+tGmke2VH7oE0DvcDlJ1HAKYU8cPmD8XnpUT0bYn2Gy98GEhGjtfbR/sxKTVb+dE770pfA==",
+      "path": "system.management/8.0.0",
+      "hashPath": "system.management.8.0.0.nupkg.sha512"
     },
     "System.Runtime.CompilerServices.Unsafe/6.0.0": {
       "type": "package",
@@ -1922,11 +1943,6 @@
     },
     "Saku Overclock.Core/1.0.0": {
       "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "System.Management/4.0.0.0": {
-      "type": "reference",
       "serviceable": false,
       "sha512": ""
     },

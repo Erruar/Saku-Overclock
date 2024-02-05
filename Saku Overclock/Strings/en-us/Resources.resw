@@ -734,4 +734,189 @@ once</value>
   <data name="Param_turbo_desc.Text" xml:space="preserve">
     <value>Allows your CPU use Turbo boost state, can broke this settings</value>
   </data>
+  <data name="Param_a10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>That value will fix iGPU freq
+This value will be reset after
+rebooting
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_a11_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>That value will fix CPU freq
+This value will be reset after
+rebooting
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_a12_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>That value will fix CPU voltage
+This value will be reset after
+rebooting
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_a13_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Processor operation mode, they
+switch when charging is connected and
+disconnected. If youre charging and turn 
+on Ultra, it won't do anything, since your
+processor is already in this mode,
+similar to battery life and
+energy efficiency mode</value>
+  </data>
+  <data name="Param_a1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>You can limit the current consumption 
+of your integrated graphics card under 
+the influence of temperatures and load</value>
+  </data>
+  <data name="Param_a2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>You can limit the current consumption 
+of your Neural Processor Unit under 
+the influence of temperatures and load
+(If you have it)</value>
+  </data>
+  <data name="Param_a3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Responsible for the maximum current
+consumed by the integrated
+graphics</value>
+  </data>
+  <data name="Param_a4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Responsible for the maximum current
+consumed by the CPU
+at PCI Express bus</value>
+  </data>
+  <data name="Param_a5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Responsible for the maximum current
+consumed by the all GPUs
+at PCI Express bus
+IT CAN'T BE LOWER THAN iGPU
+Maximum EDC!</value>
+  </data>
+  <data name="Param_a6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum temperature
+With this value, you can limit
+the iGPU by temperature, above
+this value it will not warm
+up, trottling will begin
+This will ONLY work if you see
+the temperature values on
+the information page!</value>
+  </data>
+  <data name="Param_a7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum temperature
+With this value, you can limit
+the dGPU by temperature, above
+this value it will not warm
+up, trottling will begin
+This will ONLY work if you see
+the temperature values on
+the information page!</value>
+  </data>
+  <data name="Param_a8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>This value is responsible for limiting
+the power of your iGPU
+This will ONLY work if you see
+the temperature values on
+the information page!</value>
+  </data>
+  <data name="Param_a9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>This value is responsible for limiting
+the power of your Laptop
+This will ONLY work on AMD APU + dGPU systems
+if you see the temperature values on
+the information page!</value>
+  </data>
+  <data name="Param_ADV_a1.Text" xml:space="preserve">
+    <value>iGPU Maximum TDC (A)</value>
+  </data>
+  <data name="Param_ADV_a10.Text" xml:space="preserve">
+    <value>Fixed iGPU freq (MHz)</value>
+  </data>
+  <data name="Param_ADV_a11.Text" xml:space="preserve">
+    <value>Fixed CPU freq (MHz)</value>
+  </data>
+  <data name="Param_ADV_a12.Text" xml:space="preserve">
+    <value>Fixed CPU voltage (mV)</value>
+  </data>
+  <data name="Param_ADV_a13.Text" xml:space="preserve">
+    <value>Preferred mode</value>
+  </data>
+  <data name="Param_ADV_a2.Text" xml:space="preserve">
+    <value>NPU Maximum TDC (A)</value>
+  </data>
+  <data name="Param_ADV_a3.Text" xml:space="preserve">
+    <value>iGPU Maximum EDC (A)</value>
+  </data>
+  <data name="Param_ADV_a4.Text" xml:space="preserve">
+    <value>CPU Maximum EDC (A)</value>
+  </data>
+  <data name="Param_ADV_a5.Text" xml:space="preserve">
+    <value>GPU Maximum EDC (A)</value>
+  </data>
+  <data name="Param_ADV_a6.Text" xml:space="preserve">
+    <value>iGPU Maximum temperature (C)</value>
+  </data>
+  <data name="Param_ADV_a7.Text" xml:space="preserve">
+    <value>dGPU Maximum temperature (C)</value>
+  </data>
+  <data name="Param_ADV_a8.Text" xml:space="preserve">
+    <value>iGPU Actual Power Limit (W)</value>
+  </data>
+  <data name="Param_ADV_a9.Text" xml:space="preserve">
+    <value>Laptop Power Limit (W)</value>
+  </data>
+  <data name="Param_ADV_Pdesc.Text" xml:space="preserve">
+    <value>Experimental parameters for every Ryzen Renoir and up processors</value>
+  </data>
+  <data name="Param_ADV_Text.Text" xml:space="preserve">
+    <value>Advanced CPU parameters</value>
+  </data>
+  <data name="Set_settings" xml:space="preserve">
+    <value>You have successfully set your settings</value>
+  </data>
+  <data name="Set_succ" xml:space="preserve">
+    <value>Сhanged successfully!</value>
+  </data>
+  <data name="Add_tooltip_Error.Subtitle" xml:space="preserve">
+    <value>Set other name!</value>
+  </data>
+  <data name="Add_tooltip_Error.Title" xml:space="preserve">
+    <value>Add profile error</value>
+  </data>
+  <data name="ADV_Auto.Text" xml:space="preserve">
+    <value>                                              Keep auto</value>
+  </data>
+  <data name="ADV_Change.Text" xml:space="preserve">
+    <value>                                        Don't change it!!!</value>
+  </data>
+  <data name="Apply_Target.Subtitle" xml:space="preserve">
+    <value>You have successfully set your settings</value>
+  </data>
+  <data name="Apply_Target.Title" xml:space="preserve">
+    <value>Сhanged successfully!</value>
+  </data>
+  <data name="Delete_Target_Error.Subtitle" xml:space="preserve">
+    <value>You can't delete Unsaved profile!</value>
+  </data>
+  <data name="Delete_Target_Error.Title" xml:space="preserve">
+    <value>Delete profile error</value>
+  </data>
+  <data name="Edit_Target.Subtitle" xml:space="preserve">
+    <value>New name of your preset is set</value>
+  </data>
+  <data name="Edit_Target.Title" xml:space="preserve">
+    <value>Edited successfully!</value>
+  </data>
+  <data name="Edit_Target_Error.Subtitle" xml:space="preserve">
+    <value>Set other name!</value>
+  </data>
+  <data name="Edit_Target_Error.Title" xml:space="preserve">
+    <value>Edit profile error</value>
+  </data>
+  <data name="Settings_Theme_Blue.Content" xml:space="preserve">
+    <value>Blue</value>
+  </data>
+  <data name="Unsaved_Target.Subtitle" xml:space="preserve">
+    <value>You can't rename Unsaved profile!</value>
+  </data>
+  <data name="Unsaved_Target.Title" xml:space="preserve">
+    <value>Edit profile error</value>
+  </data>
 </root>

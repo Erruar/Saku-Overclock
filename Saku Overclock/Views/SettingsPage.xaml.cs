@@ -1,10 +1,12 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
 namespace Saku_Overclock.Views;
 #pragma warning disable CS8604 // Возможно, аргумент-ссылка, допускающий значение NULL.
 #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
-public sealed partial class SettingsPage : Page
+public sealed partial class SettingsPage : Microsoft.UI.Xaml.Controls.Page
 {
     public SettingsViewModel ViewModel
     {
@@ -13,6 +15,7 @@ public sealed partial class SettingsPage : Page
     private Config config = new();
     private Devices devices = new();
     private Profile profile = new();
+    private bool relay = true; 
 
     public SettingsPage()
     {
@@ -26,14 +29,20 @@ public sealed partial class SettingsPage : Page
         config.tempex = false;
         ConfigSave();
     }
-    private void InitVal()
+    private async void InitVal()
     {
+        if (config.bluetheme == true) { Blue_sel.IsChecked = true; Dark_sel.IsChecked = false; Light_sel.IsChecked = false; Default_sel.IsChecked = false; }
         if (config.autostart == true) { CbStartBoot.IsChecked = true; }
         if (config.traystart == true) { CbStartMini.IsChecked = true; }
         if (config.autooverclock == true) { CbApplyStart.IsChecked = true; }
         if (config.reapplytime == true) { CbAutoReapply.IsChecked = true; nudAutoReapply.Value = config.reapplytimer; }
         if (config.autoupdates == true) { CbAutoCheck.IsChecked = true; }
-
+        relay = false;
+        await Task.Delay(390);
+        if (Blue_sel.IsChecked == false && Dark_sel.IsChecked == false && Light_sel.IsChecked == false && Default_sel.IsChecked == false)
+        {
+            Blue_sel.IsChecked = true;
+        }
     }
     private void cbStartBoot_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
@@ -148,6 +157,61 @@ public sealed partial class SettingsPage : Page
     {
         await Task.Delay(20);
         config.reapplytime = true; config.reapplytimer = nudAutoReapply.Value; ConfigSave();
+    }
+
+    private async void Blue_sel_Checked(object sender, RoutedEventArgs e)
+    {
+        await Task.Delay(230);
+        config.bluetheme = true;
+        ConfigSave();
+        if (App.MainWindow.Content is FrameworkElement rootElement)
+        {
+            rootElement.RequestedTheme = ElementTheme.Dark;
+            TitleBarHelper.UpdateTitleBar(ElementTheme.Dark);
+        }
+        Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+        micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt;
+        App.MainWindow.SystemBackdrop = micaBackdrop;
+        Dark_sel.IsChecked = false; Light_sel.IsChecked = false; Default_sel.IsChecked = false;
+    }
+
+    private void Default_sel_Checked(object sender, RoutedEventArgs e)
+    {
+        if (relay == false)
+        {
+            Blue_sel.IsChecked = false;
+            config.bluetheme = false;
+            ConfigSave();
+            Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+            micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base;
+            App.MainWindow.SystemBackdrop = micaBackdrop;
+        }
+    }
+
+    private void Dark_sel_Checked(object sender, RoutedEventArgs e)
+    {
+        if (relay == false)
+        {
+            Blue_sel.IsChecked = false;
+            config.bluetheme = false;
+            ConfigSave();
+            Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+            micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base;
+            App.MainWindow.SystemBackdrop = micaBackdrop;
+        }
+    }
+
+    private void Light_sel_Checked(object sender, RoutedEventArgs e)
+    {
+        if (relay == false)
+        {
+            Blue_sel.IsChecked = false;
+            config.bluetheme = false;
+            ConfigSave();
+            Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+            micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base;
+            App.MainWindow.SystemBackdrop = micaBackdrop;
+        }
     }
 #pragma warning restore CS8604 // Возможно, аргумент-ссылка, допускающий значение NULL.
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

@@ -149,6 +149,10 @@
               "target": "Package",
               "version": "[0.9.6, )"
             },
+            "System.Management": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "TaskScheduler": {
               "target": "Package",
               "version": "[2.10.1, )"

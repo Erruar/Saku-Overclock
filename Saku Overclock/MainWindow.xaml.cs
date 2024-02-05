@@ -55,7 +55,7 @@ public sealed partial class MainWindow : WindowEx
         ConfigLoad();
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         Content = null;
-        Title = "AppDisplayName".GetLocalized();
+        Title = "AppDisplayName".GetLocalized(); 
         NotifyIcon ni = new NotifyIcon();
         ni.Icon = new System.Drawing.Icon(GetType(),"WindowIcon.ico");
         ni.Visible = true;
@@ -94,6 +94,22 @@ public sealed partial class MainWindow : WindowEx
         DeviceLoad();
         ProfileLoad();
         Tray_Start();
+        Set_Blue();
+    }
+    private async void Set_Blue()
+    {
+        await Task.Delay(120);
+        if (config.bluetheme == true)
+        {
+            if (App.MainWindow.Content is FrameworkElement rootElement)
+            {
+                rootElement.RequestedTheme = ElementTheme.Dark;
+                TitleBarHelper.UpdateTitleBar(ElementTheme.Dark);
+            }
+            Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+            micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt;
+            App.MainWindow.SystemBackdrop = micaBackdrop;
+        }
     }
     private async void Tray_Start()
     {
@@ -163,7 +179,7 @@ public sealed partial class MainWindow : WindowEx
 
             if (mc.config.reapplytime == true)
             {
-                DispatcherTimer timer = new DispatcherTimer();
+                var timer = new DispatcherTimer();
                 try
                 {
                     timer.Interval = TimeSpan.FromMilliseconds(mc.config.reapplytimer * 1000);
@@ -191,8 +207,15 @@ public sealed partial class MainWindow : WindowEx
                 else
                 {
                     timer.Stop();
-                    mc.config.execute = false;
-                    ConfigSave();
+                    timer.Tick += (sender, e) =>
+                    {
+                        if (mc.config.reapplytime == true)
+                        {
+                            // Запустите ryzenadj снова
+                            Process();
+                        }
+                    };
+                    timer.Start();
                 }
                 
             }
@@ -202,6 +225,7 @@ public sealed partial class MainWindow : WindowEx
             }
             void Process()
             {
+                ConfigLoad();
                 Process p = new Process();
                 p.StartInfo.UseShellExecute = false;
                 p.StartInfo.FileName = @"ryzenadj.exe";
@@ -303,79 +327,6 @@ public sealed partial class MainWindow : WindowEx
                 line = null;
             }
         }
-
-        /*public static void GetInfo()
-        {
-            var mc = new Applyer();
-            void ConfigLoad()
-            {
-                mc.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
-            }
-            void ConfigSave()
-            {
-                Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(mc.config));
-            }
-
-            ConfigLoad();
-            ConfigLoad();
-            if (mc.config.fanex == true)
-            {
-                mc.config.fan1v = "";
-                mc.config.fan2v = "";
-                ConfigSave();
-                Process p = new Process();
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.FileName = @"nbfc/nbfc.exe";
-                p.StartInfo.Arguments = " status --fan 0";
-                p.StartInfo.CreateNoWindow = true;
-                p.StartInfo.RedirectStandardError = true;
-                p.StartInfo.RedirectStandardInput = true;
-                p.StartInfo.RedirectStandardOutput = true;
-                p.Start();
-                StreamReader outputWriter = p.StandardOutput;
-                var line = outputWriter.ReadLine();
-                while (line != null)
-                {
-
-                    if (line != "")
-                    {
-                        mc.config.fan1v += line;
-                        ConfigSave();
-                    }
-
-                    line = outputWriter.ReadLine();
-                }
-                line = null;
-                //p.WaitForExit();
-                //fan 2
-                Process p1 = new Process();
-                p1.StartInfo.UseShellExecute = false;
-                p1.StartInfo.FileName = @"nbfc/nbfc.exe";
-                p1.StartInfo.Arguments = " status --fan 1";
-                p1.StartInfo.CreateNoWindow = true;
-                p1.StartInfo.RedirectStandardError = true;
-                p1.StartInfo.RedirectStandardInput = true;
-                p1.StartInfo.RedirectStandardOutput = true;
-
-                p1.Start();
-                StreamReader outputWriter1 = p1.StandardOutput;
-                var line1 = outputWriter1.ReadLine();
-                while (line1 != null)
-                {
-
-                    if (line1 != "")
-                    {
-                        mc.config.fan2v += line1;
-                        ConfigSave();
-                    }
-
-                    line1 = outputWriter1.ReadLine();
-                }
-                line1 = null;
-                //p1.WaitForExit();
-            }
-        }*/
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed

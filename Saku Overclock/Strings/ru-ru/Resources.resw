@@ -752,4 +752,210 @@
   <data name="Param_turbo_desc.Text" xml:space="preserve">
     <value>Позволяет вашему процессору разгоняться сильнее, но вызывает проблемы</value>
   </data>
+  <data name="Param_a10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Это значение зафиксирует частоту
+iGPU на приблизительно указанной
+После перезагрузки оно сбросится
+если у вас не стоит автозагрузка и
+авторазгон
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_a11_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Это значение зафиксирует частоту
+CPU на приблизительно указанной
+После перезагрузки оно сбросится
+если у вас не стоит автозагрузка и
+авторазгон
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_a12_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Это значение зафиксирует напряжение
+CPU на приблизительно указанное
+После перезагрузки оно сбросится
+если у вас не стоит автозагрузка и
+авторазгон
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_a13_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Режим работы процессора, они
+переключаются при подключении и
+отключении зарядки. Если вы на
+зарядке и включите Ультра, это
+ничего не сделает, так как ваш
+процессор уже в этом режиме,
+аналогично с работой от батареи и
+режимом энергоэффективности</value>
+  </data>
+  <data name="Param_a1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Вы можете ограничить потребление 
+тока вашей встроенной видеокарты 
+под воздействием тепла и нагрузки</value>
+  </data>
+  <data name="Param_a2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Вы можете ограничить потребление 
+тока вашего нейронного блока в 
+процессоре, при его наличии,
+под воздействием тепла и нагрузки</value>
+  </data>
+  <data name="Param_a3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отвечает за максимальный ток
+потребляемый интегрированной
+графикой</value>
+  </data>
+  <data name="Param_a4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отвечает за максимальный ток
+потребляемый процессором
+по линии PCI Express</value>
+  </data>
+  <data name="Param_a5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отвечает за максимальный ток
+потребляемый всеми GPU
+по линии PCI Express
+Он НЕ МОЖЕТ быть меньше
+чем максимальный ток
+Интегрированной графики!</value>
+  </data>
+  <data name="Param_a6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная температура
+Этим значением вы можете ограничить 
+iGPU по температуре, выше
+этого значения он не будет греться
+будет начинаться троттлинг
+Это сработает ТОЛЬКО если вы видите 
+значения температуры на странице 
+информации!</value>
+  </data>
+  <data name="Param_a7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная температура
+Этим значением вы можете ограничить 
+dGPU по температуре, выше
+этого значения он не будет греться
+будет начинаться троттлинг
+Это сработает ТОЛЬКО если вы видите 
+значения температуры на странице 
+информации!</value>
+  </data>
+  <data name="Param_a8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Это значение ограничит iGPU
+по теплопакету на то значение
+которое вы установили. Выше этого
+значения он не будет греться и
+разгоняться
+Это сработает ТОЛЬКО если вы видите 
+значения температуры на странице 
+информации!</value>
+  </data>
+  <data name="Param_a9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Это значение ограничит систему
+по теплопакету на то значение
+которое вы установили. Выше этого
+значения она не будет греться и
+разгоняться. Это ограничение 
+AMD APU + AMD dGPU
+Это сработает ТОЛЬКО если вы видите 
+значения температуры на странице 
+информации!</value>
+  </data>
+  <data name="Param_ADV_a1.Text" xml:space="preserve">
+    <value>Лимит по току iGPU (A)</value>
+  </data>
+  <data name="Param_ADV_a10.Text" xml:space="preserve">
+    <value>Зафиксировать частоту iGPU (MHz)</value>
+  </data>
+  <data name="Param_ADV_a11.Text" xml:space="preserve">
+    <value>Зафиксировать частоту CPU (MHz)</value>
+  </data>
+  <data name="Param_ADV_a12.Text" xml:space="preserve">
+    <value>Зафиксировать напряжение CPU (mV)</value>
+  </data>
+  <data name="Param_ADV_a13.Text" xml:space="preserve">
+    <value>Предпочтительный режим</value>
+  </data>
+  <data name="Param_ADV_a2.Text" xml:space="preserve">
+    <value>Лимит по току NPU (A)</value>
+  </data>
+  <data name="Param_ADV_a3.Text" xml:space="preserve">
+    <value>Максимальный ток iGPU (A)</value>
+  </data>
+  <data name="Param_ADV_a4.Text" xml:space="preserve">
+    <value>Максимальный ток CPU по линии PCI (A)</value>
+  </data>
+  <data name="Param_ADV_a5.Text" xml:space="preserve">
+    <value>Максимальный ток GPU по линии PCI (A)</value>
+  </data>
+  <data name="Param_ADV_a6.Text" xml:space="preserve">
+    <value>Максимальная температура iGPU (C)</value>
+  </data>
+  <data name="Param_ADV_a7.Text" xml:space="preserve">
+    <value>Максимальная температура dGPU (C)</value>
+  </data>
+  <data name="Param_ADV_a8.Text" xml:space="preserve">
+    <value>Лимит потребления iGPU (W)</value>
+  </data>
+  <data name="Param_ADV_a9.Text" xml:space="preserve">
+    <value>Общий лимит потребления (W)</value>
+  </data>
+  <data name="Param_ADV_Pdesc.Text" xml:space="preserve">
+    <value>Экспериментальные параметры, работают на процессорах Реноир и выше</value>
+  </data>
+  <data name="Param_ADV_Text.Text" xml:space="preserve">
+    <value>Расширенные параметры CPU</value>
+  </data>
+  <data name="Set_settings" xml:space="preserve">
+    <value>Вы успешно применили ваши настройки</value>
+  </data>
+  <data name="Set_succ" xml:space="preserve">
+    <value>Применение успешно!</value>
+  </data>
+  <data name="Add_Target_Max.Subtitle" xml:space="preserve">
+    <value>Нельзя добавить больше 9 пресетов!</value>
+  </data>
+  <data name="Add_Target_Max.Title" xml:space="preserve">
+    <value>Ошибка добавления</value>
+  </data>
+  <data name="Add_tooltip_Error.Subtitle" xml:space="preserve">
+    <value>Нельзя добавить пресет без имени!</value>
+  </data>
+  <data name="Add_tooltip_Error.Title" xml:space="preserve">
+    <value>Ошибка добавления</value>
+  </data>
+  <data name="ADV_Auto.Text" xml:space="preserve">
+    <value>                                           Автоматически</value>
+  </data>
+  <data name="ADV_Change.Text" xml:space="preserve">
+    <value>                                        Не стоит менять!!!</value>
+  </data>
+  <data name="Apply_Target.Subtitle" xml:space="preserve">
+    <value>Вы успешно применили разгон</value>
+  </data>
+  <data name="Apply_Target.Title" xml:space="preserve">
+    <value>Значения применены!</value>
+  </data>
+  <data name="Delete_Target_Error.Subtitle" xml:space="preserve">
+    <value>Нельзя удалить несохранённый пресет!</value>
+  </data>
+  <data name="Delete_Target_Error.Title" xml:space="preserve">
+    <value>Ошибка удаления</value>
+  </data>
+  <data name="Edit_Target.Subtitle" xml:space="preserve">
+    <value>Вы изменили имя пресета</value>
+  </data>
+  <data name="Edit_Target.Title" xml:space="preserve">
+    <value>Изменение успешно!</value>
+  </data>
+  <data name="Edit_Target_Error.Subtitle" xml:space="preserve">
+    <value>Установите правильное имя!</value>
+  </data>
+  <data name="Edit_Target_Error.Title" xml:space="preserve">
+    <value>Ошибка изменения</value>
+  </data>
+  <data name="Settings_Theme_Blue.Content" xml:space="preserve">
+    <value>Тёмно-синяя</value>
+  </data>
+  <data name="Unsaved_Target.Subtitle" xml:space="preserve">
+    <value>Нельзя изменить имя несохранённому пресету!</value>
+  </data>
+  <data name="Unsaved_Target.Title" xml:space="preserve">
+    <value>Ошибка изменения</value>
+  </data>
 </root>

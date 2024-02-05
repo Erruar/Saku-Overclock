@@ -7,7 +7,7 @@
 
  Дополнительные сведения о файлах манифестов приложений см. по адресу http://go.microsoft.com/fwlink/?LinkID=241727
   -->
-  <Identity Name="129fe03a-4520-4c47-b74c-ba9210dc2f62" Publisher="CN=Sakura" Version="1.0.5.0" ProcessorArchitecture="x64" />
+  <Identity Name="129fe03a-4520-4c47-b74c-ba9210dc2f62" Publisher="CN=Sakura" Version="1.0.6.0" ProcessorArchitecture="x64" />
   <mp:PhoneIdentity PhoneProductId="129fe03a-4520-4c47-b74c-ba9210dc2f62" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Saku Overclock</DisplayName>
@@ -17,7 +17,6 @@
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <PackageDependency Name="Microsoft.WindowsAppRuntime.1.4" MinVersion="4000.1010.1349.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
   </Dependencies>
   <Resources>
     <Resource Language="EN-US" />
@@ -25,7 +24,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="Saku Overclock.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="ms-resource:AppDisplayName" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png">
+      <uap:VisualElements DisplayName="Saku Overclock" Description="An awesome utility to overclock Ryzen mobile laptops" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
