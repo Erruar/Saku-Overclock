@@ -19,6 +19,7 @@ public sealed partial class MainWindow : WindowEx
     private Config config = new();
     private Devices devices = new();
     private Profile profile = new();
+    private ИнформацияPage infp = new();
     // The enum flag for DwmSetWindowAttribute's second parameter, which tells the function what attribute to set.
     public enum DWMWINDOWATTRIBUTE
     {
@@ -95,6 +96,7 @@ public sealed partial class MainWindow : WindowEx
         ProfileLoad();
         Tray_Start();
         Set_Blue();
+        infp.Check_Info();
     }
     private async void Set_Blue()
     {

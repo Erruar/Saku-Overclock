@@ -2,6 +2,7 @@
 using System.Management;
 using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
+using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 namespace Saku_Overclock.Views;
 #pragma warning disable CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до тех пор, пока вызов не будет завершен
@@ -21,21 +22,14 @@ public sealed partial class ИнформацияPage : Page
     {
         ViewModel = App.GetService<ИнформацияViewModel>();
         InitializeComponent();
-        desc();
         ConfigLoad();
-        InitInf();
         config.fanex = false;
-        if (config.reapplyinfo == false) { Process(); }
+        config.tempex = true;
         ConfigSave();
         // Инициализация таймера
         getCPUInfo();
-    }
-
-    public async void InitInf()
-    {
-        await Task.Delay(200);
-        ConfigLoad();
-        if (config.reapplyinfo == true) { Absc.IsChecked = true; } else { Absc.IsChecked = false; }
+        getRAMInfo();
+        Check_Info();
     }
     //JSON форматирование
     public void ConfigSave()
@@ -58,39 +52,18 @@ public sealed partial class ИнформацияPage : Page
             App.MainWindow.ShowMessageDialogAsync("Пресеты 3", "Критическая ошибка!");
         }
     }
-
-    private void desc()
+    public async void Check_Info()
     {
-        if (richTextBox1.Text == "")
-        {
-            DescText.Opacity = 0;
-        }
-        else
-        {
-            DescText.Opacity = 1;
-        }
-    }
-    private void xx_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        config.tempex = true;
-        Absc.IsChecked = false;
-        ConfigSave();
-        Check_Info();
-    }
-    private async void Check_Info()
-    {
+        Process();
         if (config.tempex == true)
         {
-            Process();
-            await Task.Delay(20);
-            if (Absc.IsChecked == true) { try { await Task.Delay((int)refreshtime); } catch { refreshtime = 100; numberBox.Value = 100; await Task.Delay((int)refreshtime); } Check_Info(); }
+            await Task.Delay(2000);
+            Check_Info();
         }
     }
-    private void Process()
+    public async void Process()
     {
-        richTextBox1.Text = "";
-        richTextBox2.Text = "";
-        Process p = new Process();
+        var p = new Process();
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.FileName = @"ryzenadj.exe";
         p.StartInfo.Arguments = "-i";
@@ -101,7 +74,7 @@ public sealed partial class ИнформацияPage : Page
         ConfigLoad();
         if (config.tempex == true)
         {
-            p.Start();
+            await Task.Run(() => p.Start());
             config.tempex = false;
             StreamReader outputWriter = p.StandardOutput;
             var line = outputWriter.ReadLine();
@@ -109,54 +82,167 @@ public sealed partial class ИнформацияPage : Page
             {
                 if (line != "")
                 {
-                    richTextBox1.Text = richTextBox1.Text + "\n" + line;
-                    if (line.Contains("CPU Family:") || line.Contains("SMU BIOS Interface") || line.Contains("Version:") || line.Contains("PM Table") || line.Contains("Name ") || line.Contains("|----") ) { }
-                    else
+                    if (line.Contains("STAPM LIMIT"))
                     {
-                        if (line.Contains("STAPM VALUE"))
+                        tbStapmL.Text = line;
+                        tbStapmL.Text = tbStapmL.Text.Replace("STAPM LIMIT", "").Replace("|", "").Replace(" ", "").Replace("stapm-limit", "") + " W";
+                    }
+                    if (line.Contains("STAPM VALUE"))
+                    {
+                        tbStapmC.Text = line;
+                        tbStapmC.Text = tbStapmC.Text.Replace("STAPM VALUE", "").Replace("|", "").Replace(" ", "") + " W";
+                    }
+                    if (line.Contains("PPT LIMIT FAST"))
+                    {
+                        tbActualL.Text = line;
+                        tbActualL.Text = tbActualL.Text.Replace("PPT LIMIT FAST", "").Replace("|", "").Replace(" ", "").Replace("fast-limit", "") + " W";
+                    }
+                    if (line.Contains("PPT VALUE FAST"))
+                    {
+                        tbActualC.Text = line;
+                        tbActualC.Text = tbActualC.Text.Replace("PPT VALUE FAST", "").Replace("|", "").Replace(" ", "") + " W";
+                    }
+                    if (line.Contains("PPT LIMIT SLOW"))
+                    {
+                        tbAVGL.Text = line;
+                        tbAVGL.Text = tbAVGL.Text.Replace("PPT LIMIT SLOW", "").Replace("|", "").Replace(" ", "").Replace("slow-limit", "") + " W";
+                        infoPOWER.Maximum = int.Parse(tbAVGL.Text.Replace(" W", "").Remove(3).Replace(".", ""));
+                    }
+                    if (line.Contains("PPT VALUE SLOW"))
+                    {
+                        tbAVGC.Text = line;
+                        tbAVGC.Text = tbAVGC.Text.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "") + " W";
+                        if (int.Parse(tbAVGC.Text.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "").Replace(".", "").Replace("W", "").ToString()) < 10000)
                         {
-                            richTextBox2.Text = richTextBox2.Text + "\n" + line + "  - Лимит CPU (W), Текущее значение";
-                            richTextBox2.Text = richTextBox2.Text.Replace("STAPM VALUE", "");
+                            infoPOWER.Value = int.Parse(tbAVGC.Text.Replace(" W", "").Remove(2).Replace(".", ""));
+                            infoPOWERI.Text = tbAVGC.Text.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "").Remove(2).Replace(".", "") + " W".ToString();
                         }
                         else
                         {
-                            richTextBox2.Text = richTextBox2.Text + "\n" + line;
+                            infoPOWER.Value = int.Parse(tbAVGC.Text.Replace(" W", "").Remove(3).Replace(".", ""));
+                            infoPOWERI.Text = tbAVGC.Text.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "").Remove(3).Replace(".", "") + " W".ToString();
                         }
-                        richTextBox2.Text = richTextBox2.Text.Replace("|", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("STAPM LIMIT", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("PPT LIMIT FAST ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("PPT LIMIT SLOW ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("StapmTimeConst  ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("SlowPPTTimeConst  ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("TDC LIMIT VDD ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("EDC LIMIT VDD  ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("TDC LIMIT SOC ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("EDC LIMIT SOC ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("THM LIMIT CORE ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("STT LIMIT APU ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("PPT LIMIT APU ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("STT LIMIT dGPU", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("CCLK Boost SETPOINT", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("CCLK BUSY VALUE", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("  ", "");
-                        richTextBox2.Text = richTextBox2.Text.Replace("stapm-limit", " - Лимит CPU (W), Установленное значение");
-                        richTextBox2.Text = richTextBox2.Text.Replace("fast-limit", " - Реальный CPU (W), Установленное значение");
-                        richTextBox2.Text = richTextBox2.Text.Replace("apu-slow-limit", " - Мощность APU (W), Установленное значение");
-                        richTextBox2.Text = richTextBox2.Text.Replace("slow-limit", " - Средний CPU (W), Установленное значение");
-                        richTextBox2.Text = richTextBox2.Text.Replace("stapm-time", " - Тик быстрого разгона (S)");
-                        richTextBox2.Text = richTextBox2.Text.Replace("slow-time", " - Тик медленного разгона (S)");
-                        richTextBox2.Text = richTextBox2.Text.Replace("vrm-current", " - Лимит по току VRM (A), Установленное значение");
-                        richTextBox2.Text = richTextBox2.Text.Replace("vrmsoc-current", " - Лимит по току SoC (A), Установленное значение");
-                        richTextBox2.Text = richTextBox2.Text.Replace("vrmmax-current", " - Максимальный ток VRM (A), Установленное значение");
-                        richTextBox2.Text = richTextBox2.Text.Replace("vrmsocmax-current", " - Максимальный ток SoC (A), Установленное значение");
-                        richTextBox2.Text = richTextBox2.Text.Replace("tctl-temp", " - Максимальная температура CPU (C)");
-                        richTextBox2.Text = richTextBox2.Text.Replace("apu-skin-temp", " - Максимальная температура iGPU (C)");
-                        richTextBox2.Text = richTextBox2.Text.Replace("dgpu-skin-temp", " - Максимальная температура dGPU (C)");
-                        richTextBox2.Text = richTextBox2.Text.Replace("power-saving /", " - Процент начала троттлинга (% Загрузки CPU)");
-                        richTextBox2.Text = richTextBox2.Text.Replace("max-performance", " - Текущая загрузка процессора (%)");
                     }
-                    richTextBox1.Text = richTextBox1.Text.Replace("nan", "✕  ");
-                    DescText.Opacity = 1;
+                    if (line.Contains("StapmTimeConst"))
+                    {
+                        tbFast.Text = line;
+                        tbFast.Text = tbFast.Text.Replace("StapmTimeConst", "").Replace("|", "").Replace(" ", "").Replace("stapm-time", "") + " S";
+                    }
+                    if (line.Contains("SlowPPTTimeConst"))
+                    {
+                        tbSlow.Text = line;
+                        tbSlow.Text = tbSlow.Text.Replace("SlowPPTTimeConst", "").Replace("|", "").Replace(" ", "").Replace("slow-time", "") + " S";
+                    }
+                    if (line.Contains("PPT LIMIT APU"))
+                    {
+                        if (line.Contains("nan"))
+                        {
+                            tbAPULL.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                            tbAPULC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                            tbAPUML.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                            tbAPUMC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                            tbDGPUL.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                            tbDGPUC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                            tbAPUL.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                            tbAPUC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                            tbAPUMaxL.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                            tbAPUMaxC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                            tbDGPUMaxL.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                            tbDGPUMaxC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                        }
+                        else
+                        {
+                            tbAPUL.Text = line;
+                            tbAPUL.Text = tbAPUL.Text.Replace("PPT LIMIT APU", "").Replace("|", "").Replace(" ", "").Replace("apu-slow-limit", "") + " W";
+                        }
+                    }
+                    if (line.Contains("PPT VALUE APU"))
+                    {
+                        tbAPUC.Text = line;
+                        tbAPUC.Text = tbAPUC.Text.Replace("PPT VALUE APU", "").Replace("|", "").Replace(" ", "") + " W";
+                    }
+                    if (line.Contains("TDC LIMIT VDD"))
+                    {
+                        tbVRMTDCL.Text = line;
+                        tbVRMTDCL.Text = tbVRMTDCL.Text.Replace("TDC LIMIT VDD", "").Replace("|", "").Replace(" ", "").Replace("vrm-current", "") + " A";
+                    }
+                    if (line.Contains("TDC VALUE VDD"))
+                    {
+                        tbVRMTDCC.Text = line;
+                        tbVRMTDCC.Text = tbVRMTDCC.Text.Replace("TDC VALUE VDD", "").Replace("|", "").Replace(" ", "") + " A";
+                    }
+                    if (line.Contains("TDC LIMIT SOC"))
+                    {
+                        tbSOCTDCL.Text = line;
+                        tbSOCTDCL.Text = tbSOCTDCL.Text.Replace("TDC LIMIT SOC", "").Replace("|", "").Replace(" ", "").Replace("vrmsoc-current", "") + " A";
+                    }
+                    if (line.Contains("TDC VALUE SOC"))
+                    {
+                        tbSOCTDCC.Text = line;
+                        tbSOCTDCC.Text = tbSOCTDCC.Text.Replace("TDC VALUE SOC", "").Replace("|", "").Replace(" ", "") + " A";
+                    }
+                    if (line.Contains("EDC LIMIT VDD"))
+                    {
+                        tbVRMEDCL.Text = line;
+                        tbVRMEDCL.Text = tbVRMEDCL.Text.Replace("EDC LIMIT VDD", "").Replace("|", "").Replace(" ", "").Replace("vrmmax-current", "") + " A";
+                        infoVRM.Maximum = int.Parse(tbVRMEDCL.Text.Replace(" A", "").Remove(3).Replace(".", "").Replace("nan","000"));
+                    }
+                    if (line.Contains("EDC VALUE VDD"))
+                    {
+                        tbVRMEDCC.Text = line;
+                        tbVRMEDCC.Text = tbVRMEDCC.Text.Replace("EDC VALUE VDD", "").Replace("|", "").Replace(" ", "") + " A";
+                        infoVRM.Value = int.Parse(tbVRMEDCC.Text.Replace(" A", "").Remove(3).Replace(".", "").Replace("nan","000"));
+                        infoVRMI.Text = tbVRMEDCC.Text.Replace("EDC VALUE VDD", "").Replace("|", "").Replace(" ", "").Remove(3).Replace(".", "") + " A".ToString();
+                    }
+                    if (line.Contains("EDC LIMIT SOC"))
+                    {
+                        tbSOCEDCL.Text = line;
+                        tbSOCEDCL.Text = tbSOCEDCL.Text.Replace("EDC LIMIT SOC", "").Replace("|", "").Replace(" ", "").Replace("vrmsocmax-current", "") + " A";
+                    }
+                    if (line.Contains("EDC VALUE SOC"))
+                    {
+                        tbSOCEDCC.Text = line;
+                        tbSOCEDCC.Text = tbSOCEDCC.Text.Replace("EDC VALUE SOC", "").Replace("|", "").Replace(" ", "") + " A";
+                    }
+                    if (line.Contains("THM LIMIT CORE"))
+                    {
+                        tbCPUMaxL.Text = line;
+                        tbCPUMaxL.Text = tbCPUMaxL.Text.Replace("THM LIMIT CORE", "").Replace("|", "").Replace(" ", "").Replace("tctl-temp", "") + " C";
+                        infoCPU.Maximum = int.Parse(tbCPUMaxL.Text.Replace(" C", "").Remove(3).Replace(".", ""));
+                    }
+                    if (line.Contains("THM VALUE CORE"))
+                    {
+                        tbCPUMaxC.Text = line;
+                        tbCPUMaxC.Text = tbCPUMaxC.Text.Replace("THM VALUE CORE", "").Replace("|", "").Replace(" ", "") + " C";
+                        infoCPU.Value = int.Parse(tbCPUMaxC.Text.Replace(" C", "").Remove(3).Replace(".", "").Replace("nan", "000"));
+                        infoCPUI.Text = tbCPUMaxC.Text.Replace("THM VALUE CORE", "").Replace("|", "").Replace(" ", "").Remove(3).Replace(".", "") + "℃".ToString();
+                    }
+                    if (line.Contains("STT LIMIT APU"))
+                    {
+                        tbAPUMaxL.Text = line;
+                        tbAPUMaxL.Text = tbAPUMaxL.Text.Replace("STT LIMIT APU", "").Replace("|", "").Replace(" ", "").Replace("apu-skin-temp", "") + " C";
+                    }
+                    if (line.Contains("STT VALUE APU"))
+                    {
+                        tbAPUMaxC.Text = line;
+                        tbAPUMaxC.Text = tbAPUMaxC.Text.Replace("STT VALUE APU", "").Replace("|", "").Replace(" ", "") + " C";
+                    }
+                    if (line.Contains("STT LIMIT dGPU"))
+                    {
+                        tbDGPUMaxL.Text = line;
+                        tbDGPUMaxL.Text = tbDGPUMaxL.Text.Replace("STT LIMIT dGPU", "").Replace("|", "").Replace(" ", "").Replace("dgpu-skin-temp", "") + " C";
+                    }
+                    if (line.Contains("STT VALUE dGPU"))
+                    {
+                        tbDGPUMaxC.Text = line;
+                        tbDGPUMaxC.Text = tbDGPUMaxC.Text.Replace("STT VALUE dGPU", "").Replace("|", "").Replace(" ", "") + " C";
+                    }
+
+                    if (line.Contains("CCLK BUSY VALUE"))
+                    {
+                        tbCPUUsage.Text = line;
+                        tbCPUUsage.Text = tbCPUUsage.Text.Replace("CCLK BUSY VALUE", "").Replace("|", "").Replace(" ", "").Replace("max-performance", "") + " %";
+                    }
                 }
                 line = outputWriter.ReadLine();
             }
@@ -164,34 +250,7 @@ public sealed partial class ИнформацияPage : Page
             line = null;
         }
         config.tempex = true;
-    }
-    private async void CheckBox_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        await Task.Delay(20);
-        if (Absc.IsChecked == true) { config.reapplyinfo = true; ConfigSave(); } else { config.reapplyinfo = false; ConfigSave(); }
 
-        // Обновите Textblock и скрипт через заданный интервал времени
-        try
-        {
-            refreshtime = numberBox.Value;
-        }
-        catch
-        {
-            App.MainWindow.ShowMessageDialogAsync("Время автообновления информации некорректно и было исправлено на 100 мс", "Критическая ошибка!");
-            numberBox.Value = 100;
-        }
-        config.tempex = true;
-        ConfigSave();
-        Check_Info();
-    }
-
-    private void numberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-    {
-        refreshtime = numberBox.Value;
-        config.tempex = false;
-        Absc.IsChecked = false;
-        config.tempex = true;
-        Absc.IsChecked = true;
     }
     //AI Gen
     private async void getCPUInfo()
@@ -228,41 +287,99 @@ public sealed partial class ИнформацияPage : Page
 
             tbProcessor.Text = name;
             tbCaption.Text = description;
-            //string codeName = GetSystemInfo.Codename();
-            /*if (codeName != "") tbCodename.Text = codeName;
+            string codeName = GetSystemInfo.Codename();
+            if (codeName != "") tbCodename.Text = codeName;
             else
             {
                 tbCodename.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
                 tbCode.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
             }
-*/
             tbProducer.Text = manufacturer;
             if (numberOfLogicalProcessors == numberOfCores) tbCores.Text = numberOfCores.ToString();
-            //else tbCores.Text = GetSystemInfo.getBigLITTLE(numberOfCores, l2Size);
+            else tbCores.Text = GetSystemInfo.getBigLITTLE(numberOfCores, l2Size);
             tbThreads.Text = numberOfLogicalProcessors.ToString();
             tbL3Cache.Text = $"{l3Size.ToString("0.##")} MB";
 
             uint sum = 0;
-            //foreach (uint number in GetSystemInfo.GetCacheSizes(CacheLevel.Level1)) sum += number;
+            foreach (uint number in GetSystemInfo.GetCacheSizes(GetSystemInfo.CacheLevel.Level1)) sum += number;
             decimal total = sum;
-            total = total / 1024;
-            tbL1Cache.Text = $"{total.ToString("0.##")} MB";
+            total /= 1024;
+            tbL1Cache.Text = $"{total:0.##} MB";
 
             sum = 0;
-            //foreach (uint number in GetSystemInfo.GetCacheSizes(CacheLevel.Level2)) sum += number;
+            foreach (uint number in GetSystemInfo.GetCacheSizes(GetSystemInfo.CacheLevel.Level2)) sum += number;
             total = sum;
-            total = total / 1024;
-            tbL2Cache.Text = $"{total.ToString("0.##")} MB";
+            total /= 1024;
+            tbL2Cache.Text = $"{total:0.##} MB";
 
             tbBaseClock.Text = $"{baseClock} MHz";
 
-            //tbInstructions.Text = GetSystemInfo.InstructionSets();
+            tbInstructions.Text = GetSystemInfo.InstructionSets();
 
             sdCPU.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
         }
         catch (ManagementException ex)
         {
             Console.WriteLine("An error occurred while querying for WMI data: " + ex.Message);
+        }
+    }
+
+    private async void getRAMInfo()
+    {
+        double capacity = 0;
+        var speed = 0;
+        var type = 0;
+        var width = 0;
+        var slots = 0;
+        var producer = "";
+        var model = "";
+
+        try
+        {
+            ManagementObjectSearcher searcher =
+        new ManagementObjectSearcher("root\\CIMV2",
+        "SELECT * FROM Win32_PhysicalMemory");
+            await Task.Run(() =>
+            {
+                foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
+                {
+                    if (producer == "") { producer = queryObj["Manufacturer"].ToString(); }
+                    else if (!producer.Contains(queryObj["Manufacturer"].ToString())) { producer = $"{producer}/{queryObj["Manufacturer"]}"; }
+                    if (model == "") { model = queryObj["PartNumber"].ToString(); }
+                    else if (!model.Contains(queryObj["PartNumber"].ToString()))
+                    {
+                        model = $"{model}/{queryObj["PartNumber"]}";
+                    }
+                    capacity += Convert.ToDouble(queryObj["Capacity"]);
+                    speed = Convert.ToInt32(queryObj["ConfiguredClockSpeed"]);
+                    type = Convert.ToInt32(queryObj["SMBIOSMemoryType"]);
+                    width += Convert.ToInt32(queryObj["DataWidth"]);
+                    slots++;
+                }
+            });
+
+
+            capacity = capacity / 1024 / 1024 / 1024;
+
+            var DDRType = "";
+            if (type == 20) DDRType = "DDR";
+            else if (type == 21) DDRType = "DDR2";
+            else if (type == 24) DDRType = "DDR3";
+            else if (type == 26) DDRType = "DDR4";
+            else if (type == 30) DDRType = "LPDDR4";
+            else if (type == 34) DDRType = "DDR5";
+            else if (type == 35) DDRType = "LPDDR5";
+            else DDRType = $"Unknown ({type})";
+
+            tbRAM.Text = $"{capacity} GB {DDRType} @ {speed} MT/s";
+            tbRAMProducer.Text = producer;
+            tbRAMModel.Text = model.Replace(" ", null);
+            tbWidth.Text = $"{width} bit";
+            tbSlots.Text = $"{slots} * {width / slots} bit";
+        }
+        catch
+        {
+
         }
     }
 }

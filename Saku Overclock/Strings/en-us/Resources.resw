@@ -919,4 +919,133 @@ the information page!</value>
   <data name="Unsaved_Target.Title" xml:space="preserve">
     <value>Edit profile error</value>
   </data>
+  <data name="infoAActualC.Text" xml:space="preserve">
+    <value>Actual Current</value>
+  </data>
+  <data name="infoAActualL.Text" xml:space="preserve">
+    <value>Actual Limit</value>
+  </data>
+  <data name="infoAAVGC.Text" xml:space="preserve">
+    <value>Average Current</value>
+  </data>
+  <data name="infoAAVGL.Text" xml:space="preserve">
+    <value>Average Limit</value>
+  </data>
+  <data name="infoAStapmC.Text" xml:space="preserve">
+    <value>Stapm Current</value>
+  </data>
+  <data name="infoAStapmL.Text" xml:space="preserve">
+    <value>Stamp Limit</value>
+  </data>
+  <data name="infoBaseC.Text" xml:space="preserve">
+    <value>Base clock</value>
+  </data>
+  <data name="infoCaptC.Text" xml:space="preserve">
+    <value>Caption</value>
+  </data>
+  <data name="infoCodeC.Text" xml:space="preserve">
+    <value>Codename</value>
+  </data>
+  <data name="infoCoresC.Text" xml:space="preserve">
+    <value>Cores</value>
+  </data>
+  <data name="infoCPU_Expander.Text" xml:space="preserve">
+    <value>Processor</value>
+  </data>
+  <data name="infoCPU_Expander_desc.Text" xml:space="preserve">
+    <value>Information about your CPU</value>
+  </data>
+  <data name="infoInstructC.Text" xml:space="preserve">
+    <value>Instructions</value>
+  </data>
+  <data name="infoL1C.Text" xml:space="preserve">
+    <value>L1 Cache</value>
+  </data>
+  <data name="infoL2C.Text" xml:space="preserve">
+    <value>L2 Cache</value>
+  </data>
+  <data name="infoL3C.Text" xml:space="preserve">
+    <value>L3 Cache</value>
+  </data>
+  <data name="infoProcC.Text" xml:space="preserve">
+    <value>CPU Name</value>
+  </data>
+  <data name="infoProdC.Text" xml:space="preserve">
+    <value>Producer</value>
+  </data>
+  <data name="infoThreadC.Text" xml:space="preserve">
+    <value>Threads</value>
+  </data>
+  <data name="infoAAPUC.Text" xml:space="preserve">
+    <value>APU Current</value>
+  </data>
+  <data name="infoAAPUL.Text" xml:space="preserve">
+    <value>APU Limit</value>
+  </data>
+  <data name="infoAAPUTEMPC.Text" xml:space="preserve">
+    <value>APU Curr Temp</value>
+  </data>
+  <data name="infoAAPUTEMPL.Text" xml:space="preserve">
+    <value>APU Max Temp</value>
+  </data>
+  <data name="infoACPUTEMPC.Text" xml:space="preserve">
+    <value>CPU Curr Temp</value>
+  </data>
+  <data name="infoACPUTEMPL.Text" xml:space="preserve">
+    <value>CPU Max Temp</value>
+  </data>
+  <data name="infoACPUUSAGE.Text" xml:space="preserve">
+    <value>CPU Usage</value>
+  </data>
+  <data name="infoAFast.Text" xml:space="preserve">
+    <value>Fast Freq Rise</value>
+  </data>
+  <data name="infoAGPUTEMPC.Text" xml:space="preserve">
+    <value>dGPU Curr Temp</value>
+  </data>
+  <data name="infoAGPUTEMPL.Text" xml:space="preserve">
+    <value>dGPU Max Temp</value>
+  </data>
+  <data name="infoASlow.Text" xml:space="preserve">
+    <value>Slow Freq Rise</value>
+  </data>
+  <data name="infoASOCEDCC.Text" xml:space="preserve">
+    <value>SoC Current EDC</value>
+  </data>
+  <data name="infoASOCEDCL.Text" xml:space="preserve">
+    <value>SoC Limit EDC</value>
+  </data>
+  <data name="infoASOCTDCC.Text" xml:space="preserve">
+    <value>SoC Current TDC</value>
+  </data>
+  <data name="infoASOCTDCL.Text" xml:space="preserve">
+    <value>SoC Limit TDC</value>
+  </data>
+  <data name="infoAVRMEDCC.Text" xml:space="preserve">
+    <value>VRM Current EDC</value>
+  </data>
+  <data name="infoAVRMEDCL.Text" xml:space="preserve">
+    <value>VRM Limit EDC</value>
+  </data>
+  <data name="infoAVRMTDCC.Text" xml:space="preserve">
+    <value>VRM Current TDC</value>
+  </data>
+  <data name="infoAVRMTDCL.Text" xml:space="preserve">
+    <value>VRM Limit TDC</value>
+  </data>
+  <data name="infoMMEM.Text" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="infoMModel.Text" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="infoMModule.Text" xml:space="preserve">
+    <value>Modules</value>
+  </data>
+  <data name="infoMProd.Text" xml:space="preserve">
+    <value>Producer</value>
+  </data>
+  <data name="infoMWid.Text" xml:space="preserve">
+    <value>Width</value>
+  </data>
 </root>

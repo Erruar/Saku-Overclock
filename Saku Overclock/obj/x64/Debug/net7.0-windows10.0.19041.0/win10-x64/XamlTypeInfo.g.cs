@@ -224,7 +224,7 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
 
         private void InitTypeTables()
         {
-            _typeNameTable = new string[95];
+            _typeNameTable = new string[97];
             _typeNameTable[0] = "Microsoft.UI.Xaml.Controls.XamlControlsResources";
             _typeNameTable[1] = "Microsoft.UI.Xaml.ResourceDictionary";
             _typeNameTable[2] = "Object";
@@ -298,30 +298,32 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
             _typeNameTable[70] = "Microsoft.UI.Xaml.Controls.Expander";
             _typeNameTable[71] = "Microsoft.UI.Xaml.Controls.ExpandDirection";
             _typeNameTable[72] = "Microsoft.UI.Xaml.Controls.ExpanderTemplateSettings";
-            _typeNameTable[73] = "Saku_Overclock.Views.ИнформацияPage";
-            _typeNameTable[74] = "Saku_Overclock.ViewModels.ИнформацияViewModel";
-            _typeNameTable[75] = "Microsoft.UI.Xaml.Controls.ProgressBar";
-            _typeNameTable[76] = "Microsoft.UI.Xaml.Controls.Primitives.RangeBase";
-            _typeNameTable[77] = "Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings";
-            _typeNameTable[78] = "Saku_Overclock.Views.КулерPage";
-            _typeNameTable[79] = "Saku_Overclock.ViewModels.КулерViewModel";
-            _typeNameTable[80] = "Microsoft.UI.Xaml.Controls.TeachingTip";
-            _typeNameTable[81] = "Microsoft.UI.Xaml.Controls.IconSource";
-            _typeNameTable[82] = "System.Windows.Input.ICommand";
-            _typeNameTable[83] = "Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode";
-            _typeNameTable[84] = "Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode";
-            _typeNameTable[85] = "Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility";
-            _typeNameTable[86] = "Microsoft.UI.Xaml.FrameworkElement";
-            _typeNameTable[87] = "Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings";
-            _typeNameTable[88] = "Saku_Overclock.Views.ПараметрыPage";
-            _typeNameTable[89] = "Saku_Overclock.ViewModels.ПараметрыViewModel";
-            _typeNameTable[90] = "Saku_Overclock.Views.ПресетыPage";
-            _typeNameTable[91] = "Saku_Overclock.ViewModels.ПресетыViewModel";
-            _typeNameTable[92] = "Microsoft.UI.Xaml.Controls.TreeViewNode";
-            _typeNameTable[93] = "System.Collections.Generic.IList`1<Microsoft.UI.Xaml.Controls.TreeViewNode>";
-            _typeNameTable[94] = "Int32";
+            _typeNameTable[73] = "Microsoft.UI.Xaml.Controls.ProgressRing";
+            _typeNameTable[74] = "Microsoft.UI.Xaml.Controls.ProgressRingTemplateSettings";
+            _typeNameTable[75] = "Saku_Overclock.Views.ИнформацияPage";
+            _typeNameTable[76] = "Saku_Overclock.ViewModels.ИнформацияViewModel";
+            _typeNameTable[77] = "Microsoft.UI.Xaml.Controls.ProgressBar";
+            _typeNameTable[78] = "Microsoft.UI.Xaml.Controls.Primitives.RangeBase";
+            _typeNameTable[79] = "Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings";
+            _typeNameTable[80] = "Saku_Overclock.Views.КулерPage";
+            _typeNameTable[81] = "Saku_Overclock.ViewModels.КулерViewModel";
+            _typeNameTable[82] = "Microsoft.UI.Xaml.Controls.TeachingTip";
+            _typeNameTable[83] = "Microsoft.UI.Xaml.Controls.IconSource";
+            _typeNameTable[84] = "System.Windows.Input.ICommand";
+            _typeNameTable[85] = "Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode";
+            _typeNameTable[86] = "Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode";
+            _typeNameTable[87] = "Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility";
+            _typeNameTable[88] = "Microsoft.UI.Xaml.FrameworkElement";
+            _typeNameTable[89] = "Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings";
+            _typeNameTable[90] = "Saku_Overclock.Views.ПараметрыPage";
+            _typeNameTable[91] = "Saku_Overclock.ViewModels.ПараметрыViewModel";
+            _typeNameTable[92] = "Saku_Overclock.Views.ПресетыPage";
+            _typeNameTable[93] = "Saku_Overclock.ViewModels.ПресетыViewModel";
+            _typeNameTable[94] = "Microsoft.UI.Xaml.Controls.TreeViewNode";
+            _typeNameTable[95] = "System.Collections.Generic.IList`1<Microsoft.UI.Xaml.Controls.TreeViewNode>";
+            _typeNameTable[96] = "Int32";
 
-            _typeTable = new global::System.Type[95];
+            _typeTable = new global::System.Type[97];
             _typeTable[0] = typeof(global::Microsoft.UI.Xaml.Controls.XamlControlsResources);
             _typeTable[1] = typeof(global::Microsoft.UI.Xaml.ResourceDictionary);
             _typeTable[2] = typeof(global::System.Object);
@@ -397,28 +399,30 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
             _typeTable[70] = typeof(global::Microsoft.UI.Xaml.Controls.Expander);
             _typeTable[71] = typeof(global::Microsoft.UI.Xaml.Controls.ExpandDirection);
             _typeTable[72] = typeof(global::Microsoft.UI.Xaml.Controls.ExpanderTemplateSettings);
-            _typeTable[73] = typeof(global::Saku_Overclock.Views.ИнформацияPage);
-            _typeTable[74] = typeof(global::Saku_Overclock.ViewModels.ИнформацияViewModel);
-            _typeTable[75] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressBar);
-            _typeTable[76] = typeof(global::Microsoft.UI.Xaml.Controls.Primitives.RangeBase);
-            _typeTable[77] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings);
-            _typeTable[78] = typeof(global::Saku_Overclock.Views.КулерPage);
-            _typeTable[79] = typeof(global::Saku_Overclock.ViewModels.КулерViewModel);
-            _typeTable[80] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTip);
-            _typeTable[81] = typeof(global::Microsoft.UI.Xaml.Controls.IconSource);
-            _typeTable[82] = typeof(global::System.Windows.Input.ICommand);
-            _typeTable[83] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode);
-            _typeTable[84] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode);
-            _typeTable[85] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility);
-            _typeTable[86] = typeof(global::Microsoft.UI.Xaml.FrameworkElement);
-            _typeTable[87] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings);
-            _typeTable[88] = typeof(global::Saku_Overclock.Views.ПараметрыPage);
-            _typeTable[89] = typeof(global::Saku_Overclock.ViewModels.ПараметрыViewModel);
-            _typeTable[90] = typeof(global::Saku_Overclock.Views.ПресетыPage);
-            _typeTable[91] = typeof(global::Saku_Overclock.ViewModels.ПресетыViewModel);
-            _typeTable[92] = typeof(global::Microsoft.UI.Xaml.Controls.TreeViewNode);
-            _typeTable[93] = typeof(global::System.Collections.Generic.IList<global::Microsoft.UI.Xaml.Controls.TreeViewNode>);
-            _typeTable[94] = typeof(global::System.Int32);
+            _typeTable[73] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressRing);
+            _typeTable[74] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressRingTemplateSettings);
+            _typeTable[75] = typeof(global::Saku_Overclock.Views.ИнформацияPage);
+            _typeTable[76] = typeof(global::Saku_Overclock.ViewModels.ИнформацияViewModel);
+            _typeTable[77] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressBar);
+            _typeTable[78] = typeof(global::Microsoft.UI.Xaml.Controls.Primitives.RangeBase);
+            _typeTable[79] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings);
+            _typeTable[80] = typeof(global::Saku_Overclock.Views.КулерPage);
+            _typeTable[81] = typeof(global::Saku_Overclock.ViewModels.КулерViewModel);
+            _typeTable[82] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTip);
+            _typeTable[83] = typeof(global::Microsoft.UI.Xaml.Controls.IconSource);
+            _typeTable[84] = typeof(global::System.Windows.Input.ICommand);
+            _typeTable[85] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode);
+            _typeTable[86] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode);
+            _typeTable[87] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility);
+            _typeTable[88] = typeof(global::Microsoft.UI.Xaml.FrameworkElement);
+            _typeTable[89] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings);
+            _typeTable[90] = typeof(global::Saku_Overclock.Views.ПараметрыPage);
+            _typeTable[91] = typeof(global::Saku_Overclock.ViewModels.ПараметрыViewModel);
+            _typeTable[92] = typeof(global::Saku_Overclock.Views.ПресетыPage);
+            _typeTable[93] = typeof(global::Saku_Overclock.ViewModels.ПресетыViewModel);
+            _typeTable[94] = typeof(global::Microsoft.UI.Xaml.Controls.TreeViewNode);
+            _typeTable[95] = typeof(global::System.Collections.Generic.IList<global::Microsoft.UI.Xaml.Controls.TreeViewNode>);
+            _typeTable[96] = typeof(global::System.Int32);
         }
 
         private int LookupTypeIndexByName(string typeName)
@@ -470,18 +474,19 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
         private object Activate_68_ГлавнаяPage() { return new global::Saku_Overclock.Views.ГлавнаяPage(); }
         private object Activate_69_ГлавнаяViewModel() { return new global::Saku_Overclock.ViewModels.ГлавнаяViewModel(); }
         private object Activate_70_Expander() { return new global::Microsoft.UI.Xaml.Controls.Expander(); }
-        private object Activate_73_ИнформацияPage() { return new global::Saku_Overclock.Views.ИнформацияPage(); }
-        private object Activate_74_ИнформацияViewModel() { return new global::Saku_Overclock.ViewModels.ИнформацияViewModel(); }
-        private object Activate_75_ProgressBar() { return new global::Microsoft.UI.Xaml.Controls.ProgressBar(); }
-        private object Activate_78_КулерPage() { return new global::Saku_Overclock.Views.КулерPage(); }
-        private object Activate_79_КулерViewModel() { return new global::Saku_Overclock.ViewModels.КулерViewModel(); }
-        private object Activate_80_TeachingTip() { return new global::Microsoft.UI.Xaml.Controls.TeachingTip(); }
-        private object Activate_87_TeachingTipTemplateSettings() { return new global::Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings(); }
-        private object Activate_88_ПараметрыPage() { return new global::Saku_Overclock.Views.ПараметрыPage(); }
-        private object Activate_89_ПараметрыViewModel() { return new global::Saku_Overclock.ViewModels.ПараметрыViewModel(); }
-        private object Activate_90_ПресетыPage() { return new global::Saku_Overclock.Views.ПресетыPage(); }
-        private object Activate_91_ПресетыViewModel() { return new global::Saku_Overclock.ViewModels.ПресетыViewModel(); }
-        private object Activate_92_TreeViewNode() { return new global::Microsoft.UI.Xaml.Controls.TreeViewNode(); }
+        private object Activate_73_ProgressRing() { return new global::Microsoft.UI.Xaml.Controls.ProgressRing(); }
+        private object Activate_75_ИнформацияPage() { return new global::Saku_Overclock.Views.ИнформацияPage(); }
+        private object Activate_76_ИнформацияViewModel() { return new global::Saku_Overclock.ViewModels.ИнформацияViewModel(); }
+        private object Activate_77_ProgressBar() { return new global::Microsoft.UI.Xaml.Controls.ProgressBar(); }
+        private object Activate_80_КулерPage() { return new global::Saku_Overclock.Views.КулерPage(); }
+        private object Activate_81_КулерViewModel() { return new global::Saku_Overclock.ViewModels.КулерViewModel(); }
+        private object Activate_82_TeachingTip() { return new global::Microsoft.UI.Xaml.Controls.TeachingTip(); }
+        private object Activate_89_TeachingTipTemplateSettings() { return new global::Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings(); }
+        private object Activate_90_ПараметрыPage() { return new global::Saku_Overclock.Views.ПараметрыPage(); }
+        private object Activate_91_ПараметрыViewModel() { return new global::Saku_Overclock.ViewModels.ПараметрыViewModel(); }
+        private object Activate_92_ПресетыPage() { return new global::Saku_Overclock.Views.ПресетыPage(); }
+        private object Activate_93_ПресетыViewModel() { return new global::Saku_Overclock.ViewModels.ПресетыViewModel(); }
+        private object Activate_94_TreeViewNode() { return new global::Microsoft.UI.Xaml.Controls.TreeViewNode(); }
         private void MapAdd_0_XamlControlsResources(object instance, object key, object item)
         {
             var collection = (global::System.Collections.Generic.IDictionary<global::System.Object, global::System.Object>)instance;
@@ -501,7 +506,7 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
             var newItem = (global::Microsoft.UI.Xaml.DependencyObject)item;
             collection.Add(newItem);
         }
-        private void VectorAdd_93_IList(object instance, object item)
+        private void VectorAdd_95_IList(object instance, object item)
         {
             var collection = (global::System.Collections.Generic.ICollection<global::Microsoft.UI.Xaml.Controls.TreeViewNode>)instance;
             var newItem = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)item;
@@ -1033,8 +1038,8 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
             case 70:   //  Microsoft.UI.Xaml.Controls.Expander
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ContentControl"));
                 userType.Activator = Activate_70_Expander;
-                userType.AddMemberName("Header");
                 userType.AddMemberName("IsExpanded");
+                userType.AddMemberName("Header");
                 userType.AddMemberName("ExpandDirection");
                 userType.AddMemberName("HeaderTemplate");
                 userType.AddMemberName("HeaderTemplateSelector");
@@ -1055,24 +1060,42 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 73:   //  Saku_Overclock.Views.ИнформацияPage
+            case 73:   //  Microsoft.UI.Xaml.Controls.ProgressRing
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Control"));
+                userType.Activator = Activate_73_ProgressRing;
+                userType.AddMemberName("Maximum");
+                userType.AddMemberName("Value");
+                userType.AddMemberName("IsIndeterminate");
+                userType.AddMemberName("IsActive");
+                userType.AddMemberName("Minimum");
+                userType.AddMemberName("TemplateSettings");
+                xamlType = userType;
+                break;
+
+            case 74:   //  Microsoft.UI.Xaml.Controls.ProgressRingTemplateSettings
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
+                userType.SetIsReturnTypeStub();
+                xamlType = userType;
+                break;
+
+            case 75:   //  Saku_Overclock.Views.ИнформацияPage
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_73_ИнформацияPage;
+                userType.Activator = Activate_75_ИнформацияPage;
                 userType.AddMemberName("ViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 74:   //  Saku_Overclock.ViewModels.ИнформацияViewModel
+            case 76:   //  Saku_Overclock.ViewModels.ИнформацияViewModel
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
                 userType.SetIsReturnTypeStub();
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 75:   //  Microsoft.UI.Xaml.Controls.ProgressBar
+            case 77:   //  Microsoft.UI.Xaml.Controls.ProgressBar
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Primitives.RangeBase"));
-                userType.Activator = Activate_75_ProgressBar;
+                userType.Activator = Activate_77_ProgressBar;
                 userType.AddMemberName("IsIndeterminate");
                 userType.AddMemberName("ShowError");
                 userType.AddMemberName("ShowPaused");
@@ -1080,34 +1103,34 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 76:   //  Microsoft.UI.Xaml.Controls.Primitives.RangeBase
+            case 78:   //  Microsoft.UI.Xaml.Controls.Primitives.RangeBase
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 77:   //  Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings
+            case 79:   //  Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 78:   //  Saku_Overclock.Views.КулерPage
+            case 80:   //  Saku_Overclock.Views.КулерPage
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_78_КулерPage;
+                userType.Activator = Activate_80_КулерPage;
                 userType.AddMemberName("ViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 79:   //  Saku_Overclock.ViewModels.КулерViewModel
+            case 81:   //  Saku_Overclock.ViewModels.КулерViewModel
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
                 userType.SetIsReturnTypeStub();
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 80:   //  Microsoft.UI.Xaml.Controls.TeachingTip
+            case 82:   //  Microsoft.UI.Xaml.Controls.TeachingTip
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ContentControl"));
-                userType.Activator = Activate_80_TeachingTip;
+                userType.Activator = Activate_82_TeachingTip;
                 userType.AddMemberName("IsOpen");
                 userType.AddMemberName("Title");
                 userType.AddMemberName("Subtitle");
@@ -1132,17 +1155,17 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 81:   //  Microsoft.UI.Xaml.Controls.IconSource
+            case 83:   //  Microsoft.UI.Xaml.Controls.IconSource
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 82:   //  System.Windows.Input.ICommand
+            case 84:   //  System.Windows.Input.ICommand
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, null);
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 83:   //  Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode
+            case 85:   //  Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Auto", global::Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode.Auto);
                 userType.AddEnumValue("Top", global::Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode.Top);
@@ -1150,7 +1173,7 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 84:   //  Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode
+            case 86:   //  Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Auto", global::Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode.Auto);
                 userType.AddEnumValue("Top", global::Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode.Top);
@@ -1169,7 +1192,7 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 85:   //  Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility
+            case 87:   //  Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Auto", global::Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility.Auto);
                 userType.AddEnumValue("Visible", global::Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility.Visible);
@@ -1177,49 +1200,49 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 86:   //  Microsoft.UI.Xaml.FrameworkElement
+            case 88:   //  Microsoft.UI.Xaml.FrameworkElement
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 87:   //  Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings
+            case 89:   //  Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 88:   //  Saku_Overclock.Views.ПараметрыPage
+            case 90:   //  Saku_Overclock.Views.ПараметрыPage
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_88_ПараметрыPage;
+                userType.Activator = Activate_90_ПараметрыPage;
                 userType.AddMemberName("ViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 89:   //  Saku_Overclock.ViewModels.ПараметрыViewModel
+            case 91:   //  Saku_Overclock.ViewModels.ПараметрыViewModel
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
                 userType.SetIsReturnTypeStub();
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 90:   //  Saku_Overclock.Views.ПресетыPage
+            case 92:   //  Saku_Overclock.Views.ПресетыPage
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_90_ПресетыPage;
+                userType.Activator = Activate_92_ПресетыPage;
                 userType.AddMemberName("ViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 91:   //  Saku_Overclock.ViewModels.ПресетыViewModel
+            case 93:   //  Saku_Overclock.ViewModels.ПресетыViewModel
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
                 userType.SetIsReturnTypeStub();
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 92:   //  Microsoft.UI.Xaml.Controls.TreeViewNode
+            case 94:   //  Microsoft.UI.Xaml.Controls.TreeViewNode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
-                userType.Activator = Activate_92_TreeViewNode;
+                userType.Activator = Activate_94_TreeViewNode;
                 userType.AddMemberName("Children");
                 userType.AddMemberName("Content");
                 userType.AddMemberName("Depth");
@@ -1231,14 +1254,14 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 93:   //  System.Collections.Generic.IList`1<Microsoft.UI.Xaml.Controls.TreeViewNode>
+            case 95:   //  System.Collections.Generic.IList`1<Microsoft.UI.Xaml.Controls.TreeViewNode>
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, null);
-                userType.CollectionAdd = VectorAdd_93_IList;
+                userType.CollectionAdd = VectorAdd_95_IList;
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 94:   //  Int32
+            case 96:   //  Int32
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
             }
@@ -2317,25 +2340,25 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
             var that = (global::Saku_Overclock.Views.ГлавнаяPage)instance;
             return that.ViewModel;
         }
-        private object get_109_Expander_Header(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
-            return that.Header;
-        }
-        private void set_109_Expander_Header(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
-            that.Header = (global::System.Object)Value;
-        }
-        private object get_110_Expander_IsExpanded(object instance)
+        private object get_109_Expander_IsExpanded(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             return that.IsExpanded;
         }
-        private void set_110_Expander_IsExpanded(object instance, object Value)
+        private void set_109_Expander_IsExpanded(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             that.IsExpanded = (global::System.Boolean)Value;
+        }
+        private object get_110_Expander_Header(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
+            return that.Header;
+        }
+        private void set_110_Expander_Header(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
+            that.Header = (global::System.Object)Value;
         }
         private object get_111_Expander_ExpandDirection(object instance)
         {
@@ -2372,312 +2395,367 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             return that.TemplateSettings;
         }
-        private object get_115_ИнформацияPage_ViewModel(object instance)
+        private object get_115_ProgressRing_Maximum(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
+            return that.Maximum;
+        }
+        private void set_115_ProgressRing_Maximum(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
+            that.Maximum = (global::System.Double)Value;
+        }
+        private object get_116_ProgressRing_Value(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
+            return that.Value;
+        }
+        private void set_116_ProgressRing_Value(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
+            that.Value = (global::System.Double)Value;
+        }
+        private object get_117_ProgressRing_IsIndeterminate(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
+            return that.IsIndeterminate;
+        }
+        private void set_117_ProgressRing_IsIndeterminate(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
+            that.IsIndeterminate = (global::System.Boolean)Value;
+        }
+        private object get_118_ProgressRing_IsActive(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
+            return that.IsActive;
+        }
+        private void set_118_ProgressRing_IsActive(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
+            that.IsActive = (global::System.Boolean)Value;
+        }
+        private object get_119_ProgressRing_Minimum(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
+            return that.Minimum;
+        }
+        private void set_119_ProgressRing_Minimum(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
+            that.Minimum = (global::System.Double)Value;
+        }
+        private object get_120_ProgressRing_TemplateSettings(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
+            return that.TemplateSettings;
+        }
+        private object get_121_ИнформацияPage_ViewModel(object instance)
         {
             var that = (global::Saku_Overclock.Views.ИнформацияPage)instance;
             return that.ViewModel;
         }
-        private object get_116_ProgressBar_IsIndeterminate(object instance)
+        private object get_122_ProgressBar_IsIndeterminate(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
             return that.IsIndeterminate;
         }
-        private void set_116_ProgressBar_IsIndeterminate(object instance, object Value)
+        private void set_122_ProgressBar_IsIndeterminate(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
             that.IsIndeterminate = (global::System.Boolean)Value;
         }
-        private object get_117_ProgressBar_ShowError(object instance)
+        private object get_123_ProgressBar_ShowError(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
             return that.ShowError;
         }
-        private void set_117_ProgressBar_ShowError(object instance, object Value)
+        private void set_123_ProgressBar_ShowError(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
             that.ShowError = (global::System.Boolean)Value;
         }
-        private object get_118_ProgressBar_ShowPaused(object instance)
+        private object get_124_ProgressBar_ShowPaused(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
             return that.ShowPaused;
         }
-        private void set_118_ProgressBar_ShowPaused(object instance, object Value)
+        private void set_124_ProgressBar_ShowPaused(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
             that.ShowPaused = (global::System.Boolean)Value;
         }
-        private object get_119_ProgressBar_TemplateSettings(object instance)
+        private object get_125_ProgressBar_TemplateSettings(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
             return that.TemplateSettings;
         }
-        private object get_120_КулерPage_ViewModel(object instance)
+        private object get_126_КулерPage_ViewModel(object instance)
         {
             var that = (global::Saku_Overclock.Views.КулерPage)instance;
             return that.ViewModel;
         }
-        private object get_121_TeachingTip_IsOpen(object instance)
+        private object get_127_TeachingTip_IsOpen(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.IsOpen;
         }
-        private void set_121_TeachingTip_IsOpen(object instance, object Value)
+        private void set_127_TeachingTip_IsOpen(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.IsOpen = (global::System.Boolean)Value;
         }
-        private object get_122_TeachingTip_Title(object instance)
+        private object get_128_TeachingTip_Title(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.Title;
         }
-        private void set_122_TeachingTip_Title(object instance, object Value)
+        private void set_128_TeachingTip_Title(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.Title = (global::System.String)Value;
         }
-        private object get_123_TeachingTip_Subtitle(object instance)
+        private object get_129_TeachingTip_Subtitle(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.Subtitle;
         }
-        private void set_123_TeachingTip_Subtitle(object instance, object Value)
+        private void set_129_TeachingTip_Subtitle(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.Subtitle = (global::System.String)Value;
         }
-        private object get_124_TeachingTip_IconSource(object instance)
+        private object get_130_TeachingTip_IconSource(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.IconSource;
         }
-        private void set_124_TeachingTip_IconSource(object instance, object Value)
+        private void set_130_TeachingTip_IconSource(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.IconSource = (global::Microsoft.UI.Xaml.Controls.IconSource)Value;
         }
-        private object get_125_TeachingTip_ActionButtonCommand(object instance)
+        private object get_131_TeachingTip_ActionButtonCommand(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.ActionButtonCommand;
         }
-        private void set_125_TeachingTip_ActionButtonCommand(object instance, object Value)
+        private void set_131_TeachingTip_ActionButtonCommand(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.ActionButtonCommand = (global::System.Windows.Input.ICommand)Value;
         }
-        private object get_126_TeachingTip_ActionButtonCommandParameter(object instance)
+        private object get_132_TeachingTip_ActionButtonCommandParameter(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.ActionButtonCommandParameter;
         }
-        private void set_126_TeachingTip_ActionButtonCommandParameter(object instance, object Value)
+        private void set_132_TeachingTip_ActionButtonCommandParameter(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.ActionButtonCommandParameter = (global::System.Object)Value;
         }
-        private object get_127_TeachingTip_ActionButtonContent(object instance)
+        private object get_133_TeachingTip_ActionButtonContent(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.ActionButtonContent;
         }
-        private void set_127_TeachingTip_ActionButtonContent(object instance, object Value)
+        private void set_133_TeachingTip_ActionButtonContent(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.ActionButtonContent = (global::System.Object)Value;
         }
-        private object get_128_TeachingTip_ActionButtonStyle(object instance)
+        private object get_134_TeachingTip_ActionButtonStyle(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.ActionButtonStyle;
         }
-        private void set_128_TeachingTip_ActionButtonStyle(object instance, object Value)
+        private void set_134_TeachingTip_ActionButtonStyle(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.ActionButtonStyle = (global::Microsoft.UI.Xaml.Style)Value;
         }
-        private object get_129_TeachingTip_CloseButtonCommand(object instance)
+        private object get_135_TeachingTip_CloseButtonCommand(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.CloseButtonCommand;
         }
-        private void set_129_TeachingTip_CloseButtonCommand(object instance, object Value)
+        private void set_135_TeachingTip_CloseButtonCommand(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.CloseButtonCommand = (global::System.Windows.Input.ICommand)Value;
         }
-        private object get_130_TeachingTip_CloseButtonCommandParameter(object instance)
+        private object get_136_TeachingTip_CloseButtonCommandParameter(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.CloseButtonCommandParameter;
         }
-        private void set_130_TeachingTip_CloseButtonCommandParameter(object instance, object Value)
+        private void set_136_TeachingTip_CloseButtonCommandParameter(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.CloseButtonCommandParameter = (global::System.Object)Value;
         }
-        private object get_131_TeachingTip_CloseButtonContent(object instance)
+        private object get_137_TeachingTip_CloseButtonContent(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.CloseButtonContent;
         }
-        private void set_131_TeachingTip_CloseButtonContent(object instance, object Value)
+        private void set_137_TeachingTip_CloseButtonContent(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.CloseButtonContent = (global::System.Object)Value;
         }
-        private object get_132_TeachingTip_CloseButtonStyle(object instance)
+        private object get_138_TeachingTip_CloseButtonStyle(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.CloseButtonStyle;
         }
-        private void set_132_TeachingTip_CloseButtonStyle(object instance, object Value)
+        private void set_138_TeachingTip_CloseButtonStyle(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.CloseButtonStyle = (global::Microsoft.UI.Xaml.Style)Value;
         }
-        private object get_133_TeachingTip_HeroContent(object instance)
+        private object get_139_TeachingTip_HeroContent(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.HeroContent;
         }
-        private void set_133_TeachingTip_HeroContent(object instance, object Value)
+        private void set_139_TeachingTip_HeroContent(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.HeroContent = (global::Microsoft.UI.Xaml.UIElement)Value;
         }
-        private object get_134_TeachingTip_HeroContentPlacement(object instance)
+        private object get_140_TeachingTip_HeroContentPlacement(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.HeroContentPlacement;
         }
-        private void set_134_TeachingTip_HeroContentPlacement(object instance, object Value)
+        private void set_140_TeachingTip_HeroContentPlacement(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.HeroContentPlacement = (global::Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode)Value;
         }
-        private object get_135_TeachingTip_IsLightDismissEnabled(object instance)
+        private object get_141_TeachingTip_IsLightDismissEnabled(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.IsLightDismissEnabled;
         }
-        private void set_135_TeachingTip_IsLightDismissEnabled(object instance, object Value)
+        private void set_141_TeachingTip_IsLightDismissEnabled(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.IsLightDismissEnabled = (global::System.Boolean)Value;
         }
-        private object get_136_TeachingTip_PlacementMargin(object instance)
+        private object get_142_TeachingTip_PlacementMargin(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.PlacementMargin;
         }
-        private void set_136_TeachingTip_PlacementMargin(object instance, object Value)
+        private void set_142_TeachingTip_PlacementMargin(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.PlacementMargin = (global::Microsoft.UI.Xaml.Thickness)Value;
         }
-        private object get_137_TeachingTip_PreferredPlacement(object instance)
+        private object get_143_TeachingTip_PreferredPlacement(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.PreferredPlacement;
         }
-        private void set_137_TeachingTip_PreferredPlacement(object instance, object Value)
+        private void set_143_TeachingTip_PreferredPlacement(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.PreferredPlacement = (global::Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode)Value;
         }
-        private object get_138_TeachingTip_ShouldConstrainToRootBounds(object instance)
+        private object get_144_TeachingTip_ShouldConstrainToRootBounds(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.ShouldConstrainToRootBounds;
         }
-        private void set_138_TeachingTip_ShouldConstrainToRootBounds(object instance, object Value)
+        private void set_144_TeachingTip_ShouldConstrainToRootBounds(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.ShouldConstrainToRootBounds = (global::System.Boolean)Value;
         }
-        private object get_139_TeachingTip_TailVisibility(object instance)
+        private object get_145_TeachingTip_TailVisibility(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.TailVisibility;
         }
-        private void set_139_TeachingTip_TailVisibility(object instance, object Value)
+        private void set_145_TeachingTip_TailVisibility(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.TailVisibility = (global::Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility)Value;
         }
-        private object get_140_TeachingTip_Target(object instance)
+        private object get_146_TeachingTip_Target(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.Target;
         }
-        private void set_140_TeachingTip_Target(object instance, object Value)
+        private void set_146_TeachingTip_Target(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.Target = (global::Microsoft.UI.Xaml.FrameworkElement)Value;
         }
-        private object get_141_TeachingTip_TemplateSettings(object instance)
+        private object get_147_TeachingTip_TemplateSettings(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.TemplateSettings;
         }
-        private object get_142_ПараметрыPage_ViewModel(object instance)
+        private object get_148_ПараметрыPage_ViewModel(object instance)
         {
             var that = (global::Saku_Overclock.Views.ПараметрыPage)instance;
             return that.ViewModel;
         }
-        private object get_143_ПресетыPage_ViewModel(object instance)
+        private object get_149_ПресетыPage_ViewModel(object instance)
         {
             var that = (global::Saku_Overclock.Views.ПресетыPage)instance;
             return that.ViewModel;
         }
-        private object get_144_TreeViewNode_Children(object instance)
+        private object get_150_TreeViewNode_Children(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.Children;
         }
-        private object get_145_TreeViewNode_Content(object instance)
+        private object get_151_TreeViewNode_Content(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.Content;
         }
-        private void set_145_TreeViewNode_Content(object instance, object Value)
+        private void set_151_TreeViewNode_Content(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             that.Content = (global::System.Object)Value;
         }
-        private object get_146_TreeViewNode_Depth(object instance)
+        private object get_152_TreeViewNode_Depth(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.Depth;
         }
-        private object get_147_TreeViewNode_HasChildren(object instance)
+        private object get_153_TreeViewNode_HasChildren(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.HasChildren;
         }
-        private object get_148_TreeViewNode_HasUnrealizedChildren(object instance)
+        private object get_154_TreeViewNode_HasUnrealizedChildren(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.HasUnrealizedChildren;
         }
-        private void set_148_TreeViewNode_HasUnrealizedChildren(object instance, object Value)
+        private void set_154_TreeViewNode_HasUnrealizedChildren(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             that.HasUnrealizedChildren = (global::System.Boolean)Value;
         }
-        private object get_149_TreeViewNode_IsExpanded(object instance)
+        private object get_155_TreeViewNode_IsExpanded(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.IsExpanded;
         }
-        private void set_149_TreeViewNode_IsExpanded(object instance, object Value)
+        private void set_155_TreeViewNode_IsExpanded(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             that.IsExpanded = (global::System.Boolean)Value;
         }
-        private object get_150_TreeViewNode_Parent(object instance)
+        private object get_156_TreeViewNode_Parent(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.Parent;
@@ -3426,19 +3504,19 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlMember.Getter = get_108_ГлавнаяPage_ViewModel;
                 xamlMember.SetIsReadOnly();
                 break;
-            case "Microsoft.UI.Xaml.Controls.Expander.Header":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Header", "Object");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_109_Expander_Header;
-                xamlMember.Setter = set_109_Expander_Header;
-                break;
             case "Microsoft.UI.Xaml.Controls.Expander.IsExpanded":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsExpanded", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_110_Expander_IsExpanded;
-                xamlMember.Setter = set_110_Expander_IsExpanded;
+                xamlMember.Getter = get_109_Expander_IsExpanded;
+                xamlMember.Setter = set_109_Expander_IsExpanded;
+                break;
+            case "Microsoft.UI.Xaml.Controls.Expander.Header":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Header", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_110_Expander_Header;
+                xamlMember.Setter = set_110_Expander_Header;
                 break;
             case "Microsoft.UI.Xaml.Controls.Expander.ExpandDirection":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
@@ -3467,248 +3545,289 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlMember.Getter = get_114_Expander_TemplateSettings;
                 xamlMember.SetIsReadOnly();
                 break;
+            case "Microsoft.UI.Xaml.Controls.ProgressRing.Maximum":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Maximum", "Double");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_115_ProgressRing_Maximum;
+                xamlMember.Setter = set_115_ProgressRing_Maximum;
+                break;
+            case "Microsoft.UI.Xaml.Controls.ProgressRing.Value":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Value", "Double");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_116_ProgressRing_Value;
+                xamlMember.Setter = set_116_ProgressRing_Value;
+                break;
+            case "Microsoft.UI.Xaml.Controls.ProgressRing.IsIndeterminate":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsIndeterminate", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_117_ProgressRing_IsIndeterminate;
+                xamlMember.Setter = set_117_ProgressRing_IsIndeterminate;
+                break;
+            case "Microsoft.UI.Xaml.Controls.ProgressRing.IsActive":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsActive", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_118_ProgressRing_IsActive;
+                xamlMember.Setter = set_118_ProgressRing_IsActive;
+                break;
+            case "Microsoft.UI.Xaml.Controls.ProgressRing.Minimum":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Minimum", "Double");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_119_ProgressRing_Minimum;
+                xamlMember.Setter = set_119_ProgressRing_Minimum;
+                break;
+            case "Microsoft.UI.Xaml.Controls.ProgressRing.TemplateSettings":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TemplateSettings", "Microsoft.UI.Xaml.Controls.ProgressRingTemplateSettings");
+                xamlMember.Getter = get_120_ProgressRing_TemplateSettings;
+                xamlMember.SetIsReadOnly();
+                break;
             case "Saku_Overclock.Views.ИнформацияPage.ViewModel":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.ИнформацияPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.ИнформацияViewModel");
-                xamlMember.Getter = get_115_ИнформацияPage_ViewModel;
+                xamlMember.Getter = get_121_ИнформацияPage_ViewModel;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressBar.IsIndeterminate":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressBar");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsIndeterminate", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_116_ProgressBar_IsIndeterminate;
-                xamlMember.Setter = set_116_ProgressBar_IsIndeterminate;
+                xamlMember.Getter = get_122_ProgressBar_IsIndeterminate;
+                xamlMember.Setter = set_122_ProgressBar_IsIndeterminate;
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressBar.ShowError":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressBar");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ShowError", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_117_ProgressBar_ShowError;
-                xamlMember.Setter = set_117_ProgressBar_ShowError;
+                xamlMember.Getter = get_123_ProgressBar_ShowError;
+                xamlMember.Setter = set_123_ProgressBar_ShowError;
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressBar.ShowPaused":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressBar");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ShowPaused", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_118_ProgressBar_ShowPaused;
-                xamlMember.Setter = set_118_ProgressBar_ShowPaused;
+                xamlMember.Getter = get_124_ProgressBar_ShowPaused;
+                xamlMember.Setter = set_124_ProgressBar_ShowPaused;
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressBar.TemplateSettings":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressBar");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TemplateSettings", "Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings");
-                xamlMember.Getter = get_119_ProgressBar_TemplateSettings;
+                xamlMember.Getter = get_125_ProgressBar_TemplateSettings;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Saku_Overclock.Views.КулерPage.ViewModel":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.КулерPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.КулерViewModel");
-                xamlMember.Getter = get_120_КулерPage_ViewModel;
+                xamlMember.Getter = get_126_КулерPage_ViewModel;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.IsOpen":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsOpen", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_121_TeachingTip_IsOpen;
-                xamlMember.Setter = set_121_TeachingTip_IsOpen;
+                xamlMember.Getter = get_127_TeachingTip_IsOpen;
+                xamlMember.Setter = set_127_TeachingTip_IsOpen;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.Title":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Title", "String");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_122_TeachingTip_Title;
-                xamlMember.Setter = set_122_TeachingTip_Title;
+                xamlMember.Getter = get_128_TeachingTip_Title;
+                xamlMember.Setter = set_128_TeachingTip_Title;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.Subtitle":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Subtitle", "String");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_123_TeachingTip_Subtitle;
-                xamlMember.Setter = set_123_TeachingTip_Subtitle;
+                xamlMember.Getter = get_129_TeachingTip_Subtitle;
+                xamlMember.Setter = set_129_TeachingTip_Subtitle;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.IconSource":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IconSource", "Microsoft.UI.Xaml.Controls.IconSource");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_124_TeachingTip_IconSource;
-                xamlMember.Setter = set_124_TeachingTip_IconSource;
+                xamlMember.Getter = get_130_TeachingTip_IconSource;
+                xamlMember.Setter = set_130_TeachingTip_IconSource;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonCommand":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonCommand", "System.Windows.Input.ICommand");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_125_TeachingTip_ActionButtonCommand;
-                xamlMember.Setter = set_125_TeachingTip_ActionButtonCommand;
+                xamlMember.Getter = get_131_TeachingTip_ActionButtonCommand;
+                xamlMember.Setter = set_131_TeachingTip_ActionButtonCommand;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonCommandParameter":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonCommandParameter", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_126_TeachingTip_ActionButtonCommandParameter;
-                xamlMember.Setter = set_126_TeachingTip_ActionButtonCommandParameter;
+                xamlMember.Getter = get_132_TeachingTip_ActionButtonCommandParameter;
+                xamlMember.Setter = set_132_TeachingTip_ActionButtonCommandParameter;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonContent":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonContent", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_127_TeachingTip_ActionButtonContent;
-                xamlMember.Setter = set_127_TeachingTip_ActionButtonContent;
+                xamlMember.Getter = get_133_TeachingTip_ActionButtonContent;
+                xamlMember.Setter = set_133_TeachingTip_ActionButtonContent;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonStyle":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonStyle", "Microsoft.UI.Xaml.Style");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_128_TeachingTip_ActionButtonStyle;
-                xamlMember.Setter = set_128_TeachingTip_ActionButtonStyle;
+                xamlMember.Getter = get_134_TeachingTip_ActionButtonStyle;
+                xamlMember.Setter = set_134_TeachingTip_ActionButtonStyle;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonCommand":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonCommand", "System.Windows.Input.ICommand");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_129_TeachingTip_CloseButtonCommand;
-                xamlMember.Setter = set_129_TeachingTip_CloseButtonCommand;
+                xamlMember.Getter = get_135_TeachingTip_CloseButtonCommand;
+                xamlMember.Setter = set_135_TeachingTip_CloseButtonCommand;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonCommandParameter":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonCommandParameter", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_130_TeachingTip_CloseButtonCommandParameter;
-                xamlMember.Setter = set_130_TeachingTip_CloseButtonCommandParameter;
+                xamlMember.Getter = get_136_TeachingTip_CloseButtonCommandParameter;
+                xamlMember.Setter = set_136_TeachingTip_CloseButtonCommandParameter;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonContent":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonContent", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_131_TeachingTip_CloseButtonContent;
-                xamlMember.Setter = set_131_TeachingTip_CloseButtonContent;
+                xamlMember.Getter = get_137_TeachingTip_CloseButtonContent;
+                xamlMember.Setter = set_137_TeachingTip_CloseButtonContent;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonStyle":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonStyle", "Microsoft.UI.Xaml.Style");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_132_TeachingTip_CloseButtonStyle;
-                xamlMember.Setter = set_132_TeachingTip_CloseButtonStyle;
+                xamlMember.Getter = get_138_TeachingTip_CloseButtonStyle;
+                xamlMember.Setter = set_138_TeachingTip_CloseButtonStyle;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.HeroContent":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeroContent", "Microsoft.UI.Xaml.UIElement");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_133_TeachingTip_HeroContent;
-                xamlMember.Setter = set_133_TeachingTip_HeroContent;
+                xamlMember.Getter = get_139_TeachingTip_HeroContent;
+                xamlMember.Setter = set_139_TeachingTip_HeroContent;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.HeroContentPlacement":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeroContentPlacement", "Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_134_TeachingTip_HeroContentPlacement;
-                xamlMember.Setter = set_134_TeachingTip_HeroContentPlacement;
+                xamlMember.Getter = get_140_TeachingTip_HeroContentPlacement;
+                xamlMember.Setter = set_140_TeachingTip_HeroContentPlacement;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.IsLightDismissEnabled":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsLightDismissEnabled", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_135_TeachingTip_IsLightDismissEnabled;
-                xamlMember.Setter = set_135_TeachingTip_IsLightDismissEnabled;
+                xamlMember.Getter = get_141_TeachingTip_IsLightDismissEnabled;
+                xamlMember.Setter = set_141_TeachingTip_IsLightDismissEnabled;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.PlacementMargin":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PlacementMargin", "Microsoft.UI.Xaml.Thickness");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_136_TeachingTip_PlacementMargin;
-                xamlMember.Setter = set_136_TeachingTip_PlacementMargin;
+                xamlMember.Getter = get_142_TeachingTip_PlacementMargin;
+                xamlMember.Setter = set_142_TeachingTip_PlacementMargin;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.PreferredPlacement":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PreferredPlacement", "Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_137_TeachingTip_PreferredPlacement;
-                xamlMember.Setter = set_137_TeachingTip_PreferredPlacement;
+                xamlMember.Getter = get_143_TeachingTip_PreferredPlacement;
+                xamlMember.Setter = set_143_TeachingTip_PreferredPlacement;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.ShouldConstrainToRootBounds":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ShouldConstrainToRootBounds", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_138_TeachingTip_ShouldConstrainToRootBounds;
-                xamlMember.Setter = set_138_TeachingTip_ShouldConstrainToRootBounds;
+                xamlMember.Getter = get_144_TeachingTip_ShouldConstrainToRootBounds;
+                xamlMember.Setter = set_144_TeachingTip_ShouldConstrainToRootBounds;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.TailVisibility":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TailVisibility", "Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_139_TeachingTip_TailVisibility;
-                xamlMember.Setter = set_139_TeachingTip_TailVisibility;
+                xamlMember.Getter = get_145_TeachingTip_TailVisibility;
+                xamlMember.Setter = set_145_TeachingTip_TailVisibility;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.Target":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Target", "Microsoft.UI.Xaml.FrameworkElement");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_140_TeachingTip_Target;
-                xamlMember.Setter = set_140_TeachingTip_Target;
+                xamlMember.Getter = get_146_TeachingTip_Target;
+                xamlMember.Setter = set_146_TeachingTip_Target;
                 break;
             case "Microsoft.UI.Xaml.Controls.TeachingTip.TemplateSettings":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TemplateSettings", "Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_141_TeachingTip_TemplateSettings;
+                xamlMember.Getter = get_147_TeachingTip_TemplateSettings;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Saku_Overclock.Views.ПараметрыPage.ViewModel":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.ПараметрыPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.ПараметрыViewModel");
-                xamlMember.Getter = get_142_ПараметрыPage_ViewModel;
+                xamlMember.Getter = get_148_ПараметрыPage_ViewModel;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Saku_Overclock.Views.ПресетыPage.ViewModel":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.ПресетыPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.ПресетыViewModel");
-                xamlMember.Getter = get_143_ПресетыPage_ViewModel;
+                xamlMember.Getter = get_149_ПресетыPage_ViewModel;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.Children":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Children", "System.Collections.Generic.IList`1<Microsoft.UI.Xaml.Controls.TreeViewNode>");
-                xamlMember.Getter = get_144_TreeViewNode_Children;
+                xamlMember.Getter = get_150_TreeViewNode_Children;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.Content":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Content", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_145_TreeViewNode_Content;
-                xamlMember.Setter = set_145_TreeViewNode_Content;
+                xamlMember.Getter = get_151_TreeViewNode_Content;
+                xamlMember.Setter = set_151_TreeViewNode_Content;
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.Depth":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Depth", "Int32");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_146_TreeViewNode_Depth;
+                xamlMember.Getter = get_152_TreeViewNode_Depth;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.HasChildren":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HasChildren", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_147_TreeViewNode_HasChildren;
+                xamlMember.Getter = get_153_TreeViewNode_HasChildren;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.HasUnrealizedChildren":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HasUnrealizedChildren", "Boolean");
-                xamlMember.Getter = get_148_TreeViewNode_HasUnrealizedChildren;
-                xamlMember.Setter = set_148_TreeViewNode_HasUnrealizedChildren;
+                xamlMember.Getter = get_154_TreeViewNode_HasUnrealizedChildren;
+                xamlMember.Setter = set_154_TreeViewNode_HasUnrealizedChildren;
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.IsExpanded":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsExpanded", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_149_TreeViewNode_IsExpanded;
-                xamlMember.Setter = set_149_TreeViewNode_IsExpanded;
+                xamlMember.Getter = get_155_TreeViewNode_IsExpanded;
+                xamlMember.Setter = set_155_TreeViewNode_IsExpanded;
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.Parent":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Parent", "Microsoft.UI.Xaml.Controls.TreeViewNode");
-                xamlMember.Getter = get_150_TreeViewNode_Parent;
+                xamlMember.Getter = get_156_TreeViewNode_Parent;
                 xamlMember.SetIsReadOnly();
                 break;
             }

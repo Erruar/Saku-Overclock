@@ -18,24 +18,24 @@
     <DeployOptionalPackages>false</DeployOptionalPackages>
     <WindowsSdkPath>C:\Program Files %28x86%29\Windows Kits\10\</WindowsSdkPath>
     <LayoutDir>C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\AppX</LayoutDir>
-    <RegisteredManifestChecksum>C56770600F43B83336D0FD981CAABF29FF2476800EF2E78D9DC435EB570237D6</RegisteredManifestChecksum>
-    <RegisteredPackageMoniker>129fe03a-4520-4c47-b74c-ba9210dc2f62_1.0.6.0_x64__8fghyvnsg2qm8</RegisteredPackageMoniker>
+    <RegisteredManifestChecksum>2A240B41D036B1BBF04062C5B174D580C8DFA724CE34569045D14C95DC6D2934</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>129fe03a-4520-4c47-b74c-ba9210dc2f62_1.0.7.0_x64__8fghyvnsg2qm8</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>129fe03a-4520-4c47-b74c-ba9210dc2f62_8fghyvnsg2qm8!App</RegisteredUserModeAppID>
     <RegisteredPackageID>129fe03a-4520-4c47-b74c-ba9210dc2f62</RegisteredPackageID>
     <RegisteredPackagePublisher>CN=Sakura</RegisteredPackagePublisher>
-    <RegisteredVersion>1.0.6.0</RegisteredVersion>
+    <RegisteredVersion>1.0.7.0</RegisteredVersion>
   </PropertyGroup>
   <ItemGroup>
     <AppXManifest Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2024-02-04T18:43:41.389</Modified>
+      <Modified>2024-02-09T18:48:00.389</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2024-02-04T18:43:39.603</Modified>
+      <Modified>2024-02-09T18:47:58.847</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.runtimeconfig.json">
       <PackagePath>Saku Overclock.runtimeconfig.json</PackagePath>
@@ -43,7 +43,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.dll">
       <PackagePath>Saku Overclock.dll</PackagePath>
-      <Modified>2024-02-04T18:43:38.045</Modified>
+      <Modified>2024-02-09T18:47:57.578</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\.nuget\packages\accord\3.8.0\build\Accord.dll.config">
       <PackagePath>Accord.dll.config</PackagePath>
@@ -947,7 +947,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\apphost.exe">
       <PackagePath>Saku Overclock.exe</PackagePath>
-      <Modified>2024-02-04T18:43:38.136</Modified>
+      <Modified>2024-02-09T18:47:57.594</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MsixContent\CoreMessagingXP.dll">
       <PackagePath>CoreMessagingXP.dll</PackagePath>
@@ -1783,7 +1783,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.deps.json">
       <PackagePath>Saku Overclock.deps.json</PackagePath>
-      <Modified>2024-02-04T07:54:56.635</Modified>
+      <Modified>2024-02-09T18:47:58.174</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Sakura\.nuget\packages\microsoft.netcore.app.runtime.win-x64\7.0.14\runtimes\win-x64\lib\net7.0\Microsoft.CSharp.dll">
       <PackagePath>Microsoft.CSharp.dll</PackagePath>

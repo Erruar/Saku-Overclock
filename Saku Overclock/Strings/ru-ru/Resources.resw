@@ -958,4 +958,133 @@ AMD APU + AMD dGPU
   <data name="Unsaved_Target.Title" xml:space="preserve">
     <value>Ошибка изменения</value>
   </data>
+  <data name="infoAActualC.Text" xml:space="preserve">
+    <value>Текущее реальное потр</value>
+  </data>
+  <data name="infoAActualL.Text" xml:space="preserve">
+    <value>Лимит реального потр</value>
+  </data>
+  <data name="infoAAVGC.Text" xml:space="preserve">
+    <value>Текущее среднее потр</value>
+  </data>
+  <data name="infoAAVGL.Text" xml:space="preserve">
+    <value>Лимит среднего потр</value>
+  </data>
+  <data name="infoAStapmC.Text" xml:space="preserve">
+    <value>Текущее потребление</value>
+  </data>
+  <data name="infoAStapmL.Text" xml:space="preserve">
+    <value>Лимит потребления</value>
+  </data>
+  <data name="infoBaseC.Text" xml:space="preserve">
+    <value>Базовая частота</value>
+  </data>
+  <data name="infoCaptC.Text" xml:space="preserve">
+    <value>Серия</value>
+  </data>
+  <data name="infoCodeC.Text" xml:space="preserve">
+    <value>Кодовое имя</value>
+  </data>
+  <data name="infoCoresC.Text" xml:space="preserve">
+    <value>Ядра</value>
+  </data>
+  <data name="infoCPU_Expander.Text" xml:space="preserve">
+    <value>Процессор</value>
+  </data>
+  <data name="infoCPU_Expander_desc.Text" xml:space="preserve">
+    <value>Характеристики вашего процессора</value>
+  </data>
+  <data name="infoInstructC.Text" xml:space="preserve">
+    <value>Инструкции</value>
+  </data>
+  <data name="infoL1C.Text" xml:space="preserve">
+    <value>L1 Кеш</value>
+  </data>
+  <data name="infoL2C.Text" xml:space="preserve">
+    <value>L2 Кеш</value>
+  </data>
+  <data name="infoL3C.Text" xml:space="preserve">
+    <value>L3 Кеш</value>
+  </data>
+  <data name="infoProcC.Text" xml:space="preserve">
+    <value>ЦП</value>
+  </data>
+  <data name="infoProdC.Text" xml:space="preserve">
+    <value>Вендор</value>
+  </data>
+  <data name="infoThreadC.Text" xml:space="preserve">
+    <value>Потоки</value>
+  </data>
+  <data name="infoAAPUC.Text" xml:space="preserve">
+    <value>Текущее потр APU</value>
+  </data>
+  <data name="infoAAPUL.Text" xml:space="preserve">
+    <value>Лимит потр APU</value>
+  </data>
+  <data name="infoAAPUTEMPC.Text" xml:space="preserve">
+    <value>Текущая темп APU</value>
+  </data>
+  <data name="infoAAPUTEMPL.Text" xml:space="preserve">
+    <value>Макс темп APU</value>
+  </data>
+  <data name="infoACPUTEMPC.Text" xml:space="preserve">
+    <value>Текущая темп CPU</value>
+  </data>
+  <data name="infoACPUTEMPL.Text" xml:space="preserve">
+    <value>Макс темп CPU</value>
+  </data>
+  <data name="infoACPUUSAGE.Text" xml:space="preserve">
+    <value>Загрузка процессора</value>
+  </data>
+  <data name="infoAFast.Text" xml:space="preserve">
+    <value>Тик быстрого разгона</value>
+  </data>
+  <data name="infoAGPUTEMPC.Text" xml:space="preserve">
+    <value>Текущая темп dGPU</value>
+  </data>
+  <data name="infoAGPUTEMPL.Text" xml:space="preserve">
+    <value>Макс темп dGPU</value>
+  </data>
+  <data name="infoASlow.Text" xml:space="preserve">
+    <value>Тик долгого разгона</value>
+  </data>
+  <data name="infoASOCEDCC.Text" xml:space="preserve">
+    <value>Текущий ток SoC</value>
+  </data>
+  <data name="infoASOCEDCL.Text" xml:space="preserve">
+    <value>Лимит тока SoC</value>
+  </data>
+  <data name="infoASOCTDCC.Text" xml:space="preserve">
+    <value>Текущее SoC TDC</value>
+  </data>
+  <data name="infoASOCTDCL.Text" xml:space="preserve">
+    <value>Лимит тока SoC TDC</value>
+  </data>
+  <data name="infoAVRMEDCC.Text" xml:space="preserve">
+    <value>Текущий ток VRM</value>
+  </data>
+  <data name="infoAVRMEDCL.Text" xml:space="preserve">
+    <value>Лимит тока VRM</value>
+  </data>
+  <data name="infoAVRMTDCC.Text" xml:space="preserve">
+    <value>Текущее VRM TDC</value>
+  </data>
+  <data name="infoAVRMTDCL.Text" xml:space="preserve">
+    <value>Лимит тока VRM TDC</value>
+  </data>
+  <data name="infoMMEM.Text" xml:space="preserve">
+    <value>Тип памяти</value>
+  </data>
+  <data name="infoMModel.Text" xml:space="preserve">
+    <value>Модель</value>
+  </data>
+  <data name="infoMModule.Text" xml:space="preserve">
+    <value>Количество модулей</value>
+  </data>
+  <data name="infoMProd.Text" xml:space="preserve">
+    <value>Вендор</value>
+  </data>
+  <data name="infoMWid.Text" xml:space="preserve">
+    <value>Ширина</value>
+  </data>
 </root>

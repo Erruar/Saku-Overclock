@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Saku Overclock")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bfd05017962a936d03e0db04a7190a8a7188239e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Saku Overclock")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Saku Overclock")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
