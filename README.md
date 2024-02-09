@@ -87,10 +87,12 @@ This program is designed to overclock Ryzen mobile processors on laptops. Initia
 
 What the program can do:
 * Control TDP, VRM current and on Picasso and up - Freq of CPU subsystems and iGPU freq
-* Read and change Power States of CPU with changing frequency 
-* Get total info about TDP, VRM, Timings
+* Control dGPU and APU power limits on Renoir and up
+* Read and change Power States of CPU with changing frequency and voltages
+* Get total info about TDP, VRM, Timings of CPU
 * Cooler tuning, custom cooler spin rate
 * EXPERIMENTAL can stop BD Prochot for time, just found value for your CPU
+* Reapply your settings with windows starting and every second if it needed
 * Helps to play at high FPS :smile:
 
 Of course, you can copy my program in your projects! So I'll be adding more in the near future. Thanks for using it!
@@ -113,7 +115,7 @@ Use the `README.md` to get started.
     <h1 align="center">White main page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main-white.png"></img>
     <p> </p>
-    <p align="left">My application has two themes - dark and light, here you can see the light theme</p>
+    <p align="left">My application has three themes - dark, light and blue, here you can see the light theme</p>
   </ol>
 </details>
 
@@ -251,6 +253,13 @@ Let's install my app!
 3. Install `.appx` like normal `.exe` or `.msi` file
 4. Open app via Windows -> All apps
 5. Now you have installed my app!
+
+### If you have troubles with certificate
+How to install app without certificate:
+1. <a href="https://github.com/colinkiama/EasyCertInstall/releases"><strong>Download EasyCertInstall</strong></a>
+2. Put `EasyCertInstall.exe` into folder with my `.appx` app
+3. Run `EasyCertInstall.exe` as Administrator and wait for message from it
+4. Run my app from Windows button or from Windows Search and you can delete `EasyCertInstall.exe` and `.appx`!
 
 <a href="https://github.com/Erruar/Saku-Overclock/issues/2"><strong>Seems like app isn't working for me »</strong></a>
 ## Video installation (Click to open)
