@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Management;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Management;
 using static System.Management.ManagementObjectCollection;
 
 namespace Saku_Overclock.Services;

@@ -1,9 +1,304 @@
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.csproj.AssemblyReference.cache
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\App.g.i.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\App.g.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MainWindow.g.i.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MainWindow.g.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\AdvancedКулерPage.g.i.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\AdvancedКулерPage.g.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\SettingsPage.g.i.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\SettingsPage.g.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ShellPage.g.i.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ShellPage.g.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ГлавнаяPage.g.i.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ГлавнаяPage.g.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ИнформацияPage.g.i.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ИнформацияPage.g.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\КулерPage.g.i.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\КулерPage.g.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПараметрыPage.g.i.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПараметрыPage.g.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПресетыPage.g.i.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПресетыPage.g.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\XamlTypeInfo.g.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\App.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MainWindow.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\FontSizes.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\TextBlock.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\Thickness.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\AdvancedКулерPage.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\SettingsPage.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ShellPage.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ГлавнаяPage.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ИнформацияPage.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\КулерPage.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПараметрыPage.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПресетыPage.xaml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\App.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MainWindow.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\FontSizes.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\TextBlock.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\Thickness.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\AdvancedКулерPage.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\SettingsPage.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ShellPage.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ГлавнаяPage.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ИнформацияPage.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\КулерPage.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПараметрыPage.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПресетыPage.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\XamlSaveStateFile.xml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.AssemblyInfoInputs.cache
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.AssemblyInfo.cs
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.csproj.CoreCompileInputs.cache
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.sourcelink.json
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\CoreMessagingXP.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\dcompi.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\dwmcorei.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\DwmSceneI.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\DWriteCore.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\marshal.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.DirectManipulation.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Graphics.Display.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.InputStateManager.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Internal.FrameworkUdk.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Composition.OSSupport.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Input.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Windowing.Core.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Windowing.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Xaml.Controls.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.ui.xaml.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Xaml.Internal.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Xaml.Phone.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.ui.xaml.resources.19h1.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.ui.xaml.resources.common.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Web.WebView2.Core.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.ApplicationModel.Resources.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.Widgets.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.WindowsAppRuntime.Bootstrap.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.WindowsAppRuntime.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.WindowsAppRuntime.Insights.Resource.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MRM.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\PushNotificationsLongRunningTask.ProxyStub.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WinUIEdit.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\wuceffectsi.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\RestartAgent.exe
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\af-ZA\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\af-ZA\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\am-ET\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\am-ET\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ar-SA\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ar-SA\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\as-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\as-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\az-Latn-AZ\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\az-Latn-AZ\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bg-BG\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bg-BG\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bn-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bn-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bs-Latn-BA\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bs-Latn-BA\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ca-Es-VALENCIA\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ca-Es-VALENCIA\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ca-ES\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ca-ES\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\cs-CZ\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\cs-CZ\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\cy-GB\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\cy-GB\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\da-DK\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\da-DK\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\de-DE\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\de-DE\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\el-GR\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\el-GR\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\en-GB\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\en-GB\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\en-us\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\en-us\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\es-ES\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\es-ES\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\es-MX\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\es-MX\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\et-EE\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\et-EE\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\eu-ES\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\eu-ES\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fa-IR\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fa-IR\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fi-FI\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fi-FI\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fil-PH\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fil-PH\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fr-CA\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fr-CA\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fr-FR\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fr-FR\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ga-IE\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ga-IE\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gd-gb\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gd-gb\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gl-ES\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gl-ES\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gu-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gu-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\he-IL\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\he-IL\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hi-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hi-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hr-HR\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hr-HR\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hu-HU\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hu-HU\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hy-AM\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hy-AM\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\id-ID\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\id-ID\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\is-IS\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\is-IS\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\it-IT\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\it-IT\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ja-JP\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ja-JP\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ka-GE\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ka-GE\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kk-KZ\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kk-KZ\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\km-KH\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\km-KH\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kn-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kn-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ko-KR\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ko-KR\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kok-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kok-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lb-LU\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lb-LU\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lo-LA\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lo-LA\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lt-LT\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lt-LT\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lv-LV\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lv-LV\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mi-NZ\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mi-NZ\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mk-MK\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mk-MK\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ml-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ml-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mr-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mr-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ms-MY\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ms-MY\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mt-MT\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mt-MT\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nb-NO\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nb-NO\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ne-NP\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ne-NP\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nl-NL\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nl-NL\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nn-NO\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nn-NO\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\or-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\or-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pa-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pa-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pl-PL\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pl-PL\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pt-BR\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pt-BR\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pt-PT\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pt-PT\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\quz-PE\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\quz-PE\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ro-RO\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ro-RO\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ru-RU\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ru-RU\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sk-SK\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sk-SK\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sl-SI\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sl-SI\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sq-AL\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sq-AL\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Cyrl-BA\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Cyrl-BA\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Cyrl-RS\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Cyrl-RS\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Latn-RS\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Latn-RS\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sv-SE\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sv-SE\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ta-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ta-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\te-IN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\te-IN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\th-TH\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\th-TH\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\tr-TR\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\tr-TR\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\tt-RU\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\tt-RU\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ug-CN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ug-CN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\uk-UA\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\uk-UA\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ur-PK\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ur-PK\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\uz-Latn-UZ\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\uz-Latn-UZ\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\vi-VN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\vi-VN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-CN\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-CN\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-TW\Microsoft.ui.xaml.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-TW\Microsoft.UI.Xaml.Phone.dll.mui
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Xaml\Assets\NoiseAsset_256x256_PNG.png
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WindowsAppRuntime.png
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.exe
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Accord.dll.config
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\exit.png
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\info.png
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\param.png
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\preset.png
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\show.png
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\startup.lnk
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WindowIcon.ico
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\appsettings.json
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\inpoutx64.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\libryzenadj.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\clipr.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\CommonServiceLocator.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\ec-probe.exe
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\GalaSoft.MvvmLight.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\GalaSoft.MvvmLight.Extras.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\GalaSoft.MvvmLight.Platform.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Hardcodet.Wpf.TaskbarNotification.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\nbfc.exe
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\nbfc.exe.config
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\NLog.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Plugins\OpenHardwareMonitorLib.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Plugins\StagWare.Hardware.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Plugins\StagWare.Hardware.LPC.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Plugins\StagWare.Plugins.CpuTemperatureMonitor.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Plugins\StagWare.Plugins.ECWindows.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\StagWare.BiosInfo.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\StagWare.FanControl.Configurations.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\StagWare.FanControl.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\StagWare.FanControl.Service.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\StagWare.Settings.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\System.IO.Abstractions.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\System.Windows.Interactivity.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\WinRing0x64.sys
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Xceed.Wpf.Toolkit.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ryzenadj.exe
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ryzenps.exe
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\temp.ps1
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WinRing0x64.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WinRing0x64.sys
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\App.xbf
@@ -11,10 +306,12 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\FontSizes.xbf
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\TextBlock.xbf
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\Thickness.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\AdvancedКулерPage.xbf
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\SettingsPage.xbf
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ShellPage.xbf
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ГлавнаяPage.xbf
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ИнформацияPage.xbf
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\КулерPage.xbf
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПараметрыPage.xbf
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПресетыPage.xbf
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.deps.json
@@ -27,6 +324,7 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Accord.Math.Core.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Accord.Math.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\CommunityToolkit.Mvvm.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Hardcodet.NotifyIcon.Wpf.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Extensions.Configuration.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Extensions.Configuration.Abstractions.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Extensions.Configuration.Binder.dll
@@ -69,8 +367,8 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Xaml.Interactions.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Xaml.Interactivity.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Newtonsoft.Json.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Diagnostics.EventLog.Messages.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Diagnostics.EventLog.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.CodeDom.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Management.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Win32.TaskScheduler.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WinUIEx.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\de\Microsoft.Win32.TaskScheduler.resources.dll
@@ -81,10 +379,8 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ru\Microsoft.Win32.TaskScheduler.resources.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-CN\Microsoft.Win32.TaskScheduler.resources.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-Hant\Microsoft.Win32.TaskScheduler.resources.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.WindowsAppRuntime.Bootstrap.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.CSharp.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.VisualBasic.Core.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.VisualBasic.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Win32.Primitives.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Win32.Registry.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.AppContext.dll
@@ -117,7 +413,6 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Diagnostics.TraceSource.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Diagnostics.Tracing.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Drawing.Primitives.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Drawing.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Dynamic.Runtime.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Formats.Asn1.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Formats.Tar.dll
@@ -247,107 +542,14 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Xml.XmlSerializer.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Xml.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WindowsBase.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mscorlib.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\netstandard.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.DiaSymReader.Native.amd64.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.IO.Compression.Native.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\clretwrc.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\clrgc.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\clrjit.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\coreclr.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\createdump.exe
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hostfxr.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hostpolicy.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mscordaccore.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mscordaccore_amd64_amd64_7.0.1423.51910.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mscordbi.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mscorrc.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\msquic.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.SDK.NET.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WinRT.Runtime.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.Core.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.Core.pdb
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.csproj.AssemblyReference.cache
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\App.g.i.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\App.g.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MainWindow.g.i.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MainWindow.g.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\SettingsPage.g.i.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\SettingsPage.g.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ShellPage.g.i.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ShellPage.g.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ГлавнаяPage.g.i.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ГлавнаяPage.g.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ИнформацияPage.g.i.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ИнформацияPage.g.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПараметрыPage.g.i.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПараметрыPage.g.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПресетыPage.g.i.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПресетыPage.g.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\App.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MainWindow.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\FontSizes.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\TextBlock.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\Thickness.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\SettingsPage.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ShellPage.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ГлавнаяPage.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ИнформацияPage.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПараметрыPage.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПресетыPage.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\App.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MainWindow.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\FontSizes.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\TextBlock.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Styles\Thickness.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\SettingsPage.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ShellPage.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ГлавнаяPage.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ИнформацияPage.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПараметрыPage.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\ПресетыPage.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\XamlSaveStateFile.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.AssemblyInfoInputs.cache
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.AssemblyInfo.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.csproj.CoreCompileInputs.cache
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.sourcelink.json
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.csproj.CopyComplete
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\refint\Saku Overclock.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.pdb
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.genruntimeconfig.cache
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ref\Saku Overclock.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\priconfig.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\priconfig.xml.intermediate
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\unfiltered.layout.resfiles
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\unfiltered.layout.resfiles.intermediate
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\filtered.layout.resfiles
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\filtered.layout.resfiles.intermediate
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\excluded.layout.resfiles
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\excluded.layout.resfiles.intermediate
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\resources.resfiles
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\resources.resfiles.intermediate
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pri.resfiles
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pri.resfiles.intermediate
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\qualifiers.txt
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\qualifiers.txt.intermediate
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ProjectArchitectures.txt
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\КулерPage.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\КулерPage.g.i.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\КулерPage.g.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\КулерPage.xaml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Views\КулерPage.xbf
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\XamlTypeInfo.g.cs
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Hardcodet.NotifyIcon.Wpf.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Win32.SystemEvents.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Drawing.Common.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Accessibility.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\DirectWriteForwarder.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.VisualBasic.Forms.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.VisualBasic.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Win32.Registry.AccessControl.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Win32.SystemEvents.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\PresentationCore.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\PresentationFramework-SystemCore.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\PresentationFramework-SystemData.dll
@@ -363,12 +565,15 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\PresentationFramework.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\PresentationUI.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ReachFramework.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.CodeDom.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Configuration.ConfigurationManager.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Design.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Diagnostics.EventLog.Messages.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Diagnostics.EventLog.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Diagnostics.PerformanceCounter.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.DirectoryServices.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Drawing.Common.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Drawing.Design.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Drawing.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.IO.Packaging.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Printing.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Resources.Extensions.dll
@@ -390,7 +595,22 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\UIAutomationClientSideProviders.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\UIAutomationProvider.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\UIAutomationTypes.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WindowsBase.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WindowsFormsIntegration.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.DiaSymReader.Native.amd64.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.IO.Compression.Native.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\clretwrc.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\clrgc.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\clrjit.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\coreclr.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\createdump.exe
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hostfxr.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hostpolicy.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mscordaccore.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mscordaccore_amd64_amd64_7.0.1423.51910.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mscordbi.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mscorrc.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\msquic.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\D3DCompiler_47_cor3.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\PenImc_cor3.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\PresentationNative_cor3.dll
@@ -617,432 +837,31 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-Hant\UIAutomationTypes.resources.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-Hant\WindowsBase.resources.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-Hant\WindowsFormsIntegration.resources.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\clipr.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\nbfc.exe
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\CommonServiceLocator.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\ec-probe.exe
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\GalaSoft.MvvmLight.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\GalaSoft.MvvmLight.Extras.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\GalaSoft.MvvmLight.Platform.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Hardcodet.Wpf.TaskbarNotification.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\nbfc.exe.config
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\NbfcService.exe
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\NbfcService.exe.config
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\NLog.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Plugins\OpenHardwareMonitorLib.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Plugins\StagWare.Hardware.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Plugins\StagWare.Hardware.LPC.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Plugins\StagWare.Plugins.CpuTemperatureMonitor.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Plugins\StagWare.Plugins.ECWindows.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\StagWare.BiosInfo.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\StagWare.FanControl.Configurations.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\StagWare.FanControl.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\StagWare.FanControl.Service.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\StagWare.Settings.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\System.IO.Abstractions.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\System.Windows.Interactivity.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\WinRing0x64.sys
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Xceed.Wpf.Toolkit.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 1410.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 1810T.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 1810TZ.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 1825PTZ.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 5738G.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 5745G.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 5749.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 5930.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 7551G.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 7735.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 7740G.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire 7741G.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire E1-522.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire E1-772.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire E5-475G.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire E5-575G.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire E5-731.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire LT-10Q.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire One AO531h.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire One AO751h.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire One AOA110.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire One AOA150.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire S3.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire S7-191.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire S7-391.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire V13.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire V3-371.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire V3-571G.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire V5-551.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire V5-572G.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire VN7-572G V15 Nitro BE.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire VN7-591G V15 Nitro BE.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire VN7-791G V17 Nitro BE.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire VN7-792G V17 Nitro BE.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Aspire VN7-793G V17 Nitro BE.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Extensa 5220.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Extensa 5630Z.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer LT-10Q.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer Predator G3-572.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Acer TravelMate 7730G.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus F5SR.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus G53SX.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus K43SD.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus K501LX.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus K501UX.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus M52VA.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus N550JV.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus N551JB.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus N56JR.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus N56VZ.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus ROG G501JW.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus ROG G751JL.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus ROG G751JY.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus ROG G752VS.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus ROG G752VT.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus ROG G752VY.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus ROG G75VX.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus ROG GL702VM.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus ROG GL702ZC.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Transformer 3 Pro.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Vivobook S400CA.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Vivobook TP301UA.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\ASUS Vivobook X580VD.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus X301A1.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus X540LA.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook Flip UX360UAK.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook Pro UX550VE.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX21E.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX301LA.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX302LA.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX310UA.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX310UAK.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX31A.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX32A.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX32LN.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX32VD.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX410UQ.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX430UA.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX430UQ.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX51VZA.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Asus Zenbook UX530U.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Dell Inspiron 7348.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Dell Inspiron 7375.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Dell Vostro 3350.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Dell XPS M1530.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Fujitsu ESPRIMO Mobile V5505.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Gateway AOA110.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Gateway AOA150.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Gateway LT31.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Gigabyte p35w v3.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Compaq 15-s103tx.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Compaq 615.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Compaq 625.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Compaq 6735s Turion X2 RM-72.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Compaq 8710p.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Compaq nw9440.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Compaq Presario CQ40 Turion X2 RM-74.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP EliteBook 2560p.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP EliteBook 2570p.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP EliteBook 2760p.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP EliteBook 8560p.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP EliteBook 8560w.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP EliteBook 8760w.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP EliteBook Folio 1040 G1.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP EliteBook Folio 9470m.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP EliteBook Folio 9470m_i5-3427u_bios-F.66.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ENVY m6 1206dx.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ENVY m6 Sleekbook.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ENVY m6-1254eo.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ENVY x360 Convertible 13-ag0xxx.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ENVY x360 Convertible 15-cn0xxx.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Laptop 14-cm0xxx.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP OMEN Notebook PC 15.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Pavilion 14-v066br.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Pavilion 17-ab240nd.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Pavilion dv6 6190.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Pavilion dv6.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Pavilion HDX18.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 430 G1.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 440 G3.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 450 G1.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 4520s.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 4530s.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 4535s.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 4540s.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 4710s.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 4720s.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 5330m.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 6455b.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 6460b.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 6465b.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 650 G1.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 650 G2.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 6550b.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ProBook 6560b.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP Spectre x360 Convertible 13-ae0xx.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ZBook 15.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\HP ZBook Studio G3.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Ideapad 500S-13ISK.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Ideapad 500S-14ISK.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Ideapad 510s.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Ideapad 710S.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Ideapad U160.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Ideapad U330p.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Ideapad U430p.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo IdeaPad Y580.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo ThinkPad 13.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo ThinkPad Edge E520.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo ThinkPad Helix.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo ThinkPad T430s.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo ThinkPad T440s.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo ThinkPad T540p.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo ThinkPad x121e.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo ThinkPad x220i.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo ThinkPad x230.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo U31-70.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo U41-70.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo V580.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Yoga 11s.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Yoga 13 2191.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Yoga 2 13.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Yoga 3 14.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Yoga 510.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Lenovo Yoga 710.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Medion Akoya P6612.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Medion Akoya P6630.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Packard Bell AOA110.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Packard Bell AOA150.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Packard Bell DOA150.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Packard Bell DOTMA.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Packard Bell DOTMU.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Packard Bell DOTVR46.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Packard Bell Easynote TJ65.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Packard Bell ENBFT.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Sony Vaio SVE1711.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Sony Vaio SVE1713Y1E.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Sony Vaio SVF13N190X.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Sony Vaio SVF14N1C5E.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Sony Vaio SVT1312M1ES.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Sony Vaio VPCF12S1E.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Toshiba Satellite L740.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Toshiba Satellite L745.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nbfc\Configs\Xiaomi Mi Book.xml
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WindowIcon.ico
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\exit.png
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\show.png
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\info.png
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\param.png
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\preset.png
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\startup.lnk
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\temp.ps1
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\OpenHardwareMonitorLib.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.SDK.NET.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WinRT.Runtime.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.Core.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ZenStates-Core.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\System.Management.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ryzenps.exe
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\CoreMessagingXP.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\dcompi.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\dwmcorei.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\DwmSceneI.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\DWriteCore.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\marshal.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.DirectManipulation.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Graphics.Display.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.InputStateManager.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Internal.FrameworkUdk.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Composition.OSSupport.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Input.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Windowing.Core.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Windowing.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Xaml.Controls.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.ui.xaml.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Xaml.Internal.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Xaml.Phone.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.ui.xaml.resources.19h1.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.ui.xaml.resources.common.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Web.WebView2.Core.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.ApplicationModel.Resources.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.Widgets.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.WindowsAppRuntime.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.WindowsAppRuntime.Insights.Resource.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MRM.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\PushNotificationsLongRunningTask.ProxyStub.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WinUIEdit.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\wuceffectsi.dll
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\RestartAgent.exe
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\af-ZA\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\af-ZA\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\am-ET\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\am-ET\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ar-SA\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ar-SA\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\as-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\as-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\az-Latn-AZ\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\az-Latn-AZ\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bg-BG\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bg-BG\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bn-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bn-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bs-Latn-BA\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\bs-Latn-BA\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ca-Es-VALENCIA\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ca-Es-VALENCIA\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ca-ES\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ca-ES\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\cs-CZ\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\cs-CZ\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\cy-GB\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\cy-GB\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\da-DK\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\da-DK\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\de-DE\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\de-DE\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\el-GR\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\el-GR\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\en-GB\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\en-GB\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\en-us\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\en-us\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\es-ES\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\es-ES\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\es-MX\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\es-MX\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\et-EE\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\et-EE\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\eu-ES\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\eu-ES\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fa-IR\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fa-IR\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fi-FI\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fi-FI\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fil-PH\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fil-PH\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fr-CA\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fr-CA\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fr-FR\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\fr-FR\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ga-IE\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ga-IE\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gd-gb\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gd-gb\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gl-ES\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gl-ES\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gu-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\gu-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\he-IL\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\he-IL\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hi-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hi-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hr-HR\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hr-HR\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hu-HU\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hu-HU\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hy-AM\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\hy-AM\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\id-ID\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\id-ID\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\is-IS\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\is-IS\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\it-IT\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\it-IT\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ja-JP\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ja-JP\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ka-GE\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ka-GE\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kk-KZ\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kk-KZ\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\km-KH\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\km-KH\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kn-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kn-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ko-KR\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ko-KR\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kok-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\kok-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lb-LU\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lb-LU\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lo-LA\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lo-LA\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lt-LT\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lt-LT\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lv-LV\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\lv-LV\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mi-NZ\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mi-NZ\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mk-MK\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mk-MK\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ml-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ml-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mr-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mr-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ms-MY\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ms-MY\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mt-MT\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\mt-MT\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nb-NO\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nb-NO\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ne-NP\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ne-NP\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nl-NL\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nl-NL\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nn-NO\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\nn-NO\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\or-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\or-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pa-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pa-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pl-PL\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pl-PL\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pt-BR\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pt-BR\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pt-PT\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pt-PT\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\quz-PE\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\quz-PE\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ro-RO\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ro-RO\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ru-RU\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ru-RU\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sk-SK\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sk-SK\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sl-SI\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sl-SI\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sq-AL\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sq-AL\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Cyrl-BA\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Cyrl-BA\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Cyrl-RS\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Cyrl-RS\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Latn-RS\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sr-Latn-RS\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sv-SE\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\sv-SE\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ta-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ta-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\te-IN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\te-IN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\th-TH\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\th-TH\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\tr-TR\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\tr-TR\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\tt-RU\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\tt-RU\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ug-CN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ug-CN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\uk-UA\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\uk-UA\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ur-PK\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ur-PK\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\uz-Latn-UZ\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\uz-Latn-UZ\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\vi-VN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\vi-VN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-CN\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-CN\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-TW\Microsoft.ui.xaml.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\zh-TW\Microsoft.UI.Xaml.Phone.dll.mui
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Xaml\Assets\NoiseAsset_256x256_PNG.png
-C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\WindowsAppRuntime.png
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.Core.pdb
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\bin\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Xaml.Controls.pri
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.csproj.CopyComplete
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\refint\Saku Overclock.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.pdb
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\Saku Overclock.genruntimeconfig.cache
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ref\Saku Overclock.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\priconfig.xml
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\priconfig.xml.intermediate
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\unfiltered.layout.resfiles
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\unfiltered.layout.resfiles.intermediate
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\filtered.layout.resfiles
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\filtered.layout.resfiles.intermediate
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\excluded.layout.resfiles
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\excluded.layout.resfiles.intermediate
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\resources.resfiles
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\resources.resfiles.intermediate
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pri.resfiles
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\pri.resfiles.intermediate
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\qualifiers.txt
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\qualifiers.txt.intermediate
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\ProjectArchitectures.txt

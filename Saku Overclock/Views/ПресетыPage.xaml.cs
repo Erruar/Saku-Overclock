@@ -2,7 +2,6 @@
 using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Views;

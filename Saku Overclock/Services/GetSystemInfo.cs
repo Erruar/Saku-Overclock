@@ -1,16 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.Win32;
 using System.Diagnostics;
-using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Animation;
 
 namespace Saku_Overclock.Services;
 internal class GetSystemInfo

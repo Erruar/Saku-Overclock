@@ -1048,4 +1048,10 @@ the information page!</value>
   <data name="infoMWid.Text" xml:space="preserve">
     <value>Width</value>
   </data>
+  <data name="Param_infops_desc.Text" xml:space="preserve">
+    <value>There you can read current CPU Pstate freq and voltages</value>
+  </data>
+  <data name="Cooler_suggesttip.Title" xml:space="preserve">
+    <value>These configs probably will work for you:</value>
+  </data>
 </root>

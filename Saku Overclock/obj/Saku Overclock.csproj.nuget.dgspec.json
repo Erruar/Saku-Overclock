@@ -145,10 +145,6 @@
               "target": "Package",
               "version": "[13.0.3, )"
             },
-            "OpenHardwareMonitor": {
-              "target": "Package",
-              "version": "[0.9.6, )"
-            },
             "System.Management": {
               "target": "Package",
               "version": "[8.0.0, )"

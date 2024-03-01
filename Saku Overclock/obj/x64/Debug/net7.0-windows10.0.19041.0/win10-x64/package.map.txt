@@ -958,7 +958,7 @@
 "C:\Users\Sakura\.nuget\packages\taskscheduler\2.10.1\lib\net6.0-windows7.0\ru\Microsoft.Win32.TaskScheduler.resources.dll" "ru\Microsoft.Win32.TaskScheduler.resources.dll"
 "C:\Users\Sakura\.nuget\packages\taskscheduler\2.10.1\lib\net6.0-windows7.0\zh-CN\Microsoft.Win32.TaskScheduler.resources.dll" "zh-CN\Microsoft.Win32.TaskScheduler.resources.dll"
 "C:\Users\Sakura\.nuget\packages\taskscheduler\2.10.1\lib\net6.0-windows7.0\zh-Hant\Microsoft.Win32.TaskScheduler.resources.dll" "zh-Hant\Microsoft.Win32.TaskScheduler.resources.dll"
-"C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock.Core\bin\Debug\net7.0\Saku Overclock.Core.dll" "Saku Overclock.Core.dll"
+"C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock.Core\bin\x64\Debug\net7.0\Saku Overclock.Core.dll" "Saku Overclock.Core.dll"
 "C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\ZenStates-Core.dll" "ZenStates-Core.dll"
 "C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\obj\x64\Debug\net7.0-windows10.0.19041.0\win10-x64\MsixContent\Microsoft.UI.Xaml.Controls.pri" "Microsoft.UI.Xaml.Controls.pri"
 "C:\Users\Sakura\.nuget\packages\microsoft.xaml.behaviors.winui.managed\2.0.9\lib\net5.0-windows10.0.17763.0\Microsoft.Xaml.Interactions.pri" "Microsoft.Xaml.Interactions.pri"

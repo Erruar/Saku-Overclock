@@ -10,22 +10,22 @@
         <TextBlock x:Uid="Info_Name" Text="Информация" FontSize="30" Margin="0,-65,0,0"></TextBlock>
         <Button Width="80" Height="80" IsEnabled="False" Margin="1,-4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Grid>
-                <ProgressRing x:ConnectionId='56' Margin="0,0,0,9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" Maximum="180" x:Name="infoCPU" Value="93" IsIndeterminate="False"/>
-                <TextBlock x:ConnectionId='57' VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="infoCPUI" Margin="0,0,0,9" FontWeight="Bold"/>
+                <ProgressRing x:ConnectionId='69' Margin="0,0,0,9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" Maximum="180" x:Name="infoCPU" Value="93" IsIndeterminate="False"/>
+                <TextBlock x:ConnectionId='70' VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="infoCPUI" Margin="0,0,0,9" FontWeight="Bold"/>
                 <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Text="CPU" Margin="0,-10,0,-11" FontWeight="Bold"/>
             </Grid>
         </Button>
         <Button IsEnabled="False" Width="80" Height="80" Margin="85,-4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Grid>
-                <ProgressRing x:ConnectionId='54' Margin="0,0,0,9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" Maximum="180" x:Name="infoPOWER" Value="93" IsIndeterminate="False"/>
-                <TextBlock x:ConnectionId='55' VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="infoPOWERI" Margin="0,0,1,9" FontWeight="Bold"/>
+                <ProgressRing x:ConnectionId='67' Margin="0,0,0,9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" Maximum="180" x:Name="infoPOWER" Value="93" IsIndeterminate="False"/>
+                <TextBlock x:ConnectionId='68' VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="infoPOWERI" Margin="0,0,1,9" FontWeight="Bold"/>
                 <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Text="Power" Margin="0,-10,0,-11" FontWeight="Bold"/>
             </Grid>
         </Button>
         <Button IsEnabled="False" Width="80" Height="80" Margin="170,-4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Grid>
-                <ProgressRing x:ConnectionId='52' Margin="0,0,0,9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" Maximum="180" x:Name="infoVRM" Value="93" IsIndeterminate="False"/>
-                <TextBlock x:ConnectionId='53' VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="infoVRMI" Margin="0,0,0,9" FontWeight="Bold"/>
+                <ProgressRing x:ConnectionId='65' Margin="0,0,0,9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" Maximum="180" x:Name="infoVRM" Value="93" IsIndeterminate="False"/>
+                <TextBlock x:ConnectionId='66' VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="infoVRMI" Margin="0,0,0,9" FontWeight="Bold"/>
                 <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Text="VRM" Margin="0,-10,0,-11" FontWeight="Bold"/>
             </Grid>
         </Button>
@@ -60,7 +60,7 @@
                                     <!-- C в конце это то, что они относятся к CPU-->
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoProcC">Processor</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoProdC" Margin="0,8,0,0">Producer</TextBlock>
-                                    <TextBlock x:ConnectionId='51' FontWeight="SemiBold" x:Uid="infoCodeC" Margin="0,8,0,0" x:Name="tbCode">Codename</TextBlock>
+                                    <TextBlock x:ConnectionId='64' FontWeight="SemiBold" x:Uid="infoCodeC" Margin="0,8,0,0" x:Name="tbCode">Codename</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoCaptC" Margin="0,8,0,0">Caption</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoCoresC" Margin="0,8,0,0">Cores</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoThreadC" Margin="0,8,0,0">Threads</TextBlock>
@@ -71,17 +71,17 @@
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoInstructC" Margin="0,8,0,0">Instructions</TextBlock>
                                 </StackPanel>
                                 <StackPanel>
-                                    <TextBlock x:ConnectionId='40'  x:Name="tbProcessor"></TextBlock>
-                                    <TextBlock x:ConnectionId='41' Margin="0,8,0,0"  x:Name="tbProducer"></TextBlock>
-                                    <TextBlock x:ConnectionId='42' Margin="0,8,0,0"  x:Name="tbCodename"></TextBlock>
-                                    <TextBlock x:ConnectionId='43' Margin="0,8,0,0"  x:Name="tbCaption"></TextBlock>
-                                    <TextBlock x:ConnectionId='44' Margin="0,8,0,0"  x:Name="tbCores"></TextBlock>
-                                    <TextBlock x:ConnectionId='45' Margin="0,8,0,0"  x:Name="tbThreads"></TextBlock>
-                                    <TextBlock x:ConnectionId='46' Margin="0,8,0,0"  x:Name="tbBaseClock"></TextBlock>
-                                    <TextBlock x:ConnectionId='47' Margin="0,8,0,0"  x:Name="tbL1Cache"></TextBlock>
-                                    <TextBlock x:ConnectionId='48' Margin="0,8,0,0"  x:Name="tbL2Cache"></TextBlock>
-                                    <TextBlock x:ConnectionId='49' Margin="0,8,0,0"  x:Name="tbL3Cache"></TextBlock>
-                                    <TextBlock x:ConnectionId='50' Margin="0,8,0,0"  x:Name="tbInstructions"></TextBlock>
+                                    <TextBlock x:ConnectionId='53'  x:Name="tbProcessor"></TextBlock>
+                                    <TextBlock x:ConnectionId='54' Margin="0,8,0,0"  x:Name="tbProducer"></TextBlock>
+                                    <TextBlock x:ConnectionId='55' Margin="0,8,0,0"  x:Name="tbCodename"></TextBlock>
+                                    <TextBlock x:ConnectionId='56' Margin="0,8,0,0"  x:Name="tbCaption"></TextBlock>
+                                    <TextBlock x:ConnectionId='57' Margin="0,8,0,0"  x:Name="tbCores"></TextBlock>
+                                    <TextBlock x:ConnectionId='58' Margin="0,8,0,0"  x:Name="tbThreads"></TextBlock>
+                                    <TextBlock x:ConnectionId='59' Margin="0,8,0,0"  x:Name="tbBaseClock"></TextBlock>
+                                    <TextBlock x:ConnectionId='60' Margin="0,8,0,0"  x:Name="tbL1Cache"></TextBlock>
+                                    <TextBlock x:ConnectionId='61' Margin="0,8,0,0"  x:Name="tbL2Cache"></TextBlock>
+                                    <TextBlock x:ConnectionId='62' Margin="0,8,0,0"  x:Name="tbL3Cache"></TextBlock>
+                                    <TextBlock x:ConnectionId='63' Margin="0,8,0,0"  x:Name="tbInstructions"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -109,8 +109,8 @@
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoAAVGC" Margin="0,8,0,0">Average Current</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoAFast" Margin="0,8,0,0">Fast Freq Rise</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoASlow" Margin="0,8,0,0">Slow Freq Rise</TextBlock>
-                                    <TextBlock x:ConnectionId='34' FontWeight="SemiBold" x:Uid="infoAAPUL" x:Name="tbAPULL" Margin="0,8,0,0">APU Limit</TextBlock>
-                                    <TextBlock x:ConnectionId='35' FontWeight="SemiBold" x:Uid="infoAAPUC" x:Name="tbAPULC" Margin="0,8,0,0">APU Current</TextBlock>
+                                    <TextBlock x:ConnectionId='47' FontWeight="SemiBold" x:Uid="infoAAPUL" x:Name="tbAPULL" Margin="0,8,0,0">APU Limit</TextBlock>
+                                    <TextBlock x:ConnectionId='48' FontWeight="SemiBold" x:Uid="infoAAPUC" x:Name="tbAPULC" Margin="0,8,0,0">APU Current</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoAVRMTDCL" Margin="0,8,0,0">VRM Limit TDC</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoAVRMTDCC" Margin="0,8,0,0">VRM Current TDC</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoASOCTDCL" Margin="0,8,0,0">SOC Limit TDC</TextBlock>
@@ -121,45 +121,131 @@
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoASOCEDCC" Margin="0,8,0,0">SOC Current EDC</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoACPUTEMPL" Margin="0,8,0,0">CPU Max Temp</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoACPUTEMPC" Margin="0,8,0,0">CPU Curr Temp</TextBlock>
-                                    <TextBlock x:ConnectionId='36' FontWeight="SemiBold" x:Uid="infoAAPUTEMPL" x:Name="tbAPUML" Margin="0,8,0,0">APU Max Temp</TextBlock>
-                                    <TextBlock x:ConnectionId='37' FontWeight="SemiBold" x:Uid="infoAAPUTEMPC" x:Name="tbAPUMC" Margin="0,8,0,0">APU Curr Temp</TextBlock>
-                                    <TextBlock x:ConnectionId='38' FontWeight="SemiBold" x:Uid="infoAGPUTEMPL" x:Name="tbDGPUL" Margin="0,8,0,0">dGPU Max Temp</TextBlock>
-                                    <TextBlock x:ConnectionId='39' FontWeight="SemiBold" x:Uid="infoAGPUTEMPC" x:Name="tbDGPUC" Margin="0,8,0,0">dGPU Curr Temp</TextBlock>
+                                    <TextBlock x:ConnectionId='49' FontWeight="SemiBold" x:Uid="infoAAPUTEMPL" x:Name="tbAPUML" Margin="0,8,0,0">APU Max Temp</TextBlock>
+                                    <TextBlock x:ConnectionId='50' FontWeight="SemiBold" x:Uid="infoAAPUTEMPC" x:Name="tbAPUMC" Margin="0,8,0,0">APU Curr Temp</TextBlock>
+                                    <TextBlock x:ConnectionId='51' FontWeight="SemiBold" x:Uid="infoAGPUTEMPL" x:Name="tbDGPUL" Margin="0,8,0,0">dGPU Max Temp</TextBlock>
+                                    <TextBlock x:ConnectionId='52' FontWeight="SemiBold" x:Uid="infoAGPUTEMPC" x:Name="tbDGPUC" Margin="0,8,0,0">dGPU Curr Temp</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoACPUUSAGE" Margin="0,8,0,0">CPU Usage</TextBlock>
                                 </StackPanel>
                                 <StackPanel Margin="-2,0,0,0">
-                                    <TextBlock x:ConnectionId='9' Margin="0,8,0,0"  x:Name="tbStapmL"></TextBlock>
-                                    <TextBlock x:ConnectionId='10' Margin="0,8,0,0"  x:Name="tbStapmC"></TextBlock>
-                                    <TextBlock x:ConnectionId='11' Margin="0,8,0,0"  x:Name="tbActualL"></TextBlock>
-                                    <TextBlock x:ConnectionId='12' Margin="0,8,0,0"  x:Name="tbActualC"></TextBlock>
-                                    <TextBlock x:ConnectionId='13' Margin="0,8,0,0"  x:Name="tbAVGL"></TextBlock>
-                                    <TextBlock x:ConnectionId='14' Margin="0,8,0,0"  x:Name="tbAVGC"></TextBlock>
-                                    <TextBlock x:ConnectionId='15' Margin="0,8,0,0"  x:Name="tbFast"></TextBlock>
-                                    <TextBlock x:ConnectionId='16' Margin="0,8,0,0"  x:Name="tbSlow"></TextBlock>
-                                    <TextBlock x:ConnectionId='17' Margin="0,8,0,0"  x:Name="tbAPUL"></TextBlock>
-                                    <TextBlock x:ConnectionId='18' Margin="0,8,0,0"  x:Name="tbAPUC"></TextBlock>
-                                    <TextBlock x:ConnectionId='19' Margin="0,8,0,0"  x:Name="tbVRMTDCL"></TextBlock>
-                                    <TextBlock x:ConnectionId='20' Margin="0,8,0,0"  x:Name="tbVRMTDCC"></TextBlock>
-                                    <TextBlock x:ConnectionId='21' Margin="0,8,0,0"  x:Name="tbSOCTDCL"></TextBlock>
-                                    <TextBlock x:ConnectionId='22' Margin="0,8,0,0"  x:Name="tbSOCTDCC"></TextBlock>
-                                    <TextBlock x:ConnectionId='23' Margin="0,8,0,0"  x:Name="tbVRMEDCL"></TextBlock>
-                                    <TextBlock x:ConnectionId='24' Margin="0,8,0,0"  x:Name="tbVRMEDCC"></TextBlock>
-                                    <TextBlock x:ConnectionId='25' Margin="0,8,0,0"  x:Name="tbSOCEDCL"></TextBlock>
-                                    <TextBlock x:ConnectionId='26' Margin="0,8,0,0"  x:Name="tbSOCEDCC"></TextBlock>
-                                    <TextBlock x:ConnectionId='27' Margin="0,8,0,0"  x:Name="tbCPUMaxL"></TextBlock>
-                                    <TextBlock x:ConnectionId='28' Margin="0,8,0,0"  x:Name="tbCPUMaxC"></TextBlock>
-                                    <TextBlock x:ConnectionId='29' Margin="0,8,0,0"  x:Name="tbAPUMaxL"></TextBlock>
-                                    <TextBlock x:ConnectionId='30' Margin="0,8,0,0"  x:Name="tbAPUMaxC"></TextBlock>
-                                    <TextBlock x:ConnectionId='31' Margin="0,8,0,0"  x:Name="tbDGPUMaxL"></TextBlock>
-                                    <TextBlock x:ConnectionId='32' Margin="0,8,0,0"  x:Name="tbDGPUMaxC"></TextBlock>
-                                    <TextBlock x:ConnectionId='33' Margin="0,8,0,0"  x:Name="tbCPUUsage"></TextBlock>
+                                    <TextBlock x:ConnectionId='22' Margin="0,8,0,0"  x:Name="tbStapmL"></TextBlock>
+                                    <TextBlock x:ConnectionId='23' Margin="0,8,0,0"  x:Name="tbStapmC"></TextBlock>
+                                    <TextBlock x:ConnectionId='24' Margin="0,8,0,0"  x:Name="tbActualL"></TextBlock>
+                                    <TextBlock x:ConnectionId='25' Margin="0,8,0,0"  x:Name="tbActualC"></TextBlock>
+                                    <TextBlock x:ConnectionId='26' Margin="0,8,0,0"  x:Name="tbAVGL"></TextBlock>
+                                    <TextBlock x:ConnectionId='27' Margin="0,8,0,0"  x:Name="tbAVGC"></TextBlock>
+                                    <TextBlock x:ConnectionId='28' Margin="0,8,0,0"  x:Name="tbFast"></TextBlock>
+                                    <TextBlock x:ConnectionId='29' Margin="0,8,0,0"  x:Name="tbSlow"></TextBlock>
+                                    <TextBlock x:ConnectionId='30' Margin="0,8,0,0"  x:Name="tbAPUL"></TextBlock>
+                                    <TextBlock x:ConnectionId='31' Margin="0,8,0,0"  x:Name="tbAPUC"></TextBlock>
+                                    <TextBlock x:ConnectionId='32' Margin="0,8,0,0"  x:Name="tbVRMTDCL"></TextBlock>
+                                    <TextBlock x:ConnectionId='33' Margin="0,8,0,0"  x:Name="tbVRMTDCC"></TextBlock>
+                                    <TextBlock x:ConnectionId='34' Margin="0,8,0,0"  x:Name="tbSOCTDCL"></TextBlock>
+                                    <TextBlock x:ConnectionId='35' Margin="0,8,0,0"  x:Name="tbSOCTDCC"></TextBlock>
+                                    <TextBlock x:ConnectionId='36' Margin="0,8,0,0"  x:Name="tbVRMEDCL"></TextBlock>
+                                    <TextBlock x:ConnectionId='37' Margin="0,8,0,0"  x:Name="tbVRMEDCC"></TextBlock>
+                                    <TextBlock x:ConnectionId='38' Margin="0,8,0,0"  x:Name="tbSOCEDCL"></TextBlock>
+                                    <TextBlock x:ConnectionId='39' Margin="0,8,0,0"  x:Name="tbSOCEDCC"></TextBlock>
+                                    <TextBlock x:ConnectionId='40' Margin="0,8,0,0"  x:Name="tbCPUMaxL"></TextBlock>
+                                    <TextBlock x:ConnectionId='41' Margin="0,8,0,0"  x:Name="tbCPUMaxC"></TextBlock>
+                                    <TextBlock x:ConnectionId='42' Margin="0,8,0,0"  x:Name="tbAPUMaxL"></TextBlock>
+                                    <TextBlock x:ConnectionId='43' Margin="0,8,0,0"  x:Name="tbAPUMaxC"></TextBlock>
+                                    <TextBlock x:ConnectionId='44' Margin="0,8,0,0"  x:Name="tbDGPUMaxL"></TextBlock>
+                                    <TextBlock x:ConnectionId='45' Margin="0,8,0,0"  x:Name="tbDGPUMaxC"></TextBlock>
+                                    <TextBlock x:ConnectionId='46' Margin="0,8,0,0"  x:Name="tbCPUUsage"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
                 </Expander>
-
-                <Expander Grid.Row="2">
+                
+                <!--Pstates READ vid/fid/did-->
+                <Expander x:ConnectionId='4'  Grid.Row="4"                              VerticalAlignment="Top">
+                    <Expander.Header>
+                        <Grid Height="65" Width="2000">
+                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xf8a6;"/>
+                            <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_States_Text" Text="Состояния CPU"></TextBlock>
+                            <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_States_Pdesc"  Text="Производительные состояния процессора"></TextBlock>
+                        </Grid>
+                    </Expander.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <!-- От 0 до 6 -->
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                            <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <Grid Height="50">
+                                    <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xebd2;"/>
+                                    <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_enableps" Text="Настройки состояний CPU"></TextBlock>
+                                    <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_infops_desc" Text="Чтение Pstate состояний"></TextBlock>
+                                </Grid>
+                            </Button>
+                        </Grid>
+                        <Grid Grid.Row="1" HorizontalAlignment="Left" Margin=" 30,20,0,0">
+                            <!-- Монтируем секции -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <!-- Первая секция -->
+                            <Grid Grid.Row="0" Margin="0,0,0,0"  Width="2000">
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="15" Text="State"/>
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="51,0,0,0" FontSize="15" Text="CPU Freq"/>
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="146,0,0,0" FontSize="15" Text="FID"/>
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="220,0,0,0" FontSize="15" Text="DID"/>
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="284,0,0,0" FontSize="15" Text="mVolt"/>
+                            </Grid>
+                            <Grid Grid.Row="1"  Margin="-7,10,0,0" Width="2000">
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P0"/>
+                                <Button x:ConnectionId='18' Height="33" Width="60" Margin="55,0,0,0" x:Name="P0_Freq"></Button>
+                                <Button x:ConnectionId='19' Width="60" Height="33" x:Name="FID_0" Margin="130,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button x:ConnectionId='20' Width="60" Height="33" x:Name="DID_0" Margin="205,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button x:ConnectionId='21' Width="60" Height="33" x:Name="VID_0" Margin="278,0,0,0" HorizontalAlignment="Left"></Button>
+                            </Grid>
+                            <Grid Grid.Row="2" Margin="-7,10,0,0" Width="2000">
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P1"/>
+                                <Button x:ConnectionId='14' Height="33" Width="60" Margin="55,0,0,0" x:Name="P1_Freq" Content="1700"></Button>
+                                <Button x:ConnectionId='15' Width="60" Height="33" x:Name="FID_1" Margin="130,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button x:ConnectionId='16' Width="60" Height="33" x:Name="DID_1" Margin="205,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button x:ConnectionId='17' Width="60" Height="33" x:Name="VID_1" Margin="278,0,0,0" HorizontalAlignment="Left"></Button>
+                            </Grid>
+                            <Grid Grid.Row="3"  Margin="-7,10,0,0" Width="2000">
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P2"/>
+                                <Button x:ConnectionId='10' Height="33" Width="60" Margin="55,0,0,0" x:Name="P2_Freq" Content="1700"></Button>
+                                <Button x:ConnectionId='11' Width="60" Height="33" x:Name="FID_2" Margin="130,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button x:ConnectionId='12' Width="60" Height="33" x:Name="DID_2" Margin="205,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button x:ConnectionId='13' Width="60" Height="33" x:Name="VID_2" Margin="278,0,0,0" HorizontalAlignment="Left"></Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Expander>
+                
+                <!--RAM section-->
+                <Expander Grid.Row="3">
                     <Expander.Header>
                         <Grid Height="65" Width="2000">
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe964;"/>
@@ -178,11 +264,11 @@
                                     <TextBlock x:Uid="infoMModule" FontWeight="SemiBold" Margin="0,8,0,0">Modules</TextBlock>
                                 </StackPanel>
                                 <StackPanel>
-                                    <TextBlock x:ConnectionId='4'  Name="tbRAM"></TextBlock>
-                                    <TextBlock x:ConnectionId='5' Margin="0,8,0,0" Name="tbRAMProducer"></TextBlock>
-                                    <TextBlock x:ConnectionId='6' Margin="0,8,0,0" Name="tbRAMModel"></TextBlock>
-                                    <TextBlock x:ConnectionId='7' Margin="0,8,0,0" Name="tbWidth"></TextBlock>
-                                    <TextBlock x:ConnectionId='8' Margin="0,8,0,0" Name="tbSlots"></TextBlock>
+                                    <TextBlock x:ConnectionId='5'  Name="tbRAM"></TextBlock>
+                                    <TextBlock x:ConnectionId='6' Margin="0,8,0,0" Name="tbRAMProducer"></TextBlock>
+                                    <TextBlock x:ConnectionId='7' Margin="0,8,0,0" Name="tbRAMModel"></TextBlock>
+                                    <TextBlock x:ConnectionId='8' Margin="0,8,0,0" Name="tbWidth"></TextBlock>
+                                    <TextBlock x:ConnectionId='9' Margin="0,8,0,0" Name="tbSlots"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>

@@ -1,17 +1,14 @@
-﻿using System.Management;
-using System;
-using System.ServiceProcess;
+﻿using System.Diagnostics;
+using System.Management;
 using System.Windows.Forms;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Newtonsoft.Json;
 using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
-using System.Diagnostics;
-using Saku_Overclock.Helpers;
-using Saku_Overclock.Views;
-using Microsoft.VisualBasic;
-using System.DirectoryServices;
+
 namespace Saku_Overclock.Views;
 public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.Page
 {
@@ -24,9 +21,9 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
     private Profile profile = new();
     private readonly NUMAUtil _numaUtil;
     private bool relay = false;
-    private Cpu cpu;
+    private readonly Cpu cpu;
     public bool turbobboost = true;
-    List<SmuAddressSet> matches;
+    private bool waitforload = true;
     private readonly string wmiAMDACPI = "AMD_ACPI";
     private readonly string wmiScope = "root\\wmi";
     private ManagementObject classInstance;
@@ -68,7 +65,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             cpu = new Cpu();
         }
         catch { }
-        cpu.Cpu_Init();
+        Cpu.Cpu_Init();
     }
     private void OC_Detect() // На неподдерживаемом оборудовании мгновенно отключит эти настройки
     {
@@ -147,6 +144,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
     }
     public async void SlidersInit()
     {
+        waitforload = true;
         DeviceLoad();
         ProfileLoad();
         InitializeComponent();
@@ -730,120 +728,41 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 }
             }
         }
+        waitforload = false;
     }
     private void Init_Unsaved()
     {
-        if (devices.v1 == true)
-        {
-            V1V.Value = devices.v1v;
-            V1.IsChecked = true;
-        }
-
-        if (devices.v2 == true)
-        {
-            V2V.Value = devices.v2v;
-            V2.IsChecked = true;
-        }
-        if (devices.v3 == true)
-        {
-            V3V.Value = devices.v3v;
-            V3.IsChecked = true;
-        }
-        if (devices.v4 == true)
-        {
-            V4V.Value = devices.v4v;
-            V4.IsChecked = true;
-        }
-        if (devices.v5 == true)
-        {
-            V5V.Value = devices.v5v;
-            V5.IsChecked = true;
-        }
-        if (devices.v6 == true)
-        {
-            V6V.Value = devices.v6v;
-            V6.IsChecked = true;
-        }
-        if (devices.v7 == true)
-        {
-            V7V.Value = devices.v7v;
-            V7.IsChecked = true;
-        }
-
-        if (devices.g1 == true)
-        {
-            g1v.Value = devices.g1v;
-            g1.IsChecked = true;
-        }
-        if (devices.g2 == true)
-        {
-            g2v.Value = devices.g2v;
-            g2.IsChecked = true;
-        }
-        if (devices.g3 == true)
-        {
-            g3v.Value = devices.g3v;
-            g3.IsChecked = true;
-        }
-        if (devices.g4 == true)
-        {
-            g4v.Value = devices.g4v;
-            g4.IsChecked = true;
-        }
-        if (devices.g5 == true)
-        {
-            g5v.Value = devices.g5v;
-            g5.IsChecked = true;
-        }
-        if (devices.g6 == true)
-        {
-            g6v.Value = devices.g6v;
-            g6.IsChecked = true;
-        }
-        if (devices.g7 == true)
-        {
-            g7v.Value = devices.g7v;
-            g7.IsChecked = true;
-        }
-        if (devices.g8 == true)
-        {
-            g8v.Value = devices.g8v;
-            g8.IsChecked = true;
-        }
-        if (devices.g9 == true)
-        {
-            g9v.Value = devices.g9v;
-            g9.IsChecked = true;
-        }
-        if (devices.g10 == true)
-        {
-            g10v.Value = devices.g10v;
-            g10.IsChecked = true;
-        }
-        if (devices.enableps == true)
-        {
-            EnablePstates.IsOn = true;
-        }
-        if (devices.turboboost == true)
-        {
-            Turbo_boost.IsOn = true;
-        }
-        else { Turbo_boost.IsOn = false; }
-        if (devices.autopstate == true)
-        {
-            Autoapply_1.IsOn = true;
-        }
-        if (devices.p0ignorewarn == true)
-        {
-            Without_P0.IsOn = true;
-        }
-        if (devices.ignorewarn == true)
-        {
-            IgnoreWarn.IsOn = true;
-        }
+        if (devices.v1 == true) { V1V.Value = devices.v1v; V1.IsChecked = true; }
+        if (devices.v2 == true) { V2V.Value = devices.v2v; V2.IsChecked = true; }
+        if (devices.v3 == true) { V3V.Value = devices.v3v; V3.IsChecked = true; }
+        if (devices.v4 == true) { V4V.Value = devices.v4v; V4.IsChecked = true; }
+        if (devices.v5 == true) { V5V.Value = devices.v5v; V5.IsChecked = true; }
+        if (devices.v6 == true) { V6V.Value = devices.v6v; V6.IsChecked = true; }
+        if (devices.v7 == true) { V7V.Value = devices.v7v; V7.IsChecked = true; }
+        if (devices.g1 == true) { g1v.Value = devices.g1v; g1.IsChecked = true; }
+        if (devices.g2 == true) { g2v.Value = devices.g2v; g2.IsChecked = true; }
+        if (devices.g3 == true) { g3v.Value = devices.g3v; g3.IsChecked = true; }
+        if (devices.g4 == true) { g4v.Value = devices.g4v; g4.IsChecked = true; }
+        if (devices.g5 == true) { g5v.Value = devices.g5v; g5.IsChecked = true; }
+        if (devices.g6 == true) { g6v.Value = devices.g6v; g6.IsChecked = true; }
+        if (devices.g7 == true) { g7v.Value = devices.g7v; g7.IsChecked = true; }
+        if (devices.g8 == true) { g8v.Value = devices.g8v; g8.IsChecked = true; }
+        if (devices.g9 == true) { g9v.Value = devices.g9v; g9.IsChecked = true; }
+        if (devices.g10 == true) { g10v.Value = devices.g10v; g10.IsChecked = true; }
+        if (devices.enableps == true) { EnablePstates.IsOn = true; }
+        if (devices.turboboost == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
+        if (devices.autopstate == true) { Autoapply_1.IsOn = true; }
+        if (devices.p0ignorewarn == true) { Without_P0.IsOn = true; }
+        if (devices.ignorewarn == true) { IgnoreWarn.IsOn = true; }
         if (devices.vid0 != null) { VID_0.Value = devices.vid0; }
         if (devices.vid1 != null) { VID_1.Value = devices.vid1; }
         if (devices.vid2 != null) { VID_2.Value = devices.vid2; }
+        if (devices.fid0 != null) { FID_0.Value = devices.fid0; P0_Freq.Content = devices.fid0 / devices.did0 * 200; try { Mult_0.SelectedIndex = (int)(devices.fid0 / devices.did0 * 2 - 4); } catch { } }
+        if (devices.fid1 != null) { FID_1.Value = devices.fid1; P1_Freq.Content = devices.fid1 / devices.did1 * 200; try { Mult_1.SelectedIndex = (int)(devices.fid1 / devices.did1 * 2 - 4); } catch { } }
+        if (devices.fid2 != null) { FID_2.Value = devices.fid2; P2_Freq.Content = devices.fid2 / devices.did2 * 200; try { Mult_2.SelectedIndex = (int)(devices.fid2 / devices.did2 * 2 - 4); } catch { } }
+        if (devices.did0 != null) { DID_0.Value = devices.did0; }
+        if (devices.did1 != null) { DID_1.Value = devices.did1; }
+        if (devices.did2 != null) { DID_2.Value = devices.did2; }
         if (devices.a1 == true) { a1v.Value = devices.a1v; a1.IsChecked = true; } else { a1.IsChecked = false; }
         if (devices.a2 == true) { a2v.Value = devices.a2v; a2.IsChecked = true; } else { a2.IsChecked = false; }
         if (devices.a3 == true) { a3v.Value = devices.a3v; a3.IsChecked = true; } else { a3.IsChecked = false; }
@@ -880,6 +799,12 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         if (profile.vid0pr1 != null) { VID_0.Value = profile.vid0pr1; }
         if (profile.vid1pr1 != null) { VID_1.Value = profile.vid1pr1; }
         if (profile.vid2pr1 != null) { VID_2.Value = profile.vid2pr1; }
+        if (profile.fid0pr1 != null) { FID_0.Value = profile.fid0pr1; P0_Freq.Content = profile.fid0pr1 / profile.did0pr1 * 200; try { Mult_0.SelectedIndex = (int)(profile.fid0pr1 / profile.did0pr1 * 2 - 4); } catch { } }
+        if (profile.fid1pr1 != null) { FID_1.Value = profile.fid1pr1; P1_Freq.Content = profile.fid1pr1 / profile.did1pr1 * 200; try { Mult_1.SelectedIndex = (int)(profile.fid1pr1 / profile.did1pr1 * 2 - 4); } catch { } }
+        if (profile.fid2pr1 != null) { FID_2.Value = profile.fid2pr1; P2_Freq.Content = profile.fid2pr1 / profile.did2pr1 * 200; try { Mult_2.SelectedIndex = (int)(profile.fid2pr1 / profile.did2pr1 * 2 - 4); } catch { } }
+        if (profile.did0pr1 != null) { DID_0.Value = profile.did0pr1; }
+        if (profile.did1pr1 != null) { DID_1.Value = profile.did1pr1; }
+        if (profile.did2pr1 != null) { DID_2.Value = profile.did2pr1; }
         if (profile.enablepspr1 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
         if (profile.turboboostpr1 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
         if (profile.autopstatepr1 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
@@ -921,6 +846,12 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         if (profile.vid0pr2 != null) { VID_0.Value = profile.vid0pr2; }
         if (profile.vid1pr2 != null) { VID_1.Value = profile.vid1pr2; }
         if (profile.vid2pr2 != null) { VID_2.Value = profile.vid2pr2; }
+        if (profile.fid0pr2 != null) { FID_0.Value = profile.fid0pr2; P0_Freq.Content = profile.fid0pr2 / profile.did0pr2 * 200; try { Mult_0.SelectedIndex = (int)(profile.fid0pr2 / profile.did0pr2 * 2 - 4); } catch { } }
+        if (profile.fid1pr2 != null) { FID_1.Value = profile.fid1pr2; P1_Freq.Content = profile.fid1pr2 / profile.did1pr2 * 200; try { Mult_1.SelectedIndex = (int)(profile.fid1pr2 / profile.did1pr2 * 2 - 4); } catch { } }
+        if (profile.fid2pr2 != null) { FID_2.Value = profile.fid2pr2; P2_Freq.Content = profile.fid2pr2 / profile.did2pr2 * 200; try { Mult_2.SelectedIndex = (int)(profile.fid2pr2 / profile.did2pr2 * 2 - 4); } catch { } }
+        if (profile.did0pr2 != null) { DID_0.Value = profile.did0pr2; }
+        if (profile.did1pr2 != null) { DID_1.Value = profile.did1pr2; }
+        if (profile.did2pr2 != null) { DID_2.Value = profile.did2pr2; }
         if (profile.enablepspr2 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
         if (profile.turboboostpr2 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
         if (profile.autopstatepr2 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
@@ -962,6 +893,12 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         if (profile.vid0pr3 != null) { VID_0.Value = profile.vid0pr3; }
         if (profile.vid1pr3 != null) { VID_1.Value = profile.vid1pr3; }
         if (profile.vid2pr3 != null) { VID_2.Value = profile.vid2pr3; }
+        if (profile.fid0pr3 != null) { FID_0.Value = profile.fid0pr3; P0_Freq.Content = profile.fid0pr3 / profile.did0pr3 * 200; try { Mult_0.SelectedIndex = (int)(profile.fid0pr3 / profile.did0pr3 * 2 - 4); } catch { } }
+        if (profile.fid1pr3 != null) { FID_1.Value = profile.fid1pr3; P1_Freq.Content = profile.fid1pr3 / profile.did1pr3 * 200; try { Mult_1.SelectedIndex = (int)(profile.fid1pr3 / profile.did1pr3 * 2 - 4); } catch { } }
+        if (profile.fid2pr3 != null) { FID_2.Value = profile.fid2pr3; P2_Freq.Content = profile.fid2pr3 / profile.did2pr3 * 200; try { Mult_2.SelectedIndex = (int)(profile.fid2pr3 / profile.did2pr3 * 2 - 4); } catch { } }
+        if (profile.did0pr3 != null) { DID_0.Value = profile.did0pr3; }
+        if (profile.did1pr3 != null) { DID_1.Value = profile.did1pr3; }
+        if (profile.did2pr3 != null) { DID_2.Value = profile.did2pr3; }
         if (profile.enablepspr3 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
         if (profile.turboboostpr3 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
         if (profile.autopstatepr3 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
@@ -1003,6 +940,12 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         if (profile.vid0pr4 != null) { VID_0.Value = profile.vid0pr4; }
         if (profile.vid1pr4 != null) { VID_1.Value = profile.vid1pr4; }
         if (profile.vid2pr4 != null) { VID_2.Value = profile.vid2pr4; }
+        if (profile.fid0pr4 != null) { FID_0.Value = profile.fid0pr4; P0_Freq.Content = profile.fid0pr4 / profile.did0pr4 * 200; try { Mult_0.SelectedIndex = (int)(profile.fid0pr4 / profile.did0pr4 * 2 - 4); } catch { } }
+        if (profile.fid1pr4 != null) { FID_1.Value = profile.fid1pr4; P1_Freq.Content = profile.fid1pr4 / profile.did1pr4 * 200; try { Mult_1.SelectedIndex = (int)(profile.fid1pr4 / profile.did1pr4 * 2 - 4); } catch { } }
+        if (profile.fid2pr4 != null) { FID_2.Value = profile.fid2pr4; P2_Freq.Content = profile.fid2pr4 / profile.did2pr4 * 200; try { Mult_2.SelectedIndex = (int)(profile.fid2pr4 / profile.did2pr4 * 2 - 4); } catch { } }
+        if (profile.did0pr4 != null) { DID_0.Value = profile.did0pr4; }
+        if (profile.did1pr4 != null) { DID_1.Value = profile.did1pr4; }
+        if (profile.did2pr4 != null) { DID_2.Value = profile.did2pr4; }
         if (profile.enablepspr4 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
         if (profile.turboboostpr4 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
         if (profile.autopstatepr4 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
@@ -1044,6 +987,12 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         if (profile.vid0pr5 != null) { VID_0.Value = profile.vid0pr5; }
         if (profile.vid1pr5 != null) { VID_1.Value = profile.vid1pr5; }
         if (profile.vid2pr5 != null) { VID_2.Value = profile.vid2pr5; }
+        if (profile.fid0pr5 != null) { FID_0.Value = profile.fid0pr5; P0_Freq.Content = profile.fid0pr5 / profile.did0pr5 * 200; try { Mult_0.SelectedIndex = (int)(profile.fid0pr5 / profile.did0pr5 * 2 - 4); } catch { } }
+        if (profile.fid1pr5 != null) { FID_1.Value = profile.fid1pr5; P1_Freq.Content = profile.fid1pr5 / profile.did1pr5 * 200; try { Mult_1.SelectedIndex = (int)(profile.fid1pr5 / profile.did1pr5 * 2 - 4); } catch { } }
+        if (profile.fid2pr5 != null) { FID_2.Value = profile.fid2pr5; P2_Freq.Content = profile.fid2pr5 / profile.did2pr5 * 200; try { Mult_2.SelectedIndex = (int)(profile.fid2pr5 / profile.did2pr5 * 2 - 4); } catch { } }
+        if (profile.did0pr5 != null) { DID_0.Value = profile.did0pr5; }
+        if (profile.did1pr5 != null) { DID_1.Value = profile.did1pr5; }
+        if (profile.did2pr5 != null) { DID_2.Value = profile.did2pr5; }
         if (profile.enablepspr5 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
         if (profile.turboboostpr5 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
         if (profile.autopstatepr5 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
@@ -1085,6 +1034,12 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         if (profile.vid0pr6 != null) { VID_0.Value = profile.vid0pr6; }
         if (profile.vid1pr6 != null) { VID_1.Value = profile.vid1pr6; }
         if (profile.vid2pr6 != null) { VID_2.Value = profile.vid2pr6; }
+        if (profile.fid0pr6 != null) { FID_0.Value = profile.fid0pr6; P0_Freq.Content = profile.fid0pr6 / profile.did0pr6 * 200; try { Mult_0.SelectedIndex = (int)(profile.fid0pr6 / profile.did0pr6 * 2 - 4); } catch { } }
+        if (profile.fid1pr6 != null) { FID_1.Value = profile.fid1pr6; P1_Freq.Content = profile.fid1pr6 / profile.did1pr6 * 200; try { Mult_1.SelectedIndex = (int)(profile.fid1pr6 / profile.did1pr6 * 2 - 4); } catch { } }
+        if (profile.fid2pr6 != null) { FID_2.Value = profile.fid2pr6; P2_Freq.Content = profile.fid2pr6 / profile.did2pr6 * 200; try { Mult_2.SelectedIndex = (int)(profile.fid2pr6 / profile.did2pr6 * 2 - 4); } catch { } }
+        if (profile.did0pr6 != null) { DID_0.Value = profile.did0pr6; }
+        if (profile.did1pr6 != null) { DID_1.Value = profile.did1pr6; }
+        if (profile.did2pr6 != null) { DID_2.Value = profile.did2pr6; }
         if (profile.enablepspr6 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
         if (profile.turboboostpr6 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
         if (profile.autopstatepr6 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
@@ -1126,6 +1081,12 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         if (profile.vid0pr7 != null) { VID_0.Value = profile.vid0pr7; }
         if (profile.vid1pr7 != null) { VID_1.Value = profile.vid1pr7; }
         if (profile.vid2pr7 != null) { VID_2.Value = profile.vid2pr7; }
+        if (profile.fid0pr7 != null) { FID_0.Value = profile.fid0pr7; P0_Freq.Content = profile.fid0pr7 / profile.did0pr7 * 200; try { Mult_0.SelectedIndex = (int)(profile.fid0pr7 / profile.did0pr7 * 2 - 4); } catch { } }
+        if (profile.fid1pr7 != null) { FID_1.Value = profile.fid1pr7; P1_Freq.Content = profile.fid1pr7 / profile.did1pr7 * 200; try { Mult_1.SelectedIndex = (int)(profile.fid1pr7 / profile.did1pr7 * 2 - 4); } catch { } }
+        if (profile.fid2pr7 != null) { FID_2.Value = profile.fid2pr7; P2_Freq.Content = profile.fid2pr7 / profile.did2pr7 * 200; try { Mult_2.SelectedIndex = (int)(profile.fid2pr7 / profile.did2pr7 * 2 - 4); } catch { } }
+        if (profile.did0pr7 != null) { DID_0.Value = profile.did0pr7; }
+        if (profile.did1pr7 != null) { DID_1.Value = profile.did1pr7; }
+        if (profile.did2pr7 != null) { DID_2.Value = profile.did2pr7; }
         if (profile.enablepspr7 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
         if (profile.turboboostpr7 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
         if (profile.autopstatepr7 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
@@ -1167,6 +1128,12 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         if (profile.vid0pr8 != null) { VID_0.Value = profile.vid0pr8; }
         if (profile.vid1pr8 != null) { VID_1.Value = profile.vid1pr8; }
         if (profile.vid2pr8 != null) { VID_2.Value = profile.vid2pr8; }
+        if (profile.fid0pr8 != null) { FID_0.Value = profile.fid0pr8; P0_Freq.Content = profile.fid0pr8 / profile.did0pr8 * 200; try { Mult_0.SelectedIndex = (int)(profile.fid0pr8 / profile.did0pr8 * 2 - 4); } catch { } }
+        if (profile.fid1pr8 != null) { FID_1.Value = profile.fid1pr8; P1_Freq.Content = profile.fid1pr8 / profile.did1pr8 * 200; try { Mult_1.SelectedIndex = (int)(profile.fid1pr8 / profile.did1pr8 * 2 - 4); } catch { } }
+        if (profile.fid2pr8 != null) { FID_2.Value = profile.fid2pr8; P2_Freq.Content = profile.fid2pr8 / profile.did2pr8 * 200; try { Mult_2.SelectedIndex = (int)(profile.fid2pr8 / profile.did2pr8 * 2 - 4); } catch { } }
+        if (profile.did0pr8 != null) { DID_0.Value = profile.did0pr8; }
+        if (profile.did1pr8 != null) { DID_1.Value = profile.did1pr8; }
+        if (profile.did2pr8 != null) { DID_2.Value = profile.did2pr8; }
         if (profile.enablepspr8 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
         if (profile.turboboostpr8 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
         if (profile.autopstatepr8 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
@@ -1208,6 +1175,12 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         if (profile.vid0pr9 != null) { VID_0.Value = profile.vid0pr9; }
         if (profile.vid1pr9 != null) { VID_1.Value = profile.vid1pr9; }
         if (profile.vid2pr9 != null) { VID_2.Value = profile.vid2pr9; }
+        if (profile.fid0pr9 != null) { FID_0.Value = profile.fid0pr9; P0_Freq.Content = profile.fid0pr9 / profile.did0pr9 * 200; try { Mult_0.SelectedIndex = (int)(profile.fid0pr9 / profile.did0pr9 * 2 - 4); } catch { } }
+        if (profile.fid1pr9 != null) { FID_1.Value = profile.fid1pr9; P1_Freq.Content = profile.fid1pr9 / profile.did1pr9 * 200; try { Mult_1.SelectedIndex = (int)(profile.fid1pr9 / profile.did1pr9 * 2 - 4); } catch { } }
+        if (profile.fid2pr9 != null) { FID_2.Value = profile.fid2pr9; P2_Freq.Content = profile.fid2pr9 / profile.did2pr9 * 200; try { Mult_2.SelectedIndex = (int)(profile.fid2pr9 / profile.did2pr9 * 2 - 4); } catch { } }
+        if (profile.did0pr9 != null) { DID_0.Value = profile.did0pr9; }
+        if (profile.did1pr9 != null) { DID_1.Value = profile.did1pr9; }
+        if (profile.did2pr9 != null) { DID_2.Value = profile.did2pr9; }
         if (profile.enablepspr9 == true) { EnablePstates.IsOn = true; } else { EnablePstates.IsOn = false; }
         if (profile.turboboostpr9 == true) { Turbo_boost.IsOn = true; } else { Turbo_boost.IsOn = false; }
         if (profile.autopstatepr9 == true) { Autoapply_1.IsOn = true; } else { Autoapply_1.IsOn = false; }
@@ -5533,7 +5506,8 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         await Task.Delay(20);
         g9t.Content = g9v.Value.ToString();
     }
-    private async void g10v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void g10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (g10.IsChecked == true)
         {
@@ -5579,13 +5553,16 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.g10pr9v = g10v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         g10t.Content = g10v.Value.ToString();
     }
+
     //Расширенные параметры
-    private async void a1v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private async void a1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a1.IsChecked == true)
         {
@@ -5631,12 +5608,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a1pr9v = a1v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a1t.Content = a1v.Value.ToString();
     }
-    private async void a2v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void a2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a2.IsChecked == true)
         {
@@ -5682,12 +5662,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a2pr9v = a2v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a2t.Content = a2v.Value.ToString();
     }
-    private async void a3v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void a3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a3.IsChecked == true)
         {
@@ -5733,12 +5716,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a3pr9v = a3v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a3t.Content = a3v.Value.ToString();
     }
-    private async void a4v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void a4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a4.IsChecked == true)
         {
@@ -5784,12 +5770,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a4pr9v = a4v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a4t.Content = a4v.Value.ToString();
     }
-    private async void a5v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void a5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a5.IsChecked == true)
         {
@@ -5835,12 +5824,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a5pr9v = a5v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a5t.Content = a5v.Value.ToString();
     }
-    private async void a6v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void a6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a6.IsChecked == true)
         {
@@ -5886,12 +5878,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a6pr9v = a6v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a6t.Content = a6v.Value.ToString();
     }
-    private async void a7v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void a7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a7.IsChecked == true)
         {
@@ -5937,12 +5932,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a7pr9v = a7v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a7t.Content = a7v.Value.ToString();
     }
-    private async void a8v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void a8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a8.IsChecked == true)
         {
@@ -5988,12 +5986,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a8pr9v = a8v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a8t.Content = a8v.Value.ToString();
     }
-    private async void a9v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void a9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a9.IsChecked == true)
         {
@@ -6039,12 +6040,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a9pr9v = a9v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a9t.Content = a9v.Value.ToString();
     }
-    private async void a10v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void a10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a10.IsChecked == true)
         {
@@ -6090,12 +6094,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a10pr9v = a10v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a10t.Content = a10v.Value.ToString();
     }
-    private async void a11v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void a11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a11.IsChecked == true)
         {
@@ -6141,12 +6148,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a11pr9v = a11v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a11t.Content = a11v.Value.ToString();
     }
-    private async void a12v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void a12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (a12.IsChecked == true)
         {
@@ -6192,12 +6202,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a12pr9v = a12v.Value;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a12t.Content = a12v.Value.ToString();
     }
-    private async void a13m_SelectedIndexChanged(object sender, Microsoft.UI.Xaml.Controls.SelectionChangedEventArgs e)
+
+    private async void a13m_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
     {
         if (a13.IsChecked == true)
         {
@@ -6243,34 +6256,42 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.a13pr9v = a13m.SelectedIndex;
                     break;
             }
+
             ProfileSave();
         }
+
         await Task.Delay(20);
         a13t.Content = a13m.SelectedIndex.ToString();
     }
+
     //Кнопка применить, итоговый выход, Ryzen ADJ
-    private async void Apply_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private async void Apply_Click(object sender, RoutedEventArgs e)
     {
         if (c1.IsChecked == true)
         {
             adjline += " --tctl-temp=" + c1v.Value;
         }
+
         if (c2.IsChecked == true)
         {
             adjline += " --stapm-limit=" + c2v.Value + "000";
         }
+
         if (c3.IsChecked == true)
         {
             adjline += " --fast-limit=" + c3v.Value + "000";
         }
+
         if (c4.IsChecked == true)
         {
             adjline += " --slow-limit=" + c4v.Value + "000";
         }
+
         if (c5.IsChecked == true)
         {
             adjline += " --stapm-time=" + c5v.Value;
         }
+
         if (c6.IsChecked == true)
         {
             adjline += " --slow-time=" + c6v.Value;
@@ -6281,26 +6302,32 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         {
             adjline += " --vrmmax-current=" + V1V.Value + "000";
         }
+
         if (V2.IsChecked == true)
         {
             adjline += " --vrm-current=" + V2V.Value + "000";
         }
+
         if (V3.IsChecked == true)
         {
             adjline += " --vrmsocmax-current=" + V3V.Value + "000";
         }
+
         if (V4.IsChecked == true)
         {
             adjline += " --vrmsoc-current=" + V4V.Value + "000";
         }
+
         if (V5.IsChecked == true)
         {
             adjline += " --psi0-current=" + V5V.Value + "000";
         }
+
         if (V6.IsChecked == true)
         {
             adjline += " --psi0soc-current=" + V6V.Value + "000";
         }
+
         if (V7.IsChecked == true)
         {
             adjline += " --prochot-deassertion-ramp=" + V7V.Value;
@@ -6311,42 +6338,52 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         {
             adjline += " --min-socclk-frequency=" + g1v.Value;
         }
+
         if (g2.IsChecked == true)
         {
             adjline += " --max-socclk-frequency=" + g2v.Value;
         }
+
         if (g3.IsChecked == true)
         {
             adjline += " --min-fclk-frequency=" + g3v.Value;
         }
+
         if (g4.IsChecked == true)
         {
             adjline += " --max-fclk-frequency=" + g4v.Value;
         }
+
         if (g5.IsChecked == true)
         {
             adjline += " --min-vcn=" + g5v.Value;
         }
+
         if (g6.IsChecked == true)
         {
             adjline += " --max-vcn=" + g6v.Value;
         }
+
         if (g7.IsChecked == true)
         {
             adjline += " --min-lclk=" + g7v.Value;
         }
+
         if (g8.IsChecked == true)
         {
             adjline += " --max-lclk=" + g8v.Value;
         }
+
         if (g9.IsChecked == true)
         {
             adjline += " --max-gfxclk=" + g9v.Value;
         }
+
         if (g10.IsChecked == true)
         {
             adjline += " --min-socclk-frequency=" + g10v.Value;
         }
+
         //set_enable_oc is not supported on this family
         ocmode = "";
         Init_OC_Mode();
@@ -6357,67 +6394,81 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             {
                 adjline += " --vrmgfx-current=" + a1v.Value + "000";
             }
+
             if (a2.IsChecked == true)
             {
                 adjline += " --vrmcvip-current=" + a2v.Value + "000";
             }
+
             if (a3.IsChecked == true)
             {
                 adjline += " --vrmgfxmax_current=" + a3v.Value + "000";
             }
+
             if (a4.IsChecked == true)
             {
                 adjline += " --psi3cpu_current=" + a4v.Value + "000";
             }
+
             if (a5.IsChecked == true)
             {
                 adjline += " --psi3gfx_current=" + a5v.Value + "000";
             }
+
             if (a6.IsChecked == true)
             {
                 adjline += " --apu-skin-temp=" + a6v.Value;
             }
+
             if (a7.IsChecked == true)
             {
                 adjline += " --dgpu-skin-temp=" + a7v.Value;
             }
+
             if (a8.IsChecked == true)
             {
                 adjline += " --apu-slow-limit=" + a8v.Value + "000";
             }
+
             if (a9.IsChecked == true)
             {
                 adjline += " --skin-temp-limit=" + a9v.Value + "000";
             }
+
             if (a10.IsChecked == true)
             {
                 adjline += " --gfx-clk=" + a10v.Value;
             }
+
             if (a11.IsChecked == true)
             {
                 adjline += " --oc-clk=" + a11v.Value;
             }
+
             if (a12.IsChecked == true)
             {
                 adjline += " --oc-volt=" + Math.Round((1.55 - a12v.Value / 1000) / 0.00625);
             }
+
             if (a13.IsChecked == true)
             {
                 if (a13m.SelectedIndex == 1)
                 {
                     adjline += " --max-performance";
                 }
+
                 if (a13m.SelectedIndex == 2)
                 {
                     adjline += " --power-saving";
                 }
             }
         }
+
         config.adjline = adjline;
         adjline = "";
         ConfigSave();
         MainWindow.Applyer.Apply();
-        if (EnablePstates.IsOn == true)
+        if (EnablePstates.IsOn)
         {
             BtnPstateWrite_Click();
         }
@@ -6425,11 +6476,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         {
             ReadPstate();
         }
+
         Apply_tooltip.IsOpen = true;
         await Task.Delay(3000);
         Apply_tooltip.IsOpen = false;
         //App.MainWindow.ShowMessageDialogAsync("Set_settings".GetLocalized() + " \n" + config.adjline, "Set_succ".GetLocalized());
     }
+
     private void Init_OC_Mode()
     {
         ocmode = "";
@@ -6442,132 +6495,116 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         p.StartInfo.RedirectStandardInput = true;
         p.StartInfo.RedirectStandardOutput = true;
         p.Start();
-        StreamReader outputWriter = p.StandardOutput;
+        var outputWriter = p.StandardOutput;
         var line = outputWriter.ReadLine();
         if (line != "")
         {
             ocmode = line;
         }
+
         line = outputWriter.ReadLine();
         p.WaitForExit();
         line = null;
     }
-    private async void Save_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+
+    private async void Save_Click(object sender, RoutedEventArgs e)
     {
         if (SaveName.Text != "")
         {
             if (profile.pr1 == false)
             {
                 profile.pr1 = true;
-                ProfileCOM_1.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+                ProfileCOM_1.Visibility = Visibility.Visible;
                 ProfileCOM_1.Content = SaveName.Text;
                 ProfileCOM.SelectedIndex = 1;
                 profile.pr1name = SaveName.Text;
                 return;
             }
-            else
+
+            if (profile.pr2 == false)
             {
-                if (profile.pr2 == false)
-                {
-                    profile.pr2 = true;
-                    ProfileCOM_2.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                    ProfileCOM_2.Content = SaveName.Text;
-                    ProfileCOM.SelectedIndex = 2;
-                    profile.pr2name = SaveName.Text;
-                    return;
-                }
-                else
-                {
-                    if (profile.pr3 == false)
-                    {
-                        profile.pr3 = true;
-                        ProfileCOM_3.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                        ProfileCOM_3.Content = SaveName.Text;
-                        ProfileCOM.SelectedIndex = 3;
-                        profile.pr3name = SaveName.Text;
-                        return;
-                    }
-                    else
-                    {
-                        if (profile.pr4 == false)
-                        {
-                            profile.pr4 = true;
-                            ProfileCOM_4.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                            ProfileCOM_4.Content = SaveName.Text;
-                            ProfileCOM.SelectedIndex = 4;
-                            profile.pr4name = SaveName.Text;
-                            return;
-                        }
-                        else
-                        {
-                            if (profile.pr5 == false)
-                            {
-                                profile.pr5 = true;
-                                ProfileCOM_5.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                                ProfileCOM_5.Content = SaveName.Text;
-                                ProfileCOM.SelectedIndex = 5;
-                                profile.pr5name = SaveName.Text;
-                                return;
-                            }
-                            else
-                            {
-                                if (profile.pr6 == false)
-                                {
-                                    profile.pr6 = true;
-                                    ProfileCOM_6.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                                    ProfileCOM_6.Content = SaveName.Text;
-                                    ProfileCOM.SelectedIndex = 6;
-                                    profile.pr6name = SaveName.Text;
-                                    return;
-                                }
-                                else
-                                {
-                                    if (profile.pr7 == false)
-                                    {
-                                        profile.pr7 = true;
-                                        ProfileCOM_7.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                                        ProfileCOM_7.Content = SaveName.Text;
-                                        ProfileCOM.SelectedIndex = 7;
-                                        profile.pr7name = SaveName.Text;
-                                        return;
-                                    }
-                                    else
-                                    {
-                                        if (profile.pr8 == false)
-                                        {
-                                            profile.pr8 = true;
-                                            ProfileCOM_8.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                                            ProfileCOM_8.Content = SaveName.Text;
-                                            ProfileCOM.SelectedIndex = 8;
-                                            profile.pr8name = SaveName.Text;
-                                            return;
-                                        }
-                                        else
-                                        {
-                                            if (profile.pr9 == false)
-                                            {
-                                                profile.pr9 = true;
-                                                ProfileCOM_9.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                                                ProfileCOM_9.Content = SaveName.Text;
-                                                ProfileCOM.SelectedIndex = 9;
-                                                profile.pr9name = SaveName.Text;
-                                                return;
-                                            }
-                                            else
-                                            {
-                                                //App.MainWindow.ShowMessageDialogAsync("You can't add more than 9 profiles at one time! \n", "Profiles error!");
-                                                Add_tooltip_Max.IsOpen = true;
-                                                await Task.Delay(3000);
-                                                Add_tooltip_Max.IsOpen = false;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                profile.pr2 = true;
+                ProfileCOM_2.Visibility = Visibility.Visible;
+                ProfileCOM_2.Content = SaveName.Text;
+                ProfileCOM.SelectedIndex = 2;
+                profile.pr2name = SaveName.Text;
+                return;
             }
+
+            if (profile.pr3 == false)
+            {
+                profile.pr3 = true;
+                ProfileCOM_3.Visibility = Visibility.Visible;
+                ProfileCOM_3.Content = SaveName.Text;
+                ProfileCOM.SelectedIndex = 3;
+                profile.pr3name = SaveName.Text;
+                return;
+            }
+
+            if (profile.pr4 == false)
+            {
+                profile.pr4 = true;
+                ProfileCOM_4.Visibility = Visibility.Visible;
+                ProfileCOM_4.Content = SaveName.Text;
+                ProfileCOM.SelectedIndex = 4;
+                profile.pr4name = SaveName.Text;
+                return;
+            }
+
+            if (profile.pr5 == false)
+            {
+                profile.pr5 = true;
+                ProfileCOM_5.Visibility = Visibility.Visible;
+                ProfileCOM_5.Content = SaveName.Text;
+                ProfileCOM.SelectedIndex = 5;
+                profile.pr5name = SaveName.Text;
+                return;
+            }
+
+            if (profile.pr6 == false)
+            {
+                profile.pr6 = true;
+                ProfileCOM_6.Visibility = Visibility.Visible;
+                ProfileCOM_6.Content = SaveName.Text;
+                ProfileCOM.SelectedIndex = 6;
+                profile.pr6name = SaveName.Text;
+                return;
+            }
+
+            if (profile.pr7 == false)
+            {
+                profile.pr7 = true;
+                ProfileCOM_7.Visibility = Visibility.Visible;
+                ProfileCOM_7.Content = SaveName.Text;
+                ProfileCOM.SelectedIndex = 7;
+                profile.pr7name = SaveName.Text;
+                return;
+            }
+
+            if (profile.pr8 == false)
+            {
+                profile.pr8 = true;
+                ProfileCOM_8.Visibility = Visibility.Visible;
+                ProfileCOM_8.Content = SaveName.Text;
+                ProfileCOM.SelectedIndex = 8;
+                profile.pr8name = SaveName.Text;
+                return;
+            }
+
+            if (profile.pr9 == false)
+            {
+                profile.pr9 = true;
+                ProfileCOM_9.Visibility = Visibility.Visible;
+                ProfileCOM_9.Content = SaveName.Text;
+                ProfileCOM.SelectedIndex = 9;
+                profile.pr9name = SaveName.Text;
+                return;
+            }
+
+            //App.MainWindow.ShowMessageDialogAsync("You can't add more than 9 profiles at one time! \n", "Profiles error!");
+            Add_tooltip_Max.IsOpen = true;
+            await Task.Delay(3000);
+            Add_tooltip_Max.IsOpen = false;
         }
         else
         {
@@ -6576,9 +6613,11 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             Add_tooltip_Error.IsOpen = false;
             //App.MainWindow.ShowMessageDialogAsync("You can't add profile without name! \n", "Corrupted Name!");
         }
+
         ProfileSave();
     }
-    private async void Edit_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+
+    private async void Edit_Click(object sender, RoutedEventArgs e)
     {
         if (SaveName.Text != "")
         {
@@ -6672,6 +6711,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     Edit_tooltip.IsOpen = false;
                     break;
             }
+
             ProfileSave();
         }
         else
@@ -6682,9 +6722,10 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             //App.MainWindow.ShowMessageDialogAsync("You can't edit profile without name! \n", "Corrupted Name!");
         }
     }
-    private async void Delete_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+
+    private async void Delete_Click(object sender, RoutedEventArgs e)
     {
-        ContentDialog DelDialog = new ContentDialog
+        var DelDialog = new ContentDialog
         {
             Title = "Delete preset",
             Content = "Did you really want to delete this preset?",
@@ -6700,7 +6741,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             DelDialog.XamlRoot = XamlRoot;
         }
 
-        ContentDialogResult result = await DelDialog.ShowAsync();
+        var result = await DelDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
             switch (ProfileCOM.SelectedIndex)
@@ -6714,59 +6755,60 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 case 1:
                     profile.pr1 = false;
                     ProfileCOM.SelectedIndex = 0;
-                    ProfileCOM_1.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    ProfileCOM_1.Visibility = Visibility.Collapsed;
                     break;
                 case 2:
                     profile.pr2 = false;
                     ProfileCOM.SelectedIndex = 0;
-                    ProfileCOM_2.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    ProfileCOM_2.Visibility = Visibility.Collapsed;
                     break;
                 case 3:
                     profile.pr3 = false;
                     ProfileCOM.SelectedIndex = 0;
-                    ProfileCOM_3.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    ProfileCOM_3.Visibility = Visibility.Collapsed;
                     break;
                 case 4:
                     profile.pr4 = false;
                     ProfileCOM.SelectedIndex = 0;
-                    ProfileCOM_4.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    ProfileCOM_4.Visibility = Visibility.Collapsed;
                     break;
                 case 5:
                     profile.pr5 = false;
                     ProfileCOM.SelectedIndex = 0;
-                    ProfileCOM_5.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    ProfileCOM_5.Visibility = Visibility.Collapsed;
                     break;
                 case 6:
                     profile.pr6 = false;
                     ProfileCOM.SelectedIndex = 0;
-                    ProfileCOM_6.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    ProfileCOM_6.Visibility = Visibility.Collapsed;
                     break;
                 case 7:
                     profile.pr7 = false;
                     ProfileCOM.SelectedIndex = 0;
-                    ProfileCOM_7.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    ProfileCOM_7.Visibility = Visibility.Collapsed;
                     break;
                 case 8:
                     profile.pr8 = false;
                     ProfileCOM.SelectedIndex = 0;
-                    ProfileCOM_8.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    ProfileCOM_8.Visibility = Visibility.Collapsed;
                     break;
                 case 9:
                     profile.pr9 = false;
                     ProfileCOM.SelectedIndex = 0;
-                    ProfileCOM_9.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    ProfileCOM_9.Visibility = Visibility.Collapsed;
                     break;
             }
+
             ProfileSave();
         }
-
     }
+
     public async void BtnPstateWrite_Click()
     {
         DeviceLoad();
-        if (devices.autopstate == true)
+        if (devices.autopstate)
         {
-            if (Without_P0.IsOn == true)
+            if (Without_P0.IsOn)
             {
                 WritePstates();
             }
@@ -6777,9 +6819,9 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         }
         else
         {
-            if (IgnoreWarn.IsOn == true)
+            if (IgnoreWarn.IsOn)
             {
-                if (Without_P0.IsOn == true)
+                if (Without_P0.IsOn)
                 {
                     WritePstates();
                 }
@@ -6790,12 +6832,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             }
             else
             {
-                if (Without_P0.IsOn == true)
+                if (Without_P0.IsOn)
                 {
-                    ContentDialog WriteDialog = new ContentDialog
+                    var WriteDialog = new ContentDialog
                     {
                         Title = "Change Pstates?",
-                        Content = "Did you really want to change pstates? \nThis can crash your system immediately. \nChanging P0 state have MORE chances to crash your system",
+                        Content =
+                            "Did you really want to change pstates? \nThis can crash your system immediately. \nChanging P0 state have MORE chances to crash your system",
                         CloseButtonText = "Cancel",
                         PrimaryButtonText = "Change",
                         DefaultButton = ContentDialogButton.Close
@@ -6806,7 +6849,8 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     {
                         WriteDialog.XamlRoot = XamlRoot;
                     }
-                    ContentDialogResult result1 = await WriteDialog.ShowAsync();
+
+                    var result1 = await WriteDialog.ShowAsync();
                     if (result1 == ContentDialogResult.Primary)
                     {
                         WritePstates();
@@ -6814,10 +6858,11 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 }
                 else
                 {
-                    ContentDialog ApplyDialog = new ContentDialog
+                    var ApplyDialog = new ContentDialog
                     {
                         Title = "Change Pstates?",
-                        Content = "Did you really want to change pstates? \nThis can crash your system immediately. \nChanging P0 state have MORE chances to crash your system",
+                        Content =
+                            "Did you really want to change pstates? \nThis can crash your system immediately. \nChanging P0 state have MORE chances to crash your system",
                         CloseButtonText = "Cancel",
                         PrimaryButtonText = "Change",
                         SecondaryButtonText = "Without P0",
@@ -6830,11 +6875,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     {
                         ApplyDialog.XamlRoot = XamlRoot;
                     }
-                    ContentDialogResult result = await ApplyDialog.ShowAsync();
+
+                    var result = await ApplyDialog.ShowAsync();
                     if (result == ContentDialogResult.Primary)
                     {
                         WritePstates();
                     }
+
                     if (result == ContentDialogResult.Secondary)
                     {
                         WritePstatesWithoutP0();
@@ -6842,20 +6889,33 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 }
             }
         }
-
     }
+
     public void WritePstates()
     {
-        if (devices.autopstate == true)
+        if (devices.autopstate)
         {
-            if (profile.Unsaved == true || profile.pr1 == true || profile.pr2 == true || profile.pr3 == true || profile.pr4 == true || profile.pr5 == true || profile.pr6 == true || profile.pr7 == true || profile.pr8 == true || profile.pr9 == true) { DID_0.Text = devices.did0; DID_1.Text = devices.did1; DID_2.Text = devices.did2; FID_0.Text = devices.fid0; FID_1.Text = devices.fid1; FID_2.Text = devices.fid2; }
+            if (profile.Unsaved || profile.pr1 || profile.pr2 || profile.pr3 || profile.pr4 || profile.pr5 ||
+                profile.pr6 || profile.pr7 || profile.pr8 || profile.pr9)
+            {
+                DID_0.Value = devices.did0;
+                DID_1.Value = devices.did1;
+                DID_2.Value = devices.did2;
+                FID_0.Value = devices.fid0;
+                FID_1.Value = devices.fid1;
+                FID_2.Value = devices.fid2;
+            }
         }
+
         for (var p = 0; p < 3; p++)
         {
-            if (string.IsNullOrEmpty(DID_0.Text) || string.IsNullOrEmpty(FID_0.Text) || string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) || string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text))
+            if (string.IsNullOrEmpty(DID_0.Text) || string.IsNullOrEmpty(FID_0.Text) ||
+                string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) ||
+                string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text))
             {
                 ReadPstate();
             }
+
             //Logic
             var pstateId = p;
             uint eax = default, edx = default;
@@ -6872,6 +6932,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 MessageBox.Show("Error reading PState! ID = " + pstateId);
                 return;
             }
+
             CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
             switch (p)
             {
@@ -6891,24 +6952,38 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     Vidtext = VID_2.Value;
                     break;
             }
-            eax = (IddDiv & 0xFF) << 30 | (IddVal & 0xFF) << 22 | (CpuVid & 0xFF) << 14 | (uint.Parse(Didtext) & 0xFF) << 8 | uint.Parse(Fidtext) & 0xFF;
-            if (_numaUtil.HighestNumaNode > 0)
+
+            eax = ((IddDiv & 0xFF) << 30) | ((IddVal & 0xFF) << 22) | ((CpuVid & 0xFF) << 14) |
+                  ((uint.Parse(Didtext) & 0xFF) << 8) | (uint.Parse(Fidtext) & 0xFF);
+            if (NUMAUtil.HighestNumaNode > 0)
             {
                 for (var i = 0; i <= 2; i++)
                 {
-                    if (!WritePstateClick(pstateId, eax, edx, i)) return;
+                    if (!WritePstateClick(pstateId, eax, edx, i))
+                    {
+                        return;
+                    }
                 }
             }
             else
             {
-                if (!WritePstateClick(pstateId, eax, edx)) return;
+                if (!WritePstateClick(pstateId, eax, edx))
+                {
+                    return;
+                }
             }
-            if (!WritePstateClick(pstateId, eax, edx)) return;
-            if (!cpu.WriteMsrWN(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
+
+            if (!WritePstateClick(pstateId, eax, edx))
+            {
+                return;
+            }
+
+            if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
             {
                 MessageBox.Show("Error writing PState! ID = " + pstateId);
             }
-            equalvid = (Math.Round((1.55 - Vidtext / 1000) / 0.00625)).ToString();
+
+            equalvid = Math.Round((1.55 - Vidtext / 1000) / 0.00625).ToString();
             var f = new Process();
             f.StartInfo.UseShellExecute = false;
             f.StartInfo.FileName = @"ryzenps.exe";
@@ -6920,13 +6995,16 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             f.Start();
             f.WaitForExit();
         }
+
         ReadPstate();
     }
+
     public void WritePstatesWithoutP0()
     {
         for (var p = 1; p < 3; p++)
         {
-            if (string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) || string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text))
+            if (string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) ||
+                string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text))
             {
                 ReadPstate();
             }
@@ -6946,6 +7024,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 MessageBox.Show("Error reading PState! ID = " + pstateId);
                 return;
             }
+
             CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
             switch (p)
             {
@@ -6958,32 +7037,48 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     Fidtext = FID_2.Text;
                     break;
             }
-            eax = (IddDiv & 0xFF) << 30 | (IddVal & 0xFF) << 22 | (CpuVid & 0xFF) << 14 | (uint.Parse(Didtext) & 0xFF) << 8 | uint.Parse(Fidtext) & 0xFF;
-            if (_numaUtil.HighestNumaNode > 0)
+
+            eax = ((IddDiv & 0xFF) << 30) | ((IddVal & 0xFF) << 22) | ((CpuVid & 0xFF) << 14) |
+                  ((uint.Parse(Didtext) & 0xFF) << 8) | (uint.Parse(Fidtext) & 0xFF);
+            if (NUMAUtil.HighestNumaNode > 0)
             {
                 for (var i = 0; i <= 2; i++)
                 {
-                    if (!WritePstateClick(pstateId, eax, edx, i)) return;
+                    if (!WritePstateClick(pstateId, eax, edx, i))
+                    {
+                        return;
+                    }
                 }
             }
             else
             {
-                if (!WritePstateClick(pstateId, eax, edx)) return;
+                if (!WritePstateClick(pstateId, eax, edx))
+                {
+                    return;
+                }
             }
-            if (!WritePstateClick(pstateId, eax, edx)) return;
-            if (!cpu.WriteMsrWN(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
+
+            if (!WritePstateClick(pstateId, eax, edx))
+            {
+                return;
+            }
+
+            if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
             {
                 MessageBox.Show("Error writing PState! ID = " + pstateId);
             }
         }
+
         ReadPstate();
     }
-    public static void CalculatePstateDetails(uint eax, ref uint IddDiv, ref uint IddVal, ref uint CpuVid, ref uint CpuDfsId, ref uint CpuFid)
+
+    public static void CalculatePstateDetails(uint eax, ref uint IddDiv, ref uint IddVal, ref uint CpuVid,
+        ref uint CpuDfsId, ref uint CpuFid)
     {
         IddDiv = eax >> 30;
-        IddVal = eax >> 22 & 0xFF;
-        CpuVid = eax >> 14 & 0xFF;
-        CpuDfsId = eax >> 8 & 0x3F;
+        IddVal = (eax >> 22) & 0xFF;
+        CpuVid = (eax >> 14) & 0xFF;
+        CpuDfsId = (eax >> 8) & 0x3F;
         CpuFid = eax & 0xFF;
     }
 
@@ -6996,7 +7091,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         if (cpu.ReadMsr(0xC0010015, ref eax, ref edx))
         {
             eax |= 0x200000;
-            return cpu.WriteMsrWN(0xC0010015, eax, edx);
+            return cpu.WriteMsrWn(0xC0010015, eax, edx);
         }
 
         MessageBox.Show("Error applying TSC fix!");
@@ -7005,11 +7100,18 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private bool WritePstateClick(int pstateId, uint eax, uint edx, int numanode = 0)
     {
-        if (_numaUtil.HighestNumaNode > 0) _numaUtil.SetThreadProcessorAffinity((ushort)(numanode + 1), Enumerable.Range(0, Environment.ProcessorCount).ToArray());
+        if (NUMAUtil.HighestNumaNode > 0)
+        {
+            NUMAUtil.SetThreadProcessorAffinity((ushort)(numanode + 1),
+                Enumerable.Range(0, Environment.ProcessorCount).ToArray());
+        }
 
-        if (!ApplyTscWorkaround()) return false;
+        if (!ApplyTscWorkaround())
+        {
+            return false;
+        }
 
-        if (!cpu.WriteMsrWN(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
+        if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
         {
             MessageBox.Show("Error writing PState! ID = " + pstateId);
             return false;
@@ -7017,6 +7119,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
         return true;
     }
+
     private void ReadPstate()
     {
         for (var i = 0; i < 3; i++)
@@ -7034,6 +7137,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             catch
             {
             }
+
             uint IddDiv = 0x0;
             uint IddVal = 0x0;
             uint CpuVid = 0x0;
@@ -7044,6 +7148,9 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             switch (i)
             {
                 case 0:
+                    DID_0.Text = Convert.ToString(CpuDfsId, 10);
+                    FID_0.Text = Convert.ToString(CpuFid, 10);
+                    P0_Freq.Content = CpuFid * 25 / (CpuDfsId * 12.5) * 100;
                     int Mult_0_v;
                     Mult_0_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
                     Mult_0_v -= 4;
@@ -7052,12 +7159,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                         Mult_0_v = 0;
                         App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                     }
-                    DID_0.Text = Convert.ToString(CpuDfsId, 10);
-                    FID_0.Text = Convert.ToString(CpuFid, 10);
-                    P0_Freq.Content = (CpuFid * 25 / (CpuDfsId * 12.5)) * 100;
+
                     Mult_0.SelectedIndex = Mult_0_v;
                     break;
                 case 1:
+                    DID_1.Text = Convert.ToString(CpuDfsId, 10);
+                    FID_1.Text = Convert.ToString(CpuFid, 10);
+                    P1_Freq.Content = CpuFid * 25 / (CpuDfsId * 12.5) * 100;
                     int Mult_1_v;
                     Mult_1_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
                     Mult_1_v -= 4;
@@ -7066,12 +7174,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                         Mult_1_v = 0;
                         App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                     }
-                    DID_1.Text = Convert.ToString(CpuDfsId, 10);
-                    FID_1.Text = Convert.ToString(CpuFid, 10);
-                    P1_Freq.Content = (CpuFid * 25 / (CpuDfsId * 12.5)) * 100;
+
                     Mult_1.SelectedIndex = Mult_1_v;
                     break;
                 case 2:
+                    DID_2.Text = Convert.ToString(CpuDfsId, 10);
+                    FID_2.Text = Convert.ToString(CpuFid, 10);
+                    P2_Freq.Content = CpuFid * 25 / (CpuDfsId * 12.5) * 100;
                     int Mult_2_v;
                     Mult_2_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
                     Mult_2_v -= 4;
@@ -7080,14 +7189,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                         Mult_2_v = 0;
                         App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                     }
-                    DID_2.Text = Convert.ToString(CpuDfsId, 10);
-                    FID_2.Text = Convert.ToString(CpuFid, 10);
-                    P2_Freq.Content = (CpuFid * 25 / (CpuDfsId * 12.5)) * 100;
+
                     Mult_2.SelectedIndex = Mult_2_v;
                     break;
             }
         }
     }
+
     private string GetWmiInstanceName()
     {
         try
@@ -7101,6 +7209,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
         return instanceName;
     }
+
     private void PopulateWmiFunctions()
     {
         try
@@ -7129,9 +7238,12 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                         for (var i = 0; i < Length; ++i)
                         {
                             if (IDString[i] == "")
+                            {
                                 break;
+                            }
 
-                            WmiCmdListItem item = new WmiCmdListItem($"{IDString[i] + ": "}{ID[i]:X8}", ID[i], !IDString[i].StartsWith("Get"));
+                            var item = new WmiCmdListItem($"{IDString[i] + ": "}{ID[i]:X8}", ID[i],
+                                !IDString[i].StartsWith("Get"));
                         }
                     }
                 }
@@ -7148,14 +7260,16 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             // ignored
         }
     }
+
     //Pstates section
-    private void Pstate_Expanding(Microsoft.UI.Xaml.Controls.Expander sender, ExpanderExpandingEventArgs args)
+    private void Pstate_Expanding(Expander sender, ExpanderExpandingEventArgs args)
     {
-        ReadPstate();
+        // ReadPstate();
     }
-    private void EnablePstates_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+
+    private void EnablePstates_Click(object sender, RoutedEventArgs e)
     {
-        if (EnablePstates.IsOn == true)
+        if (EnablePstates.IsOn)
         {
             EnablePstates.IsOn = false;
         }
@@ -7163,13 +7277,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         {
             EnablePstates.IsOn = true;
         }
+
         EnablePstatess();
     }
-    private void TurboBoost_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+
+    private void TurboBoost_Click(object sender, RoutedEventArgs e)
     {
-        if (Turbo_boost.IsEnabled == true)
+        if (Turbo_boost.IsEnabled)
         {
-            if (Turbo_boost.IsOn == true)
+            if (Turbo_boost.IsOn)
             {
                 Turbo_boost.IsOn = false;
             }
@@ -7178,12 +7294,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 Turbo_boost.IsOn = true;
             }
         }
+
         TurboBoost();
     }
 
-    private void Autoapply_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void Autoapply_Click(object sender, RoutedEventArgs e)
     {
-        if (Autoapply_1.IsOn == true)
+        if (Autoapply_1.IsOn)
         {
             Autoapply_1.IsOn = false;
         }
@@ -7191,12 +7308,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         {
             Autoapply_1.IsOn = true;
         }
+
         Autoapply();
     }
 
-    private void WithoutP0_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void WithoutP0_Click(object sender, RoutedEventArgs e)
     {
-        if (Without_P0.IsOn == true)
+        if (Without_P0.IsOn)
         {
             Without_P0.IsOn = false;
         }
@@ -7204,11 +7322,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         {
             Without_P0.IsOn = true;
         }
+
         WithoutP0();
     }
-    private void IgnoreWarn_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+
+    private void IgnoreWarn_Click(object sender, RoutedEventArgs e)
     {
-        if (IgnoreWarn.IsOn == true)
+        if (IgnoreWarn.IsOn)
         {
             IgnoreWarn.IsOn = false;
         }
@@ -7216,12 +7336,14 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         {
             IgnoreWarn.IsOn = true;
         }
+
         IgnoreWarning();
     }
+
     //Enable or disable pstate toggleswitches...
     private void EnablePstatess()
     {
-        if (EnablePstates.IsOn == true)
+        if (EnablePstates.IsOn)
         {
             devices.enableps = true;
             DeviceSave();
@@ -7255,6 +7377,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.enablepspr9 = true;
                     break;
             }
+
             ProfileSave();
         }
         else
@@ -7291,15 +7414,17 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.enablepspr9 = false;
                     break;
             }
+
             ProfileSave();
         }
     }
+
     private void TurboBoost()
     {
         //Турбобуст...
         Turboo_Boost();
         //Сохранение
-        if (Turbo_boost.IsOn == true)
+        if (Turbo_boost.IsOn)
         {
             turbobboost = true;
             devices.turboboost = true;
@@ -7334,6 +7459,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.turboboostpr9 = true;
                     break;
             }
+
             ProfileSave();
         }
         else
@@ -7371,12 +7497,14 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.turboboostpr9 = false;
                     break;
             }
+
             ProfileSave();
         }
     }
+
     public void Turboo_Boost()
     {
-        if (Turbo_boost.IsOn == true)
+        if (Turbo_boost.IsOn)
         {
             SetActive();
             Enable();
@@ -7386,51 +7514,58 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             SetActive();
             Disable();
         }
+
         void Enable()
         {
-            Process p = new Process();//AC
+            var p = new Process(); //AC
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.FileName = "powercfg.exe";
-            p.StartInfo.Arguments = "/SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 002";
+            p.StartInfo.Arguments =
+                "/SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 002";
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.RedirectStandardInput = true;
             p.StartInfo.RedirectStandardOutput = true;
             p.Start();
-            Process p1 = new Process();//DC
+            var p1 = new Process(); //DC
             p1.StartInfo.UseShellExecute = false;
             p1.StartInfo.FileName = "powercfg.exe";
-            p1.StartInfo.Arguments = "/SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 002";
+            p1.StartInfo.Arguments =
+                "/SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 002";
             p1.StartInfo.CreateNoWindow = true;
             p1.StartInfo.RedirectStandardError = true;
             p1.StartInfo.RedirectStandardInput = true;
             p1.StartInfo.RedirectStandardOutput = true;
             p1.Start();
         }
+
         void Disable()
         {
-            Process p = new Process();//AC
+            var p = new Process(); //AC
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.FileName = "powercfg.exe";
-            p.StartInfo.Arguments = "/SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 000";
+            p.StartInfo.Arguments =
+                "/SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 000";
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.RedirectStandardInput = true;
             p.StartInfo.RedirectStandardOutput = true;
             p.Start();
-            Process p1 = new Process();//DC
+            var p1 = new Process(); //DC
             p1.StartInfo.UseShellExecute = false;
             p1.StartInfo.FileName = "powercfg.exe";
-            p1.StartInfo.Arguments = "/SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 000";
+            p1.StartInfo.Arguments =
+                "/SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 000";
             p1.StartInfo.CreateNoWindow = true;
             p1.StartInfo.RedirectStandardError = true;
             p1.StartInfo.RedirectStandardInput = true;
             p1.StartInfo.RedirectStandardOutput = true;
             p1.Start();
         }
+
         void SetActive()
         {
-            Process p = new Process();
+            var p = new Process();
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.FileName = "powercfg.exe";
             p.StartInfo.Arguments = "/s 381b4222-f694-41f0-9685-ff5bb260df2e";
@@ -7441,9 +7576,10 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             p.Start();
         }
     }
+
     private void Autoapply()
     {
-        if (Autoapply_1.IsOn == true)
+        if (Autoapply_1.IsOn)
         {
             devices.autopstate = true;
             DeviceSave();
@@ -7477,6 +7613,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.autopstatepr9 = true;
                     break;
             }
+
             ProfileSave();
         }
         else
@@ -7513,12 +7650,14 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.autopstatepr9 = false;
                     break;
             }
+
             ProfileSave();
         }
     }
+
     private void WithoutP0()
     {
-        if (Without_P0.IsOn == true)
+        if (Without_P0.IsOn)
         {
             devices.p0ignorewarn = true;
             DeviceSave();
@@ -7552,6 +7691,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.p0ignorewarnpr9 = true;
                     break;
             }
+
             ProfileSave();
         }
         else
@@ -7588,12 +7728,14 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.p0ignorewarnpr9 = false;
                     break;
             }
+
             ProfileSave();
         }
     }
+
     private void IgnoreWarning()
     {
-        if (IgnoreWarn.IsOn == true)
+        if (IgnoreWarn.IsOn)
         {
             devices.ignorewarn = true;
             DeviceSave();
@@ -7627,6 +7769,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.ignorewarnpr9 = true;
                     break;
             }
+
             ProfileSave();
         }
         else
@@ -7663,383 +7806,427 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     profile.ignorewarnpr9 = false;
                     break;
             }
+
             ProfileSave();
         }
     }
+
     //Toggleswitches pstate
-    private void EnablePstates_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        EnablePstatess();
-    }
-    private void Without_P0_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        WithoutP0();
-    }
+    private void EnablePstates_Toggled(object sender, RoutedEventArgs e) => EnablePstatess();
 
-    private void Autoapply_1_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        Autoapply();
-    }
+    private void Without_P0_Toggled(object sender, RoutedEventArgs e) => WithoutP0();
 
-    private void Turbo_boost_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        TurboBoost();
-    }
-    private void Ignore_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        IgnoreWarning();
-    }
+    private void Autoapply_1_Toggled(object sender, RoutedEventArgs e) => Autoapply();
+
+    private void Turbo_boost_Toggled(object sender, RoutedEventArgs e) => TurboBoost();
+    private void Ignore_Toggled(object sender, RoutedEventArgs e) => IgnoreWarning();
 
     //Autochanging values
     private async void FID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
-        if (relay == false)
+        if (waitforload == false)
         {
-            await Task.Delay(20);
-            float Mult_0_v;
-            _ = int.TryParse(DID_0.Text, out var Did_value);
-            _ = int.TryParse(FID_0.Text, out var Fid_value);
-            Mult_0_v = (Fid_value / Did_value * 2);
-            if ((Fid_value / Did_value) % 2 == 5) { Mult_0_v -= 3; } else { Mult_0_v -= 4; }
-
-            if (Mult_0_v <= 0)
+            if (relay == false)
             {
-                Mult_0_v = 0;
+                await Task.Delay(20);
+                double Mult_0_v;
+                var Did_value = DID_0.Value;
+                var Fid_value = FID_0.Value;
+                try
+                {
+                    Mult_0_v = Fid_value / Did_value * 2;
+                    if (Fid_value / Did_value % 2 == 5) { Mult_0_v -= 3; } else { Mult_0_v -= 4; }
+                    if (Mult_0_v <= 0) { Mult_0_v = 0; }
+                    P0_Freq.Content = (Mult_0_v + 4) * 100;
+                    Mult_0.SelectedIndex = (int)Mult_0_v;
+                }
+                catch { }
             }
-            P0_Freq.Content = (Mult_0_v + 4) * 100;
-            Mult_0.SelectedIndex = (int)(Mult_0_v);
+            else { relay = false; }
+            Save_ID0();
         }
-        else { relay = false; }
-        Save_ID0();
-
     }
 
     private async void Mult_0_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        await Task.Delay(20);
-        int Fid_value;
-        _ = int.TryParse(DID_0.Text, out var Did_value);
-        if (DID_0.Text != "" || DID_0.Text != null)
+        if (waitforload == false)
         {
-            Fid_value = (Mult_0.SelectedIndex + 4) * Did_value / 2;
-            relay = true;
-            FID_0.Text = Fid_value.ToString();
-            await Task.Delay(40);
-            FID_0.Text = Fid_value.ToString();
-            P0_Freq.Content = (Mult_0.SelectedIndex + 4) * 100;
-            Save_ID0();
+            await Task.Delay(20);
+            double Fid_value;
+            var Did_value = DID_0.Value;
+            if (DID_0.Text != "" || DID_0.Text != null)
+            {
+                waitforload = true;
+                Fid_value = (Mult_0.SelectedIndex + 4) * Did_value / 2;
+                relay = true;
+                FID_0.Value = Fid_value;
+                await Task.Delay(40);
+                FID_0.Value = Fid_value;
+                P0_Freq.Content = (Mult_0.SelectedIndex + 4) * 100;
+                Save_ID0();
+                await Task.Delay(40);
+                waitforload = false;
+            }
         }
     }
 
     private async void DID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
-        await Task.Delay(20);
-        float Mult_0_v;
-        _ = int.TryParse(DID_0.Text, out var Did_value);
-        _ = int.TryParse(FID_0.Text, out var Fid_value);
-        Mult_0_v = (Fid_value / Did_value * 2);
-        if ((Fid_value / Did_value) % 2 == 5) { Mult_0_v -= 3; } else { Mult_0_v -= 4; }
-
-        if (Mult_0_v <= 0)
+        if (waitforload == false)
         {
-            Mult_0_v = 0;
+            await Task.Delay(20);
+            double Mult_0_v;
+            var Did_value = DID_0.Value;
+            var Fid_value = FID_0.Value;
+            Mult_0_v = Fid_value / Did_value * 2;
+            if (Fid_value / Did_value % 2 == 5)
+            {
+                Mult_0_v -= 3;
+            }
+            else
+            {
+                Mult_0_v -= 4;
+            }
+            if (Mult_0_v <= 0)
+            {
+                Mult_0_v = 0;
+            }
+            P2_Freq.Content = (Mult_0_v + 4) * 100;
+            Mult_2.SelectedIndex = (int)Mult_0_v;
+            Save_ID0();
         }
-        P2_Freq.Content = (Mult_0_v + 4) * 100;
-        Mult_2.SelectedIndex = (int)(Mult_0_v);
-        Save_ID0();
-
     }
 
     private async void FID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
-        if (relay == false)
+        if (waitforload == false)
         {
-            await Task.Delay(20);
-            float Mult_1_v;
-            _ = int.TryParse(DID_1.Text, out var Did_value);
-            _ = int.TryParse(FID_1.Text, out var Fid_value);
-            Mult_1_v = (Fid_value / Did_value * 2);
-            if ((Fid_value / Did_value) % 2 == 5) { Mult_1_v -= 3; } else { Mult_1_v -= 4; }
-
-            if (Mult_1_v <= 0)
+            if (relay == false)
             {
-                Mult_1_v = 0;
+                await Task.Delay(20);
+                double Mult_1_v;
+                var Did_value = DID_1.Value;
+                var Fid_value = FID_1.Value;
+                try
+                {
+                    Mult_1_v = Fid_value / Did_value * 2;
+                    if (Fid_value / Did_value % 2 == 5) { Mult_1_v -= 3; }
+                    else { Mult_1_v -= 4; }
+                    if (Mult_1_v <= 0) { Mult_1_v = 0; }
+                    P1_Freq.Content = (Mult_1_v + 4) * 100;
+                    Mult_1.SelectedIndex = (int)Mult_1_v;
+                }
+                catch { }
             }
-            P1_Freq.Content = (Mult_1_v + 4) * 100;
-            Mult_1.SelectedIndex = (int)(Mult_1_v);
+            else
+            {
+                relay = false;
+            }
+            Save_ID1();
         }
-        else { relay = false; }
-        Save_ID1();
-
     }
 
     private async void Mult_1_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        await Task.Delay(20);
-        int Fid_value;
-        _ = int.TryParse(DID_1.Text, out var Did_value);
-        if (DID_1.Text != "" || DID_1.Text != null)
+        if (waitforload == false)
         {
-            Fid_value = (Mult_1.SelectedIndex + 4) * Did_value / 2;
-            relay = true;
-            FID_1.Text = Fid_value.ToString();
-            await Task.Delay(40);
-            FID_1.Text = Fid_value.ToString();
-            P1_Freq.Content = (Mult_1.SelectedIndex + 4) * 100;
-            Save_ID1();
+            await Task.Delay(20);
+            double Fid_value;
+            var Did_value = DID_1.Value;
+            if (DID_1.Text != "" || DID_1.Text != null)
+            {
+                waitforload = true;
+                Fid_value = (Mult_1.SelectedIndex + 4) * Did_value / 2;
+                relay = true;
+                FID_1.Value = Fid_value;
+                await Task.Delay(40);
+                FID_1.Value = Fid_value;
+                P1_Freq.Content = (Mult_1.SelectedIndex + 4) * 100;
+                Save_ID1();
+                waitforload = false;
+            }
         }
     }
 
     private async void DID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
-        await Task.Delay(20);
-        float Mult_2_v;
-        _ = int.TryParse(DID_2.Text, out var Did_value);
-        _ = int.TryParse(FID_2.Text, out var Fid_value);
-        Mult_2_v = (Fid_value / Did_value * 2);
-        if ((Fid_value / Did_value) % 2 == 5) { Mult_2_v -= 3; } else { Mult_2_v -= 4; }
-
-        if (Mult_2_v <= 0)
-        {
-            Mult_2_v = 0;
-        }
-        P2_Freq.Content = (Mult_2_v + 4) * 100;
-        Mult_2.SelectedIndex = (int)(Mult_2_v);
-        Save_ID1();
-
-    }
-
-    private async void Mult_2_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        await Task.Delay(20);
-        int Fid_value;
-        _ = int.TryParse(DID_2.Text, out var Did_value);
-        if (DID_2.Text != "" || DID_2.Text != null)
-        {
-            Fid_value = (Mult_2.SelectedIndex + 4) * Did_value / 2;
-            relay = true;
-            FID_2.Text = Fid_value.ToString();
-            await Task.Delay(40);
-            FID_2.Text = Fid_value.ToString();
-            P2_Freq.Content = (Mult_2.SelectedIndex + 4) * 100;
-            Save_ID2();
-        }
-    }
-    private async void FID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-    {
-        if (relay == false)
+        if (waitforload == false)
         {
             await Task.Delay(20);
-            float Mult_2_v;
-            _ = int.TryParse(DID_2.Text, out var Did_value);
-            _ = int.TryParse(FID_2.Text, out var Fid_value);
-            Mult_2_v = (Fid_value / Did_value * 2);
-            if ((Fid_value / Did_value) % 2 == 5) { Mult_2_v -= 3; } else { Mult_2_v -= 4; }
-
+            double Mult_2_v;
+            var Did_value = DID_2.Value;
+            var Fid_value = FID_2.Value;
+            Mult_2_v = Fid_value / Did_value * 2;
+            if (Fid_value / Did_value % 2 == 5)
+            {
+                Mult_2_v -= 3;
+            }
+            else
+            {
+                Mult_2_v -= 4;
+            }
             if (Mult_2_v <= 0)
             {
                 Mult_2_v = 0;
             }
             P2_Freq.Content = (Mult_2_v + 4) * 100;
-            Mult_2.SelectedIndex = (int)(Mult_2_v);
+            Mult_2.SelectedIndex = (int)Mult_2_v;
+            Save_ID1();
         }
-        else { relay = false; }
-        Save_ID2();
+    }
+
+    private async void Mult_2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (waitforload == false)
+        {
+            await Task.Delay(20);
+            double Fid_value;
+            var Did_value = DID_2.Value;
+            if (DID_2.Text != "" || DID_2.Text != null)
+            {
+                waitforload = true;
+                Fid_value = (Mult_2.SelectedIndex + 4) * Did_value / 2;
+                relay = true;
+                FID_2.Value = Fid_value;
+                await Task.Delay(40);
+                FID_2.Value = Fid_value;
+                P2_Freq.Content = (Mult_2.SelectedIndex + 4) * 100;
+                Save_ID2();
+                waitforload = false;
+            }
+        }
+    }
+
+    private async void FID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        if (waitforload == false)
+        {
+            if (relay == false)
+            {
+                await Task.Delay(20);
+                double Mult_2_v;
+                var Did_value = DID_2.Value;
+                var Fid_value = FID_2.Value;
+                try
+                {
+                    Mult_2_v = Fid_value / Did_value * 2;
+                    if (Fid_value / Did_value % 2 == 5) { Mult_2_v -= 3; } else { Mult_2_v -= 4; }
+                    if (Mult_2_v <= 0) { Mult_2_v = 0; }
+                    P2_Freq.Content = (Mult_2_v + 4) * 100;
+                    Mult_2.SelectedIndex = (int)Mult_2_v;
+                }
+                catch { }
+            }
+            else { relay = false; }
+            Save_ID2();
+        }
     }
 
     private async void DID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
-        await Task.Delay(40);
-        int Mult_2_v;
-        _ = int.TryParse(DID_2.Text, out var Did_value);
-        _ = int.TryParse(FID_2.Text, out var Fid_value);
-        Mult_2_v = (Fid_value / Did_value * 2);
-        Mult_2_v -= 4;
-        if (Mult_2_v <= 0)
+        if (waitforload == false)
         {
-            Mult_2_v = 0;
+            await Task.Delay(40);
+            double Mult_2_v;
+            var Did_value = DID_2.Value;
+            var Fid_value = FID_2.Value;
+            Mult_2_v = Fid_value / Did_value * 2;
+            Mult_2_v -= 4;
+            if (Mult_2_v <= 0)
+            {
+                Mult_2_v = 0;
+            }
+            P2_Freq.Content = (Mult_2_v + 4) * 100;
+            Mult_2.SelectedIndex = (int)Mult_2_v;
+            Save_ID2();
         }
-        P2_Freq.Content = (Mult_2_v + 4) * 100;
-        Mult_2.SelectedIndex = Mult_2_v;
-        Save_ID2();
     }
+
     public void Save_ID0()
     {
-        devices.did0 = DID_0.Text; devices.fid0 = FID_0.Text; devices.vid0 = VID_0.Value;
-        DeviceSave();
-        switch (ProfileCOM.SelectedIndex)
+        if (waitforload == false)
         {
-            case 1:
-                profile.did0pr1 = DID_0.Text;
-                profile.fid0pr1 = FID_0.Text;
-                profile.vid0pr1 = VID_0.Value;
-                break;
-            case 2:
-                profile.did0pr2 = DID_0.Text;
-                profile.fid0pr2 = FID_0.Text;
-                profile.vid0pr2 = VID_0.Value;
-                break;
-            case 3:
-                profile.did0pr3 = DID_0.Text;
-                profile.fid0pr3 = DID_0.Text;
-                profile.vid0pr3 = VID_0.Value;
-                break;
-            case 4:
-                profile.did0pr4 = DID_0.Text;
-                profile.fid0pr4 = FID_0.Text;
-                profile.vid0pr4 = VID_0.Value;
-                break;
-            case 5:
-                profile.did0pr5 = DID_0.Text;
-                profile.fid0pr5 = FID_0.Text;
-                profile.vid0pr5 = VID_0.Value;
-                break;
-            case 6:
-                profile.did0pr6 = DID_0.Text;
-                profile.fid0pr6 = FID_0.Text;
-                profile.vid0pr6 = VID_0.Value;
-                break;
-            case 7:
-                profile.did0pr7 = DID_0.Text;
-                profile.fid0pr7 = FID_0.Text;
-                profile.vid0pr7 = VID_0.Value;
-                break;
-            case 8:
-                profile.did0pr8 = DID_0.Text;
-                profile.fid0pr8 = FID_0.Text;
-                profile.vid0pr8 = VID_0.Value;
-                break;
-            case 9:
-                profile.did0pr9 = DID_0.Text;
-                profile.fid0pr9 = FID_0.Text;
-                profile.vid0pr9 = VID_0.Value;
-                break;
+            devices.did0 = DID_0.Value;
+            devices.fid0 = FID_0.Value;
+            devices.vid0 = VID_0.Value;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.did0pr1 = DID_0.Value;
+                    profile.fid0pr1 = FID_0.Value;
+                    profile.vid0pr1 = VID_0.Value;
+                    break;
+                case 2:
+                    profile.did0pr2 = DID_0.Value;
+                    profile.fid0pr2 = FID_0.Value;
+                    profile.vid0pr2 = VID_0.Value;
+                    break;
+                case 3:
+                    profile.did0pr3 = DID_0.Value;
+                    profile.fid0pr3 = DID_0.Value;
+                    profile.vid0pr3 = VID_0.Value;
+                    break;
+                case 4:
+                    profile.did0pr4 = DID_0.Value;
+                    profile.fid0pr4 = FID_0.Value;
+                    profile.vid0pr4 = VID_0.Value;
+                    break;
+                case 5:
+                    profile.did0pr5 = DID_0.Value;
+                    profile.fid0pr5 = FID_0.Value;
+                    profile.vid0pr5 = VID_0.Value;
+                    break;
+                case 6:
+                    profile.did0pr6 = DID_0.Value;
+                    profile.fid0pr6 = FID_0.Value;
+                    profile.vid0pr6 = VID_0.Value;
+                    break;
+                case 7:
+                    profile.did0pr7 = DID_0.Value;
+                    profile.fid0pr7 = FID_0.Value;
+                    profile.vid0pr7 = VID_0.Value;
+                    break;
+                case 8:
+                    profile.did0pr8 = DID_0.Value;
+                    profile.fid0pr8 = FID_0.Value;
+                    profile.vid0pr8 = VID_0.Value;
+                    break;
+                case 9:
+                    profile.did0pr9 = DID_0.Value;
+                    profile.fid0pr9 = FID_0.Value;
+                    profile.vid0pr9 = VID_0.Value;
+                    break;
+            }
+            ProfileSave();
         }
-        ProfileSave();
     }
+
     public void Save_ID1()
     {
-        devices.did1 = DID_1.Text; devices.fid1 = FID_1.Text; devices.vid1 = VID_1.Value;
-        DeviceSave();
-        switch (ProfileCOM.SelectedIndex)
+        if (waitforload == false)
         {
-            case 1:
-                profile.did1pr1 = DID_1.Text;
-                profile.fid1pr1 = FID_1.Text;
-                profile.vid1pr1 = VID_1.Value;
-                break;
-            case 2:
-                profile.did1pr2 = DID_1.Text;
-                profile.fid1pr2 = FID_1.Text;
-                profile.vid1pr2 = VID_1.Value;
-                break;
-            case 3:
-                profile.did1pr3 = DID_1.Text;
-                profile.fid1pr3 = DID_1.Text;
-                profile.vid1pr3 = VID_1.Value;
-                break;
-            case 4:
-                profile.did1pr4 = DID_1.Text;
-                profile.fid1pr4 = FID_1.Text;
-                profile.vid1pr4 = VID_1.Value;
-                break;
-            case 5:
-                profile.did1pr5 = DID_1.Text;
-                profile.fid1pr5 = FID_1.Text;
-                profile.vid1pr5 = VID_1.Value;
-                break;
-            case 6:
-                profile.did1pr6 = DID_1.Text;
-                profile.fid1pr6 = FID_1.Text;
-                profile.vid1pr6 = VID_1.Value;
-                break;
-            case 7:
-                profile.did1pr7 = DID_1.Text;
-                profile.fid1pr7 = FID_1.Text;
-                profile.vid1pr7 = VID_1.Value;
-                break;
-            case 8:
-                profile.did1pr8 = DID_1.Text;
-                profile.fid1pr8 = FID_1.Text;
-                profile.vid1pr8 = VID_1.Value;
-                break;
-            case 9:
-                profile.did1pr9 = DID_1.Text;
-                profile.fid1pr9 = FID_1.Text;
-                profile.vid1pr9 = VID_1.Value;
-                break;
+            devices.did1 = DID_1.Value;
+            devices.fid1 = FID_1.Value;
+            devices.vid1 = VID_1.Value;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.did1pr1 = DID_1.Value;
+                    profile.fid1pr1 = FID_1.Value;
+                    profile.vid1pr1 = VID_1.Value;
+                    break;
+                case 2:
+                    profile.did1pr2 = DID_1.Value;
+                    profile.fid1pr2 = FID_1.Value;
+                    profile.vid1pr2 = VID_1.Value;
+                    break;
+                case 3:
+                    profile.did1pr3 = DID_1.Value;
+                    profile.fid1pr3 = DID_1.Value;
+                    profile.vid1pr3 = VID_1.Value;
+                    break;
+                case 4:
+                    profile.did1pr4 = DID_1.Value;
+                    profile.fid1pr4 = FID_1.Value;
+                    profile.vid1pr4 = VID_1.Value;
+                    break;
+                case 5:
+                    profile.did1pr5 = DID_1.Value;
+                    profile.fid1pr5 = FID_1.Value;
+                    profile.vid1pr5 = VID_1.Value;
+                    break;
+                case 6:
+                    profile.did1pr6 = DID_1.Value;
+                    profile.fid1pr6 = FID_1.Value;
+                    profile.vid1pr6 = VID_1.Value;
+                    break;
+                case 7:
+                    profile.did1pr7 = DID_1.Value;
+                    profile.fid1pr7 = FID_1.Value;
+                    profile.vid1pr7 = VID_1.Value;
+                    break;
+                case 8:
+                    profile.did1pr8 = DID_1.Value;
+                    profile.fid1pr8 = FID_1.Value;
+                    profile.vid1pr8 = VID_1.Value;
+                    break;
+                case 9:
+                    profile.did1pr9 = DID_1.Value;
+                    profile.fid1pr9 = FID_1.Value;
+                    profile.vid1pr9 = VID_1.Value;
+                    break;
+            }
+            ProfileSave();
         }
-        ProfileSave();
     }
+
     public void Save_ID2()
     {
-        devices.did2 = DID_2.Text; devices.fid2 = FID_2.Text; devices.vid2 = VID_2.Value;
-        DeviceSave();
-        switch (ProfileCOM.SelectedIndex)
+        if (waitforload == false)
         {
-            case 1:
-                profile.did2pr1 = DID_2.Text;
-                profile.fid2pr1 = FID_2.Text;
-                profile.vid2pr1 = VID_2.Value;
-                break;
-            case 2:
-                profile.did2pr2 = DID_2.Text;
-                profile.fid2pr2 = FID_2.Text;
-                profile.vid2pr2 = VID_2.Value;
-                break;
-            case 3:
-                profile.did2pr3 = DID_2.Text;
-                profile.fid2pr3 = DID_2.Text;
-                profile.vid2pr3 = VID_2.Value;
-                break;
-            case 4:
-                profile.did2pr4 = DID_2.Text;
-                profile.fid2pr4 = FID_2.Text;
-                profile.vid2pr4 = VID_2.Value;
-                break;
-            case 5:
-                profile.did2pr5 = DID_2.Text;
-                profile.fid2pr5 = FID_2.Text;
-                profile.vid2pr5 = VID_2.Value;
-                break;
-            case 6:
-                profile.did2pr6 = DID_2.Text;
-                profile.fid2pr6 = FID_2.Text;
-                profile.vid2pr6 = VID_2.Value;
-                break;
-            case 7:
-                profile.did2pr7 = DID_2.Text;
-                profile.fid2pr7 = FID_2.Text;
-                profile.vid2pr7 = VID_2.Value;
-                break;
-            case 8:
-                profile.did2pr8 = DID_2.Text;
-                profile.fid2pr8 = FID_2.Text;
-                profile.vid2pr8 = VID_2.Value;
-                break;
-            case 9:
-                profile.did2pr9 = DID_2.Text;
-                profile.fid2pr9 = FID_2.Text;
-                profile.vid2pr9 = VID_2.Value;
-                break;
+            devices.did2 = DID_2.Value;
+            devices.fid2 = FID_2.Value;
+            devices.vid2 = VID_2.Value;
+            DeviceSave();
+            switch (ProfileCOM.SelectedIndex)
+            {
+                case 1:
+                    profile.did2pr1 = DID_2.Value;
+                    profile.fid2pr1 = FID_2.Value;
+                    profile.vid2pr1 = VID_2.Value;
+                    break;
+                case 2:
+                    profile.did2pr2 = DID_2.Value;
+                    profile.fid2pr2 = FID_2.Value;
+                    profile.vid2pr2 = VID_2.Value;
+                    break;
+                case 3:
+                    profile.did2pr3 = DID_2.Value;
+                    profile.fid2pr3 = DID_2.Value;
+                    profile.vid2pr3 = VID_2.Value;
+                    break;
+                case 4:
+                    profile.did2pr4 = DID_2.Value;
+                    profile.fid2pr4 = FID_2.Value;
+                    profile.vid2pr4 = VID_2.Value;
+                    break;
+                case 5:
+                    profile.did2pr5 = DID_2.Value;
+                    profile.fid2pr5 = FID_2.Value;
+                    profile.vid2pr5 = VID_2.Value;
+                    break;
+                case 6:
+                    profile.did2pr6 = DID_2.Value;
+                    profile.fid2pr6 = FID_2.Value;
+                    profile.vid2pr6 = VID_2.Value;
+                    break;
+                case 7:
+                    profile.did2pr7 = DID_2.Value;
+                    profile.fid2pr7 = FID_2.Value;
+                    profile.vid2pr7 = VID_2.Value;
+                    break;
+                case 8:
+                    profile.did2pr8 = DID_2.Value;
+                    profile.fid2pr8 = FID_2.Value;
+                    profile.vid2pr8 = VID_2.Value;
+                    break;
+                case 9:
+                    profile.did2pr9 = DID_2.Value;
+                    profile.fid2pr9 = FID_2.Value;
+                    profile.vid2pr9 = VID_2.Value;
+                    break;
+            }
+            ProfileSave();
         }
-        ProfileSave();
     }
 
-    private void VID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-    {
-        Save_ID0();
-    }
+    private void VID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID0();
 
-    private void VID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-    {
-        Save_ID1();
-    }
+    private void VID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID1();
 
-    private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-    {
-        Save_ID2();
-    }
+    private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID2();
 
 #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

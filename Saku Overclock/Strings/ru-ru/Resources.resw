@@ -1087,4 +1087,10 @@ AMD APU + AMD dGPU
   <data name="infoMWid.Text" xml:space="preserve">
     <value>Ширина</value>
   </data>
+  <data name="Param_infops_desc.Text" xml:space="preserve">
+    <value>Здесь вы сможете узнать текущие значения Pstate состояний</value>
+  </data>
+  <data name="Cooler_suggesttip.Title" xml:space="preserve">
+    <value>Эти конфигурации возможно вам подойдут:</value>
+  </data>
 </root>

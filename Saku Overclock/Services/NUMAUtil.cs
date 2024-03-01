@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 
 namespace Saku_Overclock.Services;
-public class NUMAUtil
+public partial class NUMAUtil
 {
-    public ulong HighestNumaNode
+    public static ulong HighestNumaNode
     {
         get
         {
@@ -19,7 +14,7 @@ public class NUMAUtil
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    private struct _GROUP_AFFINITY
+    private struct GROUP_AFFINITY
     {
         public UIntPtr Mask;
         [MarshalAs(UnmanagedType.U2)]
@@ -29,16 +24,17 @@ public class NUMAUtil
     }
 
     [DllImport("kernel32", SetLastError = true)]
-    private static extern Boolean SetThreadGroupAffinity(
+    private static extern bool SetThreadGroupAffinity(
         IntPtr hThread,
-        ref _GROUP_AFFINITY GroupAffinity,
-        ref _GROUP_AFFINITY PreviousGroupAffinity);
+        ref GROUP_AFFINITY GroupAffinity,
+        ref GROUP_AFFINITY PreviousGroupAffinity);
 
-    [DllImport("kernel32", SetLastError = true)]
-    private static extern IntPtr GetCurrentThread();
+    [LibraryImport("kernel32", SetLastError = true)]
+    private static partial IntPtr GetCurrentThread();
 
-    [DllImport("kernel32", SetLastError = true)]
-    private static extern Boolean GetNumaHighestNodeNumber(ref ulong HighestNodeNumer);
+    [LibraryImport("kernel32", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetNumaHighestNodeNumber(ref ulong HighestNodeNumer);
 
     /// <summary>
     /// Sets the processor group and the processor cpu affinity of the current thread.
@@ -46,7 +42,7 @@ public class NUMAUtil
     /// <param name="group">A processor group number.</param>
     /// <param name="cpus">A list of CPU numbers. The values should be
     /// between 0 and <see cref="Environment.ProcessorCount"/>.</param>
-    public void SetThreadProcessorAffinity(ushort groupId, params int[] cpus)
+    public static void SetThreadProcessorAffinity(ushort groupId, params int[] cpus)
     {
         if (cpus == null) throw new ArgumentNullException(nameof(cpus));
         if (cpus.Length == 0) throw new ArgumentException("You must specify at least one CPU.", nameof(cpus));
@@ -62,8 +58,8 @@ public class NUMAUtil
         }
 
         var hThread = GetCurrentThread();
-        var previousAffinity = new _GROUP_AFFINITY { Reserved = new ushort[3] };
-        var newAffinity = new _GROUP_AFFINITY
+        var previousAffinity = new GROUP_AFFINITY { Reserved = new ushort[3] };
+        var newAffinity = new GROUP_AFFINITY
         {
             Group = groupId,
             Mask = new UIntPtr((ulong)cpuMask),

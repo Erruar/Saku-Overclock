@@ -113,12 +113,12 @@ internal class Profile
     public double a12pr1v;
     public int a13pr1v;
     //Pstates preset 1
-    public string did0pr1;
-    public string did1pr1;
-    public string did2pr1;
-    public string fid0pr1;
-    public string fid1pr1;
-    public string fid2pr1;
+    public double did0pr1;
+    public double did1pr1;
+    public double did2pr1;
+    public double fid0pr1;
+    public double fid1pr1;
+    public double fid2pr1;
     public double vid0pr1;
     public double vid1pr1;
     public double vid2pr1;
@@ -204,12 +204,12 @@ internal class Profile
     public double a12pr2v;
     public int a13pr2v;
     //Pstates preset 2
-    public string did0pr2;
-    public string did1pr2;
-    public string did2pr2;
-    public string fid0pr2;
-    public string fid1pr2;
-    public string fid2pr2;
+    public double did0pr2;
+    public double did1pr2;
+    public double did2pr2;
+    public double fid0pr2;
+    public double fid1pr2;
+    public double fid2pr2;
     public double vid0pr2;
     public double vid1pr2;
     public double vid2pr2;
@@ -295,12 +295,12 @@ internal class Profile
     public double a12pr3v;
     public int a13pr3v;
     //Pstates preset 3
-    public string did0pr3;
-    public string did1pr3;
-    public string did2pr3;
-    public string fid0pr3;
-    public string fid1pr3;
-    public string fid2pr3;
+    public double did0pr3;
+    public double did1pr3;
+    public double did2pr3;
+    public double fid0pr3;
+    public double fid1pr3;
+    public double fid2pr3;
     public double vid0pr3;
     public double vid1pr3;
     public double vid2pr3;
@@ -386,12 +386,12 @@ internal class Profile
     public double a12pr4v;
     public int a13pr4v;
     //Pstates preset 4
-    public string did0pr4;
-    public string did1pr4;
-    public string did2pr4;
-    public string fid0pr4;
-    public string fid1pr4;
-    public string fid2pr4;
+    public double did0pr4;
+    public double did1pr4;
+    public double did2pr4;
+    public double fid0pr4;
+    public double fid1pr4;
+    public double fid2pr4;
     public double vid0pr4;
     public double vid1pr4;
     public double vid2pr4;
@@ -477,12 +477,12 @@ internal class Profile
     public double a12pr5v;
     public int a13pr5v;
     //Pstates preset 5
-    public string did0pr5;
-    public string did1pr5;
-    public string did2pr5;
-    public string fid0pr5;
-    public string fid1pr5;
-    public string fid2pr5;
+    public double did0pr5;
+    public double did1pr5;
+    public double did2pr5;
+    public double fid0pr5;
+    public double fid1pr5;
+    public double fid2pr5;
     public double vid0pr5;
     public double vid1pr5;
     public double vid2pr5;
@@ -568,12 +568,12 @@ internal class Profile
     public double a12pr6v;
     public int a13pr6v;
     //Pstates preset 6
-    public string did0pr6;
-    public string did1pr6;
-    public string did2pr6;
-    public string fid0pr6;
-    public string fid1pr6;
-    public string fid2pr6;
+    public double did0pr6;
+    public double did1pr6;
+    public double did2pr6;
+    public double fid0pr6;
+    public double fid1pr6;
+    public double fid2pr6;
     public double vid0pr6;
     public double vid1pr6;
     public double vid2pr6;
@@ -659,12 +659,12 @@ internal class Profile
     public double a12pr7v;
     public int a13pr7v;
     //Pstates preset 7
-    public string did0pr7;
-    public string did1pr7;
-    public string did2pr7;
-    public string fid0pr7;
-    public string fid1pr7;
-    public string fid2pr7;
+    public double did0pr7;
+    public double did1pr7;
+    public double did2pr7;
+    public double fid0pr7;
+    public double fid1pr7;
+    public double fid2pr7;
     public double vid0pr7;
     public double vid1pr7;
     public double vid2pr7;
@@ -750,12 +750,12 @@ internal class Profile
     public double a12pr8v;
     public int a13pr8v;
     //Pstates preset 8
-    public string did0pr8;
-    public string did1pr8;
-    public string did2pr8;
-    public string fid0pr8;
-    public string fid1pr8;
-    public string fid2pr8;
+    public double did0pr8;
+    public double did1pr8;
+    public double did2pr8;
+    public double fid0pr8;
+    public double fid1pr8;
+    public double fid2pr8;
     public double vid0pr8;
     public double vid1pr8;
     public double vid2pr8;
@@ -841,12 +841,12 @@ internal class Profile
     public double a12pr9v;
     public int a13pr9v;
     //Pstates preset 9
-    public string did0pr9;
-    public string did1pr9;
-    public string did2pr9;
-    public string fid0pr9;
-    public string fid1pr9;
-    public string fid2pr9;
+    public double did0pr9;
+    public double did1pr9;
+    public double did2pr9;
+    public double fid0pr9;
+    public double fid1pr9;
+    public double fid2pr9;
     public double vid0pr9;
     public double vid1pr9;
     public double vid2pr9;

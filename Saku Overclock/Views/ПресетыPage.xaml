@@ -6,9 +6,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea">
+    <Grid x:Name="ContentArea" Margin="-80,0,-80,0">
         
-        <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="30" Margin="0,-65,0,0"></TextBlock>
+        <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="30" Margin="80,-65,0,0"></TextBlock>
         <Grid >
             <Border
                CornerRadius="8" Margin="200,-180,0,0">
@@ -17,8 +17,8 @@
                            Stretch="UniformToFill" />
             </Border.Background>
         </Border>
-            <TextBlock x:Name="PrName" VerticalAlignment="Center" Margin="0,-280,0,0" Text="Экономия энергии" FontSize="28"/>
-            <TextBlock x:Name="PrDesc" VerticalAlignment="Center" Margin="0,-140,0,0" Text="Этот пресет позволит сэкономить &#x0a;вам проценты аккумулятора, без &#x0a;существенной потери производительности" FontSize="20"/>
+            <TextBlock x:Name="PrName" VerticalAlignment="Center" Margin="80,-280,0,0" Text="Экономия энергии" FontSize="28"/>
+            <TextBlock x:Name="PrDesc" VerticalAlignment="Center" Margin="80,-140,0,0" Text="Этот пресет позволит сэкономить &#x0a;вам проценты аккумулятора, без &#x0a;существенной потери производительности" FontSize="20"/>
         </Grid>
         
         <Button HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="810" Height="70" IsEnabled="False"></Button>

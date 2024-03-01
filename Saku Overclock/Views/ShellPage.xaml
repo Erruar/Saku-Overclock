@@ -24,7 +24,7 @@
                        TextWrapping="NoWrap"
                        Style="{StaticResource CaptionTextBlockStyle}"
                        Margin="28,0,0,0"/>
-            <HyperlinkButton Margin="107,2,0,0">BETA</HyperlinkButton>
+            <HyperlinkButton TabIndex="-1" Margin="107,2,0,0">BETA</HyperlinkButton>
         </Grid>
         <NavigationView
             x:Name="NavigationViewControl"
@@ -88,6 +88,7 @@
                                 <TextBlock
                                     Text=" "
                                     Style="{ThemeResource TitleTextBlockStyle}" />
+                                
                             </Grid>
                         </DataTemplate>
                     </behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
@@ -95,7 +96,17 @@
             </i:Interaction.Behaviors>
             <Grid Margin="{StaticResource NavigationViewPageContentMargin}">
                 <Frame x:Name="NavigationFrame" />
+                
             </Grid>
         </NavigationView>
+        <Border VerticalAlignment="Top" Margin="70,50,0,0" Width="400" HorizontalAlignment="Center" CornerRadius="7" Background="#1f2022">
+            <InfoBar
+        x:Name="ShellMessage"
+IsOpen="False"
+IsIconVisible="True"
+IsClosable="False"
+Title="Important Message"
+Message="This app will not work for your processor. Try to run app with administrator rights or contact developer if there is mistake" />
+        </Border>
     </Grid>
 </Page>

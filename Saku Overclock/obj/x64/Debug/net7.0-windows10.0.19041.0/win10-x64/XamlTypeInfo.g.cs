@@ -224,7 +224,7 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
 
         private void InitTypeTables()
         {
-            _typeNameTable = new string[97];
+            _typeNameTable = new string[111];
             _typeNameTable[0] = "Microsoft.UI.Xaml.Controls.XamlControlsResources";
             _typeNameTable[1] = "Microsoft.UI.Xaml.ResourceDictionary";
             _typeNameTable[2] = "Object";
@@ -247,83 +247,97 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
             _typeNameTable[19] = "Saku_Overclock.MainWindow";
             _typeNameTable[20] = "Microsoft.UI.Xaml.Thickness";
             _typeNameTable[21] = "Microsoft.UI.Xaml.CornerRadius";
-            _typeNameTable[22] = "Saku_Overclock.Helpers.EnumToBooleanConverter";
-            _typeNameTable[23] = "Microsoft.UI.Xaml.Controls.NumberBox";
-            _typeNameTable[24] = "Microsoft.UI.Xaml.Controls.Control";
-            _typeNameTable[25] = "Microsoft.UI.Xaml.DataTemplate";
-            _typeNameTable[26] = "Windows.Globalization.NumberFormatting.INumberFormatter2";
-            _typeNameTable[27] = "Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase";
-            _typeNameTable[28] = "Microsoft.UI.Xaml.Media.SolidColorBrush";
-            _typeNameTable[29] = "Microsoft.UI.Xaml.Controls.NumberBoxSpinButtonPlacementMode";
-            _typeNameTable[30] = "Microsoft.UI.Xaml.TextReadingOrder";
-            _typeNameTable[31] = "Microsoft.UI.Xaml.Controls.NumberBoxValidationMode";
-            _typeNameTable[32] = "Saku_Overclock.Views.SettingsPage";
-            _typeNameTable[33] = "Microsoft.UI.Xaml.Controls.Page";
-            _typeNameTable[34] = "Microsoft.UI.Xaml.Controls.UserControl";
-            _typeNameTable[35] = "Saku_Overclock.ViewModels.SettingsViewModel";
-            _typeNameTable[36] = "CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient";
-            _typeNameTable[37] = "CommunityToolkit.Mvvm.ComponentModel.ObservableObject";
-            _typeNameTable[38] = "Microsoft.UI.Xaml.Controls.NavigationView";
-            _typeNameTable[39] = "Microsoft.UI.Xaml.Controls.ContentControl";
-            _typeNameTable[40] = "Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible";
-            _typeNameTable[41] = "System.Collections.Generic.IList`1<Object>";
-            _typeNameTable[42] = "Microsoft.UI.Xaml.Controls.AutoSuggestBox";
-            _typeNameTable[43] = "Microsoft.UI.Xaml.UIElement";
-            _typeNameTable[44] = "Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode";
-            _typeNameTable[45] = "Microsoft.UI.Xaml.Style";
-            _typeNameTable[46] = "Microsoft.UI.Xaml.Controls.StyleSelector";
-            _typeNameTable[47] = "Microsoft.UI.Xaml.Controls.DataTemplateSelector";
-            _typeNameTable[48] = "Microsoft.UI.Xaml.Controls.NavigationViewOverflowLabelMode";
-            _typeNameTable[49] = "Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode";
-            _typeNameTable[50] = "Microsoft.UI.Xaml.Controls.NavigationViewSelectionFollowsFocus";
-            _typeNameTable[51] = "Microsoft.UI.Xaml.Controls.NavigationViewShoulderNavigationEnabled";
-            _typeNameTable[52] = "Microsoft.UI.Xaml.Controls.NavigationViewTemplateSettings";
-            _typeNameTable[53] = "Microsoft.UI.Xaml.DependencyObject";
-            _typeNameTable[54] = "Microsoft.Xaml.Interactivity.Interaction";
-            _typeNameTable[55] = "Microsoft.Xaml.Interactivity.BehaviorCollection";
-            _typeNameTable[56] = "Microsoft.UI.Xaml.DependencyObjectCollection";
-            _typeNameTable[57] = "Microsoft.UI.Xaml.Controls.NavigationViewItem";
-            _typeNameTable[58] = "Microsoft.UI.Xaml.Controls.NavigationViewItemBase";
-            _typeNameTable[59] = "Microsoft.UI.Xaml.Controls.IconElement";
-            _typeNameTable[60] = "Microsoft.UI.Xaml.Controls.InfoBadge";
-            _typeNameTable[61] = "Saku_Overclock.Helpers.NavigationHelper";
-            _typeNameTable[62] = "Saku_Overclock.Behaviors.NavigationViewHeaderBehavior";
-            _typeNameTable[63] = "Microsoft.Xaml.Interactivity.Behavior`1<Microsoft.UI.Xaml.Controls.NavigationView>";
-            _typeNameTable[64] = "Microsoft.Xaml.Interactivity.Behavior";
-            _typeNameTable[65] = "Saku_Overclock.Behaviors.NavigationViewHeaderMode";
-            _typeNameTable[66] = "Saku_Overclock.Views.ShellPage";
-            _typeNameTable[67] = "Saku_Overclock.ViewModels.ShellViewModel";
-            _typeNameTable[68] = "Saku_Overclock.Views.ГлавнаяPage";
-            _typeNameTable[69] = "Saku_Overclock.ViewModels.ГлавнаяViewModel";
-            _typeNameTable[70] = "Microsoft.UI.Xaml.Controls.Expander";
-            _typeNameTable[71] = "Microsoft.UI.Xaml.Controls.ExpandDirection";
-            _typeNameTable[72] = "Microsoft.UI.Xaml.Controls.ExpanderTemplateSettings";
-            _typeNameTable[73] = "Microsoft.UI.Xaml.Controls.ProgressRing";
-            _typeNameTable[74] = "Microsoft.UI.Xaml.Controls.ProgressRingTemplateSettings";
-            _typeNameTable[75] = "Saku_Overclock.Views.ИнформацияPage";
-            _typeNameTable[76] = "Saku_Overclock.ViewModels.ИнформацияViewModel";
-            _typeNameTable[77] = "Microsoft.UI.Xaml.Controls.ProgressBar";
-            _typeNameTable[78] = "Microsoft.UI.Xaml.Controls.Primitives.RangeBase";
-            _typeNameTable[79] = "Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings";
-            _typeNameTable[80] = "Saku_Overclock.Views.КулерPage";
-            _typeNameTable[81] = "Saku_Overclock.ViewModels.КулерViewModel";
-            _typeNameTable[82] = "Microsoft.UI.Xaml.Controls.TeachingTip";
-            _typeNameTable[83] = "Microsoft.UI.Xaml.Controls.IconSource";
-            _typeNameTable[84] = "System.Windows.Input.ICommand";
-            _typeNameTable[85] = "Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode";
-            _typeNameTable[86] = "Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode";
-            _typeNameTable[87] = "Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility";
-            _typeNameTable[88] = "Microsoft.UI.Xaml.FrameworkElement";
-            _typeNameTable[89] = "Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings";
-            _typeNameTable[90] = "Saku_Overclock.Views.ПараметрыPage";
-            _typeNameTable[91] = "Saku_Overclock.ViewModels.ПараметрыViewModel";
-            _typeNameTable[92] = "Saku_Overclock.Views.ПресетыPage";
-            _typeNameTable[93] = "Saku_Overclock.ViewModels.ПресетыViewModel";
-            _typeNameTable[94] = "Microsoft.UI.Xaml.Controls.TreeViewNode";
-            _typeNameTable[95] = "System.Collections.Generic.IList`1<Microsoft.UI.Xaml.Controls.TreeViewNode>";
-            _typeNameTable[96] = "Int32";
+            _typeNameTable[22] = "Microsoft.UI.Xaml.Controls.TabView";
+            _typeNameTable[23] = "Microsoft.UI.Xaml.Controls.Control";
+            _typeNameTable[24] = "System.Collections.Generic.IList`1<Object>";
+            _typeNameTable[25] = "Microsoft.UI.Xaml.Controls.TabViewCloseButtonOverlayMode";
+            _typeNameTable[26] = "Microsoft.UI.Xaml.Controls.TabViewWidthMode";
+            _typeNameTable[27] = "System.Windows.Input.ICommand";
+            _typeNameTable[28] = "Int32";
+            _typeNameTable[29] = "Microsoft.UI.Xaml.DataTemplate";
+            _typeNameTable[30] = "Microsoft.UI.Xaml.Controls.DataTemplateSelector";
+            _typeNameTable[31] = "Microsoft.UI.Xaml.Controls.TabViewItem";
+            _typeNameTable[32] = "Microsoft.UI.Xaml.Controls.ListViewItem";
+            _typeNameTable[33] = "Microsoft.UI.Xaml.Controls.ContentControl";
+            _typeNameTable[34] = "Microsoft.UI.Xaml.Controls.IconSource";
+            _typeNameTable[35] = "Microsoft.UI.Xaml.Controls.TabViewItemTemplateSettings";
+            _typeNameTable[36] = "Microsoft.UI.Xaml.DependencyObject";
+            _typeNameTable[37] = "Microsoft.UI.Xaml.Controls.NumberBox";
+            _typeNameTable[38] = "Windows.Globalization.NumberFormatting.INumberFormatter2";
+            _typeNameTable[39] = "Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase";
+            _typeNameTable[40] = "Microsoft.UI.Xaml.Media.SolidColorBrush";
+            _typeNameTable[41] = "Microsoft.UI.Xaml.Controls.NumberBoxSpinButtonPlacementMode";
+            _typeNameTable[42] = "Microsoft.UI.Xaml.TextReadingOrder";
+            _typeNameTable[43] = "Microsoft.UI.Xaml.Controls.NumberBoxValidationMode";
+            _typeNameTable[44] = "Microsoft.UI.Xaml.Controls.ToggleSplitButton";
+            _typeNameTable[45] = "Microsoft.UI.Xaml.Controls.SplitButton";
+            _typeNameTable[46] = "Microsoft.UI.Xaml.Controls.Expander";
+            _typeNameTable[47] = "Microsoft.UI.Xaml.Controls.ExpandDirection";
+            _typeNameTable[48] = "Microsoft.UI.Xaml.Controls.ExpanderTemplateSettings";
+            _typeNameTable[49] = "Saku_Overclock.Views.AdvancedКулерPage";
+            _typeNameTable[50] = "Microsoft.UI.Xaml.Controls.Page";
+            _typeNameTable[51] = "Microsoft.UI.Xaml.Controls.UserControl";
+            _typeNameTable[52] = "Saku_Overclock.ViewModels.AdvancedКулерViewModel";
+            _typeNameTable[53] = "CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient";
+            _typeNameTable[54] = "CommunityToolkit.Mvvm.ComponentModel.ObservableObject";
+            _typeNameTable[55] = "Saku_Overclock.Helpers.EnumToBooleanConverter";
+            _typeNameTable[56] = "Saku_Overclock.Views.SettingsPage";
+            _typeNameTable[57] = "Saku_Overclock.ViewModels.SettingsViewModel";
+            _typeNameTable[58] = "Microsoft.UI.Xaml.Controls.NavigationView";
+            _typeNameTable[59] = "Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible";
+            _typeNameTable[60] = "Microsoft.UI.Xaml.Controls.AutoSuggestBox";
+            _typeNameTable[61] = "Microsoft.UI.Xaml.UIElement";
+            _typeNameTable[62] = "Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode";
+            _typeNameTable[63] = "Microsoft.UI.Xaml.Style";
+            _typeNameTable[64] = "Microsoft.UI.Xaml.Controls.StyleSelector";
+            _typeNameTable[65] = "Microsoft.UI.Xaml.Controls.NavigationViewOverflowLabelMode";
+            _typeNameTable[66] = "Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode";
+            _typeNameTable[67] = "Microsoft.UI.Xaml.Controls.NavigationViewSelectionFollowsFocus";
+            _typeNameTable[68] = "Microsoft.UI.Xaml.Controls.NavigationViewShoulderNavigationEnabled";
+            _typeNameTable[69] = "Microsoft.UI.Xaml.Controls.NavigationViewTemplateSettings";
+            _typeNameTable[70] = "Microsoft.Xaml.Interactivity.Interaction";
+            _typeNameTable[71] = "Microsoft.Xaml.Interactivity.BehaviorCollection";
+            _typeNameTable[72] = "Microsoft.UI.Xaml.DependencyObjectCollection";
+            _typeNameTable[73] = "Microsoft.UI.Xaml.Controls.InfoBar";
+            _typeNameTable[74] = "Microsoft.UI.Xaml.Controls.Primitives.ButtonBase";
+            _typeNameTable[75] = "Microsoft.UI.Xaml.Controls.InfoBarSeverity";
+            _typeNameTable[76] = "Microsoft.UI.Xaml.Controls.InfoBarTemplateSettings";
+            _typeNameTable[77] = "Microsoft.UI.Xaml.Controls.NavigationViewItem";
+            _typeNameTable[78] = "Microsoft.UI.Xaml.Controls.NavigationViewItemBase";
+            _typeNameTable[79] = "Microsoft.UI.Xaml.Controls.IconElement";
+            _typeNameTable[80] = "Microsoft.UI.Xaml.Controls.InfoBadge";
+            _typeNameTable[81] = "Saku_Overclock.Helpers.NavigationHelper";
+            _typeNameTable[82] = "Saku_Overclock.Behaviors.NavigationViewHeaderBehavior";
+            _typeNameTable[83] = "Microsoft.Xaml.Interactivity.Behavior`1<Microsoft.UI.Xaml.Controls.NavigationView>";
+            _typeNameTable[84] = "Microsoft.Xaml.Interactivity.Behavior";
+            _typeNameTable[85] = "Saku_Overclock.Behaviors.NavigationViewHeaderMode";
+            _typeNameTable[86] = "Saku_Overclock.Views.ShellPage";
+            _typeNameTable[87] = "Saku_Overclock.ViewModels.ShellViewModel";
+            _typeNameTable[88] = "Saku_Overclock.Views.ГлавнаяPage";
+            _typeNameTable[89] = "Saku_Overclock.ViewModels.ГлавнаяViewModel";
+            _typeNameTable[90] = "Microsoft.UI.Xaml.Controls.ProgressRing";
+            _typeNameTable[91] = "Microsoft.UI.Xaml.Controls.ProgressRingTemplateSettings";
+            _typeNameTable[92] = "Saku_Overclock.Views.ИнформацияPage";
+            _typeNameTable[93] = "Saku_Overclock.ViewModels.ИнформацияViewModel";
+            _typeNameTable[94] = "Microsoft.UI.Xaml.Controls.TeachingTip";
+            _typeNameTable[95] = "Microsoft.UI.Xaml.FrameworkElement";
+            _typeNameTable[96] = "Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode";
+            _typeNameTable[97] = "Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode";
+            _typeNameTable[98] = "Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility";
+            _typeNameTable[99] = "Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings";
+            _typeNameTable[100] = "Microsoft.UI.Xaml.Controls.ProgressBar";
+            _typeNameTable[101] = "Microsoft.UI.Xaml.Controls.Primitives.RangeBase";
+            _typeNameTable[102] = "Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings";
+            _typeNameTable[103] = "Saku_Overclock.Views.КулерPage";
+            _typeNameTable[104] = "Saku_Overclock.ViewModels.КулерViewModel";
+            _typeNameTable[105] = "Saku_Overclock.Views.ПараметрыPage";
+            _typeNameTable[106] = "Saku_Overclock.ViewModels.ПараметрыViewModel";
+            _typeNameTable[107] = "Saku_Overclock.Views.ПресетыPage";
+            _typeNameTable[108] = "Saku_Overclock.ViewModels.ПресетыViewModel";
+            _typeNameTable[109] = "Microsoft.UI.Xaml.Controls.TreeViewNode";
+            _typeNameTable[110] = "System.Collections.Generic.IList`1<Microsoft.UI.Xaml.Controls.TreeViewNode>";
 
-            _typeTable = new global::System.Type[97];
+            _typeTable = new global::System.Type[111];
             _typeTable[0] = typeof(global::Microsoft.UI.Xaml.Controls.XamlControlsResources);
             _typeTable[1] = typeof(global::Microsoft.UI.Xaml.ResourceDictionary);
             _typeTable[2] = typeof(global::System.Object);
@@ -348,81 +362,95 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
             _typeTable[19] = typeof(global::Saku_Overclock.MainWindow);
             _typeTable[20] = typeof(global::Microsoft.UI.Xaml.Thickness);
             _typeTable[21] = typeof(global::Microsoft.UI.Xaml.CornerRadius);
-            _typeTable[22] = typeof(global::Saku_Overclock.Helpers.EnumToBooleanConverter);
-            _typeTable[23] = typeof(global::Microsoft.UI.Xaml.Controls.NumberBox);
-            _typeTable[24] = typeof(global::Microsoft.UI.Xaml.Controls.Control);
-            _typeTable[25] = typeof(global::Microsoft.UI.Xaml.DataTemplate);
-            _typeTable[26] = typeof(global::Windows.Globalization.NumberFormatting.INumberFormatter2);
-            _typeTable[27] = typeof(global::Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase);
-            _typeTable[28] = typeof(global::Microsoft.UI.Xaml.Media.SolidColorBrush);
-            _typeTable[29] = typeof(global::Microsoft.UI.Xaml.Controls.NumberBoxSpinButtonPlacementMode);
-            _typeTable[30] = typeof(global::Microsoft.UI.Xaml.TextReadingOrder);
-            _typeTable[31] = typeof(global::Microsoft.UI.Xaml.Controls.NumberBoxValidationMode);
-            _typeTable[32] = typeof(global::Saku_Overclock.Views.SettingsPage);
-            _typeTable[33] = typeof(global::Microsoft.UI.Xaml.Controls.Page);
-            _typeTable[34] = typeof(global::Microsoft.UI.Xaml.Controls.UserControl);
-            _typeTable[35] = typeof(global::Saku_Overclock.ViewModels.SettingsViewModel);
-            _typeTable[36] = typeof(global::CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient);
-            _typeTable[37] = typeof(global::CommunityToolkit.Mvvm.ComponentModel.ObservableObject);
-            _typeTable[38] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationView);
-            _typeTable[39] = typeof(global::Microsoft.UI.Xaml.Controls.ContentControl);
-            _typeTable[40] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible);
-            _typeTable[41] = typeof(global::System.Collections.Generic.IList<global::System.Object>);
-            _typeTable[42] = typeof(global::Microsoft.UI.Xaml.Controls.AutoSuggestBox);
-            _typeTable[43] = typeof(global::Microsoft.UI.Xaml.UIElement);
-            _typeTable[44] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode);
-            _typeTable[45] = typeof(global::Microsoft.UI.Xaml.Style);
-            _typeTable[46] = typeof(global::Microsoft.UI.Xaml.Controls.StyleSelector);
-            _typeTable[47] = typeof(global::Microsoft.UI.Xaml.Controls.DataTemplateSelector);
-            _typeTable[48] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewOverflowLabelMode);
-            _typeTable[49] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode);
-            _typeTable[50] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewSelectionFollowsFocus);
-            _typeTable[51] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewShoulderNavigationEnabled);
-            _typeTable[52] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewTemplateSettings);
-            _typeTable[53] = typeof(global::Microsoft.UI.Xaml.DependencyObject);
-            _typeTable[54] = typeof(global::Microsoft.Xaml.Interactivity.Interaction);
-            _typeTable[55] = typeof(global::Microsoft.Xaml.Interactivity.BehaviorCollection);
-            _typeTable[56] = typeof(global::Microsoft.UI.Xaml.DependencyObjectCollection);
-            _typeTable[57] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewItem);
-            _typeTable[58] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewItemBase);
-            _typeTable[59] = typeof(global::Microsoft.UI.Xaml.Controls.IconElement);
-            _typeTable[60] = typeof(global::Microsoft.UI.Xaml.Controls.InfoBadge);
-            _typeTable[61] = typeof(global::Saku_Overclock.Helpers.NavigationHelper);
-            _typeTable[62] = typeof(global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior);
-            _typeTable[63] = typeof(global::Microsoft.Xaml.Interactivity.Behavior<global::Microsoft.UI.Xaml.Controls.NavigationView>);
-            _typeTable[64] = typeof(global::Microsoft.Xaml.Interactivity.Behavior);
-            _typeTable[65] = typeof(global::Saku_Overclock.Behaviors.NavigationViewHeaderMode);
-            _typeTable[66] = typeof(global::Saku_Overclock.Views.ShellPage);
-            _typeTable[67] = typeof(global::Saku_Overclock.ViewModels.ShellViewModel);
-            _typeTable[68] = typeof(global::Saku_Overclock.Views.ГлавнаяPage);
-            _typeTable[69] = typeof(global::Saku_Overclock.ViewModels.ГлавнаяViewModel);
-            _typeTable[70] = typeof(global::Microsoft.UI.Xaml.Controls.Expander);
-            _typeTable[71] = typeof(global::Microsoft.UI.Xaml.Controls.ExpandDirection);
-            _typeTable[72] = typeof(global::Microsoft.UI.Xaml.Controls.ExpanderTemplateSettings);
-            _typeTable[73] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressRing);
-            _typeTable[74] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressRingTemplateSettings);
-            _typeTable[75] = typeof(global::Saku_Overclock.Views.ИнформацияPage);
-            _typeTable[76] = typeof(global::Saku_Overclock.ViewModels.ИнформацияViewModel);
-            _typeTable[77] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressBar);
-            _typeTable[78] = typeof(global::Microsoft.UI.Xaml.Controls.Primitives.RangeBase);
-            _typeTable[79] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings);
-            _typeTable[80] = typeof(global::Saku_Overclock.Views.КулерPage);
-            _typeTable[81] = typeof(global::Saku_Overclock.ViewModels.КулерViewModel);
-            _typeTable[82] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTip);
-            _typeTable[83] = typeof(global::Microsoft.UI.Xaml.Controls.IconSource);
-            _typeTable[84] = typeof(global::System.Windows.Input.ICommand);
-            _typeTable[85] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode);
-            _typeTable[86] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode);
-            _typeTable[87] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility);
-            _typeTable[88] = typeof(global::Microsoft.UI.Xaml.FrameworkElement);
-            _typeTable[89] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings);
-            _typeTable[90] = typeof(global::Saku_Overclock.Views.ПараметрыPage);
-            _typeTable[91] = typeof(global::Saku_Overclock.ViewModels.ПараметрыViewModel);
-            _typeTable[92] = typeof(global::Saku_Overclock.Views.ПресетыPage);
-            _typeTable[93] = typeof(global::Saku_Overclock.ViewModels.ПресетыViewModel);
-            _typeTable[94] = typeof(global::Microsoft.UI.Xaml.Controls.TreeViewNode);
-            _typeTable[95] = typeof(global::System.Collections.Generic.IList<global::Microsoft.UI.Xaml.Controls.TreeViewNode>);
-            _typeTable[96] = typeof(global::System.Int32);
+            _typeTable[22] = typeof(global::Microsoft.UI.Xaml.Controls.TabView);
+            _typeTable[23] = typeof(global::Microsoft.UI.Xaml.Controls.Control);
+            _typeTable[24] = typeof(global::System.Collections.Generic.IList<global::System.Object>);
+            _typeTable[25] = typeof(global::Microsoft.UI.Xaml.Controls.TabViewCloseButtonOverlayMode);
+            _typeTable[26] = typeof(global::Microsoft.UI.Xaml.Controls.TabViewWidthMode);
+            _typeTable[27] = typeof(global::System.Windows.Input.ICommand);
+            _typeTable[28] = typeof(global::System.Int32);
+            _typeTable[29] = typeof(global::Microsoft.UI.Xaml.DataTemplate);
+            _typeTable[30] = typeof(global::Microsoft.UI.Xaml.Controls.DataTemplateSelector);
+            _typeTable[31] = typeof(global::Microsoft.UI.Xaml.Controls.TabViewItem);
+            _typeTable[32] = typeof(global::Microsoft.UI.Xaml.Controls.ListViewItem);
+            _typeTable[33] = typeof(global::Microsoft.UI.Xaml.Controls.ContentControl);
+            _typeTable[34] = typeof(global::Microsoft.UI.Xaml.Controls.IconSource);
+            _typeTable[35] = typeof(global::Microsoft.UI.Xaml.Controls.TabViewItemTemplateSettings);
+            _typeTable[36] = typeof(global::Microsoft.UI.Xaml.DependencyObject);
+            _typeTable[37] = typeof(global::Microsoft.UI.Xaml.Controls.NumberBox);
+            _typeTable[38] = typeof(global::Windows.Globalization.NumberFormatting.INumberFormatter2);
+            _typeTable[39] = typeof(global::Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase);
+            _typeTable[40] = typeof(global::Microsoft.UI.Xaml.Media.SolidColorBrush);
+            _typeTable[41] = typeof(global::Microsoft.UI.Xaml.Controls.NumberBoxSpinButtonPlacementMode);
+            _typeTable[42] = typeof(global::Microsoft.UI.Xaml.TextReadingOrder);
+            _typeTable[43] = typeof(global::Microsoft.UI.Xaml.Controls.NumberBoxValidationMode);
+            _typeTable[44] = typeof(global::Microsoft.UI.Xaml.Controls.ToggleSplitButton);
+            _typeTable[45] = typeof(global::Microsoft.UI.Xaml.Controls.SplitButton);
+            _typeTable[46] = typeof(global::Microsoft.UI.Xaml.Controls.Expander);
+            _typeTable[47] = typeof(global::Microsoft.UI.Xaml.Controls.ExpandDirection);
+            _typeTable[48] = typeof(global::Microsoft.UI.Xaml.Controls.ExpanderTemplateSettings);
+            _typeTable[49] = typeof(global::Saku_Overclock.Views.AdvancedКулерPage);
+            _typeTable[50] = typeof(global::Microsoft.UI.Xaml.Controls.Page);
+            _typeTable[51] = typeof(global::Microsoft.UI.Xaml.Controls.UserControl);
+            _typeTable[52] = typeof(global::Saku_Overclock.ViewModels.AdvancedКулерViewModel);
+            _typeTable[53] = typeof(global::CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient);
+            _typeTable[54] = typeof(global::CommunityToolkit.Mvvm.ComponentModel.ObservableObject);
+            _typeTable[55] = typeof(global::Saku_Overclock.Helpers.EnumToBooleanConverter);
+            _typeTable[56] = typeof(global::Saku_Overclock.Views.SettingsPage);
+            _typeTable[57] = typeof(global::Saku_Overclock.ViewModels.SettingsViewModel);
+            _typeTable[58] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationView);
+            _typeTable[59] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible);
+            _typeTable[60] = typeof(global::Microsoft.UI.Xaml.Controls.AutoSuggestBox);
+            _typeTable[61] = typeof(global::Microsoft.UI.Xaml.UIElement);
+            _typeTable[62] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode);
+            _typeTable[63] = typeof(global::Microsoft.UI.Xaml.Style);
+            _typeTable[64] = typeof(global::Microsoft.UI.Xaml.Controls.StyleSelector);
+            _typeTable[65] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewOverflowLabelMode);
+            _typeTable[66] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode);
+            _typeTable[67] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewSelectionFollowsFocus);
+            _typeTable[68] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewShoulderNavigationEnabled);
+            _typeTable[69] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewTemplateSettings);
+            _typeTable[70] = typeof(global::Microsoft.Xaml.Interactivity.Interaction);
+            _typeTable[71] = typeof(global::Microsoft.Xaml.Interactivity.BehaviorCollection);
+            _typeTable[72] = typeof(global::Microsoft.UI.Xaml.DependencyObjectCollection);
+            _typeTable[73] = typeof(global::Microsoft.UI.Xaml.Controls.InfoBar);
+            _typeTable[74] = typeof(global::Microsoft.UI.Xaml.Controls.Primitives.ButtonBase);
+            _typeTable[75] = typeof(global::Microsoft.UI.Xaml.Controls.InfoBarSeverity);
+            _typeTable[76] = typeof(global::Microsoft.UI.Xaml.Controls.InfoBarTemplateSettings);
+            _typeTable[77] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewItem);
+            _typeTable[78] = typeof(global::Microsoft.UI.Xaml.Controls.NavigationViewItemBase);
+            _typeTable[79] = typeof(global::Microsoft.UI.Xaml.Controls.IconElement);
+            _typeTable[80] = typeof(global::Microsoft.UI.Xaml.Controls.InfoBadge);
+            _typeTable[81] = typeof(global::Saku_Overclock.Helpers.NavigationHelper);
+            _typeTable[82] = typeof(global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior);
+            _typeTable[83] = typeof(global::Microsoft.Xaml.Interactivity.Behavior<global::Microsoft.UI.Xaml.Controls.NavigationView>);
+            _typeTable[84] = typeof(global::Microsoft.Xaml.Interactivity.Behavior);
+            _typeTable[85] = typeof(global::Saku_Overclock.Behaviors.NavigationViewHeaderMode);
+            _typeTable[86] = typeof(global::Saku_Overclock.Views.ShellPage);
+            _typeTable[87] = typeof(global::Saku_Overclock.ViewModels.ShellViewModel);
+            _typeTable[88] = typeof(global::Saku_Overclock.Views.ГлавнаяPage);
+            _typeTable[89] = typeof(global::Saku_Overclock.ViewModels.ГлавнаяViewModel);
+            _typeTable[90] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressRing);
+            _typeTable[91] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressRingTemplateSettings);
+            _typeTable[92] = typeof(global::Saku_Overclock.Views.ИнформацияPage);
+            _typeTable[93] = typeof(global::Saku_Overclock.ViewModels.ИнформацияViewModel);
+            _typeTable[94] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTip);
+            _typeTable[95] = typeof(global::Microsoft.UI.Xaml.FrameworkElement);
+            _typeTable[96] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode);
+            _typeTable[97] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode);
+            _typeTable[98] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility);
+            _typeTable[99] = typeof(global::Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings);
+            _typeTable[100] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressBar);
+            _typeTable[101] = typeof(global::Microsoft.UI.Xaml.Controls.Primitives.RangeBase);
+            _typeTable[102] = typeof(global::Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings);
+            _typeTable[103] = typeof(global::Saku_Overclock.Views.КулерPage);
+            _typeTable[104] = typeof(global::Saku_Overclock.ViewModels.КулерViewModel);
+            _typeTable[105] = typeof(global::Saku_Overclock.Views.ПараметрыPage);
+            _typeTable[106] = typeof(global::Saku_Overclock.ViewModels.ПараметрыViewModel);
+            _typeTable[107] = typeof(global::Saku_Overclock.Views.ПресетыPage);
+            _typeTable[108] = typeof(global::Saku_Overclock.ViewModels.ПресетыViewModel);
+            _typeTable[109] = typeof(global::Microsoft.UI.Xaml.Controls.TreeViewNode);
+            _typeTable[110] = typeof(global::System.Collections.Generic.IList<global::Microsoft.UI.Xaml.Controls.TreeViewNode>);
         }
 
         private int LookupTypeIndexByName(string typeName)
@@ -461,32 +489,41 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
         private object Activate_4_WindowEx() { return new global::WinUIEx.WindowEx(); }
         private object Activate_16_MicaBackdrop() { return new global::Microsoft.UI.Xaml.Media.MicaBackdrop(); }
         private object Activate_19_MainWindow() { return new global::Saku_Overclock.MainWindow(); }
-        private object Activate_22_EnumToBooleanConverter() { return new global::Saku_Overclock.Helpers.EnumToBooleanConverter(); }
-        private object Activate_23_NumberBox() { return new global::Microsoft.UI.Xaml.Controls.NumberBox(); }
-        private object Activate_32_SettingsPage() { return new global::Saku_Overclock.Views.SettingsPage(); }
-        private object Activate_38_NavigationView() { return new global::Microsoft.UI.Xaml.Controls.NavigationView(); }
-        private object Activate_52_NavigationViewTemplateSettings() { return new global::Microsoft.UI.Xaml.Controls.NavigationViewTemplateSettings(); }
-        private object Activate_55_BehaviorCollection() { return new global::Microsoft.Xaml.Interactivity.BehaviorCollection(); }
-        private object Activate_57_NavigationViewItem() { return new global::Microsoft.UI.Xaml.Controls.NavigationViewItem(); }
-        private object Activate_60_InfoBadge() { return new global::Microsoft.UI.Xaml.Controls.InfoBadge(); }
-        private object Activate_61_NavigationHelper() { return new global::Saku_Overclock.Helpers.NavigationHelper(); }
-        private object Activate_62_NavigationViewHeaderBehavior() { return new global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior(); }
-        private object Activate_68_ГлавнаяPage() { return new global::Saku_Overclock.Views.ГлавнаяPage(); }
-        private object Activate_69_ГлавнаяViewModel() { return new global::Saku_Overclock.ViewModels.ГлавнаяViewModel(); }
-        private object Activate_70_Expander() { return new global::Microsoft.UI.Xaml.Controls.Expander(); }
-        private object Activate_73_ProgressRing() { return new global::Microsoft.UI.Xaml.Controls.ProgressRing(); }
-        private object Activate_75_ИнформацияPage() { return new global::Saku_Overclock.Views.ИнформацияPage(); }
-        private object Activate_76_ИнформацияViewModel() { return new global::Saku_Overclock.ViewModels.ИнформацияViewModel(); }
-        private object Activate_77_ProgressBar() { return new global::Microsoft.UI.Xaml.Controls.ProgressBar(); }
-        private object Activate_80_КулерPage() { return new global::Saku_Overclock.Views.КулерPage(); }
-        private object Activate_81_КулерViewModel() { return new global::Saku_Overclock.ViewModels.КулерViewModel(); }
-        private object Activate_82_TeachingTip() { return new global::Microsoft.UI.Xaml.Controls.TeachingTip(); }
-        private object Activate_89_TeachingTipTemplateSettings() { return new global::Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings(); }
-        private object Activate_90_ПараметрыPage() { return new global::Saku_Overclock.Views.ПараметрыPage(); }
-        private object Activate_91_ПараметрыViewModel() { return new global::Saku_Overclock.ViewModels.ПараметрыViewModel(); }
-        private object Activate_92_ПресетыPage() { return new global::Saku_Overclock.Views.ПресетыPage(); }
-        private object Activate_93_ПресетыViewModel() { return new global::Saku_Overclock.ViewModels.ПресетыViewModel(); }
-        private object Activate_94_TreeViewNode() { return new global::Microsoft.UI.Xaml.Controls.TreeViewNode(); }
+        private object Activate_22_TabView() { return new global::Microsoft.UI.Xaml.Controls.TabView(); }
+        private object Activate_31_TabViewItem() { return new global::Microsoft.UI.Xaml.Controls.TabViewItem(); }
+        private object Activate_35_TabViewItemTemplateSettings() { return new global::Microsoft.UI.Xaml.Controls.TabViewItemTemplateSettings(); }
+        private object Activate_37_NumberBox() { return new global::Microsoft.UI.Xaml.Controls.NumberBox(); }
+        private object Activate_44_ToggleSplitButton() { return new global::Microsoft.UI.Xaml.Controls.ToggleSplitButton(); }
+        private object Activate_45_SplitButton() { return new global::Microsoft.UI.Xaml.Controls.SplitButton(); }
+        private object Activate_46_Expander() { return new global::Microsoft.UI.Xaml.Controls.Expander(); }
+        private object Activate_49_AdvancedКулерPage() { return new global::Saku_Overclock.Views.AdvancedКулерPage(); }
+        private object Activate_52_AdvancedКулерViewModel() { return new global::Saku_Overclock.ViewModels.AdvancedКулерViewModel(); }
+        private object Activate_55_EnumToBooleanConverter() { return new global::Saku_Overclock.Helpers.EnumToBooleanConverter(); }
+        private object Activate_56_SettingsPage() { return new global::Saku_Overclock.Views.SettingsPage(); }
+        private object Activate_58_NavigationView() { return new global::Microsoft.UI.Xaml.Controls.NavigationView(); }
+        private object Activate_69_NavigationViewTemplateSettings() { return new global::Microsoft.UI.Xaml.Controls.NavigationViewTemplateSettings(); }
+        private object Activate_71_BehaviorCollection() { return new global::Microsoft.Xaml.Interactivity.BehaviorCollection(); }
+        private object Activate_73_InfoBar() { return new global::Microsoft.UI.Xaml.Controls.InfoBar(); }
+        private object Activate_76_InfoBarTemplateSettings() { return new global::Microsoft.UI.Xaml.Controls.InfoBarTemplateSettings(); }
+        private object Activate_77_NavigationViewItem() { return new global::Microsoft.UI.Xaml.Controls.NavigationViewItem(); }
+        private object Activate_80_InfoBadge() { return new global::Microsoft.UI.Xaml.Controls.InfoBadge(); }
+        private object Activate_81_NavigationHelper() { return new global::Saku_Overclock.Helpers.NavigationHelper(); }
+        private object Activate_82_NavigationViewHeaderBehavior() { return new global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior(); }
+        private object Activate_88_ГлавнаяPage() { return new global::Saku_Overclock.Views.ГлавнаяPage(); }
+        private object Activate_89_ГлавнаяViewModel() { return new global::Saku_Overclock.ViewModels.ГлавнаяViewModel(); }
+        private object Activate_90_ProgressRing() { return new global::Microsoft.UI.Xaml.Controls.ProgressRing(); }
+        private object Activate_92_ИнформацияPage() { return new global::Saku_Overclock.Views.ИнформацияPage(); }
+        private object Activate_93_ИнформацияViewModel() { return new global::Saku_Overclock.ViewModels.ИнформацияViewModel(); }
+        private object Activate_94_TeachingTip() { return new global::Microsoft.UI.Xaml.Controls.TeachingTip(); }
+        private object Activate_99_TeachingTipTemplateSettings() { return new global::Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings(); }
+        private object Activate_100_ProgressBar() { return new global::Microsoft.UI.Xaml.Controls.ProgressBar(); }
+        private object Activate_103_КулерPage() { return new global::Saku_Overclock.Views.КулерPage(); }
+        private object Activate_104_КулерViewModel() { return new global::Saku_Overclock.ViewModels.КулерViewModel(); }
+        private object Activate_105_ПараметрыPage() { return new global::Saku_Overclock.Views.ПараметрыPage(); }
+        private object Activate_106_ПараметрыViewModel() { return new global::Saku_Overclock.ViewModels.ПараметрыViewModel(); }
+        private object Activate_107_ПресетыPage() { return new global::Saku_Overclock.Views.ПресетыPage(); }
+        private object Activate_108_ПресетыViewModel() { return new global::Saku_Overclock.ViewModels.ПресетыViewModel(); }
+        private object Activate_109_TreeViewNode() { return new global::Microsoft.UI.Xaml.Controls.TreeViewNode(); }
         private void MapAdd_0_XamlControlsResources(object instance, object key, object item)
         {
             var collection = (global::System.Collections.Generic.IDictionary<global::System.Object, global::System.Object>)instance;
@@ -494,19 +531,19 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
             var newItem = (global::System.Object)item;
             collection.Add(newKey, newItem);
         }
-        private void VectorAdd_41_IList(object instance, object item)
+        private void VectorAdd_24_IList(object instance, object item)
         {
             var collection = (global::System.Collections.Generic.ICollection<global::System.Object>)instance;
             var newItem = (global::System.Object)item;
             collection.Add(newItem);
         }
-        private void VectorAdd_55_BehaviorCollection(object instance, object item)
+        private void VectorAdd_71_BehaviorCollection(object instance, object item)
         {
             var collection = (global::System.Collections.Generic.ICollection<global::Microsoft.UI.Xaml.DependencyObject>)instance;
             var newItem = (global::Microsoft.UI.Xaml.DependencyObject)item;
             collection.Add(newItem);
         }
-        private void VectorAdd_95_IList(object instance, object item)
+        private void VectorAdd_110_IList(object instance, object item)
         {
             var collection = (global::System.Collections.Generic.ICollection<global::Microsoft.UI.Xaml.Controls.TreeViewNode>)instance;
             var newItem = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)item;
@@ -679,25 +716,121 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 22:   //  Saku_Overclock.Helpers.EnumToBooleanConverter
-                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_22_EnumToBooleanConverter;
-                userType.SetIsLocalType();
+            case 22:   //  Microsoft.UI.Xaml.Controls.TabView
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Control"));
+                userType.Activator = Activate_22_TabView;
+                userType.SetContentPropertyName("Microsoft.UI.Xaml.Controls.TabView.TabItems");
+                userType.AddMemberName("TabItems");
+                userType.AddMemberName("CloseButtonOverlayMode");
+                userType.AddMemberName("TabWidthMode");
+                userType.AddMemberName("AddTabButtonCommand");
+                userType.AddMemberName("AddTabButtonCommandParameter");
+                userType.AddMemberName("AllowDropTabs");
+                userType.AddMemberName("CanDragTabs");
+                userType.AddMemberName("CanReorderTabs");
+                userType.AddMemberName("IsAddTabButtonVisible");
+                userType.AddMemberName("SelectedIndex");
+                userType.AddMemberName("SelectedItem");
+                userType.AddMemberName("TabItemTemplate");
+                userType.AddMemberName("TabItemTemplateSelector");
+                userType.AddMemberName("TabItemsSource");
+                userType.AddMemberName("TabStripFooter");
+                userType.AddMemberName("TabStripFooterTemplate");
+                userType.AddMemberName("TabStripHeader");
+                userType.AddMemberName("TabStripHeaderTemplate");
                 xamlType = userType;
                 break;
 
-            case 23:   //  Microsoft.UI.Xaml.Controls.NumberBox
+            case 23:   //  Microsoft.UI.Xaml.Controls.Control
+                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 24:   //  System.Collections.Generic.IList`1<Object>
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, null);
+                userType.CollectionAdd = VectorAdd_24_IList;
+                userType.SetIsReturnTypeStub();
+                xamlType = userType;
+                break;
+
+            case 25:   //  Microsoft.UI.Xaml.Controls.TabViewCloseButtonOverlayMode
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
+                userType.AddEnumValue("Auto", global::Microsoft.UI.Xaml.Controls.TabViewCloseButtonOverlayMode.Auto);
+                userType.AddEnumValue("OnPointerOver", global::Microsoft.UI.Xaml.Controls.TabViewCloseButtonOverlayMode.OnPointerOver);
+                userType.AddEnumValue("Always", global::Microsoft.UI.Xaml.Controls.TabViewCloseButtonOverlayMode.Always);
+                xamlType = userType;
+                break;
+
+            case 26:   //  Microsoft.UI.Xaml.Controls.TabViewWidthMode
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
+                userType.AddEnumValue("Equal", global::Microsoft.UI.Xaml.Controls.TabViewWidthMode.Equal);
+                userType.AddEnumValue("SizeToContent", global::Microsoft.UI.Xaml.Controls.TabViewWidthMode.SizeToContent);
+                userType.AddEnumValue("Compact", global::Microsoft.UI.Xaml.Controls.TabViewWidthMode.Compact);
+                xamlType = userType;
+                break;
+
+            case 27:   //  System.Windows.Input.ICommand
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, null);
+                userType.SetIsReturnTypeStub();
+                xamlType = userType;
+                break;
+
+            case 28:   //  Int32
+                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 29:   //  Microsoft.UI.Xaml.DataTemplate
+                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 30:   //  Microsoft.UI.Xaml.Controls.DataTemplateSelector
+                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 31:   //  Microsoft.UI.Xaml.Controls.TabViewItem
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ListViewItem"));
+                userType.Activator = Activate_31_TabViewItem;
+                userType.AddMemberName("Header");
+                userType.AddMemberName("IconSource");
+                userType.AddMemberName("IsClosable");
+                userType.AddMemberName("HeaderTemplate");
+                userType.AddMemberName("TabViewTemplateSettings");
+                xamlType = userType;
+                break;
+
+            case 32:   //  Microsoft.UI.Xaml.Controls.ListViewItem
+                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 33:   //  Microsoft.UI.Xaml.Controls.ContentControl
+                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 34:   //  Microsoft.UI.Xaml.Controls.IconSource
+                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 35:   //  Microsoft.UI.Xaml.Controls.TabViewItemTemplateSettings
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
+                userType.SetIsReturnTypeStub();
+                xamlType = userType;
+                break;
+
+            case 36:   //  Microsoft.UI.Xaml.DependencyObject
+                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 37:   //  Microsoft.UI.Xaml.Controls.NumberBox
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Control"));
-                userType.Activator = Activate_23_NumberBox;
-                userType.AddMemberName("Minimum");
+                userType.Activator = Activate_37_NumberBox;
                 userType.AddMemberName("Value");
-                userType.AddMemberName("Maximum");
                 userType.AddMemberName("AcceptsExpression");
                 userType.AddMemberName("Description");
                 userType.AddMemberName("Header");
                 userType.AddMemberName("HeaderTemplate");
                 userType.AddMemberName("IsWrapEnabled");
                 userType.AddMemberName("LargeChange");
+                userType.AddMemberName("Maximum");
+                userType.AddMemberName("Minimum");
                 userType.AddMemberName("NumberFormatter");
                 userType.AddMemberName("PlaceholderText");
                 userType.AddMemberName("PreventKeyboardDisplayOnProgrammaticFocus");
@@ -711,29 +844,21 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 24:   //  Microsoft.UI.Xaml.Controls.Control
-                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
-                break;
-
-            case 25:   //  Microsoft.UI.Xaml.DataTemplate
-                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
-                break;
-
-            case 26:   //  Windows.Globalization.NumberFormatting.INumberFormatter2
+            case 38:   //  Windows.Globalization.NumberFormatting.INumberFormatter2
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, null);
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 27:   //  Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase
+            case 39:   //  Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 28:   //  Microsoft.UI.Xaml.Media.SolidColorBrush
+            case 40:   //  Microsoft.UI.Xaml.Media.SolidColorBrush
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 29:   //  Microsoft.UI.Xaml.Controls.NumberBoxSpinButtonPlacementMode
+            case 41:   //  Microsoft.UI.Xaml.Controls.NumberBoxSpinButtonPlacementMode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Hidden", global::Microsoft.UI.Xaml.Controls.NumberBoxSpinButtonPlacementMode.Hidden);
                 userType.AddEnumValue("Compact", global::Microsoft.UI.Xaml.Controls.NumberBoxSpinButtonPlacementMode.Compact);
@@ -741,53 +866,116 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 30:   //  Microsoft.UI.Xaml.TextReadingOrder
+            case 42:   //  Microsoft.UI.Xaml.TextReadingOrder
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 31:   //  Microsoft.UI.Xaml.Controls.NumberBoxValidationMode
+            case 43:   //  Microsoft.UI.Xaml.Controls.NumberBoxValidationMode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("InvalidInputOverwritten", global::Microsoft.UI.Xaml.Controls.NumberBoxValidationMode.InvalidInputOverwritten);
                 userType.AddEnumValue("Disabled", global::Microsoft.UI.Xaml.Controls.NumberBoxValidationMode.Disabled);
                 xamlType = userType;
                 break;
 
-            case 32:   //  Saku_Overclock.Views.SettingsPage
+            case 44:   //  Microsoft.UI.Xaml.Controls.ToggleSplitButton
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.SplitButton"));
+                userType.Activator = Activate_44_ToggleSplitButton;
+                userType.AddMemberName("IsChecked");
+                xamlType = userType;
+                break;
+
+            case 45:   //  Microsoft.UI.Xaml.Controls.SplitButton
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ContentControl"));
+                userType.Activator = Activate_45_SplitButton;
+                userType.AddMemberName("Flyout");
+                userType.AddMemberName("Command");
+                userType.AddMemberName("CommandParameter");
+                xamlType = userType;
+                break;
+
+            case 46:   //  Microsoft.UI.Xaml.Controls.Expander
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ContentControl"));
+                userType.Activator = Activate_46_Expander;
+                userType.AddMemberName("Header");
+                userType.AddMemberName("ExpandDirection");
+                userType.AddMemberName("HeaderTemplate");
+                userType.AddMemberName("HeaderTemplateSelector");
+                userType.AddMemberName("IsExpanded");
+                userType.AddMemberName("TemplateSettings");
+                xamlType = userType;
+                break;
+
+            case 47:   //  Microsoft.UI.Xaml.Controls.ExpandDirection
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
+                userType.AddEnumValue("Down", global::Microsoft.UI.Xaml.Controls.ExpandDirection.Down);
+                userType.AddEnumValue("Up", global::Microsoft.UI.Xaml.Controls.ExpandDirection.Up);
+                xamlType = userType;
+                break;
+
+            case 48:   //  Microsoft.UI.Xaml.Controls.ExpanderTemplateSettings
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
+                userType.SetIsReturnTypeStub();
+                xamlType = userType;
+                break;
+
+            case 49:   //  Saku_Overclock.Views.AdvancedКулерPage
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_32_SettingsPage;
+                userType.Activator = Activate_49_AdvancedКулерPage;
                 userType.AddMemberName("ViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 33:   //  Microsoft.UI.Xaml.Controls.Page
+            case 50:   //  Microsoft.UI.Xaml.Controls.Page
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 34:   //  Microsoft.UI.Xaml.Controls.UserControl
+            case 51:   //  Microsoft.UI.Xaml.Controls.UserControl
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 35:   //  Saku_Overclock.ViewModels.SettingsViewModel
+            case 52:   //  Saku_Overclock.ViewModels.AdvancedКулерViewModel
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
                 userType.SetIsReturnTypeStub();
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 36:   //  CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient
+            case 53:   //  CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableObject"));
                 xamlType = userType;
                 break;
 
-            case 37:   //  CommunityToolkit.Mvvm.ComponentModel.ObservableObject
+            case 54:   //  CommunityToolkit.Mvvm.ComponentModel.ObservableObject
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
                 xamlType = userType;
                 break;
 
-            case 38:   //  Microsoft.UI.Xaml.Controls.NavigationView
+            case 55:   //  Saku_Overclock.Helpers.EnumToBooleanConverter
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
+                userType.Activator = Activate_55_EnumToBooleanConverter;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 56:   //  Saku_Overclock.Views.SettingsPage
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
+                userType.Activator = Activate_56_SettingsPage;
+                userType.AddMemberName("ViewModel");
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 57:   //  Saku_Overclock.ViewModels.SettingsViewModel
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
+                userType.SetIsReturnTypeStub();
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 58:   //  Microsoft.UI.Xaml.Controls.NavigationView
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ContentControl"));
-                userType.Activator = Activate_38_NavigationView;
+                userType.Activator = Activate_58_NavigationView;
                 userType.AddMemberName("IsBackButtonVisible");
                 userType.AddMemberName("IsBackEnabled");
                 userType.AddMemberName("SelectedItem");
@@ -828,11 +1016,7 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 39:   //  Microsoft.UI.Xaml.Controls.ContentControl
-                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
-                break;
-
-            case 40:   //  Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible
+            case 59:   //  Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Collapsed", global::Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed);
                 userType.AddEnumValue("Visible", global::Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Visible);
@@ -840,22 +1024,15 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 41:   //  System.Collections.Generic.IList`1<Object>
-                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, null);
-                userType.CollectionAdd = VectorAdd_41_IList;
-                userType.SetIsReturnTypeStub();
-                xamlType = userType;
-                break;
-
-            case 42:   //  Microsoft.UI.Xaml.Controls.AutoSuggestBox
+            case 60:   //  Microsoft.UI.Xaml.Controls.AutoSuggestBox
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 43:   //  Microsoft.UI.Xaml.UIElement
+            case 61:   //  Microsoft.UI.Xaml.UIElement
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 44:   //  Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode
+            case 62:   //  Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Minimal", global::Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Minimal);
                 userType.AddEnumValue("Compact", global::Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Compact);
@@ -863,26 +1040,22 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 45:   //  Microsoft.UI.Xaml.Style
+            case 63:   //  Microsoft.UI.Xaml.Style
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 46:   //  Microsoft.UI.Xaml.Controls.StyleSelector
+            case 64:   //  Microsoft.UI.Xaml.Controls.StyleSelector
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 47:   //  Microsoft.UI.Xaml.Controls.DataTemplateSelector
-                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
-                break;
-
-            case 48:   //  Microsoft.UI.Xaml.Controls.NavigationViewOverflowLabelMode
+            case 65:   //  Microsoft.UI.Xaml.Controls.NavigationViewOverflowLabelMode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("MoreLabel", global::Microsoft.UI.Xaml.Controls.NavigationViewOverflowLabelMode.MoreLabel);
                 userType.AddEnumValue("NoLabel", global::Microsoft.UI.Xaml.Controls.NavigationViewOverflowLabelMode.NoLabel);
                 xamlType = userType;
                 break;
 
-            case 49:   //  Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode
+            case 66:   //  Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Auto", global::Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Auto);
                 userType.AddEnumValue("Left", global::Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Left);
@@ -892,14 +1065,14 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 50:   //  Microsoft.UI.Xaml.Controls.NavigationViewSelectionFollowsFocus
+            case 67:   //  Microsoft.UI.Xaml.Controls.NavigationViewSelectionFollowsFocus
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Disabled", global::Microsoft.UI.Xaml.Controls.NavigationViewSelectionFollowsFocus.Disabled);
                 userType.AddEnumValue("Enabled", global::Microsoft.UI.Xaml.Controls.NavigationViewSelectionFollowsFocus.Enabled);
                 xamlType = userType;
                 break;
 
-            case 51:   //  Microsoft.UI.Xaml.Controls.NavigationViewShoulderNavigationEnabled
+            case 68:   //  Microsoft.UI.Xaml.Controls.NavigationViewShoulderNavigationEnabled
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("WhenSelectionFollowsFocus", global::Microsoft.UI.Xaml.Controls.NavigationViewShoulderNavigationEnabled.WhenSelectionFollowsFocus);
                 userType.AddEnumValue("Always", global::Microsoft.UI.Xaml.Controls.NavigationViewShoulderNavigationEnabled.Always);
@@ -907,36 +1080,72 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 52:   //  Microsoft.UI.Xaml.Controls.NavigationViewTemplateSettings
+            case 69:   //  Microsoft.UI.Xaml.Controls.NavigationViewTemplateSettings
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 53:   //  Microsoft.UI.Xaml.DependencyObject
-                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
-                break;
-
-            case 54:   //  Microsoft.Xaml.Interactivity.Interaction
+            case 70:   //  Microsoft.Xaml.Interactivity.Interaction
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
                 userType.AddMemberName("Behaviors");
                 xamlType = userType;
                 break;
 
-            case 55:   //  Microsoft.Xaml.Interactivity.BehaviorCollection
+            case 71:   //  Microsoft.Xaml.Interactivity.BehaviorCollection
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObjectCollection"));
-                userType.CollectionAdd = VectorAdd_55_BehaviorCollection;
+                userType.CollectionAdd = VectorAdd_71_BehaviorCollection;
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 56:   //  Microsoft.UI.Xaml.DependencyObjectCollection
+            case 72:   //  Microsoft.UI.Xaml.DependencyObjectCollection
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 57:   //  Microsoft.UI.Xaml.Controls.NavigationViewItem
+            case 73:   //  Microsoft.UI.Xaml.Controls.InfoBar
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Control"));
+                userType.Activator = Activate_73_InfoBar;
+                userType.SetContentPropertyName("Microsoft.UI.Xaml.Controls.InfoBar.Content");
+                userType.AddMemberName("Content");
+                userType.AddMemberName("IsOpen");
+                userType.AddMemberName("IsIconVisible");
+                userType.AddMemberName("IsClosable");
+                userType.AddMemberName("Title");
+                userType.AddMemberName("Message");
+                userType.AddMemberName("ActionButton");
+                userType.AddMemberName("CloseButtonCommand");
+                userType.AddMemberName("CloseButtonCommandParameter");
+                userType.AddMemberName("CloseButtonStyle");
+                userType.AddMemberName("ContentTemplate");
+                userType.AddMemberName("IconSource");
+                userType.AddMemberName("Severity");
+                userType.AddMemberName("TemplateSettings");
+                xamlType = userType;
+                break;
+
+            case 74:   //  Microsoft.UI.Xaml.Controls.Primitives.ButtonBase
+                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 75:   //  Microsoft.UI.Xaml.Controls.InfoBarSeverity
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
+                userType.AddEnumValue("Informational", global::Microsoft.UI.Xaml.Controls.InfoBarSeverity.Informational);
+                userType.AddEnumValue("Success", global::Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success);
+                userType.AddEnumValue("Warning", global::Microsoft.UI.Xaml.Controls.InfoBarSeverity.Warning);
+                userType.AddEnumValue("Error", global::Microsoft.UI.Xaml.Controls.InfoBarSeverity.Error);
+                xamlType = userType;
+                break;
+
+            case 76:   //  Microsoft.UI.Xaml.Controls.InfoBarTemplateSettings
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
+                userType.SetIsReturnTypeStub();
+                xamlType = userType;
+                break;
+
+            case 77:   //  Microsoft.UI.Xaml.Controls.NavigationViewItem
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationViewItemBase"));
-                userType.Activator = Activate_57_NavigationViewItem;
+                userType.Activator = Activate_77_NavigationViewItem;
                 userType.AddMemberName("Icon");
                 userType.AddMemberName("CompactPaneLength");
                 userType.AddMemberName("HasUnrealizedChildren");
@@ -949,33 +1158,33 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 58:   //  Microsoft.UI.Xaml.Controls.NavigationViewItemBase
+            case 78:   //  Microsoft.UI.Xaml.Controls.NavigationViewItemBase
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ContentControl"));
                 userType.AddMemberName("IsSelected");
                 xamlType = userType;
                 break;
 
-            case 59:   //  Microsoft.UI.Xaml.Controls.IconElement
+            case 79:   //  Microsoft.UI.Xaml.Controls.IconElement
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 60:   //  Microsoft.UI.Xaml.Controls.InfoBadge
+            case 80:   //  Microsoft.UI.Xaml.Controls.InfoBadge
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Control"));
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 61:   //  Saku_Overclock.Helpers.NavigationHelper
+            case 81:   //  Saku_Overclock.Helpers.NavigationHelper
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Object"));
-                userType.Activator = Activate_61_NavigationHelper;
+                userType.Activator = Activate_81_NavigationHelper;
                 userType.AddMemberName("NavigateTo");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 62:   //  Saku_Overclock.Behaviors.NavigationViewHeaderBehavior
+            case 82:   //  Saku_Overclock.Behaviors.NavigationViewHeaderBehavior
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.Xaml.Interactivity.Behavior`1<Microsoft.UI.Xaml.Controls.NavigationView>"));
-                userType.Activator = Activate_62_NavigationViewHeaderBehavior;
+                userType.Activator = Activate_82_NavigationViewHeaderBehavior;
                 userType.AddMemberName("DefaultHeader");
                 userType.AddMemberName("DefaultHeaderTemplate");
                 userType.AddMemberName("HeaderMode");
@@ -985,18 +1194,18 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 63:   //  Microsoft.Xaml.Interactivity.Behavior`1<Microsoft.UI.Xaml.Controls.NavigationView>
+            case 83:   //  Microsoft.Xaml.Interactivity.Behavior`1<Microsoft.UI.Xaml.Controls.NavigationView>
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.Xaml.Interactivity.Behavior"));
                 userType.AddMemberName("AssociatedObject");
                 xamlType = userType;
                 break;
 
-            case 64:   //  Microsoft.Xaml.Interactivity.Behavior
+            case 84:   //  Microsoft.Xaml.Interactivity.Behavior
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
                 xamlType = userType;
                 break;
 
-            case 65:   //  Saku_Overclock.Behaviors.NavigationViewHeaderMode
+            case 85:   //  Saku_Overclock.Behaviors.NavigationViewHeaderMode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Always", global::Saku_Overclock.Behaviors.NavigationViewHeaderMode.Always);
                 userType.AddEnumValue("Never", global::Saku_Overclock.Behaviors.NavigationViewHeaderMode.Never);
@@ -1005,64 +1214,39 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 66:   //  Saku_Overclock.Views.ShellPage
+            case 86:   //  Saku_Overclock.Views.ShellPage
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
                 userType.AddMemberName("ViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 67:   //  Saku_Overclock.ViewModels.ShellViewModel
+            case 87:   //  Saku_Overclock.ViewModels.ShellViewModel
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
                 userType.SetIsReturnTypeStub();
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 68:   //  Saku_Overclock.Views.ГлавнаяPage
+            case 88:   //  Saku_Overclock.Views.ГлавнаяPage
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_68_ГлавнаяPage;
+                userType.Activator = Activate_88_ГлавнаяPage;
                 userType.AddMemberName("SettingsPage");
                 userType.AddMemberName("ViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 69:   //  Saku_Overclock.ViewModels.ГлавнаяViewModel
+            case 89:   //  Saku_Overclock.ViewModels.ГлавнаяViewModel
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
                 userType.SetIsReturnTypeStub();
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 70:   //  Microsoft.UI.Xaml.Controls.Expander
-                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ContentControl"));
-                userType.Activator = Activate_70_Expander;
-                userType.AddMemberName("IsExpanded");
-                userType.AddMemberName("Header");
-                userType.AddMemberName("ExpandDirection");
-                userType.AddMemberName("HeaderTemplate");
-                userType.AddMemberName("HeaderTemplateSelector");
-                userType.AddMemberName("TemplateSettings");
-                xamlType = userType;
-                break;
-
-            case 71:   //  Microsoft.UI.Xaml.Controls.ExpandDirection
-                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
-                userType.AddEnumValue("Down", global::Microsoft.UI.Xaml.Controls.ExpandDirection.Down);
-                userType.AddEnumValue("Up", global::Microsoft.UI.Xaml.Controls.ExpandDirection.Up);
-                xamlType = userType;
-                break;
-
-            case 72:   //  Microsoft.UI.Xaml.Controls.ExpanderTemplateSettings
-                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
-                userType.SetIsReturnTypeStub();
-                xamlType = userType;
-                break;
-
-            case 73:   //  Microsoft.UI.Xaml.Controls.ProgressRing
+            case 90:   //  Microsoft.UI.Xaml.Controls.ProgressRing
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Control"));
-                userType.Activator = Activate_73_ProgressRing;
+                userType.Activator = Activate_90_ProgressRing;
                 userType.AddMemberName("Maximum");
                 userType.AddMemberName("Value");
                 userType.AddMemberName("IsIndeterminate");
@@ -1072,66 +1256,31 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 74:   //  Microsoft.UI.Xaml.Controls.ProgressRingTemplateSettings
+            case 91:   //  Microsoft.UI.Xaml.Controls.ProgressRingTemplateSettings
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 75:   //  Saku_Overclock.Views.ИнформацияPage
+            case 92:   //  Saku_Overclock.Views.ИнформацияPage
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_75_ИнформацияPage;
+                userType.Activator = Activate_92_ИнформацияPage;
                 userType.AddMemberName("ViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 76:   //  Saku_Overclock.ViewModels.ИнформацияViewModel
+            case 93:   //  Saku_Overclock.ViewModels.ИнформацияViewModel
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
                 userType.SetIsReturnTypeStub();
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 77:   //  Microsoft.UI.Xaml.Controls.ProgressBar
-                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Primitives.RangeBase"));
-                userType.Activator = Activate_77_ProgressBar;
-                userType.AddMemberName("IsIndeterminate");
-                userType.AddMemberName("ShowError");
-                userType.AddMemberName("ShowPaused");
-                userType.AddMemberName("TemplateSettings");
-                xamlType = userType;
-                break;
-
-            case 78:   //  Microsoft.UI.Xaml.Controls.Primitives.RangeBase
-                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
-                break;
-
-            case 79:   //  Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings
-                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
-                userType.SetIsReturnTypeStub();
-                xamlType = userType;
-                break;
-
-            case 80:   //  Saku_Overclock.Views.КулерPage
-                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_80_КулерPage;
-                userType.AddMemberName("ViewModel");
-                userType.SetIsLocalType();
-                xamlType = userType;
-                break;
-
-            case 81:   //  Saku_Overclock.ViewModels.КулерViewModel
-                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
-                userType.SetIsReturnTypeStub();
-                userType.SetIsLocalType();
-                xamlType = userType;
-                break;
-
-            case 82:   //  Microsoft.UI.Xaml.Controls.TeachingTip
+            case 94:   //  Microsoft.UI.Xaml.Controls.TeachingTip
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ContentControl"));
-                userType.Activator = Activate_82_TeachingTip;
-                userType.AddMemberName("IsOpen");
+                userType.Activator = Activate_94_TeachingTip;
+                userType.AddMemberName("Target");
                 userType.AddMemberName("Title");
                 userType.AddMemberName("Subtitle");
                 userType.AddMemberName("IconSource");
@@ -1146,26 +1295,20 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 userType.AddMemberName("HeroContent");
                 userType.AddMemberName("HeroContentPlacement");
                 userType.AddMemberName("IsLightDismissEnabled");
+                userType.AddMemberName("IsOpen");
                 userType.AddMemberName("PlacementMargin");
                 userType.AddMemberName("PreferredPlacement");
                 userType.AddMemberName("ShouldConstrainToRootBounds");
                 userType.AddMemberName("TailVisibility");
-                userType.AddMemberName("Target");
                 userType.AddMemberName("TemplateSettings");
                 xamlType = userType;
                 break;
 
-            case 83:   //  Microsoft.UI.Xaml.Controls.IconSource
+            case 95:   //  Microsoft.UI.Xaml.FrameworkElement
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 84:   //  System.Windows.Input.ICommand
-                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, null);
-                userType.SetIsReturnTypeStub();
-                xamlType = userType;
-                break;
-
-            case 85:   //  Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode
+            case 96:   //  Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Auto", global::Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode.Auto);
                 userType.AddEnumValue("Top", global::Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode.Top);
@@ -1173,7 +1316,7 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 86:   //  Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode
+            case 97:   //  Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Auto", global::Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode.Auto);
                 userType.AddEnumValue("Top", global::Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode.Top);
@@ -1192,7 +1335,7 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 87:   //  Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility
+            case 98:   //  Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("System.Enum"));
                 userType.AddEnumValue("Auto", global::Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility.Auto);
                 userType.AddEnumValue("Visible", global::Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility.Visible);
@@ -1200,49 +1343,80 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 88:   //  Microsoft.UI.Xaml.FrameworkElement
+            case 99:   //  Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
+                userType.SetIsReturnTypeStub();
+                xamlType = userType;
+                break;
+
+            case 100:   //  Microsoft.UI.Xaml.Controls.ProgressBar
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Primitives.RangeBase"));
+                userType.Activator = Activate_100_ProgressBar;
+                userType.AddMemberName("IsIndeterminate");
+                userType.AddMemberName("ShowError");
+                userType.AddMemberName("ShowPaused");
+                userType.AddMemberName("TemplateSettings");
+                xamlType = userType;
+                break;
+
+            case 101:   //  Microsoft.UI.Xaml.Controls.Primitives.RangeBase
                 xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 89:   //  Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings
+            case 102:   //  Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
                 break;
 
-            case 90:   //  Saku_Overclock.Views.ПараметрыPage
+            case 103:   //  Saku_Overclock.Views.КулерPage
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_90_ПараметрыPage;
+                userType.Activator = Activate_103_КулерPage;
                 userType.AddMemberName("ViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 91:   //  Saku_Overclock.ViewModels.ПараметрыViewModel
+            case 104:   //  Saku_Overclock.ViewModels.КулерViewModel
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
                 userType.SetIsReturnTypeStub();
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 92:   //  Saku_Overclock.Views.ПресетыPage
+            case 105:   //  Saku_Overclock.Views.ПараметрыPage
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_92_ПресетыPage;
+                userType.Activator = Activate_105_ПараметрыPage;
                 userType.AddMemberName("ViewModel");
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 93:   //  Saku_Overclock.ViewModels.ПресетыViewModel
+            case 106:   //  Saku_Overclock.ViewModels.ПараметрыViewModel
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
                 userType.SetIsReturnTypeStub();
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 94:   //  Microsoft.UI.Xaml.Controls.TreeViewNode
+            case 107:   //  Saku_Overclock.Views.ПресетыPage
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Page"));
+                userType.Activator = Activate_107_ПресетыPage;
+                userType.AddMemberName("ViewModel");
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 108:   //  Saku_Overclock.ViewModels.ПресетыViewModel
+                userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("CommunityToolkit.Mvvm.ComponentModel.ObservableRecipient"));
+                userType.SetIsReturnTypeStub();
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 109:   //  Microsoft.UI.Xaml.Controls.TreeViewNode
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Microsoft.UI.Xaml.DependencyObject"));
-                userType.Activator = Activate_94_TreeViewNode;
+                userType.Activator = Activate_109_TreeViewNode;
                 userType.AddMemberName("Children");
                 userType.AddMemberName("Content");
                 userType.AddMemberName("Depth");
@@ -1254,15 +1428,11 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case 95:   //  System.Collections.Generic.IList`1<Microsoft.UI.Xaml.Controls.TreeViewNode>
+            case 110:   //  System.Collections.Generic.IList`1<Microsoft.UI.Xaml.Controls.TreeViewNode>
                 userType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType(this, typeName, type, null);
-                userType.CollectionAdd = VectorAdd_95_IList;
+                userType.CollectionAdd = VectorAdd_110_IList;
                 userType.SetIsReturnTypeStub();
                 xamlType = userType;
-                break;
-
-            case 96:   //  Int32
-                xamlType = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
             }
             return xamlType;
@@ -1625,1137 +1795,1537 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
             var that = (global::Microsoft.UI.Xaml.CornerRadius)instance;
             that.BottomLeft = (global::System.Double)Value;
         }
-        private object get_31_NumberBox_Minimum(object instance)
+        private object get_31_TabView_TabItems(object instance)
         {
-            var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
-            return that.Minimum;
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.TabItems;
         }
-        private void set_31_NumberBox_Minimum(object instance, object Value)
+        private object get_32_TabView_CloseButtonOverlayMode(object instance)
         {
-            var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
-            that.Minimum = (global::System.Double)Value;
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.CloseButtonOverlayMode;
         }
-        private object get_32_NumberBox_Value(object instance)
+        private void set_32_TabView_CloseButtonOverlayMode(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.CloseButtonOverlayMode = (global::Microsoft.UI.Xaml.Controls.TabViewCloseButtonOverlayMode)Value;
+        }
+        private object get_33_TabView_TabWidthMode(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.TabWidthMode;
+        }
+        private void set_33_TabView_TabWidthMode(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.TabWidthMode = (global::Microsoft.UI.Xaml.Controls.TabViewWidthMode)Value;
+        }
+        private object get_34_TabView_AddTabButtonCommand(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.AddTabButtonCommand;
+        }
+        private void set_34_TabView_AddTabButtonCommand(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.AddTabButtonCommand = (global::System.Windows.Input.ICommand)Value;
+        }
+        private object get_35_TabView_AddTabButtonCommandParameter(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.AddTabButtonCommandParameter;
+        }
+        private void set_35_TabView_AddTabButtonCommandParameter(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.AddTabButtonCommandParameter = (global::System.Object)Value;
+        }
+        private object get_36_TabView_AllowDropTabs(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.AllowDropTabs;
+        }
+        private void set_36_TabView_AllowDropTabs(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.AllowDropTabs = (global::System.Boolean)Value;
+        }
+        private object get_37_TabView_CanDragTabs(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.CanDragTabs;
+        }
+        private void set_37_TabView_CanDragTabs(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.CanDragTabs = (global::System.Boolean)Value;
+        }
+        private object get_38_TabView_CanReorderTabs(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.CanReorderTabs;
+        }
+        private void set_38_TabView_CanReorderTabs(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.CanReorderTabs = (global::System.Boolean)Value;
+        }
+        private object get_39_TabView_IsAddTabButtonVisible(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.IsAddTabButtonVisible;
+        }
+        private void set_39_TabView_IsAddTabButtonVisible(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.IsAddTabButtonVisible = (global::System.Boolean)Value;
+        }
+        private object get_40_TabView_SelectedIndex(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.SelectedIndex;
+        }
+        private void set_40_TabView_SelectedIndex(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.SelectedIndex = (global::System.Int32)Value;
+        }
+        private object get_41_TabView_SelectedItem(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.SelectedItem;
+        }
+        private void set_41_TabView_SelectedItem(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.SelectedItem = (global::System.Object)Value;
+        }
+        private object get_42_TabView_TabItemTemplate(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.TabItemTemplate;
+        }
+        private void set_42_TabView_TabItemTemplate(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.TabItemTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
+        }
+        private object get_43_TabView_TabItemTemplateSelector(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.TabItemTemplateSelector;
+        }
+        private void set_43_TabView_TabItemTemplateSelector(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.TabItemTemplateSelector = (global::Microsoft.UI.Xaml.Controls.DataTemplateSelector)Value;
+        }
+        private object get_44_TabView_TabItemsSource(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.TabItemsSource;
+        }
+        private void set_44_TabView_TabItemsSource(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.TabItemsSource = (global::System.Object)Value;
+        }
+        private object get_45_TabView_TabStripFooter(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.TabStripFooter;
+        }
+        private void set_45_TabView_TabStripFooter(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.TabStripFooter = (global::System.Object)Value;
+        }
+        private object get_46_TabView_TabStripFooterTemplate(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.TabStripFooterTemplate;
+        }
+        private void set_46_TabView_TabStripFooterTemplate(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.TabStripFooterTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
+        }
+        private object get_47_TabView_TabStripHeader(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.TabStripHeader;
+        }
+        private void set_47_TabView_TabStripHeader(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.TabStripHeader = (global::System.Object)Value;
+        }
+        private object get_48_TabView_TabStripHeaderTemplate(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            return that.TabStripHeaderTemplate;
+        }
+        private void set_48_TabView_TabStripHeaderTemplate(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabView)instance;
+            that.TabStripHeaderTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
+        }
+        private object get_49_TabViewItem_Header(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabViewItem)instance;
+            return that.Header;
+        }
+        private void set_49_TabViewItem_Header(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabViewItem)instance;
+            that.Header = (global::System.Object)Value;
+        }
+        private object get_50_TabViewItem_IconSource(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabViewItem)instance;
+            return that.IconSource;
+        }
+        private void set_50_TabViewItem_IconSource(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabViewItem)instance;
+            that.IconSource = (global::Microsoft.UI.Xaml.Controls.IconSource)Value;
+        }
+        private object get_51_TabViewItem_IsClosable(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabViewItem)instance;
+            return that.IsClosable;
+        }
+        private void set_51_TabViewItem_IsClosable(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabViewItem)instance;
+            that.IsClosable = (global::System.Boolean)Value;
+        }
+        private object get_52_TabViewItem_HeaderTemplate(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabViewItem)instance;
+            return that.HeaderTemplate;
+        }
+        private void set_52_TabViewItem_HeaderTemplate(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabViewItem)instance;
+            that.HeaderTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
+        }
+        private object get_53_TabViewItem_TabViewTemplateSettings(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TabViewItem)instance;
+            return that.TabViewTemplateSettings;
+        }
+        private object get_54_NumberBox_Value(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.Value;
         }
-        private void set_32_NumberBox_Value(object instance, object Value)
+        private void set_54_NumberBox_Value(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.Value = (global::System.Double)Value;
         }
-        private object get_33_NumberBox_Maximum(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
-            return that.Maximum;
-        }
-        private void set_33_NumberBox_Maximum(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
-            that.Maximum = (global::System.Double)Value;
-        }
-        private object get_34_NumberBox_AcceptsExpression(object instance)
+        private object get_55_NumberBox_AcceptsExpression(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.AcceptsExpression;
         }
-        private void set_34_NumberBox_AcceptsExpression(object instance, object Value)
+        private void set_55_NumberBox_AcceptsExpression(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.AcceptsExpression = (global::System.Boolean)Value;
         }
-        private object get_35_NumberBox_Description(object instance)
+        private object get_56_NumberBox_Description(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.Description;
         }
-        private void set_35_NumberBox_Description(object instance, object Value)
+        private void set_56_NumberBox_Description(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.Description = (global::System.Object)Value;
         }
-        private object get_36_NumberBox_Header(object instance)
+        private object get_57_NumberBox_Header(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.Header;
         }
-        private void set_36_NumberBox_Header(object instance, object Value)
+        private void set_57_NumberBox_Header(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.Header = (global::System.Object)Value;
         }
-        private object get_37_NumberBox_HeaderTemplate(object instance)
+        private object get_58_NumberBox_HeaderTemplate(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.HeaderTemplate;
         }
-        private void set_37_NumberBox_HeaderTemplate(object instance, object Value)
+        private void set_58_NumberBox_HeaderTemplate(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.HeaderTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
         }
-        private object get_38_NumberBox_IsWrapEnabled(object instance)
+        private object get_59_NumberBox_IsWrapEnabled(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.IsWrapEnabled;
         }
-        private void set_38_NumberBox_IsWrapEnabled(object instance, object Value)
+        private void set_59_NumberBox_IsWrapEnabled(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.IsWrapEnabled = (global::System.Boolean)Value;
         }
-        private object get_39_NumberBox_LargeChange(object instance)
+        private object get_60_NumberBox_LargeChange(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.LargeChange;
         }
-        private void set_39_NumberBox_LargeChange(object instance, object Value)
+        private void set_60_NumberBox_LargeChange(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.LargeChange = (global::System.Double)Value;
         }
-        private object get_40_NumberBox_NumberFormatter(object instance)
+        private object get_61_NumberBox_Maximum(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
+            return that.Maximum;
+        }
+        private void set_61_NumberBox_Maximum(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
+            that.Maximum = (global::System.Double)Value;
+        }
+        private object get_62_NumberBox_Minimum(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
+            return that.Minimum;
+        }
+        private void set_62_NumberBox_Minimum(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
+            that.Minimum = (global::System.Double)Value;
+        }
+        private object get_63_NumberBox_NumberFormatter(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.NumberFormatter;
         }
-        private void set_40_NumberBox_NumberFormatter(object instance, object Value)
+        private void set_63_NumberBox_NumberFormatter(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.NumberFormatter = (global::Windows.Globalization.NumberFormatting.INumberFormatter2)Value;
         }
-        private object get_41_NumberBox_PlaceholderText(object instance)
+        private object get_64_NumberBox_PlaceholderText(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.PlaceholderText;
         }
-        private void set_41_NumberBox_PlaceholderText(object instance, object Value)
+        private void set_64_NumberBox_PlaceholderText(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.PlaceholderText = (global::System.String)Value;
         }
-        private object get_42_NumberBox_PreventKeyboardDisplayOnProgrammaticFocus(object instance)
+        private object get_65_NumberBox_PreventKeyboardDisplayOnProgrammaticFocus(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.PreventKeyboardDisplayOnProgrammaticFocus;
         }
-        private void set_42_NumberBox_PreventKeyboardDisplayOnProgrammaticFocus(object instance, object Value)
+        private void set_65_NumberBox_PreventKeyboardDisplayOnProgrammaticFocus(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.PreventKeyboardDisplayOnProgrammaticFocus = (global::System.Boolean)Value;
         }
-        private object get_43_NumberBox_SelectionFlyout(object instance)
+        private object get_66_NumberBox_SelectionFlyout(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.SelectionFlyout;
         }
-        private void set_43_NumberBox_SelectionFlyout(object instance, object Value)
+        private void set_66_NumberBox_SelectionFlyout(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.SelectionFlyout = (global::Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase)Value;
         }
-        private object get_44_NumberBox_SelectionHighlightColor(object instance)
+        private object get_67_NumberBox_SelectionHighlightColor(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.SelectionHighlightColor;
         }
-        private void set_44_NumberBox_SelectionHighlightColor(object instance, object Value)
+        private void set_67_NumberBox_SelectionHighlightColor(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.SelectionHighlightColor = (global::Microsoft.UI.Xaml.Media.SolidColorBrush)Value;
         }
-        private object get_45_NumberBox_SmallChange(object instance)
+        private object get_68_NumberBox_SmallChange(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.SmallChange;
         }
-        private void set_45_NumberBox_SmallChange(object instance, object Value)
+        private void set_68_NumberBox_SmallChange(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.SmallChange = (global::System.Double)Value;
         }
-        private object get_46_NumberBox_SpinButtonPlacementMode(object instance)
+        private object get_69_NumberBox_SpinButtonPlacementMode(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.SpinButtonPlacementMode;
         }
-        private void set_46_NumberBox_SpinButtonPlacementMode(object instance, object Value)
+        private void set_69_NumberBox_SpinButtonPlacementMode(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.SpinButtonPlacementMode = (global::Microsoft.UI.Xaml.Controls.NumberBoxSpinButtonPlacementMode)Value;
         }
-        private object get_47_NumberBox_Text(object instance)
+        private object get_70_NumberBox_Text(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.Text;
         }
-        private void set_47_NumberBox_Text(object instance, object Value)
+        private void set_70_NumberBox_Text(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.Text = (global::System.String)Value;
         }
-        private object get_48_NumberBox_TextReadingOrder(object instance)
+        private object get_71_NumberBox_TextReadingOrder(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.TextReadingOrder;
         }
-        private void set_48_NumberBox_TextReadingOrder(object instance, object Value)
+        private void set_71_NumberBox_TextReadingOrder(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.TextReadingOrder = (global::Microsoft.UI.Xaml.TextReadingOrder)Value;
         }
-        private object get_49_NumberBox_ValidationMode(object instance)
+        private object get_72_NumberBox_ValidationMode(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             return that.ValidationMode;
         }
-        private void set_49_NumberBox_ValidationMode(object instance, object Value)
+        private void set_72_NumberBox_ValidationMode(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.NumberBox)instance;
             that.ValidationMode = (global::Microsoft.UI.Xaml.Controls.NumberBoxValidationMode)Value;
         }
-        private object get_50_SettingsPage_ViewModel(object instance)
+        private object get_73_ToggleSplitButton_IsChecked(object instance)
         {
-            var that = (global::Saku_Overclock.Views.SettingsPage)instance;
-            return that.ViewModel;
+            var that = (global::Microsoft.UI.Xaml.Controls.ToggleSplitButton)instance;
+            return that.IsChecked;
         }
-        private object get_51_NavigationView_IsBackButtonVisible(object instance)
+        private void set_73_ToggleSplitButton_IsChecked(object instance, object Value)
         {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.IsBackButtonVisible;
+            var that = (global::Microsoft.UI.Xaml.Controls.ToggleSplitButton)instance;
+            that.IsChecked = (global::System.Boolean)Value;
         }
-        private void set_51_NavigationView_IsBackButtonVisible(object instance, object Value)
+        private object get_74_SplitButton_Flyout(object instance)
         {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.IsBackButtonVisible = (global::Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible)Value;
+            var that = (global::Microsoft.UI.Xaml.Controls.SplitButton)instance;
+            return that.Flyout;
         }
-        private object get_52_NavigationView_IsBackEnabled(object instance)
+        private void set_74_SplitButton_Flyout(object instance, object Value)
         {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.IsBackEnabled;
+            var that = (global::Microsoft.UI.Xaml.Controls.SplitButton)instance;
+            that.Flyout = (global::Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase)Value;
         }
-        private void set_52_NavigationView_IsBackEnabled(object instance, object Value)
+        private object get_75_SplitButton_Command(object instance)
         {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.IsBackEnabled = (global::System.Boolean)Value;
+            var that = (global::Microsoft.UI.Xaml.Controls.SplitButton)instance;
+            return that.Command;
         }
-        private object get_53_NavigationView_SelectedItem(object instance)
+        private void set_75_SplitButton_Command(object instance, object Value)
         {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.SelectedItem;
+            var that = (global::Microsoft.UI.Xaml.Controls.SplitButton)instance;
+            that.Command = (global::System.Windows.Input.ICommand)Value;
         }
-        private void set_53_NavigationView_SelectedItem(object instance, object Value)
+        private object get_76_SplitButton_CommandParameter(object instance)
         {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.SelectedItem = (global::System.Object)Value;
+            var that = (global::Microsoft.UI.Xaml.Controls.SplitButton)instance;
+            return that.CommandParameter;
         }
-        private object get_54_NavigationView_IsSettingsVisible(object instance)
+        private void set_76_SplitButton_CommandParameter(object instance, object Value)
         {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.IsSettingsVisible;
+            var that = (global::Microsoft.UI.Xaml.Controls.SplitButton)instance;
+            that.CommandParameter = (global::System.Object)Value;
         }
-        private void set_54_NavigationView_IsSettingsVisible(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.IsSettingsVisible = (global::System.Boolean)Value;
-        }
-        private object get_55_NavigationView_ExpandedModeThresholdWidth(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.ExpandedModeThresholdWidth;
-        }
-        private void set_55_NavigationView_ExpandedModeThresholdWidth(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.ExpandedModeThresholdWidth = (global::System.Double)Value;
-        }
-        private object get_56_NavigationView_Header(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.Header;
-        }
-        private void set_56_NavigationView_Header(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.Header = (global::System.Object)Value;
-        }
-        private object get_57_NavigationView_MenuItems(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.MenuItems;
-        }
-        private object get_58_NavigationView_HeaderTemplate(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.HeaderTemplate;
-        }
-        private void set_58_NavigationView_HeaderTemplate(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.HeaderTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
-        }
-        private object get_59_NavigationView_AlwaysShowHeader(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.AlwaysShowHeader;
-        }
-        private void set_59_NavigationView_AlwaysShowHeader(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.AlwaysShowHeader = (global::System.Boolean)Value;
-        }
-        private object get_60_NavigationView_AutoSuggestBox(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.AutoSuggestBox;
-        }
-        private void set_60_NavigationView_AutoSuggestBox(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.AutoSuggestBox = (global::Microsoft.UI.Xaml.Controls.AutoSuggestBox)Value;
-        }
-        private object get_61_NavigationView_CompactModeThresholdWidth(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.CompactModeThresholdWidth;
-        }
-        private void set_61_NavigationView_CompactModeThresholdWidth(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.CompactModeThresholdWidth = (global::System.Double)Value;
-        }
-        private object get_62_NavigationView_CompactPaneLength(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.CompactPaneLength;
-        }
-        private void set_62_NavigationView_CompactPaneLength(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.CompactPaneLength = (global::System.Double)Value;
-        }
-        private object get_63_NavigationView_ContentOverlay(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.ContentOverlay;
-        }
-        private void set_63_NavigationView_ContentOverlay(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.ContentOverlay = (global::Microsoft.UI.Xaml.UIElement)Value;
-        }
-        private object get_64_NavigationView_DisplayMode(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.DisplayMode;
-        }
-        private object get_65_NavigationView_FooterMenuItems(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.FooterMenuItems;
-        }
-        private object get_66_NavigationView_FooterMenuItemsSource(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.FooterMenuItemsSource;
-        }
-        private void set_66_NavigationView_FooterMenuItemsSource(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.FooterMenuItemsSource = (global::System.Object)Value;
-        }
-        private object get_67_NavigationView_IsPaneOpen(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.IsPaneOpen;
-        }
-        private void set_67_NavigationView_IsPaneOpen(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.IsPaneOpen = (global::System.Boolean)Value;
-        }
-        private object get_68_NavigationView_IsPaneToggleButtonVisible(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.IsPaneToggleButtonVisible;
-        }
-        private void set_68_NavigationView_IsPaneToggleButtonVisible(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.IsPaneToggleButtonVisible = (global::System.Boolean)Value;
-        }
-        private object get_69_NavigationView_IsPaneVisible(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.IsPaneVisible;
-        }
-        private void set_69_NavigationView_IsPaneVisible(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.IsPaneVisible = (global::System.Boolean)Value;
-        }
-        private object get_70_NavigationView_IsTitleBarAutoPaddingEnabled(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.IsTitleBarAutoPaddingEnabled;
-        }
-        private void set_70_NavigationView_IsTitleBarAutoPaddingEnabled(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.IsTitleBarAutoPaddingEnabled = (global::System.Boolean)Value;
-        }
-        private object get_71_NavigationView_MenuItemContainerStyle(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.MenuItemContainerStyle;
-        }
-        private void set_71_NavigationView_MenuItemContainerStyle(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.MenuItemContainerStyle = (global::Microsoft.UI.Xaml.Style)Value;
-        }
-        private object get_72_NavigationView_MenuItemContainerStyleSelector(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.MenuItemContainerStyleSelector;
-        }
-        private void set_72_NavigationView_MenuItemContainerStyleSelector(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.MenuItemContainerStyleSelector = (global::Microsoft.UI.Xaml.Controls.StyleSelector)Value;
-        }
-        private object get_73_NavigationView_MenuItemTemplate(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.MenuItemTemplate;
-        }
-        private void set_73_NavigationView_MenuItemTemplate(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.MenuItemTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
-        }
-        private object get_74_NavigationView_MenuItemTemplateSelector(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.MenuItemTemplateSelector;
-        }
-        private void set_74_NavigationView_MenuItemTemplateSelector(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.MenuItemTemplateSelector = (global::Microsoft.UI.Xaml.Controls.DataTemplateSelector)Value;
-        }
-        private object get_75_NavigationView_MenuItemsSource(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.MenuItemsSource;
-        }
-        private void set_75_NavigationView_MenuItemsSource(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.MenuItemsSource = (global::System.Object)Value;
-        }
-        private object get_76_NavigationView_OpenPaneLength(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.OpenPaneLength;
-        }
-        private void set_76_NavigationView_OpenPaneLength(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.OpenPaneLength = (global::System.Double)Value;
-        }
-        private object get_77_NavigationView_OverflowLabelMode(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.OverflowLabelMode;
-        }
-        private void set_77_NavigationView_OverflowLabelMode(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.OverflowLabelMode = (global::Microsoft.UI.Xaml.Controls.NavigationViewOverflowLabelMode)Value;
-        }
-        private object get_78_NavigationView_PaneCustomContent(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.PaneCustomContent;
-        }
-        private void set_78_NavigationView_PaneCustomContent(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.PaneCustomContent = (global::Microsoft.UI.Xaml.UIElement)Value;
-        }
-        private object get_79_NavigationView_PaneDisplayMode(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.PaneDisplayMode;
-        }
-        private void set_79_NavigationView_PaneDisplayMode(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.PaneDisplayMode = (global::Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode)Value;
-        }
-        private object get_80_NavigationView_PaneFooter(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.PaneFooter;
-        }
-        private void set_80_NavigationView_PaneFooter(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.PaneFooter = (global::Microsoft.UI.Xaml.UIElement)Value;
-        }
-        private object get_81_NavigationView_PaneHeader(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.PaneHeader;
-        }
-        private void set_81_NavigationView_PaneHeader(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.PaneHeader = (global::Microsoft.UI.Xaml.UIElement)Value;
-        }
-        private object get_82_NavigationView_PaneTitle(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.PaneTitle;
-        }
-        private void set_82_NavigationView_PaneTitle(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.PaneTitle = (global::System.String)Value;
-        }
-        private object get_83_NavigationView_PaneToggleButtonStyle(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.PaneToggleButtonStyle;
-        }
-        private void set_83_NavigationView_PaneToggleButtonStyle(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.PaneToggleButtonStyle = (global::Microsoft.UI.Xaml.Style)Value;
-        }
-        private object get_84_NavigationView_SelectionFollowsFocus(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.SelectionFollowsFocus;
-        }
-        private void set_84_NavigationView_SelectionFollowsFocus(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.SelectionFollowsFocus = (global::Microsoft.UI.Xaml.Controls.NavigationViewSelectionFollowsFocus)Value;
-        }
-        private object get_85_NavigationView_SettingsItem(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.SettingsItem;
-        }
-        private object get_86_NavigationView_ShoulderNavigationEnabled(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.ShoulderNavigationEnabled;
-        }
-        private void set_86_NavigationView_ShoulderNavigationEnabled(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            that.ShoulderNavigationEnabled = (global::Microsoft.UI.Xaml.Controls.NavigationViewShoulderNavigationEnabled)Value;
-        }
-        private object get_87_NavigationView_TemplateSettings(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
-            return that.TemplateSettings;
-        }
-        private object get_88_Interaction_Behaviors(object instance)
-        {
-            return global::Microsoft.Xaml.Interactivity.Interaction.GetBehaviors((global::Microsoft.UI.Xaml.DependencyObject)instance);
-        }
-        private void set_88_Interaction_Behaviors(object instance, object Value)
-        {
-            global::Microsoft.Xaml.Interactivity.Interaction.SetBehaviors((global::Microsoft.UI.Xaml.DependencyObject)instance, (global::Microsoft.Xaml.Interactivity.BehaviorCollection)Value);
-        }
-        private object get_89_NavigationViewItem_Icon(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            return that.Icon;
-        }
-        private void set_89_NavigationViewItem_Icon(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            that.Icon = (global::Microsoft.UI.Xaml.Controls.IconElement)Value;
-        }
-        private object get_90_NavigationViewItem_CompactPaneLength(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            return that.CompactPaneLength;
-        }
-        private object get_91_NavigationViewItem_HasUnrealizedChildren(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            return that.HasUnrealizedChildren;
-        }
-        private void set_91_NavigationViewItem_HasUnrealizedChildren(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            that.HasUnrealizedChildren = (global::System.Boolean)Value;
-        }
-        private object get_92_NavigationViewItem_InfoBadge(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            return that.InfoBadge;
-        }
-        private void set_92_NavigationViewItem_InfoBadge(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            that.InfoBadge = (global::Microsoft.UI.Xaml.Controls.InfoBadge)Value;
-        }
-        private object get_93_NavigationViewItem_IsChildSelected(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            return that.IsChildSelected;
-        }
-        private void set_93_NavigationViewItem_IsChildSelected(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            that.IsChildSelected = (global::System.Boolean)Value;
-        }
-        private object get_94_NavigationViewItem_IsExpanded(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            return that.IsExpanded;
-        }
-        private void set_94_NavigationViewItem_IsExpanded(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            that.IsExpanded = (global::System.Boolean)Value;
-        }
-        private object get_95_NavigationViewItem_MenuItems(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            return that.MenuItems;
-        }
-        private object get_96_NavigationViewItem_MenuItemsSource(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            return that.MenuItemsSource;
-        }
-        private void set_96_NavigationViewItem_MenuItemsSource(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            that.MenuItemsSource = (global::System.Object)Value;
-        }
-        private object get_97_NavigationViewItem_SelectsOnInvoked(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            return that.SelectsOnInvoked;
-        }
-        private void set_97_NavigationViewItem_SelectsOnInvoked(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
-            that.SelectsOnInvoked = (global::System.Boolean)Value;
-        }
-        private object get_98_NavigationViewItemBase_IsSelected(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItemBase)instance;
-            return that.IsSelected;
-        }
-        private void set_98_NavigationViewItemBase_IsSelected(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItemBase)instance;
-            that.IsSelected = (global::System.Boolean)Value;
-        }
-        private object get_99_NavigationHelper_NavigateTo(object instance)
-        {
-            return global::Saku_Overclock.Helpers.NavigationHelper.GetNavigateTo((global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance);
-        }
-        private void set_99_NavigationHelper_NavigateTo(object instance, object Value)
-        {
-            global::Saku_Overclock.Helpers.NavigationHelper.SetNavigateTo((global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance, (global::System.String)Value);
-        }
-        private object get_100_NavigationViewHeaderBehavior_DefaultHeader(object instance)
-        {
-            var that = (global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior)instance;
-            return that.DefaultHeader;
-        }
-        private void set_100_NavigationViewHeaderBehavior_DefaultHeader(object instance, object Value)
-        {
-            var that = (global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior)instance;
-            that.DefaultHeader = (global::System.Object)Value;
-        }
-        private object get_101_NavigationViewHeaderBehavior_DefaultHeaderTemplate(object instance)
-        {
-            var that = (global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior)instance;
-            return that.DefaultHeaderTemplate;
-        }
-        private void set_101_NavigationViewHeaderBehavior_DefaultHeaderTemplate(object instance, object Value)
-        {
-            var that = (global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior)instance;
-            that.DefaultHeaderTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
-        }
-        private object get_102_Behavior_AssociatedObject(object instance)
-        {
-            var that = (global::Microsoft.Xaml.Interactivity.Behavior<global::Microsoft.UI.Xaml.Controls.NavigationView>)instance;
-            return that.AssociatedObject;
-        }
-        private object get_103_NavigationViewHeaderBehavior_HeaderMode(object instance)
-        {
-            return global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.GetHeaderMode((global::Microsoft.UI.Xaml.Controls.Page)instance);
-        }
-        private void set_103_NavigationViewHeaderBehavior_HeaderMode(object instance, object Value)
-        {
-            global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.SetHeaderMode((global::Microsoft.UI.Xaml.Controls.Page)instance, (global::Saku_Overclock.Behaviors.NavigationViewHeaderMode)Value);
-        }
-        private object get_104_NavigationViewHeaderBehavior_HeaderContext(object instance)
-        {
-            return global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.GetHeaderContext((global::Microsoft.UI.Xaml.Controls.Page)instance);
-        }
-        private void set_104_NavigationViewHeaderBehavior_HeaderContext(object instance, object Value)
-        {
-            global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.SetHeaderContext((global::Microsoft.UI.Xaml.Controls.Page)instance, (global::System.Object)Value);
-        }
-        private object get_105_NavigationViewHeaderBehavior_HeaderTemplate(object instance)
-        {
-            return global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.GetHeaderTemplate((global::Microsoft.UI.Xaml.Controls.Page)instance);
-        }
-        private void set_105_NavigationViewHeaderBehavior_HeaderTemplate(object instance, object Value)
-        {
-            global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.SetHeaderTemplate((global::Microsoft.UI.Xaml.Controls.Page)instance, (global::Microsoft.UI.Xaml.DataTemplate)Value);
-        }
-        private object get_106_ShellPage_ViewModel(object instance)
-        {
-            var that = (global::Saku_Overclock.Views.ShellPage)instance;
-            return that.ViewModel;
-        }
-        private object get_107_ГлавнаяPage_SettingsPage(object instance)
-        {
-            var that = (global::Saku_Overclock.Views.ГлавнаяPage)instance;
-            return that.SettingsPage;
-        }
-        private void set_107_ГлавнаяPage_SettingsPage(object instance, object Value)
-        {
-            var that = (global::Saku_Overclock.Views.ГлавнаяPage)instance;
-            that.SettingsPage = (global::Saku_Overclock.Views.SettingsPage)Value;
-        }
-        private object get_108_ГлавнаяPage_ViewModel(object instance)
-        {
-            var that = (global::Saku_Overclock.Views.ГлавнаяPage)instance;
-            return that.ViewModel;
-        }
-        private object get_109_Expander_IsExpanded(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
-            return that.IsExpanded;
-        }
-        private void set_109_Expander_IsExpanded(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
-            that.IsExpanded = (global::System.Boolean)Value;
-        }
-        private object get_110_Expander_Header(object instance)
+        private object get_77_Expander_Header(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             return that.Header;
         }
-        private void set_110_Expander_Header(object instance, object Value)
+        private void set_77_Expander_Header(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             that.Header = (global::System.Object)Value;
         }
-        private object get_111_Expander_ExpandDirection(object instance)
+        private object get_78_Expander_ExpandDirection(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             return that.ExpandDirection;
         }
-        private void set_111_Expander_ExpandDirection(object instance, object Value)
+        private void set_78_Expander_ExpandDirection(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             that.ExpandDirection = (global::Microsoft.UI.Xaml.Controls.ExpandDirection)Value;
         }
-        private object get_112_Expander_HeaderTemplate(object instance)
+        private object get_79_Expander_HeaderTemplate(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             return that.HeaderTemplate;
         }
-        private void set_112_Expander_HeaderTemplate(object instance, object Value)
+        private void set_79_Expander_HeaderTemplate(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             that.HeaderTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
         }
-        private object get_113_Expander_HeaderTemplateSelector(object instance)
+        private object get_80_Expander_HeaderTemplateSelector(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             return that.HeaderTemplateSelector;
         }
-        private void set_113_Expander_HeaderTemplateSelector(object instance, object Value)
+        private void set_80_Expander_HeaderTemplateSelector(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             that.HeaderTemplateSelector = (global::Microsoft.UI.Xaml.Controls.DataTemplateSelector)Value;
         }
-        private object get_114_Expander_TemplateSettings(object instance)
+        private object get_81_Expander_IsExpanded(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
+            return that.IsExpanded;
+        }
+        private void set_81_Expander_IsExpanded(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
+            that.IsExpanded = (global::System.Boolean)Value;
+        }
+        private object get_82_Expander_TemplateSettings(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.Expander)instance;
             return that.TemplateSettings;
         }
-        private object get_115_ProgressRing_Maximum(object instance)
+        private object get_83_AdvancedКулерPage_ViewModel(object instance)
+        {
+            var that = (global::Saku_Overclock.Views.AdvancedКулерPage)instance;
+            return that.ViewModel;
+        }
+        private object get_84_SettingsPage_ViewModel(object instance)
+        {
+            var that = (global::Saku_Overclock.Views.SettingsPage)instance;
+            return that.ViewModel;
+        }
+        private object get_85_NavigationView_IsBackButtonVisible(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.IsBackButtonVisible;
+        }
+        private void set_85_NavigationView_IsBackButtonVisible(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.IsBackButtonVisible = (global::Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible)Value;
+        }
+        private object get_86_NavigationView_IsBackEnabled(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.IsBackEnabled;
+        }
+        private void set_86_NavigationView_IsBackEnabled(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.IsBackEnabled = (global::System.Boolean)Value;
+        }
+        private object get_87_NavigationView_SelectedItem(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.SelectedItem;
+        }
+        private void set_87_NavigationView_SelectedItem(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.SelectedItem = (global::System.Object)Value;
+        }
+        private object get_88_NavigationView_IsSettingsVisible(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.IsSettingsVisible;
+        }
+        private void set_88_NavigationView_IsSettingsVisible(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.IsSettingsVisible = (global::System.Boolean)Value;
+        }
+        private object get_89_NavigationView_ExpandedModeThresholdWidth(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.ExpandedModeThresholdWidth;
+        }
+        private void set_89_NavigationView_ExpandedModeThresholdWidth(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.ExpandedModeThresholdWidth = (global::System.Double)Value;
+        }
+        private object get_90_NavigationView_Header(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.Header;
+        }
+        private void set_90_NavigationView_Header(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.Header = (global::System.Object)Value;
+        }
+        private object get_91_NavigationView_MenuItems(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.MenuItems;
+        }
+        private object get_92_NavigationView_HeaderTemplate(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.HeaderTemplate;
+        }
+        private void set_92_NavigationView_HeaderTemplate(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.HeaderTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
+        }
+        private object get_93_NavigationView_AlwaysShowHeader(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.AlwaysShowHeader;
+        }
+        private void set_93_NavigationView_AlwaysShowHeader(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.AlwaysShowHeader = (global::System.Boolean)Value;
+        }
+        private object get_94_NavigationView_AutoSuggestBox(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.AutoSuggestBox;
+        }
+        private void set_94_NavigationView_AutoSuggestBox(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.AutoSuggestBox = (global::Microsoft.UI.Xaml.Controls.AutoSuggestBox)Value;
+        }
+        private object get_95_NavigationView_CompactModeThresholdWidth(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.CompactModeThresholdWidth;
+        }
+        private void set_95_NavigationView_CompactModeThresholdWidth(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.CompactModeThresholdWidth = (global::System.Double)Value;
+        }
+        private object get_96_NavigationView_CompactPaneLength(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.CompactPaneLength;
+        }
+        private void set_96_NavigationView_CompactPaneLength(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.CompactPaneLength = (global::System.Double)Value;
+        }
+        private object get_97_NavigationView_ContentOverlay(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.ContentOverlay;
+        }
+        private void set_97_NavigationView_ContentOverlay(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.ContentOverlay = (global::Microsoft.UI.Xaml.UIElement)Value;
+        }
+        private object get_98_NavigationView_DisplayMode(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.DisplayMode;
+        }
+        private object get_99_NavigationView_FooterMenuItems(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.FooterMenuItems;
+        }
+        private object get_100_NavigationView_FooterMenuItemsSource(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.FooterMenuItemsSource;
+        }
+        private void set_100_NavigationView_FooterMenuItemsSource(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.FooterMenuItemsSource = (global::System.Object)Value;
+        }
+        private object get_101_NavigationView_IsPaneOpen(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.IsPaneOpen;
+        }
+        private void set_101_NavigationView_IsPaneOpen(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.IsPaneOpen = (global::System.Boolean)Value;
+        }
+        private object get_102_NavigationView_IsPaneToggleButtonVisible(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.IsPaneToggleButtonVisible;
+        }
+        private void set_102_NavigationView_IsPaneToggleButtonVisible(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.IsPaneToggleButtonVisible = (global::System.Boolean)Value;
+        }
+        private object get_103_NavigationView_IsPaneVisible(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.IsPaneVisible;
+        }
+        private void set_103_NavigationView_IsPaneVisible(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.IsPaneVisible = (global::System.Boolean)Value;
+        }
+        private object get_104_NavigationView_IsTitleBarAutoPaddingEnabled(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.IsTitleBarAutoPaddingEnabled;
+        }
+        private void set_104_NavigationView_IsTitleBarAutoPaddingEnabled(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.IsTitleBarAutoPaddingEnabled = (global::System.Boolean)Value;
+        }
+        private object get_105_NavigationView_MenuItemContainerStyle(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.MenuItemContainerStyle;
+        }
+        private void set_105_NavigationView_MenuItemContainerStyle(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.MenuItemContainerStyle = (global::Microsoft.UI.Xaml.Style)Value;
+        }
+        private object get_106_NavigationView_MenuItemContainerStyleSelector(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.MenuItemContainerStyleSelector;
+        }
+        private void set_106_NavigationView_MenuItemContainerStyleSelector(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.MenuItemContainerStyleSelector = (global::Microsoft.UI.Xaml.Controls.StyleSelector)Value;
+        }
+        private object get_107_NavigationView_MenuItemTemplate(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.MenuItemTemplate;
+        }
+        private void set_107_NavigationView_MenuItemTemplate(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.MenuItemTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
+        }
+        private object get_108_NavigationView_MenuItemTemplateSelector(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.MenuItemTemplateSelector;
+        }
+        private void set_108_NavigationView_MenuItemTemplateSelector(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.MenuItemTemplateSelector = (global::Microsoft.UI.Xaml.Controls.DataTemplateSelector)Value;
+        }
+        private object get_109_NavigationView_MenuItemsSource(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.MenuItemsSource;
+        }
+        private void set_109_NavigationView_MenuItemsSource(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.MenuItemsSource = (global::System.Object)Value;
+        }
+        private object get_110_NavigationView_OpenPaneLength(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.OpenPaneLength;
+        }
+        private void set_110_NavigationView_OpenPaneLength(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.OpenPaneLength = (global::System.Double)Value;
+        }
+        private object get_111_NavigationView_OverflowLabelMode(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.OverflowLabelMode;
+        }
+        private void set_111_NavigationView_OverflowLabelMode(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.OverflowLabelMode = (global::Microsoft.UI.Xaml.Controls.NavigationViewOverflowLabelMode)Value;
+        }
+        private object get_112_NavigationView_PaneCustomContent(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.PaneCustomContent;
+        }
+        private void set_112_NavigationView_PaneCustomContent(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.PaneCustomContent = (global::Microsoft.UI.Xaml.UIElement)Value;
+        }
+        private object get_113_NavigationView_PaneDisplayMode(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.PaneDisplayMode;
+        }
+        private void set_113_NavigationView_PaneDisplayMode(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.PaneDisplayMode = (global::Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode)Value;
+        }
+        private object get_114_NavigationView_PaneFooter(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.PaneFooter;
+        }
+        private void set_114_NavigationView_PaneFooter(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.PaneFooter = (global::Microsoft.UI.Xaml.UIElement)Value;
+        }
+        private object get_115_NavigationView_PaneHeader(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.PaneHeader;
+        }
+        private void set_115_NavigationView_PaneHeader(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.PaneHeader = (global::Microsoft.UI.Xaml.UIElement)Value;
+        }
+        private object get_116_NavigationView_PaneTitle(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.PaneTitle;
+        }
+        private void set_116_NavigationView_PaneTitle(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.PaneTitle = (global::System.String)Value;
+        }
+        private object get_117_NavigationView_PaneToggleButtonStyle(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.PaneToggleButtonStyle;
+        }
+        private void set_117_NavigationView_PaneToggleButtonStyle(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.PaneToggleButtonStyle = (global::Microsoft.UI.Xaml.Style)Value;
+        }
+        private object get_118_NavigationView_SelectionFollowsFocus(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.SelectionFollowsFocus;
+        }
+        private void set_118_NavigationView_SelectionFollowsFocus(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.SelectionFollowsFocus = (global::Microsoft.UI.Xaml.Controls.NavigationViewSelectionFollowsFocus)Value;
+        }
+        private object get_119_NavigationView_SettingsItem(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.SettingsItem;
+        }
+        private object get_120_NavigationView_ShoulderNavigationEnabled(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.ShoulderNavigationEnabled;
+        }
+        private void set_120_NavigationView_ShoulderNavigationEnabled(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            that.ShoulderNavigationEnabled = (global::Microsoft.UI.Xaml.Controls.NavigationViewShoulderNavigationEnabled)Value;
+        }
+        private object get_121_NavigationView_TemplateSettings(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationView)instance;
+            return that.TemplateSettings;
+        }
+        private object get_122_Interaction_Behaviors(object instance)
+        {
+            return global::Microsoft.Xaml.Interactivity.Interaction.GetBehaviors((global::Microsoft.UI.Xaml.DependencyObject)instance);
+        }
+        private void set_122_Interaction_Behaviors(object instance, object Value)
+        {
+            global::Microsoft.Xaml.Interactivity.Interaction.SetBehaviors((global::Microsoft.UI.Xaml.DependencyObject)instance, (global::Microsoft.Xaml.Interactivity.BehaviorCollection)Value);
+        }
+        private object get_123_InfoBar_Content(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.Content;
+        }
+        private void set_123_InfoBar_Content(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.Content = (global::System.Object)Value;
+        }
+        private object get_124_InfoBar_IsOpen(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.IsOpen;
+        }
+        private void set_124_InfoBar_IsOpen(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.IsOpen = (global::System.Boolean)Value;
+        }
+        private object get_125_InfoBar_IsIconVisible(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.IsIconVisible;
+        }
+        private void set_125_InfoBar_IsIconVisible(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.IsIconVisible = (global::System.Boolean)Value;
+        }
+        private object get_126_InfoBar_IsClosable(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.IsClosable;
+        }
+        private void set_126_InfoBar_IsClosable(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.IsClosable = (global::System.Boolean)Value;
+        }
+        private object get_127_InfoBar_Title(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.Title;
+        }
+        private void set_127_InfoBar_Title(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.Title = (global::System.String)Value;
+        }
+        private object get_128_InfoBar_Message(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.Message;
+        }
+        private void set_128_InfoBar_Message(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.Message = (global::System.String)Value;
+        }
+        private object get_129_InfoBar_ActionButton(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.ActionButton;
+        }
+        private void set_129_InfoBar_ActionButton(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.ActionButton = (global::Microsoft.UI.Xaml.Controls.Primitives.ButtonBase)Value;
+        }
+        private object get_130_InfoBar_CloseButtonCommand(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.CloseButtonCommand;
+        }
+        private void set_130_InfoBar_CloseButtonCommand(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.CloseButtonCommand = (global::System.Windows.Input.ICommand)Value;
+        }
+        private object get_131_InfoBar_CloseButtonCommandParameter(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.CloseButtonCommandParameter;
+        }
+        private void set_131_InfoBar_CloseButtonCommandParameter(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.CloseButtonCommandParameter = (global::System.Object)Value;
+        }
+        private object get_132_InfoBar_CloseButtonStyle(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.CloseButtonStyle;
+        }
+        private void set_132_InfoBar_CloseButtonStyle(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.CloseButtonStyle = (global::Microsoft.UI.Xaml.Style)Value;
+        }
+        private object get_133_InfoBar_ContentTemplate(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.ContentTemplate;
+        }
+        private void set_133_InfoBar_ContentTemplate(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.ContentTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
+        }
+        private object get_134_InfoBar_IconSource(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.IconSource;
+        }
+        private void set_134_InfoBar_IconSource(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.IconSource = (global::Microsoft.UI.Xaml.Controls.IconSource)Value;
+        }
+        private object get_135_InfoBar_Severity(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.Severity;
+        }
+        private void set_135_InfoBar_Severity(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            that.Severity = (global::Microsoft.UI.Xaml.Controls.InfoBarSeverity)Value;
+        }
+        private object get_136_InfoBar_TemplateSettings(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.InfoBar)instance;
+            return that.TemplateSettings;
+        }
+        private object get_137_NavigationViewItem_Icon(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            return that.Icon;
+        }
+        private void set_137_NavigationViewItem_Icon(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            that.Icon = (global::Microsoft.UI.Xaml.Controls.IconElement)Value;
+        }
+        private object get_138_NavigationViewItem_CompactPaneLength(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            return that.CompactPaneLength;
+        }
+        private object get_139_NavigationViewItem_HasUnrealizedChildren(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            return that.HasUnrealizedChildren;
+        }
+        private void set_139_NavigationViewItem_HasUnrealizedChildren(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            that.HasUnrealizedChildren = (global::System.Boolean)Value;
+        }
+        private object get_140_NavigationViewItem_InfoBadge(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            return that.InfoBadge;
+        }
+        private void set_140_NavigationViewItem_InfoBadge(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            that.InfoBadge = (global::Microsoft.UI.Xaml.Controls.InfoBadge)Value;
+        }
+        private object get_141_NavigationViewItem_IsChildSelected(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            return that.IsChildSelected;
+        }
+        private void set_141_NavigationViewItem_IsChildSelected(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            that.IsChildSelected = (global::System.Boolean)Value;
+        }
+        private object get_142_NavigationViewItem_IsExpanded(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            return that.IsExpanded;
+        }
+        private void set_142_NavigationViewItem_IsExpanded(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            that.IsExpanded = (global::System.Boolean)Value;
+        }
+        private object get_143_NavigationViewItem_MenuItems(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            return that.MenuItems;
+        }
+        private object get_144_NavigationViewItem_MenuItemsSource(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            return that.MenuItemsSource;
+        }
+        private void set_144_NavigationViewItem_MenuItemsSource(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            that.MenuItemsSource = (global::System.Object)Value;
+        }
+        private object get_145_NavigationViewItem_SelectsOnInvoked(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            return that.SelectsOnInvoked;
+        }
+        private void set_145_NavigationViewItem_SelectsOnInvoked(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance;
+            that.SelectsOnInvoked = (global::System.Boolean)Value;
+        }
+        private object get_146_NavigationViewItemBase_IsSelected(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItemBase)instance;
+            return that.IsSelected;
+        }
+        private void set_146_NavigationViewItemBase_IsSelected(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.NavigationViewItemBase)instance;
+            that.IsSelected = (global::System.Boolean)Value;
+        }
+        private object get_147_NavigationHelper_NavigateTo(object instance)
+        {
+            return global::Saku_Overclock.Helpers.NavigationHelper.GetNavigateTo((global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance);
+        }
+        private void set_147_NavigationHelper_NavigateTo(object instance, object Value)
+        {
+            global::Saku_Overclock.Helpers.NavigationHelper.SetNavigateTo((global::Microsoft.UI.Xaml.Controls.NavigationViewItem)instance, (global::System.String)Value);
+        }
+        private object get_148_NavigationViewHeaderBehavior_DefaultHeader(object instance)
+        {
+            var that = (global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior)instance;
+            return that.DefaultHeader;
+        }
+        private void set_148_NavigationViewHeaderBehavior_DefaultHeader(object instance, object Value)
+        {
+            var that = (global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior)instance;
+            that.DefaultHeader = (global::System.Object)Value;
+        }
+        private object get_149_NavigationViewHeaderBehavior_DefaultHeaderTemplate(object instance)
+        {
+            var that = (global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior)instance;
+            return that.DefaultHeaderTemplate;
+        }
+        private void set_149_NavigationViewHeaderBehavior_DefaultHeaderTemplate(object instance, object Value)
+        {
+            var that = (global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior)instance;
+            that.DefaultHeaderTemplate = (global::Microsoft.UI.Xaml.DataTemplate)Value;
+        }
+        private object get_150_Behavior_AssociatedObject(object instance)
+        {
+            var that = (global::Microsoft.Xaml.Interactivity.Behavior<global::Microsoft.UI.Xaml.Controls.NavigationView>)instance;
+            return that.AssociatedObject;
+        }
+        private object get_151_NavigationViewHeaderBehavior_HeaderMode(object instance)
+        {
+            return global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.GetHeaderMode((global::Microsoft.UI.Xaml.Controls.Page)instance);
+        }
+        private void set_151_NavigationViewHeaderBehavior_HeaderMode(object instance, object Value)
+        {
+            global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.SetHeaderMode((global::Microsoft.UI.Xaml.Controls.Page)instance, (global::Saku_Overclock.Behaviors.NavigationViewHeaderMode)Value);
+        }
+        private object get_152_NavigationViewHeaderBehavior_HeaderContext(object instance)
+        {
+            return global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.GetHeaderContext((global::Microsoft.UI.Xaml.Controls.Page)instance);
+        }
+        private void set_152_NavigationViewHeaderBehavior_HeaderContext(object instance, object Value)
+        {
+            global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.SetHeaderContext((global::Microsoft.UI.Xaml.Controls.Page)instance, (global::System.Object)Value);
+        }
+        private object get_153_NavigationViewHeaderBehavior_HeaderTemplate(object instance)
+        {
+            return global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.GetHeaderTemplate((global::Microsoft.UI.Xaml.Controls.Page)instance);
+        }
+        private void set_153_NavigationViewHeaderBehavior_HeaderTemplate(object instance, object Value)
+        {
+            global::Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.SetHeaderTemplate((global::Microsoft.UI.Xaml.Controls.Page)instance, (global::Microsoft.UI.Xaml.DataTemplate)Value);
+        }
+        private object get_154_ShellPage_ViewModel(object instance)
+        {
+            var that = (global::Saku_Overclock.Views.ShellPage)instance;
+            return that.ViewModel;
+        }
+        private object get_155_ГлавнаяPage_SettingsPage(object instance)
+        {
+            var that = (global::Saku_Overclock.Views.ГлавнаяPage)instance;
+            return that.SettingsPage;
+        }
+        private void set_155_ГлавнаяPage_SettingsPage(object instance, object Value)
+        {
+            var that = (global::Saku_Overclock.Views.ГлавнаяPage)instance;
+            that.SettingsPage = (global::Saku_Overclock.Views.SettingsPage)Value;
+        }
+        private object get_156_ГлавнаяPage_ViewModel(object instance)
+        {
+            var that = (global::Saku_Overclock.Views.ГлавнаяPage)instance;
+            return that.ViewModel;
+        }
+        private object get_157_ProgressRing_Maximum(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
             return that.Maximum;
         }
-        private void set_115_ProgressRing_Maximum(object instance, object Value)
+        private void set_157_ProgressRing_Maximum(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
             that.Maximum = (global::System.Double)Value;
         }
-        private object get_116_ProgressRing_Value(object instance)
+        private object get_158_ProgressRing_Value(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
             return that.Value;
         }
-        private void set_116_ProgressRing_Value(object instance, object Value)
+        private void set_158_ProgressRing_Value(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
             that.Value = (global::System.Double)Value;
         }
-        private object get_117_ProgressRing_IsIndeterminate(object instance)
+        private object get_159_ProgressRing_IsIndeterminate(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
             return that.IsIndeterminate;
         }
-        private void set_117_ProgressRing_IsIndeterminate(object instance, object Value)
+        private void set_159_ProgressRing_IsIndeterminate(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
             that.IsIndeterminate = (global::System.Boolean)Value;
         }
-        private object get_118_ProgressRing_IsActive(object instance)
+        private object get_160_ProgressRing_IsActive(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
             return that.IsActive;
         }
-        private void set_118_ProgressRing_IsActive(object instance, object Value)
+        private void set_160_ProgressRing_IsActive(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
             that.IsActive = (global::System.Boolean)Value;
         }
-        private object get_119_ProgressRing_Minimum(object instance)
+        private object get_161_ProgressRing_Minimum(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
             return that.Minimum;
         }
-        private void set_119_ProgressRing_Minimum(object instance, object Value)
+        private void set_161_ProgressRing_Minimum(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
             that.Minimum = (global::System.Double)Value;
         }
-        private object get_120_ProgressRing_TemplateSettings(object instance)
+        private object get_162_ProgressRing_TemplateSettings(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.ProgressRing)instance;
             return that.TemplateSettings;
         }
-        private object get_121_ИнформацияPage_ViewModel(object instance)
+        private object get_163_ИнформацияPage_ViewModel(object instance)
         {
             var that = (global::Saku_Overclock.Views.ИнформацияPage)instance;
             return that.ViewModel;
         }
-        private object get_122_ProgressBar_IsIndeterminate(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
-            return that.IsIndeterminate;
-        }
-        private void set_122_ProgressBar_IsIndeterminate(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
-            that.IsIndeterminate = (global::System.Boolean)Value;
-        }
-        private object get_123_ProgressBar_ShowError(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
-            return that.ShowError;
-        }
-        private void set_123_ProgressBar_ShowError(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
-            that.ShowError = (global::System.Boolean)Value;
-        }
-        private object get_124_ProgressBar_ShowPaused(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
-            return that.ShowPaused;
-        }
-        private void set_124_ProgressBar_ShowPaused(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
-            that.ShowPaused = (global::System.Boolean)Value;
-        }
-        private object get_125_ProgressBar_TemplateSettings(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
-            return that.TemplateSettings;
-        }
-        private object get_126_КулерPage_ViewModel(object instance)
-        {
-            var that = (global::Saku_Overclock.Views.КулерPage)instance;
-            return that.ViewModel;
-        }
-        private object get_127_TeachingTip_IsOpen(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.IsOpen;
-        }
-        private void set_127_TeachingTip_IsOpen(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.IsOpen = (global::System.Boolean)Value;
-        }
-        private object get_128_TeachingTip_Title(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.Title;
-        }
-        private void set_128_TeachingTip_Title(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.Title = (global::System.String)Value;
-        }
-        private object get_129_TeachingTip_Subtitle(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.Subtitle;
-        }
-        private void set_129_TeachingTip_Subtitle(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.Subtitle = (global::System.String)Value;
-        }
-        private object get_130_TeachingTip_IconSource(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.IconSource;
-        }
-        private void set_130_TeachingTip_IconSource(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.IconSource = (global::Microsoft.UI.Xaml.Controls.IconSource)Value;
-        }
-        private object get_131_TeachingTip_ActionButtonCommand(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.ActionButtonCommand;
-        }
-        private void set_131_TeachingTip_ActionButtonCommand(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.ActionButtonCommand = (global::System.Windows.Input.ICommand)Value;
-        }
-        private object get_132_TeachingTip_ActionButtonCommandParameter(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.ActionButtonCommandParameter;
-        }
-        private void set_132_TeachingTip_ActionButtonCommandParameter(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.ActionButtonCommandParameter = (global::System.Object)Value;
-        }
-        private object get_133_TeachingTip_ActionButtonContent(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.ActionButtonContent;
-        }
-        private void set_133_TeachingTip_ActionButtonContent(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.ActionButtonContent = (global::System.Object)Value;
-        }
-        private object get_134_TeachingTip_ActionButtonStyle(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.ActionButtonStyle;
-        }
-        private void set_134_TeachingTip_ActionButtonStyle(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.ActionButtonStyle = (global::Microsoft.UI.Xaml.Style)Value;
-        }
-        private object get_135_TeachingTip_CloseButtonCommand(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.CloseButtonCommand;
-        }
-        private void set_135_TeachingTip_CloseButtonCommand(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.CloseButtonCommand = (global::System.Windows.Input.ICommand)Value;
-        }
-        private object get_136_TeachingTip_CloseButtonCommandParameter(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.CloseButtonCommandParameter;
-        }
-        private void set_136_TeachingTip_CloseButtonCommandParameter(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.CloseButtonCommandParameter = (global::System.Object)Value;
-        }
-        private object get_137_TeachingTip_CloseButtonContent(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.CloseButtonContent;
-        }
-        private void set_137_TeachingTip_CloseButtonContent(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.CloseButtonContent = (global::System.Object)Value;
-        }
-        private object get_138_TeachingTip_CloseButtonStyle(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.CloseButtonStyle;
-        }
-        private void set_138_TeachingTip_CloseButtonStyle(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.CloseButtonStyle = (global::Microsoft.UI.Xaml.Style)Value;
-        }
-        private object get_139_TeachingTip_HeroContent(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.HeroContent;
-        }
-        private void set_139_TeachingTip_HeroContent(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.HeroContent = (global::Microsoft.UI.Xaml.UIElement)Value;
-        }
-        private object get_140_TeachingTip_HeroContentPlacement(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.HeroContentPlacement;
-        }
-        private void set_140_TeachingTip_HeroContentPlacement(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.HeroContentPlacement = (global::Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode)Value;
-        }
-        private object get_141_TeachingTip_IsLightDismissEnabled(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.IsLightDismissEnabled;
-        }
-        private void set_141_TeachingTip_IsLightDismissEnabled(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.IsLightDismissEnabled = (global::System.Boolean)Value;
-        }
-        private object get_142_TeachingTip_PlacementMargin(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.PlacementMargin;
-        }
-        private void set_142_TeachingTip_PlacementMargin(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.PlacementMargin = (global::Microsoft.UI.Xaml.Thickness)Value;
-        }
-        private object get_143_TeachingTip_PreferredPlacement(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.PreferredPlacement;
-        }
-        private void set_143_TeachingTip_PreferredPlacement(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.PreferredPlacement = (global::Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode)Value;
-        }
-        private object get_144_TeachingTip_ShouldConstrainToRootBounds(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.ShouldConstrainToRootBounds;
-        }
-        private void set_144_TeachingTip_ShouldConstrainToRootBounds(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.ShouldConstrainToRootBounds = (global::System.Boolean)Value;
-        }
-        private object get_145_TeachingTip_TailVisibility(object instance)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            return that.TailVisibility;
-        }
-        private void set_145_TeachingTip_TailVisibility(object instance, object Value)
-        {
-            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
-            that.TailVisibility = (global::Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility)Value;
-        }
-        private object get_146_TeachingTip_Target(object instance)
+        private object get_164_TeachingTip_Target(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.Target;
         }
-        private void set_146_TeachingTip_Target(object instance, object Value)
+        private void set_164_TeachingTip_Target(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             that.Target = (global::Microsoft.UI.Xaml.FrameworkElement)Value;
         }
-        private object get_147_TeachingTip_TemplateSettings(object instance)
+        private object get_165_TeachingTip_Title(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.Title;
+        }
+        private void set_165_TeachingTip_Title(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.Title = (global::System.String)Value;
+        }
+        private object get_166_TeachingTip_Subtitle(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.Subtitle;
+        }
+        private void set_166_TeachingTip_Subtitle(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.Subtitle = (global::System.String)Value;
+        }
+        private object get_167_TeachingTip_IconSource(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.IconSource;
+        }
+        private void set_167_TeachingTip_IconSource(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.IconSource = (global::Microsoft.UI.Xaml.Controls.IconSource)Value;
+        }
+        private object get_168_TeachingTip_ActionButtonCommand(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.ActionButtonCommand;
+        }
+        private void set_168_TeachingTip_ActionButtonCommand(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.ActionButtonCommand = (global::System.Windows.Input.ICommand)Value;
+        }
+        private object get_169_TeachingTip_ActionButtonCommandParameter(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.ActionButtonCommandParameter;
+        }
+        private void set_169_TeachingTip_ActionButtonCommandParameter(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.ActionButtonCommandParameter = (global::System.Object)Value;
+        }
+        private object get_170_TeachingTip_ActionButtonContent(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.ActionButtonContent;
+        }
+        private void set_170_TeachingTip_ActionButtonContent(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.ActionButtonContent = (global::System.Object)Value;
+        }
+        private object get_171_TeachingTip_ActionButtonStyle(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.ActionButtonStyle;
+        }
+        private void set_171_TeachingTip_ActionButtonStyle(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.ActionButtonStyle = (global::Microsoft.UI.Xaml.Style)Value;
+        }
+        private object get_172_TeachingTip_CloseButtonCommand(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.CloseButtonCommand;
+        }
+        private void set_172_TeachingTip_CloseButtonCommand(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.CloseButtonCommand = (global::System.Windows.Input.ICommand)Value;
+        }
+        private object get_173_TeachingTip_CloseButtonCommandParameter(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.CloseButtonCommandParameter;
+        }
+        private void set_173_TeachingTip_CloseButtonCommandParameter(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.CloseButtonCommandParameter = (global::System.Object)Value;
+        }
+        private object get_174_TeachingTip_CloseButtonContent(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.CloseButtonContent;
+        }
+        private void set_174_TeachingTip_CloseButtonContent(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.CloseButtonContent = (global::System.Object)Value;
+        }
+        private object get_175_TeachingTip_CloseButtonStyle(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.CloseButtonStyle;
+        }
+        private void set_175_TeachingTip_CloseButtonStyle(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.CloseButtonStyle = (global::Microsoft.UI.Xaml.Style)Value;
+        }
+        private object get_176_TeachingTip_HeroContent(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.HeroContent;
+        }
+        private void set_176_TeachingTip_HeroContent(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.HeroContent = (global::Microsoft.UI.Xaml.UIElement)Value;
+        }
+        private object get_177_TeachingTip_HeroContentPlacement(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.HeroContentPlacement;
+        }
+        private void set_177_TeachingTip_HeroContentPlacement(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.HeroContentPlacement = (global::Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode)Value;
+        }
+        private object get_178_TeachingTip_IsLightDismissEnabled(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.IsLightDismissEnabled;
+        }
+        private void set_178_TeachingTip_IsLightDismissEnabled(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.IsLightDismissEnabled = (global::System.Boolean)Value;
+        }
+        private object get_179_TeachingTip_IsOpen(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.IsOpen;
+        }
+        private void set_179_TeachingTip_IsOpen(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.IsOpen = (global::System.Boolean)Value;
+        }
+        private object get_180_TeachingTip_PlacementMargin(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.PlacementMargin;
+        }
+        private void set_180_TeachingTip_PlacementMargin(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.PlacementMargin = (global::Microsoft.UI.Xaml.Thickness)Value;
+        }
+        private object get_181_TeachingTip_PreferredPlacement(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.PreferredPlacement;
+        }
+        private void set_181_TeachingTip_PreferredPlacement(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.PreferredPlacement = (global::Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode)Value;
+        }
+        private object get_182_TeachingTip_ShouldConstrainToRootBounds(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.ShouldConstrainToRootBounds;
+        }
+        private void set_182_TeachingTip_ShouldConstrainToRootBounds(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.ShouldConstrainToRootBounds = (global::System.Boolean)Value;
+        }
+        private object get_183_TeachingTip_TailVisibility(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            return that.TailVisibility;
+        }
+        private void set_183_TeachingTip_TailVisibility(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
+            that.TailVisibility = (global::Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility)Value;
+        }
+        private object get_184_TeachingTip_TemplateSettings(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TeachingTip)instance;
             return that.TemplateSettings;
         }
-        private object get_148_ПараметрыPage_ViewModel(object instance)
+        private object get_185_ProgressBar_IsIndeterminate(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
+            return that.IsIndeterminate;
+        }
+        private void set_185_ProgressBar_IsIndeterminate(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
+            that.IsIndeterminate = (global::System.Boolean)Value;
+        }
+        private object get_186_ProgressBar_ShowError(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
+            return that.ShowError;
+        }
+        private void set_186_ProgressBar_ShowError(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
+            that.ShowError = (global::System.Boolean)Value;
+        }
+        private object get_187_ProgressBar_ShowPaused(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
+            return that.ShowPaused;
+        }
+        private void set_187_ProgressBar_ShowPaused(object instance, object Value)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
+            that.ShowPaused = (global::System.Boolean)Value;
+        }
+        private object get_188_ProgressBar_TemplateSettings(object instance)
+        {
+            var that = (global::Microsoft.UI.Xaml.Controls.ProgressBar)instance;
+            return that.TemplateSettings;
+        }
+        private object get_189_КулерPage_ViewModel(object instance)
+        {
+            var that = (global::Saku_Overclock.Views.КулерPage)instance;
+            return that.ViewModel;
+        }
+        private object get_190_ПараметрыPage_ViewModel(object instance)
         {
             var that = (global::Saku_Overclock.Views.ПараметрыPage)instance;
             return that.ViewModel;
         }
-        private object get_149_ПресетыPage_ViewModel(object instance)
+        private object get_191_ПресетыPage_ViewModel(object instance)
         {
             var that = (global::Saku_Overclock.Views.ПресетыPage)instance;
             return that.ViewModel;
         }
-        private object get_150_TreeViewNode_Children(object instance)
+        private object get_192_TreeViewNode_Children(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.Children;
         }
-        private object get_151_TreeViewNode_Content(object instance)
+        private object get_193_TreeViewNode_Content(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.Content;
         }
-        private void set_151_TreeViewNode_Content(object instance, object Value)
+        private void set_193_TreeViewNode_Content(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             that.Content = (global::System.Object)Value;
         }
-        private object get_152_TreeViewNode_Depth(object instance)
+        private object get_194_TreeViewNode_Depth(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.Depth;
         }
-        private object get_153_TreeViewNode_HasChildren(object instance)
+        private object get_195_TreeViewNode_HasChildren(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.HasChildren;
         }
-        private object get_154_TreeViewNode_HasUnrealizedChildren(object instance)
+        private object get_196_TreeViewNode_HasUnrealizedChildren(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.HasUnrealizedChildren;
         }
-        private void set_154_TreeViewNode_HasUnrealizedChildren(object instance, object Value)
+        private void set_196_TreeViewNode_HasUnrealizedChildren(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             that.HasUnrealizedChildren = (global::System.Boolean)Value;
         }
-        private object get_155_TreeViewNode_IsExpanded(object instance)
+        private object get_197_TreeViewNode_IsExpanded(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.IsExpanded;
         }
-        private void set_155_TreeViewNode_IsExpanded(object instance, object Value)
+        private void set_197_TreeViewNode_IsExpanded(object instance, object Value)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             that.IsExpanded = (global::System.Boolean)Value;
         }
-        private object get_156_TreeViewNode_Parent(object instance)
+        private object get_198_TreeViewNode_Parent(object instance)
         {
             var that = (global::Microsoft.UI.Xaml.Controls.TreeViewNode)instance;
             return that.Parent;
@@ -2956,402 +3526,638 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlMember.Getter = get_30_CornerRadius_BottomLeft;
                 xamlMember.Setter = set_30_CornerRadius_BottomLeft;
                 break;
-            case "Microsoft.UI.Xaml.Controls.NumberBox.Minimum":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Minimum", "Double");
+            case "Microsoft.UI.Xaml.Controls.TabView.TabItems":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TabItems", "System.Collections.Generic.IList`1<Object>");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_31_NumberBox_Minimum;
-                xamlMember.Setter = set_31_NumberBox_Minimum;
+                xamlMember.Getter = get_31_TabView_TabItems;
+                xamlMember.SetIsReadOnly();
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.CloseButtonOverlayMode":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonOverlayMode", "Microsoft.UI.Xaml.Controls.TabViewCloseButtonOverlayMode");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_32_TabView_CloseButtonOverlayMode;
+                xamlMember.Setter = set_32_TabView_CloseButtonOverlayMode;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.TabWidthMode":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TabWidthMode", "Microsoft.UI.Xaml.Controls.TabViewWidthMode");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_33_TabView_TabWidthMode;
+                xamlMember.Setter = set_33_TabView_TabWidthMode;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.AddTabButtonCommand":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "AddTabButtonCommand", "System.Windows.Input.ICommand");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_34_TabView_AddTabButtonCommand;
+                xamlMember.Setter = set_34_TabView_AddTabButtonCommand;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.AddTabButtonCommandParameter":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "AddTabButtonCommandParameter", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_35_TabView_AddTabButtonCommandParameter;
+                xamlMember.Setter = set_35_TabView_AddTabButtonCommandParameter;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.AllowDropTabs":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "AllowDropTabs", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_36_TabView_AllowDropTabs;
+                xamlMember.Setter = set_36_TabView_AllowDropTabs;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.CanDragTabs":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CanDragTabs", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_37_TabView_CanDragTabs;
+                xamlMember.Setter = set_37_TabView_CanDragTabs;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.CanReorderTabs":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CanReorderTabs", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_38_TabView_CanReorderTabs;
+                xamlMember.Setter = set_38_TabView_CanReorderTabs;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.IsAddTabButtonVisible":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsAddTabButtonVisible", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_39_TabView_IsAddTabButtonVisible;
+                xamlMember.Setter = set_39_TabView_IsAddTabButtonVisible;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.SelectedIndex":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "SelectedIndex", "Int32");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_40_TabView_SelectedIndex;
+                xamlMember.Setter = set_40_TabView_SelectedIndex;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.SelectedItem":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "SelectedItem", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_41_TabView_SelectedItem;
+                xamlMember.Setter = set_41_TabView_SelectedItem;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.TabItemTemplate":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TabItemTemplate", "Microsoft.UI.Xaml.DataTemplate");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_42_TabView_TabItemTemplate;
+                xamlMember.Setter = set_42_TabView_TabItemTemplate;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.TabItemTemplateSelector":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TabItemTemplateSelector", "Microsoft.UI.Xaml.Controls.DataTemplateSelector");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_43_TabView_TabItemTemplateSelector;
+                xamlMember.Setter = set_43_TabView_TabItemTemplateSelector;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.TabItemsSource":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TabItemsSource", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_44_TabView_TabItemsSource;
+                xamlMember.Setter = set_44_TabView_TabItemsSource;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.TabStripFooter":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TabStripFooter", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_45_TabView_TabStripFooter;
+                xamlMember.Setter = set_45_TabView_TabStripFooter;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.TabStripFooterTemplate":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TabStripFooterTemplate", "Microsoft.UI.Xaml.DataTemplate");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_46_TabView_TabStripFooterTemplate;
+                xamlMember.Setter = set_46_TabView_TabStripFooterTemplate;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.TabStripHeader":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TabStripHeader", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_47_TabView_TabStripHeader;
+                xamlMember.Setter = set_47_TabView_TabStripHeader;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabView.TabStripHeaderTemplate":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabView");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TabStripHeaderTemplate", "Microsoft.UI.Xaml.DataTemplate");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_48_TabView_TabStripHeaderTemplate;
+                xamlMember.Setter = set_48_TabView_TabStripHeaderTemplate;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabViewItem.Header":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabViewItem");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Header", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_49_TabViewItem_Header;
+                xamlMember.Setter = set_49_TabViewItem_Header;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabViewItem.IconSource":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabViewItem");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IconSource", "Microsoft.UI.Xaml.Controls.IconSource");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_50_TabViewItem_IconSource;
+                xamlMember.Setter = set_50_TabViewItem_IconSource;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabViewItem.IsClosable":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabViewItem");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsClosable", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_51_TabViewItem_IsClosable;
+                xamlMember.Setter = set_51_TabViewItem_IsClosable;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabViewItem.HeaderTemplate":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabViewItem");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeaderTemplate", "Microsoft.UI.Xaml.DataTemplate");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_52_TabViewItem_HeaderTemplate;
+                xamlMember.Setter = set_52_TabViewItem_HeaderTemplate;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TabViewItem.TabViewTemplateSettings":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TabViewItem");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TabViewTemplateSettings", "Microsoft.UI.Xaml.Controls.TabViewItemTemplateSettings");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_53_TabViewItem_TabViewTemplateSettings;
+                xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.Value":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Value", "Double");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_32_NumberBox_Value;
-                xamlMember.Setter = set_32_NumberBox_Value;
-                break;
-            case "Microsoft.UI.Xaml.Controls.NumberBox.Maximum":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Maximum", "Double");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_33_NumberBox_Maximum;
-                xamlMember.Setter = set_33_NumberBox_Maximum;
+                xamlMember.Getter = get_54_NumberBox_Value;
+                xamlMember.Setter = set_54_NumberBox_Value;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.AcceptsExpression":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "AcceptsExpression", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_34_NumberBox_AcceptsExpression;
-                xamlMember.Setter = set_34_NumberBox_AcceptsExpression;
+                xamlMember.Getter = get_55_NumberBox_AcceptsExpression;
+                xamlMember.Setter = set_55_NumberBox_AcceptsExpression;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.Description":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Description", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_35_NumberBox_Description;
-                xamlMember.Setter = set_35_NumberBox_Description;
+                xamlMember.Getter = get_56_NumberBox_Description;
+                xamlMember.Setter = set_56_NumberBox_Description;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.Header":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Header", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_36_NumberBox_Header;
-                xamlMember.Setter = set_36_NumberBox_Header;
+                xamlMember.Getter = get_57_NumberBox_Header;
+                xamlMember.Setter = set_57_NumberBox_Header;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.HeaderTemplate":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeaderTemplate", "Microsoft.UI.Xaml.DataTemplate");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_37_NumberBox_HeaderTemplate;
-                xamlMember.Setter = set_37_NumberBox_HeaderTemplate;
+                xamlMember.Getter = get_58_NumberBox_HeaderTemplate;
+                xamlMember.Setter = set_58_NumberBox_HeaderTemplate;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.IsWrapEnabled":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsWrapEnabled", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_38_NumberBox_IsWrapEnabled;
-                xamlMember.Setter = set_38_NumberBox_IsWrapEnabled;
+                xamlMember.Getter = get_59_NumberBox_IsWrapEnabled;
+                xamlMember.Setter = set_59_NumberBox_IsWrapEnabled;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.LargeChange":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "LargeChange", "Double");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_39_NumberBox_LargeChange;
-                xamlMember.Setter = set_39_NumberBox_LargeChange;
+                xamlMember.Getter = get_60_NumberBox_LargeChange;
+                xamlMember.Setter = set_60_NumberBox_LargeChange;
+                break;
+            case "Microsoft.UI.Xaml.Controls.NumberBox.Maximum":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Maximum", "Double");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_61_NumberBox_Maximum;
+                xamlMember.Setter = set_61_NumberBox_Maximum;
+                break;
+            case "Microsoft.UI.Xaml.Controls.NumberBox.Minimum":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Minimum", "Double");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_62_NumberBox_Minimum;
+                xamlMember.Setter = set_62_NumberBox_Minimum;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.NumberFormatter":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "NumberFormatter", "Windows.Globalization.NumberFormatting.INumberFormatter2");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_40_NumberBox_NumberFormatter;
-                xamlMember.Setter = set_40_NumberBox_NumberFormatter;
+                xamlMember.Getter = get_63_NumberBox_NumberFormatter;
+                xamlMember.Setter = set_63_NumberBox_NumberFormatter;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.PlaceholderText":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PlaceholderText", "String");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_41_NumberBox_PlaceholderText;
-                xamlMember.Setter = set_41_NumberBox_PlaceholderText;
+                xamlMember.Getter = get_64_NumberBox_PlaceholderText;
+                xamlMember.Setter = set_64_NumberBox_PlaceholderText;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.PreventKeyboardDisplayOnProgrammaticFocus":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PreventKeyboardDisplayOnProgrammaticFocus", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_42_NumberBox_PreventKeyboardDisplayOnProgrammaticFocus;
-                xamlMember.Setter = set_42_NumberBox_PreventKeyboardDisplayOnProgrammaticFocus;
+                xamlMember.Getter = get_65_NumberBox_PreventKeyboardDisplayOnProgrammaticFocus;
+                xamlMember.Setter = set_65_NumberBox_PreventKeyboardDisplayOnProgrammaticFocus;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.SelectionFlyout":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "SelectionFlyout", "Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_43_NumberBox_SelectionFlyout;
-                xamlMember.Setter = set_43_NumberBox_SelectionFlyout;
+                xamlMember.Getter = get_66_NumberBox_SelectionFlyout;
+                xamlMember.Setter = set_66_NumberBox_SelectionFlyout;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.SelectionHighlightColor":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "SelectionHighlightColor", "Microsoft.UI.Xaml.Media.SolidColorBrush");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_44_NumberBox_SelectionHighlightColor;
-                xamlMember.Setter = set_44_NumberBox_SelectionHighlightColor;
+                xamlMember.Getter = get_67_NumberBox_SelectionHighlightColor;
+                xamlMember.Setter = set_67_NumberBox_SelectionHighlightColor;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.SmallChange":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "SmallChange", "Double");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_45_NumberBox_SmallChange;
-                xamlMember.Setter = set_45_NumberBox_SmallChange;
+                xamlMember.Getter = get_68_NumberBox_SmallChange;
+                xamlMember.Setter = set_68_NumberBox_SmallChange;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.SpinButtonPlacementMode":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "SpinButtonPlacementMode", "Microsoft.UI.Xaml.Controls.NumberBoxSpinButtonPlacementMode");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_46_NumberBox_SpinButtonPlacementMode;
-                xamlMember.Setter = set_46_NumberBox_SpinButtonPlacementMode;
+                xamlMember.Getter = get_69_NumberBox_SpinButtonPlacementMode;
+                xamlMember.Setter = set_69_NumberBox_SpinButtonPlacementMode;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.Text":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Text", "String");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_47_NumberBox_Text;
-                xamlMember.Setter = set_47_NumberBox_Text;
+                xamlMember.Getter = get_70_NumberBox_Text;
+                xamlMember.Setter = set_70_NumberBox_Text;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.TextReadingOrder":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TextReadingOrder", "Microsoft.UI.Xaml.TextReadingOrder");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_48_NumberBox_TextReadingOrder;
-                xamlMember.Setter = set_48_NumberBox_TextReadingOrder;
+                xamlMember.Getter = get_71_NumberBox_TextReadingOrder;
+                xamlMember.Setter = set_71_NumberBox_TextReadingOrder;
                 break;
             case "Microsoft.UI.Xaml.Controls.NumberBox.ValidationMode":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NumberBox");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ValidationMode", "Microsoft.UI.Xaml.Controls.NumberBoxValidationMode");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_49_NumberBox_ValidationMode;
-                xamlMember.Setter = set_49_NumberBox_ValidationMode;
+                xamlMember.Getter = get_72_NumberBox_ValidationMode;
+                xamlMember.Setter = set_72_NumberBox_ValidationMode;
+                break;
+            case "Microsoft.UI.Xaml.Controls.ToggleSplitButton.IsChecked":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ToggleSplitButton");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsChecked", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_73_ToggleSplitButton_IsChecked;
+                xamlMember.Setter = set_73_ToggleSplitButton_IsChecked;
+                break;
+            case "Microsoft.UI.Xaml.Controls.SplitButton.Flyout":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.SplitButton");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Flyout", "Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_74_SplitButton_Flyout;
+                xamlMember.Setter = set_74_SplitButton_Flyout;
+                break;
+            case "Microsoft.UI.Xaml.Controls.SplitButton.Command":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.SplitButton");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Command", "System.Windows.Input.ICommand");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_75_SplitButton_Command;
+                xamlMember.Setter = set_75_SplitButton_Command;
+                break;
+            case "Microsoft.UI.Xaml.Controls.SplitButton.CommandParameter":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.SplitButton");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CommandParameter", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_76_SplitButton_CommandParameter;
+                xamlMember.Setter = set_76_SplitButton_CommandParameter;
+                break;
+            case "Microsoft.UI.Xaml.Controls.Expander.Header":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Header", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_77_Expander_Header;
+                xamlMember.Setter = set_77_Expander_Header;
+                break;
+            case "Microsoft.UI.Xaml.Controls.Expander.ExpandDirection":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ExpandDirection", "Microsoft.UI.Xaml.Controls.ExpandDirection");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_78_Expander_ExpandDirection;
+                xamlMember.Setter = set_78_Expander_ExpandDirection;
+                break;
+            case "Microsoft.UI.Xaml.Controls.Expander.HeaderTemplate":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeaderTemplate", "Microsoft.UI.Xaml.DataTemplate");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_79_Expander_HeaderTemplate;
+                xamlMember.Setter = set_79_Expander_HeaderTemplate;
+                break;
+            case "Microsoft.UI.Xaml.Controls.Expander.HeaderTemplateSelector":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeaderTemplateSelector", "Microsoft.UI.Xaml.Controls.DataTemplateSelector");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_80_Expander_HeaderTemplateSelector;
+                xamlMember.Setter = set_80_Expander_HeaderTemplateSelector;
+                break;
+            case "Microsoft.UI.Xaml.Controls.Expander.IsExpanded":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsExpanded", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_81_Expander_IsExpanded;
+                xamlMember.Setter = set_81_Expander_IsExpanded;
+                break;
+            case "Microsoft.UI.Xaml.Controls.Expander.TemplateSettings":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TemplateSettings", "Microsoft.UI.Xaml.Controls.ExpanderTemplateSettings");
+                xamlMember.Getter = get_82_Expander_TemplateSettings;
+                xamlMember.SetIsReadOnly();
+                break;
+            case "Saku_Overclock.Views.AdvancedКулерPage.ViewModel":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.AdvancedКулерPage");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.AdvancedКулерViewModel");
+                xamlMember.Getter = get_83_AdvancedКулерPage_ViewModel;
+                xamlMember.SetIsReadOnly();
                 break;
             case "Saku_Overclock.Views.SettingsPage.ViewModel":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.SettingsPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.SettingsViewModel");
-                xamlMember.Getter = get_50_SettingsPage_ViewModel;
+                xamlMember.Getter = get_84_SettingsPage_ViewModel;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.IsBackButtonVisible":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsBackButtonVisible", "Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_51_NavigationView_IsBackButtonVisible;
-                xamlMember.Setter = set_51_NavigationView_IsBackButtonVisible;
+                xamlMember.Getter = get_85_NavigationView_IsBackButtonVisible;
+                xamlMember.Setter = set_85_NavigationView_IsBackButtonVisible;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.IsBackEnabled":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsBackEnabled", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_52_NavigationView_IsBackEnabled;
-                xamlMember.Setter = set_52_NavigationView_IsBackEnabled;
+                xamlMember.Getter = get_86_NavigationView_IsBackEnabled;
+                xamlMember.Setter = set_86_NavigationView_IsBackEnabled;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.SelectedItem":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "SelectedItem", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_53_NavigationView_SelectedItem;
-                xamlMember.Setter = set_53_NavigationView_SelectedItem;
+                xamlMember.Getter = get_87_NavigationView_SelectedItem;
+                xamlMember.Setter = set_87_NavigationView_SelectedItem;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.IsSettingsVisible":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsSettingsVisible", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_54_NavigationView_IsSettingsVisible;
-                xamlMember.Setter = set_54_NavigationView_IsSettingsVisible;
+                xamlMember.Getter = get_88_NavigationView_IsSettingsVisible;
+                xamlMember.Setter = set_88_NavigationView_IsSettingsVisible;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.ExpandedModeThresholdWidth":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ExpandedModeThresholdWidth", "Double");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_55_NavigationView_ExpandedModeThresholdWidth;
-                xamlMember.Setter = set_55_NavigationView_ExpandedModeThresholdWidth;
+                xamlMember.Getter = get_89_NavigationView_ExpandedModeThresholdWidth;
+                xamlMember.Setter = set_89_NavigationView_ExpandedModeThresholdWidth;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.Header":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Header", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_56_NavigationView_Header;
-                xamlMember.Setter = set_56_NavigationView_Header;
+                xamlMember.Getter = get_90_NavigationView_Header;
+                xamlMember.Setter = set_90_NavigationView_Header;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.MenuItems":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "MenuItems", "System.Collections.Generic.IList`1<Object>");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_57_NavigationView_MenuItems;
+                xamlMember.Getter = get_91_NavigationView_MenuItems;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.HeaderTemplate":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeaderTemplate", "Microsoft.UI.Xaml.DataTemplate");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_58_NavigationView_HeaderTemplate;
-                xamlMember.Setter = set_58_NavigationView_HeaderTemplate;
+                xamlMember.Getter = get_92_NavigationView_HeaderTemplate;
+                xamlMember.Setter = set_92_NavigationView_HeaderTemplate;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.AlwaysShowHeader":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "AlwaysShowHeader", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_59_NavigationView_AlwaysShowHeader;
-                xamlMember.Setter = set_59_NavigationView_AlwaysShowHeader;
+                xamlMember.Getter = get_93_NavigationView_AlwaysShowHeader;
+                xamlMember.Setter = set_93_NavigationView_AlwaysShowHeader;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.AutoSuggestBox":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "AutoSuggestBox", "Microsoft.UI.Xaml.Controls.AutoSuggestBox");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_60_NavigationView_AutoSuggestBox;
-                xamlMember.Setter = set_60_NavigationView_AutoSuggestBox;
+                xamlMember.Getter = get_94_NavigationView_AutoSuggestBox;
+                xamlMember.Setter = set_94_NavigationView_AutoSuggestBox;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.CompactModeThresholdWidth":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CompactModeThresholdWidth", "Double");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_61_NavigationView_CompactModeThresholdWidth;
-                xamlMember.Setter = set_61_NavigationView_CompactModeThresholdWidth;
+                xamlMember.Getter = get_95_NavigationView_CompactModeThresholdWidth;
+                xamlMember.Setter = set_95_NavigationView_CompactModeThresholdWidth;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.CompactPaneLength":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CompactPaneLength", "Double");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_62_NavigationView_CompactPaneLength;
-                xamlMember.Setter = set_62_NavigationView_CompactPaneLength;
+                xamlMember.Getter = get_96_NavigationView_CompactPaneLength;
+                xamlMember.Setter = set_96_NavigationView_CompactPaneLength;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.ContentOverlay":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ContentOverlay", "Microsoft.UI.Xaml.UIElement");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_63_NavigationView_ContentOverlay;
-                xamlMember.Setter = set_63_NavigationView_ContentOverlay;
+                xamlMember.Getter = get_97_NavigationView_ContentOverlay;
+                xamlMember.Setter = set_97_NavigationView_ContentOverlay;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.DisplayMode":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "DisplayMode", "Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_64_NavigationView_DisplayMode;
+                xamlMember.Getter = get_98_NavigationView_DisplayMode;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.FooterMenuItems":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "FooterMenuItems", "System.Collections.Generic.IList`1<Object>");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_65_NavigationView_FooterMenuItems;
+                xamlMember.Getter = get_99_NavigationView_FooterMenuItems;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.FooterMenuItemsSource":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "FooterMenuItemsSource", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_66_NavigationView_FooterMenuItemsSource;
-                xamlMember.Setter = set_66_NavigationView_FooterMenuItemsSource;
+                xamlMember.Getter = get_100_NavigationView_FooterMenuItemsSource;
+                xamlMember.Setter = set_100_NavigationView_FooterMenuItemsSource;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.IsPaneOpen":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsPaneOpen", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_67_NavigationView_IsPaneOpen;
-                xamlMember.Setter = set_67_NavigationView_IsPaneOpen;
+                xamlMember.Getter = get_101_NavigationView_IsPaneOpen;
+                xamlMember.Setter = set_101_NavigationView_IsPaneOpen;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.IsPaneToggleButtonVisible":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsPaneToggleButtonVisible", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_68_NavigationView_IsPaneToggleButtonVisible;
-                xamlMember.Setter = set_68_NavigationView_IsPaneToggleButtonVisible;
+                xamlMember.Getter = get_102_NavigationView_IsPaneToggleButtonVisible;
+                xamlMember.Setter = set_102_NavigationView_IsPaneToggleButtonVisible;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.IsPaneVisible":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsPaneVisible", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_69_NavigationView_IsPaneVisible;
-                xamlMember.Setter = set_69_NavigationView_IsPaneVisible;
+                xamlMember.Getter = get_103_NavigationView_IsPaneVisible;
+                xamlMember.Setter = set_103_NavigationView_IsPaneVisible;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.IsTitleBarAutoPaddingEnabled":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsTitleBarAutoPaddingEnabled", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_70_NavigationView_IsTitleBarAutoPaddingEnabled;
-                xamlMember.Setter = set_70_NavigationView_IsTitleBarAutoPaddingEnabled;
+                xamlMember.Getter = get_104_NavigationView_IsTitleBarAutoPaddingEnabled;
+                xamlMember.Setter = set_104_NavigationView_IsTitleBarAutoPaddingEnabled;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.MenuItemContainerStyle":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "MenuItemContainerStyle", "Microsoft.UI.Xaml.Style");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_71_NavigationView_MenuItemContainerStyle;
-                xamlMember.Setter = set_71_NavigationView_MenuItemContainerStyle;
+                xamlMember.Getter = get_105_NavigationView_MenuItemContainerStyle;
+                xamlMember.Setter = set_105_NavigationView_MenuItemContainerStyle;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.MenuItemContainerStyleSelector":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "MenuItemContainerStyleSelector", "Microsoft.UI.Xaml.Controls.StyleSelector");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_72_NavigationView_MenuItemContainerStyleSelector;
-                xamlMember.Setter = set_72_NavigationView_MenuItemContainerStyleSelector;
+                xamlMember.Getter = get_106_NavigationView_MenuItemContainerStyleSelector;
+                xamlMember.Setter = set_106_NavigationView_MenuItemContainerStyleSelector;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.MenuItemTemplate":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "MenuItemTemplate", "Microsoft.UI.Xaml.DataTemplate");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_73_NavigationView_MenuItemTemplate;
-                xamlMember.Setter = set_73_NavigationView_MenuItemTemplate;
+                xamlMember.Getter = get_107_NavigationView_MenuItemTemplate;
+                xamlMember.Setter = set_107_NavigationView_MenuItemTemplate;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.MenuItemTemplateSelector":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "MenuItemTemplateSelector", "Microsoft.UI.Xaml.Controls.DataTemplateSelector");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_74_NavigationView_MenuItemTemplateSelector;
-                xamlMember.Setter = set_74_NavigationView_MenuItemTemplateSelector;
+                xamlMember.Getter = get_108_NavigationView_MenuItemTemplateSelector;
+                xamlMember.Setter = set_108_NavigationView_MenuItemTemplateSelector;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.MenuItemsSource":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "MenuItemsSource", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_75_NavigationView_MenuItemsSource;
-                xamlMember.Setter = set_75_NavigationView_MenuItemsSource;
+                xamlMember.Getter = get_109_NavigationView_MenuItemsSource;
+                xamlMember.Setter = set_109_NavigationView_MenuItemsSource;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.OpenPaneLength":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "OpenPaneLength", "Double");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_76_NavigationView_OpenPaneLength;
-                xamlMember.Setter = set_76_NavigationView_OpenPaneLength;
+                xamlMember.Getter = get_110_NavigationView_OpenPaneLength;
+                xamlMember.Setter = set_110_NavigationView_OpenPaneLength;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.OverflowLabelMode":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "OverflowLabelMode", "Microsoft.UI.Xaml.Controls.NavigationViewOverflowLabelMode");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_77_NavigationView_OverflowLabelMode;
-                xamlMember.Setter = set_77_NavigationView_OverflowLabelMode;
+                xamlMember.Getter = get_111_NavigationView_OverflowLabelMode;
+                xamlMember.Setter = set_111_NavigationView_OverflowLabelMode;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.PaneCustomContent":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PaneCustomContent", "Microsoft.UI.Xaml.UIElement");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_78_NavigationView_PaneCustomContent;
-                xamlMember.Setter = set_78_NavigationView_PaneCustomContent;
+                xamlMember.Getter = get_112_NavigationView_PaneCustomContent;
+                xamlMember.Setter = set_112_NavigationView_PaneCustomContent;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.PaneDisplayMode":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PaneDisplayMode", "Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_79_NavigationView_PaneDisplayMode;
-                xamlMember.Setter = set_79_NavigationView_PaneDisplayMode;
+                xamlMember.Getter = get_113_NavigationView_PaneDisplayMode;
+                xamlMember.Setter = set_113_NavigationView_PaneDisplayMode;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.PaneFooter":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PaneFooter", "Microsoft.UI.Xaml.UIElement");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_80_NavigationView_PaneFooter;
-                xamlMember.Setter = set_80_NavigationView_PaneFooter;
+                xamlMember.Getter = get_114_NavigationView_PaneFooter;
+                xamlMember.Setter = set_114_NavigationView_PaneFooter;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.PaneHeader":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PaneHeader", "Microsoft.UI.Xaml.UIElement");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_81_NavigationView_PaneHeader;
-                xamlMember.Setter = set_81_NavigationView_PaneHeader;
+                xamlMember.Getter = get_115_NavigationView_PaneHeader;
+                xamlMember.Setter = set_115_NavigationView_PaneHeader;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.PaneTitle":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PaneTitle", "String");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_82_NavigationView_PaneTitle;
-                xamlMember.Setter = set_82_NavigationView_PaneTitle;
+                xamlMember.Getter = get_116_NavigationView_PaneTitle;
+                xamlMember.Setter = set_116_NavigationView_PaneTitle;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.PaneToggleButtonStyle":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PaneToggleButtonStyle", "Microsoft.UI.Xaml.Style");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_83_NavigationView_PaneToggleButtonStyle;
-                xamlMember.Setter = set_83_NavigationView_PaneToggleButtonStyle;
+                xamlMember.Getter = get_117_NavigationView_PaneToggleButtonStyle;
+                xamlMember.Setter = set_117_NavigationView_PaneToggleButtonStyle;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.SelectionFollowsFocus":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "SelectionFollowsFocus", "Microsoft.UI.Xaml.Controls.NavigationViewSelectionFollowsFocus");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_84_NavigationView_SelectionFollowsFocus;
-                xamlMember.Setter = set_84_NavigationView_SelectionFollowsFocus;
+                xamlMember.Getter = get_118_NavigationView_SelectionFollowsFocus;
+                xamlMember.Setter = set_118_NavigationView_SelectionFollowsFocus;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.SettingsItem":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "SettingsItem", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_85_NavigationView_SettingsItem;
+                xamlMember.Getter = get_119_NavigationView_SettingsItem;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.ShoulderNavigationEnabled":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ShoulderNavigationEnabled", "Microsoft.UI.Xaml.Controls.NavigationViewShoulderNavigationEnabled");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_86_NavigationView_ShoulderNavigationEnabled;
-                xamlMember.Setter = set_86_NavigationView_ShoulderNavigationEnabled;
+                xamlMember.Getter = get_120_NavigationView_ShoulderNavigationEnabled;
+                xamlMember.Setter = set_120_NavigationView_ShoulderNavigationEnabled;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationView.TemplateSettings":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationView");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TemplateSettings", "Microsoft.UI.Xaml.Controls.NavigationViewTemplateSettings");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_87_NavigationView_TemplateSettings;
+                xamlMember.Getter = get_121_NavigationView_TemplateSettings;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.Xaml.Interactivity.Interaction.Behaviors":
@@ -3359,104 +4165,202 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Behaviors", "Microsoft.Xaml.Interactivity.BehaviorCollection");
                 xamlMember.SetTargetTypeName("Microsoft.UI.Xaml.DependencyObject");
                 xamlMember.SetIsAttachable();
-                xamlMember.Getter = get_88_Interaction_Behaviors;
-                xamlMember.Setter = set_88_Interaction_Behaviors;
+                xamlMember.Getter = get_122_Interaction_Behaviors;
+                xamlMember.Setter = set_122_Interaction_Behaviors;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.Content":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Content", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_123_InfoBar_Content;
+                xamlMember.Setter = set_123_InfoBar_Content;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.IsOpen":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsOpen", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_124_InfoBar_IsOpen;
+                xamlMember.Setter = set_124_InfoBar_IsOpen;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.IsIconVisible":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsIconVisible", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_125_InfoBar_IsIconVisible;
+                xamlMember.Setter = set_125_InfoBar_IsIconVisible;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.IsClosable":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsClosable", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_126_InfoBar_IsClosable;
+                xamlMember.Setter = set_126_InfoBar_IsClosable;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.Title":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Title", "String");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_127_InfoBar_Title;
+                xamlMember.Setter = set_127_InfoBar_Title;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.Message":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Message", "String");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_128_InfoBar_Message;
+                xamlMember.Setter = set_128_InfoBar_Message;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.ActionButton":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButton", "Microsoft.UI.Xaml.Controls.Primitives.ButtonBase");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_129_InfoBar_ActionButton;
+                xamlMember.Setter = set_129_InfoBar_ActionButton;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.CloseButtonCommand":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonCommand", "System.Windows.Input.ICommand");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_130_InfoBar_CloseButtonCommand;
+                xamlMember.Setter = set_130_InfoBar_CloseButtonCommand;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.CloseButtonCommandParameter":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonCommandParameter", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_131_InfoBar_CloseButtonCommandParameter;
+                xamlMember.Setter = set_131_InfoBar_CloseButtonCommandParameter;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.CloseButtonStyle":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonStyle", "Microsoft.UI.Xaml.Style");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_132_InfoBar_CloseButtonStyle;
+                xamlMember.Setter = set_132_InfoBar_CloseButtonStyle;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.ContentTemplate":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ContentTemplate", "Microsoft.UI.Xaml.DataTemplate");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_133_InfoBar_ContentTemplate;
+                xamlMember.Setter = set_133_InfoBar_ContentTemplate;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.IconSource":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IconSource", "Microsoft.UI.Xaml.Controls.IconSource");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_134_InfoBar_IconSource;
+                xamlMember.Setter = set_134_InfoBar_IconSource;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.Severity":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Severity", "Microsoft.UI.Xaml.Controls.InfoBarSeverity");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_135_InfoBar_Severity;
+                xamlMember.Setter = set_135_InfoBar_Severity;
+                break;
+            case "Microsoft.UI.Xaml.Controls.InfoBar.TemplateSettings":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.InfoBar");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TemplateSettings", "Microsoft.UI.Xaml.Controls.InfoBarTemplateSettings");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_136_InfoBar_TemplateSettings;
+                xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationViewItem.Icon":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationViewItem");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Icon", "Microsoft.UI.Xaml.Controls.IconElement");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_89_NavigationViewItem_Icon;
-                xamlMember.Setter = set_89_NavigationViewItem_Icon;
+                xamlMember.Getter = get_137_NavigationViewItem_Icon;
+                xamlMember.Setter = set_137_NavigationViewItem_Icon;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationViewItem.CompactPaneLength":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationViewItem");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CompactPaneLength", "Double");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_90_NavigationViewItem_CompactPaneLength;
+                xamlMember.Getter = get_138_NavigationViewItem_CompactPaneLength;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationViewItem.HasUnrealizedChildren":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationViewItem");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HasUnrealizedChildren", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_91_NavigationViewItem_HasUnrealizedChildren;
-                xamlMember.Setter = set_91_NavigationViewItem_HasUnrealizedChildren;
+                xamlMember.Getter = get_139_NavigationViewItem_HasUnrealizedChildren;
+                xamlMember.Setter = set_139_NavigationViewItem_HasUnrealizedChildren;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationViewItem.InfoBadge":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationViewItem");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "InfoBadge", "Microsoft.UI.Xaml.Controls.InfoBadge");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_92_NavigationViewItem_InfoBadge;
-                xamlMember.Setter = set_92_NavigationViewItem_InfoBadge;
+                xamlMember.Getter = get_140_NavigationViewItem_InfoBadge;
+                xamlMember.Setter = set_140_NavigationViewItem_InfoBadge;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationViewItem.IsChildSelected":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationViewItem");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsChildSelected", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_93_NavigationViewItem_IsChildSelected;
-                xamlMember.Setter = set_93_NavigationViewItem_IsChildSelected;
+                xamlMember.Getter = get_141_NavigationViewItem_IsChildSelected;
+                xamlMember.Setter = set_141_NavigationViewItem_IsChildSelected;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationViewItem.IsExpanded":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationViewItem");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsExpanded", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_94_NavigationViewItem_IsExpanded;
-                xamlMember.Setter = set_94_NavigationViewItem_IsExpanded;
+                xamlMember.Getter = get_142_NavigationViewItem_IsExpanded;
+                xamlMember.Setter = set_142_NavigationViewItem_IsExpanded;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationViewItem.MenuItems":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationViewItem");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "MenuItems", "System.Collections.Generic.IList`1<Object>");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_95_NavigationViewItem_MenuItems;
+                xamlMember.Getter = get_143_NavigationViewItem_MenuItems;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationViewItem.MenuItemsSource":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationViewItem");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "MenuItemsSource", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_96_NavigationViewItem_MenuItemsSource;
-                xamlMember.Setter = set_96_NavigationViewItem_MenuItemsSource;
+                xamlMember.Getter = get_144_NavigationViewItem_MenuItemsSource;
+                xamlMember.Setter = set_144_NavigationViewItem_MenuItemsSource;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationViewItem.SelectsOnInvoked":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationViewItem");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "SelectsOnInvoked", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_97_NavigationViewItem_SelectsOnInvoked;
-                xamlMember.Setter = set_97_NavigationViewItem_SelectsOnInvoked;
+                xamlMember.Getter = get_145_NavigationViewItem_SelectsOnInvoked;
+                xamlMember.Setter = set_145_NavigationViewItem_SelectsOnInvoked;
                 break;
             case "Microsoft.UI.Xaml.Controls.NavigationViewItemBase.IsSelected":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.NavigationViewItemBase");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsSelected", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_98_NavigationViewItemBase_IsSelected;
-                xamlMember.Setter = set_98_NavigationViewItemBase_IsSelected;
+                xamlMember.Getter = get_146_NavigationViewItemBase_IsSelected;
+                xamlMember.Setter = set_146_NavigationViewItemBase_IsSelected;
                 break;
             case "Saku_Overclock.Helpers.NavigationHelper.NavigateTo":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Helpers.NavigationHelper");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "NavigateTo", "String");
                 xamlMember.SetTargetTypeName("Microsoft.UI.Xaml.Controls.NavigationViewItem");
                 xamlMember.SetIsAttachable();
-                xamlMember.Getter = get_99_NavigationHelper_NavigateTo;
-                xamlMember.Setter = set_99_NavigationHelper_NavigateTo;
+                xamlMember.Getter = get_147_NavigationHelper_NavigateTo;
+                xamlMember.Setter = set_147_NavigationHelper_NavigateTo;
                 break;
             case "Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.DefaultHeader":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Behaviors.NavigationViewHeaderBehavior");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "DefaultHeader", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_100_NavigationViewHeaderBehavior_DefaultHeader;
-                xamlMember.Setter = set_100_NavigationViewHeaderBehavior_DefaultHeader;
+                xamlMember.Getter = get_148_NavigationViewHeaderBehavior_DefaultHeader;
+                xamlMember.Setter = set_148_NavigationViewHeaderBehavior_DefaultHeader;
                 break;
             case "Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.DefaultHeaderTemplate":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Behaviors.NavigationViewHeaderBehavior");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "DefaultHeaderTemplate", "Microsoft.UI.Xaml.DataTemplate");
-                xamlMember.Getter = get_101_NavigationViewHeaderBehavior_DefaultHeaderTemplate;
-                xamlMember.Setter = set_101_NavigationViewHeaderBehavior_DefaultHeaderTemplate;
+                xamlMember.Getter = get_149_NavigationViewHeaderBehavior_DefaultHeaderTemplate;
+                xamlMember.Setter = set_149_NavigationViewHeaderBehavior_DefaultHeaderTemplate;
                 break;
             case "Microsoft.Xaml.Interactivity.Behavior`1<Microsoft.UI.Xaml.Controls.NavigationView>.AssociatedObject":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.Xaml.Interactivity.Behavior`1<Microsoft.UI.Xaml.Controls.NavigationView>");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "AssociatedObject", "Microsoft.UI.Xaml.Controls.NavigationView");
-                xamlMember.Getter = get_102_Behavior_AssociatedObject;
+                xamlMember.Getter = get_150_Behavior_AssociatedObject;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.HeaderMode":
@@ -3465,8 +4369,8 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlMember.SetTargetTypeName("Microsoft.UI.Xaml.Controls.Page");
                 xamlMember.SetIsDependencyProperty();
                 xamlMember.SetIsAttachable();
-                xamlMember.Getter = get_103_NavigationViewHeaderBehavior_HeaderMode;
-                xamlMember.Setter = set_103_NavigationViewHeaderBehavior_HeaderMode;
+                xamlMember.Getter = get_151_NavigationViewHeaderBehavior_HeaderMode;
+                xamlMember.Setter = set_151_NavigationViewHeaderBehavior_HeaderMode;
                 break;
             case "Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.HeaderContext":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Behaviors.NavigationViewHeaderBehavior");
@@ -3474,8 +4378,8 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlMember.SetTargetTypeName("Microsoft.UI.Xaml.Controls.Page");
                 xamlMember.SetIsDependencyProperty();
                 xamlMember.SetIsAttachable();
-                xamlMember.Getter = get_104_NavigationViewHeaderBehavior_HeaderContext;
-                xamlMember.Setter = set_104_NavigationViewHeaderBehavior_HeaderContext;
+                xamlMember.Getter = get_152_NavigationViewHeaderBehavior_HeaderContext;
+                xamlMember.Setter = set_152_NavigationViewHeaderBehavior_HeaderContext;
                 break;
             case "Saku_Overclock.Behaviors.NavigationViewHeaderBehavior.HeaderTemplate":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Behaviors.NavigationViewHeaderBehavior");
@@ -3483,351 +4387,310 @@ namespace Saku_Overclock.Saku_Overclock_XamlTypeInfo
                 xamlMember.SetTargetTypeName("Microsoft.UI.Xaml.Controls.Page");
                 xamlMember.SetIsDependencyProperty();
                 xamlMember.SetIsAttachable();
-                xamlMember.Getter = get_105_NavigationViewHeaderBehavior_HeaderTemplate;
-                xamlMember.Setter = set_105_NavigationViewHeaderBehavior_HeaderTemplate;
+                xamlMember.Getter = get_153_NavigationViewHeaderBehavior_HeaderTemplate;
+                xamlMember.Setter = set_153_NavigationViewHeaderBehavior_HeaderTemplate;
                 break;
             case "Saku_Overclock.Views.ShellPage.ViewModel":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.ShellPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.ShellViewModel");
-                xamlMember.Getter = get_106_ShellPage_ViewModel;
+                xamlMember.Getter = get_154_ShellPage_ViewModel;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Saku_Overclock.Views.ГлавнаяPage.SettingsPage":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.ГлавнаяPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "SettingsPage", "Saku_Overclock.Views.SettingsPage");
-                xamlMember.Getter = get_107_ГлавнаяPage_SettingsPage;
-                xamlMember.Setter = set_107_ГлавнаяPage_SettingsPage;
+                xamlMember.Getter = get_155_ГлавнаяPage_SettingsPage;
+                xamlMember.Setter = set_155_ГлавнаяPage_SettingsPage;
                 break;
             case "Saku_Overclock.Views.ГлавнаяPage.ViewModel":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.ГлавнаяPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.ГлавнаяViewModel");
-                xamlMember.Getter = get_108_ГлавнаяPage_ViewModel;
-                xamlMember.SetIsReadOnly();
-                break;
-            case "Microsoft.UI.Xaml.Controls.Expander.IsExpanded":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsExpanded", "Boolean");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_109_Expander_IsExpanded;
-                xamlMember.Setter = set_109_Expander_IsExpanded;
-                break;
-            case "Microsoft.UI.Xaml.Controls.Expander.Header":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Header", "Object");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_110_Expander_Header;
-                xamlMember.Setter = set_110_Expander_Header;
-                break;
-            case "Microsoft.UI.Xaml.Controls.Expander.ExpandDirection":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ExpandDirection", "Microsoft.UI.Xaml.Controls.ExpandDirection");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_111_Expander_ExpandDirection;
-                xamlMember.Setter = set_111_Expander_ExpandDirection;
-                break;
-            case "Microsoft.UI.Xaml.Controls.Expander.HeaderTemplate":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeaderTemplate", "Microsoft.UI.Xaml.DataTemplate");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_112_Expander_HeaderTemplate;
-                xamlMember.Setter = set_112_Expander_HeaderTemplate;
-                break;
-            case "Microsoft.UI.Xaml.Controls.Expander.HeaderTemplateSelector":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeaderTemplateSelector", "Microsoft.UI.Xaml.Controls.DataTemplateSelector");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_113_Expander_HeaderTemplateSelector;
-                xamlMember.Setter = set_113_Expander_HeaderTemplateSelector;
-                break;
-            case "Microsoft.UI.Xaml.Controls.Expander.TemplateSettings":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.Expander");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TemplateSettings", "Microsoft.UI.Xaml.Controls.ExpanderTemplateSettings");
-                xamlMember.Getter = get_114_Expander_TemplateSettings;
+                xamlMember.Getter = get_156_ГлавнаяPage_ViewModel;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressRing.Maximum":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Maximum", "Double");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_115_ProgressRing_Maximum;
-                xamlMember.Setter = set_115_ProgressRing_Maximum;
+                xamlMember.Getter = get_157_ProgressRing_Maximum;
+                xamlMember.Setter = set_157_ProgressRing_Maximum;
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressRing.Value":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Value", "Double");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_116_ProgressRing_Value;
-                xamlMember.Setter = set_116_ProgressRing_Value;
+                xamlMember.Getter = get_158_ProgressRing_Value;
+                xamlMember.Setter = set_158_ProgressRing_Value;
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressRing.IsIndeterminate":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsIndeterminate", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_117_ProgressRing_IsIndeterminate;
-                xamlMember.Setter = set_117_ProgressRing_IsIndeterminate;
+                xamlMember.Getter = get_159_ProgressRing_IsIndeterminate;
+                xamlMember.Setter = set_159_ProgressRing_IsIndeterminate;
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressRing.IsActive":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsActive", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_118_ProgressRing_IsActive;
-                xamlMember.Setter = set_118_ProgressRing_IsActive;
+                xamlMember.Getter = get_160_ProgressRing_IsActive;
+                xamlMember.Setter = set_160_ProgressRing_IsActive;
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressRing.Minimum":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Minimum", "Double");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_119_ProgressRing_Minimum;
-                xamlMember.Setter = set_119_ProgressRing_Minimum;
+                xamlMember.Getter = get_161_ProgressRing_Minimum;
+                xamlMember.Setter = set_161_ProgressRing_Minimum;
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressRing.TemplateSettings":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressRing");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TemplateSettings", "Microsoft.UI.Xaml.Controls.ProgressRingTemplateSettings");
-                xamlMember.Getter = get_120_ProgressRing_TemplateSettings;
+                xamlMember.Getter = get_162_ProgressRing_TemplateSettings;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Saku_Overclock.Views.ИнформацияPage.ViewModel":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.ИнформацияPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.ИнформацияViewModel");
-                xamlMember.Getter = get_121_ИнформацияPage_ViewModel;
+                xamlMember.Getter = get_163_ИнформацияPage_ViewModel;
+                xamlMember.SetIsReadOnly();
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.Target":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Target", "Microsoft.UI.Xaml.FrameworkElement");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_164_TeachingTip_Target;
+                xamlMember.Setter = set_164_TeachingTip_Target;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.Title":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Title", "String");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_165_TeachingTip_Title;
+                xamlMember.Setter = set_165_TeachingTip_Title;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.Subtitle":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Subtitle", "String");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_166_TeachingTip_Subtitle;
+                xamlMember.Setter = set_166_TeachingTip_Subtitle;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.IconSource":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IconSource", "Microsoft.UI.Xaml.Controls.IconSource");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_167_TeachingTip_IconSource;
+                xamlMember.Setter = set_167_TeachingTip_IconSource;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonCommand":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonCommand", "System.Windows.Input.ICommand");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_168_TeachingTip_ActionButtonCommand;
+                xamlMember.Setter = set_168_TeachingTip_ActionButtonCommand;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonCommandParameter":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonCommandParameter", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_169_TeachingTip_ActionButtonCommandParameter;
+                xamlMember.Setter = set_169_TeachingTip_ActionButtonCommandParameter;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonContent":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonContent", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_170_TeachingTip_ActionButtonContent;
+                xamlMember.Setter = set_170_TeachingTip_ActionButtonContent;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonStyle":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonStyle", "Microsoft.UI.Xaml.Style");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_171_TeachingTip_ActionButtonStyle;
+                xamlMember.Setter = set_171_TeachingTip_ActionButtonStyle;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonCommand":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonCommand", "System.Windows.Input.ICommand");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_172_TeachingTip_CloseButtonCommand;
+                xamlMember.Setter = set_172_TeachingTip_CloseButtonCommand;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonCommandParameter":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonCommandParameter", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_173_TeachingTip_CloseButtonCommandParameter;
+                xamlMember.Setter = set_173_TeachingTip_CloseButtonCommandParameter;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonContent":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonContent", "Object");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_174_TeachingTip_CloseButtonContent;
+                xamlMember.Setter = set_174_TeachingTip_CloseButtonContent;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonStyle":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonStyle", "Microsoft.UI.Xaml.Style");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_175_TeachingTip_CloseButtonStyle;
+                xamlMember.Setter = set_175_TeachingTip_CloseButtonStyle;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.HeroContent":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeroContent", "Microsoft.UI.Xaml.UIElement");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_176_TeachingTip_HeroContent;
+                xamlMember.Setter = set_176_TeachingTip_HeroContent;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.HeroContentPlacement":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeroContentPlacement", "Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_177_TeachingTip_HeroContentPlacement;
+                xamlMember.Setter = set_177_TeachingTip_HeroContentPlacement;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.IsLightDismissEnabled":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsLightDismissEnabled", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_178_TeachingTip_IsLightDismissEnabled;
+                xamlMember.Setter = set_178_TeachingTip_IsLightDismissEnabled;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.IsOpen":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsOpen", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_179_TeachingTip_IsOpen;
+                xamlMember.Setter = set_179_TeachingTip_IsOpen;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.PlacementMargin":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PlacementMargin", "Microsoft.UI.Xaml.Thickness");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_180_TeachingTip_PlacementMargin;
+                xamlMember.Setter = set_180_TeachingTip_PlacementMargin;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.PreferredPlacement":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PreferredPlacement", "Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_181_TeachingTip_PreferredPlacement;
+                xamlMember.Setter = set_181_TeachingTip_PreferredPlacement;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.ShouldConstrainToRootBounds":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ShouldConstrainToRootBounds", "Boolean");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_182_TeachingTip_ShouldConstrainToRootBounds;
+                xamlMember.Setter = set_182_TeachingTip_ShouldConstrainToRootBounds;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.TailVisibility":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TailVisibility", "Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_183_TeachingTip_TailVisibility;
+                xamlMember.Setter = set_183_TeachingTip_TailVisibility;
+                break;
+            case "Microsoft.UI.Xaml.Controls.TeachingTip.TemplateSettings":
+                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
+                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TemplateSettings", "Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_184_TeachingTip_TemplateSettings;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressBar.IsIndeterminate":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressBar");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsIndeterminate", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_122_ProgressBar_IsIndeterminate;
-                xamlMember.Setter = set_122_ProgressBar_IsIndeterminate;
+                xamlMember.Getter = get_185_ProgressBar_IsIndeterminate;
+                xamlMember.Setter = set_185_ProgressBar_IsIndeterminate;
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressBar.ShowError":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressBar");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ShowError", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_123_ProgressBar_ShowError;
-                xamlMember.Setter = set_123_ProgressBar_ShowError;
+                xamlMember.Getter = get_186_ProgressBar_ShowError;
+                xamlMember.Setter = set_186_ProgressBar_ShowError;
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressBar.ShowPaused":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressBar");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ShowPaused", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_124_ProgressBar_ShowPaused;
-                xamlMember.Setter = set_124_ProgressBar_ShowPaused;
+                xamlMember.Getter = get_187_ProgressBar_ShowPaused;
+                xamlMember.Setter = set_187_ProgressBar_ShowPaused;
                 break;
             case "Microsoft.UI.Xaml.Controls.ProgressBar.TemplateSettings":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.ProgressBar");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TemplateSettings", "Microsoft.UI.Xaml.Controls.ProgressBarTemplateSettings");
-                xamlMember.Getter = get_125_ProgressBar_TemplateSettings;
+                xamlMember.Getter = get_188_ProgressBar_TemplateSettings;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Saku_Overclock.Views.КулерPage.ViewModel":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.КулерPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.КулерViewModel");
-                xamlMember.Getter = get_126_КулерPage_ViewModel;
-                xamlMember.SetIsReadOnly();
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.IsOpen":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsOpen", "Boolean");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_127_TeachingTip_IsOpen;
-                xamlMember.Setter = set_127_TeachingTip_IsOpen;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.Title":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Title", "String");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_128_TeachingTip_Title;
-                xamlMember.Setter = set_128_TeachingTip_Title;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.Subtitle":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Subtitle", "String");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_129_TeachingTip_Subtitle;
-                xamlMember.Setter = set_129_TeachingTip_Subtitle;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.IconSource":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IconSource", "Microsoft.UI.Xaml.Controls.IconSource");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_130_TeachingTip_IconSource;
-                xamlMember.Setter = set_130_TeachingTip_IconSource;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonCommand":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonCommand", "System.Windows.Input.ICommand");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_131_TeachingTip_ActionButtonCommand;
-                xamlMember.Setter = set_131_TeachingTip_ActionButtonCommand;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonCommandParameter":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonCommandParameter", "Object");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_132_TeachingTip_ActionButtonCommandParameter;
-                xamlMember.Setter = set_132_TeachingTip_ActionButtonCommandParameter;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonContent":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonContent", "Object");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_133_TeachingTip_ActionButtonContent;
-                xamlMember.Setter = set_133_TeachingTip_ActionButtonContent;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.ActionButtonStyle":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ActionButtonStyle", "Microsoft.UI.Xaml.Style");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_134_TeachingTip_ActionButtonStyle;
-                xamlMember.Setter = set_134_TeachingTip_ActionButtonStyle;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonCommand":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonCommand", "System.Windows.Input.ICommand");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_135_TeachingTip_CloseButtonCommand;
-                xamlMember.Setter = set_135_TeachingTip_CloseButtonCommand;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonCommandParameter":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonCommandParameter", "Object");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_136_TeachingTip_CloseButtonCommandParameter;
-                xamlMember.Setter = set_136_TeachingTip_CloseButtonCommandParameter;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonContent":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonContent", "Object");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_137_TeachingTip_CloseButtonContent;
-                xamlMember.Setter = set_137_TeachingTip_CloseButtonContent;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.CloseButtonStyle":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "CloseButtonStyle", "Microsoft.UI.Xaml.Style");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_138_TeachingTip_CloseButtonStyle;
-                xamlMember.Setter = set_138_TeachingTip_CloseButtonStyle;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.HeroContent":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeroContent", "Microsoft.UI.Xaml.UIElement");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_139_TeachingTip_HeroContent;
-                xamlMember.Setter = set_139_TeachingTip_HeroContent;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.HeroContentPlacement":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HeroContentPlacement", "Microsoft.UI.Xaml.Controls.TeachingTipHeroContentPlacementMode");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_140_TeachingTip_HeroContentPlacement;
-                xamlMember.Setter = set_140_TeachingTip_HeroContentPlacement;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.IsLightDismissEnabled":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsLightDismissEnabled", "Boolean");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_141_TeachingTip_IsLightDismissEnabled;
-                xamlMember.Setter = set_141_TeachingTip_IsLightDismissEnabled;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.PlacementMargin":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PlacementMargin", "Microsoft.UI.Xaml.Thickness");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_142_TeachingTip_PlacementMargin;
-                xamlMember.Setter = set_142_TeachingTip_PlacementMargin;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.PreferredPlacement":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "PreferredPlacement", "Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_143_TeachingTip_PreferredPlacement;
-                xamlMember.Setter = set_143_TeachingTip_PreferredPlacement;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.ShouldConstrainToRootBounds":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ShouldConstrainToRootBounds", "Boolean");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_144_TeachingTip_ShouldConstrainToRootBounds;
-                xamlMember.Setter = set_144_TeachingTip_ShouldConstrainToRootBounds;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.TailVisibility":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TailVisibility", "Microsoft.UI.Xaml.Controls.TeachingTipTailVisibility");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_145_TeachingTip_TailVisibility;
-                xamlMember.Setter = set_145_TeachingTip_TailVisibility;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.Target":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Target", "Microsoft.UI.Xaml.FrameworkElement");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_146_TeachingTip_Target;
-                xamlMember.Setter = set_146_TeachingTip_Target;
-                break;
-            case "Microsoft.UI.Xaml.Controls.TeachingTip.TemplateSettings":
-                userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TeachingTip");
-                xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "TemplateSettings", "Microsoft.UI.Xaml.Controls.TeachingTipTemplateSettings");
-                xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_147_TeachingTip_TemplateSettings;
+                xamlMember.Getter = get_189_КулерPage_ViewModel;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Saku_Overclock.Views.ПараметрыPage.ViewModel":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.ПараметрыPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.ПараметрыViewModel");
-                xamlMember.Getter = get_148_ПараметрыPage_ViewModel;
+                xamlMember.Getter = get_190_ПараметрыPage_ViewModel;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Saku_Overclock.Views.ПресетыPage.ViewModel":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Saku_Overclock.Views.ПресетыPage");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "ViewModel", "Saku_Overclock.ViewModels.ПресетыViewModel");
-                xamlMember.Getter = get_149_ПресетыPage_ViewModel;
+                xamlMember.Getter = get_191_ПресетыPage_ViewModel;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.Children":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Children", "System.Collections.Generic.IList`1<Microsoft.UI.Xaml.Controls.TreeViewNode>");
-                xamlMember.Getter = get_150_TreeViewNode_Children;
+                xamlMember.Getter = get_192_TreeViewNode_Children;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.Content":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Content", "Object");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_151_TreeViewNode_Content;
-                xamlMember.Setter = set_151_TreeViewNode_Content;
+                xamlMember.Getter = get_193_TreeViewNode_Content;
+                xamlMember.Setter = set_193_TreeViewNode_Content;
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.Depth":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Depth", "Int32");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_152_TreeViewNode_Depth;
+                xamlMember.Getter = get_194_TreeViewNode_Depth;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.HasChildren":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HasChildren", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_153_TreeViewNode_HasChildren;
+                xamlMember.Getter = get_195_TreeViewNode_HasChildren;
                 xamlMember.SetIsReadOnly();
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.HasUnrealizedChildren":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "HasUnrealizedChildren", "Boolean");
-                xamlMember.Getter = get_154_TreeViewNode_HasUnrealizedChildren;
-                xamlMember.Setter = set_154_TreeViewNode_HasUnrealizedChildren;
+                xamlMember.Getter = get_196_TreeViewNode_HasUnrealizedChildren;
+                xamlMember.Setter = set_196_TreeViewNode_HasUnrealizedChildren;
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.IsExpanded":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "IsExpanded", "Boolean");
                 xamlMember.SetIsDependencyProperty();
-                xamlMember.Getter = get_155_TreeViewNode_IsExpanded;
-                xamlMember.Setter = set_155_TreeViewNode_IsExpanded;
+                xamlMember.Getter = get_197_TreeViewNode_IsExpanded;
+                xamlMember.Setter = set_197_TreeViewNode_IsExpanded;
                 break;
             case "Microsoft.UI.Xaml.Controls.TreeViewNode.Parent":
                 userType = (global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlUserType)GetXamlTypeByName("Microsoft.UI.Xaml.Controls.TreeViewNode");
                 xamlMember = new global::Saku_Overclock.Saku_Overclock_XamlTypeInfo.XamlMember(this, "Parent", "Microsoft.UI.Xaml.Controls.TreeViewNode");
-                xamlMember.Getter = get_156_TreeViewNode_Parent;
+                xamlMember.Getter = get_198_TreeViewNode_Parent;
                 xamlMember.SetIsReadOnly();
                 break;
             }

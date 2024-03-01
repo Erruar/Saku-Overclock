@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Saku_Overclock;
 
 internal class Devices
@@ -85,12 +79,12 @@ internal class Devices
     public double a12v;
     public int a13v;
     //Pstates config
-    public string? did0;
-    public string? did1;
-    public string? did2;
-    public string? fid0;
-    public string? fid1;
-    public string? fid2;
+    public double did0;
+    public double did1;
+    public double did2;
+    public double fid0;
+    public double fid1;
+    public double fid2;
     public double vid0;
     public double vid1;
     public double vid2;

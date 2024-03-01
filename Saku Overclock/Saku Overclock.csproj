@@ -25,12 +25,16 @@
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <PackageCertificateKeyFile>C:\Users\Sakura\source\repos\Sakuoverclock.pfx</PackageCertificateKeyFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxPackageDir>C:\Users\Sakura\Downloads\</AppxPackageDir>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundle>Never</AppxBundle>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="Assets\xml.png" />
+  </ItemGroup>
   <ItemGroup>
     <None Remove="exit.png" />
     <None Remove="info.bat" />
@@ -40,6 +44,7 @@
     <None Remove="Services\Cpu.cs.bak.zip" />
     <None Remove="show.png" />
     <None Remove="startup.lnk" />
+    <None Remove="Views\AdvancedКулерPage.xaml" />
     <None Remove="Views\КулерPage.xaml" />
     <None Remove="WindowIcon.ico" />
   </ItemGroup>
@@ -80,7 +85,6 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231008000" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="OpenHardwareMonitor" Version="0.9.6" />
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="TaskScheduler" Version="2.10.1" />
     <PackageReference Include="WinUIEx" Version="2.3.2" />
@@ -763,6 +767,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Views\AdvancedКулерPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </Page>
     <Page Update="Views\КулерPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Saku_Overclock.Services;
+﻿namespace Saku_Overclock.Services;
 public class SmuAddressSet
 {
     public uint MsgAddress;

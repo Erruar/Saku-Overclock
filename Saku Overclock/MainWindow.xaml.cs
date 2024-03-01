@@ -8,6 +8,7 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using System.Runtime.InteropServices;
+
 namespace Saku_Overclock;
 #pragma warning disable IDE0044 // Добавить модификатор только для чтения
 #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
@@ -19,7 +20,6 @@ public sealed partial class MainWindow : WindowEx
     private Config config = new();
     private Devices devices = new();
     private Profile profile = new();
-    private ИнформацияPage infp = new();
     // The enum flag for DwmSetWindowAttribute's second parameter, which tells the function what attribute to set.
     public enum DWMWINDOWATTRIBUTE
     {
@@ -35,7 +35,7 @@ public sealed partial class MainWindow : WindowEx
         DWMWCP_ROUND = 2,
         DWMWCP_ROUNDSMALL = 3
     }
-
+    public NotifyIcon ni = new();
     // Import dwmapi.dll and define DwmSetWindowAttribute in C# corresponding to the native function.
     [DllImport("dwmapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern long DwmSetWindowAttribute(IntPtr hwnd,
@@ -57,7 +57,6 @@ public sealed partial class MainWindow : WindowEx
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         Content = null;
         Title = "AppDisplayName".GetLocalized(); 
-        NotifyIcon ni = new NotifyIcon();
         ni.Icon = new System.Drawing.Icon(GetType(),"WindowIcon.ico");
         ni.Visible = true;
         ni.DoubleClick +=
@@ -96,8 +95,10 @@ public sealed partial class MainWindow : WindowEx
         ProfileLoad();
         Tray_Start();
         Set_Blue();
-        infp.Check_Info();
+        Closed += Dispose_Tray;
     }
+
+    private void Dispose_Tray(object sender, WindowEventArgs args) => ni.Dispose();
     private async void Set_Blue()
     {
         await Task.Delay(120);
@@ -116,11 +117,19 @@ public sealed partial class MainWindow : WindowEx
     private async void Tray_Start()
     {
         ConfigLoad();
-        if (config.autooverclock == true) { Applyer.Apply(); if (devices.autopstate == true && devices.enableps == true) { var cpu = new ПараметрыPage(); cpu.BtnPstateWrite_Click(); } }
-        if (config.traystart == true)
+        try
         {
-            await Task.Delay(700);
-            this.Hide();
+            if (config.autooverclock == true) { Applyer.Apply(); if (devices.autopstate == true && devices.enableps == true) { var cpu = new ПараметрыPage(); cpu.BtnPstateWrite_Click(); } }
+            if (config.traystart == true)
+            {
+                await Task.Delay(700);
+                this.Hide();
+            }
+        }
+        catch
+        {
+            JsonRepair('c');
+            JsonRepair('c');
         }
     }
     void Open_Preset(object sender, EventArgs e)
@@ -161,7 +170,7 @@ public sealed partial class MainWindow : WindowEx
     {
         public bool execute = false;
         private Config config = new();
-        public static void Apply()
+        public static async void Apply()
         {
             
             var mc = new Applyer();
@@ -188,7 +197,7 @@ public sealed partial class MainWindow : WindowEx
                 }
                 catch
                 {
-                    App.MainWindow.ShowMessageDialogAsync("Время автообновления разгона некорректно и было исправлено на 3000 мс", "Критическая ошибка!");
+                    await App.MainWindow.ShowMessageDialogAsync("Время автообновления разгона некорректно и было исправлено на 3000 мс", "Критическая ошибка!");
                     mc.config.reapplytimer = 3000;
                     timer.Interval = TimeSpan.FromMilliseconds(mc.config.reapplytimer);
                 }
@@ -196,12 +205,12 @@ public sealed partial class MainWindow : WindowEx
                 {
                     mc.config.execute = true;
                     ConfigSave();
-                    timer.Tick += (sender, e) =>
+                    timer.Tick += async (sender, e) =>
                     {
                         if (mc.config.reapplytime == true)
                         {
                             // Запустите ryzenadj снова
-                            Process();
+                            await Process();
                         }
                     };
                     timer.Start();
@@ -209,12 +218,12 @@ public sealed partial class MainWindow : WindowEx
                 else
                 {
                     timer.Stop();
-                    timer.Tick += (sender, e) =>
+                    timer.Tick += async (sender, e) =>
                     {
                         if (mc.config.reapplytime == true)
                         {
                             // Запустите ryzenadj снова
-                            Process();
+                            await Process();
                         }
                     };
                     timer.Start();
@@ -223,12 +232,19 @@ public sealed partial class MainWindow : WindowEx
             }
             else
             {
-                Process();
+                await Process();
             }
-            void Process()
+        }
+        private static async Task Process()
+        {
+            var mc = new Applyer
             {
-                ConfigLoad();
-                Process p = new Process();
+                config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))
+            };
+            if (mc.config == null) { return; }
+            await Task.Run(() =>
+            {
+                var p = new Process();
                 p.StartInfo.UseShellExecute = false;
                 p.StartInfo.FileName = @"ryzenadj.exe";
                 p.StartInfo.Arguments = mc.config.adjline;
@@ -236,11 +252,8 @@ public sealed partial class MainWindow : WindowEx
                 p.StartInfo.RedirectStandardError = true;
                 p.StartInfo.RedirectStandardInput = true;
                 p.StartInfo.RedirectStandardOutput = true;
-
                 p.Start();
-                //App.MainWindow.ShowMessageDialogAsync("Вы успешно выставили свои настройки! \n" + mc.config.adjline, "Применение успешно!");
-                
-            }
+            });
         }
         public static void FanInfo()
         {
@@ -417,7 +430,7 @@ public sealed partial class MainWindow : WindowEx
                 }
             }
         }
-        if (file != 'p')
+        if (file == 'p')
         {
             try
             {

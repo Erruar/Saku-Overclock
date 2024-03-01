@@ -158,8 +158,94 @@
                         </StackPanel>
                     </Grid>
                 </Expander>
-
-                <Expander Grid.Row="2">
+                
+                <!--Pstates READ vid/fid/did-->
+                <Expander  Grid.Row="4" Expanding="Pstate_Expanding" VerticalAlignment="Top">
+                    <Expander.Header>
+                        <Grid Height="65" Width="2000">
+                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xf8a6;"/>
+                            <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_States_Text" Text="Состояния CPU"></TextBlock>
+                            <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_States_Pdesc"  Text="Производительные состояния процессора"></TextBlock>
+                        </Grid>
+                    </Expander.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <!-- От 0 до 6 -->
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                            <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <Grid Height="50">
+                                    <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xebd2;"/>
+                                    <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_enableps" Text="Настройки состояний CPU"></TextBlock>
+                                    <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_infops_desc" Text="Чтение Pstate состояний"></TextBlock>
+                                </Grid>
+                            </Button>
+                        </Grid>
+                        <Grid Grid.Row="1" HorizontalAlignment="Left" Margin=" 30,20,0,0">
+                            <!-- Монтируем секции -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <!-- Первая секция -->
+                            <Grid Grid.Row="0" Margin="0,0,0,0"  Width="2000">
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="15" Text="State"/>
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="51,0,0,0" FontSize="15" Text="CPU Freq"/>
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="146,0,0,0" FontSize="15" Text="FID"/>
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="220,0,0,0" FontSize="15" Text="DID"/>
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="284,0,0,0" FontSize="15" Text="mVolt"/>
+                            </Grid>
+                            <Grid Grid.Row="1"  Margin="-7,10,0,0" Width="2000">
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P0"/>
+                                <Button Height="33" Width="60" Margin="55,0,0,0" x:Name="P0_Freq"></Button>
+                                <Button Width="60" Height="33" x:Name="FID_0" Margin="130,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button Width="60" Height="33" x:Name="DID_0" Margin="205,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button Width="60" Height="33" x:Name="VID_0" Margin="278,0,0,0" HorizontalAlignment="Left"></Button>
+                            </Grid>
+                            <Grid Grid.Row="2" Margin="-7,10,0,0" Width="2000">
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P1"/>
+                                <Button Height="33" Width="60" Margin="55,0,0,0" x:Name="P1_Freq" Content="1700"></Button>
+                                <Button Width="60" Height="33" x:Name="FID_1" Margin="130,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button Width="60" Height="33" x:Name="DID_1" Margin="205,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button Width="60" Height="33" x:Name="VID_1" Margin="278,0,0,0" HorizontalAlignment="Left"></Button>
+                            </Grid>
+                            <Grid Grid.Row="3"  Margin="-7,10,0,0" Width="2000">
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P2"/>
+                                <Button Height="33" Width="60" Margin="55,0,0,0" x:Name="P2_Freq" Content="1700"></Button>
+                                <Button Width="60" Height="33" x:Name="FID_2" Margin="130,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button Width="60" Height="33" x:Name="DID_2" Margin="205,0,0,0" HorizontalAlignment="Left"></Button>
+                                <Button Width="60" Height="33" x:Name="VID_2" Margin="278,0,0,0" HorizontalAlignment="Left"></Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Expander>
+                
+                <!--RAM section-->
+                <Expander Grid.Row="3">
                     <Expander.Header>
                         <Grid Height="65" Width="2000">
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe964;"/>

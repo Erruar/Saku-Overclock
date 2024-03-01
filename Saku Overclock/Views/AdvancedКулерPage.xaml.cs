@@ -1,0 +1,600 @@
+﻿using System.Globalization;
+using System.Xml.Linq;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Shapes;
+using Newtonsoft.Json;
+using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.ViewModels;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation.Metadata;
+using Windows.Storage;
+
+namespace Saku_Overclock.Views;
+#pragma warning disable CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).
+#pragma warning disable CS8602 // Разыменование вероятной пустой ссылки.
+#pragma warning disable CS8604 // Возможно, аргумент-ссылка, допускающий значение NULL.
+public sealed partial class AdvancedКулерPage : Page
+{
+    public AdvancedКулерViewModel ViewModel
+    {
+        get;
+    }
+    private Config config = new();
+    private Windows.Foundation.Point cursorPosition;
+    public AdvancedКулерPage()
+    {
+        ViewModel = App.GetService<AdvancedКулерViewModel>();
+        InitializeComponent();
+        Load_example();
+        ConfigLoad();
+        config.fanex = false;
+        config.tempex = false;
+        ConfigSave();
+        LoadFanCurvesFromConfig();
+        Init_Configs();
+    }
+    public void ConfigSave()
+    {
+        try
+        {
+            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+        }
+        catch { }
+    }
+    public void ConfigLoad()
+    {
+        try
+        {
+#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
+            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
+        }
+        catch
+        {
+            App.MainWindow.ShowMessageDialogAsync("Пресеты 3", "Критическая ошибка!");
+        }
+    }
+    private void NormalMode_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(КулерViewModel).FullName!);
+    }
+    private void Init_Configs()
+    {
+        // Получите папку, в которой хранятся ваши XML-файлы
+        var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\";
+
+        // Получите все XML-файлы в этой папке
+        var xmlFiles = Directory.GetFiles(folderPath, "*.xml");
+
+        // Получите MenuFlyoutSubItem, в котором будут добавляться вложенные пункты меню
+
+        // Очистите существующие элементы, чтобы избежать дублирования
+        Others_CC.Items.Clear();
+
+        // Добавьте вложенные пункты меню для каждого XML-файла
+        foreach (var xmlFile in xmlFiles)
+        {
+            // Создайте новый MenuFlyoutItem для каждого XML-файла
+            var fileItem = new MenuFlyoutItem
+            {
+                Text = System.IO.Path.GetFileName(xmlFile),
+                Command = new RelayCommand<string>(HandleFileItemClick),
+                CommandParameter = xmlFile
+            };
+            var copyItem = new MenuFlyoutItem
+            {
+                Text = System.IO.Path.GetFileName(xmlFile),
+                Command = new RelayCommand<string>(CreateFromFile),
+                CommandParameter = xmlFile
+            };
+            // Добавьте MenuFlyoutItem в MenuFlyoutSubItem
+            Others_CC.Items.Add(fileItem);
+            Copy_CC.Items.Add(copyItem);
+        }
+    }
+    private void CreateFromFile(string baseFileName)
+    {
+        var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
+
+        // Находим первое свободное имя файла
+        var index = 1;
+        string newFileName;
+        do
+        {
+            newFileName = $"Custom{index}.xml";
+            index++;
+        } while (File.Exists(System.IO.Path.Combine(folderPath, newFileName)));
+
+        // Создаем новый файл
+        var newFilePath = System.IO.Path.Combine(folderPath, newFileName);
+        File.Copy(System.IO.Path.Combine(folderPath, baseFileName), newFilePath);
+        HandleFileItemClick(System.IO.Path.Combine(folderPath, newFilePath));
+        Init_Configs();
+    }
+    private void HandleFileItemClick(string filePath)
+    {
+        // Извлечь имя файла без расширения
+        var tabName = System.IO.Path.GetFileNameWithoutExtension(filePath);
+
+        // Создать новую вкладку
+        var newTab = new TabViewItem
+        {
+            Header = tabName,
+            IconSource = new FontIconSource { Glyph = "\uE78C" } // Unicode-код для иконки
+        };
+
+        // Создать Grid с кнопкой и RichEditBox
+        var tabContent = new Grid();
+
+        // Создать кнопку для копирования в буфер обмена
+        var copyButton = new Button
+        {
+            VerticalAlignment = VerticalAlignment.Top,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Height = 40,
+            Width = 40,
+            Margin = new Thickness(0, 3, 5, 0),
+            Content = new ContentControl
+            {
+                Content = new FontIcon
+                {
+                    FontFamily = new FontFamily("Segoe MDL2 Assets"),
+                    Glyph = "\uE8C8",
+                    Margin = new Thickness(-4, -2, -5, -5)
+                }
+            }
+        };
+
+        // Добавить обработчик события для кнопки
+        copyButton.Click += (sender, args) =>
+        {
+            // Копировать текст в буфер обмена
+            var textToCopy = GetXmlFileContent(filePath, newTab);
+            var dataPackage = new DataPackage();
+            dataPackage.SetText(textToCopy);
+            Clipboard.SetContent(dataPackage);
+        };
+
+        // Создать RichEditBox и загрузить в него содержимое файла .xml
+        var xmlContent = new RichEditBox
+        {
+            VerticalAlignment = VerticalAlignment.Stretch,
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+        xmlContent.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, GetXmlFileContent(filePath, newTab));
+        // Создать кнопку для сохранения
+        var saveButton = new Button
+        {
+            VerticalAlignment = VerticalAlignment.Top,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Height = 40,
+            Width = 40,
+            Margin = new Thickness(0, 3, 50, 0),
+            Content = new ContentControl
+            {
+                Content = new FontIcon
+                {
+                    FontFamily = new FontFamily("Segoe MDL2 Assets"),
+                    Glyph = "\uE74E",
+                    Margin = new Thickness(-4, -2, -5, -5)
+                }
+            }
+        };
+        saveButton.Click += (sender, e) => SaveRichEditBoxContentToFile(xmlContent, filePath, newTab);
+        // Создать кнопку для переименования
+        var renameButton = new Button
+        {
+            VerticalAlignment = VerticalAlignment.Top,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Height = 40,
+            Width = 40,
+            Margin = new Thickness(0, 3, 96, 0),
+            Content = new ContentControl
+            {
+                Content = new FontIcon
+                {
+                    FontFamily = new FontFamily("Segoe MDL2 Assets"),
+                    Glyph = "\uE70F",
+                    Margin = new Thickness(-4, -2, -5, -5)
+                }
+            }
+        };
+        renameButton.Click += (sender, e) =>
+        {
+            ShowRenameDialog(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" + newTab.Header.ToString() + ".xml", newTab);
+
+        };
+        // Добавить элементы в Grid
+        tabContent.Children.Add(xmlContent);
+        tabContent.Children.Add(copyButton);
+        tabContent.Children.Add(saveButton);
+        tabContent.Children.Add(renameButton);
+
+        // Установить содержимое вкладки
+        newTab.Content = tabContent;
+
+        // Добавить вкладку в TabView
+        MainTab.TabItems.Add(newTab);
+
+        // Выбрать только что созданную вкладку
+        MainTab.SelectedItem = newTab;
+    }
+    private async void ShowRenameDialog(string filePath, TabViewItem tabItem)
+    {
+        // Проверяем, что файл имеет в себе имя "Custom"
+        var isCustomFile = System.IO.Path.GetFileNameWithoutExtension(filePath).StartsWith("Custom");
+
+        // Создать ContentDialog
+        var renameDialog = new ContentDialog
+        {
+            Title = isCustomFile ? "Выберите действие" : "Переименовать файл и вкладку",
+            Content = new TextBox { PlaceholderText = "Новое имя" },
+            PrimaryButtonText = "Переименовать",
+            CloseButtonText = "Отмена",
+            DefaultButton = ContentDialogButton.Close
+        };
+        if (isCustomFile) { renameDialog.SecondaryButtonText = "Удалить"; }
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+        {
+            renameDialog.XamlRoot = XamlRoot;
+        }
+        // Отобразить ContentDialog и обработать результат
+        var result = await renameDialog.ShowAsync();
+        // Если файл имеет в себе имя "Custom", добавляем опцию "Удалить файл"
+        if (result == ContentDialogResult.Secondary)
+        {
+            await Task.Delay(1000);
+            var deleteConfirmationDialog = new ContentDialog
+            {
+                Title = "Удалить файл",
+                Content = "Вы уверены в удалении?",
+                PrimaryButtonText = "Удалить",
+                CloseButtonText = "Отмена",
+                DefaultButton = ContentDialogButton.Close
+            };
+            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            {
+                deleteConfirmationDialog.XamlRoot = XamlRoot;
+            }
+            var deleteConfirmationResult = await deleteConfirmationDialog.ShowAsync();
+            if (deleteConfirmationResult == ContentDialogResult.Primary)
+            {
+                // Удалить файл
+                try
+                {
+                    File.Delete(filePath);
+                    // Удалить вкладку
+                    MainTab.TabItems.Remove(tabItem);
+                    Init_Configs();
+                }
+                catch
+                {
+                    Init_Configs();
+                }
+            }
+        }
+
+
+
+        if (result == ContentDialogResult.Primary)
+        {
+            var textBox = (TextBox)renameDialog.Content;
+
+            // Проверить, что введено новое имя
+            if (!string.IsNullOrWhiteSpace(textBox.Text))
+            {
+                var newName = textBox.Text + ".xml";
+                try
+                {
+                    // Переименовать файл
+                    File.Move(filePath, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(filePath), newName));
+
+                    // Переименовать вкладку
+                    tabItem.Header = textBox.Text;
+                    Init_Configs();
+                }
+                catch
+                {
+                    Init_Configs();
+                }
+            }
+        }
+    }
+
+    private static async void SaveRichEditBoxContentToFile(RichEditBox richEditBox, string filePath, TabViewItem tabItem)
+    {
+        try
+        {
+            // Получить текст из RichEditBox
+            var documentRange = richEditBox.Document.GetRange(0, Microsoft.UI.Text.TextConstants.MaxUnitCount);
+            var content = "";
+            documentRange.GetText(Microsoft.UI.Text.TextGetOptions.None, out content);
+            // Сохранить текст в файл
+            try
+            {
+                await FileIO.WriteTextAsync(await StorageFile.GetFileFromPathAsync(filePath), content);
+            }
+            catch
+            {
+                await FileIO.WriteTextAsync(await StorageFile.GetFileFromPathAsync(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" + tabItem.Header.ToString() + ".xml"), content);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при сохранении файла: {ex.Message}");
+        }
+    }
+    // Вспомогательная функция для получения содержимого файла .xml
+    private static string GetXmlFileContent(string filePath, TabViewItem newTab)
+    {
+        // Здесь вы можете добавить код для чтения содержимого файла .xml
+        // Например, вы можете использовать File.ReadAllText(filePath)
+        // и возвращать прочитанный текст.
+        // Ваша реализация может отличаться в зависимости от структуры ваших XML-файлов.
+
+        // Пример:
+        try
+        {
+            return File.ReadAllText(filePath);
+        }
+        catch
+        {
+            return File.ReadAllText(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" + newTab.Header.ToString() + ".xml");
+        }
+    }
+
+    private void TabView_PointerMoved(object sender, PointerRoutedEventArgs e)
+    {
+        // Сохраните текущее положение курсора
+        cursorPosition = e.GetCurrentPoint(MainTab).Position;
+    }
+    private void Tabs_AddTabButtonClick(TabView sender, object args)
+    {
+        // Получите кнопку, на которой был выполнен щелчок
+        var addButton = (TabView)sender;
+        // Получите контекстное меню из ресурсов
+        var contextMenu = (MenuFlyout)Resources["TabContextM"];
+        // Получите позицию курсора относительно TabView
+
+        // Отобразите контекстное меню относительно кнопки
+        contextMenu.ShowAt(addButton, cursorPosition);
+
+        // Остановите дальнейшую обработку события
+        //var tab = CreateNewTVI("New Item", "New Item");
+        //sender.TabItems.Add(tab);
+    }
+
+    private void Tabs_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
+    {
+        if (args.Tab == Example_1Tab || args.Tab == FanC_Tab)
+        {
+            args.Tab.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+
+        }
+        else
+        {
+            MainTab.TabItems.Remove(args.Tab);
+        }
+        // Ищем следующий видимый элемент и устанавливаем его в качестве текущего
+        var foundVisibleTab = false;
+        // Ищем следующий видимый элемент и устанавливаем его в качестве текущего
+        for (var i = 0; i < MainTab.TabItems.Count; i++)
+        {
+            if (MainTab.TabItems[i] is UIElement itemElement && itemElement.Visibility == Microsoft.UI.Xaml.Visibility.Visible)
+            {
+                MainTab.SelectedIndex = i;
+                foundVisibleTab = true;
+                break;
+            }
+        }
+        // Если нет видимых вкладок, создаем новую
+        if (!foundVisibleTab)
+        {
+            // Создаем новую вкладку
+            var newTab = new TabViewItem
+            {
+                Header = "Empty",
+                IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource { Symbol = Symbol.Placeholder },
+                Content = new TextBlock { Text = "There is no any Tabs, open a new one" }
+            };
+
+            // Добавляем вкладку в TabView
+            MainTab.TabItems.Add(newTab);
+
+            // Устанавливаем новую вкладку в качестве текущей
+            MainTab.SelectedItem = newTab;
+        }
+    }
+    //Создать пустую вкладку:
+    /*private static TabViewItem CreateNewTVI(string header)
+    {
+        var newTab = new TabViewItem()
+        {
+            IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource()
+            {
+                Symbol = Symbol.Placeholder
+            },
+            Header = header
+        };
+
+        return newTab;
+    }*/
+    private void Load_example()
+    {
+        var pathToExecutableFile = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        // Получите путь к папке с программой
+        var pathToProgramDirectory = System.IO.Path.GetDirectoryName(pathToExecutableFile);
+        // Получите путь к файлу конфига
+        var pathToConfig = System.IO.Path.Combine(pathToProgramDirectory, @"C:\Program Files (x86)\NoteBook FanControl\Configs\ASUS Vivobook X580VD.xml");
+        try { ReadEx.Text = File.ReadAllText(pathToConfig); ReadEx.Text = ReadEx.Text.Replace("<?xml version=\"1.0\"?>", "\n"); } catch { }
+    }
+
+    private void CopyPath_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var package = new DataPackage();
+        package.SetText(ReadEx.Text);
+        Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(package);
+    }
+    private async void LoadFanCurvesFromConfig()
+    {
+        try
+        {
+            ConfigLoad();
+            var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" + config.fanvalue + ".xml";
+            Config_Name1.Text = config.fanvalue;
+            if (System.IO.File.Exists(configFilePath))
+            {
+                // Загрузка XML-документа из файла
+                var configXml = XDocument.Load(configFilePath);
+
+                // Извлечение всех FanConfiguration-элементов в документе
+                var fanConfigurations = configXml.Descendants("FanConfiguration").ToList();
+
+                // Обход каждого FanConfiguration-элемента в файле
+                for (var i = 0; i < fanConfigurations.Count; i++)
+                {
+                    // Извлечение элементов TemperatureThresholds
+                    var thresholdElements = fanConfigurations[i].Descendants("TemperatureThreshold");
+
+                    // Обход каждого элемента TemperatureThreshold внутри FanConfiguration
+                    foreach (var thresholdElement in thresholdElements)
+                    {
+                        // Извлечение значений UpThreshold, DownThreshold и FanSpeed из текущего элемента
+                        var upThreshold = double.Parse(thresholdElement.Element("UpThreshold").Value);
+                        var downThreshold = double.Parse(thresholdElement.Element("DownThreshold").Value);
+                        var fanSpeed = 0.0;
+                        try
+                        {
+                            // Округление значения FanSpeed до ближайшего целого числа
+                            fanSpeed = double.Parse(thresholdElement.Element("FanSpeed").Value.Trim(), CultureInfo.InvariantCulture);
+                        }
+                        catch { }
+                        // Добавление точек на соответствующий Polyline в соответствии с текущими значениями и идентификатором FanConfiguration
+                        AddThresholdToPolyline((i + 1).ToString(), downThreshold, upThreshold, fanSpeed);
+                    }
+                }
+
+                // Отрисовка кривых после обработки всех элементов из файла
+                DrawFanCurves();
+            }
+            else
+            {
+                // Если файл не найден, выводим сообщение
+                var messageDialog = new Windows.UI.Popups.MessageDialog("File not found: " + configFilePath);
+                await messageDialog.ShowAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error loading fan curves from config: " + ex.Message);
+        }
+    }
+
+    private void AddThresholdToPolyline(string fanName, double minTemp, double maxTemp, double fanSpeed)
+    {
+        var normalizedX1 = (int)fanSpeed;
+        var normalizedY1 = 100 - minTemp;
+
+        var normalizedX2 = (int)fanSpeed;
+        var normalizedY2 = 100 - maxTemp;
+        if (fanName == "1")
+        {
+            ExtFan1C.Points.Add(new Windows.Foundation.Point(normalizedX1, (int)normalizedY1));
+            ExtFan1C.Points.Add(new Windows.Foundation.Point(normalizedX2, (int)normalizedY2));
+        }
+        else
+        {
+            ExtFan2C.Points.Add(new Windows.Foundation.Point(normalizedX1, (int)normalizedY1));
+            ExtFan2C.Points.Add(new Windows.Foundation.Point(normalizedX2, (int)normalizedY2));
+        }
+    }
+
+    private static void DrawFanCurves()
+    {
+        // Дополнительная отрисовка, если нужно
+    }
+
+    private void Example_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        Example_1Tab.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+        MainTab.SelectedItem = Example_1Tab;
+    }
+
+    private void Curve_Click(object sender, RoutedEventArgs e)
+    {
+        FanC_Tab.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+        MainTab.SelectedItem = FanC_Tab;
+    }
+
+    private void Create_Example_Click(object sender, RoutedEventArgs e)
+    {
+        var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
+        var baseFileName = "ASUS Vivobook X580VD.xml";
+
+        // Находим первое свободное имя файла
+        var index = 1;
+        string newFileName;
+        do
+        {
+            newFileName = $"Custom{index}.xml";
+            index++;
+        } while (File.Exists(System.IO.Path.Combine(folderPath, newFileName)));
+
+        // Создаем новый файл
+        var newFilePath = System.IO.Path.Combine(folderPath, newFileName);
+        File.Copy(System.IO.Path.Combine(folderPath, baseFileName), newFilePath);
+        HandleFileItemClick(System.IO.Path.Combine(folderPath, newFilePath));
+        Init_Configs();
+    }
+
+    private void Create_Null_Click(object sender, RoutedEventArgs e)
+    {
+        var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
+
+        for (var i = 1; i <= int.MaxValue; i++)
+        {
+            var fileName = $"Custom{i}.xml";
+            var filePath = System.IO.Path.Combine(folderPath, fileName);
+
+            if (!File.Exists(filePath))
+            {
+                // Файл с указанным именем не существует, создаем его
+                File.Create(filePath).Close();
+                HandleFileItemClick(filePath);
+                Init_Configs();
+                break;
+            }
+        }
+    }
+    private void GridView_ItemClick1(object sender, ItemClickEventArgs e)
+    {
+        PolilyneChange(ExtFan1C, e);
+    }
+    private void GridView_ItemClick2(object sender, ItemClickEventArgs e)
+    {
+        PolilyneChange(ExtFan2C, e);
+    }
+    private void PolilyneChange(Polyline pln, ItemClickEventArgs e)
+    {
+        var rect = (Rectangle)e.ClickedItem;
+        var color = ((SolidColorBrush)rect.Fill).Color;
+        pln.Stroke = new SolidColorBrush(color);
+        Task.Delay(10).ContinueWith(_ => myListButton.Flyout.Hide(), TaskScheduler.FromCurrentSynchronizationContext());
+        Task.Delay(10).ContinueWith(_ => myListButton1.Flyout.Hide(), TaskScheduler.FromCurrentSynchronizationContext());
+
+    }
+    private void myListButton_IsCheckedChanged(ToggleSplitButton sender, ToggleSplitButtonIsCheckedChangedEventArgs args)
+    {
+        if (myListButton.IsChecked) { ExtFan1C.Visibility = Visibility.Visible; } else { ExtFan1C.Visibility = Visibility.Collapsed; }
+    }
+
+    private void myListButton1_IsCheckedChanged(ToggleSplitButton sender, ToggleSplitButtonIsCheckedChangedEventArgs args)
+    {
+        if (myListButton1.IsChecked) { ExtFan2C.Visibility = Visibility.Visible; } else { ExtFan2C.Visibility = Visibility.Collapsed; }
+    }
+}

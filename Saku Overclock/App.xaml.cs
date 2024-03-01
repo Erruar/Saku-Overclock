@@ -79,6 +79,8 @@ public partial class App : Application
             services.AddTransient<SettingsPage>();
             services.AddTransient<КулерViewModel>();
             services.AddTransient<КулерPage>();
+            services.AddTransient<AdvancedКулерViewModel>();
+            services.AddTransient<AdvancedКулерPage>();
             services.AddTransient<ИнформацияViewModel>();
             services.AddTransient<ИнформацияPage>();
             services.AddTransient<ПараметрыViewModel>();

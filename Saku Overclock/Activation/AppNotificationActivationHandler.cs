@@ -1,10 +1,7 @@
 ﻿using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
-using Microsoft.Windows.AppNotifications;
-
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Activation;
 

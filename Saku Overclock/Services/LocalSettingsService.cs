@@ -5,8 +5,6 @@ using Saku_Overclock.Core.Contracts.Services;
 using Saku_Overclock.Core.Helpers;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
-
-using Windows.ApplicationModel;
 using Windows.Storage;
 
 namespace Saku_Overclock.Services;

@@ -12,6 +12,9 @@
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Update="Views\AdvancedКулерPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\КулерPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

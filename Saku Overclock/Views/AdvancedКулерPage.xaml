@@ -1,0 +1,488 @@
+﻿<Page 
+    x:Class="Saku_Overclock.Views.AdvancedКулерPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <MenuFlyout x:Name="TabContextM">
+            <MenuFlyoutItem Text="Readme" Click="Example_Click">
+                <MenuFlyoutItem.Icon>
+                    <FontIcon Glyph="&#xe718;"/>
+                </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+            <MenuFlyoutSubItem Text="Configs">
+                <MenuFlyoutSubItem.Icon>
+                    <FontIcon Glyph="&#xe8b7;"/>
+                </MenuFlyoutSubItem.Icon>
+                <MenuFlyoutItem Text="Fan Curve" Click="Curve_Click">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xe932;"/>
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutSubItem x:Name="Others_CC" Text="Other Configs">
+                    <MenuFlyoutSubItem.Icon>
+                        <FontIcon Glyph="&#xe74c;"/>
+                    </MenuFlyoutSubItem.Icon>
+                </MenuFlyoutSubItem>
+                <MenuFlyoutSubItem Text="Create Custom">
+                    <MenuFlyoutSubItem.Icon>
+                        <FontIcon Glyph="&#xe792;"/>
+                    </MenuFlyoutSubItem.Icon>
+                    <MenuFlyoutItem Text="Config From Example" Click="Create_Example_Click">
+                        <MenuFlyoutItem.Icon>
+                            <FontIcon Glyph="&#xe78c;"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                    <MenuFlyoutItem Text="Empty Config" Click="Create_Null_Click">
+                        <MenuFlyoutItem.Icon>
+                            <FontIcon Glyph="&#xe78c;"/>
+                        </MenuFlyoutItem.Icon>
+                    </MenuFlyoutItem>
+                    <MenuFlyoutSubItem x:Name="Copy_CC" Text="Copy Config From">
+                        <MenuFlyoutSubItem.Icon>
+                            <FontIcon Glyph="&#xe78c;"/>
+                        </MenuFlyoutSubItem.Icon>
+                    </MenuFlyoutSubItem>
+                </MenuFlyoutSubItem>
+            </MenuFlyoutSubItem>
+        </MenuFlyout>
+    </Page.Resources>
+    <!--Pages can be added as references or inline-->
+    <Grid x:Name="ContentArea">
+        <TextBlock Text="Advanced cooler tweaking" FontSize="30" Margin="0,-65,0,0"></TextBlock>
+        <ContentControl>
+            <TabView x:Name="MainTab" Background="{ThemeResource LayerOnMicaBaseAltFillColorTransparentBrush}" AddTabButtonClick="Tabs_AddTabButtonClick" PointerMoved="TabView_PointerMoved" TabCloseRequested="Tabs_TabCloseRequested" CloseButtonOverlayMode="OnPointerOver" TabWidthMode="SizeToContent">
+                <TabView.TabItems>
+                    <TabViewItem Header="Readme" x:Name="Example_1Tab">
+                        <TabViewItem.IconSource>
+                            <FontIconSource Glyph="&#xe718;"/>
+                        </TabViewItem.IconSource>
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto">
+                            <ScrollViewer Padding="0,0,36,0" IsTabStop="False"
+         UseSystemFocusVisuals="False"
+         VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+         VerticalScrollMode="Auto" Margin="0,0,-50,0">
+                                <Grid>
+                                    <Expander  VerticalAlignment="Bottom" Opacity="0" IsEnabled="False">
+                                        <Expander.Header>
+                                            <Grid Height="65" Width="2000">
+                                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xee92;"/>
+                                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Unknown"></TextBlock>
+                                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Unknown expander? It fixes automargin error!!!"></TextBlock>
+                                            </Grid>
+                                        </Expander.Header>
+                                    </Expander>
+                                    <TextBlock FontWeight="Bold" Text="This is example of config"/>
+                                    <RichTextBlock x:Name="RichEt">
+                                        <Paragraph x:Name="RichPargr">
+                                            <Run x:Name="ReadEx"></Run>
+                                        </Paragraph>
+                                    </RichTextBlock>
+                                    <Button   VerticalAlignment="Top"  Click="CopyPath_Click"  HorizontalAlignment="Right"  Height="40" Width="40">
+                                        <ContentControl>
+                                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Margin="-3,0,0,0"    Glyph="&#xe8c8;"/>
+                                        </ContentControl>
+                                    </Button>
+                                </Grid>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabViewItem>
+                    <TabViewItem Header="Fan Curve" x:Name="FanC_Tab" IsClosable="True">
+                        <TabViewItem.IconSource>
+                            <FontIconSource Glyph="&#xe932;"/>
+                        </TabViewItem.IconSource>
+                        <Grid>
+                            <ScrollViewer Padding="0,0,36,0" IsTabStop="False"
+         UseSystemFocusVisuals="False"
+         VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+         VerticalScrollMode="Auto" Margin="0,0,-50,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="450"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="Fan curve editor" FontWeight="Light" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="21"></TextBlock>
+                                    <TextBlock Text="There you can change laptop fans behavior &#10;for selected config:" Margin="0,28,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"></TextBlock>
+                                    <TextBlock Text="Critical error in line 104 of com.sakuoverclock.org" Margin="148,50,0,0" x:Name="Config_Name1" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"></TextBlock>
+                                    <!-- Выбор кривой -->
+                                    <Grid>
+                                        <ToggleSplitButton IsChecked="True" IsCheckedChanged="myListButton_IsCheckedChanged" x:Name="myListButton" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="300,120,0,0">
+                                            <Grid>
+                                                <ContentControl>
+                                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xedad;"/>
+                                                </ContentControl>
+                                                <TextBlock Text="Fan 1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
+                                            </Grid>
+                                            
+                                            <ToggleSplitButton.Flyout>
+                                                <Flyout Placement="Bottom">
+                                                    <!-- flyout content -->
+                                                    <GridView ItemClick="GridView_ItemClick1" IsItemClickEnabled="True">
+                                                        <GridView.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
+                                                            </ItemsPanelTemplate>
+                                                        </GridView.ItemsPanel>
+                                                        <GridView.Resources>
+                                                            <Style TargetType="Rectangle">
+                                                                <Setter Property="Width" Value="40"/>
+                                                                <Setter Property="Height" Value="40"/>
+                                                                <Setter Property="RadiusX" Value="4"/>
+                                                                <Setter Property="RadiusY" Value="4"/>
+                                                            </Style>
+                                                        </GridView.Resources>
+                                                        <GridView.Items>
+                                                            <Rectangle Fill="Red"/>
+                                                            <Rectangle Fill="Orange"/>
+                                                            <Rectangle Fill="Yellow"/>
+                                                            <Rectangle Fill="Green"/>
+                                                            <Rectangle Fill="Blue"/>
+                                                            <Rectangle Fill="Indigo"/>
+                                                            <Rectangle Fill="Violet"/>
+                                                            <Rectangle Fill="Gray"/>
+                                                        </GridView.Items>
+                                                    </GridView>
+                                                </Flyout>
+                                            </ToggleSplitButton.Flyout>
+                                        </ToggleSplitButton>
+                                        <ToggleSplitButton IsChecked="True" IsCheckedChanged="myListButton1_IsCheckedChanged" x:Name="myListButton1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="300,160,0,0">
+                                            <Grid>
+                                                <ContentControl>
+                                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xedad;"/>
+                                                </ContentControl>
+                                                <TextBlock Text="Fan 2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
+                                            </Grid>
+                                            <ToggleSplitButton.Flyout>
+                                                <Flyout Placement="Bottom">
+                                                    <!-- flyout content -->
+                                                    <GridView ItemClick="GridView_ItemClick2" IsItemClickEnabled="True">
+                                                        <GridView.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
+                                                            </ItemsPanelTemplate>
+                                                        </GridView.ItemsPanel>
+                                                        <GridView.Resources>
+                                                            <Style TargetType="Rectangle">
+                                                                <Setter Property="Width" Value="40"/>
+                                                                <Setter Property="Height" Value="40"/>
+                                                                <Setter Property="RadiusX" Value="4"/>
+                                                                <Setter Property="RadiusY" Value="4"/>
+                                                            </Style>
+                                                        </GridView.Resources>
+                                                        <GridView.Items>
+                                                            <Rectangle Fill="Red"/>
+                                                            <Rectangle Fill="Orange"/>
+                                                            <Rectangle Fill="Yellow"/>
+                                                            <Rectangle Fill="Green"/>
+                                                            <Rectangle Fill="Blue"/>
+                                                            <Rectangle Fill="Indigo"/>
+                                                            <Rectangle Fill="Violet"/>
+                                                            <Rectangle Fill="Gray"/>
+                                                        </GridView.Items>
+                                                    </GridView>
+                                                </Flyout>
+                                            </ToggleSplitButton.Flyout>
+                                        </ToggleSplitButton>
+                                        <ContentControl>
+                                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="330,205,-5,0"   Glyph="&#xea47;">
+                                                <FontIcon.RenderTransform>
+                                                    <ScaleTransform ScaleX="2.5" ScaleY="2.5"></ScaleTransform>
+                                                </FontIcon.RenderTransform>
+                                            </FontIcon>
+                                        </ContentControl>
+                                    </Grid>
+                                    <!-- Собственно кривая кулеров До изменения -->
+                                    <Grid Margin="0,87,0,0" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="22"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="t℃" Margin="0,-10,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Before" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="-10,-6,0,5">
+                                            <TextBlock Text="100" HorizontalAlignment="Right" Margin="0,2,0,0"/>
+                                            <TextBlock Text="90" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                            <TextBlock Text="80" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                            <TextBlock Text="70" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                            <TextBlock Text="60" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                            <TextBlock Text="50" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                            <TextBlock Text="40" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                            <TextBlock Text="30" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                            <TextBlock Text="20" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                            <TextBlock Text="10" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                            <TextBlock Text="0" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text=" " HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="10,-70,5,0">
+                                            <TextBlock Text="0" Margin="2,0,0,0"/>
+                                            <TextBlock Text="10" Margin="7,0,0,0"/>
+                                            <TextBlock Text="20" Margin="10,0,0,0"/>
+                                            <TextBlock Text="30" Margin="7,0,0,0"/>
+                                            <TextBlock Text="40" Margin="10,0,0,0"/>
+                                            <TextBlock Text="50" Margin="8,0,0,0"/>
+                                            <TextBlock Text="60" Margin="10,0,0,0"/>
+                                            <TextBlock Text="70" Margin="7,0,0,0"/>
+                                            <TextBlock Text="80" Margin="10,0,0,0"/>
+                                            <TextBlock Text="90" Margin="7,0,0,0"/>
+                                            <TextBlock Text="100  RPM (%)" Margin="10,0,0,0"/>
+                                        </StackPanel>
+                                        <Canvas Grid.Row="1" Grid.Column="1" Margin="10,5,0,0">
+                                            <!-- Влево вправо-->
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="100" X2="100" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="10" X2="100" Y2="10"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="20" X2="100" Y2="20" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="30" X2="100" Y2="30"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="40" X2="100" Y2="40" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="50" X2="100" Y2="50"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="60" X2="100" Y2="60" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="70" X2="100" Y2="70"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="80" X2="100" Y2="80" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="90" X2="100" Y2="90"/>
+                                            </ContentControl>
+                                            <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="0" X2="100" Y2="0" StrokeDashArray="2 2"/>
+                                            <!-- Вверх вниз-->
+                                            <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="0" X2="0" Y2="100"/>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="10" Y1="0" X2="10" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="20" Y1="0" X2="20" Y2="105"  StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="30" Y1="0" X2="30" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="40" Y1="0" X2="40" Y2="105" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="50" Y1="0" X2="50" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="60" Y1="0" X2="60" Y2="105" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="70" Y1="0" X2="70" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="80" Y1="0" X2="80" Y2="105" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="90" Y1="0" X2="90" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="100" Y1="0" X2="100" Y2="105" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <!--Кривые-->
+                                            <Polyline x:Name="ExtFan1C" Stroke="Pink" StrokeThickness="1" Points="0,100"/>
+                                            <Polyline x:Name="ExtFan2C" Stroke="Purple" Opacity="1" StrokeThickness="1" Points="0,100"/>
+                                            <Canvas.RenderTransform>
+                                                <ScaleTransform ScaleX="2.5" ScaleY="2.5"/>
+                                            </Canvas.RenderTransform>
+                                        </Canvas>
+                                    </Grid>
+                                    <!-- Собственно кривая кулеров после изменения -->
+                                    <Grid Margin="420,87,0,0" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="22"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="t℃" Margin="0,-10,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="After" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="-10,-6,0,5">
+                                            <TextBlock Text="100" HorizontalAlignment="Right" Margin="0,2,0,0"/>
+                                            <TextBlock Text="90" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                            <TextBlock Text="80" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                            <TextBlock Text="70" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                            <TextBlock Text="60" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                            <TextBlock Text="50" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                            <TextBlock Text="40" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                            <TextBlock Text="30" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                            <TextBlock Text="20" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                            <TextBlock Text="10" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                                            <TextBlock Text="0" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text=" " HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="10,-70,5,0">
+                                            <TextBlock Text="0" Margin="2,0,0,0"/>
+                                            <TextBlock Text="10" Margin="7,0,0,0"/>
+                                            <TextBlock Text="20" Margin="10,0,0,0"/>
+                                            <TextBlock Text="30" Margin="7,0,0,0"/>
+                                            <TextBlock Text="40" Margin="10,0,0,0"/>
+                                            <TextBlock Text="50" Margin="8,0,0,0"/>
+                                            <TextBlock Text="60" Margin="10,0,0,0"/>
+                                            <TextBlock Text="70" Margin="7,0,0,0"/>
+                                            <TextBlock Text="80" Margin="10,0,0,0"/>
+                                            <TextBlock Text="90" Margin="7,0,0,0"/>
+                                            <TextBlock Text="100  RPM (%)" Margin="10,0,0,0"/>
+                                        </StackPanel>
+                                        <Canvas Grid.Row="1" Grid.Column="1" Margin="10,5,0,0">
+                                            <!-- Влево вправо-->
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="100" X2="100" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="10" X2="100" Y2="10"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="20" X2="100" Y2="20" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="30" X2="100" Y2="30"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="40" X2="100" Y2="40" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="50" X2="100" Y2="50"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="60" X2="100" Y2="60" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="70" X2="100" Y2="70"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="80" X2="100" Y2="80" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="90" X2="100" Y2="90"/>
+                                            </ContentControl>
+                                            <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="0" X2="100" Y2="0" StrokeDashArray="2 2"/>
+                                            <!-- Вверх вниз-->
+                                            <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="0" X2="0" Y2="100"/>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="10" Y1="0" X2="10" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="20" Y1="0" X2="20" Y2="105"  StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="30" Y1="0" X2="30" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="40" Y1="0" X2="40" Y2="105" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="50" Y1="0" X2="50" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="60" Y1="0" X2="60" Y2="105" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="70" Y1="0" X2="70" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="80" Y1="0" X2="80" Y2="105" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="90" Y1="0" X2="90" Y2="100"/>
+                                            </ContentControl>
+                                            <ContentControl>
+                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="100" Y1="0" X2="100" Y2="105" StrokeDashArray="2 2"/>
+                                            </ContentControl>
+                                            <!--Кривые-->
+                                            <Polyline x:Name="InvFan1C" Stroke="Pink" StrokeThickness="1" Points="0,100"/>
+                                            <Polyline x:Name="InvFan2C" Stroke="Purple" Opacity="1" StrokeThickness="1" Points="0,100"/>
+                                            <Canvas.RenderTransform>
+                                                <ScaleTransform ScaleX="2.5" ScaleY="2.5"/>
+                                            </Canvas.RenderTransform>
+                                        </Canvas>
+                                    </Grid>
+                                    <!-- Всё что ниже кривых -->
+                                    <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" Text="Temperature tresholds"/>
+
+                                    <Grid Grid.Row="1" x:Name="FanDef" VerticalAlignment="Top" Margin="0,19,0,0" HorizontalAlignment="Left">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Margin="0,19,0,0" Text="Fan 1"/>
+                                        <TextBlock Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,44,-195,0" Text="     Min           Max           SPD"/>
+                                        <NumberBox Grid.Row="0" HorizontalAlignment="Left" Width="65" Margin="0,65,0,0" Grid.Column="0" Value="0"></NumberBox>
+                                        <NumberBox Grid.Row="0" HorizontalAlignment="Left" Width="65" Margin="0,65,0,0" Grid.Column="2" Value="50"></NumberBox>
+                                        <NumberBox Grid.Row="0" HorizontalAlignment="Left" Width="65" Margin="0,65,0,0" Grid.Column="4" Value="50"></NumberBox>
+                                    </Grid>
+                                </Grid>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabViewItem>
+                </TabView.TabItems>
+            </TabView>
+        </ContentControl>
+
+        <Button VerticalAlignment="Bottom"  Click="NormalMode_Click"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-13,15"  ToolTipService.ToolTip="Normal mode">
+            <Grid>
+                <ContentControl>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe90f;">
+                    </FontIcon>
+                </ContentControl>
+            </Grid>
+        </Button>
+    </Grid>
+</Page>

@@ -552,7 +552,7 @@
                                     <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="146,0,0,0" FontSize="15" Text="FID"/>
                                     <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="205,0,0,0" FontSize="15" Text="Multiplier"/>
                                     <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="303,0,0,0" FontSize="15" Text="DID"/>
-                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="373,0,0,0" FontSize="15" Text="VID"/>
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="367,0,0,0" FontSize="15" Text="mVolt"/>
                                 </Grid>
                                 <Grid Grid.Row="1"  Margin="-7,10,0,0" Width="2000">
                                     <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P0"/>
