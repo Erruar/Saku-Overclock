@@ -1,1 +1,0 @@
-ryzenadj.exe -i
