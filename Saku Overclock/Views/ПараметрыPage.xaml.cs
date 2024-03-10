@@ -510,9 +510,9 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 try
                 {
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
-                    App.MainWindow.Close();
                     Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
+                    App.MainWindow.Close();
                 }
                 catch
                 {
