@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Windows.UI.Core;
+using ZenStates.Core;
 namespace Saku_Overclock.Views;
 #pragma warning disable CS8600 // Преобразование литерала, допускающего значение NULL или возможного значения NULL в тип, не допускающий значение NULL.
 #pragma warning disable IDE0059 // Ненужное присваивание значения
@@ -19,6 +20,7 @@ public sealed partial class ИнформацияPage : Page
     private Config config = new();
     public double refreshtime;
     private System.Windows.Threading.DispatcherTimer dispatcherTimer;
+    private readonly Services.Cpu cpu = new();
     public ИнформацияViewModel ViewModel
     {
         get;
@@ -92,11 +94,35 @@ public sealed partial class ИнформацияPage : Page
             tbProcessor.Text = name;
             tbCaption.Text = description;
             string codeName = GetSystemInfo.Codename();
-            if (codeName != "") tbCodename.Text = codeName;
+            if (codeName != "")
+            {
+                tbCodename.Text = codeName;
+                tbCodename1.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                tbCode1.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            }
             else
             {
+                try
+                {
+                    Services.Cpu.Cpu_Init();
+                    tbCodename1.Text = $"{cpu.info.codeName}";
+                }
+                catch
+                {
+                    tbCodename1.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    tbCode1.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                }
                 tbCodename.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
                 tbCode.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            }
+            try
+            {
+                tbSMU.Text = cpu.systemInfo.GetSmuVersionString();
+            }
+            catch
+            {
+                tbSMU.Visibility = Visibility.Collapsed;
+                infoSMU.Visibility = Visibility.Collapsed;
             }
             tbProducer.Text = manufacturer;
             if (numberOfLogicalProcessors == numberOfCores) tbCores.Text = numberOfCores.ToString();

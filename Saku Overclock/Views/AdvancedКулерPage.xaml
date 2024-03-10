@@ -100,100 +100,13 @@
          VerticalScrollMode="Auto" Margin="0,0,-50,0">
                                 <Grid>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="450"/>
+                                        <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <TextBlock Text="Fan curve editor" FontWeight="Light" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="21"></TextBlock>
                                     <TextBlock Text="There you can change laptop fans behavior &#10;for selected config:" Margin="0,28,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"></TextBlock>
-                                    <TextBlock Text="Critical error in line 104 of com.sakuoverclock.org" Margin="148,50,0,0" x:Name="Config_Name1" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"></TextBlock>
-                                    <!-- Выбор кривой -->
-                                    <Grid>
-                                        <ToggleSplitButton IsChecked="True" IsCheckedChanged="myListButton_IsCheckedChanged" x:Name="myListButton" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="300,120,0,0">
-                                            <Grid>
-                                                <ContentControl>
-                                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xedad;"/>
-                                                </ContentControl>
-                                                <TextBlock Text="Fan 1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
-                                            </Grid>
-                                            
-                                            <ToggleSplitButton.Flyout>
-                                                <Flyout Placement="Bottom">
-                                                    <!-- flyout content -->
-                                                    <GridView ItemClick="GridView_ItemClick1" IsItemClickEnabled="True">
-                                                        <GridView.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
-                                                            </ItemsPanelTemplate>
-                                                        </GridView.ItemsPanel>
-                                                        <GridView.Resources>
-                                                            <Style TargetType="Rectangle">
-                                                                <Setter Property="Width" Value="40"/>
-                                                                <Setter Property="Height" Value="40"/>
-                                                                <Setter Property="RadiusX" Value="4"/>
-                                                                <Setter Property="RadiusY" Value="4"/>
-                                                            </Style>
-                                                        </GridView.Resources>
-                                                        <GridView.Items>
-                                                            <Rectangle Fill="Red"/>
-                                                            <Rectangle Fill="Orange"/>
-                                                            <Rectangle Fill="Yellow"/>
-                                                            <Rectangle Fill="Green"/>
-                                                            <Rectangle Fill="Blue"/>
-                                                            <Rectangle Fill="Indigo"/>
-                                                            <Rectangle Fill="Violet"/>
-                                                            <Rectangle Fill="Gray"/>
-                                                        </GridView.Items>
-                                                    </GridView>
-                                                </Flyout>
-                                            </ToggleSplitButton.Flyout>
-                                        </ToggleSplitButton>
-                                        <ToggleSplitButton IsChecked="True" IsCheckedChanged="myListButton1_IsCheckedChanged" x:Name="myListButton1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="300,160,0,0">
-                                            <Grid>
-                                                <ContentControl>
-                                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xedad;"/>
-                                                </ContentControl>
-                                                <TextBlock Text="Fan 2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
-                                            </Grid>
-                                            <ToggleSplitButton.Flyout>
-                                                <Flyout Placement="Bottom">
-                                                    <!-- flyout content -->
-                                                    <GridView ItemClick="GridView_ItemClick2" IsItemClickEnabled="True">
-                                                        <GridView.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
-                                                            </ItemsPanelTemplate>
-                                                        </GridView.ItemsPanel>
-                                                        <GridView.Resources>
-                                                            <Style TargetType="Rectangle">
-                                                                <Setter Property="Width" Value="40"/>
-                                                                <Setter Property="Height" Value="40"/>
-                                                                <Setter Property="RadiusX" Value="4"/>
-                                                                <Setter Property="RadiusY" Value="4"/>
-                                                            </Style>
-                                                        </GridView.Resources>
-                                                        <GridView.Items>
-                                                            <Rectangle Fill="Red"/>
-                                                            <Rectangle Fill="Orange"/>
-                                                            <Rectangle Fill="Yellow"/>
-                                                            <Rectangle Fill="Green"/>
-                                                            <Rectangle Fill="Blue"/>
-                                                            <Rectangle Fill="Indigo"/>
-                                                            <Rectangle Fill="Violet"/>
-                                                            <Rectangle Fill="Gray"/>
-                                                        </GridView.Items>
-                                                    </GridView>
-                                                </Flyout>
-                                            </ToggleSplitButton.Flyout>
-                                        </ToggleSplitButton>
-                                        <ContentControl>
-                                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="330,205,-5,0"   Glyph="&#xea47;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="2.5" ScaleY="2.5"></ScaleTransform>
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </ContentControl>
-                                    </Grid>
-                                    <!-- Собственно кривая кулеров До изменения -->
+                                    <TextBlock Text="Critical error in line 104 of com.sakuoverclock.org: File not found" Margin="148,50,0,0" x:Name="Config_Name1" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"></TextBlock>
+                                    <!-- Собственно кривая кулеров 1 -->
                                     <Grid Margin="0,87,0,0" Grid.Row="0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="22"/>
@@ -206,7 +119,7 @@
                                         </Grid.RowDefinitions>
 
                                         <TextBlock Grid.Row="0" Grid.Column="0" Text="t℃" Margin="0,-10,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Before" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Fan 1" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="-10,-6,0,5">
                                             <TextBlock Text="100" HorizontalAlignment="Right" Margin="0,2,0,0"/>
                                             <TextBlock Text="90" HorizontalAlignment="Right" Margin="0,4,0,0"/>
@@ -222,7 +135,7 @@
                                         </StackPanel>
 
                                         <TextBlock Grid.Row="2" Grid.Column="0" Text=" " HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="10,-70,5,0">
+                                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="10,0,5,0">
                                             <TextBlock Text="0" Margin="2,0,0,0"/>
                                             <TextBlock Text="10" Margin="7,0,0,0"/>
                                             <TextBlock Text="20" Margin="10,0,0,0"/>
@@ -304,15 +217,14 @@
                                                 <Line Stroke="Gray" StrokeThickness="0.5" X1="100" Y1="0" X2="100" Y2="105" StrokeDashArray="2 2"/>
                                             </ContentControl>
                                             <!--Кривые-->
-                                            <Polyline x:Name="ExtFan1C" Stroke="Pink" StrokeThickness="1" Points="0,100"/>
-                                            <Polyline x:Name="ExtFan2C" Stroke="Purple" Opacity="1" StrokeThickness="1" Points="0,100"/>
+                                            <Polyline x:Name="ExtFan1C" Opacity="1" Stroke="Pink" StrokeThickness="1" Points="0,100"/>
                                             <Canvas.RenderTransform>
                                                 <ScaleTransform ScaleX="2.5" ScaleY="2.5"/>
                                             </Canvas.RenderTransform>
                                         </Canvas>
                                     </Grid>
-                                    <!-- Собственно кривая кулеров после изменения -->
-                                    <Grid Margin="420,87,0,0" Grid.Row="0">
+                                    <!-- Собственно кривая кулеров 2 -->
+                                    <Grid Margin="0,5,0,0" Grid.Row="1">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="22"/>
                                             <ColumnDefinition Width="*"/>
@@ -324,7 +236,7 @@
                                         </Grid.RowDefinitions>
 
                                         <TextBlock Grid.Row="0" Grid.Column="0" Text="t℃" Margin="0,-10,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="After" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Fan 2" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="-10,-6,0,5">
                                             <TextBlock Text="100" HorizontalAlignment="Right" Margin="0,2,0,0"/>
                                             <TextBlock Text="90" HorizontalAlignment="Right" Margin="0,4,0,0"/>
@@ -340,7 +252,7 @@
                                         </StackPanel>
 
                                         <TextBlock Grid.Row="2" Grid.Column="0" Text=" " HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="10,-70,5,0">
+                                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="10,0,5,0">
                                             <TextBlock Text="0" Margin="2,0,0,0"/>
                                             <TextBlock Text="10" Margin="7,0,0,0"/>
                                             <TextBlock Text="20" Margin="10,0,0,0"/>
@@ -422,17 +334,54 @@
                                                 <Line Stroke="Gray" StrokeThickness="0.5" X1="100" Y1="0" X2="100" Y2="105" StrokeDashArray="2 2"/>
                                             </ContentControl>
                                             <!--Кривые-->
-                                            <Polyline x:Name="InvFan1C" Stroke="Pink" StrokeThickness="1" Points="0,100"/>
-                                            <Polyline x:Name="InvFan2C" Stroke="Purple" Opacity="1" StrokeThickness="1" Points="0,100"/>
+                                            <Polyline x:Name="ExtFan2C" Stroke="Purple" Opacity="1" StrokeThickness="1" Points="0,100"/>
                                             <Canvas.RenderTransform>
                                                 <ScaleTransform ScaleX="2.5" ScaleY="2.5"/>
                                             </Canvas.RenderTransform>
                                         </Canvas>
                                     </Grid>
                                     <!-- Всё что ниже кривых -->
-                                    <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" Text="Temperature tresholds"/>
+                                    <TextBlock Grid.Row="0" Margin="420,78,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" Text="Temperature tresholds"/>
+                                    <ToggleSplitButton Grid.Row="0" Width="205" IsChecked="True" Grid.Column="0" IsCheckedChanged="myListButton_IsCheckedChanged" x:Name="myListButton" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,112,0,0">
+                                        <Grid>
+                                            <ContentControl>
+                                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xedad;"/>
+                                            </ContentControl>
+                                            <TextBlock Text="Fan 1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
+                                        </Grid>
 
-                                    <Grid Grid.Row="1" x:Name="FanDef" VerticalAlignment="Top" Margin="0,19,0,0" HorizontalAlignment="Left">
+                                        <ToggleSplitButton.Flyout>
+                                            <Flyout Placement="Bottom">
+                                                <!-- flyout content -->
+                                                <GridView ItemClick="GridView_ItemClick1" IsItemClickEnabled="True">
+                                                    <GridView.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
+                                                        </ItemsPanelTemplate>
+                                                    </GridView.ItemsPanel>
+                                                    <GridView.Resources>
+                                                        <Style TargetType="Rectangle">
+                                                            <Setter Property="Width" Value="40"/>
+                                                            <Setter Property="Height" Value="40"/>
+                                                            <Setter Property="RadiusX" Value="4"/>
+                                                            <Setter Property="RadiusY" Value="4"/>
+                                                        </Style>
+                                                    </GridView.Resources>
+                                                    <GridView.Items>
+                                                        <Rectangle Fill="Red"/>
+                                                        <Rectangle Fill="Orange"/>
+                                                        <Rectangle Fill="Yellow"/>
+                                                        <Rectangle Fill="Green"/>
+                                                        <Rectangle Fill="Blue"/>
+                                                        <Rectangle Fill="Indigo"/>
+                                                        <Rectangle Fill="Violet"/>
+                                                        <Rectangle Fill="Gray"/>
+                                                    </GridView.Items>
+                                                </GridView>
+                                            </Flyout>
+                                        </ToggleSplitButton.Flyout>
+                                    </ToggleSplitButton>
+                                    <Grid Grid.Row="0" x:Name="FanDef" VerticalAlignment="Top" Margin="420,82,0,0" HorizontalAlignment="Left">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="65"/>
                                             <ColumnDefinition Width="5"/>
@@ -462,11 +411,79 @@
                                             <RowDefinition/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
+
                                         <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Margin="0,19,0,0" Text="Fan 1"/>
                                         <TextBlock Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,44,-195,0" Text="     Min           Max           SPD"/>
-                                        <NumberBox Grid.Row="0" HorizontalAlignment="Left" Width="65" Margin="0,65,0,0" Grid.Column="0" Value="0"></NumberBox>
-                                        <NumberBox Grid.Row="0" HorizontalAlignment="Left" Width="65" Margin="0,65,0,0" Grid.Column="2" Value="50"></NumberBox>
-                                        <NumberBox Grid.Row="0" HorizontalAlignment="Left" Width="65" Margin="0,65,0,0" Grid.Column="4" Value="50"></NumberBox>
+                                    </Grid>
+                                    <ToggleSplitButton IsChecked="True" Grid.Row="1" Width="205" IsCheckedChanged="myListButton1_IsCheckedChanged" x:Name="myListButton1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,33,0,0">
+                                        <Grid>
+                                            <ContentControl>
+                                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xedad;"/>
+                                            </ContentControl>
+                                            <TextBlock Text="Fan 2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
+                                        </Grid>
+                                        <ToggleSplitButton.Flyout>
+                                            <Flyout Placement="Bottom">
+                                                <!-- flyout content -->
+                                                <GridView ItemClick="GridView_ItemClick2" IsItemClickEnabled="True">
+                                                    <GridView.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
+                                                        </ItemsPanelTemplate>
+                                                    </GridView.ItemsPanel>
+                                                    <GridView.Resources>
+                                                        <Style TargetType="Rectangle">
+                                                            <Setter Property="Width" Value="40"/>
+                                                            <Setter Property="Height" Value="40"/>
+                                                            <Setter Property="RadiusX" Value="4"/>
+                                                            <Setter Property="RadiusY" Value="4"/>
+                                                        </Style>
+                                                    </GridView.Resources>
+                                                    <GridView.Items>
+                                                        <Rectangle Fill="Red"/>
+                                                        <Rectangle Fill="Orange"/>
+                                                        <Rectangle Fill="Yellow"/>
+                                                        <Rectangle Fill="Green"/>
+                                                        <Rectangle Fill="Blue"/>
+                                                        <Rectangle Fill="Indigo"/>
+                                                        <Rectangle Fill="Violet"/>
+                                                        <Rectangle Fill="Gray"/>
+                                                    </GridView.Items>
+                                                </GridView>
+                                            </Flyout>
+                                        </ToggleSplitButton.Flyout>
+                                    </ToggleSplitButton>
+                                    <Grid Grid.Row="1" x:Name="FanDef1" VerticalAlignment="Top" Margin="420,4,0,0" HorizontalAlignment="Left">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="5"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Margin="0,19,0,0" Text="Fan 2"/>
+                                        <TextBlock Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,44,-195,0" Text="     Min           Max           SPD"/>
                                     </Grid>
                                 </Grid>
                             </ScrollViewer>
@@ -479,8 +496,7 @@
         <Button VerticalAlignment="Bottom"  Click="NormalMode_Click"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-13,15"  ToolTipService.ToolTip="Normal mode">
             <Grid>
                 <ContentControl>
-                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe90f;">
-                    </FontIcon>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe90f;"/>
                 </ContentControl>
             </Grid>
         </Button>

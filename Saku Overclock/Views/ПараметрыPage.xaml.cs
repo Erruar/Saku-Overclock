@@ -1,27 +1,36 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Management;
 using System.Windows.Forms;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Newtonsoft.Json;
+using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
 
 namespace Saku_Overclock.Views;
+#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
+#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
+#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
+#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
+
 public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.Page
 {
     public ПараметрыViewModel ViewModel
     {
         get;
     }
+    List<SmuAddressSet> matches;
     private Config config = new();
     private Devices devices = new();
     private Profile profile = new();
     private readonly NUMAUtil _numaUtil;
     private bool relay = false;
-    private readonly Cpu cpu;
+    private readonly Services.Cpu cpu;
     public bool turbobboost = true;
     private bool waitforload = true;
     private readonly string wmiAMDACPI = "AMD_ACPI";
@@ -36,12 +45,11 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
     private readonly bool isApplyProfile;
     public string adjline;
     public string ocmode;
+    private readonly Services.Mailbox testMailbox = new();
     public string universalvid;
     public string equalvid;
     private bool load = false;
-#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
     public ПараметрыPage()
-#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
     {
         ViewModel = App.GetService<ПараметрыViewModel>();
         InitializeComponent();
@@ -49,30 +57,265 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         DeviceLoad();
         ConfigLoad();
         ProfileLoad();
-        SlidersInit();
         config.fanex = false;
         config.tempex = false;
         ConfigSave();
-        _numaUtil = new NUMAUtil();
+        try
+        {
+            _numaUtil = new NUMAUtil();
+        }
+        catch
+        {
+            App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+        }
         try
         {
             args = Environment.GetCommandLineArgs();
-            foreach (string arg in args)
+            foreach (var arg in args)
             {
-                isApplyProfile |= (arg.ToLower() == "--applyprofile");
+                isApplyProfile |= arg.ToLower() == "--applyprofile";
+            }
+            cpu = new Services.Cpu();
+            Services.Cpu.Cpu_Init();
+        }
+        catch
+        {
+            App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+        }
+        Loaded += ПараметрыPage_Loaded;
+    }
+
+    private async void ПараметрыPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        try 
+        { 
+            SlidersInit(); 
+        } 
+        catch 
+        {
+            await Send_Message("Critical Error!", "Can't load profiles. Tell this to developer", Symbol.Bookmarks);
+        }
+    }
+
+    private static void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler)
+    {
+        try
+        {
+            var backgroundWorker1 = new BackgroundWorker();
+            backgroundWorker1.DoWork += task;
+            backgroundWorker1.RunWorkerCompleted += completedHandler;
+            backgroundWorker1.RunWorkerAsync();
+        }
+        catch
+        {
+            //Ignored
+        }
+    }
+    private void PopulateMailboxesList(ItemCollection l)
+    {
+        l.Clear();
+        l.Add(new MailboxListItem("RSMU", cpu.smu.Rsmu));
+        l.Add(new MailboxListItem("MP1", cpu.smu.Mp1Smu));
+        l.Add(new MailboxListItem("HSMP", cpu.smu.Hsmp));
+    }
+    private void AddMailboxToList(string label, SmuAddressSet addressSet)
+    {
+        comboBoxMailboxSelect.Items.Add(new MailboxListItem(label, addressSet));
+    }
+    private async void SmuScan_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+    {
+        int index = comboBoxMailboxSelect.SelectedIndex;
+        PopulateMailboxesList(comboBoxMailboxSelect.Items);
+
+        for (var i = 0; i < matches.Count; i++)
+        {
+            AddMailboxToList($"Mailbox {i + 1}", matches[i]);
+        }
+
+        if (index > comboBoxMailboxSelect.Items.Count)
+        {
+            index = 0;
+        }
+        comboBoxMailboxSelect.SelectedIndex = index;
+        await Send_Message("Scan Complete!", "Some Values found", Symbol.Message);
+    }
+    private void BackgroundWorkerTrySettings_DoWork(object sender, DoWorkEventArgs e)
+    {
+        try
+        {
+            switch (cpu.info.codeName)
+            {
+                case Cpu.CodeName.BristolRidge:
+                    //ScanSmuRange(0x13000000, 0x13000F00, 4, 0x10);
+                    break;
+                case Cpu.CodeName.RavenRidge:
+                case Cpu.CodeName.Picasso:
+                case Cpu.CodeName.FireFlight:
+                case Cpu.CodeName.Dali:
+                case Cpu.CodeName.Renoir:
+                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
+                    ScanSmuRange(0x03B10A00, 0x03B10AFF, 4, 0x60);
+                    break;
+                case Cpu.CodeName.PinnacleRidge:
+                case Cpu.CodeName.SummitRidge:
+                case Cpu.CodeName.Matisse:
+                case Cpu.CodeName.Whitehaven:
+                case Cpu.CodeName.Naples:
+                case Cpu.CodeName.Colfax:
+                case Cpu.CodeName.Vermeer:
+                    //case Cpu.CodeName.Raphael:
+                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
+                    ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
+                    break;
+                case Cpu.CodeName.Raphael:
+                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
+                    // ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
+                    break;
+                case Cpu.CodeName.Rome:
+                    ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
+                    break;
+                default:
+                    break;
+            }
+        }
+        catch (ApplicationException)
+        {
+        }
+    }
+    private async void ScanSmuRange(uint start, uint end, uint step, uint offset)
+    {
+        matches = new List<SmuAddressSet>();
+
+        var temp = new List<KeyValuePair<uint, uint>>();
+
+        while (start <= end)
+        {
+            uint smuRspAddress = start + offset;
+
+            if (cpu.ReadDword(start) != 0xFFFFFFFF)
+            {
+                // Send unknown command 0xFF to each pair of this start and possible response addresses
+                if (cpu.WriteDwordEx(start, 0xFF))
+                {
+                    Thread.Sleep(10);
+
+                    while (smuRspAddress <= end)
+                    {
+                        // Expect UNKNOWN_CMD status to be returned if the mailbox works
+                        if (cpu.ReadDword(smuRspAddress) == 0xFE)
+                        {
+                            // Send Get_SMU_Version command
+                            if (cpu.WriteDwordEx(start, 0x2))
+                            {
+                                Thread.Sleep(10);
+                                if (cpu.ReadDword(smuRspAddress) == 0x1)
+                                    temp.Add(new KeyValuePair<uint, uint>(start, smuRspAddress));
+                            }
+                        }
+                        smuRspAddress += step;
+                    }
+                }
             }
 
-            cpu = new Cpu();
+            start += step;
         }
-        catch { }
-        Cpu.Cpu_Init();
+
+        if (temp.Count > 0)
+        {
+            for (var i = 0; i < temp.Count; i++)
+            {
+                Console.WriteLine($"{temp[i].Key:X8}: {temp[i].Value:X8}");
+            }
+
+            Console.WriteLine();
+        }
+
+        List<uint> possibleArgAddresses = new List<uint>();
+
+        foreach (var pair in temp)
+        {
+            Console.WriteLine($"Testing {pair.Key:X8}: {pair.Value:X8}");
+
+            if (TrySettings(pair.Key, pair.Value, 0xFFFFFFFF, 0x2, 0xFF) == SMU.Status.OK)
+            {
+                var smuArgAddress = pair.Value + 4;
+                while (smuArgAddress <= end)
+                {
+                    if (cpu.ReadDword(smuArgAddress) == cpu.smu.Version)
+                    {
+                        possibleArgAddresses.Add(smuArgAddress);
+                    }
+                    smuArgAddress += step;
+                }
+            }
+
+            // Verify the arg address returns correct value (should be test argument + 1)
+            foreach (var address in possibleArgAddresses)
+            {
+                uint testArg = 0xFAFAFAFA;
+                var retries = 3;
+
+                while (retries > 0)
+                {
+                    testArg++;
+                    retries--;
+
+                    // Send test command
+                    if (TrySettings(pair.Key, pair.Value, address, 0x1, testArg) == SMU.Status.OK)
+                        if (cpu.ReadDword(address) != testArg + 1)
+                            retries = -1;
+                }
+
+                if (retries == 0)
+                {
+                    matches.Add(new SmuAddressSet(pair.Key, pair.Value, address));
+
+                    string responseString =
+                            $"CMD:  0x{pair.Key:X8}" +
+                            Environment.NewLine +
+                            $"RSP:  0x{pair.Value:X8}" +
+                            Environment.NewLine +
+                            $"ARG:  0x{address:X8}" +
+                            Environment.NewLine +
+                            Environment.NewLine;
+
+                    //await Send_Message("Found!", responseString, Symbol.Message);
+                    break;
+                }
+            }
+        }
     }
-    private void OC_Detect() // На неподдерживаемом оборудовании мгновенно отключит эти настройки
+    private SMU.Status TrySettings(uint msgAddr, uint rspAddr, uint argAddr, uint cmd, uint value)
     {
-        try { Init_OC_Mode(); } catch { App.MainWindow.ShowMessageDialogAsync("App can't detect Ryzen CPU!", "Can't detect!"); }
-        if (ocmode == "set_enable_oc is not supported on this family")
+        uint[] args = new uint[6];
+        args[0] = value;
+
+        testMailbox.SMU_ADDR_MSG = msgAddr;
+        testMailbox.SMU_ADDR_RSP = rspAddr;
+        testMailbox.SMU_ADDR_ARG = argAddr;
+
+        return cpu.smu.SendSmuCommand(testMailbox, cmd, ref args);
+    }
+    private void ResetSmuAddresses()
+    {
+        textBoxCMDAddress.Text = $@"0x{Convert.ToString(testMailbox.SMU_ADDR_MSG, 16).ToUpper()}";
+        textBoxRSPAddress.Text = $@"0x{Convert.ToString(testMailbox.SMU_ADDR_RSP, 16).ToUpper()}";
+        textBoxARGAddress.Text = $@"0x{Convert.ToString(testMailbox.SMU_ADDR_ARG, 16).ToUpper()}";
+    }
+    private async void OC_Detect() // На неподдерживаемом оборудовании мгновенно отключит эти настройки
+    {
+        try
+        {
+            await Init_OC_Mode();
+            if (ocmode == "set_enable_oc is not supported on this family")
+            {
+                OC_Advanced.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            }
+        }
+        catch
         {
             OC_Advanced.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            await App.MainWindow.ShowMessageDialogAsync("App can't detect Ryzen CPU model!", "Can't detect!");
         }
     }
     //JSON форматирование
@@ -89,12 +332,11 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
     {
         try
         {
-#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
             config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
         }
         catch
         {
-            App.MainWindow.ShowMessageDialogAsync("Пресеты 3", "Критическая ошибка!");
+            JsonRepair('c');
         }
     }
 
@@ -116,7 +358,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         }
         catch
         {
-            App.MainWindow.ShowMessageDialogAsync("Пресеты 2", "Критическая ошибка!");
+            JsonRepair('d');
         }
     }
 
@@ -139,15 +381,150 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         }
         catch
         {
-            App.MainWindow.ShowMessageDialogAsync("Пресеты 1", "Критическая ошибка!");
+            JsonRepair('p');
+        }
+    }
+    public void JsonRepair(char file)
+    {
+        if (file == 'c')
+        {
+            try
+            {
+                config = new Config();
+            }
+            catch
+            {
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                App.MainWindow.Close();
+            }
+            if (config != null)
+            {
+                try
+                {
+                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+                }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
+                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+            else
+            {
+                try
+                {
+
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
+                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+                    App.MainWindow.Close();
+                }
+                catch
+                {
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+        }
+        if (file == 'd')
+        {
+            try
+            {
+                for (var j = 0; j < 5; j++)
+                {
+                    devices = new Devices();
+                }
+            }
+            catch
+            {
+                App.MainWindow.Close();
+            }
+            if (devices != null)
+            {
+                try
+                {
+                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
+                }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json");
+                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+            else
+            {
+                try
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json");
+                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
+                    App.MainWindow.Close();
+                }
+                catch
+                {
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+        }
+        if (file == 'p')
+        {
+            try
+            {
+                for (var j = 0; j < 5; j++)
+                {
+                    profile = new Profile();
+                }
+            }
+            catch
+            {
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                App.MainWindow.Close();
+            }
+            if (profile != null)
+            {
+                try
+                {
+                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
+                }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
+                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+            else
+            {
+                try
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
+                    App.MainWindow.Close();
+                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
+                }
+                catch
+                {
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
         }
     }
     public async void SlidersInit()
     {
         waitforload = true;
-        DeviceLoad();
-        ProfileLoad();
-        InitializeComponent();
         switch (profile.Preset)
         {
             case 0:
@@ -220,7 +597,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 c6.IsChecked = true;
 
             }
-            DeviceLoad();
             if (load == true)
             {
                 Init_Unsaved();
@@ -244,7 +620,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 if (profile.c4pr1 == true) { c4v.Value = profile.c4pr1v; c4.IsChecked = true; } else { c4.IsChecked = false; }
                 if (profile.c5pr1 == true) { c5v.Value = profile.c5pr1v; c5.IsChecked = true; } else { c5.IsChecked = false; }
                 if (profile.c6pr1 == true) { c6v.Value = profile.c6pr1v; c6.IsChecked = true; } else { c6.IsChecked = false; }
-                DeviceLoad();
                 if (load == true)
                 {
                     Init_Pr1();
@@ -303,7 +678,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
                 }
                 else { c6.IsChecked = false; }
-                DeviceLoad();
                 if (load == true)
                 {
                     Init_Pr2();
@@ -362,7 +736,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
                 }
                 else { c6.IsChecked = false; }
-                DeviceLoad();
                 if (load == true)
                 {
                     Init_Pr3();
@@ -421,7 +794,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
                 }
                 else { c6.IsChecked = false; }
-                DeviceLoad();
                 if (load == true)
                 {
                     Init_Pr4();
@@ -480,7 +852,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
                 }
                 else { c6.IsChecked = false; }
-                DeviceLoad();
                 if (load == true)
                 {
                     Init_Pr5();
@@ -539,7 +910,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
                 }
                 else { c6.IsChecked = false; }
-                DeviceLoad();
                 if (load == true)
                 {
                     Init_Pr6();
@@ -598,7 +968,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
                 }
                 else { c6.IsChecked = false; }
-                DeviceLoad();
                 if (load == true)
                 {
                     Init_Pr7();
@@ -657,7 +1026,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
                 }
                 else { c6.IsChecked = false; }
-                DeviceLoad();
                 if (load == true)
                 {
                     Init_Pr8();
@@ -716,7 +1084,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
                 }
                 else { c6.IsChecked = false; }
-                DeviceLoad();
                 if (load == true)
                 {
                     Init_Pr9();
@@ -6265,6 +6632,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
     }
 
     //Кнопка применить, итоговый выход, Ryzen ADJ
+    [Obsolete]
     private async void Apply_Click(object sender, RoutedEventArgs e)
     {
         if (c1.IsChecked == true)
@@ -6480,10 +6848,10 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         Apply_tooltip.IsOpen = true;
         await Task.Delay(3000);
         Apply_tooltip.IsOpen = false;
-        //App.MainWindow.ShowMessageDialogAsync("Set_settings".GetLocalized() + " \n" + config.adjline, "Set_succ".GetLocalized());
+        if (textBoxARG0 != null && textBoxARGAddress != null && textBoxCMD != null && textBoxCMDAddress != null && textBoxRSPAddress != null) { ApplySettings(); }
     }
 
-    private void Init_OC_Mode()
+    private async Task Init_OC_Mode()
     {
         ocmode = "";
         var p = new Process();
@@ -6501,10 +6869,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         {
             ocmode = line;
         }
-
-        line = outputWriter.ReadLine();
-        p.WaitForExit();
-        line = null;
+        await p.WaitForExitAsync();
     }
 
     private async void Save_Click(object sender, RoutedEventArgs e)
@@ -8228,6 +8593,125 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID2();
 
+    //Send Message
+    private async Task Send_Message(string msg, string submsg, Symbol symbol)
+    {
+        UniToolTip.IconSource = new SymbolIconSource()
+        {
+            Symbol = symbol
+        };
+        UniToolTip.Title = msg;
+        UniToolTip.Subtitle = submsg;
+        UniToolTip.IsOpen = true;
+        await Task.Delay(3000);
+        UniToolTip.IsOpen = false;
+    }
+
+    //SMU КОМАНДЫ
+    [Obsolete]
+    private async void ApplySettings()
+    {
+        try
+        {
+            uint[] args = Services.Utils.MakeCmdArgs();
+            string[] userArgs = textBoxARG0.Text.Trim().Split(',');
+
+            TryConvertToUint(textBoxCMDAddress.Text, out uint addrMsg);
+            TryConvertToUint(textBoxRSPAddress.Text, out uint addrRsp);
+            TryConvertToUint(textBoxARGAddress.Text, out uint addrArg);
+            TryConvertToUint(textBoxCMD.Text, out var command);
+            testMailbox.SMU_ADDR_MSG = addrMsg;
+            testMailbox.SMU_ADDR_RSP = addrRsp;
+            testMailbox.SMU_ADDR_ARG = addrArg;
+            for (var i = 0; i < userArgs.Length; i++)
+            {
+                if (i == args.Length)
+                {
+                    break;
+                }
+                TryConvertToUint(userArgs[i], out uint temp);
+                args[i] = temp;
+            }
+            //App.MainWindow.ShowMessageDialogAsync("MSG Address:  0x" + Convert.ToString(testMailbox.SMU_ADDR_MSG, 16).ToUpper() + "\n" + "RSP Address:  0x" + Convert.ToString(testMailbox.SMU_ADDR_RSP, 16).ToUpper() + "\n" + "ARG0 Address: 0x" + Convert.ToString(testMailbox.SMU_ADDR_ARG, 16).ToUpper() + "\n" + "ARG0        : 0x" + Convert.ToString(args[0], 16).ToUpper() + " " + command.ToString(), "Adress");
+            var status = cpu.smu.SendSmuCommand(testMailbox, command, ref args);
+            //App.MainWindow.ShowMessageDialogAsync(testMailbox.SMU_ADDR_RSP + " " + testMailbox.SMU_ADDR_MSG + " " + testMailbox.SMU_ADDR_ARG + " " + command.ToString() + args[0].ToString(), "Set!");
+            if (status == Services.SMU.Status.OK)
+            {
+                await Send_Message("Set success!", "SMU changes command success", Symbol.Accept);
+            }
+            else
+            {
+                if (status == Services.SMU.Status.CMD_REJECTED_PREREQ)
+                {
+                    await Send_Message("Can't set!", "This command is locked on your SMU", Symbol.Dislike);
+                }
+                else
+                {
+                    await Send_Message("Can't set!", "This command isn't exist!", Symbol.Filter);
+                }
+            }
+        }
+        catch
+        {
+            await Send_Message("Can't set!", "IO Chip can't keep parameters on. Reboot or disable safe boot", Symbol.Dislike);
+        }
+    }
+    private static void TryConvertToUint(string text, out uint address)
+    {
+        try
+        {
+            address = Convert.ToUInt32(text.Trim().ToLower(), 16);
+        }
+        catch
+        {
+            throw new ApplicationException("Invalid hexadecimal value.");
+        }
+    }
+    private void DevEnv_Expanding(Expander sender, ExpanderExpandingEventArgs args)
+    {
+        RunBackgroundTask(BackgroundWorkerTrySettings_DoWork!, SmuScan_WorkerCompleted!);
+    }
+
+    private void ComboBoxMailboxSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (comboBoxMailboxSelect.SelectedItem is MailboxListItem item) { InitTestMailbox(item.msgAddr, item.rspAddr, item.argAddr); }
+        else { return; }
+    }
+    private void InitTestMailbox(uint msgAddr, uint rspAddr, uint argAddr)
+    {
+        testMailbox.SMU_ADDR_MSG = msgAddr;
+        testMailbox.SMU_ADDR_RSP = rspAddr;
+        testMailbox.SMU_ADDR_ARG = argAddr;
+        ResetSmuAddresses();
+    }
+    private async void Mon_Click(object sender, RoutedEventArgs e)
+    {
+        var MonDialog = new ContentDialog
+        {
+            Title = "Open Saku PowerMon",
+            Content = "Did you really want to open monitor? It may take up to 2 minutes to load it, while both applications will freeze and you will have to wait for its full initialization",
+            CloseButtonText = "Cancel",
+            PrimaryButtonText = "Open!",
+            DefaultButton = ContentDialogButton.Close
+        };
+
+        // Use this code to associate the dialog to the appropriate AppWindow by setting
+        // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+        {
+            MonDialog.XamlRoot = XamlRoot;
+        }
+
+        var result = await MonDialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            var newWindow = new PowerWindow(cpu);
+            var micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+            micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt;
+            newWindow.SystemBackdrop = micaBackdrop;
+            newWindow.Activate();
+        }
+    }
 #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 }

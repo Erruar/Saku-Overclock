@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Web;
 
 using Microsoft.Windows.AppNotifications;
@@ -47,6 +48,13 @@ public class AppNotificationService : IAppNotificationService
                 App.MainWindow.ShowMessageDialogAsync("Здесь вы сможете настроить ваш процессор как вам надо", "Настройки применены!");
             });
             
+        }
+        if (ParseArguments(args.Argument)["action"] == "Message")
+        {
+            App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+            {
+                Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/issues/new/") { UseShellExecute = true });
+            });
         }
     }
 

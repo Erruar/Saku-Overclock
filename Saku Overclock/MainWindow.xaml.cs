@@ -57,37 +57,44 @@ public sealed partial class MainWindow : WindowEx
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         Content = null;
         Title = "AppDisplayName".GetLocalized(); 
-        ni.Icon = new System.Drawing.Icon(GetType(),"WindowIcon.ico");
-        ni.Visible = true;
-        ni.DoubleClick +=
-                delegate (object sender, EventArgs args)
-                {
-                    this.Show();
-                    this.WindowState = WindowState.Normal;
-                };
-        ni.ContextMenuStrip = new ContextMenuStrip();
-        var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE;
-        var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND;
-        DwmSetWindowAttribute(ni.ContextMenuStrip.Handle, attribute, ref preference, sizeof(uint));
-        System.Drawing.Image bmp = new System.Drawing.Bitmap(GetType(), "show.png");
-        System.Drawing.Image bmp1 = new System.Drawing.Bitmap(GetType(), "exit.png");
-        System.Drawing.Image bmp2 = new System.Drawing.Bitmap(GetType(), "WindowIcon.ico");
-        System.Drawing.Image bmp3 = new System.Drawing.Bitmap(GetType(), "preset.png");
-        System.Drawing.Image bmp4 = new System.Drawing.Bitmap(GetType(), "param.png");
-        System.Drawing.Image bmp5 = new System.Drawing.Bitmap(GetType(), "info.png");
-        ni.ContextMenuStrip.Items.Add("Tray_Saku_Overclock".GetLocalized(), bmp2, Menu_Show1);
-        ni.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-        ni.ContextMenuStrip.Items.Add("Tray_Presets".GetLocalized(), bmp3, Open_Preset);
-        ni.ContextMenuStrip.Items.Add("Tray_Parameters".GetLocalized(), bmp4, Open_Param);
-        ni.ContextMenuStrip.Items.Add("Tray_Inforfation".GetLocalized(), bmp5, Open_Info);
-        ni.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-        ni.ContextMenuStrip.Items.Add("Tray_Show".GetLocalized(), bmp, Menu_Show1);
-        ni.ContextMenuStrip.Items.Add("Tray_Quit".GetLocalized(), bmp1, Menu_Exit1);
-        ni.ContextMenuStrip.Items[0].Enabled = false;
-        ni.ContextMenuStrip.Opacity = 0.89;
-        ni.ContextMenuStrip.ForeColor = System.Drawing.Color.Purple;
-        ni.ContextMenuStrip.BackColor = System.Drawing.Color.White;
-        ni.Text = "Saku Overclock";
+        try
+        {
+            ni.Icon = new System.Drawing.Icon(GetType(), "WindowIcon.ico");
+            ni.Visible = true;
+            ni.DoubleClick +=
+                    delegate (object sender, EventArgs args)
+                    {
+                        this.Show();
+                        this.WindowState = WindowState.Normal;
+                    };
+            ni.ContextMenuStrip = new ContextMenuStrip();
+            var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE;
+            var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND;
+            DwmSetWindowAttribute(ni.ContextMenuStrip.Handle, attribute, ref preference, sizeof(uint));
+            System.Drawing.Image bmp = new System.Drawing.Bitmap(GetType(), "show.png");
+            System.Drawing.Image bmp1 = new System.Drawing.Bitmap(GetType(), "exit.png");
+            System.Drawing.Image bmp2 = new System.Drawing.Bitmap(GetType(), "WindowIcon.ico");
+            System.Drawing.Image bmp3 = new System.Drawing.Bitmap(GetType(), "preset.png");
+            System.Drawing.Image bmp4 = new System.Drawing.Bitmap(GetType(), "param.png");
+            System.Drawing.Image bmp5 = new System.Drawing.Bitmap(GetType(), "info.png");
+            ni.ContextMenuStrip.Items.Add("Tray_Saku_Overclock".GetLocalized(), bmp2, Menu_Show1);
+            ni.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+            ni.ContextMenuStrip.Items.Add("Tray_Presets".GetLocalized(), bmp3, Open_Preset);
+            ni.ContextMenuStrip.Items.Add("Tray_Parameters".GetLocalized(), bmp4, Open_Param);
+            ni.ContextMenuStrip.Items.Add("Tray_Inforfation".GetLocalized(), bmp5, Open_Info);
+            ni.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+            ni.ContextMenuStrip.Items.Add("Tray_Show".GetLocalized(), bmp, Menu_Show1);
+            ni.ContextMenuStrip.Items.Add("Tray_Quit".GetLocalized(), bmp1, Menu_Exit1);
+            ni.ContextMenuStrip.Items[0].Enabled = false;
+            ni.ContextMenuStrip.Opacity = 0.89;
+            ni.ContextMenuStrip.ForeColor = System.Drawing.Color.Purple;
+            ni.ContextMenuStrip.BackColor = System.Drawing.Color.White;
+            ni.Text = "Saku Overclock";
+        }
+        catch
+        {
+
+        }
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event   
@@ -98,20 +105,37 @@ public sealed partial class MainWindow : WindowEx
         Closed += Dispose_Tray;
     }
 
-    private void Dispose_Tray(object sender, WindowEventArgs args) => ni.Dispose();
+    private void Dispose_Tray(object sender, WindowEventArgs args)
+    {
+        try
+        {
+            ni.Dispose();
+        }
+        catch
+        {
+
+        }
+    }
     private async void Set_Blue()
     {
-        await Task.Delay(120);
-        if (config.bluetheme == true)
+        try
         {
-            if (App.MainWindow.Content is FrameworkElement rootElement)
+            await Task.Delay(120);
+            if (config.bluetheme == true)
             {
-                rootElement.RequestedTheme = ElementTheme.Dark;
-                TitleBarHelper.UpdateTitleBar(ElementTheme.Dark);
+                if (App.MainWindow.Content is FrameworkElement rootElement)
+                {
+                    rootElement.RequestedTheme = ElementTheme.Dark;
+                    TitleBarHelper.UpdateTitleBar(ElementTheme.Dark);
+                }
+                Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+                micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt;
+                App.MainWindow.SystemBackdrop = micaBackdrop;
             }
-            Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
-            micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt;
-            App.MainWindow.SystemBackdrop = micaBackdrop;
+        }
+        catch
+        {
+            JsonRepair('c');
         }
     }
     private async void Tray_Start()
@@ -129,7 +153,7 @@ public sealed partial class MainWindow : WindowEx
         catch
         {
             JsonRepair('c');
-            JsonRepair('c');
+            JsonRepair('d');
         }
     }
     void Open_Preset(object sender, EventArgs e)

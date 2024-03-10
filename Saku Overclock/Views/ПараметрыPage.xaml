@@ -13,7 +13,6 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition Height="70"></RowDefinition>
             </Grid.RowDefinitions>
-
             <!-- Начало -->
             <TextBlock x:Uid="Param_Name" Text="Параметры процессора" FontSize="30" Margin="0,-65,0,0"></TextBlock>
             <TextBlock x:Uid="Param_Preset" Text="Сохранённые пресеты:" FontSize="20" Margin="0,-10,0,0"></TextBlock>
@@ -1020,7 +1019,7 @@
                         </Grid>
                     </Expander>
 
-                    <Expander  Grid.Row="5" Visibility="Collapsed" IsEnabled="False">
+                    <Expander  Grid.Row="5" Visibility="Collapsed" IsEnabled="True">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xee92;"/>
@@ -1131,47 +1130,166 @@
                                 <Grid Grid.Row="3"  Margin="-7,10,0,0" Width="2000">
                                 </Grid>
                             </Grid>
+                            <!--  CardExpander content  -->
+                            <StackPanel Grid.Row="6">
+                                <StackPanel Margin="0,-8,0,0">
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal">
+                                            <CheckBox Name="cbVSync"  FontSize="13" FontWeight="SemiBold" Content="Enable VSync"/>
+                                            <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-4" ToolTipService.ToolTip="Synchronises capture frame rate to display refresh rate." VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                                <StackPanel Margin="0,-8,0,0">
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal">
+                                            <CheckBox Width="130" Name="cbAutoCap"  FontSize="13" FontWeight="SemiBold" Content="Auto Recapture"/>
+                                            <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-4" ToolTipService.ToolTip="Auto recaptures the previous capture window after focus was lost and restored." VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,8,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontWeight="SemiBold" FontSize="13">Capture Sharpness (%)</TextBlock>
+                                        <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-2"  ToolTipService.ToolTip="Controls UXTU Super Resolution capture image sharpness." VerticalAlignment="Bottom" />
+                                    </StackPanel>
+
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="150" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <NumberBox Name="nudSharp" Text="{Binding ElementName=sdSharp, Path=Value}" Value="{Binding ElementName=sdSharp, Path=Value}" Maximum="100" Minimum="5" Grid.Column="0" SmallChange="1" LargeChange="10" SpinButtonPlacementMode="Inline" />
+                                        <Slider Name="sdSharp" Value="{Binding ElementName=nudSharp, Path=Value}" Maximum="100" Minimum="5" Grid.Column="1" Margin="12,0,0,0" TickFrequency="1" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,8,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontWeight="SemiBold" FontSize="13">Resolution Scale</TextBlock>
+                                        <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-2" ToolTipService.ToolTip="Controls the resolution of the window being captured. Use application controlled if you do not want Saku Fidelity to override the window resolution. Not all applications will be compatible with this mode!" VerticalAlignment="Bottom" />
+                                    </StackPanel>
+
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="208" />
+                                        </Grid.ColumnDefinitions>
+                                        <ComboBox
+Grid.Column="1"
+VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" Height="37">
+                                            <ComboBoxItem>Application Controlled</ComboBoxItem>
+                                            <ComboBoxItem>Ultra Quality (77%)</ComboBoxItem>
+                                            <ComboBoxItem>Quality (67%)</ComboBoxItem>
+                                            <ComboBoxItem>Balanced (59%)</ComboBoxItem>
+                                            <ComboBoxItem>Performance (50%)</ComboBoxItem>
+                                            <ComboBoxItem>Ultra Performance (33%)</ComboBoxItem>
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Expander>
+                    <Expander  Grid.Row="6" x:Name="DevEnv" Expanding="DevEnv_Expanding" IsEnabled="True">
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xef58;"/>
+                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Developer overclock"></TextBlock>
+                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Advanced CPU developer overclock"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid Width="2000" HorizontalAlignment="Left">
+                            <Grid Width="{Binding ElementName=DevEnv, Path=ActualWidth}" VerticalAlignment="Top" HorizontalAlignment="Left">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <TextBlock Text="Путь" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <ComboBox Width="110" Margin="80,0,0,0" x:Name="comboBoxMailboxSelect" SelectionChanged="ComboBoxMailboxSelect_SelectionChanged" VerticalAlignment="Center" SelectedIndex="0" HorizontalAlignment="Left">
+                                        <ComboBoxItem>RSMU</ComboBoxItem>
+                                        <ComboBoxItem>MP1</ComboBoxItem>
+                                        <ComboBoxItem>PSMU</ComboBoxItem>
+                                    </ComboBox>
+                                </Grid>
+                                <Grid Grid.Row="1" Margin="0,5,0,0">
+                                    <TextBlock Text="CMD Адрес" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBox Width="110" x:Name="textBoxCMDAddress" Text="0x3B10A20" Margin="80,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBox>
+                                </Grid>
+                                <Grid Grid.Row="2" Margin="0,5,0,0">
+                                    <TextBlock Text="RSP Адрес" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBox Width="110" x:Name="textBoxRSPAddress" Text="0x3B10A80" Margin="80,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBox>
+                                </Grid>
+                                <Grid Grid.Row="3" Margin="0,5,0,0">
+                                    <TextBlock Text="ARG Адрес" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBox Width="110" x:Name="textBoxARGAddress" Text="0x3B10A88" Margin="80,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"></TextBox>
+                                </Grid>
+                                <Grid Grid.Row="4" Margin="0,5,0,0">
+                                    <TextBlock Text="Команда" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBox Width="110" x:Name="textBoxCMD"  Margin="80,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                </Grid>
+                                <Grid Grid.Row="5" Margin="0,5,0,0">
+                                    <TextBlock Text="Аргументы" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBox Width="110" x:Name="textBoxARG0" Margin="80,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                </Grid>
+                                <Button  Grid.Row="5" HorizontalAlignment="Left" Margin="280,5,0,0" Content="Open Saku PowerMON" Click="Mon_Click"/>
+                            </Grid>
                         </Grid>
                     </Expander>
                 </Grid>
             </ScrollViewer>
 
-            <TeachingTip x:Uid="Apply_Target" x:Name="Apply_tooltip" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0"
-            Title="Значения применены!"
-            Subtitle="Вы успешно применили разгон">
+            <TeachingTip Grid.Row="0" x:Uid="Apply_Target" x:Name="Apply_tooltip" IsOpen="False" Margin="300,-10,0,0"
+                         Title="Значения применены!"
+                         Subtitle="Вы успешно применили разгон">
                 <TeachingTip.IconSource>
                     <SymbolIconSource Symbol="Accept"/>
                 </TeachingTip.IconSource>
             </TeachingTip>
-            <TeachingTip x:Uid="Edit_Target_Error" x:Name="Edit_tooltip_Error" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+            <TeachingTip Grid.Row="0" x:Uid="Edit_Target_Error" x:Name="Edit_tooltip_Error" IsOpen="False" Margin="300,-10,0,0">
                 <TeachingTip.IconSource>
                     <SymbolIconSource Symbol="Edit"/>
                 </TeachingTip.IconSource>
             </TeachingTip>
-            <TeachingTip x:Uid="Edit_Target" x:Name="Edit_tooltip" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+            <TeachingTip Grid.Row="0" x:Uid="Edit_Target" x:Name="Edit_tooltip" IsOpen="False" Margin="300,-10,0,0">
                 <TeachingTip.IconSource>
                     <SymbolIconSource Symbol="Edit"/>
                 </TeachingTip.IconSource>
             </TeachingTip>
-            <TeachingTip x:Uid="Add_Target_Error" x:Name="Add_tooltip_Error" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+            <TeachingTip Grid.Row="0" x:Uid="Add_Target_Error" x:Name="Add_tooltip_Error" IsOpen="False" Margin="300,-10,0,0">
                 <TeachingTip.IconSource>
                     <SymbolIconSource Symbol="Add"/>
                 </TeachingTip.IconSource>
             </TeachingTip>
-            <TeachingTip x:Uid="Add_Target_Max" x:Name="Add_tooltip_Max" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+            <TeachingTip Grid.Row="0" x:Uid="Add_Target_Max" x:Name="Add_tooltip_Max" IsOpen="False"  Margin="300,-10,0,0">
                 <TeachingTip.IconSource>
                     <SymbolIconSource Symbol="Add"/>
                 </TeachingTip.IconSource>
             </TeachingTip>
-            <TeachingTip x:Uid="Unsaved_Target" x:Name="Unsaved_tooltip" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+            <TeachingTip Grid.Row="0" x:Uid="Unsaved_Target" x:Name="Unsaved_tooltip" IsOpen="False" Margin="300,-10,0,0">
                 <TeachingTip.IconSource>
                     <SymbolIconSource Symbol="Edit"/>
                 </TeachingTip.IconSource>
             </TeachingTip>
-            <TeachingTip x:Uid="Delete_Target_Error" x:Name="Delete_tooltip_error" IsOpen="False" Grid.Column="1" Margin="300,-10,0,0">
+            <TeachingTip Grid.Row="0" x:Uid="Delete_Target_Error" x:Name="Delete_tooltip_error" IsOpen="False" Margin="300,-10,0,0">
                 <TeachingTip.IconSource>
                     <SymbolIconSource Symbol="Delete"/>
                 </TeachingTip.IconSource>
+            </TeachingTip>
+            <TeachingTip Grid.Row="0" x:Name="UniToolTip" Title="dfasdd" Subtitle="sdxzfczx" IsOpen="False" Margin="300,-10,0,0">
+
             </TeachingTip>
             <!-- Конец -->
             <TextBlock Grid.Row="2" x:Uid="Param_New" Text="Название нового пресета:" Margin="0,16,0,0" FontSize="20"></TextBlock>

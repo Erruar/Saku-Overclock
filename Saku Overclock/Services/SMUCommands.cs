@@ -1,11 +1,11 @@
-﻿using ZenStates.Core;
+﻿using Saku_Overclock.Services;
 
 namespace Saku_Overclock.Services;
 internal class SMUCommands
 {
 }
 
-internal abstract class BaseSMUCommand : IDisposable
+internal class BaseSMUCommand : IDisposable
 {
     internal SMU smu;
 

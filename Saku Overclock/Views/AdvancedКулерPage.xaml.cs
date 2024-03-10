@@ -25,6 +25,11 @@ public sealed partial class AdvancedКулерPage : Page
     }
     private Config config = new();
     private Windows.Foundation.Point cursorPosition;
+
+    // Создаем списки для хранения NumberBox'ов каждого типа для каждого FanConfiguration
+    private readonly List<List<NumberBox>> downThresholdBoxes = new();
+    private readonly List<List<NumberBox>> upThresholdBoxes = new();
+    private readonly List<List<NumberBox>> fanSpeedBoxes = new();
     public AdvancedКулерPage()
     {
         ViewModel = App.GetService<AdvancedКулерViewModel>();
@@ -442,6 +447,17 @@ public sealed partial class AdvancedКулерPage : Page
     }
     private async void LoadFanCurvesFromConfig()
     {
+        FanDef.Children.Clear();
+        FanDef1.Children.Clear();
+        ExtFan1C.Points.Clear();
+        ExtFan2C.Points.Clear();
+        var currentFanDef = FanDef;
+        var currentInvFanC = ExtFan1C;
+        // Создаем списки для текущего FanConfiguration
+        var currentDownThresholdBoxes = new List<NumberBox>();
+        var currentUpThresholdBoxes = new List<NumberBox>();
+        var currentFanSpeedBoxes = new List<NumberBox>();
+        var rowCounter = 0; // Счетчик строк в Grid
         try
         {
             ConfigLoad();
@@ -460,7 +476,6 @@ public sealed partial class AdvancedКулерPage : Page
                 {
                     // Извлечение элементов TemperatureThresholds
                     var thresholdElements = fanConfigurations[i].Descendants("TemperatureThreshold");
-
                     // Обход каждого элемента TemperatureThreshold внутри FanConfiguration
                     foreach (var thresholdElement in thresholdElements)
                     {
@@ -476,6 +491,80 @@ public sealed partial class AdvancedКулерPage : Page
                         catch { }
                         // Добавление точек на соответствующий Polyline в соответствии с текущими значениями и идентификатором FanConfiguration
                         AddThresholdToPolyline((i + 1).ToString(), downThreshold, upThreshold, fanSpeed);
+
+                        //При каждом Tresholds отрисовывать NumberBox
+                        // 1.1 Создаем и настраиваем NumberBox'ы
+                        var downThresholdBox = new NumberBox
+                        {
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            VerticalAlignment = VerticalAlignment.Top,
+                            Width = 65,
+                            Value = double.Parse(thresholdElement.Element("DownThreshold").Value),
+                            Name = $"DownThresholdBox_{rowCounter}" // Уникальное имя для идентификации NumberBox'а
+                        };
+                        if (rowCounter == 0) { downThresholdBox.Margin = new Thickness(0, 65, 0, 0); }
+                        else { downThresholdBox.Margin = new Thickness(0, 5, 0, 0); }
+                        Grid.SetRow(downThresholdBox, rowCounter);
+                        Grid.SetColumn(downThresholdBox, 0);
+
+                        var upThresholdBox = new NumberBox
+                        {
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            VerticalAlignment = VerticalAlignment.Top,
+                            Width = 65,
+                            Value = double.Parse(thresholdElement.Element("UpThreshold").Value),
+                            Name = $"UpThresholdBox_{rowCounter}"
+                        };
+                        if (rowCounter == 0) { upThresholdBox.Margin = new Thickness(0, 65, 0, 0); }
+                        else { upThresholdBox.Margin = new Thickness(0, 5, 0, 0); }
+                        Grid.SetRow(upThresholdBox, rowCounter);
+                        Grid.SetColumn(upThresholdBox, 2);
+                        var fanSpeedBox = new NumberBox
+                        {
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            VerticalAlignment = VerticalAlignment.Top,
+                            Width = 65,
+                            Value = double.Parse(thresholdElement.Element("FanSpeed").Value.Trim(), CultureInfo.InvariantCulture),
+                            Name = $"FanSpeedBox_{rowCounter}"
+                        };
+                        if (rowCounter == 0) { fanSpeedBox.Margin = new Thickness(0, 65, 0, 0); }
+                        else { fanSpeedBox.Margin = new Thickness(0, 5, 0, 0); }
+                        Grid.SetRow(fanSpeedBox, rowCounter);
+                        Grid.SetColumn(fanSpeedBox, 4);
+                        var fanDefNow = 1;
+                        if (currentFanDef == FanDef) { fanDefNow = 1; } else { fanDefNow = 2; }
+                        // 1.2 Добавляем вызовы методов при изменении значений NumberBox'ов
+                        downThresholdBox.ValueChanged += (s, args) => DownThresholdValueChanged(args, int.Parse(s.Name.ToString().Replace("DownThresholdBox_", "")), fanDefNow);
+                        upThresholdBox.ValueChanged += (s, args) => UpThresholdValueChanged(args, int.Parse(s.Name.ToString().Replace("UpThresholdBox_", "")), fanDefNow);
+                        fanSpeedBox.ValueChanged += (s, args) => FanSpeedValueChanged(args, int.Parse(s.Name.ToString().Replace("FanSpeedBox_", "")), fanDefNow);
+
+                        // 1.3 Добавляем NumberBox'ы в текущий Grid и списки
+                        currentFanDef.Children.Add(downThresholdBox);
+                        currentFanDef.Children.Add(upThresholdBox);
+                        currentFanDef.Children.Add(fanSpeedBox);
+
+                        currentDownThresholdBoxes.Add(downThresholdBox);
+                        currentUpThresholdBoxes.Add(upThresholdBox);
+                        currentFanSpeedBoxes.Add(fanSpeedBox);
+
+                        // Увеличиваем счетчик строк
+                        rowCounter++;
+                    }
+                    // Добавляем списки NumberBox'ов текущего FanConfiguration в соответствующие списки
+                    downThresholdBoxes.Add(currentDownThresholdBoxes);
+                    upThresholdBoxes.Add(currentUpThresholdBoxes);
+                    fanSpeedBoxes.Add(currentFanSpeedBoxes);
+
+                    // 2. Переключаемся на следующий FanDef, InvFanC и FanConfiguration
+                    if (currentFanDef == FanDef)
+                    {
+                        rowCounter = 0;
+                        currentFanDef = FanDef1;
+                        currentInvFanC = ExtFan2C;
+                    }
+                    else
+                    {
+                        break; // Прерываем цикл, так как у нас нет FanDef2 или InvFan3C
                     }
                 }
 
@@ -493,6 +582,129 @@ public sealed partial class AdvancedКулерPage : Page
         {
             Console.WriteLine("Error loading fan curves from config: " + ex.Message);
         }
+    }
+
+    private async void DownThresholdValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
+    {
+        await ReplaceNumberB("DownThreshold", args.NewValue, values, fan);
+    }
+
+    private async void UpThresholdValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
+    {
+        await ReplaceNumberB("UpThreshold", args.NewValue, values, fan);
+    }
+
+    private async void FanSpeedValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
+    {
+        await ReplaceNumberB("FanSpeed", args.NewValue, values, fan);
+    }
+
+    private async Task ReplaceNumberB(string foundValue, double newValue, int unicalId, int fanCount)
+    {
+        var currentFanDef = FanDef;
+        var currentInvFanC = ExtFan1C;
+        var rowCounter = 0; // Счетчик строк в Grid
+        try
+        {
+            ConfigLoad();
+            var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" + config.fanvalue + ".xml";
+            if (System.IO.File.Exists(configFilePath))
+            {
+                // Загрузка XML-документа из файла
+                var configXml = XDocument.Load(configFilePath);
+
+                // Извлечение всех FanConfiguration-элементов в документе
+                var fanConfigurations = configXml.Descendants("FanConfiguration").ToList();
+
+                // Обход каждого FanConfiguration-элемента в файле
+                for (var i = 0; i < fanConfigurations.Count; i++)
+                {
+                    // Извлечение элементов TemperatureThresholds
+                    var thresholdElements = fanConfigurations[i].Descendants("TemperatureThreshold");
+                    // Обход каждого элемента TemperatureThreshold внутри FanConfiguration
+                    foreach (var thresholdElement in thresholdElements)
+                    {
+                        if (rowCounter == unicalId) // ID Row совпадает с найденным значением
+                        {
+                            if (currentFanDef == FanDef && fanCount == 1 && i == 0) //Если первый кулер
+                            {
+                                switch (foundValue)
+                                {
+                                    case "DownThreshold":
+                                        thresholdElement.Element("DownThreshold").Value = newValue.ToString();
+                                        break;
+                                    case "UpThreshold":
+                                        thresholdElement.Element("UpThreshold").Value = newValue.ToString();
+                                        break;
+                                    case "FanSpeed":
+                                        thresholdElement.Element("FanSpeed").Value = newValue.ToString();
+                                        break;
+                                }
+                                try
+                                {
+                                    configXml.Save(configFilePath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    await App.MainWindow.ShowMessageDialogAsync("Unable to save XML fan config in target directory: " + ex.Message, "Critical Error!");
+                                }
+                                break;
+                            }
+                            if (currentFanDef == FanDef1 && fanCount == 2 && i != 0)//Если второй кулер (при наличии)
+                            {
+                                switch (foundValue)
+                                {
+                                    case "DownThreshold":
+                                        thresholdElement.Element("DownThreshold").Value = newValue.ToString().Replace(",", ".");
+                                        break;
+                                    case "UpThreshold":
+                                        thresholdElement.Element("UpThreshold").Value = newValue.ToString().Replace(",", ".");
+                                        break;
+                                    case "FanSpeed":
+                                        thresholdElement.Element("FanSpeed").Value = newValue.ToString().Replace(",",".");
+                                        break;
+                                }
+                                try
+                                {
+                                    configXml.Save(configFilePath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    await App.MainWindow.ShowMessageDialogAsync("Unable to save XML fan config in target directory: " + ex.Message, "Critical Error!");
+                                }
+                            }
+                            //await App.MainWindow.ShowMessageDialogAsync("LetVal: " + foundValue + " NewVal: " + newValue.ToString() + " UID: " + unicalId.ToString() + " FanCnt: " + fanCount.ToString() ,"Set success!");
+                        }
+                        //else { await App.MainWindow.ShowMessageDialogAsync("LetVal: " + foundValue + " NewVal: " + newValue.ToString() + " UID: " + unicalId.ToString() + " FanCnt: " + fanCount.ToString(), "Can't Set!"); break; }
+                        // Увеличиваем счетчик строк
+                        rowCounter++;
+                    }
+
+                    // 2. Переключаемся на следующий FanDef, InvFanC и FanConfiguration
+                    if (currentFanDef == FanDef)
+                    {
+                        rowCounter = 0;
+                        currentFanDef = FanDef1;
+                        currentInvFanC = ExtFan2C;
+                    }
+                    else
+                    {
+                        break; // Прерываем цикл, так как у нас нет FanDef2 или InvFan3C
+                    }
+                }
+            }
+            else
+            {
+                // Если файл не найден, выводим сообщение
+                var messageDialog = new Windows.UI.Popups.MessageDialog("File not found: " + configFilePath);
+                await messageDialog.ShowAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await App.MainWindow.ShowMessageDialogAsync("Unable to found or save any values in selected config: " + ex.Message,"Critical Error!");
+        }
+        LoadFanCurvesFromConfig();
     }
 
     private void AddThresholdToPolyline(string fanName, double minTemp, double maxTemp, double fanSpeed)

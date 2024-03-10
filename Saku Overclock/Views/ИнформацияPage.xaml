@@ -61,6 +61,7 @@
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoProcC">Processor</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoProdC" Margin="0,8,0,0">Producer</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoCodeC" Margin="0,8,0,0" x:Name="tbCode">Codename</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" x:Uid="infoCodeC" Margin="0,8,0,0" x:Name="tbCode1">Codename</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoCaptC" Margin="0,8,0,0">Caption</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoCoresC" Margin="0,8,0,0">Cores</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoThreadC" Margin="0,8,0,0">Threads</TextBlock>
@@ -68,12 +69,14 @@
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoL1C" Margin="0,8,0,0">L1 Cache</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoL2C" Margin="0,8,0,0">L2 Cache</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoL3C" Margin="0,8,0,0">L3 Cache</TextBlock>
+                                    <TextBlock FontWeight="SemiBold" x:Uid="infoSMU" x:Name="infoSMU" Margin="0,8,0,0">SMU</TextBlock>
                                     <TextBlock FontWeight="SemiBold" x:Uid="infoInstructC" Margin="0,8,0,0">Instructions</TextBlock>
                                 </StackPanel>
                                 <StackPanel>
                                     <TextBlock  x:Name="tbProcessor"></TextBlock>
                                     <TextBlock Margin="0,8,0,0"  x:Name="tbProducer"></TextBlock>
                                     <TextBlock Margin="0,8,0,0"  x:Name="tbCodename"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbCodename1"></TextBlock>
                                     <TextBlock Margin="0,8,0,0"  x:Name="tbCaption"></TextBlock>
                                     <TextBlock Margin="0,8,0,0"  x:Name="tbCores"></TextBlock>
                                     <TextBlock Margin="0,8,0,0"  x:Name="tbThreads"></TextBlock>
@@ -81,6 +84,7 @@
                                     <TextBlock Margin="0,8,0,0"  x:Name="tbL1Cache"></TextBlock>
                                     <TextBlock Margin="0,8,0,0"  x:Name="tbL2Cache"></TextBlock>
                                     <TextBlock Margin="0,8,0,0"  x:Name="tbL3Cache"></TextBlock>
+                                    <TextBlock Margin="0,8,0,0"  x:Name="tbSMU"></TextBlock>
                                     <TextBlock Margin="0,8,0,0"  x:Name="tbInstructions"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
