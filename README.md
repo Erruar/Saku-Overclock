@@ -83,18 +83,18 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png)
 
-This program is designed to overclock Ryzen mobile processors on laptops. Initially, the program was created due to the frequent occurrence of 0.4 GHz processor freq. I came across a group of such people on the Internet, as a result of which I developed this program.
+Saku Overclock is an incredible utility for Ryzen laptop overclocking, providing precise control over various parameters to enhance your device's performance. Our program offers:
 
-What the program can do:
-* Control TDP, VRM current and on Picasso and up - Freq of CPU subsystems and iGPU freq
-* Control dGPU and APU power limits on Renoir and up
-* Read and change Power States of CPU with changing frequency and voltages
-* Get total info about TDP, VRM, Timings of CPU
-* Cooler tuning, custom cooler spin rate
-* EXPERIMENTAL can stop BD Prochot for time, just found value for your CPU
-* Reapply your settings with windows starting and every second if it needed
-* Helps to play at high FPS :smile:
+* Accurate Current Tuning: Manage VRM, SoC, processor, and integrated graphics currents, giving you complete control.
+* Temperature Management: Set the maximum temperature for all laptop components, excluding the discrete GPU. This helps prevent overheating and makes your laptop more efficient. When temperatures exceed the set threshold, processor frequencies can automatically decrease to maintain optimal conditions.
+* Frequency and Voltage Configuration: Set frequencies for processor performance states and their corresponding voltages to achieve optimal efficiency.
+* Fan Control: Regulate fan speed, adjust its curve, and save configurations for quick access. Create custom presets for convenience.
+* Settings Persistence and Sharing: All your settings are automatically saved, and you can export/import them, facilitating sharing with other users.
+* Real-time Monitoring: Keep track of processor metrics, temperature, GPU, RAM, battery, and more in real-time.
+* Resource-Optimized Operation: Thanks to optimization, the application runs smoothly and quickly without burdening unnecessary processor resources.
+* Background Operation and Auto-Start: The program can operate in the background or automatically start with the system, ensuring user convenience.
 
+With Saku Overclock, you gain full control over your laptop, optimizing its performance and maintaining optimal temperature conditions.
 Of course, you can copy my program in your projects! So I'll be adding more in the near future. Thanks for using it!
 
 Use the `README.md` to get started.
