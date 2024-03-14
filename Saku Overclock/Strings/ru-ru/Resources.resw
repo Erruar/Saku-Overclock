@@ -908,15 +908,15 @@ AMD APU + AMD dGPU
     <value>Применение успешно!</value>
   </data>
   <data name="Add_Target_Max.Subtitle" xml:space="preserve">
-    <value>Нельзя добавить больше 9 пресетов!</value>
+    <value>Нельзя добавить больше 10000 пресетов!</value>
   </data>
   <data name="Add_Target_Max.Title" xml:space="preserve">
     <value>Ошибка добавления</value>
   </data>
-  <data name="Add_tooltip_Error.Subtitle" xml:space="preserve">
+  <data name="Add_Target_Error.Subtitle" xml:space="preserve">
     <value>Нельзя добавить пресет без имени!</value>
   </data>
-  <data name="Add_tooltip_Error.Title" xml:space="preserve">
+  <data name="Add_Target_Error.Title" xml:space="preserve">
     <value>Ошибка добавления</value>
   </data>
   <data name="ADV_Auto.Text" xml:space="preserve">
@@ -1107,5 +1107,159 @@ AMD APU + AMD dGPU
     &lt;action content="Тех. Поддержка" arguments="action=Message"/&gt;
   &lt;/actions&gt;
 &lt;/toast&gt;</value>
+  </data>
+  <data name="AdvancedCooler_Configs.Text" xml:space="preserve">
+    <value>Конфигурации</value>
+  </data>
+  <data name="AdvancedCooler_Curve.Header" xml:space="preserve">
+    <value>Кривая кулера</value>
+  </data>
+  <data name="AdvancedCooler_CurveDesc.Text" xml:space="preserve">
+    <value>Здесь вы можете изменить кривую
+конфигурации:</value>
+  </data>
+  <data name="AdvancedCooler_Curves.Text" xml:space="preserve">
+    <value>Кривая кулера</value>
+  </data>
+  <data name="AdvancedCooler_CurveText.Text" xml:space="preserve">
+    <value>Редактор кривой кулера</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Fan1.Text" xml:space="preserve">
+    <value>Кулер 1</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Fan2.Text" xml:space="preserve">
+    <value>Кулер 2</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Tresh.Margin" xml:space="preserve">
+    <value>390,78,0,0</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Tresh.Text" xml:space="preserve">
+    <value>Температурные зависимости</value>
+  </data>
+  <data name="AdvancedCooler_Custom.Text" xml:space="preserve">
+    <value>Новая конфигурация</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Em.Text" xml:space="preserve">
+    <value>Новая пустая конфигурация</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Ex.Text" xml:space="preserve">
+    <value>Создать из примера</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Fr.Text" xml:space="preserve">
+    <value>Скопировать из конфигурации</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action" xml:space="preserve">
+    <value>Выберите действие</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Delete" xml:space="preserve">
+    <value>Удалить файл</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Rename" xml:space="preserve">
+    <value>Переименовать файл и вкладку</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Sure" xml:space="preserve">
+    <value>Вы уверены в удалении?</value>
+  </data>
+  <data name="AdvancedCooler_Normal.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Обычный режим
+Вернуться обратно в обычный режим:
+Оптимизация кулера</value>
+  </data>
+  <data name="AdvancedCooler_Others.Text" xml:space="preserve">
+    <value>Другие конфигурации</value>
+  </data>
+  <data name="AdvancedCooler_Page.Text" xml:space="preserve">
+    <value>Оптимизация кулера ⟩ Расширенный режим</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Cooler_Advanced.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Расширенный режим
+Перейти в расширенный режим
+Тут вы сможете изменять файлы 
+конфигурации, изменять кривую 
+кулера, а также создавать свои 
+конфигурации управления кулерами</value>
+  </data>
+  <data name="Cooler_Suggest.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Получить совет
+Не знаете какая конфигурация вам
+может подойти? Нажмите сюда, 
+чтобы получить список возможно
+совместимых!</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="New_Name" xml:space="preserve">
+    <value>Новое имя</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Открыть!</value>
+  </data>
+  <data name="Param_PowerMon.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Открыть Saku PowerMon Pro
+Монитор всех параметров ACPI, FIRM, 
+AOD, Power, Temp, Load таблиц устройства.
+Учтите что его запуск может занять до 2 
+минут!</value>
+  </data>
+  <data name="PowerMonDesc" xml:space="preserve">
+    <value>Вы действительно хотите открыть PowerMon? Учтите, что его загрузка может занимать до 2 минут и оба приложения зависнут. Пожалуйста дождитесь полной загрузки, после чего можете его использовать, программы при этом не будут зависать</value>
+  </data>
+  <data name="PowerMonText" xml:space="preserve">
+    <value>Открыть Saku PowerMon Pro?</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="SMUARG.Text" xml:space="preserve">
+    <value>ARG Адрес</value>
+  </data>
+  <data name="SMUArguments.Text" xml:space="preserve">
+    <value>Аргументы</value>
+  </data>
+  <data name="SMUCMD.Text" xml:space="preserve">
+    <value>CMD Адрес</value>
+  </data>
+  <data name="SMUCommand.Text" xml:space="preserve">
+    <value>Команда</value>
+  </data>
+  <data name="SMUDesc.Text" xml:space="preserve">
+    <value>Измените параметры SMU для максимального разгона</value>
+  </data>
+  <data name="SMUErrorDesc" xml:space="preserve">
+    <value>Команда не установлена или IO чип её отклонил. Перезапустите ноутбук и отключите Safe Boot или измените команду!</value>
+  </data>
+  <data name="SMUErrorNoCMD" xml:space="preserve">
+    <value>Такой команды не существует для вашего SMU</value>
+  </data>
+  <data name="SMUErrorRejected" xml:space="preserve">
+    <value>SMU отклонил команду из-за того, что она заблокирована SMU или BIOS</value>
+  </data>
+  <data name="SMUErrorText" xml:space="preserve">
+    <value>Невозможно применить команду SMU</value>
+  </data>
+  <data name="SMUOKDesc" xml:space="preserve">
+    <value>Вы изменили значение для этой команды успешно</value>
+  </data>
+  <data name="SMUOKText" xml:space="preserve">
+    <value>Команда SMU применена успешно!</value>
+  </data>
+  <data name="SMUPath.Text" xml:space="preserve">
+    <value>Путь</value>
+  </data>
+  <data name="SMURSP.Text" xml:space="preserve">
+    <value>RSP Адрес</value>
+  </data>
+  <data name="SMUScanDesc" xml:space="preserve">
+    <value>Теперь вы можете изменять параметры SMU</value>
+  </data>
+  <data name="SMUScanText" xml:space="preserve">
+    <value>Адреса SMU найдены</value>
+  </data>
+  <data name="SMUText.Text" xml:space="preserve">
+    <value>Редактор параметров SMU</value>
   </data>
 </root>

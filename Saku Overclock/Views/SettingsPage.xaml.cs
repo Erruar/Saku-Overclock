@@ -22,8 +22,7 @@ public sealed partial class SettingsPage : Microsoft.UI.Xaml.Controls.Page
         ViewModel = App.GetService<SettingsViewModel>();
         InitializeComponent();
         ConfigLoad();
-        DeviceLoad();
-        ProfileLoad();
+        DeviceLoad(); 
         InitVal();
         config.fanex = false;
         config.tempex = false;
@@ -132,27 +131,7 @@ public sealed partial class SettingsPage : Microsoft.UI.Xaml.Controls.Page
         {
             App.MainWindow.ShowMessageDialogAsync("Пресеты 2", "Критическая ошибка!");
         }
-    }
-    public void ProfileSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-        }
-        catch { }
-    }
-    public void ProfileLoad()
-    {
-        try
-        {
-            profile = JsonConvert.DeserializeObject<Profile>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"));
-        }
-        catch
-        {
-            App.MainWindow.ShowMessageDialogAsync("Пресеты 1", "Критическая ошибка!");
-        }
-    }
+    } 
     private async void nudAutoReapply_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
         await Task.Delay(20);

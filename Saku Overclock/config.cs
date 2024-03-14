@@ -3,6 +3,7 @@ namespace Saku_Overclock;
 #pragma warning disable CS0649 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 internal class Config
 {
+    public int Preset = 0;
     public bool bluetheme;
     public bool Infoupdate;
     public string fanvalue;

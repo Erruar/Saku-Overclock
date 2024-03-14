@@ -13,15 +13,13 @@ public sealed partial class ПресетыPage : Page
         get;
     }
     private Config config = new();
-    private Devices devices = new();
-    private Profile profile = new();
+    private Devices devices = new(); 
     public ПресетыPage()
     {
         ViewModel = App.GetService<ПресетыViewModel>();
         InitializeComponent();
         ConfigLoad();
-        DeviceLoad();
-        ProfileLoad();
+        DeviceLoad(); 
         InitSave();
         config.fanex = false;
         config.tempex = false;
@@ -153,28 +151,6 @@ public sealed partial class ПресетыPage : Page
         {
             App.MainWindow.ShowMessageDialogAsync("Пресеты 2", "Критическая ошибка!");
         }
-    }
-
-    public void ProfileSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-        }
-        catch { }
-    }
-
-    public void ProfileLoad()
-    {
-        try
-        {
-            profile = JsonConvert.DeserializeObject<Profile>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"));
-        }
-        catch
-        {
-            App.MainWindow.ShowMessageDialogAsync("Пресеты 1", "Критическая ошибка!");
-        }
-    }
+    } 
 }
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

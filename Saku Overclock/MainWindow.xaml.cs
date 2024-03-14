@@ -19,7 +19,6 @@ public sealed partial class MainWindow : WindowEx
     private UISettings settings;
     private Config config = new();
     private Devices devices = new();
-    private Profile profile = new();
     // The enum flag for DwmSetWindowAttribute's second parameter, which tells the function what attribute to set.
     public enum DWMWINDOWATTRIBUTE
     {
@@ -98,8 +97,7 @@ public sealed partial class MainWindow : WindowEx
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event   
-        DeviceLoad();
-        ProfileLoad();
+        DeviceLoad(); 
         Tray_Start();
         Set_Blue();
         Closed += Dispose_Tray;
@@ -138,17 +136,15 @@ public sealed partial class MainWindow : WindowEx
             JsonRepair('c');
         }
     }
+
+    [Obsolete]
     private async void Tray_Start()
     {
         ConfigLoad();
         try
         {
             if (config.autooverclock == true) { Applyer.Apply(); if (devices.autopstate == true && devices.enableps == true) { var cpu = new ПараметрыPage(); cpu.BtnPstateWrite_Click(); } }
-            if (config.traystart == true)
-            {
-                await Task.Delay(700);
-                this.Hide();
-            }
+            if (config.traystart == true) { await Task.Delay(700); this.Hide(); }
         }
         catch
         {
@@ -268,9 +264,11 @@ public sealed partial class MainWindow : WindowEx
             if (mc.config == null) { return; }
             await Task.Run(() =>
             {
+                var name = Path.Combine(AppContext.BaseDirectory, @"ryzenadj.exe");
                 var p = new Process();
                 p.StartInfo.UseShellExecute = false;
                 p.StartInfo.FileName = @"ryzenadj.exe";
+                p.StartInfo.WorkingDirectory = AppContext.BaseDirectory;
                 p.StartInfo.Arguments = mc.config.adjline;
                 p.StartInfo.CreateNoWindow = true;
                 p.StartInfo.RedirectStandardError = true;
@@ -453,68 +451,7 @@ public sealed partial class MainWindow : WindowEx
                     Close();
                 }
             }
-        }
-        if (file == 'p')
-        {
-            try
-            {
-                for (var j = 0; j < 5; j++)
-                {
-                    profile = new Profile();
-                }
-            }
-            catch
-            {
-                Close();
-            }
-            if (profile != null)
-            {
-                try
-                {
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-                }
-                catch
-                {
-                    Close();
-                }
-            }
-            else
-            {
-                try
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
-                    Close();
-                }
-                catch
-                {
-                    Close();
-                }
-            }
-        }
-        if (profile != null)
-        {
-            try
-            {
-                Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-                return;
-            }
-            catch
-            {
-                Close();
-                return;
-            }
-        }
-        try
-        {
-            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
-            Close();
-        }
-        catch
-        {
-            Close();
-        }
+        } 
     }
 
     public void ConfigSave()
@@ -560,28 +497,7 @@ public sealed partial class MainWindow : WindowEx
             JsonRepair('d');
         }
     }
-
-    public void ProfileSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-        }
-        catch { }
-    }
-
-    public void ProfileLoad()
-    {
-        try
-        {
-            profile = JsonConvert.DeserializeObject<Profile>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"));
-        }
-        catch
-        {
-            JsonRepair('p');
-        }
-    }
+     
 }
 #pragma warning restore IDE0044 // Добавить модификатор только для чтения
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

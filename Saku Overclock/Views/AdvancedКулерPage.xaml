@@ -12,35 +12,35 @@
                     <FontIcon Glyph="&#xe718;"/>
                 </MenuFlyoutItem.Icon>
             </MenuFlyoutItem>
-            <MenuFlyoutSubItem Text="Configs">
+            <MenuFlyoutSubItem x:Uid="AdvancedCooler_Configs" Text="Configs">
                 <MenuFlyoutSubItem.Icon>
                     <FontIcon Glyph="&#xe8b7;"/>
                 </MenuFlyoutSubItem.Icon>
-                <MenuFlyoutItem Text="Fan Curve" Click="Curve_Click">
+                <MenuFlyoutItem x:Uid="AdvancedCooler_Curves" Text="Fan Curve" Click="Curve_Click">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xe932;"/>
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
-                <MenuFlyoutSubItem x:Name="Others_CC" Text="Other Configs">
+                <MenuFlyoutSubItem x:Uid="AdvancedCooler_Others" x:Name="Others_CC" Text="Other Configs">
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe74c;"/>
                     </MenuFlyoutSubItem.Icon>
                 </MenuFlyoutSubItem>
-                <MenuFlyoutSubItem Text="Create Custom">
+                <MenuFlyoutSubItem x:Uid="AdvancedCooler_Custom" Text="Create Custom">
                     <MenuFlyoutSubItem.Icon>
                         <FontIcon Glyph="&#xe792;"/>
                     </MenuFlyoutSubItem.Icon>
-                    <MenuFlyoutItem Text="Config From Example" Click="Create_Example_Click">
+                    <MenuFlyoutItem x:Uid="AdvancedCooler_Custom_Ex" Text="Config From Example" Click="Create_Example_Click">
                         <MenuFlyoutItem.Icon>
                             <FontIcon Glyph="&#xe78c;"/>
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
-                    <MenuFlyoutItem Text="Empty Config" Click="Create_Null_Click">
+                    <MenuFlyoutItem x:Uid="AdvancedCooler_Custom_Em" Text="Empty Config" Click="Create_Null_Click">
                         <MenuFlyoutItem.Icon>
                             <FontIcon Glyph="&#xe78c;"/>
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
-                    <MenuFlyoutSubItem x:Name="Copy_CC" Text="Copy Config From">
+                    <MenuFlyoutSubItem x:Uid="AdvancedCooler_Custom_Fr" x:Name="Copy_CC" Text="Copy Config From">
                         <MenuFlyoutSubItem.Icon>
                             <FontIcon Glyph="&#xe78c;"/>
                         </MenuFlyoutSubItem.Icon>
@@ -51,7 +51,7 @@
     </Page.Resources>
     <!--Pages can be added as references or inline-->
     <Grid x:Name="ContentArea">
-        <TextBlock Text="Advanced cooler tweaking" FontSize="30" Margin="0,-65,0,0"></TextBlock>
+        <TextBlock Text="Advanced cooler tweaking" x:Uid="AdvancedCooler_Page" FontSize="30" Margin="0,-65,0,0"></TextBlock>
         <ContentControl>
             <TabView x:Name="MainTab" Background="{ThemeResource LayerOnMicaBaseAltFillColorTransparentBrush}" AddTabButtonClick="Tabs_AddTabButtonClick" PointerMoved="TabView_PointerMoved" TabCloseRequested="Tabs_TabCloseRequested" CloseButtonOverlayMode="OnPointerOver" TabWidthMode="SizeToContent">
                 <TabView.TabItems>
@@ -74,7 +74,7 @@
                                             </Grid>
                                         </Expander.Header>
                                     </Expander>
-                                    <TextBlock FontWeight="Bold" Text="This is example of config"/>
+                                    <TextBlock FontWeight="Bold"  Text="This is example of config"/>
                                     <RichTextBlock x:Name="RichEt">
                                         <Paragraph x:Name="RichPargr">
                                             <Run x:Name="ReadEx"></Run>
@@ -89,7 +89,7 @@
                             </ScrollViewer>
                         </Grid>
                     </TabViewItem>
-                    <TabViewItem Header="Fan Curve" x:Name="FanC_Tab" IsClosable="True">
+                    <TabViewItem x:Uid="AdvancedCooler_Curve" Header="Fan Curve" x:Name="FanC_Tab" IsClosable="True">
                         <TabViewItem.IconSource>
                             <FontIconSource Glyph="&#xe932;"/>
                         </TabViewItem.IconSource>
@@ -103,9 +103,9 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Text="Fan curve editor" FontWeight="Light" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="21"></TextBlock>
-                                    <TextBlock Text="There you can change laptop fans behavior &#10;for selected config:" Margin="0,28,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"></TextBlock>
-                                    <TextBlock Text="Critical error in line 104 of com.sakuoverclock.org: File not found" Margin="148,50,0,0" x:Name="Config_Name1" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"></TextBlock>
+                                    <TextBlock  x:Uid="AdvancedCooler_CurveText" Text="Fan curve editor" FontWeight="Light" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="21"></TextBlock>
+                                    <TextBlock x:Uid="AdvancedCooler_CurveDesc" Text="There you can change laptop fans behavior &#10;for selected config:" Margin="0,28,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"></TextBlock>
+                                    <TextBlock Text="Config not found!" Margin="148,50,0,0" x:Name="Config_Name1" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"></TextBlock>
                                     <!-- Собственно кривая кулеров 1 -->
                                     <Grid Margin="0,87,0,0" Grid.Row="0">
                                         <Grid.ColumnDefinitions>
@@ -119,7 +119,7 @@
                                         </Grid.RowDefinitions>
 
                                         <TextBlock Grid.Row="0" Grid.Column="0" Text="t℃" Margin="0,-10,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Fan 1" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Fan 1" x:Uid="AdvancedCooler_Curve_Fan1" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="-10,-6,0,5">
                                             <TextBlock Text="100" HorizontalAlignment="Right" Margin="0,2,0,0"/>
                                             <TextBlock Text="90" HorizontalAlignment="Right" Margin="0,4,0,0"/>
@@ -224,7 +224,7 @@
                                         </Canvas>
                                     </Grid>
                                     <!-- Собственно кривая кулеров 2 -->
-                                    <Grid Margin="0,5,0,0" Grid.Row="1">
+                                    <Grid Margin="0,5,0,0" x:Name="CurveFan2" Grid.Row="1">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="22"/>
                                             <ColumnDefinition Width="*"/>
@@ -236,7 +236,7 @@
                                         </Grid.RowDefinitions>
 
                                         <TextBlock Grid.Row="0" Grid.Column="0" Text="t℃" Margin="0,-10,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Fan 2" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Fan 2" x:Uid="AdvancedCooler_Curve_Fan2" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="-10,-6,0,5">
                                             <TextBlock Text="100" HorizontalAlignment="Right" Margin="0,2,0,0"/>
                                             <TextBlock Text="90" HorizontalAlignment="Right" Margin="0,4,0,0"/>
@@ -341,13 +341,13 @@
                                         </Canvas>
                                     </Grid>
                                     <!-- Всё что ниже кривых -->
-                                    <TextBlock Grid.Row="0" Margin="420,78,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" Text="Temperature tresholds"/>
+                                    <TextBlock Grid.Row="0" Margin="420,78,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" x:Uid="AdvancedCooler_Curve_Tresh" Text="Temperature tresholds"/>
                                     <ToggleSplitButton Grid.Row="0" Width="205" IsChecked="True" Grid.Column="0" IsCheckedChanged="myListButton_IsCheckedChanged" x:Name="myListButton" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,112,0,0">
                                         <Grid>
                                             <ContentControl>
                                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xedad;"/>
                                             </ContentControl>
-                                            <TextBlock Text="Fan 1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
+                                            <TextBlock Text="Fan 1" x:Uid="AdvancedCooler_Curve_Fan1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
                                         </Grid>
 
                                         <ToggleSplitButton.Flyout>
@@ -356,7 +356,7 @@
                                                 <GridView ItemClick="GridView_ItemClick1" IsItemClickEnabled="True">
                                                     <GridView.ItemsPanel>
                                                         <ItemsPanelTemplate>
-                                                            <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
+                                                            <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
                                                         </ItemsPanelTemplate>
                                                     </GridView.ItemsPanel>
                                                     <GridView.Resources>
@@ -368,14 +368,22 @@
                                                         </Style>
                                                     </GridView.Resources>
                                                     <GridView.Items>
+                                                        <Rectangle Fill="Gray"/>
+                                                        <Rectangle Fill="Black"/>
+                                                        <Rectangle Fill="Brown"/>
                                                         <Rectangle Fill="Red"/>
+                                                        <Rectangle Fill="Coral"/>
                                                         <Rectangle Fill="Orange"/>
                                                         <Rectangle Fill="Yellow"/>
                                                         <Rectangle Fill="Green"/>
+                                                        <Rectangle Fill="LawnGreen"/>
+                                                        <Rectangle Fill="Lime"/>
+                                                        <Rectangle Fill="LimeGreen"/>
                                                         <Rectangle Fill="Blue"/>
                                                         <Rectangle Fill="Indigo"/>
                                                         <Rectangle Fill="Violet"/>
-                                                        <Rectangle Fill="Gray"/>
+                                                        <Rectangle Fill="Pink"/>
+                                                        <Rectangle Fill="White"/>
                                                     </GridView.Items>
                                                 </GridView>
                                             </Flyout>
@@ -412,7 +420,7 @@
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Margin="0,19,0,0" Text="Fan 1"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold"  x:Uid="AdvancedCooler_Curve_Fan1" FontSize="20" Margin="0,19,0,0" Text="Fan 1"/>
                                         <TextBlock Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,44,-195,0" Text="     Min           Max           SPD"/>
                                     </Grid>
                                     <ToggleSplitButton IsChecked="True" Grid.Row="1" Width="205" IsCheckedChanged="myListButton1_IsCheckedChanged" x:Name="myListButton1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,33,0,0">
@@ -420,7 +428,7 @@
                                             <ContentControl>
                                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xedad;"/>
                                             </ContentControl>
-                                            <TextBlock Text="Fan 2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
+                                            <TextBlock Text="Fan 2" x:Uid="AdvancedCooler_Curve_Fan2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
                                         </Grid>
                                         <ToggleSplitButton.Flyout>
                                             <Flyout Placement="Bottom">
@@ -428,7 +436,7 @@
                                                 <GridView ItemClick="GridView_ItemClick2" IsItemClickEnabled="True">
                                                     <GridView.ItemsPanel>
                                                         <ItemsPanelTemplate>
-                                                            <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
+                                                            <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
                                                         </ItemsPanelTemplate>
                                                     </GridView.ItemsPanel>
                                                     <GridView.Resources>
@@ -440,14 +448,22 @@
                                                         </Style>
                                                     </GridView.Resources>
                                                     <GridView.Items>
+                                                        <Rectangle Fill="Gray"/>
+                                                        <Rectangle Fill="Black"/>
+                                                        <Rectangle Fill="Brown"/>
                                                         <Rectangle Fill="Red"/>
+                                                        <Rectangle Fill="Coral"/>
                                                         <Rectangle Fill="Orange"/>
                                                         <Rectangle Fill="Yellow"/>
                                                         <Rectangle Fill="Green"/>
+                                                        <Rectangle Fill="LawnGreen"/>
+                                                        <Rectangle Fill="Lime"/>
+                                                        <Rectangle Fill="LimeGreen"/>
                                                         <Rectangle Fill="Blue"/>
                                                         <Rectangle Fill="Indigo"/>
                                                         <Rectangle Fill="Violet"/>
-                                                        <Rectangle Fill="Gray"/>
+                                                        <Rectangle Fill="Pink"/>
+                                                        <Rectangle Fill="White"/>
                                                     </GridView.Items>
                                                 </GridView>
                                             </Flyout>
@@ -482,7 +498,7 @@
                                             <RowDefinition/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
-                                        <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Margin="0,19,0,0" Text="Fan 2"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" x:Uid="AdvancedCooler_Curve_Fan2" FontSize="20" Margin="0,19,0,0" Text="Fan 2"/>
                                         <TextBlock Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,44,-195,0" Text="     Min           Max           SPD"/>
                                     </Grid>
                                 </Grid>
@@ -493,7 +509,7 @@
             </TabView>
         </ContentControl>
 
-        <Button VerticalAlignment="Bottom"  Click="NormalMode_Click"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-13,15"  ToolTipService.ToolTip="Normal mode">
+        <Button VerticalAlignment="Bottom"  Click="NormalMode_Click"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-13,15" x:Uid="AdvancedCooler_Normal" ToolTipService.ToolTip="Normal mode">
             <Grid>
                 <ContentControl>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe90f;"/>

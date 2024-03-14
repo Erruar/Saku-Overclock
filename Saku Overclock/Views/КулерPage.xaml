@@ -58,7 +58,7 @@
                     </FontIcon>
                 </Grid>
             </Button>
-            <Button VerticalAlignment="Bottom" Click="Suggest_Click" x:Name="Suggest" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,87,15"  ToolTipService.ToolTip="Suggest">
+            <Button VerticalAlignment="Bottom" Click="Suggest_Click" x:Name="Suggest" x:Uid="Cooler_Suggest" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,87,15"  ToolTipService.ToolTip="Suggest">
                 <Grid>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe897;">
                     </FontIcon>
@@ -72,7 +72,7 @@
                     <SymbolIconSource Symbol="Refresh" />
                 </TeachingTip.IconSource>
             </TeachingTip>
-            <Button VerticalAlignment="Bottom"  Click="AdvancedCooler_Click"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,137,15"  ToolTipService.ToolTip="Advanced mode">
+            <Button VerticalAlignment="Bottom"  Click="AdvancedCooler_Click" x:Uid="Cooler_Advanced"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,137,15"  ToolTipService.ToolTip="Advanced mode">
                 <Grid>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe90f;">
                     </FontIcon>

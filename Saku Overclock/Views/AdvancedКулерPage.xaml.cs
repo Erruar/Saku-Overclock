@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
@@ -237,13 +238,13 @@ public sealed partial class AdvancedКулерPage : Page
         // Создать ContentDialog
         var renameDialog = new ContentDialog
         {
-            Title = isCustomFile ? "Выберите действие" : "Переименовать файл и вкладку",
-            Content = new TextBox { PlaceholderText = "Новое имя" },
-            PrimaryButtonText = "Переименовать",
-            CloseButtonText = "Отмена",
+            Title = isCustomFile ? "AdvancedCooler_Del_Action".GetLocalized() : "AdvancedCooler_Del_Action_Rename".GetLocalized(),
+            Content = new TextBox { PlaceholderText = "New_Name".GetLocalized() },
+            PrimaryButtonText = "Rename".GetLocalized(),
+            CloseButtonText = "Cancel".GetLocalized(),
             DefaultButton = ContentDialogButton.Close
         };
-        if (isCustomFile) { renameDialog.SecondaryButtonText = "Удалить"; }
+        if (isCustomFile) { renameDialog.SecondaryButtonText = "Delete".GetLocalized(); }
         if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
             renameDialog.XamlRoot = XamlRoot;
@@ -256,10 +257,10 @@ public sealed partial class AdvancedКулерPage : Page
             await Task.Delay(1000);
             var deleteConfirmationDialog = new ContentDialog
             {
-                Title = "Удалить файл",
-                Content = "Вы уверены в удалении?",
-                PrimaryButtonText = "Удалить",
-                CloseButtonText = "Отмена",
+                Title = "AdvancedCooler_Del_Action_Delete".GetLocalized(),
+                Content = "AdvancedCooler_Del_Action_Sure".GetLocalized(),
+                PrimaryButtonText = "Delete".GetLocalized(),
+                CloseButtonText = "Cancel".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
             };
             if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
@@ -567,7 +568,18 @@ public sealed partial class AdvancedКулерPage : Page
                         break; // Прерываем цикл, так как у нас нет FanDef2 или InvFan3C
                     }
                 }
-
+                if (fanConfigurations.Count == 1)
+                { 
+                    CurveFan2.Visibility = Visibility.Collapsed;
+                    myListButton1.Visibility = Visibility.Collapsed;
+                    FanDef1.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    CurveFan2.Visibility = Visibility.Visible;
+                    myListButton1.Visibility = Visibility.Visible;
+                    FanDef1.Visibility = Visibility.Visible;
+                }
                 // Отрисовка кривых после обработки всех элементов из файла
                 DrawFanCurves();
             }

@@ -1069,4 +1069,153 @@ the information page!</value>
   &lt;/actions&gt;
 &lt;/toast&gt;</value>
   </data>
+  <data name="AdvancedCooler_Configs.Text" xml:space="preserve">
+    <value>Configs</value>
+  </data>
+  <data name="AdvancedCooler_Curve.Header" xml:space="preserve">
+    <value>Fan Curve</value>
+  </data>
+  <data name="AdvancedCooler_CurveDesc.Text" xml:space="preserve">
+    <value>There you can change laptop fans behavior 
+for selected config:</value>
+  </data>
+  <data name="AdvancedCooler_Curves.Text" xml:space="preserve">
+    <value>Fan Curve</value>
+  </data>
+  <data name="AdvancedCooler_CurveText.Text" xml:space="preserve">
+    <value>Fan curve editor</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Fan1.Text" xml:space="preserve">
+    <value>Fan 1</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Fan2.Text" xml:space="preserve">
+    <value>Fan 2</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Tresh.Margin" xml:space="preserve">
+    <value>420,78,0,0</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Tresh.Text" xml:space="preserve">
+    <value>Temperature tresholds</value>
+  </data>
+  <data name="AdvancedCooler_Custom.Text" xml:space="preserve">
+    <value>Create Custom</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Em.Text" xml:space="preserve">
+    <value>Empty Config</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Ex.Text" xml:space="preserve">
+    <value>Config From Example</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Fr.Text" xml:space="preserve">
+    <value>Copy Config From</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action" xml:space="preserve">
+    <value>Choose an action</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Delete" xml:space="preserve">
+    <value>Delete file</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Rename" xml:space="preserve">
+    <value>Rename File and Tab</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Sure" xml:space="preserve">
+    <value>Are you sure?</value>
+  </data>
+  <data name="AdvancedCooler_Normal.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Normal Mode
+Switch to normal mode</value>
+  </data>
+  <data name="AdvancedCooler_Others.Text" xml:space="preserve">
+    <value>Other Configs</value>
+  </data>
+  <data name="AdvancedCooler_Page.Text" xml:space="preserve">
+    <value>Cooler tweaks ⟩ Advanced cooler tweaking</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Cooler_Advanced.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Advanced mode
+Switch to advanced mode. 
+There you can change configuration 
+files, change the cooler curve, and 
+create your own cooler management 
+configurations</value>
+  </data>
+  <data name="Cooler_Suggest.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Suggest
+Get suggest on a possible configuration</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="New_Name" xml:space="preserve">
+    <value>New Name...</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open!</value>
+  </data>
+  <data name="Param_PowerMon.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Open Saku PowerMon Pro
+Monitor for all ACPI parameters, FIRM, 
+AOD, Power, Temp, Load tables of the device.
+Please note that it may take up to 2 minutes to launch!</value>
+  </data>
+  <data name="PowerMonDesc" xml:space="preserve">
+    <value>Did you really want to open monitor? It may take up to 2 minutes to load it, while both applications will freeze and you will have to wait for its full initialization</value>
+  </data>
+  <data name="PowerMonText" xml:space="preserve">
+    <value>Open Saku PowerMon</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="SMUARG.Text" xml:space="preserve">
+    <value>ARG Address</value>
+  </data>
+  <data name="SMUArguments.Text" xml:space="preserve">
+    <value>Arguments</value>
+  </data>
+  <data name="SMUCMD.Text" xml:space="preserve">
+    <value>CMD Address</value>
+  </data>
+  <data name="SMUCommand.Text" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="SMUDesc.Text" xml:space="preserve">
+    <value>Edit your SMU parameters for extreme overclocking</value>
+  </data>
+  <data name="SMUErrorDesc" xml:space="preserve">
+    <value>IO Chip can't keep parameters on. Reboot and disable Safe Boot or set the command</value>
+  </data>
+  <data name="SMUErrorNoCMD" xml:space="preserve">
+    <value>This command isn't exist!</value>
+  </data>
+  <data name="SMUErrorRejected" xml:space="preserve">
+    <value>This command is locked on your SMU by SMU or BIOS limitations</value>
+  </data>
+  <data name="SMUErrorText" xml:space="preserve">
+    <value>Can't set SMU command!</value>
+  </data>
+  <data name="SMUOKDesc" xml:space="preserve">
+    <value>SMU changes this command success</value>
+  </data>
+  <data name="SMUOKText" xml:space="preserve">
+    <value>Set SMU command success!</value>
+  </data>
+  <data name="SMUPath.Text" xml:space="preserve">
+    <value>Mailbox</value>
+  </data>
+  <data name="SMURSP.Text" xml:space="preserve">
+    <value>RSP Address</value>
+  </data>
+  <data name="SMUScanDesc" xml:space="preserve">
+    <value>Now you can change SMU commands for detected mailboxes</value>
+  </data>
+  <data name="SMUScanText" xml:space="preserve">
+    <value>SMU addresses have been detected</value>
+  </data>
+  <data name="SMUText.Text" xml:space="preserve">
+    <value>SMU Parameters editor</value>
+  </data>
 </root>
