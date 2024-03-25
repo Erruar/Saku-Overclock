@@ -107,8 +107,8 @@ public sealed partial class КулерPage : Page
                 p.Start();
             }
             catch
-            {
-                await App.MainWindow.ShowMessageDialogAsync("Error in line 52 of КулерPage.xaml.cs in com.sakuoverclock.org", "Critical error!");
+            { 
+
             }
             var outputWriter = p.StandardOutput;
             var line = await outputWriter.ReadLineAsync();
@@ -354,7 +354,7 @@ public sealed partial class КулерPage : Page
 
     public void NbfcFan1()
     {
-        Process p = new Process();
+        var p = new Process();
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.FileName = @"nbfc/nbfc.exe";
         ConfigLoad();
@@ -372,7 +372,7 @@ public sealed partial class КулерPage : Page
     }
     public void NbfcFan2()
     {
-        Process p = new Process();
+        var p = new Process();
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.FileName = @"nbfc/nbfc.exe";
         ConfigLoad();
@@ -392,7 +392,7 @@ public sealed partial class КулерPage : Page
     {
         const string quote = "\"";
 
-        Process p = new Process();
+        var p = new Process();
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.FileName = @"nbfc/nbfc.exe";
         ConfigLoad();
@@ -531,12 +531,12 @@ public sealed partial class КулерPage : Page
         {
             if (config.autofan == false)
             {
-                ContentDialog AutoDialog = new ContentDialog
+                var AutoDialog = new ContentDialog
                 {
-                    Title = "Autoupdate info",
-                    Content = "Did you really want to enable auto update? \nThis will negatively affect the performance of the application",
-                    CloseButtonText = "Cancel",
-                    PrimaryButtonText = "Enable",
+                    Title = "Cooler_FanAuto_Text".GetLocalized(),
+                    Content = "Cooler_FanAuto_Desc".GetLocalized(),
+                    CloseButtonText = "Cancel".GetLocalized(),
+                    PrimaryButtonText = "Enable".GetLocalized(),
                     DefaultButton = ContentDialogButton.Close
                 };
 

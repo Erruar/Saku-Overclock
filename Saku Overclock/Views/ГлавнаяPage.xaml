@@ -18,7 +18,7 @@
         <TextBlock x:Uid="Main_Welcome" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Добро пожаловать в" Margin="0,105,0,0"/>
         <TextBlock FontSize="27" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Saku Overclock" Margin="0,130,0,0"/>
         <TextBlock x:Uid="Main_Welcome_1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Для тех, кто желает максимум!"  Margin="0,170,0,0"/>
-        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Ver 1.0.7.0 BETA" Margin="0,198,0,0"/>
+        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Ver 1.0.8.0 BETA" Margin="0,198,0,0"/>
         <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -44,13 +44,7 @@
                 
             </Button>
             <Button  Grid.Column="2" Height="60" Click="Param_Click">
-                <Button.Background>
-                    <AcrylicBrush 
-FallbackColor="#EE222222"
-TintColor="#666666"
-TintLuminosityOpacity="0.1"
-TintOpacity="0" />
-                </Button.Background>
+               
                 <Grid>
                     <Grid Width="2000">
                         <SymbolIcon Symbol="Edit" HorizontalAlignment="Left"/>

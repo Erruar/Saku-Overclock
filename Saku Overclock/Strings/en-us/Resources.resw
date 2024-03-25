@@ -383,7 +383,7 @@ at this button</value>
     <value>Add new preset
 You can add new preset
 and add in it your values.
-All presets are autosaving</value>
+All presets have autosaving</value>
   </data>
   <data name="Param_VRM_desc.Text" xml:space="preserve">
     <value>Recommendation:     Balance                 Performance</value>
@@ -1171,13 +1171,13 @@ Please note that it may take up to 2 minutes to launch!</value>
     <value>Rename</value>
   </data>
   <data name="SMUARG.Text" xml:space="preserve">
-    <value>ARG Address</value>
+    <value>ARG Adr</value>
   </data>
   <data name="SMUArguments.Text" xml:space="preserve">
     <value>Arguments</value>
   </data>
   <data name="SMUCMD.Text" xml:space="preserve">
-    <value>CMD Address</value>
+    <value>CMD Adr</value>
   </data>
   <data name="SMUCommand.Text" xml:space="preserve">
     <value>Command</value>
@@ -1207,7 +1207,7 @@ Please note that it may take up to 2 minutes to launch!</value>
     <value>Mailbox</value>
   </data>
   <data name="SMURSP.Text" xml:space="preserve">
-    <value>RSP Address</value>
+    <value>RSP Adr</value>
   </data>
   <data name="SMUScanDesc" xml:space="preserve">
     <value>Now you can change SMU commands for detected mailboxes</value>
@@ -1217,5 +1217,92 @@ Please note that it may take up to 2 minutes to launch!</value>
   </data>
   <data name="SMUText.Text" xml:space="preserve">
     <value>SMU Parameters editor</value>
+  </data>
+  <data name="SMUEnableDesc.Text" xml:space="preserve">
+    <value>Enable this quick SMU commands</value>
+  </data>
+  <data name="SMUEnableText.Text" xml:space="preserve">
+    <value>Apply SMU commands</value>
+  </data>
+  <data name="CancelThis.Text" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Copy.Text" xml:space="preserve">
+    <value>Copy this</value>
+  </data>
+  <data name="Cut.Text" xml:space="preserve">
+    <value>Cut this</value>
+  </data>
+  <data name="SelectAll.Text" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="ToHex.Text" xml:space="preserve">
+    <value>Convert to Hex</value>
+  </data>
+  <data name="Arguments" xml:space="preserve">
+    <value>Arguments</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Command" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="Cooler_FanAuto_Desc" xml:space="preserve">
+    <value>Did you really want to enable auto update? 
+This will negatively affect the performance of the application</value>
+  </data>
+  <data name="Cooler_FanAuto_Text" xml:space="preserve">
+    <value>Autoupdate info</value>
+  </data>
+  <data name="Desc" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Info_CPU_desc.Text" xml:space="preserve">
+    <value>Information about CPU and other powers</value>
+  </data>
+  <data name="Info_CPU_text.Text" xml:space="preserve">
+    <value>Power information</value>
+  </data>
+  <data name="Info_RAM_desc.Text" xml:space="preserve">
+    <value>Common RAM information</value>
+  </data>
+  <data name="Info_RAM_text.Text" xml:space="preserve">
+    <value>RAM Information</value>
+  </data>
+  <data name="Param_Autorun" xml:space="preserve">
+    <value>Apply with app start</value>
+  </data>
+  <data name="Param_ChPstates_Desc" xml:space="preserve">
+    <value>Did you really want to change pstates? 
+This can crash your system immediately. 
+Changing P0 state have MORE chances to crash your system</value>
+  </data>
+  <data name="Param_ChPstates_Text" xml:space="preserve">
+    <value>Change Pstates?</value>
+  </data>
+  <data name="Param_DelPreset_Desc" xml:space="preserve">
+    <value>Did you really want to delete this preset?</value>
+  </data>
+  <data name="Param_DelPreset_Text" xml:space="preserve">
+    <value>Delete preset</value>
+  </data>
+  <data name="Param_QSMU_Desc.Text" xml:space="preserve">
+    <value>Add new command</value>
+  </data>
+  <data name="Param_QSMU_Text.Text" xml:space="preserve">
+    <value>Quick SMU commands</value>
+  </data>
+  <data name="Param_WithApply" xml:space="preserve">
+    <value>Apply with "Apply button"</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Without_P0" xml:space="preserve">
+    <value>Without P0</value>
   </data>
 </root>

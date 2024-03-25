@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Management;
 using System.Windows.Threading;
 using Microsoft.UI.Xaml;
@@ -6,11 +7,11 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Services;
+using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.UI.Core;
 using ZenStates.Core;
 namespace Saku_Overclock.Views;
-#pragma warning disable CS8600 // Преобразование литерала, допускающего значение NULL или возможного значения NULL в тип, не допускающий значение NULL.
 #pragma warning disable IDE0059 // Ненужное присваивание значения
 #pragma warning disable IDE0044 // Ненужное присваивание значения
 #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
@@ -20,7 +21,7 @@ public sealed partial class ИнформацияPage : Page
     private Config config = new();
     public double refreshtime;
     private System.Windows.Threading.DispatcherTimer dispatcherTimer;
-    private readonly Services.Cpu cpu = new();
+    private readonly SMUEngine.Cpu cpu = new();
     public ИнформацияViewModel ViewModel
     {
         get;
@@ -34,8 +35,8 @@ public sealed partial class ИнформацияPage : Page
         config.tempex = true;
         ConfigSave();
         // Инициализация таймера
-        getCPUInfo();
-        getRAMInfo();
+        GetCPUInfo();
+        GetRAMInfo();
         ReadPstate();
     }
     //JSON форматирование
@@ -43,7 +44,7 @@ public sealed partial class ИнформацияPage : Page
     {
         try
         {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
         }
         catch { }
@@ -59,22 +60,22 @@ public sealed partial class ИнформацияPage : Page
             App.MainWindow.ShowMessageDialogAsync("Пресеты 3", "Критическая ошибка!");
         }
     }
-    private async void getCPUInfo()
+    private async void GetCPUInfo()
     {
         try
         {
-            sdCPU.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            sdCPU.Visibility = Visibility.Collapsed;
             // CPU information using WMI
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+            var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
 
-            string name = "";
-            string description = "";
-            string manufacturer = "";
-            int numberOfCores = 0;
-            int numberOfLogicalProcessors = 0;
+            var name = "";
+            var description = "";
+            var manufacturer = "";
+            var numberOfCores = 0;
+            var numberOfLogicalProcessors = 0;
             double l2Size = 0;
             double l3Size = 0;
-            string baseClock = "";
+            var baseClock = "";
 
             await Task.Run(() =>
             {
@@ -89,35 +90,34 @@ public sealed partial class ИнформацияPage : Page
                     l3Size = Convert.ToDouble(queryObj["L3CacheSize"]) / 1024;
                     baseClock = queryObj["MaxClockSpeed"].ToString();
                 }
-            });
-
+            }); 
             tbProcessor.Text = name;
             tbCaption.Text = description;
-            string codeName = GetSystemInfo.Codename();
+            var codeName = GetSystemInfo.Codename();
             if (codeName != "")
             {
                 tbCodename.Text = codeName;
-                tbCodename1.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                tbCode1.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                tbCodename1.Visibility = Visibility.Collapsed;
+                tbCode1.Visibility = Visibility.Collapsed;
             }
             else
             {
                 try
                 {
-                    Services.Cpu.Cpu_Init();
-                    tbCodename1.Text = $"{cpu.info.codeName}";
+                    SMUEngine.Cpu.Cpu_Init();
+                    tbCodename1.Text = $"{cpu.Info.codeName}";
                 }
                 catch
                 {
-                    tbCodename1.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                    tbCode1.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    tbCodename1.Visibility = Visibility.Collapsed;
+                    tbCode1.Visibility = Visibility.Collapsed;
                 }
-                tbCodename.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                tbCode.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                tbCodename.Visibility = Visibility.Collapsed;
+                tbCode.Visibility = Visibility.Collapsed;
             }
             try
             {
-                tbSMU.Text = cpu.systemInfo.GetSmuVersionString();
+                tbSMU.Text = cpu.SystemInfo.GetSmuVersionString();
             }
             catch
             {
@@ -125,37 +125,36 @@ public sealed partial class ИнформацияPage : Page
                 infoSMU.Visibility = Visibility.Collapsed;
             }
             tbProducer.Text = manufacturer;
-            if (numberOfLogicalProcessors == numberOfCores) tbCores.Text = numberOfCores.ToString();
-            else tbCores.Text = GetSystemInfo.getBigLITTLE(numberOfCores, l2Size);
+            tbCores.Text = numberOfLogicalProcessors == numberOfCores ? numberOfCores.ToString() : GetSystemInfo.GetBigLITTLE(numberOfCores, l2Size);
             tbThreads.Text = numberOfLogicalProcessors.ToString();
-            tbL3Cache.Text = $"{l3Size.ToString("0.##")} MB";
-
+            tbL3Cache.Text = $"{l3Size:0.##} MB"; 
             uint sum = 0;
-            foreach (uint number in GetSystemInfo.GetCacheSizes(GetSystemInfo.CacheLevel.Level1)) sum += number;
+            foreach (var number in GetSystemInfo.GetCacheSizes(GetSystemInfo.CacheLevel.Level1))
+            {
+                sum += number;
+            } 
             decimal total = sum;
             total /= 1024;
-            tbL1Cache.Text = $"{total:0.##} MB";
-
+            tbL1Cache.Text = $"{total:0.##} MB"; 
             sum = 0;
-            foreach (uint number in GetSystemInfo.GetCacheSizes(GetSystemInfo.CacheLevel.Level2)) sum += number;
+            foreach (var number in GetSystemInfo.GetCacheSizes(GetSystemInfo.CacheLevel.Level2))
+            {
+                sum += number;
+            } 
             total = sum;
             total /= 1024;
-            tbL2Cache.Text = $"{total:0.##} MB";
-
-            tbBaseClock.Text = $"{baseClock} MHz";
-
-            tbInstructions.Text = GetSystemInfo.InstructionSets();
-
-            sdCPU.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+            tbL2Cache.Text = $"{total:0.##} MB"; 
+            tbBaseClock.Text = $"{baseClock} MHz"; 
+            tbInstructions.Text = GetSystemInfo.InstructionSets(); 
+            sdCPU.Visibility = Visibility.Visible;
             sdCPU.IsExpanded = false;
         }
         catch (ManagementException ex)
         {
             Console.WriteLine("An error occurred while querying for WMI data: " + ex.Message);
         }
-    }
-
-    private async void getRAMInfo()
+    } 
+    private async void GetRAMInfo()
     {
         double capacity = 0;
         var speed = 0;
@@ -167,17 +166,15 @@ public sealed partial class ИнформацияPage : Page
 
         try
         {
-            ManagementObjectSearcher searcher =
-        new ManagementObjectSearcher("root\\CIMV2",
-        "SELECT * FROM Win32_PhysicalMemory");
+            var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_PhysicalMemory");
             await Task.Run(() =>
             {
                 foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
                 {
                     if (producer == "") { producer = queryObj["Manufacturer"].ToString(); }
-                    else if (!producer.Contains(queryObj["Manufacturer"].ToString())) { producer = $"{producer}/{queryObj["Manufacturer"]}"; }
+                    else if (!producer!.Contains(value: queryObj["Manufacturer"].ToString())) { producer = $"{producer}/{queryObj["Manufacturer"]}"; }
                     if (model == "") { model = queryObj["PartNumber"].ToString(); }
-                    else if (!model.Contains(queryObj["PartNumber"].ToString()))
+                    else if (!model!.Contains(value: queryObj["PartNumber"].ToString()))
                     {
                         model = $"{model}/{queryObj["PartNumber"]}";
                     }
@@ -187,21 +184,20 @@ public sealed partial class ИнформацияPage : Page
                     width += Convert.ToInt32(queryObj["DataWidth"]);
                     slots++;
                 }
-            });
-
-
-            capacity = capacity / 1024 / 1024 / 1024;
-
+            }); 
+            capacity = capacity / 1024 / 1024 / 1024; 
             var DDRType = "";
-            if (type == 20) DDRType = "DDR";
-            else if (type == 21) DDRType = "DDR2";
-            else if (type == 24) DDRType = "DDR3";
-            else if (type == 26) DDRType = "DDR4";
-            else if (type == 30) DDRType = "LPDDR4";
-            else if (type == 34) DDRType = "DDR5";
-            else if (type == 35) DDRType = "LPDDR5";
-            else DDRType = $"Unknown ({type})";
-
+            DDRType = type switch
+            {
+                20 => "DDR",
+                21 => "DDR2",
+                24 => "DDR3",
+                26 => "DDR4",
+                30 => "LPDDR4",
+                34 => "DDR5",
+                35 => "LPDDR5",
+                _ => $"Unknown ({type})",
+            };
             tbRAM.Text = $"{capacity} GB {DDRType} @ {speed} MT/s";
             tbRAMProducer.Text = producer;
             tbRAMModel.Text = model.Replace(" ", null);
@@ -226,19 +222,7 @@ public sealed partial class ИнформацияPage : Page
         CpuFid = eax & 0xFF;
     }
     private void ReadPstate()
-    {
-        var DID_0S = "";
-        var FID_0S = "";
-        var VID_0S = "";
-        var DID_1S = "";
-        var FID_1S = "";
-        var VID_1S = "";
-        var DID_2S = "";
-        var FID_2S = "";
-        var VID_2S = "";
-        var FREQ0 = "";
-        var FREQ1 = "";
-        var FREQ2 = "";
+    {   
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.FileName = @"ryzenps.exe";
@@ -249,65 +233,18 @@ public sealed partial class ИнформацияPage : Page
         p.StartInfo.RedirectStandardOutput = true;
         ConfigLoad();
         p.Start();
-        StreamReader outputWriter = p.StandardOutput;
+        var outputWriter = p.StandardOutput;
         var line = outputWriter.ReadLine();
         while (line != null)
         {
             if (line != "")
             {
-                if (line.Contains("DID:"))
-                {
-                    DID_0S = line;
-                    DID_0.Content = DID_0S.Replace("DID:", "").Replace(" ", "");
-                }
-                if (line.Contains("FID:"))
-                {
-                    FID_0S = line;
-                    FID_0.Content = FID_0S.Replace("FID:", "").Replace(" ", "");
-                }
-                if (line.Contains("VCore (V):"))
-                {
-                    VID_0S = line;
-                    VID_0.Content = VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "");
-                    try
-                    {
-                        if (int.Parse(VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) >= 90000)
-                        {
-                            VID_0.Content = VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(4);
-                            if (int.Parse(VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(4)) >= 9000)
-                            {
-                                VID_0.Content = VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(3);
-                            }
-                        }
-                        else
-                        {
-                            if (int.Parse(VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) >= 10000)
-                            {
-                                VID_0.Content = VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(4);
-                            }
-                            else
-                            {
-                                if (int.Parse(VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) < 10) { VID_0.Content = VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "") + "000"; }
-                                else
-                                {
-                                    if (int.Parse(VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) < 100) { VID_0.Content = VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "") + "0"; }
-                                    else { VID_0.Content = VID_0S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(3); }
-                                }
-                            }
-                        }
-                    }
-                    catch { }
-                }
-                if (line.Contains("MHz"))
-                {
-                    FREQ0 = line;
-                    P0_Freq.Content = FREQ0.Replace("Frequency (MHz):", "").Replace(" ", "");
-                }
-            }
-            line = outputWriter.ReadLine();
-        }
-        p.WaitForExit();
-        line = null;
+                if (line.Contains("DID:")) { DID_0.Content = line.Replace("DID:", "").Replace(" ", ""); }
+                if (line.Contains("FID:")) { FID_0.Content = line.Replace("FID:", "").Replace(" ", ""); }
+                if (line.Contains("VCore (V):")) { try { VID_0.Content = double.Parse(line.Replace("VCore (V):", "").Replace(" ", ""), CultureInfo.InvariantCulture) * 1000; } catch { } }
+                if (line.Contains("MHz")) { P0_Freq.Content = line.Replace("Frequency (MHz):", "").Replace(" ", ""); }
+            } line = outputWriter.ReadLine();
+        } p.WaitForExit(); line = null;
         var p1 = new Process();
         p1.StartInfo.UseShellExecute = false;
         p1.StartInfo.FileName = @"ryzenps.exe";
@@ -318,65 +255,18 @@ public sealed partial class ИнформацияPage : Page
         p1.StartInfo.RedirectStandardOutput = true;
         ConfigLoad();
         p1.Start();
-        StreamReader outputWriter1 = p1.StandardOutput;
+        var outputWriter1 = p1.StandardOutput;
         var line1 = outputWriter1.ReadLine();
         while (line1 != null)
         {
             if (line1 != "")
             {
-                if (line1.Contains("DID:"))
-                {
-                    DID_1S = line1;
-                    DID_1.Content = DID_1S.Replace("DID:", "").Replace(" ", "");
-                }
-                if (line1.Contains("FID:"))
-                {
-                    FID_1S = line1;
-                    FID_1.Content = FID_1S.Replace("FID:", "").Replace(" ", "");
-                }
-                if (line1.Contains("VCore (V):"))
-                {
-                    VID_1S = line1;
-                    VID_1.Content = VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "");
-                    try
-                    {
-                        if (int.Parse(VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) >= 90000)
-                        {
-                            VID_1.Content = VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(4);
-                            if (int.Parse(VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(4)) >= 9000)
-                            {
-                                VID_1.Content = VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(3);
-                            }
-                        }
-                        else
-                        {
-                            if (int.Parse(VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) >= 10000)
-                            {
-                                VID_1.Content = VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(4);
-                            }
-                            else
-                            {
-                                if (int.Parse(VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) < 10) { VID_1.Content = VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "") + "000"; }
-                                else
-                                {
-                                    if (int.Parse(VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) < 100) { VID_1.Content = VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "") + "0"; }
-                                    else { VID_1.Content = VID_1S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(3); }
-                                }
-                            }
-                        }
-                    }
-                    catch { }
-                }
-                if (line1.Contains("Frequency (MHz):"))
-                {
-                    FREQ1 = line1;
-                    P1_Freq.Content = FREQ1.Replace("Frequency (MHz):", "").Replace(" ", "");
-                }
-            }
-                line1 = outputWriter1.ReadLine();
-        }
-        p1.WaitForExit();
-        line1 = null;
+                if (line1.Contains("DID:")) { DID_1.Content = line1.Replace("DID:", "").Replace(" ", ""); }
+                if (line1.Contains("FID:")) { FID_1.Content = line1.Replace("FID:", "").Replace(" ", ""); }
+                if (line1.Contains("VCore (V):")) { try { VID_1.Content = double.Parse(line1.Replace("VCore (V):", "").Replace(" ", ""), CultureInfo.InvariantCulture) * 1000; } catch { } }
+                if (line1.Contains("Frequency (MHz):")) { P1_Freq.Content = line1.Replace("Frequency (MHz):", "").Replace(" ", ""); }
+            } line1 = outputWriter1.ReadLine();
+        } p1.WaitForExit(); line1 = null;
         var p2 = new Process();
         p2.StartInfo.UseShellExecute = false;
         p2.StartInfo.FileName = @"ryzenps.exe";
@@ -387,124 +277,32 @@ public sealed partial class ИнформацияPage : Page
         p2.StartInfo.RedirectStandardOutput = true;
         ConfigLoad();
         p2.Start();
-        StreamReader outputWriter2 = p2.StandardOutput;
+        var outputWriter2 = p2.StandardOutput;
         var line2 = outputWriter2.ReadLine();
         while (line2 != null)
         {
             if (line2 != "")
             {
-                if (line2.Contains("DID:"))
-                {
-                    DID_2S = line2;
-                    DID_2.Content = DID_2S.Replace("DID:", "").Replace(" ", "");
-                }
-                if (line2.Contains("FID:"))
-                {
-                    FID_2S = line2;
-                    FID_2.Content = FID_2S.Replace("FID:", "").Replace(" ", "");
-                }
-                if (line2.Contains("VCore (V):"))
-                {
-                    VID_2S = line2;
-                    VID_2.Content = VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "");
-                    try
-                    {
-                        if (int.Parse(VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) >= 90000)
-                        {
-                            VID_2.Content = VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(4);
-                            if (int.Parse(VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(4)) >= 9000)
-                            {
-                                VID_2.Content = VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(3);
-                            }
-                        }
-                        else
-                        {
-                            if (int.Parse(VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) >= 10000)
-                            {
-                                VID_2.Content = VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(4);
-                            }
-                            else
-                            {
-                                if (int.Parse(VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) < 10) { VID_2.Content = VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "") + "000"; }
-                                else
-                                {
-                                    if (int.Parse(VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "")) < 100) { VID_2.Content = VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "") + "0"; }
-                                    else { VID_2.Content = VID_2S.Replace("VCore (V):", "").Replace(" ", "").Replace("0.", "").Replace(".", "").Remove(3); }
-
-                                }
-                            }
-                        }
-                    }
-                    catch { }
-                }
-                if (line2.Contains("Frequency (MHz):"))
-                {
-                    FREQ2 = line2;
-                    P2_Freq.Content = FREQ2.Replace("Frequency (MHz):", "").Replace(" ", "");
-                }
-            }
-                line2 = outputWriter2.ReadLine();
-        }
-        p2.WaitForExit();
-        line2 = null;
-    }
-
-
-
+                if (line2.Contains("DID:")) { DID_2.Content = line2.Replace("DID:", "").Replace(" ", ""); }
+                if (line2.Contains("FID:")) { FID_2.Content = line2.Replace("FID:", "").Replace(" ", ""); }
+                if (line2.Contains("VCore (V):")) { try { VID_2.Content = double.Parse(line2.Replace("VCore (V):", "").Replace(" ", ""), CultureInfo.InvariantCulture) * 1000; } catch { } }
+                if (line2.Contains("Frequency (MHz):")) { P2_Freq.Content = line2.Replace("Frequency (MHz):", "").Replace(" ", ""); }
+            } line2 = outputWriter2.ReadLine();
+        } p2.WaitForExit(); line2 = null;
+    }  
     // Автообновление информации
     private void StartInfoUpdate()
     {
         dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
         dispatcherTimer.Tick += async (sender, e) => await UpdateInfoAsync();
-        dispatcherTimer.Interval = TimeSpan.FromMilliseconds(300);
-        // Подписка на событие потери фокуса
-        //App.MainWindow.Activated += Window_Activated;
-
-        // Подписка на событие изменения видимости
+        dispatcherTimer.Interval = TimeSpan.FromMilliseconds(300);  
         App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
         dispatcherTimer.Start();
-    }
-
-    /*private void Window_Activated(object sender, Microsoft.UI.Xaml.WindowActivatedEventArgs args)
-    {
-        if (args.WindowActivationState == WindowActivationState.CodeActivated || args.WindowActivationState == WindowActivationState.PointerActivated)
-        {
-            // Окно активировано
-            if (dispatcherTimer != null)
-            {
-                dispatcherTimer.Start();
-            }
-        }
-        else
-        {
-            // Окно не активировано
-            if (dispatcherTimer != null)
-            {
-                dispatcherTimer.Stop();
-            }
-        }
-    }*/
-
+    }  
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
     {
-        if (args.Visible)
-        {
-            // Окно видимо
-            if (dispatcherTimer != null)
-            {
-                dispatcherTimer.Start();
-            }
-        }
-        else
-        {
-            // Окно не видимо
-            if (dispatcherTimer != null)
-            {
-                dispatcherTimer.Stop();
-            }
-        }
-    }
-
+        if (args.Visible) { dispatcherTimer?.Start();  } else { dispatcherTimer?.Stop(); }
+    } 
     private async Task UpdateInfoAsync()
     {
         if (config.tempex)
@@ -516,215 +314,82 @@ public sealed partial class ИнформацияPage : Page
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-
-            try
-            {
-                p.Start();
-            }
-            catch
-            {
-                await App.MainWindow.ShowMessageDialogAsync("Unable to start info service. Error at line 651 of ИнформацияPage.xaml.cs in com.sakuoverclock.org", "Critical Error!");
-            }
+            p.StartInfo.RedirectStandardOutput = true; 
+            try { p.Start(); } catch { await App.MainWindow.ShowMessageDialogAsync("Unable to start info service. Error at ИнформацияPage.xaml.cs in com.sakuoverclock.org", "Critical Error!"); }
             var outputWriter = p.StandardOutput;
             var line = await outputWriter.ReadLineAsync();
             while (line != null)
             {
                 if (line != "")
                 {
-                    if (line.Contains("STAPM LIMIT"))
-                    {
-                        tbStapmL.Text = line;
-                        tbStapmL.Text = tbStapmL.Text.Replace("STAPM LIMIT", "").Replace("|", "").Replace(" ", "").Replace("stapm-limit", "") + " W";
-                    }
-                    if (line.Contains("STAPM VALUE"))
-                    {
-                        tbStapmC.Text = line;
-                        tbStapmC.Text = tbStapmC.Text.Replace("STAPM VALUE", "").Replace("|", "").Replace(" ", "") + " W";
-                    }
-                    if (line.Contains("PPT LIMIT FAST"))
-                    {
-                        tbActualL.Text = line;
-                        tbActualL.Text = tbActualL.Text.Replace("PPT LIMIT FAST", "").Replace("|", "").Replace(" ", "").Replace("fast-limit", "") + " W";
-                    }
-                    if (line.Contains("PPT VALUE FAST"))
-                    {
-                        tbActualC.Text = line;
-                        tbActualC.Text = tbActualC.Text.Replace("PPT VALUE FAST", "").Replace("|", "").Replace(" ", "") + " W";
-                    }
+                    if (line.Contains("STAPM LIMIT")) { tbStapmL.Text = line.Replace("STAPM LIMIT", "").Replace("|", "").Replace(" ", "").Replace("stapm-limit", "") + " W"; }
+                    if (line.Contains("STAPM VALUE")) { tbStapmC.Text = line.Replace("STAPM VALUE", "").Replace("|", "").Replace(" ", "") + " W"; }
+                    if (line.Contains("PPT LIMIT FAST")) { tbActualL.Text = line.Replace("PPT LIMIT FAST", "").Replace("|", "").Replace(" ", "").Replace("fast-limit", "") + " W"; }
+                    if (line.Contains("PPT VALUE FAST")) { tbActualC.Text = line.Replace("PPT VALUE FAST", "").Replace("|", "").Replace(" ", "") + " W"; }
                     if (line.Contains("PPT LIMIT SLOW"))
-                    {
-                        tbAVGL.Text = line;
-                        tbAVGL.Text = tbAVGL.Text.Replace("PPT LIMIT SLOW", "").Replace("|", "").Replace(" ", "").Replace("slow-limit", "") + " W";
-                        infoPOWER.Maximum = int.Parse(tbAVGL.Text.Replace(" W", "").Remove(3).Replace(".", ""));
+                    { 
+                        tbAVGL.Text = line.Replace("PPT LIMIT SLOW", "").Replace("|", "").Replace(" ", "").Replace("slow-limit", "") + " W";
+                        infoPOWER.Maximum = double.Parse(tbAVGL.Text.Replace(" W", ""),CultureInfo.InvariantCulture);
                     }
                     if (line.Contains("PPT VALUE SLOW"))
-                    {
-                        tbAVGC.Text = line;
-                        tbAVGC.Text = tbAVGC.Text.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "") + " W";
-                        if (int.Parse(tbAVGC.Text.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "").Replace(".", "").Replace("W", "").ToString()) < 10000)
-                        {
-                            infoPOWER.Value = int.Parse(tbAVGC.Text.Replace(" W", "").Remove(2).Replace(".", "").Replace("nan", "100"));
-                            infoPOWERI.Text = tbAVGC.Text.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "").Remove(2).Replace(".", "") + " W".ToString();
-                        }
-                        else
-                        {
-                            infoPOWER.Value = int.Parse(tbAVGC.Text.Replace(" W", "").Remove(3).Replace(".", "").Replace("nan", "100"));
-                            infoPOWERI.Text = tbAVGC.Text.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "").Remove(3).Replace(".", "") + " W".ToString();
-                        }
+                    { 
+                        tbAVGC.Text = line.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "") + " W"; 
+                        infoPOWER.Value = double.Parse(line.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace("W","").Replace(" ", "").Replace("nan", "100"), CultureInfo.InvariantCulture);
+                        infoPOWERI.Text = ((int)infoPOWER.Value).ToString() + " W".ToString(); 
                     }
-                    if (line.Contains("StapmTimeConst"))
-                    {
-                        tbFast.Text = line;
-                        tbFast.Text = tbFast.Text.Replace("StapmTimeConst", "").Replace("|", "").Replace(" ", "").Replace("stapm-time", "") + " S";
-                    }
-                    if (line.Contains("SlowPPTTimeConst"))
-                    {
-                        tbSlow.Text = line;
-                        tbSlow.Text = tbSlow.Text.Replace("SlowPPTTimeConst", "").Replace("|", "").Replace(" ", "").Replace("slow-time", "") + " S";
-                    }
+                    if (line.Contains("StapmTimeConst")) { tbFast.Text = line.Replace("StapmTimeConst", "").Replace("|", "").Replace(" ", "").Replace("stapm-time", "") + " S"; }
+                    if (line.Contains("SlowPPTTimeConst")) { tbSlow.Text = line.Replace("SlowPPTTimeConst", "").Replace("|", "").Replace(" ", "").Replace("slow-time", "") + " S"; }
                     if (line.Contains("PPT LIMIT APU"))
                     {
                         if (line.Contains("nan"))
                         {
-                            tbAPULL.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                            tbAPULC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                            tbAPUML.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                            tbAPUMC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                            tbDGPUL.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                            tbDGPUC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                            tbAPUL.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                            tbAPUC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                            tbAPUMaxL.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                            tbAPUMaxC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                            tbDGPUMaxL.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                            tbDGPUMaxC.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                        }
-                        else
-                        {
-                            tbAPUL.Text = line;
-                            tbAPUL.Text = tbAPUL.Text.Replace("PPT LIMIT APU", "").Replace("|", "").Replace(" ", "").Replace("apu-slow-limit", "") + " W";
-                        }
+                            tbAPULL.Visibility = Visibility.Collapsed;
+                            tbAPULC.Visibility = Visibility.Collapsed;
+                            tbAPUML.Visibility = Visibility.Collapsed;
+                            tbAPUMC.Visibility = Visibility.Collapsed;
+                            tbDGPUL.Visibility = Visibility.Collapsed;
+                            tbDGPUC.Visibility = Visibility.Collapsed;
+                            tbAPUL.Visibility = Visibility.Collapsed;
+                            tbAPUC.Visibility = Visibility.Collapsed;
+                            tbAPUMaxL.Visibility = Visibility.Collapsed;
+                            tbAPUMaxC.Visibility = Visibility.Collapsed;
+                            tbDGPUMaxL.Visibility = Visibility.Collapsed;
+                            tbDGPUMaxC.Visibility = Visibility.Collapsed;
+                        } else { tbAPUL.Text = line.Replace("PPT LIMIT APU", "").Replace("|", "").Replace(" ", "").Replace("apu-slow-limit", "") + " W"; }
                     }
-                    if (line.Contains("PPT VALUE APU"))
-                    {
-                        tbAPUC.Text = line;
-                        tbAPUC.Text = tbAPUC.Text.Replace("PPT VALUE APU", "").Replace("|", "").Replace(" ", "") + " W";
-                    }
-                    if (line.Contains("TDC LIMIT VDD"))
-                    {
-                        tbVRMTDCL.Text = line;
-                        tbVRMTDCL.Text = tbVRMTDCL.Text.Replace("TDC LIMIT VDD", "").Replace("|", "").Replace(" ", "").Replace("vrm-current", "") + " A";
-                    }
-                    if (line.Contains("TDC VALUE VDD"))
-                    {
-                        tbVRMTDCC.Text = line;
-                        tbVRMTDCC.Text = tbVRMTDCC.Text.Replace("TDC VALUE VDD", "").Replace("|", "").Replace(" ", "") + " A";
-                    }
-                    if (line.Contains("TDC LIMIT SOC"))
-                    {
-                        tbSOCTDCL.Text = line;
-                        tbSOCTDCL.Text = tbSOCTDCL.Text.Replace("TDC LIMIT SOC", "").Replace("|", "").Replace(" ", "").Replace("vrmsoc-current", "") + " A";
-                    }
-                    if (line.Contains("TDC VALUE SOC"))
-                    {
-                        tbSOCTDCC.Text = line;
-                        tbSOCTDCC.Text = tbSOCTDCC.Text.Replace("TDC VALUE SOC", "").Replace("|", "").Replace(" ", "") + " A";
-                    }
-                    if (line.Contains("EDC LIMIT VDD"))
-                    {
-                        tbVRMEDCL.Text = line;
-                        tbVRMEDCL.Text = tbVRMEDCL.Text.Replace("EDC LIMIT VDD", "").Replace("|", "").Replace(" ", "").Replace("vrmmax-current", "") + " A";
-                        infoVRM.Maximum = int.Parse(tbVRMEDCL.Text.Replace(" A", "").Remove(3).Replace(".", "").Replace("nan", "000"));
-                    }
-                    if (line.Contains("EDC VALUE VDD"))
-                    {
-                        tbVRMEDCC.Text = line;
-                        tbVRMEDCC.Text = tbVRMEDCC.Text.Replace("EDC VALUE VDD", "").Replace("|", "").Replace(" ", "") + " A";
-                        infoVRM.Value = int.Parse(tbVRMEDCC.Text.Replace(" A", "").Remove(3).Replace(".", "").Replace("nan", "000"));
-                        infoVRMI.Text = tbVRMEDCC.Text.Replace("EDC VALUE VDD", "").Replace("|", "").Replace(" ", "").Remove(3).Replace(".", "") + " A".ToString();
-                    }
-                    if (line.Contains("EDC LIMIT SOC"))
-                    {
-                        tbSOCEDCL.Text = line;
-                        tbSOCEDCL.Text = tbSOCEDCL.Text.Replace("EDC LIMIT SOC", "").Replace("|", "").Replace(" ", "").Replace("vrmsocmax-current", "") + " A";
-                    }
-                    if (line.Contains("EDC VALUE SOC"))
-                    {
-                        tbSOCEDCC.Text = line;
-                        tbSOCEDCC.Text = tbSOCEDCC.Text.Replace("EDC VALUE SOC", "").Replace("|", "").Replace(" ", "") + " A";
-                    }
-                    if (line.Contains("THM LIMIT CORE"))
-                    {
-                        tbCPUMaxL.Text = line;
-                        tbCPUMaxL.Text = tbCPUMaxL.Text.Replace("THM LIMIT CORE", "").Replace("|", "").Replace(" ", "").Replace("tctl-temp", "") + " C";
-                        infoCPU.Maximum = int.Parse(tbCPUMaxL.Text.Replace(" C", "").Remove(3).Replace(".", "").Replace("nan", "100"));
-                    }
-                    if (line.Contains("THM VALUE CORE"))
-                    {
-                        tbCPUMaxC.Text = line;
-                        tbCPUMaxC.Text = tbCPUMaxC.Text.Replace("THM VALUE CORE", "").Replace("|", "").Replace(" ", "") + " C";
-                        infoCPU.Value = int.Parse(tbCPUMaxC.Text.Replace(" C", "").Remove(3).Replace(".", "").Replace("nan", "000"));
-                        infoCPUI.Text = tbCPUMaxC.Text.Replace("THM VALUE CORE", "").Replace("|", "").Replace(" ", "").Remove(3).Replace(".", "") + "℃".ToString();
-                    }
-                    if (line.Contains("STT LIMIT APU"))
-                    {
-                        tbAPUMaxL.Text = line;
-                        tbAPUMaxL.Text = tbAPUMaxL.Text.Replace("STT LIMIT APU", "").Replace("|", "").Replace(" ", "").Replace("apu-skin-temp", "") + " C";
-                    }
-                    if (line.Contains("STT VALUE APU"))
-                    {
-                        tbAPUMaxC.Text = line;
-                        tbAPUMaxC.Text = tbAPUMaxC.Text.Replace("STT VALUE APU", "").Replace("|", "").Replace(" ", "") + " C";
-                    }
-                    if (line.Contains("STT LIMIT dGPU"))
-                    {
-                        tbDGPUMaxL.Text = line;
-                        tbDGPUMaxL.Text = tbDGPUMaxL.Text.Replace("STT LIMIT dGPU", "").Replace("|", "").Replace(" ", "").Replace("dgpu-skin-temp", "") + " C";
-                    }
-                    if (line.Contains("STT VALUE dGPU"))
-                    {
-                        tbDGPUMaxC.Text = line;
-                        tbDGPUMaxC.Text = tbDGPUMaxC.Text.Replace("STT VALUE dGPU", "").Replace("|", "").Replace(" ", "") + " C";
-                    }
-
-                    if (line.Contains("CCLK BUSY VALUE"))
-                    {
-                        tbCPUUsage.Text = line;
-                        tbCPUUsage.Text = tbCPUUsage.Text.Replace("CCLK BUSY VALUE", "").Replace("|", "").Replace(" ", "").Replace("max-performance", "") + " %";
-                    }
-                }
-                line = await outputWriter.ReadLineAsync();
-            }
-
-            p.WaitForExit();
-            line = null;
+                    if (line.Contains("PPT VALUE APU")) { tbAPUC.Text = line.Replace("PPT VALUE APU", "").Replace("|", "").Replace(" ", "") + " W"; }
+                    if (line.Contains("TDC LIMIT VDD")) { tbVRMTDCL.Text = line.Replace("TDC LIMIT VDD", "").Replace("|", "").Replace(" ", "").Replace("vrm-current", "") + " A"; }
+                    if (line.Contains("TDC VALUE VDD")) { tbVRMTDCC.Text = line.Replace("TDC VALUE VDD", "").Replace("|", "").Replace(" ", "") + " A"; }
+                    if (line.Contains("TDC LIMIT SOC")) { tbSOCTDCL.Text = line.Replace("TDC LIMIT SOC", "").Replace("|", "").Replace(" ", "").Replace("vrmsoc-current", "") + " A"; }
+                    if (line.Contains("TDC VALUE SOC")) { tbSOCTDCC.Text = line.Replace("TDC VALUE SOC", "").Replace("|", "").Replace(" ", "") + " A"; }
+                    if (line.Contains("EDC LIMIT VDD")) { tbVRMEDCL.Text = line.Replace("EDC LIMIT VDD", "").Replace("|", "").Replace(" ", "").Replace("vrmmax-current", "") + " A"; infoVRM.Maximum = double.Parse(tbVRMEDCL.Text.Replace(" A", "").Replace("nan", "000"), CultureInfo.InvariantCulture); }
+                    if (line.Contains("EDC VALUE VDD")) { tbVRMEDCC.Text = line.Replace("EDC VALUE VDD", "").Replace("|", "").Replace(" ", "") + " A"; infoVRM.Value = double.Parse(tbVRMEDCC.Text.Replace(" A", "").Replace("nan", "000"), CultureInfo.InvariantCulture); infoVRMI.Text = ((int)infoVRM.Value).ToString() + " A"; }
+                    if (line.Contains("EDC LIMIT SOC")) { tbSOCEDCL.Text = line.Replace("EDC LIMIT SOC", "").Replace("|", "").Replace(" ", "").Replace("vrmsocmax-current", "") + " A"; }
+                    if (line.Contains("EDC VALUE SOC")) { tbSOCEDCC.Text = line.Replace("EDC VALUE SOC", "").Replace("|", "").Replace(" ", "") + " A"; }
+                    if (line.Contains("THM LIMIT CORE")) { tbCPUMaxL.Text = line.Replace("THM LIMIT CORE", "").Replace("|", "").Replace(" ", "").Replace("tctl-temp", "") + " C"; infoCPU.Maximum = double.Parse(tbCPUMaxL.Text.Replace(" C", "").Replace("nan", "100"), CultureInfo.InvariantCulture); }
+                    if (line.Contains("THM VALUE CORE")) { tbCPUMaxC.Text = line.Replace("THM VALUE CORE", "").Replace("|", "").Replace(" ", "") + " C"; infoCPU.Value = double.Parse(tbCPUMaxC.Text.Replace(" C", "").Replace("nan", "000"),CultureInfo.InvariantCulture); infoCPUI.Text = ((int)infoCPU.Value).ToString() + " ℃";}
+                    if (line.Contains("STT LIMIT APU")) { tbAPUMaxL.Text = line.Replace("STT LIMIT APU", "").Replace("|", "").Replace(" ", "").Replace("apu-skin-temp", "") + " C"; }
+                    if (line.Contains("STT VALUE APU")) { tbAPUMaxC.Text = line.Replace("STT VALUE APU", "").Replace("|", "").Replace(" ", "") + " C"; }
+                    if (line.Contains("STT LIMIT dGPU")) { tbDGPUMaxL.Text = line.Replace("STT LIMIT dGPU", "").Replace("|", "").Replace(" ", "").Replace("dgpu-skin-temp", "") + " C"; }
+                    if (line.Contains("STT VALUE dGPU")) { tbDGPUMaxC.Text = line.Replace("STT VALUE dGPU", "").Replace("|", "").Replace(" ", "") + " C"; }
+                    if (line.Contains("CCLK BUSY VALUE")) { tbCPUUsage.Text = line.Replace("CCLK BUSY VALUE", "").Replace("|", "").Replace(" ", "").Replace("max-performance", "") + " %"; }
+                } line = await outputWriter.ReadLineAsync();
+            }  p.WaitForExit(); line = null;
         }
-    }
-
+    } 
     // Ваш метод, который будет вызываться при скрытии/переключении страницы
     private void StopInfoUpdate()
     {
         dispatcherTimer?.Stop();
-    }
-
+    } 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-        base.OnNavigatedTo(e);
-        StartInfoUpdate();
-    }
-
+        base.OnNavigatedTo(e); StartInfoUpdate();
+    } 
     protected override void OnNavigatedFrom(NavigationEventArgs e)
-    {
-        base.OnNavigatedFrom(e);
-        StopInfoUpdate();
+    { 
+        base.OnNavigatedFrom(e); StopInfoUpdate();
     }
 }
-
-
-
-
 #pragma warning restore IDE0059 // Ненужное присваивание значения
-#pragma warning restore CS8600 // Преобразование литерала, допускающего значение NULL или возможного значения NULL в тип, не допускающий значение NULL.
-#pragma warning restore CS4014 // Так как этот вызов не ожидается, выполнение существующего метода продолжается до тех пор, пока вызов не будет завершен
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

@@ -1,24 +1,21 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
+using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.ViewModels;
-using WinUIEx;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace Saku_Overclock.Views;
-#pragma warning disable CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).
-#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
-#pragma warning disable CS8612 // Допустимость значения NULL для ссылочных типов в типе не совпадает с явно реализованным членом.
-#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
+#pragma warning disable CS8622 // Р”РѕРїСѓСЃС‚РёРјРѕСЃС‚СЊ Р·РЅР°С‡РµРЅРёР№ NULL РґР»СЏ СЃСЃС‹Р»РѕС‡РЅС‹С… С‚РёРїРѕРІ РІ С‚РёРїРµ РїР°СЂР°РјРµС‚СЂР° РЅРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ С†РµР»РµРІРѕРјСѓ РѕР±СЉРµРєС‚Сѓ РґРµР»РµРіРёСЂРѕРІР°РЅРёСЏ (РІРѕР·РјРѕР¶РЅРѕ, РёР·-Р·Р° Р°С‚СЂРёР±СѓС‚РѕРІ РґРѕРїСѓСЃС‚РёРјРѕСЃС‚Рё Р·РЅР°С‡РµРЅРёР№ NULL).
+#pragma warning disable CS8618 // РџРѕР»Рµ, РЅРµ РґРѕРїСѓСЃРєР°СЋС‰РµРµ Р·РЅР°С‡РµРЅРёСЏ NULL, РґРѕР»Р¶РЅРѕ СЃРѕРґРµСЂР¶Р°С‚СЊ Р·РЅР°С‡РµРЅРёРµ, РѕС‚Р»РёС‡РЅРѕРµ РѕС‚ NULL, РїСЂРё РІС‹С…РѕРґРµ РёР· РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°. Р’РѕР·РјРѕР¶РЅРѕ, СЃС‚РѕРёС‚ РѕР±СЉСЏРІРёС‚СЊ РїРѕР»Рµ РєР°Рє РґРѕРїСѓСЃРєР°СЋС‰РµРµ Р·РЅР°С‡РµРЅРёСЏ NULL.
+#pragma warning disable CS8612 // Р”РѕРїСѓСЃС‚РёРјРѕСЃС‚СЊ Р·РЅР°С‡РµРЅРёСЏ NULL РґР»СЏ СЃСЃС‹Р»РѕС‡РЅС‹С… С‚РёРїРѕРІ РІ С‚РёРїРµ РЅРµ СЃРѕРІРїР°РґР°РµС‚ СЃ СЏРІРЅРѕ СЂРµР°Р»РёР·РѕРІР°РЅРЅС‹Рј С‡Р»РµРЅРѕРј.
+#pragma warning disable CS8601 // Р’РѕР·РјРѕР¶РЅРѕ, РЅР°Р·РЅР°С‡РµРЅРёРµ-СЃСЃС‹Р»РєР°, РґРѕРїСѓСЃРєР°СЋС‰РµРµ Р·РЅР°С‡РµРЅРёРµ NULL.
 internal partial class PowerWindow : Window
 {
-    private readonly Services.Cpu CPU;
+    private readonly SMUEngine.Cpu CPU;
     private Powercfg notes = new();
     private ObservableCollection<PowerMonitorItem> PowerGridItems;
-    public PowerWindow(Services.Cpu cpu)
+    public PowerWindow(SMUEngine.Cpu cpu)
     {
         InitializeComponent();
         ExtendsContentIntoTitleBar = true;
@@ -33,8 +30,8 @@ internal partial class PowerWindow : Window
         InitializeComponent();
         cpu.RefreshPowerTable();
         notes = new Powercfg();
-        FillInData(cpu.powerTable.Table);
-        CPU = cpu; // Добавим инициализацию CPU здесь
+        FillInData(cpu.PowerTable.Table);
+        CPU = cpu; // Р”РѕР±Р°РІРёРј РёРЅРёС†РёР°Р»РёР·Р°С†РёСЋ CPU Р·РґРµСЃСЊ
         PowerCfgTimer.Start();
     }
     private void PowerWindow_Activated(object sender, WindowActivatedEventArgs args)
@@ -91,7 +88,7 @@ internal partial class PowerWindow : Window
         {
             Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\", "PowerMon"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json", JsonConvert.SerializeObject(notes));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json", JsonConvert.SerializeObject(notes, Formatting.Indented));
         }
         catch { }
     }
@@ -184,30 +181,37 @@ internal partial class PowerWindow : Window
     }
     private void RefreshData(float[] table)
     {
-       DispatcherQueue.TryEnqueue(() =>
+        try
         {
-            var index = 0;
-            foreach (var item in PowerGridItems)
+            DispatcherQueue.TryEnqueue(() =>
             {
-                item.Value = $"{table[index]:F6}";
-                if (item.Note != notes._notelist[index])
+                var index = 0;
+                foreach (var item in PowerGridItems)
                 {
-                    notes._notelist[index] = item.Note;
-                    NoteSave();
+                    item.Value = $"{table[index]:F6}";
+                    if (item.Note != notes._notelist[index])
+                    {
+                        notes._notelist[index] = item.Note;
+                        NoteSave();
+                    }
+                    index++;
                 }
-                index++;
-            }
-            // Явное обновление GridView
-            PowerGridView.ItemsSource = PowerGridItems;
-        });
-        
+                // РЇРІРЅРѕРµ РѕР±РЅРѕРІР»РµРЅРёРµ GridView
+                PowerGridView.ItemsSource = PowerGridItems;
+            });
+        }
+        catch
+        {
+            App.MainWindow.Close();
+            Close();
+        } 
     }
 
     private void PowerCfgTimer_Tick(object sender, EventArgs e)
     {
-        if (CPU.RefreshPowerTable() == Services.SMU.Status.OK)
+        if (CPU.RefreshPowerTable() == SMUEngine.SMU.Status.OK)
         {
-            RefreshData(CPU.powerTable.Table);
+            RefreshData(CPU.PowerTable.Table);
         }
     }
     private void Button_Click(object sender, RoutedEventArgs e)
@@ -223,6 +227,6 @@ internal partial class PowerWindow : Window
         }
     }
 }
-#pragma warning restore CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).
-#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
-#pragma warning restore CS8612 // Допустимость значения NULL для ссылочных типов в типе не совпадает с явно реализованным членом.
+#pragma warning restore CS8622 // Р”РѕРїСѓСЃС‚РёРјРѕСЃС‚СЊ Р·РЅР°С‡РµРЅРёР№ NULL РґР»СЏ СЃСЃС‹Р»РѕС‡РЅС‹С… С‚РёРїРѕРІ РІ С‚РёРїРµ РїР°СЂР°РјРµС‚СЂР° РЅРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ С†РµР»РµРІРѕРјСѓ РѕР±СЉРµРєС‚Сѓ РґРµР»РµРіРёСЂРѕРІР°РЅРёСЏ (РІРѕР·РјРѕР¶РЅРѕ, РёР·-Р·Р° Р°С‚СЂРёР±СѓС‚РѕРІ РґРѕРїСѓСЃС‚РёРјРѕСЃС‚Рё Р·РЅР°С‡РµРЅРёР№ NULL).
+#pragma warning restore CS8618 // РџРѕР»Рµ, РЅРµ РґРѕРїСѓСЃРєР°СЋС‰РµРµ Р·РЅР°С‡РµРЅРёСЏ NULL, РґРѕР»Р¶РЅРѕ СЃРѕРґРµСЂР¶Р°С‚СЊ Р·РЅР°С‡РµРЅРёРµ, РѕС‚Р»РёС‡РЅРѕРµ РѕС‚ NULL, РїСЂРё РІС‹С…РѕРґРµ РёР· РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°. Р’РѕР·РјРѕР¶РЅРѕ, СЃС‚РѕРёС‚ РѕР±СЉСЏРІРёС‚СЊ РїРѕР»Рµ РєР°Рє РґРѕРїСѓСЃРєР°СЋС‰РµРµ Р·РЅР°С‡РµРЅРёСЏ NULL.
+#pragma warning restore CS8612 // Р”РѕРїСѓСЃС‚РёРјРѕСЃС‚СЊ Р·РЅР°С‡РµРЅРёСЏ NULL РґР»СЏ СЃСЃС‹Р»РѕС‡РЅС‹С… С‚РёРїРѕРІ РІ С‚РёРїРµ РЅРµ СЃРѕРІРїР°РґР°РµС‚ СЃ СЏРІРЅРѕ СЂРµР°Р»РёР·РѕРІР°РЅРЅС‹Рј С‡Р»РµРЅРѕРј.

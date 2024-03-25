@@ -1,16 +1,21 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Management;
 using System.Windows.Forms;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Services;
+using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
+using Button = Microsoft.UI.Xaml.Controls.Button;
+using CheckBox = Microsoft.UI.Xaml.Controls.CheckBox;
+using ComboBox = Microsoft.UI.Xaml.Controls.ComboBox;
+using Process = System.Diagnostics.Process;
+using TextBox = Microsoft.UI.Xaml.Controls.TextBox;
 
 namespace Saku_Overclock.Views;
 #pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
@@ -18,44 +23,39 @@ namespace Saku_Overclock.Views;
 #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 #pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 
-public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.Page
+public sealed partial class ПараметрыPage : Page
 {
     public ПараметрыViewModel ViewModel
     {
         get;
     }
-
+    private FontIcon SMUSymbol1;
     private List<SmuAddressSet> matches;
     private Config config = new();
     private Devices devices = new();
+    private Smusettings smusettings = new();
     private Profile[] profile = new Profile[1];
     private int indexprofile = 0;
     private readonly NUMAUtil _numaUtil;
+    private string SMUSymbol = "\uE8C8";
     private bool isLoaded = false;
     private bool relay = false;
-    private readonly Services.Cpu cpu;
+    private readonly Cpu cpu;
+    private readonly SendSMUCommand cpusend;
     public bool turbobboost = true;
     private bool waitforload = true;
     private readonly string wmiAMDACPI = "AMD_ACPI";
     private readonly string wmiScope = "root\\wmi";
-    private ManagementObject classInstance;
     private string instanceName;
-    private ManagementBaseObject pack;
-    private const string filename = "co_profile.txt";
-    private const string profilesFolderName = "profiles";
-    private const string defaultsPath = profilesFolderName + @"\" + filename;
-    private readonly string[] args;
-    private readonly bool isApplyProfile;
     public string adjline;
-    public string ocmode;
-    private readonly Services.Mailbox testMailbox = new();
+    private readonly Mailbox testMailbox = new();
     public string universalvid;
     public string equalvid;
+    [Obsolete("Obsolete")]
     public ПараметрыPage()
     {
         ViewModel = App.GetService<ПараметрыViewModel>();
-        InitializeComponent();
-        OC_Detect();
+        InitializeComponent(); 
         DeviceLoad();
         ConfigLoad();
         ProfileLoad();
@@ -73,13 +73,10 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         }
         try
         {
-            args = Environment.GetCommandLineArgs();
-            foreach (var arg in args)
-            {
-                isApplyProfile |= arg.ToLower() == "--applyprofile";
-            }
-            cpu = new Services.Cpu();
-            Services.Cpu.Cpu_Init();
+            cpu = new Cpu();
+            Cpu.Cpu_Init();
+            cpusend = new SendSMUCommand();
+            if (SendSMUCommand.OC_Detect(cpusend) == false) { OC_Advanced.Visibility = Visibility.Collapsed; }
         }
         catch
         {
@@ -88,6 +85,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         Loaded += ПараметрыPage_Loaded;
     }
 
+    [Obsolete("Obsolete")]
     private async void ПараметрыPage_Loaded(object sender, RoutedEventArgs e)
     {
         isLoaded = true;
@@ -109,7 +107,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             }
         }
     }
-
     private static void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler)
     {
         try
@@ -127,9 +124,9 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
     private void PopulateMailboxesList(ItemCollection l)
     {
         l.Clear();
-        l.Add(new MailboxListItem("RSMU", cpu.smu.Rsmu));
-        l.Add(new MailboxListItem("MP1", cpu.smu.Mp1Smu));
-        l.Add(new MailboxListItem("HSMP", cpu.smu.Hsmp));
+        l.Add(new MailboxListItem("RSMU", cpu.Smu.Rsmu));
+        l.Add(new MailboxListItem("MP1", cpu.Smu.Mp1Smu));
+        l.Add(new MailboxListItem("HSMP", cpu.Smu.Hsmp));
     }
     private void AddMailboxToList(string label, SmuAddressSet addressSet)
     {
@@ -150,15 +147,16 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             index = 0;
         }
         comboBoxMailboxSelect.SelectedIndex = index;
+        QuickCommand.IsEnabled = true;
         await Send_Message("SMUScanText".GetLocalized(), "SMUScanDesc".GetLocalized(), Symbol.Message);
     }
 
-    [Obsolete]
+    [Obsolete("Obsolete")]
     private void BackgroundWorkerTrySettings_DoWork(object sender, DoWorkEventArgs e)
     {
         try
         {
-            switch (cpu.info.codeName)
+            switch (cpu.Info.codeName)
             {
                 case Cpu.CodeName.BristolRidge:
                     //ScanSmuRange(0x13000000, 0x13000F00, 4, 0x10);
@@ -198,7 +196,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         }
     }
 
-    [Obsolete]
+    [Obsolete("Obsolete")]
     private void ScanSmuRange(uint start, uint end, uint step, uint offset)
     {
         matches = new List<SmuAddressSet>();
@@ -226,7 +224,9 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                             {
                                 Thread.Sleep(10);
                                 if (cpu.ReadDword(smuRspAddress) == 0x1)
+                                {
                                     temp.Add(new KeyValuePair<uint, uint>(start, smuRspAddress));
+                                }
                             }
                         }
                         smuRspAddress += step;
@@ -237,16 +237,12 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         }
         if (temp.Count > 0)
         {
-            for (var i = 0; i < temp.Count; i++)
+            foreach (var t in temp)
             {
-                Console.WriteLine($"{temp[i].Key:X8}: {temp[i].Value:X8}");
+                Console.WriteLine($"{t.Key:X8}: {t.Value:X8}");
             }
-
-            Console.WriteLine();
         }
-
         var possibleArgAddresses = new List<uint>();
-
         foreach (var pair in temp)
         {
             Console.WriteLine($"Testing {pair.Key:X8}: {pair.Value:X8}");
@@ -256,20 +252,18 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 var smuArgAddress = pair.Value + 4;
                 while (smuArgAddress <= end)
                 {
-                    if (cpu.ReadDword(smuArgAddress) == cpu.smu.Version)
+                    if (cpu.ReadDword(smuArgAddress) == cpu.Smu.Version)
                     {
                         possibleArgAddresses.Add(smuArgAddress);
                     }
                     smuArgAddress += step;
                 }
             }
-
             // Verify the arg address returns correct value (should be test argument + 1)
             foreach (var address in possibleArgAddresses)
             {
                 var testArg = 0xFAFAFAFA;
                 var retries = 3;
-
                 while (retries > 0)
                 {
                     testArg++;
@@ -277,10 +271,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
                     // Send test command
                     if (TrySettings(pair.Key, pair.Value, address, 0x1, testArg) == SMU.Status.OK)
+                    {
                         if (cpu.ReadDword(address) != testArg + 1)
+                        {
                             retries = -1;
+                        }
+                    }
                 }
-
                 if (retries == 0)
                 {
                     matches.Add(new SmuAddressSet(pair.Key, pair.Value, address));
@@ -289,8 +286,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             }
         }
     }
-
-    [Obsolete]
+    [Obsolete("Obsolete")]
     private SMU.Status TrySettings(uint msgAddr, uint rspAddr, uint argAddr, uint cmd, uint value)
     {
         var args = new uint[6];
@@ -300,7 +296,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         testMailbox.SMU_ADDR_RSP = rspAddr;
         testMailbox.SMU_ADDR_ARG = argAddr;
 
-        return cpu.smu.SendSmuCommand(testMailbox, cmd, ref args);
+        return cpu.Smu.SendSmuCommand(testMailbox, cmd, ref args);
     }
     private void ResetSmuAddresses()
     {
@@ -308,31 +304,19 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         textBoxRSPAddress.Text = $@"0x{Convert.ToString(testMailbox.SMU_ADDR_RSP, 16).ToUpper()}";
         textBoxARGAddress.Text = $@"0x{Convert.ToString(testMailbox.SMU_ADDR_ARG, 16).ToUpper()}";
     }
-    private async void OC_Detect() // На неподдерживаемом оборудовании мгновенно отключит эти настройки
-    {
-        try
-        {
-            await Init_OC_Mode();
-            if (ocmode == "set_enable_oc is not supported on this family")
-            {
-                OC_Advanced.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-            }
-        }
-        catch
-        {
-            OC_Advanced.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-            await App.MainWindow.ShowMessageDialogAsync("App can't detect Ryzen CPU model!", "Can't detect!");
-        }
-    }
+
     //JSON форматирование
     public void ConfigSave()
     {
         try
         {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
     }
     public void ConfigLoad()
     {
@@ -345,17 +329,18 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             JsonRepair('c');
         }
     }
-
     public void DeviceSave()
     {
         try
         {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
     }
-
     public void DeviceLoad()
     {
         try
@@ -367,17 +352,41 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             JsonRepair('d');
         }
     }
-
+    public void SmuSettingsSave()
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json", JsonConvert.SerializeObject(smusettings, Formatting.Indented));
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    public void SmuSettingsLoad()
+    {
+        try
+        {
+            smusettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json"));
+        }
+        catch
+        {
+            JsonRepair('s');
+        }
+    }
     public void ProfileSave()
     {
         try
         {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile, Formatting.Indented));
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
     }
-
     public void ProfileLoad()
     {
         try
@@ -407,13 +416,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             {
                 try
                 {
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
                 }
                 catch
                 {
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
                     App.MainWindow.Close();
@@ -425,7 +434,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 {
 
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
                     App.MainWindow.Close();
                 }
@@ -453,13 +462,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             {
                 try
                 {
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
                 }
                 catch
                 {
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json");
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
                     App.MainWindow.Close();
@@ -470,8 +479,53 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 try
                 {
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json");
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
+                    App.MainWindow.Close();
+                }
+                catch
+                {
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+        }
+        if (file == 's')
+        {
+            try
+            {
+                for (var j = 0; j < 5; j++)
+                {
+                    smusettings = new Smusettings();
+                }
+            }
+            catch
+            {
+                App.MainWindow.Close();
+            }
+            if (smusettings != null)
+            {
+                try
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json", JsonConvert.SerializeObject(smusettings, Formatting.Indented));
+                }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json", JsonConvert.SerializeObject(smusettings, Formatting.Indented));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+            else
+            {
+                try
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json", JsonConvert.SerializeObject(smusettings, Formatting.Indented));
                     App.MainWindow.Close();
                 }
                 catch
@@ -499,13 +553,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             {
                 try
                 {
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
                 }
                 catch
                 {
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
                     App.MainWindow.Close();
@@ -516,7 +570,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 try
                 {
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
                     App.MainWindow.Close();
                 }
@@ -528,6 +582,8 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             }
         }
     }
+
+    [Obsolete("Obsolete")]
     public void SlidersInit()
     {
         //PLS don't beat me for this WEIRDEST initialization.
@@ -568,6 +624,8 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         MainInit(indexprofile);
         waitforload = false;
     }
+
+    [Obsolete("Obsolete")]
     private void MainInit(int index)
     {
         waitforload = true;
@@ -581,6 +639,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             a1.IsChecked = devices.a1; a1v.Value = devices.a1v; a2.IsChecked = devices.a2; a2v.Value = devices.a2v; a3.IsChecked = devices.a3; a3v.Value = devices.a3v; a4.IsChecked = devices.a4; a4v.Value = devices.a4v; a5.IsChecked = devices.a5; a5v.Value = devices.a5v; a6.IsChecked = devices.a6; a6v.Value = devices.a6v; a7.IsChecked = devices.a7; a7v.Value = devices.a7v; a8v.Value = devices.a8v; a8.IsChecked = devices.a8; a9v.Value = devices.a9v; a9.IsChecked = devices.a9; a10v.Value = devices.a10v; a11v.Value = devices.a11v; a11.IsChecked = devices.a11; a12v.Value = devices.a12v; a12.IsChecked = devices.a12; a13m.SelectedIndex = devices.a13v;
             EnablePstates.IsOn = devices.enableps; Turbo_boost.IsOn = devices.turboboost; Autoapply_1.IsOn = devices.autopstate; IgnoreWarn.IsOn = devices.ignorewarn; Without_P0.IsOn = devices.p0ignorewarn;
             DID_0.Value = devices.did0; DID_1.Value = devices.did1; DID_2.Value = devices.did2; FID_0.Value = devices.fid0; FID_1.Value = devices.fid1; FID_2.Value = devices.fid2; VID_0.Value = devices.vid0; VID_1.Value = devices.vid1; VID_2.Value = devices.vid2;
+            EnableSMU.IsOn = devices.smuenabled;
         }
         else
         {
@@ -591,13 +650,219 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             a1.IsChecked = profile[index].advncd1; a1v.Value = profile[index].advncd1value; a2.IsChecked = profile[index].advncd2; a2v.Value = profile[index].advncd2value; a3.IsChecked = profile[index].advncd3; a3v.Value = profile[index].advncd3value; a4.IsChecked = profile[index].advncd4; a4v.Value = profile[index].advncd4value; a5.IsChecked = profile[index].advncd5; a5v.Value = profile[index].advncd5value; a6.IsChecked = profile[index].advncd6; a6v.Value = profile[index].advncd6value; a7.IsChecked = profile[index].advncd7; a7v.Value = profile[index].advncd7value; a8v.Value = profile[index].advncd8value; a8.IsChecked = profile[index].advncd8; a9v.Value = profile[index].advncd9value; a9.IsChecked = profile[index].advncd9; a10v.Value = profile[index].advncd10value; a11v.Value = profile[index].advncd11value; a11.IsChecked = profile[index].advncd11; a12v.Value = profile[index].advncd12value; a12.IsChecked = profile[index].advncd12; a13m.SelectedIndex = profile[index].advncd13value;
             EnablePstates.IsOn = profile[index].enablePstateEditor; Turbo_boost.IsOn = profile[index].turboBoost; Autoapply_1.IsOn = profile[index].autoPstate; IgnoreWarn.IsOn = profile[index].ignoreWarn; Without_P0.IsOn = profile[index].p0Ignorewarn;
             DID_0.Value = profile[index].did0; DID_1.Value = profile[index].did1; DID_2.Value = profile[index].did2; FID_0.Value = profile[index].fid0; FID_1.Value = profile[index].fid1; FID_2.Value = profile[index].fid2; VID_0.Value = profile[index].vid0; VID_1.Value = profile[index].vid1; VID_2.Value = profile[index].vid2;
+            EnableSMU.IsOn = profile[index].smuEnabled;
         }
+        try
+        {
+            Mult_0.SelectedIndex = (int)(FID_0.Value * 25 / (DID_0.Value * 12.5)) - 4;
+            P0_Freq.Content = FID_0.Value * 25 / (DID_0.Value * 12.5) * 100;
+            Mult_1.SelectedIndex = (int)(FID_1.Value * 25 / (DID_1.Value * 12.5)) - 4;
+            P1_Freq.Content = FID_1.Value * 25 / (DID_1.Value * 12.5) * 100;
+            P2_Freq.Content = FID_2.Value * 25 / (DID_2.Value * 12.5) * 100;
+            Mult_2.SelectedIndex = (int)(FID_2.Value * 25 / (DID_2.Value * 12.5)) - 4;
+        }
+        catch
+        {
+        
+        } 
         waitforload = false;
+        SmuSettingsLoad();
+        if (smusettings.Note != string.Empty)
+        {
+            SMUNotes.Document.SetText(TextSetOptions.FormatRtf, smusettings.Note);
+        }
+        try
+        {
+            Init_QuickSMU();
+        }
+        catch
+        {
+            //Ignored
+        }
     }
-    private async void ProfileCOM_SelectionChanged(object sender, Microsoft.UI.Xaml.Controls.SelectionChangedEventArgs e)
+
+    [Obsolete("Obsolete")]
+    private void Init_QuickSMU()
+    {
+        SmuSettingsLoad();
+        if (smusettings.QuickSMUCommands == null)
+        {
+            return;
+        }
+
+        QuickSMU.Children.Clear();
+        QuickSMU.RowDefinitions.Clear();
+        for (var i = 0; i < smusettings.QuickSMUCommands.Count; i++)
+        {
+            var grid = new Grid //Основной грид, куда всё добавляется
+            {
+                //grid.SetValue(Grid.RowProperty, 8);
+                Margin = new Thickness(0, 10, 0, 0),
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch
+            };
+            // Создание новой RowDefinition
+            var rowDef = new RowDefinition
+            {
+                Height = GridLength.Auto // Указать необходимую высоту
+            };
+            // Добавление новой RowDefinition в SMU_MainSection
+            QuickSMU.RowDefinitions.Add(rowDef);
+            // Определение строки для размещения Grid
+            var rowIndex = QuickSMU.RowDefinitions.Count - 1;
+            // Размещение созданного Grid в SMU_MainSection
+            QuickSMU.Children.Add(grid); //Добавить в программу грид быстрой команды
+            Grid.SetRow(grid, rowIndex); //Задать дорожку для нового грида
+            // Создание Button
+            var button = new Button //Добавить основную кнопку быстрой команды. Именно в ней всё содержимое
+            {
+                Height = 50,
+                HorizontalContentAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch,
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch
+            };
+            // Создание Grid внутри Button
+            var innerGrid = new Grid
+            {
+                Height = 50
+            };
+            // Создание FontIcon она же иконка у этой команды
+            var fontIcon = new FontIcon
+            {
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, -10, 0, 0),
+                FontFamily = new FontFamily("Segoe Fluent Icons"),
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+                Glyph = smusettings.QuickSMUCommands[i].Symbol
+            };
+            // Добавление FontIcon в Grid
+            innerGrid.Children.Add(fontIcon);
+            // Создание TextBlock
+            var textBlock1 = new TextBlock
+            {
+                Margin = new Thickness(35, 0.5, 0, 0),
+                VerticalAlignment = VerticalAlignment.Top,
+                Text = smusettings.QuickSMUCommands[i].Name,
+                FontWeight = FontWeights.SemiBold
+            };
+            innerGrid.Children.Add(textBlock1);
+            // Создание второго TextBlock
+            var textBlock2 = new TextBlock
+            {
+                Margin = new Thickness(35, 17.5, 0, 0),
+                VerticalAlignment = VerticalAlignment.Top,
+                Text = smusettings.QuickSMUCommands[i].Description,
+                FontWeight = FontWeights.Light
+            };
+            innerGrid.Children.Add(textBlock2);
+            // Добавление внутреннего Grid в Button
+            button.Content = innerGrid;
+            // Создание внешнего Grid с кнопками
+            var buttonsGrid = new Grid
+            {
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Right
+            };
+            // Создание и добавление кнопок во внешний Grid
+            var playButton = new Button //Кнопка применить
+            {
+                Name = $"Play_{rowIndex}",
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Right,
+                Width = 35,
+                Height = 35,
+                Margin = new Thickness(0, 0, 7, 0),
+                Content = new SymbolIcon()
+                {
+                    Symbol = Symbol.Play,
+                    Margin = new Thickness(-5, 0, -5, 0),
+                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left
+                }
+            };
+            buttonsGrid.Children.Add(playButton);
+            var editButton = new Button //Кнопка изменить
+            {
+                Name = $"Edit_{rowIndex}",
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Right,
+                Width = 35,
+                Height = 35,
+                Margin = new Thickness(0, 0, 50, 0),
+                Content = new SymbolIcon()
+                {
+                    Symbol = Symbol.Edit,
+                    Margin = new Thickness(-5, 0, -5, 0)
+                }
+            };
+            buttonsGrid.Children.Add(editButton);
+            var rsmuButton = new Button
+            {
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Right,
+                Width = 86,
+                Height = 35,
+                Margin = new Thickness(0, 0, 93, 0)
+            };
+            var rsmuTextBlock = new TextBlock
+            {
+                Text = smusettings.MailBoxes[smusettings.QuickSMUCommands[i].MailIndex].Name
+            };
+            rsmuButton.Content = rsmuTextBlock;
+            buttonsGrid.Children.Add(rsmuButton);
+            var cmdButton = new Button
+            {
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Right,
+                Width = 86,
+                Height = 35,
+                Margin = new Thickness(0, 0, 187, 0)
+            };
+            var cmdTextBlock = new TextBlock
+            {
+                Text = smusettings.QuickSMUCommands[i].Command + " / " + smusettings.QuickSMUCommands[i].Argument
+            };
+            cmdButton.Content = cmdTextBlock;
+            buttonsGrid.Children.Add(cmdButton);
+            var autoButton = new Button
+            {
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Right,
+                Width = 86,
+                Height = 35,
+                Margin = new Thickness(0, 0, 281, 0)
+            };
+            var autoTextBlock = new TextBlock
+            {
+                Text = "Apply"
+            };
+            if (smusettings.QuickSMUCommands[i].Startup)
+            {
+                autoTextBlock.Text = "Autorun";
+            }
+            if (smusettings.QuickSMUCommands[i].Startup || smusettings.QuickSMUCommands[i].ApplyWith)
+            {
+                buttonsGrid.Children.Add(autoButton);
+            }
+            //
+            autoButton.Content = autoTextBlock;
+            // Добавление внешнего Grid в основной Grid
+            grid.Children.Add(button);
+            grid.Children.Add(buttonsGrid);
+            editButton.Click += EditButton_Click;
+            playButton.Click += PlayButton_Click;
+        }
+    }
+    [Obsolete("Obsolete")]
+    private void PlayButton_Click(object sender, RoutedEventArgs e)
+    {
+        var button = sender as Button;
+        SmuSettingsLoad();
+        ApplySettings(1, int.Parse(button!.Name.Replace("Play_", "")));
+    }
+    [Obsolete("Obsolete")]
+    private void EditButton_Click(object sender, RoutedEventArgs e)
+    {
+        var button = sender as Button;
+        SmuSettingsLoad();
+        QuickDialog(1, int.Parse(button!.Name.Replace("Edit_", "")));
+    }
+    [Obsolete("Obsolete")]
+    private async void ProfileCOM_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         ConfigLoad();
-        while (isLoaded == false || waitforload == true)
+        while (isLoaded == false || waitforload)
         {
             await Task.Delay(100);
         }
@@ -607,145 +872,132 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
     }
     //Параметры процессора
     //Максимальная температура CPU (C)
-    private void C1_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void C1_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (c1.IsChecked == true) { check = true; }
+        var check = c1.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu1 = check; profile[indexprofile].cpu1value = c1v.Value; ProfileSave(); }
         devices.c1 = check; devices.c1v = c1v.Value;
         DeviceSave();
     }
     //Лимит CPU (W)
-    private void C2_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void C2_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (c2.IsChecked == true) { check = true; }
+        var check = c2.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu2 = check; profile[indexprofile].cpu2value = c2v.Value; ProfileSave(); }
         devices.c2 = check; devices.c2v = c2v.Value;
         DeviceSave();
     }
     //Реальный CPU (W)
-    private void C3_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void C3_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (c3.IsChecked == true) { check = true; }
+        var check = c3.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu3 = check; profile[indexprofile].cpu3value = c3v.Value; ProfileSave(); }
         devices.c3 = check; devices.c3v = c3v.Value;
         DeviceSave();
     }
     //Средний CPU (W)
-    private void C4_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void C4_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (c4.IsChecked == true) { check = true; }
+        var check = c4.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu4 = check; profile[indexprofile].cpu4value = c4v.Value; ProfileSave(); }
         devices.c4 = check; devices.c4v = c4v.Value;
         DeviceSave();
     }
     //Тик быстрого разгона (S)
-    private void C5_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void C5_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (c5.IsChecked == true) { check = true; }
+        var check = c5.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu5 = check; profile[indexprofile].cpu5value = c5v.Value; ProfileSave(); }
         devices.c5 = check; devices.c5v = c5v.Value;
         DeviceSave();
     }
     //Тик медленного разгона (S)
-    private void C6_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void C6_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (c6.IsChecked == true) { check = true; }
+        var check = c6.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu6 = check; profile[indexprofile].cpu6value = c6v.Value; ProfileSave(); }
         devices.c6 = check; devices.c6v = c6v.Value;
         DeviceSave();
     }
     //Параметры VRM
     //Максимальный ток VRM A
-    private void V1_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void V1_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (V1.IsChecked == true) { check = true; }
+        var check = V1.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm1 = check; profile[indexprofile].vrm1value = V1V.Value; ProfileSave(); }
         devices.v1 = check; devices.v1v = V1V.Value;
         DeviceSave();
     }
     //Лимит по току VRM A
-    private void V2_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void V2_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (V2.IsChecked == true) { check = true; }
+        var check = V2.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm2 = check; profile[indexprofile].vrm2value = V2V.Value; ProfileSave(); }
         devices.v2 = check; devices.v2v = V2V.Value;
         DeviceSave();
     }
     //Максимальный ток SOC A
-    private void V3_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void V3_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (V3.IsChecked == true) { check = true; }
+        var check = V3.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm3 = check; profile[indexprofile].vrm3value = V3V.Value; ProfileSave(); }
         devices.v3 = check; devices.v3v = V3V.Value;
         DeviceSave();
     }
     //Лимит по току SOC A
-    private void V4_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void V4_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (V4.IsChecked == true) { check = true; }
+        var check = V4.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm4 = check; profile[indexprofile].vrm4value = V4V.Value; ProfileSave(); }
         devices.v4 = check; devices.v4v = V4V.Value;
         DeviceSave();
     }
     //Максимальный ток PCI VDD A
-    private void V5_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void V5_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (V5.IsChecked == true) { check = true; }
+        var check = V5.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm5 = check; profile[indexprofile].vrm5value = V5V.Value; ProfileSave(); }
         devices.v5 = check; devices.v5v = V5V.Value;
         DeviceSave();
     }
     //Максимальный ток PCI SOC A
-    private void V6_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void V6_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (V6.IsChecked == true) { check = true; }
+        var check = V6.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm6 = check; profile[indexprofile].vrm6value = V6V.Value; ProfileSave(); }
         devices.v6 = check; devices.v6v = V6V.Value;
         DeviceSave();
     }
     //Отключить троттлинг на время
-    private void V7_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void V7_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (V7.IsChecked == true) { check = true; }
+        var check = V7.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm7 = check; profile[indexprofile].vrm7value = V7V.Value; ProfileSave(); }
         devices.v7 = check; devices.v7v = V7V.Value;
         DeviceSave();
@@ -753,426 +1005,403 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     //Параметры графики
     //Минимальная частота SOC 
-    private void G1_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void G1_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (g1.IsChecked == true) { check = true; }
+        var check = g1.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu1 = check; profile[indexprofile].gpu1value = g1v.Value; ProfileSave(); }
         devices.g1 = check; devices.g1v = g1v.Value;
         DeviceSave();
     }
     //Максимальная частота SOC
-    private void G2_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void G2_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (g2.IsChecked == true) { check = true; }
+        var check = g2.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu2 = check; profile[indexprofile].gpu2value = g2v.Value; ProfileSave(); }
         devices.g2 = check; devices.g2v = g2v.Value;
         DeviceSave();
     }
     //Минимальная частота Infinity Fabric
-    private void G3_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void G3_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (g3.IsChecked == true) { check = true; }
+        var check = g3.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu3 = check; profile[indexprofile].gpu3value = g3v.Value; ProfileSave(); }
         devices.g3 = check; devices.g3v = g3v.Value;
         DeviceSave();
     }
     //Максимальная частота Infinity Fabric
-    private void G4_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void G4_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (g4.IsChecked == true) { check = true; }
+        var check = g4.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu4 = check; profile[indexprofile].gpu4value = g4v.Value; ProfileSave(); }
         devices.g4 = check; devices.g4v = g4v.Value;
         DeviceSave();
     }
     //Минимальная частота кодека VCE
-    private void G5_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void G5_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (g5.IsChecked == true) { check = true; }
+        var check = g5.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu5 = check; profile[indexprofile].gpu5value = g5v.Value; ProfileSave(); }
         devices.g5 = check; devices.g5v = g5v.Value;
         DeviceSave();
     }
     //Максимальная частота кодека VCE
-    private void G6_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void G6_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (g6.IsChecked == true) { check = true; }
+        var check = g6.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu6 = check; profile[indexprofile].gpu6value = g6v.Value; ProfileSave(); }
         devices.g6 = check; devices.g6v = g6v.Value;
         DeviceSave();
     }
     //Минимальная частота частота Data Latch
-    private void G7_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void G7_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (g7.IsChecked == true) { check = true; }
+        var check = g7.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu7 = check; profile[indexprofile].gpu7value = g7v.Value; ProfileSave(); }
         devices.g7 = check; devices.g7v = g7v.Value;
         DeviceSave();
     }
     //Максимальная частота Data Latch
-    private void G8_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void G8_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (g8.IsChecked == true) { check = true; }
+        var check = g8.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu8 = check; profile[indexprofile].gpu8value = g8v.Value; ProfileSave(); }
         devices.g8 = check; devices.g8v = g8v.Value;
         DeviceSave();
     }
     //Минимальная частота iGpu
-    private void G9_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void G9_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (g9.IsChecked == true) { check = true; }
+        var check = g9.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu9 = check; profile[indexprofile].gpu9value = g9v.Value; ProfileSave(); }
         devices.g9 = check; devices.g9v = g9v.Value;
         DeviceSave();
     }
     //Максимальная частота iGpu
-    private void G10_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void G10_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (g10.IsChecked == true) { check = true; }
+        var check = g10.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu10 = check; profile[indexprofile].gpu10value = g10v.Value; ProfileSave(); }
         devices.g10 = check; devices.g10v = g10v.Value;
         DeviceSave();
     }
     //Расширенные параметры
-    private void A1_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A1_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a1.IsChecked == true) { check = true; }
+        var check = a1.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd1 = check; profile[indexprofile].advncd1value = a1v.Value; ProfileSave(); }
         devices.a1 = check; devices.a1v = a1v.Value;
         DeviceSave();
     }
-    private void A2_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A2_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a2.IsChecked == true) { check = true; }
+        var check = a2.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd2 = check; profile[indexprofile].advncd2value = a2v.Value; ProfileSave(); }
         devices.a2 = check; devices.a2v = a2v.Value;
         DeviceSave();
     }
-    private void A3_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A3_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a3.IsChecked == true) { check = true; }
+        var check = a3.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd3 = check; profile[indexprofile].advncd3value = a3v.Value; ProfileSave(); }
         devices.a3 = check; devices.a3v = a3v.Value;
         DeviceSave();
     }
-    private void A4_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A4_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a4.IsChecked == true) { check = true; }
+        var check = a4.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd4 = check; profile[indexprofile].advncd4value = a4v.Value; ProfileSave(); }
         devices.a4 = check; devices.a4v = a4v.Value;
         DeviceSave();
     }
-    private void A5_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A5_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a5.IsChecked == true) { check = true; }
+        var check = a5.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd5 = check; profile[indexprofile].advncd5value = a5v.Value; ProfileSave(); }
         devices.a5 = check; devices.a5v = a5v.Value;
         DeviceSave();
     }
-    private void A6_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A6_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a6.IsChecked == true) { check = true; }
+        var check = a6.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd6 = check; profile[indexprofile].advncd6value = a6v.Value; ProfileSave(); }
         devices.a6 = check; devices.a6v = a6v.Value;
         DeviceSave();
     }
-    private void A7_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A7_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a7.IsChecked == true) { check = true; }
+        var check = a7.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd7 = check; profile[indexprofile].advncd7value = a7v.Value; ProfileSave(); }
         devices.a7 = check; devices.a7v = a7v.Value;
         DeviceSave();
     }
-    private void A8_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A8_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a8.IsChecked == true) { check = true; }
+        var check = a8.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd8 = check; profile[indexprofile].advncd8value = a8v.Value; ProfileSave(); }
         devices.a8 = check; devices.a8v = a8v.Value;
         DeviceSave();
     }
-    private void A9_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A9_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a9.IsChecked == true) { check = true; }
+        var check = a9.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd9 = check; profile[indexprofile].advncd9value = a9v.Value; ProfileSave(); }
         devices.a9 = check; devices.a9v = a9v.Value;
         DeviceSave();
     }
-    private void A10_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A10_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a10.IsChecked == true) { check = true; }
+        var check = a10.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd10 = check; profile[indexprofile].advncd10value = a10v.Value; ProfileSave(); }
         devices.a10 = check; devices.a10v = a10v.Value;
         DeviceSave();
     }
-    private void A11_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A11_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a11.IsChecked == true) { check = true; }
+        var check = a11.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd11 = check; profile[indexprofile].advncd11value = a11v.Value; ProfileSave(); }
         devices.a11 = check; devices.a11v = a11v.Value;
         DeviceSave();
     }
-    private void A12_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A12_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a12.IsChecked == true) { check = true; }
+        var check = a12.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd12 = check; profile[indexprofile].advncd12value = a12v.Value; ProfileSave(); }
         devices.a12 = check; devices.a12v = a12v.Value;
         DeviceSave();
     }
-    private void A13_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void A13_Checked(object sender, RoutedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
-        var check = false;
-        if (a13.IsChecked == true) { check = true; }
+        var check = a13.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd13 = check; profile[indexprofile].advncd1value = a13m.SelectedIndex; ProfileSave(); }
         devices.a13 = check; devices.a13v = a13m.SelectedIndex;
         DeviceSave();
     }
     //Параметры процессора, при изменении слайдеров
     //Максимальная температура CPU (C)
-    private void C1_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void C1_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.c1v = c1v.Value;
         if (indexprofile != -1) { profile[indexprofile].cpu1value = c1v.Value; ProfileSave(); }
         DeviceSave();
     }
     //Лимит CPU (W)
-    private void C2_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void C2_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.c2v = c2v.Value;
         if (indexprofile != -1) { profile[indexprofile].cpu2value = c2v.Value; ProfileSave(); }
         DeviceSave();
     }
     //Реальный CPU (W)
-    private void C3_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void C3_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.c3v = c3v.Value;
         if (indexprofile != -1) { profile[indexprofile].cpu3value = c3v.Value; ProfileSave(); }
         DeviceSave();
     }
     //Средний CPU(W)
-    private void C4_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void C4_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.c4v = c4v.Value;
         if (indexprofile != -1) { profile[indexprofile].cpu4value = c4v.Value; ProfileSave(); }
         DeviceSave();
     }
     //Тик быстрого разгона (S)
-    private void C5_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void C5_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.c5v = c5v.Value;
         if (indexprofile != -1) { profile[indexprofile].cpu5value = c5v.Value; ProfileSave(); }
         DeviceSave();
     }
     //Тик медленного разгона (S)
-    private void C6_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void C6_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.c6v = c6v.Value;
         if (indexprofile != -1) { profile[indexprofile].cpu6value = c6v.Value; ProfileSave(); }
         DeviceSave();
     }
     //Параметры VRM
-    private void V1v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void V1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.v1v = V1V.Value;
         if (indexprofile != -1) { profile[indexprofile].vrm1value = V1V.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void V2v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void V2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.v2v = V2V.Value;
         if (indexprofile != -1) { profile[indexprofile].vrm2value = V2V.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void V3v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void V3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.v3v = V3V.Value;
         if (indexprofile != -1) { profile[indexprofile].vrm3value = V3V.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void V4v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void V4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.v4v = V4V.Value;
         if (indexprofile != -1) { profile[indexprofile].vrm4value = V4V.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void V5v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void V5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.v5v = V5V.Value;
         if (indexprofile != -1) { profile[indexprofile].vrm5value = V5V.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void V6v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void V6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.v6v = V6V.Value;
         if (indexprofile != -1) { profile[indexprofile].vrm6value = V6V.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void V7v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void V7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.v7v = V7V.Value;
         if (indexprofile != -1) { profile[indexprofile].vrm7value = V7V.Value; ProfileSave(); }
         DeviceSave();
     }
     //Параметры GPU
-    private void G1v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void G1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.g1v = g1v.Value;
         if (indexprofile != -1) { profile[indexprofile].gpu1value = g1v.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void G2v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void G2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.g2v = g2v.Value;
         if (indexprofile != -1) { profile[indexprofile].gpu2value = g2v.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void G3v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void G3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.g3v = g3v.Value;
         if (indexprofile != -1) { profile[indexprofile].gpu3value = g3v.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void G4v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void G4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.g4v = g4v.Value;
         if (indexprofile != -1) { profile[indexprofile].gpu4value = g4v.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void G5v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void G5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.g5v = g5v.Value;
         if (indexprofile != -1) { profile[indexprofile].gpu5value = g5v.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void G6v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void G6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.g6v = g6v.Value;
         if (indexprofile != -1) { profile[indexprofile].gpu6value = g6v.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void G7v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void G7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.g7v = g7v.Value;
         if (indexprofile != -1) { profile[indexprofile].gpu7value = g7v.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void G8v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void G8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.g8v = g8v.Value;
         if (indexprofile != -1) { profile[indexprofile].gpu8value = g8v.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void G9v_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void G9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.g9v = g9v.Value;
         if (indexprofile != -1) { profile[indexprofile].gpu9value = g9v.Value; ProfileSave(); }
@@ -1190,7 +1419,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
     //Расширенные параметры
     private void A1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a1v = a1v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd1value = a1v.Value; ProfileSave(); }
@@ -1199,7 +1428,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a2v = a2v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd2value = a2v.Value; ProfileSave(); }
@@ -1208,7 +1437,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a3v = a3v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd3value = a3v.Value; ProfileSave(); }
@@ -1217,7 +1446,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a4v = a4v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd4value = a4v.Value; ProfileSave(); }
@@ -1226,7 +1455,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a5v = a5v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd5value = a5v.Value; ProfileSave(); }
@@ -1235,7 +1464,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a6v = a6v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd6value = a6v.Value; ProfileSave(); }
@@ -1244,7 +1473,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a7v = a7v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd7value = a7v.Value; ProfileSave(); }
@@ -1253,7 +1482,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a8v = a8v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd8value = a8v.Value; ProfileSave(); }
@@ -1262,7 +1491,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a9v = a9v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd9value = a9v.Value; ProfileSave(); }
@@ -1271,7 +1500,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a10v = a10v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd10value = a10v.Value; ProfileSave(); }
@@ -1280,7 +1509,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a11v = a11v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd11value = a11v.Value; ProfileSave(); }
@@ -1289,7 +1518,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a12v = a12v.Value;
         if (indexprofile != -1) { profile[indexprofile].advncd12value = a12v.Value; ProfileSave(); }
@@ -1298,7 +1527,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
     private void A13m_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (isLoaded == false || waitforload == true) { return; }
+        if (isLoaded == false || waitforload) { return; }
         DeviceLoad(); ProfileLoad();
         devices.a13v = a13m.SelectedIndex;
         if (indexprofile != -1) { profile[indexprofile].advncd13value = a13m.SelectedIndex; ProfileSave(); }
@@ -1306,7 +1535,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
     }
 
     //Кнопка применить, итоговый выход, Ryzen ADJ
-    [Obsolete]
+    [Obsolete("Obsolete")]
     private async void Apply_Click(object sender, RoutedEventArgs e)
     {
         if (c1.IsChecked == true)
@@ -1425,123 +1654,90 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         {
             adjline += " --min-socclk-frequency=" + g10v.Value;
         }
-        if (ocmode != "set_enable_oc is not supported on this family")
+        //advanced
+        if (a1.IsChecked == true)
         {
-            //advanced
-            if (a1.IsChecked == true)
-            {
-                adjline += " --vrmgfx-current=" + a1v.Value + "000";
-            }
-
-            if (a2.IsChecked == true)
-            {
-                adjline += " --vrmcvip-current=" + a2v.Value + "000";
-            }
-
-            if (a3.IsChecked == true)
-            {
-                adjline += " --vrmgfxmax_current=" + a3v.Value + "000";
-            }
-
-            if (a4.IsChecked == true)
-            {
-                adjline += " --psi3cpu_current=" + a4v.Value + "000";
-            }
-
-            if (a5.IsChecked == true)
-            {
-                adjline += " --psi3gfx_current=" + a5v.Value + "000";
-            }
-
-            if (a6.IsChecked == true)
-            {
-                adjline += " --apu-skin-temp=" + a6v.Value;
-            }
-
-            if (a7.IsChecked == true)
-            {
-                adjline += " --dgpu-skin-temp=" + a7v.Value;
-            }
-
-            if (a8.IsChecked == true)
-            {
-                adjline += " --apu-slow-limit=" + a8v.Value + "000";
-            }
-
-            if (a9.IsChecked == true)
-            {
-                adjline += " --skin-temp-limit=" + a9v.Value + "000";
-            }
-
-            if (a10.IsChecked == true)
-            {
-                adjline += " --gfx-clk=" + a10v.Value;
-            }
-
-            if (a11.IsChecked == true)
-            {
-                adjline += " --oc-clk=" + a11v.Value;
-            }
-
-            if (a12.IsChecked == true)
-            {
-                adjline += " --oc-volt=" + Math.Round((1.55 - a12v.Value / 1000) / 0.00625);
-            }
-
-            if (a13.IsChecked == true)
-            {
-                if (a13m.SelectedIndex == 1)
-                {
-                    adjline += " --max-performance";
-                }
-
-                if (a13m.SelectedIndex == 2)
-                {
-                    adjline += " --power-saving";
-                }
-            }
+            adjline += " --vrmgfx-current=" + a1v.Value + "000";
         }
 
+        if (a2.IsChecked == true)
+        {
+            adjline += " --vrmcvip-current=" + a2v.Value + "000";
+        }
+
+        if (a3.IsChecked == true)
+        {
+            adjline += " --vrmgfxmax_current=" + a3v.Value + "000";
+        }
+
+        if (a4.IsChecked == true)
+        {
+            adjline += " --psi3cpu_current=" + a4v.Value + "000";
+        }
+
+        if (a5.IsChecked == true)
+        {
+            adjline += " --psi3gfx_current=" + a5v.Value + "000";
+        }
+
+        if (a6.IsChecked == true)
+        {
+            adjline += " --apu-skin-temp=" + a6v.Value;
+        }
+
+        if (a7.IsChecked == true)
+        {
+            adjline += " --dgpu-skin-temp=" + a7v.Value;
+        }
+
+        if (a8.IsChecked == true)
+        {
+            adjline += " --apu-slow-limit=" + a8v.Value + "000";
+        }
+
+        if (a9.IsChecked == true)
+        {
+            adjline += " --skin-temp-limit=" + a9v.Value + "000";
+        }
+
+        if (a10.IsChecked == true)
+        {
+            adjline += " --gfx-clk=" + a10v.Value;
+        }
+
+        if (a11.IsChecked == true)
+        {
+            adjline += " --oc-clk=" + a11v.Value;
+        }
+
+        if (a12.IsChecked == true)
+        {
+            adjline += " --oc-volt=" + Math.Round((1.55 - a12v.Value / 1000) / 0.00625);
+        }
+
+        if (a13.IsChecked == true)
+        {
+            if (a13m.SelectedIndex == 1)
+            {
+                adjline += " --max-performance";
+            }
+
+            if (a13m.SelectedIndex == 2)
+            {
+                adjline += " --power-saving";
+            }
+        } 
         config.adjline = adjline;
         adjline = "";
         ConfigSave();
         MainWindow.Applyer.Apply();
-        if (EnablePstates.IsOn)
-        {
-            BtnPstateWrite_Click();
-        }
-        else
-        {
-            ReadPstate();
-        }
-
+        if (EnablePstates.IsOn) { BtnPstateWrite_Click(); } else { ReadPstate(); }
         Apply_tooltip.IsOpen = true;
         await Task.Delay(3000);
         Apply_tooltip.IsOpen = false;
-        if (textBoxARG0 != null && textBoxARGAddress != null && textBoxCMD != null && textBoxCMDAddress != null && textBoxRSPAddress != null) { ApplySettings(); }
-    }
-
-    private async Task Init_OC_Mode()
-    {
-        ocmode = "";
-        var p = new Process();
-        p.StartInfo.UseShellExecute = false;
-        p.StartInfo.FileName = @"ryzenadj.exe";
-        p.StartInfo.Arguments = "--enable-oc";
-        p.StartInfo.CreateNoWindow = true;
-        p.StartInfo.RedirectStandardError = true;
-        p.StartInfo.RedirectStandardInput = true;
-        p.StartInfo.RedirectStandardOutput = true;
-        p.Start();
-        var outputWriter = p.StandardOutput;
-        var line = outputWriter.ReadLine();
-        if (line != "")
-        {
-            ocmode = line;
-        }
-        await p.WaitForExitAsync();
-    }
-
+        if (textBoxARG0 != null && textBoxARGAddress != null && textBoxCMD != null && textBoxCMDAddress != null && textBoxRSPAddress != null && EnableSMU.IsOn) { ApplySettings(0, 0); }
+        cpusend.Play_Invernate_QuickSMU(0);
+    } 
     private async void Save_Click(object sender, RoutedEventArgs e)
     {
         if (SaveName.Text != "")
@@ -1579,7 +1775,6 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         ConfigSave();
         ProfileSave();
     }
-
     private async void Edit_Click(object sender, RoutedEventArgs e)
     {
         if (SaveName.Text != "")
@@ -1621,25 +1816,19 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             Edit_tooltip_Error.IsOpen = false;
         }
     }
-
     private async void Delete_Click(object sender, RoutedEventArgs e)
     {
         var DelDialog = new ContentDialog
         {
-            Title = "Delete preset",
-            Content = "Did you really want to delete this preset?",
-            CloseButtonText = "Cancel",
-            PrimaryButtonText = "Delete",
+            Title = "Param_DelPreset_Text".GetLocalized(),
+            Content = "Param_DelPreset_Desc".GetLocalized(),
+            CloseButtonText = "Cancel".GetLocalized(),
+            PrimaryButtonText = "Delete".GetLocalized(),
             DefaultButton = ContentDialogButton.Close
         };
-
         // Use this code to associate the dialog to the appropriate AppWindow by setting
         // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
-        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-        {
-            DelDialog.XamlRoot = XamlRoot;
-        }
-
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8)) { DelDialog.XamlRoot = XamlRoot; }
         var result = await DelDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
@@ -1664,8 +1853,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             ProfileSave();
         }
     }
-
-    [Obsolete]
+    [Obsolete("Obsolete")]
     public async void BtnPstateWrite_Click()
     {
         DeviceLoad();
@@ -1699,11 +1887,10 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 {
                     var WriteDialog = new ContentDialog
                     {
-                        Title = "Change Pstates?",
-                        Content =
-                            "Did you really want to change pstates? \nThis can crash your system immediately. \nChanging P0 state have MORE chances to crash your system",
-                        CloseButtonText = "Cancel",
-                        PrimaryButtonText = "Change",
+                        Title = "Param_ChPstates_Text".GetLocalized(),
+                        Content = "Param_ChPstates_Desc".GetLocalized(),
+                        CloseButtonText = "Cancel".GetLocalized(),
+                        PrimaryButtonText = "Change".GetLocalized(),
                         DefaultButton = ContentDialogButton.Close
                     };
                     // Use this code to associate the dialog to the appropriate AppWindow by setting
@@ -1723,12 +1910,11 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 {
                     var ApplyDialog = new ContentDialog
                     {
-                        Title = "Change Pstates?",
-                        Content =
-                            "Did you really want to change pstates? \nThis can crash your system immediately. \nChanging P0 state have MORE chances to crash your system",
-                        CloseButtonText = "Cancel",
-                        PrimaryButtonText = "Change",
-                        SecondaryButtonText = "Without P0",
+                        Title = "Param_ChPstates_Text".GetLocalized(),
+                        Content = "Param_ChPstates_Desc".GetLocalized(),
+                        CloseButtonText = "Cancel".GetLocalized(),
+                        PrimaryButtonText = "Change".GetLocalized(),
+                        SecondaryButtonText = "Without_P0".GetLocalized(),
                         DefaultButton = ContentDialogButton.Close
                     };
 
@@ -1737,167 +1923,177 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                     if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
                     {
                         ApplyDialog.XamlRoot = XamlRoot;
-                    } 
+                    }
                     var result = await ApplyDialog.ShowAsync();
-                    if (result == ContentDialogResult.Primary) { WritePstates(); } 
+                    if (result == ContentDialogResult.Primary) { WritePstates(); }
                     if (result == ContentDialogResult.Secondary) { WritePstatesWithoutP0(); }
                 }
             }
         }
-    } 
-    [Obsolete]
+    }
+    [Obsolete("Obsolete")]
     public void WritePstates()
     {
-        if (devices.autopstate)
+        try
         {
-            DID_0.Value = devices.did0;
-            DID_1.Value = devices.did1;
-            DID_2.Value = devices.did2;
-            FID_0.Value = devices.fid0;
-            FID_1.Value = devices.fid1;
-            FID_2.Value = devices.fid2;
-        } 
-        for (var p = 0; p < 3; p++)
-        {
-            if (string.IsNullOrEmpty(DID_0.Text) || string.IsNullOrEmpty(FID_0.Text) || string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) || string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text)) { ReadPstate(); } 
-            //Logic
-            var pstateId = p;
-            uint eax = default, edx = default;
-            uint IddDiv = 0x0;
-            uint IddVal = 0x0;
-            uint CpuVid = 0x0;
-            uint CpuDfsId = 0x0;
-            uint CpuFid = 0x0;
-            var Didtext = "12";
-            var Fidtext = "102";
-            var Vidtext = 56.0;
-            if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+            if (devices.autopstate)
             {
-                MessageBox.Show("Error reading PState! ID = " + pstateId);
-                return;
-            } 
-            CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
-            switch (p)
+                DID_0.Value = devices.did0;
+                DID_1.Value = devices.did1;
+                DID_2.Value = devices.did2;
+                FID_0.Value = devices.fid0;
+                FID_1.Value = devices.fid1;
+                FID_2.Value = devices.fid2;
+            }
+            for (var p = 0; p < 3; p++)
             {
-                case 0:
-                    Didtext = DID_0.Text;
-                    Fidtext = FID_0.Text;
-                    Vidtext = VID_0.Value;
-                    break;
-                case 1:
-                    Didtext = DID_1.Text;
-                    Fidtext = FID_1.Text;
-                    Vidtext = VID_1.Value;
-                    break;
-                case 2:
-                    Didtext = DID_2.Text;
-                    Fidtext = FID_2.Text;
-                    Vidtext = VID_2.Value;
-                    break;
-            } 
-            eax = ((IddDiv & 0xFF) << 30) | ((IddVal & 0xFF) << 22) | ((CpuVid & 0xFF) << 14) |
-                  ((uint.Parse(Didtext) & 0xFF) << 8) | (uint.Parse(Fidtext) & 0xFF);
-            if (NUMAUtil.HighestNumaNode > 0)
-            {
-                for (var i = 0; i <= 2; i++)
+                if (string.IsNullOrEmpty(DID_0.Text) || string.IsNullOrEmpty(FID_0.Text) || string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) || string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text)) { ReadPstate(); }
+                //Logic
+                var pstateId = p;
+                uint eax = default, edx = default;
+                uint IddDiv = 0x0;
+                uint IddVal = 0x0;
+                uint CpuVid = 0x0;
+                uint CpuDfsId = 0x0;
+                uint CpuFid = 0x0;
+                var Didtext = "12";
+                var Fidtext = "102";
+                var Vidtext = 56.0;
+                if (!Cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
                 {
-                    if (!WritePstateClick(pstateId, eax, edx, i))
+                    MessageBox.Show("Error reading PState! ID = " + pstateId);
+                    return;
+                }
+                CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
+                switch (p)
+                {
+                    case 0:
+                        Didtext = DID_0.Text;
+                        Fidtext = FID_0.Text;
+                        Vidtext = VID_0.Value;
+                        break;
+                    case 1:
+                        Didtext = DID_1.Text;
+                        Fidtext = FID_1.Text;
+                        Vidtext = VID_1.Value;
+                        break;
+                    case 2:
+                        Didtext = DID_2.Text;
+                        Fidtext = FID_2.Text;
+                        Vidtext = VID_2.Value;
+                        break;
+                }
+                eax = ((IddDiv & 0xFF) << 30) | ((IddVal & 0xFF) << 22) | ((CpuVid & 0xFF) << 14) |
+                      ((uint.Parse(Didtext) & 0xFF) << 8) | (uint.Parse(Fidtext) & 0xFF);
+                if (NUMAUtil.HighestNumaNode > 0)
+                {
+                    for (var i = 0; i <= 2; i++)
+                    {
+                        if (!WritePstateClick(pstateId, eax, edx, i))
+                        {
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    if (!WritePstateClick(pstateId, eax, edx))
                     {
                         return;
                     }
                 }
+                if (!WritePstateClick(pstateId, eax, edx)) { return; }
+                if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); }
+                equalvid = Math.Round((1.55 - Vidtext / 1000) / 0.00625).ToString();
+                var f = new Process();
+                f.StartInfo.UseShellExecute = false;
+                f.StartInfo.FileName = @"ryzenps.exe";
+                f.StartInfo.Arguments = "-p=" + p + " -v=" + equalvid;
+                f.StartInfo.CreateNoWindow = true;
+                f.StartInfo.RedirectStandardError = true;
+                f.StartInfo.RedirectStandardInput = true;
+                f.StartInfo.RedirectStandardOutput = true;
+                f.Start();
+                f.WaitForExit();
             }
-            else
-            {
-                if (!WritePstateClick(pstateId, eax, edx))
-                {
-                    return;
-                }
-            } 
-            if (!WritePstateClick(pstateId, eax, edx)) { return; } 
-            if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); } 
-            equalvid = Math.Round((1.55 - Vidtext / 1000) / 0.00625).ToString();
-            var f = new Process();
-            f.StartInfo.UseShellExecute = false;
-            f.StartInfo.FileName = @"ryzenps.exe";
-            f.StartInfo.Arguments = "-p=" + p + " -v=" + equalvid;
-            f.StartInfo.CreateNoWindow = true;
-            f.StartInfo.RedirectStandardError = true;
-            f.StartInfo.RedirectStandardInput = true;
-            f.StartInfo.RedirectStandardOutput = true;
-            f.Start();
-            f.WaitForExit();
-        } 
-        ReadPstate();
+            ReadPstate();
+        }
+        catch
+        {
+            // ignored
+        }
     }
-
-    [Obsolete]
+    [Obsolete("Obsolete")]
     public void WritePstatesWithoutP0()
     {
-        for (var p = 1; p < 3; p++)
+        try
         {
-            if (string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) || string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text)) { ReadPstate(); }
-            //Logic
-            var pstateId = p;
-            uint eax = default, edx = default;
-            uint IddDiv = 0x0;
-            uint IddVal = 0x0;
-            uint CpuVid = 0x0;
-            uint CpuDfsId = 0x0;
-            uint CpuFid = 0x0;
-            var Didtext = "12";
-            var Fidtext = "102";
-            if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+            for (var p = 1; p < 3; p++)
             {
-                MessageBox.Show("Error reading PState! ID = " + pstateId);
-                return;
-            }
-
-            CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
-            switch (p)
-            {
-                case 1:
-                    Didtext = DID_1.Text;
-                    Fidtext = FID_1.Text;
-                    break;
-                case 2:
-                    Didtext = DID_2.Text;
-                    Fidtext = FID_2.Text;
-                    break;
-            }
-
-            eax = ((IddDiv & 0xFF) << 30) | ((IddVal & 0xFF) << 22) | ((CpuVid & 0xFF) << 14) |
-                  ((uint.Parse(Didtext) & 0xFF) << 8) | (uint.Parse(Fidtext) & 0xFF);
-            if (NUMAUtil.HighestNumaNode > 0)
-            {
-                for (var i = 0; i <= 2; i++)
+                if (string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) || string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text)) { ReadPstate(); }
+                //Logic
+                var pstateId = p;
+                uint eax = default, edx = default;
+                uint IddDiv = 0x0;
+                uint IddVal = 0x0;
+                uint CpuVid = 0x0;
+                uint CpuDfsId = 0x0;
+                uint CpuFid = 0x0;
+                var Didtext = "12";
+                var Fidtext = "102";
+                if (!Cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
                 {
-                    if (!WritePstateClick(pstateId, eax, edx, i))
+                    MessageBox.Show("Error reading PState! ID = " + pstateId);
+                    return;
+                }
+                CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
+                switch (p)
+                {
+                    case 1:
+                        Didtext = DID_1.Text;
+                        Fidtext = FID_1.Text;
+                        break;
+                    case 2:
+                        Didtext = DID_2.Text;
+                        Fidtext = FID_2.Text;
+                        break;
+                }
+
+                eax = ((IddDiv & 0xFF) << 30) | ((IddVal & 0xFF) << 22) | ((CpuVid & 0xFF) << 14) |
+                      ((uint.Parse(Didtext) & 0xFF) << 8) | (uint.Parse(Fidtext) & 0xFF);
+                if (NUMAUtil.HighestNumaNode > 0)
+                {
+                    for (var i = 0; i <= 2; i++)
+                    {
+                        if (!WritePstateClick(pstateId, eax, edx, i))
+                        {
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    if (!WritePstateClick(pstateId, eax, edx))
                     {
                         return;
                     }
                 }
-            }
-            else
-            {
                 if (!WritePstateClick(pstateId, eax, edx))
                 {
                     return;
                 }
+                if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
+                {
+                    MessageBox.Show("Error writing PState! ID = " + pstateId);
+                }
             }
-
-            if (!WritePstateClick(pstateId, eax, edx))
-            {
-                return;
-            }
-
-            if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
-            { MessageBox.Show("Error writing PState! ID = " + pstateId); }
+            ReadPstate();
         }
-
-        ReadPstate();
+        catch
+        {
+            // ignored
+        }
     }
-
     public static void CalculatePstateDetails(uint eax, ref uint IddDiv, ref uint IddVal, ref uint CpuVid,
         ref uint CpuDfsId, ref uint CpuFid)
     {
@@ -1907,109 +2103,116 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         CpuDfsId = (eax >> 8) & 0x3F;
         CpuFid = eax & 0xFF;
     }
-
     // P0 fix C001_0015 HWCR[21]=1
     // Fixes timer issues when not using HPET
-    [Obsolete]
+    [Obsolete("Obsolete")]
     public bool ApplyTscWorkaround()
     {
-        uint eax = 0, edx = 0; 
-        if (cpu.ReadMsr(0xC0010015, ref eax, ref edx))
+        uint eax = 0, edx = 0;
+        if (Cpu.ReadMsr(0xC0010015, ref eax, ref edx))
         {
             eax |= 0x200000;
             return cpu.WriteMsrWn(0xC0010015, eax, edx);
-        } 
+        }
         MessageBox.Show("Error applying TSC fix!");
         return false;
     }
 
-    [Obsolete]
+    [Obsolete("Obsolete")]
     private bool WritePstateClick(int pstateId, uint eax, uint edx, int numanode = 0)
     {
-        if (NUMAUtil.HighestNumaNode > 0)
+        try
         {
-            NUMAUtil.SetThreadProcessorAffinity((ushort)(numanode + 1),
-            Enumerable.Range(0, Environment.ProcessorCount).ToArray());
-        } 
-        if (!ApplyTscWorkaround())
-        { return false; } 
-        if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; } 
-        return true;
+            if (NUMAUtil.HighestNumaNode > 0)
+            {
+                NUMAUtil.SetThreadProcessorAffinity((ushort)(numanode + 1),
+                Enumerable.Range(0, Environment.ProcessorCount).ToArray());
+            }
+            if (!ApplyTscWorkaround()) { return false; }
+            if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; }
+            return true;
+        }
+        catch { return false; }
     }
 
+    [Obsolete("Obsolete")]
     private void ReadPstate()
     {
-        for (var i = 0; i < 3; i++)
+        try
         {
-            uint eax = default, edx = default;
-            var pstateId = i;
-            try
+            for (var i = 0; i < 3; i++)
             {
-                if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+                uint eax = default, edx = default;
+                var pstateId = i;
+                try
                 {
-                    MessageBox.Show("Error reading PState! ID = " + pstateId);
-                    return;
+                    if (!Cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+                    {
+                        MessageBox.Show("Error reading PState! ID = " + pstateId);
+                        return;
+                    }
+                }
+                catch
+                {
+                    // ignored
+                }
+
+                uint IddDiv = 0x0;
+                uint IddVal = 0x0;
+                uint CpuVid = 0x0;
+                uint CpuDfsId = 0x0;
+                uint CpuFid = 0x0;
+                CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
+                switch (i)
+                {
+                    case 0:
+                        DID_0.Text = Convert.ToString(CpuDfsId, 10);
+                        FID_0.Text = Convert.ToString(CpuFid, 10);
+                        P0_Freq.Content = CpuFid * 25 / (CpuDfsId * 12.5) * 100;
+                        int Mult_0_v;
+                        Mult_0_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
+                        Mult_0_v -= 4;
+                        if (Mult_0_v <= 0)
+                        {
+                            Mult_0_v = 0;
+                            App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
+                        }
+                        Mult_0.SelectedIndex = Mult_0_v;
+                        break;
+                    case 1:
+                        DID_1.Text = Convert.ToString(CpuDfsId, 10);
+                        FID_1.Text = Convert.ToString(CpuFid, 10);
+                        P1_Freq.Content = CpuFid * 25 / (CpuDfsId * 12.5) * 100;
+                        int Mult_1_v;
+                        Mult_1_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
+                        Mult_1_v -= 4;
+                        if (Mult_1_v <= 0)
+                        {
+                            Mult_1_v = 0;
+                            App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
+                        }
+                        Mult_1.SelectedIndex = Mult_1_v;
+                        break;
+                    case 2:
+                        DID_2.Text = Convert.ToString(CpuDfsId, 10);
+                        FID_2.Text = Convert.ToString(CpuFid, 10);
+                        P2_Freq.Content = CpuFid * 25 / (CpuDfsId * 12.5) * 100;
+                        int Mult_2_v;
+                        Mult_2_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
+                        Mult_2_v -= 4;
+                        if (Mult_2_v <= 0)
+                        {
+                            Mult_2_v = 0;
+                            App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
+                        }
+                        Mult_2.SelectedIndex = Mult_2_v;
+                        break;
                 }
             }
-            catch
-            {
-            }
-
-            uint IddDiv = 0x0;
-            uint IddVal = 0x0;
-            uint CpuVid = 0x0;
-            uint CpuDfsId = 0x0;
-            uint CpuFid = 0x0;
-
-            CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
-            switch (i)
-            {
-                case 0:
-                    DID_0.Text = Convert.ToString(CpuDfsId, 10);
-                    FID_0.Text = Convert.ToString(CpuFid, 10);
-                    P0_Freq.Content = CpuFid * 25 / (CpuDfsId * 12.5) * 100;
-                    int Mult_0_v;
-                    Mult_0_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
-                    Mult_0_v -= 4;
-                    if (Mult_0_v <= 0)
-                    {
-                        Mult_0_v = 0;
-                        App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
-                    }
-
-                    Mult_0.SelectedIndex = Mult_0_v;
-                    break;
-                case 1:
-                    DID_1.Text = Convert.ToString(CpuDfsId, 10);
-                    FID_1.Text = Convert.ToString(CpuFid, 10);
-                    P1_Freq.Content = CpuFid * 25 / (CpuDfsId * 12.5) * 100;
-                    int Mult_1_v;
-                    Mult_1_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
-                    Mult_1_v -= 4;
-                    if (Mult_1_v <= 0)
-                    {
-                        Mult_1_v = 0;
-                        App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
-                    }
-
-                    Mult_1.SelectedIndex = Mult_1_v;
-                    break;
-                case 2:
-                    DID_2.Text = Convert.ToString(CpuDfsId, 10);
-                    FID_2.Text = Convert.ToString(CpuFid, 10);
-                    P2_Freq.Content = CpuFid * 25 / (CpuDfsId * 12.5) * 100;
-                    int Mult_2_v;
-                    Mult_2_v = (int)(CpuFid * 25 / (CpuDfsId * 12.5));
-                    Mult_2_v -= 4;
-                    if (Mult_2_v <= 0)
-                    {
-                        Mult_2_v = 0;
-                        App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
-                    }
-
-                    Mult_2.SelectedIndex = Mult_2_v;
-                    break;
-            }
+        }
+        catch
+        {
+            // ignored
         }
     }
 
@@ -2026,85 +2229,33 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
 
         return instanceName;
     }
-
-    private void PopulateWmiFunctions()
-    {
-        try
-        {
-            instanceName = GetWmiInstanceName();
-            classInstance = new ManagementObject(wmiScope,
-                $"{wmiAMDACPI}.InstanceName='{instanceName}'",
-                null);
-
-            // Get function names with their IDs
-            string[] functionObjects = { "GetObjectID", "GetObjectID2" };
-            var index = 1; 
-            foreach (var functionObject in functionObjects)
-            {
-                try
-                {
-                    pack = WMI.InvokeMethod(classInstance, functionObject, "pack", null, 0);
-
-                    if (pack != null)
-                    {
-                        var ID = (uint[])pack.GetPropertyValue("ID");
-                        var IDString = (string[])pack.GetPropertyValue("IDString");
-                        var Length = (byte)pack.GetPropertyValue("Length");
-
-                        for (var i = 0; i < Length; ++i)
-                        {
-                            if (IDString[i] == "")
-                            {
-                                break;
-                            }
-
-                            var item = new WmiCmdListItem($"{IDString[i] + ": "}{ID[i]:X8}", ID[i],
-                                !IDString[i].StartsWith("Get"));
-                        }
-                    }
-                }
-                catch
-                {
-                    // ignored
-                } index++;
-            }
-        }
-        catch
-        {
-            // ignored
-        }
-    } 
-    //Pstates section
-    private void Pstate_Expanding(Expander sender, ExpanderExpandingEventArgs args)
-    {
-        // ReadPstate();
-    } 
+    //Pstates section 
     private void EnablePstates_Click(object sender, RoutedEventArgs e)
     {
-        if (EnablePstates.IsOn) { EnablePstates.IsOn = false; } else { EnablePstates.IsOn = true; } 
+        if (EnablePstates.IsOn) { EnablePstates.IsOn = false; } else { EnablePstates.IsOn = true; }
         EnablePstatess();
-    } 
+    }
     private void TurboBoost_Click(object sender, RoutedEventArgs e)
     {
-        if (Turbo_boost.IsEnabled) { if (Turbo_boost.IsOn) { Turbo_boost.IsOn = false; } else { Turbo_boost.IsOn = true; } } 
+        if (Turbo_boost.IsEnabled) { if (Turbo_boost.IsOn) { Turbo_boost.IsOn = false; } else { Turbo_boost.IsOn = true; } }
         TurboBoost();
-    } 
+    }
     private void Autoapply_Click(object sender, RoutedEventArgs e)
     {
-        if (Autoapply_1.IsOn) { Autoapply_1.IsOn = false; } else { Autoapply_1.IsOn = true; } 
+        if (Autoapply_1.IsOn) { Autoapply_1.IsOn = false; } else { Autoapply_1.IsOn = true; }
         Autoapply();
-    } 
+    }
     private void WithoutP0_Click(object sender, RoutedEventArgs e)
     {
-        if (Without_P0.IsOn) { Without_P0.IsOn = false; } else { Without_P0.IsOn = true; } 
+        if (Without_P0.IsOn) { Without_P0.IsOn = false; } else { Without_P0.IsOn = true; }
         WithoutP0();
     }
 
     private void IgnoreWarn_Click(object sender, RoutedEventArgs e)
     {
-        if (IgnoreWarn.IsOn) { IgnoreWarn.IsOn = false; } else { IgnoreWarn.IsOn = true; } 
+        if (IgnoreWarn.IsOn) { IgnoreWarn.IsOn = false; } else { IgnoreWarn.IsOn = true; }
         IgnoreWarning();
-    } 
+    }
     //Enable or disable pstate toggleswitches...
     private void EnablePstatess()
     {
@@ -2122,9 +2273,9 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             profile[indexprofile].enablePstateEditor = false;
             ProfileSave();
         }
-    } 
+    }
     private void TurboBoost()
-    { 
+    {
         Turboo_Boost(); //Турбобуст... 
         if (Turbo_boost.IsOn) //Сохранение
         {
@@ -2142,10 +2293,10 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             profile[indexprofile].turboBoost = false;
             ProfileSave();
         }
-    } 
+    }
     public void Turboo_Boost()
     {
-        if (Turbo_boost.IsOn) { SetActive(); Enable(); } else { SetActive(); Disable(); } 
+        if (Turbo_boost.IsOn) { SetActive(); Enable(); } else { SetActive(); Disable(); }
         void Enable()
         {
             var p = new Process(); //AC
@@ -2168,7 +2319,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             p1.StartInfo.RedirectStandardInput = true;
             p1.StartInfo.RedirectStandardOutput = true;
             p1.Start();
-        } 
+        }
         void Disable()
         {
             var p = new Process(); //AC
@@ -2191,7 +2342,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             p1.StartInfo.RedirectStandardInput = true;
             p1.StartInfo.RedirectStandardOutput = true;
             p1.Start();
-        } 
+        }
         void SetActive()
         {
             var p = new Process();
@@ -2204,7 +2355,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             p.StartInfo.RedirectStandardOutput = true;
             p.Start();
         }
-    } 
+    }
     private void Autoapply()
     {
         if (Autoapply_1.IsOn)
@@ -2221,7 +2372,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             profile[indexprofile].autoPstate = false;
             ProfileSave();
         }
-    } 
+    }
     private void WithoutP0()
     {
         if (Without_P0.IsOn)
@@ -2238,7 +2389,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             profile[indexprofile].p0Ignorewarn = false;
             ProfileSave();
         }
-    } 
+    }
     private void IgnoreWarning()
     {
         if (IgnoreWarn.IsOn)
@@ -2255,13 +2406,13 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             profile[indexprofile].ignoreWarn = false;
             ProfileSave();
         }
-    } 
+    }
     //Toggleswitches pstate
-    private void EnablePstates_Toggled(object sender, RoutedEventArgs e) => EnablePstatess(); 
-    private void Without_P0_Toggled(object sender, RoutedEventArgs e) => WithoutP0(); 
-    private void Autoapply_1_Toggled(object sender, RoutedEventArgs e) => Autoapply(); 
+    private void EnablePstates_Toggled(object sender, RoutedEventArgs e) => EnablePstatess();
+    private void Without_P0_Toggled(object sender, RoutedEventArgs e) => WithoutP0();
+    private void Autoapply_1_Toggled(object sender, RoutedEventArgs e) => Autoapply();
     private void Turbo_boost_Toggled(object sender, RoutedEventArgs e) => TurboBoost();
-    private void Ignore_Toggled(object sender, RoutedEventArgs e) => IgnoreWarning(); 
+    private void Ignore_Toggled(object sender, RoutedEventArgs e) => IgnoreWarning();
     //Autochanging values
     private async void FID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
@@ -2286,7 +2437,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             else { relay = false; }
             Save_ID0();
         }
-    } 
+    }
     private async void Mult_0_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (waitforload == false)
@@ -2308,7 +2459,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 waitforload = false;
             }
         }
-    } 
+    }
     private async void DID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
         if (waitforload == false)
@@ -2334,10 +2485,11 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             try
             {
                 Mult_0.SelectedIndex = (int)Mult_0_v;
-            } catch { }
+            }
+            catch { }
             Save_ID0();
         }
-    } 
+    }
     private async void FID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
         if (waitforload == false)
@@ -2365,7 +2517,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             }
             Save_ID1();
         }
-    } 
+    }
     private async void Mult_1_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (waitforload == false)
@@ -2386,7 +2538,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 waitforload = false;
             }
         }
-    } 
+    }
     private async void DID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
         if (waitforload == false)
@@ -2412,13 +2564,14 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             try
             {
                 Mult_1.SelectedIndex = (int)Mult_2_v;
-            } catch { }
+            }
+            catch { }
             Save_ID1();
         }
-    } 
+    }
     private async void Mult_2_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (waitforload == true) { return; }
+        if (waitforload) { return; }
         await Task.Delay(20);
         double Fid_value;
         var Did_value = DID_2.Value;
@@ -2434,7 +2587,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             Save_ID2();
             waitforload = false;
         }
-    } 
+    }
     private async void FID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
         if (waitforload == false)
@@ -2458,7 +2611,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             else { relay = false; }
             Save_ID2();
         }
-    } 
+    }
     private async void DID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
         if (waitforload == false)
@@ -2471,7 +2624,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             try { Mult_2.SelectedIndex = (int)Mult_2_v; } catch { }
             Save_ID2();
         }
-    } 
+    }
     public void Save_ID0()
     {
         if (waitforload == false)
@@ -2485,7 +2638,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             profile[indexprofile].vid0 = VID_0.Value;
             ProfileSave();
         }
-    } 
+    }
     public void Save_ID1()
     {
         if (waitforload == false)
@@ -2499,7 +2652,7 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             profile[indexprofile].vid1 = VID_1.Value;
             ProfileSave();
         }
-    } 
+    }
     public void Save_ID2()
     {
         if (waitforload == false)
@@ -2513,10 +2666,10 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
             profile[indexprofile].vid2 = VID_2.Value;
             ProfileSave();
         }
-    } 
-    private void VID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID0(); 
-    private void VID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID1(); 
-    private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID2(); 
+    }
+    private void VID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID0();
+    private void VID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID1();
+    private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID2();
     //Send Message
     private async Task Send_Message(string msg, string submsg, Symbol symbol)
     {
@@ -2529,20 +2682,39 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         UniToolTip.IsOpen = true;
         await Task.Delay(3000);
         UniToolTip.IsOpen = false;
-    } 
+    }
     //SMU КОМАНДЫ
-    [Obsolete]
-    private async void ApplySettings()
+    [Obsolete("Obsolete")]
+    private async void ApplySettings(int mode, int CommandIndex)
     {
         try
         {
-            var args = Services.Utils.MakeCmdArgs();
-            var userArgs = textBoxARG0.Text.Trim().Split(',');
+            uint[]? args;
+            string[]? userArgs;
+            uint addrMsg;
+            uint addrRsp;
+            uint addrArg;
+            uint command;
+            if (mode != 0)
+            {
+                SmuSettingsLoad();
+                args = Utils.MakeCmdArgs();
+                userArgs = smusettings.QuickSMUCommands[CommandIndex].Argument.Trim().Split(',');
+                TryConvertToUint(smusettings.MailBoxes[smusettings.QuickSMUCommands[CommandIndex].MailIndex].CMD, out addrMsg);
+                TryConvertToUint(smusettings.MailBoxes[smusettings.QuickSMUCommands[CommandIndex].MailIndex].RSP, out addrRsp);
+                TryConvertToUint(smusettings.MailBoxes[smusettings.QuickSMUCommands[CommandIndex].MailIndex].ARG, out addrArg);
+                TryConvertToUint(smusettings.QuickSMUCommands[CommandIndex].Command, out command);
+            }
+            else
+            {
+                args = Utils.MakeCmdArgs();
+                userArgs = textBoxARG0.Text.Trim().Split(',');
+                TryConvertToUint(textBoxCMDAddress.Text, out addrMsg);
+                TryConvertToUint(textBoxRSPAddress.Text, out addrRsp);
+                TryConvertToUint(textBoxARGAddress.Text, out addrArg);
+                TryConvertToUint(textBoxCMD.Text, out command);
 
-            TryConvertToUint(textBoxCMDAddress.Text, out var addrMsg);
-            TryConvertToUint(textBoxRSPAddress.Text, out var addrRsp);
-            TryConvertToUint(textBoxARGAddress.Text, out var addrArg);
-            TryConvertToUint(textBoxCMD.Text, out var command);
+            }
             testMailbox.SMU_ADDR_MSG = addrMsg;
             testMailbox.SMU_ADDR_RSP = addrRsp;
             testMailbox.SMU_ADDR_ARG = addrArg;
@@ -2555,16 +2727,14 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
                 TryConvertToUint(userArgs[i], out var temp);
                 args[i] = temp;
             }
-            //App.MainWindow.ShowMessageDialogAsync("MSG Address:  0x" + Convert.ToString(testMailbox.SMU_ADDR_MSG, 16).ToUpper() + "\n" + "RSP Address:  0x" + Convert.ToString(testMailbox.SMU_ADDR_RSP, 16).ToUpper() + "\n" + "ARG0 Address: 0x" + Convert.ToString(testMailbox.SMU_ADDR_ARG, 16).ToUpper() + "\n" + "ARG0        : 0x" + Convert.ToString(args[0], 16).ToUpper() + " " + command.ToString(), "Adress");
-            var status = cpu.smu.SendSmuCommand(testMailbox, command, ref args);
-            //App.MainWindow.ShowMessageDialogAsync(testMailbox.SMU_ADDR_RSP + " " + testMailbox.SMU_ADDR_MSG + " " + testMailbox.SMU_ADDR_ARG + " " + command.ToString() + args[0].ToString(), "Set!");
-            if (status == Services.SMU.Status.OK)
+            var status = cpu.Smu.SendSmuCommand(testMailbox, command, ref args);
+            if (status == SMU.Status.OK)
             {
                 await Send_Message("SMUOKText".GetLocalized(), "SMUOKDesc".GetLocalized(), Symbol.Accept);
             }
             else
             {
-                if (status == Services.SMU.Status.CMD_REJECTED_PREREQ)
+                if (status == SMU.Status.CMD_REJECTED_PREREQ)
                 {
                     await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorRejected".GetLocalized(), Symbol.Dislike);
                 }
@@ -2589,16 +2759,15 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         {
             throw new ApplicationException("Invalid hexadecimal value.");
         }
-    } 
-    [Obsolete]
+    }
+    [Obsolete("Obsolete")]
     private void DevEnv_Expanding(Expander sender, ExpanderExpandingEventArgs args)
     {
         RunBackgroundTask(BackgroundWorkerTrySettings_DoWork!, SmuScan_WorkerCompleted!);
-    } 
+    }
     private void ComboBoxMailboxSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (comboBoxMailboxSelect.SelectedItem is MailboxListItem item) { InitTestMailbox(item.msgAddr, item.rspAddr, item.argAddr); }
-        else { return; }
     }
     private void InitTestMailbox(uint msgAddr, uint rspAddr, uint argAddr)
     {
@@ -2629,14 +2798,393 @@ public sealed partial class ПараметрыPage : Microsoft.UI.Xaml.Controls.
         if (result == ContentDialogResult.Primary)
         {
             var newWindow = new PowerWindow(cpu);
-            var micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop
+            var micaBackdrop = new MicaBackdrop
             {
                 Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
             };
             newWindow.SystemBackdrop = micaBackdrop;
             newWindow.Activate();
         }
-    } 
+    }
+
+    private void SMUEnabl_Click(object sender, RoutedEventArgs e)
+    {
+        if (EnableSMU.IsOn) { EnableSMU.IsOn = false; } else { EnableSMU.IsOn = true; }
+        SMUEnabl();
+    }
+    private void EnableSMU_Toggled(object sender, RoutedEventArgs e) => SMUEnabl();
+    private void SMUEnabl()
+    {
+        if (EnableSMU.IsOn) { devices.smuenabled = true; DeviceSave(); profile[indexprofile].smuEnabled = true; ProfileSave(); }
+        else { devices.smuenabled = false; DeviceSave(); profile[indexprofile].smuEnabled = false; ProfileSave(); }
+    }
+
+    [Obsolete("Obsolete")]
+    private void CreateQuickCommandSMU_Click(object sender, RoutedEventArgs e)
+    {
+        QuickDialog(0, 0);
+    }
+    [Obsolete("Obsolete")]
+    private async void QuickDialog(int destination, int rowindex)
+    {
+        SMUSymbol1 = new FontIcon
+        {
+            FontFamily = new FontFamily("Segoe Fluent Icons"),
+            Glyph = SMUSymbol,
+            Margin = new Thickness(-4, -2, -5, -5),
+        };
+        var symbolButton = new Button
+        {
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(320, 60, 0, 0),
+            Width = 40,
+            Height = 40,
+            Content = new ContentControl
+            {
+                Content = SMUSymbol1
+            }
+        };
+        var comboSelSMU = new ComboBox
+        {
+            Margin = new Thickness(0, 20, 0, 0),
+            VerticalAlignment = VerticalAlignment.Top
+        };
+        var mainText = new TextBox
+        {
+            Margin = new Thickness(0, 60, 0, 0),
+            PlaceholderText = "New_Name".GetLocalized(),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Height = 39.5,
+            Width = 315
+        };
+        var descText = new TextBox
+        {
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(0, 105.5, 0, 0),
+            PlaceholderText = "Desc".GetLocalized(),
+            Height = 40,
+            Width = 360
+        };
+        var cmdText = new TextBox
+        {
+            Margin = new Thickness(0, 152, 0, 0),
+            PlaceholderText = "Command".GetLocalized(),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Height = 40,
+            Width = 176
+        };
+        var argText = new TextBox
+        {
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(180, 152, 0, 0),
+            PlaceholderText = "Arguments".GetLocalized(),
+            Height = 40,
+            Width = 179
+        };
+        var autoRun = new CheckBox
+        {
+            Margin = new Thickness(1, 195, 0, 0),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Content = "Param_Autorun".GetLocalized(),
+            IsChecked = false
+        };
+        var applyWith = new CheckBox
+        {
+            Margin = new Thickness(1, 225, 0, 0),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Content = "Param_WithApply".GetLocalized(),
+            IsChecked = false
+        };
+        try
+        {
+            foreach (var item in comboBoxMailboxSelect.Items)
+            {
+                comboSelSMU.Items.Add(item);
+            }
+            comboSelSMU.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
+            comboSelSMU.SelectionChanged += ComboSelSMU_SelectionChanged;
+            symbolButton.Click += SymbolButton_Click;
+            if (destination != 0)
+            {
+                SmuSettingsLoad();
+                SMUSymbol = smusettings.QuickSMUCommands[rowindex].Symbol;
+                SMUSymbol1.Glyph = smusettings.QuickSMUCommands[rowindex].Symbol;
+                comboSelSMU.SelectedIndex = smusettings.QuickSMUCommands[rowindex].MailIndex;
+                mainText.Text = smusettings.QuickSMUCommands[rowindex].Name;
+                descText.Text = smusettings.QuickSMUCommands[rowindex].Description;
+                cmdText.Text = smusettings.QuickSMUCommands[rowindex].Command;
+                argText.Text = smusettings.QuickSMUCommands[rowindex].Argument;
+                autoRun.IsChecked = smusettings.QuickSMUCommands[rowindex].Startup;
+                applyWith.IsChecked = smusettings.QuickSMUCommands[rowindex].ApplyWith;
+            }
+        }
+        catch { }
+        try
+        {
+            //var result = ContentDialogResult.None;
+            var newQuickCommand = new ContentDialog
+            {
+                Title = "AdvancedCooler_Del_Action".GetLocalized(),
+                Content = new Grid
+                {
+                    Children =
+                    {
+                        comboSelSMU,
+                        symbolButton,
+                        mainText,
+                        descText,
+                        cmdText,
+                        argText,
+                        autoRun,
+                        applyWith
+                    }
+                },
+                PrimaryButtonText = "Save".GetLocalized(),
+                CloseButtonText = "Cancel".GetLocalized(),
+                DefaultButton = ContentDialogButton.Close
+            };
+            if (destination != 0)
+            {
+                newQuickCommand.SecondaryButtonText = "Delete".GetLocalized();
+            }
+            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            {
+                newQuickCommand.XamlRoot = XamlRoot;
+            }
+            newQuickCommand.Closed += (sender, args) =>
+            {
+                newQuickCommand?.Hide();
+                newQuickCommand = null;
+            };
+            // Отобразить ContentDialog и обработать результат
+            try
+            {
+                var saveIndex = 0;
+                var result = await newQuickCommand.ShowAsync();
+                // Создать ContentDialog 
+                if (result == ContentDialogResult.Primary)
+                {
+                    SmuSettingsLoad();
+                    saveIndex = comboSelSMU.SelectedIndex;
+                    for (var i = 0; i < comboSelSMU.Items.Count; i++)
+                    {
+                        var adressName = false;
+                        var adressIndex = 0;
+                        comboSelSMU.SelectedIndex = i;
+                        if (smusettings.MailBoxes == null)
+                        {
+                            smusettings.MailBoxes = new List<CustomMailBoxes>();
+                            adressIndex = smusettings.MailBoxes.Count;
+                            smusettings.MailBoxes.Add(new CustomMailBoxes
+                            {
+                                Name = comboSelSMU.SelectedItem.ToString(),
+                                CMD = textBoxCMDAddress.Text,
+                                RSP = textBoxRSPAddress.Text,
+                                ARG = textBoxARGAddress.Text
+                            });
+                        }
+                        else
+                        {
+                            for (var d = 0; d < smusettings.MailBoxes.Count; d++)
+                            {
+                                if (smusettings.MailBoxes[d].Name != null && smusettings.MailBoxes[d].Name == comboSelSMU.SelectedItem.ToString())
+                                {
+                                    adressName = true;
+                                    adressIndex = d;
+                                    break;
+                                }
+                            }
+                            if (adressName == false)
+                            {
+                                smusettings.MailBoxes.Add(new CustomMailBoxes
+                                {
+                                    Name = comboSelSMU.SelectedItem.ToString(),
+                                    CMD = textBoxCMDAddress.Text,
+                                    RSP = textBoxRSPAddress.Text,
+                                    ARG = textBoxARGAddress.Text
+                                });
+                            }
+                        }
+                    }
+                    SmuSettingsSave();
+                    if (cmdText.Text != string.Empty && argText.Text != string.Empty)
+                    {
+                        var run = false;
+                        var apply = false;
+                        if (autoRun.IsChecked == true) { run = true; }
+                        if (applyWith.IsChecked == true) { apply = true; }
+                        if (destination == 0)
+                        {
+                            smusettings.QuickSMUCommands ??= new List<QuickSMUCommands>();
+                            smusettings.QuickSMUCommands.Add(new QuickSMUCommands
+                            {
+                                Name = mainText.Text,
+                                Description = descText.Text,
+                                Symbol = SMUSymbol,
+                                MailIndex = saveIndex,
+                                Startup = run,
+                                ApplyWith = apply,
+                                Command = cmdText.Text,
+                                Argument = argText.Text
+                            });
+                        }
+                        else
+                        {
+                            smusettings.QuickSMUCommands[rowindex].Symbol = SMUSymbol;
+                            smusettings.QuickSMUCommands[rowindex].Symbol = SMUSymbol1.Glyph;
+                            smusettings.QuickSMUCommands[rowindex].MailIndex = saveIndex;
+                            smusettings.QuickSMUCommands[rowindex].Name = mainText.Text;
+                            smusettings.QuickSMUCommands[rowindex].Description = descText.Text;
+                            smusettings.QuickSMUCommands[rowindex].Command = cmdText.Text;
+                            smusettings.QuickSMUCommands[rowindex].Argument = argText.Text;
+                            smusettings.QuickSMUCommands[rowindex].Startup = run;
+                            smusettings.QuickSMUCommands[rowindex].ApplyWith = apply;
+                        }
+                    }
+                    comboBoxMailboxSelect.SelectedIndex = saveIndex;
+                    SmuSettingsSave();
+                    Init_QuickSMU();
+                    newQuickCommand?.Hide();
+                    newQuickCommand = null;
+                }
+                else
+                {
+                    if (result == ContentDialogResult.Secondary)
+                    {
+                        SmuSettingsLoad();
+                        smusettings.QuickSMUCommands.RemoveAt(rowindex);
+                        SmuSettingsSave();
+                        Init_QuickSMU();
+                    }
+                    else
+                    {
+                        newQuickCommand?.Hide();
+                        newQuickCommand = null;
+                    }
+                }
+            }
+            catch
+            {
+                newQuickCommand?.Hide();
+                newQuickCommand = null;
+            }
+
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    private void SymbolButton_Click(object sender, RoutedEventArgs e)
+    {
+        SymbolFlyout.ShowAt(sender as Button);
+    }
+    private void ComboSelSMU_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            var comboBox = sender as ComboBox;
+            if (comboBox != null)
+            {
+                comboBoxMailboxSelect.SelectedIndex = comboBox.SelectedIndex;
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    private void SymbolList_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        var glypher = (FontIcon)e.ClickedItem;
+        if (glypher != null)
+        {
+            SMUSymbol = glypher.Glyph;
+            SMUSymbol1.Glyph = glypher.Glyph;
+        }
+    }
+    private void SMUNotes_TextChanged(object sender, RoutedEventArgs e)
+    {
+        SmuSettingsLoad();
+        var documentRange = SMUNotes.Document.GetRange(0, TextConstants.MaxUnitCount);
+        string content;
+        documentRange.GetText(TextGetOptions.FormatRtf, out content);
+        smusettings.Note = content;
+        SmuSettingsSave();
+    }
+    private void ToHex_Click(object sender, RoutedEventArgs e)
+    {
+        // Преобразование выделенного текста в шестнадцатиричную систему
+        if (textBoxARG0.SelectedText != "")
+        {
+            try
+            {
+                var decimalValue = int.Parse(textBoxARG0.SelectedText);
+                var hexValue = decimalValue.ToString("X");
+                textBoxARG0.SelectedText = hexValue;
+            }
+            catch (FormatException)
+            {
+                // Отобразить сообщение об ошибке
+            }
+        }
+        else
+        {
+            try
+            {
+                var decimalValue = int.Parse(textBoxARG0.Text);
+                var hexValue = decimalValue.ToString("X");
+                textBoxARG0.Text = hexValue;
+            }
+            catch (FormatException)
+            {
+                // Отобразить сообщение об ошибке
+            }
+        }
+    }
+    private void CopyThis_Click(object sender, RoutedEventArgs e)
+    {
+        if (textBoxARG0.SelectedText != "")
+        {
+            // Скопировать текст в буфер обмена
+            Clipboard.SetText(textBoxARG0.SelectedText);
+        }
+        else
+        {
+            // Выделить весь текст
+            textBoxARG0.SelectAll();
+            // Скопировать текст в буфер обмена
+            Clipboard.SetText(textBoxARG0.Text);
+        }
+    }
+    private void CutThis_Click(object sender, RoutedEventArgs e)
+    {
+        if (textBoxARG0.SelectedText != "")
+        {
+            // Скопировать текст в буфер обмена
+            Clipboard.SetText(textBoxARG0.SelectedText);
+            textBoxARG0.SelectedText = "";
+        }
+        else
+        {
+            // Выделить весь текст
+            textBoxARG0.SelectAll();
+            // Скопировать текст в буфер обмена
+            Clipboard.SetText(textBoxARG0.Text);
+            textBoxARG0.Text = "";
+        }
+    }
+    private void SelectAllThis_Click(object sender, RoutedEventArgs e)
+    {
+        // Выделить весь текст
+        textBoxARG0.SelectAll();
+    }
 #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 }

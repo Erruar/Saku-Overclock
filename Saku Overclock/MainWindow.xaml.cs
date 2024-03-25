@@ -8,11 +8,13 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using System.Runtime.InteropServices;
+using Saku_Overclock.SMUEngine;
 
 namespace Saku_Overclock;
-#pragma warning disable IDE0044 // Добавить модификатор только для чтения
 #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 #pragma warning disable CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).
+#pragma warning disable CA1041 // Укажите сообщение ObsoleteAttribute
+
 public sealed partial class MainWindow : WindowEx
 {
     private Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
@@ -36,17 +38,19 @@ public sealed partial class MainWindow : WindowEx
     }
     public NotifyIcon ni = new();
     // Import dwmapi.dll and define DwmSetWindowAttribute in C# corresponding to the native function.
-    [DllImport("dwmapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern long DwmSetWindowAttribute(IntPtr hwnd,
+    [LibraryImport("dwmapi.dll", SetLastError = true)]
+    private static partial long DwmSetWindowAttribute(IntPtr hwnd,
                                                      DWMWINDOWATTRIBUTE attribute,
                                                      ref DWM_WINDOW_CORNER_PREFERENCE pvAttribute,
                                                      uint cbAttribute);
+
+    [Obsolete]
     public MainWindow()
     {
         InitializeComponent();
-        this.WindowStateChanged += (sender, e) =>
+        WindowStateChanged += (sender, e) =>
         {
-            if(this.WindowState == WindowState.Minimized)
+            if(WindowState == WindowState.Minimized)
             { 
                 // Скройте окно
                 this.Hide();
@@ -64,7 +68,7 @@ public sealed partial class MainWindow : WindowEx
                     delegate (object sender, EventArgs args)
                     {
                         this.Show();
-                        this.WindowState = WindowState.Normal;
+                        WindowState = WindowState.Normal;
                     };
             ni.ContextMenuStrip = new ContextMenuStrip();
             var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE;
@@ -111,7 +115,7 @@ public sealed partial class MainWindow : WindowEx
         }
         catch
         {
-
+            // ignored
         }
     }
     private async void Set_Blue()
@@ -119,15 +123,17 @@ public sealed partial class MainWindow : WindowEx
         try
         {
             await Task.Delay(120);
-            if (config.bluetheme == true)
+            if (config.bluetheme)
             {
                 if (App.MainWindow.Content is FrameworkElement rootElement)
                 {
                     rootElement.RequestedTheme = ElementTheme.Dark;
                     TitleBarHelper.UpdateTitleBar(ElementTheme.Dark);
                 }
-                Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
-                micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt;
+                var micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop
+                {
+                    Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
+                };
                 App.MainWindow.SystemBackdrop = micaBackdrop;
             }
         }
@@ -143,7 +149,7 @@ public sealed partial class MainWindow : WindowEx
         ConfigLoad();
         try
         {
-            if (config.autooverclock == true) { Applyer.Apply(); if (devices.autopstate == true && devices.enableps == true) { var cpu = new ПараметрыPage(); cpu.BtnPstateWrite_Click(); } }
+            if (config.autooverclock == true) { var cpu = new ПараметрыPage(); Applyer.Apply(); /*cpu.Play_Invernate_QuickSMU(1);*/ if (devices.autopstate == true && devices.enableps == true) { cpu.BtnPstateWrite_Click(); }  }
             if (config.traystart == true) { await Task.Delay(700); this.Hide(); }
         }
         catch
@@ -152,49 +158,57 @@ public sealed partial class MainWindow : WindowEx
             JsonRepair('d');
         }
     }
-    void Open_Preset(object sender, EventArgs e)
+    private void Open_Preset(object sender, EventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
         this.Show();
-        this.BringToFront();
+        BringToFront();
     }
-    void Open_Param(object sender, EventArgs e)
+    private void Open_Param(object sender, EventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!);
         this.Show();
-        this.BringToFront();
-    }
-    void Open_Info(object sender, EventArgs e)
+        BringToFront();
+    } 
+    private void Open_Info(object sender, EventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!);
         this.Show();
-        this.BringToFront();
-    }
-    void Menu_Show1(object sender, EventArgs e)
+        BringToFront();
+    } 
+    private void Menu_Show1(object sender, EventArgs e)
     {
-        System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
-        ni.Visible = true;
+        ni = new NotifyIcon
+        {
+            Visible = true
+        };
         this.Show();
-        this.BringToFront();
-    }
-    void Menu_Exit1(object sender, EventArgs e)
+        BringToFront();
+    } 
+    private void Menu_Exit1(object sender, EventArgs e)
     {
-        System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
-        ni.Visible = false;
+        ni = new NotifyIcon
+        {
+            Visible = false
+        };
         Close();
     }
     public class Applyer
     {
         public bool execute = false;
         private Config config = new();
+        [Obsolete]
+        private SendSMUCommand sendSMUCommand = new();
+        [Obsolete]
         public static async void Apply()
         {
             
             var mc = new Applyer();
-            
+            var smu = new ПараметрыPage();
+            var sendSMUCommand = new SendSMUCommand();
             void ConfigLoad()
             {
                 mc.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
@@ -231,6 +245,7 @@ public sealed partial class MainWindow : WindowEx
                         {
                             // Запустите ryzenadj снова
                             await Process();
+                            sendSMUCommand.Play_Invernate_QuickSMU(1);
                         }
                     };
                     timer.Start();
@@ -244,6 +259,7 @@ public sealed partial class MainWindow : WindowEx
                         {
                             // Запустите ryzenadj снова
                             await Process();
+                            sendSMUCommand.Play_Invernate_QuickSMU(1);
                         }
                     };
                     timer.Start();
@@ -295,7 +311,7 @@ public sealed partial class MainWindow : WindowEx
 
             if (mc.config.reapplytime == true)
             {
-                DispatcherTimer timer = new DispatcherTimer();
+                var timer = new DispatcherTimer();
                 try
                 {
                     ConfigLoad();
@@ -339,7 +355,7 @@ public sealed partial class MainWindow : WindowEx
                 ConfigLoad();
                 mc.config.fan1v = "";
                 ConfigSave();
-                Process p = new Process();
+                var p = new Process();
                 p.StartInfo.UseShellExecute = false;
                 p.StartInfo.FileName = @"nbfc/nbfc.exe";
                 p.StartInfo.Arguments = " status --fan 0";
@@ -349,7 +365,7 @@ public sealed partial class MainWindow : WindowEx
                 p.StartInfo.RedirectStandardOutput = true;
 
                 p.Start();
-                StreamReader outputWriter = p.StandardOutput;
+                var outputWriter = p.StandardOutput;
                 var line = outputWriter.ReadLine();
                 while (line != null)
                 {
@@ -499,6 +515,5 @@ public sealed partial class MainWindow : WindowEx
     }
      
 }
-#pragma warning restore IDE0044 // Добавить модификатор только для чтения
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 #pragma warning restore CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).

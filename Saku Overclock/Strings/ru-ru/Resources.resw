@@ -385,9 +385,7 @@
 Добавляет новый пресет для
 сохранения ваших настроек.
 После изменения параметров
-они сохраняются автоматически
-также вы можете иметь до
-9 таких пресетов</value>
+они сохраняются автоматически</value>
   </data>
   <data name="Param_VRM_desc.Text" xml:space="preserve">
     <value>Рекомендации:        Баланс          Производительность</value>
@@ -1261,5 +1259,96 @@ AOD, Power, Temp, Load таблиц устройства.
   </data>
   <data name="SMUText.Text" xml:space="preserve">
     <value>Редактор параметров SMU</value>
+  </data>
+  <data name="SMUEnableDesc.Text" xml:space="preserve">
+    <value>Включить применение быстрых команд SMU </value>
+  </data>
+  <data name="SMUEnableText.Text" xml:space="preserve">
+    <value>Применять параметры SMU</value>
+  </data>
+  <data name="CancelThis.Text" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Copy.Text" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="Cut.Text" xml:space="preserve">
+    <value>Вырезать</value>
+  </data>
+  <data name="SelectAll.Text" xml:space="preserve">
+    <value>Выбрать всё</value>
+  </data>
+  <data name="ToHex.Text" xml:space="preserve">
+    <value>Перевести в Hex</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Изменить</value>
+  </data>
+  <data name="Cooler_FanAuto_Desc" xml:space="preserve">
+    <value>Вы действительно хотите включить автообновление
+информации о скорости кулеров? Это может
+негативно сказаться на загрузке вашего процессора!
+В связи с этим, программа была оптимизирована так,
+чтобы пока она в фоне информация не обновлялась</value>
+  </data>
+  <data name="Cooler_FanAuto_Text" xml:space="preserve">
+    <value>Автообновлять информацию?</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Включить</value>
+  </data>
+  <data name="Param_ChPstates_Desc" xml:space="preserve">
+    <value>Вы действительно хотите изменить состояния PState процессора?
+Учтите, это может крашнуть вашу систему моментально!
+Изменения P0 состояния имеет больше шансов на это</value>
+  </data>
+  <data name="Param_ChPstates_Text" xml:space="preserve">
+    <value>Изменить состояния процессора</value>
+  </data>
+  <data name="Param_DelPreset_Desc" xml:space="preserve">
+    <value>Вы действительно хотите удалить этот пресет? 
+Это действие отменить нельзя!</value>
+  </data>
+  <data name="Param_DelPreset_Text" xml:space="preserve">
+    <value>Удалить пресет</value>
+  </data>
+  <data name="Without_P0" xml:space="preserve">
+    <value>Без P0 состояния </value>
+  </data>
+  <data name="Arguments" xml:space="preserve">
+    <value>Аргументы</value>
+  </data>
+  <data name="Command" xml:space="preserve">
+    <value>Команда</value>
+  </data>
+  <data name="Desc" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="Info_CPU_desc.Text" xml:space="preserve">
+    <value>Информация о мощностях CPU</value>
+  </data>
+  <data name="Info_CPU_text.Text" xml:space="preserve">
+    <value>Информация </value>
+  </data>
+  <data name="Info_RAM_desc.Text" xml:space="preserve">
+    <value>Свойства оперативной памяти</value>
+  </data>
+  <data name="Info_RAM_text.Text" xml:space="preserve">
+    <value>Оперативная память</value>
+  </data>
+  <data name="Param_Autorun" xml:space="preserve">
+    <value>Применять при запуске программы</value>
+  </data>
+  <data name="Param_QSMU_Desc.Text" xml:space="preserve">
+    <value>Добавить новую команду</value>
+  </data>
+  <data name="Param_QSMU_Text.Text" xml:space="preserve">
+    <value>Быстрые команды SMU</value>
+  </data>
+  <data name="Param_WithApply" xml:space="preserve">
+    <value>Применять с кнопкой "Применить"</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
   </data>
 </root>

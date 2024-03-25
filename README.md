@@ -112,10 +112,11 @@ Use the `README.md` to get started.
     <p> </p>
     <p align="left">The main page of my application will greet you at launch</p>
     <p> </p>
-    <h1 align="center">White main page</h1>
+    <h1 align="center">White and blue main page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main-white.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main-blue.png"></img>
     <p> </p>
-    <p align="left">My application has three themes - dark, light and blue, here you can see the light theme</p>
+    <p align="left">My application has three themes - dark, light and blue, here you can see the light and blue theme. Note: You can use blue theme ONLY on windows 11 cuz Windows 10 haven't this function</p>
   </ol>
 </details>
 
@@ -149,26 +150,34 @@ Use the `README.md` to get started.
 
 
 <details>
-  <summary>Custom presets</summary>
+  <summary>Parameters & Custom presets</summary>
   <ol>
-    <h1 align="center">Custom presets page</h1>
+    <h1 align="center">Parameters page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main.png"></img>
+    <p align="left"> Here you can see the contents of the Parameters page. This page is the most important in the entire application, as it allows you to configure overclocking the way you need it.</p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/1.png"></img>
+    <p align="left">• CPU Overclocking: Allows users to adjust the power and temperature of their CPU, which can increase performance.</p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/2.png"></img>
+    <p align="left">• VRM Tuning: Allows users to adjust VRM settings, Currents and timings of your CPU.</p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/3.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/4.png"></img>
-    <p> </p>
-    <p align="left">There you can easily adjust values of your CPU, GPU and VRM with recommendations for balance and performance. About Disable BD Prochot timings: in theory it can help with 0,4 GHz and stop throttling, you need to found value that works for you. Try with 0, 2, 4, 8, 10, e.t.c. More features soon!</p>
+    <p align="left">• iGPU and CPU subsystem clocks: Allows users to overclock clocks iGPU and other CPU subsystems. Note that this works on processors from the some Ryzen Raven Ridge (2000), almost all Ryzen Picasso (3000) line and above, and changing these parameters DOES NOT GIVE a 100% chance that the frequency will always be equal to what you set. This will affect their base frequency, from which the main frequency is generated. In simple words, these frequencies are influenced by a lot of factors (temperature, load, power), which is why it is very difficult to make sure that the frequency is always the same</p>
     <p> </p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/5.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/6.png"></img>
     <p> </p>
-    <p align="left">There you can modify advanced values of your CPU, GPU and VRM. It will works only on Ryzen Renoir (4000) and above processors!</p>
+    <p align="left">• Advanced CPU parameters: Allows users to adjust more advanced CPU parameters, which are intended for experienced overclockers and can be risky if not configured correctly. It will works only on Ryzen Renoir (4000) and above processors!</p>
     <p> </p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/7.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/8.png"></img>
     <p> </p>
-    <p align="left">There you can change PStates of your CPU. It can improve performance as well. Disable Turbo boost for better results. It can help with 0,4 GHz issue! Pls, don't try changing P0 State while you using battery right now. Change it while power adapter is connected. If you got system crash - don't worry, it won't break your CPU. Just restart. If you enabled reapply with ignoring warnings and got system crashing - boot into safe mode and disable it</p>
+    <p align="left">• CPU Power States: Allows users to adjust the power states of the CPU, even with system starts (if my app in autostart). everything is the same here as with the frequency of the iGPU and CPU subsystems. There is far from a 100% chance that the frequency will always be the same as you set here or the voltage, however, this way you bring your processor closer to the specified values</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/9.png"></img>
+    <p align="left">When you open SMU section - enable Quick commands to apply thems! Autodetect is there, pls DON'T CHANGE RSP, ARG and CMD Adresses! If you know SMU commands for your CPU, you can type them as a hint into Quick note box. You can highlight them if it needed or paste photo there. Autosaving is there</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/10.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/11.png"></img>
+    <p align="left">• SMU Parameters editor: Allows users to edit  SMU parameters for extreme overclocking, and is likely best left to experienced overclockers only. These commands can do ANYTHING with your CPU even BURN IT!!! BE CAREFUL! If you know your CPU commands, you can add thems in Quick SMU Commands and apply them by pressing their buttons, by pressing Apply button or with app start (even with autostart with system!). You can give any name, description and icon for your quick command. It's very practical! For example, you need to quickly change the voltage to the desired value or return the frequency to normal or raise the PBO - you just click on the apply button on the desired command and your processor immediately applies this effect! Again, the commands are NOT freely available and you will have to search for them yourself. Please note that the commands are in HEX format!!! To quickly convert from decimal to HEX, highlight your value or just right-click on the Arguments field and select Convert to HEX. Note that you do NOT need to write 0x in the command. The commands usually look like `0x2E`, `0x11`, this is just an EXAMPLE. You don't need to write 0x. if the command accepts multiple arguments, separate them with `,` It can give you best experience of your laptop if you KNOW WHAT ARE YOU DOING. This is not a joke and your processor may well burn out from ignorance of commands</p>
+    <p> </p>
   </ol>
 </details>
 
@@ -178,9 +187,18 @@ Use the `README.md` to get started.
   <summary>Information page</summary>
   <ol>
     <h1 align="center">Information page</h1>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info.png"></img>
+   <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/main.png"></img>
+    <p align="left"> Here you can see the contents of the Information page. This page is allowing you to see important values of you system</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/1.png"></img>
+    <p align="left">• Processor: Allows users to show the current properties of your processor</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/2.png"></img>
+    <p align="left">• Power Information: Allows users to watch VRM powers, Currents and timings of your CPU</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/3.png"></img>
+    <p align="left">• RAM Information: Allows users to know their common RAM info. Soon there were be more info options!</p>
     <p> </p>
-    <p align="left">There you can see information of your CPU, VRM and timings. You can use it page to provide me in our discord</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/4.png"></img>
+    <p align="left">• CPU Power States: There you can see PStates of you CPU</p>
+    <p> </p> 
   </ol>
 </details>
 
@@ -190,10 +208,31 @@ Use the `README.md` to get started.
 <details>
   <summary>Cooler page</summary>
   <ol>
-    <h1 align="center">Cooler tweaks page</h1>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/fan.png"></img>
+    <h1 align="center">Cooler tweaks page</h1> 
+        <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/main.png"></img>
+    <p align="left"> There you can adjust your cooler spinning, but only if you have Notebook fan controller app on your pc! Just download it and install in `C:/` drive. Without it app will crash at this pages. Then in my app set your laptop model at which Notebook fan controller is working for you and you can see and change values!</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/1.png"></img>
+    <p align="left">• Page: How to use it - simply click on suggest button (button with question symbol). Choose config from saved configs. Choose `Enabled` in  `Fan Control status`, choose target speed or auto. Autosaving is there. If you wanna more - go to `Advanced mode`, where you can change whole all config and fan curve!</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/2.png"></img>
+    <p align="left">• Suggest button: It can help you to find configs which will (NOT 100%!!!) work with your laptop</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/3.png"></img>
+    <p align="left">• Advanced Cooler Tweaking, Readme: There you can found an example of config, copy it to clipboard</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/4.png"></img>
+    <p align="left">• Advanced Cooler Tweaking, Fan Curve Editor: Allows users to change fan curves on your laptop. All values have autosaving when you change them! After changing I just recommend you to enter in normal mode and switch to Disabled and Enabled then it should working normally. Or reboot</p>
     <p> </p>
-    <p align="left">There you can adjust your cooler spinning, but only if you have Notebook fan controller app on your pc! Just download it and install. Then in my app set your laptop model at which Notebook fan controller is working for you and you can see and change values!</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/5.png"></img>
+    <p align="left">• Advanced Cooler Tweaking, Fan Curve Editor, Color changing: you can highlight your fan curve into other color (haven't autosaving)</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/6.png"></img>
+    <p> </p>
+    <p align="left">• Advanced Cooler Tweaking, menu: There you can open closed tab (CTRL + F4 to close tab) or edit existed config or create new one: empty (for PRO users), from example or from any others. Note: you can delete custom configs via Saku Overclock only if they have `Custom` in their name</p>
+    <p> </p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/7.png"></img>
+    <p align="left">• Advanced Cooler Tweaking, Config Editor: You can edit config as you need or remove it and delete for custom. Note: THERE IS NO AUTOSAVING! PRESS ON SAVE BUTTON MANUALLY! NOW THERE IS NO `CTRL + S`!!!</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/8.png"></img>
+    <p> </p>
+    <p align="left">• Config Editor, Common configs: You can only rename it, when you press button with icon like pencil</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/9.png"></img>
+    <p align="left">• Config Editor, Custom configs: You can only rename it or delete PERMANENTLY when you press button with icon like pencil</p>
   </ol>
 </details>
 
@@ -344,6 +383,7 @@ Project Link: [https://github.com/Erruar/Saku-Overclock/](https://github.com/Err
 ## Projects used:
 
 Here you can see links to everything that was used in the development of the project:
+* [Zen States Core](https://github.com/irusanov/ZenStates-Core)
 * [Notebook fan control](https://github.com/hirschmann/nbfc)
 * [Ryzen ADJ](https://github.com/FlyGoat/RyzenAdj)
 * [Freepik icons](https://www.freepik.com/)

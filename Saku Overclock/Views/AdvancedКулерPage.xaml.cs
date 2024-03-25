@@ -613,8 +613,7 @@ public sealed partial class AdvancedКулерPage : Page
 
     private async Task ReplaceNumberB(string foundValue, double newValue, int unicalId, int fanCount)
     {
-        var currentFanDef = FanDef;
-        var currentInvFanC = ExtFan1C;
+        var currentFanDef = FanDef; 
         var rowCounter = 0; // Счетчик строк в Grid
         try
         {
@@ -624,10 +623,8 @@ public sealed partial class AdvancedКулерPage : Page
             {
                 // Загрузка XML-документа из файла
                 var configXml = XDocument.Load(configFilePath);
-
                 // Извлечение всех FanConfiguration-элементов в документе
                 var fanConfigurations = configXml.Descendants("FanConfiguration").ToList();
-
                 // Обход каждого FanConfiguration-элемента в файле
                 for (var i = 0; i < fanConfigurations.Count; i++)
                 {
@@ -685,19 +682,15 @@ public sealed partial class AdvancedКулерPage : Page
                                     await App.MainWindow.ShowMessageDialogAsync("Unable to save XML fan config in target directory: " + ex.Message, "Critical Error!");
                                 }
                             }
-                            //await App.MainWindow.ShowMessageDialogAsync("LetVal: " + foundValue + " NewVal: " + newValue.ToString() + " UID: " + unicalId.ToString() + " FanCnt: " + fanCount.ToString() ,"Set success!");
                         }
-                        //else { await App.MainWindow.ShowMessageDialogAsync("LetVal: " + foundValue + " NewVal: " + newValue.ToString() + " UID: " + unicalId.ToString() + " FanCnt: " + fanCount.ToString(), "Can't Set!"); break; }
                         // Увеличиваем счетчик строк
                         rowCounter++;
                     }
-
                     // 2. Переключаемся на следующий FanDef, InvFanC и FanConfiguration
                     if (currentFanDef == FanDef)
                     {
                         rowCounter = 0;
-                        currentFanDef = FanDef1;
-                        currentInvFanC = ExtFan2C;
+                        currentFanDef = FanDef1; 
                     }
                     else
                     {

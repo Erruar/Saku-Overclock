@@ -39,32 +39,32 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <ToggleButton x:Name="Min_btn" Grid.Row="0" Grid.Column="0" Height="40" Width="150" Checked="Min_btn_Checked">
+                <ToggleButton x:Name="Min_btn" Grid.Row="0" Grid.Column="0" Height="40" Width="150"  Unchecked="Min_btn_Unchecked_1" Checked="Min_btn_Checked">
                     <StackPanel Orientation="Horizontal">
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xebc0;"/>
                         <TextBlock x:Uid="Preset_Min_Name" >Минимум</TextBlock>
                     </StackPanel>
                 </ToggleButton>
-                <ToggleButton x:Name="Eco" Grid.Row="0" Grid.Column="2" Height="40" Width="150" Checked="Eco_Checked">
+                <ToggleButton x:Name="Eco" Grid.Row="0" Grid.Column="2" Height="40" Width="150" Unchecked="Eco_Unchecked" Checked="Eco_Checked">
                     <StackPanel Orientation="Horizontal">
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xec0a;"/>
                         <!-- 	ec0a -->
                         <TextBlock x:Uid="Preset_Eco_Name">Эко</TextBlock>
                     </StackPanel>
                 </ToggleButton>
-                <ToggleButton x:Name="Balance" Grid.Row="0" Grid.Column="4" Height="40" Width="150" Checked="Balance_Checked">
+                <ToggleButton x:Name="Balance" Grid.Row="0" Grid.Column="4" Height="40" Width="150" Unchecked="Balance_Unchecked" Checked="Balance_Checked">
                     <StackPanel Orientation="Horizontal">
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xec49;"/>
                         <TextBlock x:Uid="Preset_Balance_Name">Баланс</TextBlock>
                     </StackPanel>
                 </ToggleButton>
-                <ToggleButton x:Name="Speed" Grid.Row="0" Grid.Column="6" Height="40" Width="150" Checked="Speed_Checked">
+                <ToggleButton x:Name="Speed" Grid.Row="0" Grid.Column="6" Height="40" Width="150" Checked="Speed_Checked" Unchecked="Speed_Unchecked">
                     <StackPanel Orientation="Horizontal">
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xe945;"/>
                         <TextBlock x:Uid="Preset_Speed_Name">Скорость</TextBlock>
                     </StackPanel>
                 </ToggleButton>
-                <ToggleButton x:Name="Max_btn" Grid.Row="0" Grid.Column="8" Height="40" Width="150" Checked="Max_btn_Checked">
+                <ToggleButton x:Name="Max_btn" Grid.Row="0" Grid.Column="8" Height="40" Width="150" Checked="Max_btn_Checked" Unchecked="Max_btn_Unchecked">
                     <StackPanel Orientation="Horizontal">
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xEcad;"/>
                         <TextBlock x:Uid="Preset_Max_Name">Максимум</TextBlock>

@@ -148,7 +148,7 @@ public sealed partial class SettingsPage : Microsoft.UI.Xaml.Controls.Page
             rootElement.RequestedTheme = ElementTheme.Dark;
             TitleBarHelper.UpdateTitleBar(ElementTheme.Dark);
         }
-        Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+        var micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
         micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt;
         App.MainWindow.SystemBackdrop = micaBackdrop;
         Dark_sel.IsChecked = false; Light_sel.IsChecked = false; Default_sel.IsChecked = false;
@@ -161,7 +161,7 @@ public sealed partial class SettingsPage : Microsoft.UI.Xaml.Controls.Page
             Blue_sel.IsChecked = false;
             config.bluetheme = false;
             ConfigSave();
-            Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+            var micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
             micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base;
             App.MainWindow.SystemBackdrop = micaBackdrop;
         }
@@ -174,7 +174,7 @@ public sealed partial class SettingsPage : Microsoft.UI.Xaml.Controls.Page
             Blue_sel.IsChecked = false;
             config.bluetheme = false;
             ConfigSave();
-            Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+            var micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
             micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base;
             App.MainWindow.SystemBackdrop = micaBackdrop;
         }
@@ -187,7 +187,7 @@ public sealed partial class SettingsPage : Microsoft.UI.Xaml.Controls.Page
             Blue_sel.IsChecked = false;
             config.bluetheme = false;
             ConfigSave();
-            Microsoft.UI.Xaml.Media.MicaBackdrop micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
+            var micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
             micaBackdrop.Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.Base;
             App.MainWindow.SystemBackdrop = micaBackdrop;
         }

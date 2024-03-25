@@ -97,8 +97,8 @@
                         <Grid Height="65" Width="2000">
                             <!--	e9d9-->
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe9d9;"/>
-                            <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top"   Text="Информация"></TextBlock>
-                            <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Информация о мощностях CPU"></TextBlock>
+                            <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Info_CPU_text"  Text="Информация"></TextBlock>
+                            <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Info_CPU_desc"  Text="Информация о мощностях CPU"></TextBlock>
                         </Grid>
                     </Expander.Header>
                     <Grid HorizontalAlignment="Left" Width="2000">
@@ -253,8 +253,8 @@
                     <Expander.Header>
                         <Grid Height="65" Width="2000">
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe964;"/>
-                            <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top"   Text="Оперативная память"></TextBlock>
-                            <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Свойства оперативной памяти"></TextBlock>
+                            <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Info_RAM_text"  Text="Оперативная память"></TextBlock>
+                            <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Info_RAM_desc" Text="Свойства оперативной памяти"></TextBlock>
                         </Grid>
                     </Expander.Header>
                     <Grid HorizontalAlignment="Left" Width="2000">

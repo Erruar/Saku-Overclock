@@ -34,6 +34,8 @@ public sealed partial class ПресетыPage : Page
         if (config.Eco == true) { Eco.IsChecked = true; PrSource.ImageSource = new BitmapImage(new System.Uri("ms-appx:///Assets/eco.png")); PrName.Text = "Preset_Eco".GetLocalized(); PrDesc.Text = "Preset_Eco_Desc".GetLocalized(); }
         if (config.Min == true) { Min_btn.IsChecked = true; PrSource.ImageSource = new BitmapImage(new System.Uri("ms-appx:///Assets/min.png")); PrName.Text = "Preset_Min".GetLocalized(); PrDesc.Text = "Preset_Min_Desc".GetLocalized(); }
     }
+
+    [Obsolete]
     private void Min_btn_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         Eco.IsChecked = false; Balance.IsChecked = false; Speed.IsChecked = false; Max_btn.IsChecked = false;
@@ -49,6 +51,7 @@ public sealed partial class ПресетыPage : Page
         MainWindow.Applyer.Apply();
     }
 
+    [Obsolete]
     private void Eco_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         Min_btn.IsChecked = false; Balance.IsChecked = false; Speed.IsChecked = false; Max_btn.IsChecked = false;
@@ -64,6 +67,7 @@ public sealed partial class ПресетыPage : Page
         MainWindow.Applyer.Apply();
     }
 
+    [Obsolete]
     private void Balance_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         Eco.IsChecked = false; Min_btn.IsChecked = false; Speed.IsChecked = false; Max_btn.IsChecked = false;
@@ -78,7 +82,9 @@ public sealed partial class ПресетыPage : Page
         InitSave();
         MainWindow.Applyer.Apply();
     }
+
     //--prochot-deassertion-ramp=2
+    [Obsolete]
     private void Speed_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         Eco.IsChecked = false; Balance.IsChecked = false; Min_btn.IsChecked = false; Max_btn.IsChecked = false;
@@ -94,6 +100,7 @@ public sealed partial class ПресетыPage : Page
         MainWindow.Applyer.Apply();
     }
 
+    [Obsolete]
     private void Max_btn_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         Eco.IsChecked = false; Balance.IsChecked = false; Speed.IsChecked = false; Min_btn.IsChecked = false;
@@ -152,5 +159,30 @@ public sealed partial class ПресетыPage : Page
             App.MainWindow.ShowMessageDialogAsync("Пресеты 2", "Критическая ошибка!");
         }
     } 
+
+    private void Min_btn_Unchecked_1(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        Min_btn.IsChecked = true;
+    }
+
+    private void Eco_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        Eco.IsChecked = true;
+    }
+
+    private void Balance_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        Balance.IsChecked = true;
+    }
+
+    private void Speed_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        Speed.IsChecked = true;
+    }
+
+    private void Max_btn_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        Max_btn.IsChecked = true;
+    }
 }
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
