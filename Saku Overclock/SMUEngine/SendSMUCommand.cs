@@ -12,7 +12,7 @@ internal class SendSMUCommand
     private Config config = new();
     private readonly Mailbox testMailbox = new();
     private Devices devices = new();
-    private readonly Profile[] profile = new Profile[1];
+    private Profile[] profile = new Profile[1];
     public string? ocmode;
 
     [Obsolete]
@@ -86,6 +86,29 @@ internal class SendSMUCommand
         catch
         {
             JsonRepair('s');
+        }
+    }
+    public void ProfileLoad()
+    {
+        try
+        {
+
+            profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"));
+        }
+        catch
+        {
+            JsonRepair('p');
+        }
+    }
+    public void ConfigLoad()
+    {
+        try
+        {
+            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
+        }
+        catch
+        {
+            JsonRepair('c');
         }
     }
     public void JsonRepair(char file)
@@ -287,11 +310,16 @@ internal class SendSMUCommand
     public void Play_Invernate_QuickSMU(int mode)
     {
         SmuSettingsLoad();
+        ProfileLoad();
+        ConfigLoad();
         if (smusettings.QuickSMUCommands == null)
         {
             return;
         }
-
+        if (config.Preset != -1)
+        {
+            if (profile[config.Preset].smuEnabled == false) { return; }
+        }
         for (var i = 0; i < smusettings.QuickSMUCommands.Count; i++)
         {
             if (mode == 0)

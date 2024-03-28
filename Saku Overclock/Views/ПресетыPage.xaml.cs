@@ -13,7 +13,8 @@ public sealed partial class ПресетыPage : Page
         get;
     }
     private Config config = new();
-    private Devices devices = new(); 
+    private Devices devices = new();
+    private bool relay = false;
     public ПресетыPage()
     {
         ViewModel = App.GetService<ПресетыViewModel>();
@@ -38,6 +39,7 @@ public sealed partial class ПресетыPage : Page
     [Obsolete]
     private void Min_btn_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        relay = true;
         Eco.IsChecked = false; Balance.IsChecked = false; Speed.IsChecked = false; Max_btn.IsChecked = false;
         ConfigLoad();
         config.Min = true;
@@ -54,6 +56,7 @@ public sealed partial class ПресетыPage : Page
     [Obsolete]
     private void Eco_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        relay = true; 
         Min_btn.IsChecked = false; Balance.IsChecked = false; Speed.IsChecked = false; Max_btn.IsChecked = false;
         ConfigLoad();
         config.Min = false;
@@ -70,6 +73,7 @@ public sealed partial class ПресетыPage : Page
     [Obsolete]
     private void Balance_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        relay = true;
         Eco.IsChecked = false; Min_btn.IsChecked = false; Speed.IsChecked = false; Max_btn.IsChecked = false;
         ConfigLoad();
         config.Min = false;
@@ -87,6 +91,7 @@ public sealed partial class ПресетыPage : Page
     [Obsolete]
     private void Speed_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        relay = true;
         Eco.IsChecked = false; Balance.IsChecked = false; Min_btn.IsChecked = false; Max_btn.IsChecked = false;
         ConfigLoad();
         config.Min = false;
@@ -103,6 +108,7 @@ public sealed partial class ПресетыPage : Page
     [Obsolete]
     private void Max_btn_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        relay = true;
         Eco.IsChecked = false; Balance.IsChecked = false; Speed.IsChecked = false; Min_btn.IsChecked = false;
         ConfigLoad();
         config.Min = false;
@@ -162,26 +168,31 @@ public sealed partial class ПресетыPage : Page
 
     private void Min_btn_Unchecked_1(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        if (relay) { return; } 
         Min_btn.IsChecked = true;
     }
 
     private void Eco_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        if (relay) { return; }
         Eco.IsChecked = true;
     }
 
     private void Balance_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        if (relay) { return; }
         Balance.IsChecked = true;
     }
 
     private void Speed_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        if (relay) { return; }
         Speed.IsChecked = true;
     }
 
     private void Max_btn_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        if (relay) { return; }
         Max_btn.IsChecked = true;
     }
 }
