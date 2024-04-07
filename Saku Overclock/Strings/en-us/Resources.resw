@@ -1305,4 +1305,10 @@ Changing P0 state have MORE chances to crash your system</value>
   <data name="Without_P0" xml:space="preserve">
     <value>Without P0</value>
   </data>
+  <data name="CancelToken.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Cancel operation</value>
+  </data>
+  <data name="SMURange" xml:space="preserve">
+    <value>Range is applying</value>
+  </data>
 </root>

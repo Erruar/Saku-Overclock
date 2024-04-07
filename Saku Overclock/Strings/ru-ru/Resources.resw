@@ -1351,4 +1351,10 @@ AOD, Power, Temp, Load таблиц устройства.
   <data name="Save" xml:space="preserve">
     <value>Сохранить</value>
   </data>
+  <data name="CancelToken.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отменить действие</value>
+  </data>
+  <data name="SMURange" xml:space="preserve">
+    <value>Применяется диапазон</value>
+  </data>
 </root>

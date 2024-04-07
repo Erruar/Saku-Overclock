@@ -36,7 +36,7 @@ public sealed partial class MainWindow : WindowEx
         DWMWCP_ROUND = 2,
         DWMWCP_ROUNDSMALL = 3
     }
-    public NotifyIcon ni = new();
+    public System.Windows.Forms.NotifyIcon ni = new();
     // Import dwmapi.dll and define DwmSetWindowAttribute in C# corresponding to the native function.
     [LibraryImport("dwmapi.dll", SetLastError = true)]
     private static partial long DwmSetWindowAttribute(IntPtr hwnd,
@@ -199,16 +199,16 @@ public sealed partial class MainWindow : WindowEx
     public class Applyer
     {
         public bool execute = false;
-        private Config config = new();
+        private Config config = new(); 
         [Obsolete]
-        private SendSMUCommand sendSMUCommand = new();
+        private static SendSMUCommand sendSMUCommand;
+
         [Obsolete]
         public static async void Apply()
         {
-            
+            try { sendSMUCommand = new SendSMUCommand(); } catch { return; }
             var mc = new Applyer();
             var smu = new ПараметрыPage();
-            var sendSMUCommand = new SendSMUCommand();
             void ConfigLoad()
             {
                 mc.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
@@ -271,8 +271,11 @@ public sealed partial class MainWindow : WindowEx
                 await Process();
             }
         }
+
+        [Obsolete]
         private static async Task Process()
         {
+          //  var sendSMUCommand = new SendSMUCommand();
             var mc = new Applyer
             {
                 config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))
@@ -280,106 +283,9 @@ public sealed partial class MainWindow : WindowEx
             if (mc.config == null) { return; }
             await Task.Run(() =>
             {
-                var name = Path.Combine(AppContext.BaseDirectory, @"ryzenadj.exe");
-                var p = new Process();
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.FileName = @"ryzenadj.exe";
-                p.StartInfo.WorkingDirectory = AppContext.BaseDirectory;
-                p.StartInfo.Arguments = mc.config.adjline;
-                p.StartInfo.CreateNoWindow = true;
-                p.StartInfo.RedirectStandardError = true;
-                p.StartInfo.RedirectStandardInput = true;
-                p.StartInfo.RedirectStandardOutput = true;
-                p.Start();
+                sendSMUCommand.Translate(mc.config.adjline); 
             });
-        }
-        public static void FanInfo()
-        {
-            var mc = new Applyer();
-
-            void ConfigLoad()
-            {
-                mc.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
-            }
-            void ConfigSave()
-            {
-                Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(mc.config));
-            }
-
-            ConfigLoad();
-
-            if (mc.config.reapplytime == true)
-            {
-                var timer = new DispatcherTimer();
-                try
-                {
-                    ConfigLoad();
-                    timer.Interval = TimeSpan.FromMilliseconds(mc.config.reapplytimer * 1000);
-                }
-                catch
-                {
-                    App.MainWindow.ShowMessageDialogAsync("Время автообновления разгона некорректно и было исправлено на 3000 мс", "Критическая ошибка!");
-                    mc.config.reapplytimer = 3000;
-                    ConfigLoad();
-                    timer.Interval = TimeSpan.FromMilliseconds(mc.config.reapplytimer);
-                }
-                ConfigLoad();
-                if (mc.config.fanex == false)
-                {
-                    mc.config.fanex = true;
-                    ConfigSave();
-                    timer.Tick += (sender, e) =>
-                    {
-
-                        // Запустите faninfo снова
-                        Process();
-                        
-                    };
-                    timer.Start();
-                }
-                else
-                {
-                    timer.Stop();
-                    mc.config.fanex = false;
-                    ConfigSave();
-                }
-
-            }
-            else
-            {
-                Process();
-            }
-            void Process()
-            {
-                ConfigLoad();
-                mc.config.fan1v = "";
-                ConfigSave();
-                var p = new Process();
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.FileName = @"nbfc/nbfc.exe";
-                p.StartInfo.Arguments = " status --fan 0";
-                p.StartInfo.CreateNoWindow = true;
-                p.StartInfo.RedirectStandardError = true;
-                p.StartInfo.RedirectStandardInput = true;
-                p.StartInfo.RedirectStandardOutput = true;
-
-                p.Start();
-                var outputWriter = p.StandardOutput;
-                var line = outputWriter.ReadLine();
-                while (line != null)
-                {
-                    if (line != "")
-                    {
-                        mc.config.fan1v += line;
-                        ConfigSave();
-                    }
-                    line = outputWriter.ReadLine();
-                }
-                p.WaitForExit();
-                line = null;
-            }
-        }
+        } 
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed

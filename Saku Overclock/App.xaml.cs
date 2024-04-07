@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Diagnostics;
+using System.Windows.Forms;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
 using Saku_Overclock.Activation;
 using Saku_Overclock.Contracts.Services;
@@ -40,6 +43,7 @@ public partial class App : Application
         return service;
     }
 
+    [Obsolete]
     public static WindowEx MainWindow { get; } = new MainWindow();
 
     public static UIElement? AppTitlebar { get; set; }
@@ -84,7 +88,7 @@ public partial class App : Application
             services.AddTransient<ИнформацияViewModel>();
             services.AddTransient<ИнформацияPage>();
             services.AddTransient<ПараметрыViewModel>();
-            services.AddTransient<ПараметрыPage>();
+            services.AddTransient<ПараметрыPage>(); 
             services.AddTransient<ПресетыViewModel>();
             services.AddTransient<ПресетыPage>();
             services.AddTransient<ГлавнаяViewModel>();
@@ -107,16 +111,43 @@ public partial class App : Application
         config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
     }
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
-    {
-        // TODO: Log and handle exceptions as appropriate.
-        // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
-    }
-
+    { 
+        MessageBox.Show(e.Message + "\nRerun application and contact developer", "Critical Error!", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1); 
+    } 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
+        // Проверяем, запущен ли уже экземпляр программы
+        bool isFirstInstance;
+        var mutex = new Mutex(true, "MyProgramMutex", out isFirstInstance);
+
+        if (!isFirstInstance)
+        {
+            // Если программа уже запущена, завершаем текущий экземпляр 
+            MessageBox.Show("Текущий экземпляр будет завершен через 3 секунды...", "Другой экземпляр программы уже запущен.");
+            Thread.Sleep(3000);
+            return;
+        }
+        mutex.ReleaseMutex();
+        /*string processName = "Saku Overclock"; // Замените "YourProcessName" на имя процесса, который вы хотите завершить
+
+        // Получаем все процессы с указанным именем
+        Process[] processes = Process.GetProcessesByName(processName);
+
+        // Завершаем каждый процесс
+        foreach (Process process in processes)
+        {
+            try
+            {
+                process.Kill(); // Завершаем процесс
+                Console.WriteLine($"Процесс {process.ProcessName} завершен.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при завершении процесса {process.ProcessName}: {ex.Message}");
+            }
+        }*/
         base.OnLaunched(args);
         App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
-
         await App.GetService<IActivationService>().ActivateAsync(args);
     }
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

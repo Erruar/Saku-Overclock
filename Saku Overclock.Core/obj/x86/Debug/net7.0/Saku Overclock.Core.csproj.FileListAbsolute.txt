@@ -10,3 +10,4 @@ C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock.Core\obj\x86\Debug\ne
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock.Core\obj\x86\Debug\net7.0\refint\Saku Overclock.Core.dll
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock.Core\obj\x86\Debug\net7.0\Saku Overclock.Core.pdb
 C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock.Core\obj\x86\Debug\net7.0\ref\Saku Overclock.Core.dll
+C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock.Core\obj\x86\Debug\net7.0\Saku Overclock.Core.sourcelink.json

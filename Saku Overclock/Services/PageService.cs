@@ -16,7 +16,7 @@ public class PageService : IPageService
     {
         Configure<ГлавнаяViewModel, ГлавнаяPage>();
         Configure<ПресетыViewModel, ПресетыPage>();
-        Configure<ПараметрыViewModel, ПараметрыPage>();
+        Configure<ПараметрыViewModel, ПараметрыPage>(); 
         Configure<ИнформацияViewModel, ИнформацияPage>();
         Configure<КулерViewModel, КулерPage>();
         Configure<AdvancedКулерViewModel, AdvancedКулерPage>();

@@ -4,6 +4,7 @@ namespace Saku_Overclock;
 internal class Config
 {
     public int Preset = 0;
+    public bool RangeApplied = true;
     public bool bluetheme;
     public bool Infoupdate;
     public string fanvalue;

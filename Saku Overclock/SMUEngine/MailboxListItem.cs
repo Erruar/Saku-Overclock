@@ -29,7 +29,7 @@ public class MailboxListItem
         argAddr = addressSet.ArgAddress;
     }
 
-    public MailboxListItem(string label, Mailbox mailbox)
+    public MailboxListItem(string label, ZenStates.Core.Mailbox mailbox)
     {
         this.label = label;
         msgAddr = mailbox.SMU_ADDR_MSG;

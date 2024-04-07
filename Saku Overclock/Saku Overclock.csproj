@@ -102,7 +102,7 @@
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Management.dll</HintPath>
     </Reference>
     <Reference Include="ZenStates-Core">
-      <HintPath>ZenStates-Core.dll</HintPath>
+      <HintPath>..\ZenStates-Core.dll</HintPath>
     </Reference>
   </ItemGroup>
 

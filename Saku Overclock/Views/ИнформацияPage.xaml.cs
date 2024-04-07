@@ -7,10 +7,12 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Services;
-using Saku_Overclock.SMUEngine;
+using ZenStates.Core;
 using Saku_Overclock.ViewModels;
 using Windows.UI.Core;
-using ZenStates.Core;
+using Saku_Overclock.SMUEngine;
+using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Helpers;
 namespace Saku_Overclock.Views;
 #pragma warning disable IDE0059 // Ненужное присваивание значения
 #pragma warning disable IDE0044 // Ненужное присваивание значения
@@ -21,7 +23,7 @@ public sealed partial class ИнформацияPage : Page
     private Config config = new();
     public double refreshtime;
     private System.Windows.Threading.DispatcherTimer dispatcherTimer;
-    private readonly SMUEngine.Cpu cpu = new();
+    private readonly ZenStates.Core.Cpu cpu;
     public ИнформацияViewModel ViewModel
     {
         get;
@@ -30,6 +32,14 @@ public sealed partial class ИнформацияPage : Page
     {
         ViewModel = App.GetService<ИнформацияViewModel>();
         InitializeComponent();
+        try
+        { 
+            cpu ??= CpuSingleton.GetInstance();
+        }
+        catch
+        {
+            App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+        }
         ConfigLoad();
         config.fanex = false;
         config.tempex = true;
@@ -103,9 +113,8 @@ public sealed partial class ИнформацияPage : Page
             else
             {
                 try
-                {
-                    SMUEngine.Cpu.Cpu_Init();
-                    tbCodename1.Text = $"{cpu.Info.codeName}";
+                { 
+                    tbCodename1.Text = $"{cpu.info.codeName}";
                 }
                 catch
                 {
@@ -117,7 +126,7 @@ public sealed partial class ИнформацияPage : Page
             }
             try
             {
-                tbSMU.Text = cpu.SystemInfo.GetSmuVersionString();
+                tbSMU.Text = cpu.systemInfo.GetSmuVersionString();
             }
             catch
             {

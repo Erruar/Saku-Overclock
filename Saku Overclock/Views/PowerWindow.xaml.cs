@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using ZenStates.Core;
+
 namespace Saku_Overclock.Views;
 #pragma warning disable CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).
 #pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
@@ -12,10 +14,10 @@ namespace Saku_Overclock.Views;
 #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 internal partial class PowerWindow : Window
 {
-    private readonly SMUEngine.Cpu CPU;
+    private readonly ZenStates.Core.Cpu CPU;
     private Powercfg notes = new();
     private ObservableCollection<PowerMonitorItem> PowerGridItems;
-    public PowerWindow(SMUEngine.Cpu cpu)
+    public PowerWindow(ZenStates.Core.Cpu cpu)
     {
         InitializeComponent();
         ExtendsContentIntoTitleBar = true;
@@ -30,7 +32,7 @@ internal partial class PowerWindow : Window
         InitializeComponent();
         cpu.RefreshPowerTable();
         notes = new Powercfg();
-        FillInData(cpu.PowerTable.Table);
+        FillInData(cpu.powerTable.Table);
         CPU = cpu; // Добавим инициализацию CPU здесь
         PowerCfgTimer.Start();
     }
@@ -209,9 +211,9 @@ internal partial class PowerWindow : Window
 
     private void PowerCfgTimer_Tick(object sender, EventArgs e)
     {
-        if (CPU.RefreshPowerTable() == SMUEngine.SMU.Status.OK)
+        if (CPU.RefreshPowerTable() == ZenStates.Core.SMU.Status.OK)
         {
-            RefreshData(CPU.PowerTable.Table);
+            RefreshData(CPU.powerTable.Table);
         }
     }
     private void Button_Click(object sender, RoutedEventArgs e)
