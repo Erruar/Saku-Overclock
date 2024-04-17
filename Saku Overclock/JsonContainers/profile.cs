@@ -10,12 +10,14 @@ internal class Profile
     public bool cpu4;
     public bool cpu5;
     public bool cpu6;
+    public bool cpu7;
     public double cpu1value;
     public double cpu2value;
     public double cpu3value;
     public double cpu4value;
     public double cpu5value;
     public double cpu6value;
+    public double cpu7value;
     //VRM config 
     public bool vrm1;
     public bool vrm2;
@@ -24,6 +26,9 @@ internal class Profile
     public bool vrm5;
     public bool vrm6;
     public bool vrm7;
+    public bool vrm8;
+    public bool vrm9;
+    public bool vrm10;
     public double vrm1value;
     public double vrm2value;
     public double vrm3value;
@@ -31,6 +36,9 @@ internal class Profile
     public double vrm5value;
     public double vrm6value;
     public double vrm7value;
+    public double vrm8value;
+    public double vrm9value;
+    public double vrm10value;
     //GPU config  
     public bool gpu1;
     public bool gpu2;
@@ -42,6 +50,12 @@ internal class Profile
     public bool gpu8;
     public bool gpu9;
     public bool gpu10;
+    public bool gpu11;
+    public bool gpu12;
+    public bool gpu13;
+    public bool gpu14;
+    public bool gpu15;
+    public bool gpu16;
     public double gpu1value;
     public double gpu2value;
     public double gpu3value;
@@ -52,6 +66,12 @@ internal class Profile
     public double gpu8value;
     public double gpu9value;
     public double gpu10value;
+    public double gpu11value;
+    public double gpu12value;
+    public double gpu13value;
+    public double gpu14value;
+    public int gpu15value;
+    public int gpu16value;
     //ADVANCED config 
     public bool advncd1;
     public bool advncd2;
@@ -66,6 +86,12 @@ internal class Profile
     public bool advncd11;
     public bool advncd12;
     public bool advncd13;
+    public bool advncd14;
+    public bool advncd15;
+    public bool advncd16;
+    public bool advncd17;
+    public bool advncd18;
+    public bool advncd19;
     public double advncd1value;
     public double advncd2value;
     public double advncd3value;
@@ -79,6 +105,12 @@ internal class Profile
     public double advncd11value;
     public double advncd12value;
     public int advncd13value;
+    public int advncd14value;
+    public double advncd15value;
+    public double advncd16value;
+    public double advncd17value;
+    public double advncd18value;
+    public double advncd19value;
     //Pstates  
     public double did0;
     public double did1;

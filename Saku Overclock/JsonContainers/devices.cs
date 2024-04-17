@@ -9,12 +9,14 @@ internal class Devices
     public bool c4;
     public bool c5;
     public bool c6;
+    public bool c7;
     public double c1v;
     public double c2v;
     public double c3v;
     public double c4v;
     public double c5v;
     public double c6v;
+    public double c7v;
     //VRM config
     public bool v1;
     public bool v2;
@@ -23,6 +25,9 @@ internal class Devices
     public bool v5;
     public bool v6;
     public bool v7;
+    public bool v8;
+    public bool v9;
+    public bool v10; 
     public double v1v;
     public double v2v;
     public double v3v;
@@ -30,6 +35,9 @@ internal class Devices
     public double v5v;
     public double v6v;
     public double v7v;
+    public double v8v;
+    public double v9v;
+    public double v10v;
     //GPU config 
     public bool g1;
     public bool g2;
@@ -41,6 +49,12 @@ internal class Devices
     public bool g8;
     public bool g9;
     public bool g10;
+    public bool g11;
+    public bool g12;
+    public bool g13;
+    public bool g14;
+    public bool g15;
+    public bool g16;
     public double g1v;
     public double g2v;
     public double g3v;
@@ -51,6 +65,12 @@ internal class Devices
     public double g8v;
     public double g9v;
     public double g10v;
+    public double g11v;
+    public double g12v;
+    public double g13v;
+    public double g14v;
+    public int g15v;
+    public int g16v; 
     //ADVANCED config
     public bool a1;
     public bool a2;
@@ -65,6 +85,12 @@ internal class Devices
     public bool a11;
     public bool a12;
     public bool a13;
+    public bool a14;
+    public bool a15;
+    public bool a16;
+    public bool a17;
+    public bool a18;
+    public bool a19;
     public double a1v;
     public double a2v;
     public double a3v;
@@ -78,6 +104,12 @@ internal class Devices
     public double a11v;
     public double a12v;
     public int a13v;
+    public int a14v;
+    public double a15v;
+    public double a16v;
+    public double a17v;
+    public double a18v;
+    public double a19v;
     //Pstates config
     public double did0;
     public double did1;

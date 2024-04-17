@@ -694,7 +694,7 @@
     <value>Изменение мощности процессора</value>
   </data>
   <data name="Param_GPU_Pdesc.Text" xml:space="preserve">
-    <value>Изменение частот для процессоров Пикассо и выше</value>
+    <value>Изменение частот подсистем процессора</value>
   </data>
   <data name="Param_VRM_Pdesc.Text" xml:space="preserve">
     <value>Изменение всех значений VRM</value>
@@ -894,7 +894,7 @@ AMD APU + AMD dGPU
     <value>Общий лимит потребления (W)</value>
   </data>
   <data name="Param_ADV_Pdesc.Text" xml:space="preserve">
-    <value>Экспериментальные параметры, работают на процессорах Реноир и выше</value>
+    <value>Экспериментальные опасные параметры</value>
   </data>
   <data name="Param_ADV_Text.Text" xml:space="preserve">
     <value>Расширенные параметры CPU</value>
@@ -1356,5 +1356,38 @@ AOD, Power, Temp, Load таблиц устройства.
   </data>
   <data name="SMURange" xml:space="preserve">
     <value>Применяется диапазон</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Применить</value>
+  </data>
+  <data name="Logging" xml:space="preserve">
+    <value>Логироовать в файл</value>
+  </data>
+  <data name="Param_EndW" xml:space="preserve">
+    <value>Закончить на</value>
+  </data>
+  <data name="Param_SMURange.Text" xml:space="preserve">
+    <value>Применить диапазон команд SMU</value>
+  </data>
+  <data name="Param_SMURangeDesc.Text" xml:space="preserve">
+    <value>Применяет диапазон значений в определённыый адрес SMU</value>
+  </data>
+  <data name="Param_Start" xml:space="preserve">
+    <value>Начать с</value>
+  </data>
+  <data name="Apply_Success" xml:space="preserve">
+    <value>Значения применены успешно!</value>
+  </data>
+  <data name="Apply_Success_Desc" xml:space="preserve">
+    <value>Все значения применены без ошибок</value>
+  </data>
+  <data name="Apply_Warn" xml:space="preserve">
+    <value>Значения применены с ошибками!</value>
+  </data>
+  <data name="Apply_Warn_Desc" xml:space="preserve">
+    <value>Вы применили параметры, но без:</value>
+  </data>
+  <data name="Param_CPU_c7.Text" xml:space="preserve">
+    <value>Максимальная температура cHTC (C)</value>
   </data>
 </root>

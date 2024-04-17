@@ -50,7 +50,7 @@ public sealed partial class ПресетыPage : Page
         config.adjline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=64 --slow-limit=6000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
         ConfigSave();
         InitSave();
-        MainWindow.Applyer.Apply();
+        MainWindow.Applyer.Apply(false);
     }
 
     [Obsolete]
@@ -67,7 +67,7 @@ public sealed partial class ПресетыPage : Page
         config.adjline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=64 --slow-limit=16000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
         ConfigSave();
         InitSave();
-        MainWindow.Applyer.Apply();
+        MainWindow.Applyer.Apply(false);
     }
 
     [Obsolete]
@@ -84,7 +84,7 @@ public sealed partial class ПресетыPage : Page
         config.adjline = " --tctl-temp=75 --stapm-limit=18000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
         ConfigSave();
         InitSave();
-        MainWindow.Applyer.Apply();
+        MainWindow.Applyer.Apply(false);
     }
 
     //--prochot-deassertion-ramp=2
@@ -102,7 +102,7 @@ public sealed partial class ПресетыPage : Page
         config.adjline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=64 --slow-limit=20000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
         ConfigSave();
         InitSave();
-        MainWindow.Applyer.Apply();
+        MainWindow.Applyer.Apply(false);
     }
 
     [Obsolete]
@@ -119,7 +119,7 @@ public sealed partial class ПресетыPage : Page
         config.adjline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=64 --slow-limit=60000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
         ConfigSave();
         InitSave();
-        MainWindow.Applyer.Apply();
+        MainWindow.Applyer.Apply(false);
     }
 
     //JSON форматирование

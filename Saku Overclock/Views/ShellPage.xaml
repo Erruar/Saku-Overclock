@@ -24,7 +24,7 @@
                        TextWrapping="NoWrap"
                        Style="{StaticResource CaptionTextBlockStyle}"
                        Margin="28,0,0,0"/>
-            <HyperlinkButton TabIndex="-1" Margin="107,2,0,0">Rel-Cand v1</HyperlinkButton>
+            <HyperlinkButton TabIndex="-1" Margin="107,2,0,0">Rel-Cand v2</HyperlinkButton>
         </Grid>
         <NavigationView
             x:Name="NavigationViewControl"

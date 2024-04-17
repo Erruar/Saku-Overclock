@@ -149,7 +149,7 @@ public sealed partial class MainWindow : WindowEx
         ConfigLoad();
         try
         {
-            if (config.autooverclock == true) { var cpu = new ПараметрыPage(); Applyer.Apply(); /*cpu.Play_Invernate_QuickSMU(1);*/ if (devices.autopstate == true && devices.enableps == true) { cpu.BtnPstateWrite_Click(); }  }
+            if (config.autooverclock == true) { var cpu = new ПараметрыPage(); Applyer.Apply(false); /*cpu.Play_Invernate_QuickSMU(1);*/ if (devices.autopstate == true && devices.enableps == true) { cpu.BtnPstateWrite_Click(); }  }
             if (config.traystart == true) { await Task.Delay(700); this.Hide(); }
         }
         catch
@@ -204,7 +204,7 @@ public sealed partial class MainWindow : WindowEx
         private static SendSMUCommand sendSMUCommand;
 
         [Obsolete]
-        public static async void Apply()
+        public static async void Apply(bool saveinfo)
         {
             try { sendSMUCommand = new SendSMUCommand(); } catch { return; }
             var mc = new Applyer();
@@ -216,7 +216,7 @@ public sealed partial class MainWindow : WindowEx
             void ConfigSave()
             {
                     Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(mc.config));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(mc.config,Formatting.Indented));
             }
 
             ConfigLoad();
@@ -244,7 +244,7 @@ public sealed partial class MainWindow : WindowEx
                         if (mc.config.reapplytime == true)
                         {
                             // Запустите ryzenadj снова
-                            await Process();
+                            await Process(false);
                             sendSMUCommand.Play_Invernate_QuickSMU(1);
                         }
                     };
@@ -258,7 +258,7 @@ public sealed partial class MainWindow : WindowEx
                         if (mc.config.reapplytime == true)
                         {
                             // Запустите ryzenadj снова
-                            await Process();
+                            await Process(false);
                             sendSMUCommand.Play_Invernate_QuickSMU(1);
                         }
                     };
@@ -266,14 +266,14 @@ public sealed partial class MainWindow : WindowEx
                 }
                 
             }
-            else
-            {
-                await Process();
-            }
+         /*   else
+            {*/
+                await Process(saveinfo);
+         /*   }*/
         }
 
         [Obsolete]
-        private static async Task Process()
+        private static async Task Process(bool saveinfo)
         {
           //  var sendSMUCommand = new SendSMUCommand();
             var mc = new Applyer
@@ -283,7 +283,7 @@ public sealed partial class MainWindow : WindowEx
             if (mc.config == null) { return; }
             await Task.Run(() =>
             {
-                sendSMUCommand.Translate(mc.config.adjline); 
+                sendSMUCommand.Translate(mc.config.adjline, saveinfo); 
             });
         } 
     }
@@ -316,7 +316,7 @@ public sealed partial class MainWindow : WindowEx
                 try
                 {
                     Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
                 }
                 catch
                 {
@@ -354,7 +354,7 @@ public sealed partial class MainWindow : WindowEx
                 try
                 {
                     Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices, Formatting.Indented));
                 }
                 catch
                 {
@@ -381,7 +381,7 @@ public sealed partial class MainWindow : WindowEx
         try
         {
             Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
         }
         catch { }
     }
@@ -403,7 +403,7 @@ public sealed partial class MainWindow : WindowEx
         try
         {
             Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices, Formatting.Indented));
         }
         catch { }
     }

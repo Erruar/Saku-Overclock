@@ -89,7 +89,7 @@ public sealed partial class ИнформацияPage : Page
 
             await Task.Run(() =>
             {
-                foreach (ManagementObject queryObj in searcher.Get())
+                foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
                 {
                     name = queryObj["Name"].ToString();
                     description = queryObj["Description"].ToString();
@@ -331,20 +331,38 @@ public sealed partial class ИнформацияPage : Page
             {
                 if (line != "")
                 {
-                    if (line.Contains("STAPM LIMIT")) { tbStapmL.Text = line.Replace("STAPM LIMIT", "").Replace("|", "").Replace(" ", "").Replace("stapm-limit", "") + " W"; }
-                    if (line.Contains("STAPM VALUE")) { tbStapmC.Text = line.Replace("STAPM VALUE", "").Replace("|", "").Replace(" ", "") + " W"; }
-                    if (line.Contains("PPT LIMIT FAST")) { tbActualL.Text = line.Replace("PPT LIMIT FAST", "").Replace("|", "").Replace(" ", "").Replace("fast-limit", "") + " W"; }
-                    if (line.Contains("PPT VALUE FAST")) { tbActualC.Text = line.Replace("PPT VALUE FAST", "").Replace("|", "").Replace(" ", "") + " W"; }
+                    if (line.Contains("STAPM LIMIT")) 
+                    { 
+                        tbStapmL.Text = line.Replace("STAPM LIMIT", "").Replace("|", "").Replace(" ", "").Replace("stapm-limit", "") + " W";
+                        infoPOWER.Maximum = double.Parse(tbStapmL.Text.Replace(" W", ""), CultureInfo.InvariantCulture);
+                    }
+                    if (line.Contains("STAPM VALUE")) 
+                    { 
+                        tbStapmC.Text = line.Replace("STAPM VALUE", "").Replace("|", "").Replace(" ", "") + " W";
+                        infoPOWER.Value = double.Parse(line.Replace("STAPM VALUE", "").Replace("|", "").Replace("W", "").Replace(" ", "").Replace("nan", "100"), CultureInfo.InvariantCulture);
+                        infoPOWERI.Text = $"{(int)infoPOWER.Value}{" W"}";
+                    }
+                    if (line.Contains("PPT LIMIT FAST")) 
+                    { 
+                        tbActualL.Text = line.Replace("PPT LIMIT FAST", "").Replace("|", "").Replace(" ", "").Replace("fast-limit", "") + " W";
+                        infoPOWER1.Maximum = double.Parse(tbActualL.Text.Replace(" W", ""), CultureInfo.InvariantCulture);
+                    }
+                    if (line.Contains("PPT VALUE FAST")) 
+                    { 
+                        tbActualC.Text = line.Replace("PPT VALUE FAST", "").Replace("|", "").Replace(" ", "") + " W";
+                        infoPOWER1.Value = double.Parse(line.Replace("PPT VALUE FAST", "").Replace("|", "").Replace("W", "").Replace(" ", "").Replace("nan", "100"), CultureInfo.InvariantCulture);
+                        infoPOWERI1.Text = $"{(int)infoPOWER1.Value}{" W"}";
+                    }
                     if (line.Contains("PPT LIMIT SLOW"))
                     { 
                         tbAVGL.Text = line.Replace("PPT LIMIT SLOW", "").Replace("|", "").Replace(" ", "").Replace("slow-limit", "") + " W";
-                        infoPOWER.Maximum = double.Parse(tbAVGL.Text.Replace(" W", ""),CultureInfo.InvariantCulture);
+                        infoPOWER2.Maximum = double.Parse(tbAVGL.Text.Replace(" W", ""),CultureInfo.InvariantCulture);
                     }
                     if (line.Contains("PPT VALUE SLOW"))
                     { 
                         tbAVGC.Text = line.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "") + " W"; 
-                        infoPOWER.Value = double.Parse(line.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace("W","").Replace(" ", "").Replace("nan", "100"), CultureInfo.InvariantCulture);
-                        infoPOWERI.Text = ((int)infoPOWER.Value).ToString() + " W".ToString(); 
+                        infoPOWER2.Value = double.Parse(line.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace("W","").Replace(" ", "").Replace("nan", "100"), CultureInfo.InvariantCulture);
+                        infoPOWERI2.Text = $"{(int)infoPOWER2.Value}{" W"}"; 
                     }
                     if (line.Contains("StapmTimeConst")) { tbFast.Text = line.Replace("StapmTimeConst", "").Replace("|", "").Replace(" ", "").Replace("stapm-time", "") + " S"; }
                     if (line.Contains("SlowPPTTimeConst")) { tbSlow.Text = line.Replace("SlowPPTTimeConst", "").Replace("|", "").Replace(" ", "").Replace("slow-time", "") + " S"; }

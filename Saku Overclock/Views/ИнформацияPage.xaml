@@ -19,10 +19,24 @@
             <Grid>
                 <ProgressRing Margin="0,0,0,9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" Maximum="180" x:Name="infoPOWER" Value="93" IsIndeterminate="False"/>
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="infoPOWERI" Margin="0,0,1,9" FontWeight="Bold"/>
-                <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Text="Power" Margin="0,-10,0,-11" FontWeight="Bold"/>
+                <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Text="STAPM" Margin="0,-10,0,-11" FontWeight="Bold"/>
             </Grid>
         </Button>
         <Button IsEnabled="False" Width="80" Height="80" Margin="170,-4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid>
+                <ProgressRing Margin="0,0,0,9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" Maximum="180" x:Name="infoPOWER1" Value="93" IsIndeterminate="False"/>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="infoPOWERI1" Margin="0,0,1,9" FontWeight="Bold"/>
+                <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Text="REAL" Margin="0,-10,0,-11" FontWeight="Bold"/>
+            </Grid>
+        </Button>
+        <Button IsEnabled="False" Width="80" Height="80" Margin="255,-4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid>
+                <ProgressRing Margin="0,0,0,9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" Maximum="180" x:Name="infoPOWER2" Value="93" IsIndeterminate="False"/>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="infoPOWERI2" Margin="0,0,1,9" FontWeight="Bold"/>
+                <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" Text="AVG" Margin="0,-10,0,-11" FontWeight="Bold"/>
+            </Grid>
+        </Button>
+        <Button IsEnabled="False" Width="80" Height="80" Margin="340,-4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Grid>
                 <ProgressRing Margin="0,0,0,9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" Maximum="180" x:Name="infoVRM" Value="93" IsIndeterminate="False"/>
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="infoVRMI" Margin="0,0,0,9" FontWeight="Bold"/>

@@ -18,7 +18,7 @@
         <TextBlock x:Uid="Main_Welcome" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Добро пожаловать в" Margin="0,105,0,0"/>
         <TextBlock FontSize="27" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Saku Overclock" Margin="0,130,0,0"/>
         <TextBlock x:Uid="Main_Welcome_1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Для тех, кто желает максимум!"  Margin="0,170,0,0"/>
-        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Ver 1.0.9.0 Rel-Cand v1" Margin="0,198,0,0"/>
+        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Ver 1.0.10.0 Rel-Cand v2" Margin="0,198,0,0"/>
         <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
             <Grid.RowDefinitions>
                 <RowDefinition/>

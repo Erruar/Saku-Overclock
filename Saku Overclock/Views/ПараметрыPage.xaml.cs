@@ -68,7 +68,7 @@ public sealed partial class ПараметрыPage : Page
             cpu ??= CpuSingleton.GetInstance();
             //Cpu.Cpu_Init();
             cpusend ??= new SendSMUCommand();
-            if (SendSMUCommand.OC_Detect(cpusend) == false) { OC_Advanced.Visibility = Visibility.Collapsed; }
+            //if (SendSMUCommand.OC_Detect(cpusend) == false) { OC_Advanced.Visibility = Visibility.Collapsed; }
         }
         catch
         {
@@ -304,7 +304,7 @@ public sealed partial class ПараметрыPage : Page
         try
         {
             Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
         }
         catch
         {
@@ -621,6 +621,19 @@ public sealed partial class ПараметрыPage : Page
     [Obsolete("Obsolete")]
     private void MainInit(int index)
     {
+        if (cpu.info.codeName != Cpu.CodeName.VanGogh)
+        {
+            A1_main.Visibility = Visibility.Collapsed;
+            A2_main.Visibility = Visibility.Collapsed;
+            A3_main.Visibility = Visibility.Collapsed;
+            A4_main.Visibility = Visibility.Collapsed;
+            A5_main.Visibility = Visibility.Collapsed;
+            A1_desc.Visibility = Visibility.Collapsed;
+            A2_desc.Visibility = Visibility.Collapsed;
+            A3_desc.Visibility = Visibility.Collapsed;
+            A4_desc.Visibility = Visibility.Collapsed;
+            A5_desc.Visibility = Visibility.Collapsed;
+        }
         waitforload = true;
         ConfigLoad();
         if (config.Preset == -1 || index == -1) //Load from unsaved
@@ -629,7 +642,7 @@ public sealed partial class ПараметрыPage : Page
             c1.IsChecked = devices.c1; c1v.Value = devices.c1v; c2.IsChecked = devices.c2; c1v.Value = devices.c2v; c3.IsChecked = devices.c3; c1v.Value = devices.c3v; c4.IsChecked = devices.c4; c1v.Value = devices.c4v; c5.IsChecked = devices.c5; c1v.Value = devices.c5v; c6.IsChecked = devices.c6; c1v.Value = devices.c6v;
             V1.IsChecked = devices.v1; V1V.Value = devices.v1v; V2.IsChecked = devices.v2; V2V.Value = devices.v2v; V3.IsChecked = devices.v3; V3V.Value = devices.v3v; V4.IsChecked = devices.v4; V4V.Value = devices.v4v; V5.IsChecked = devices.v5; V5V.Value = devices.v5v; V6.IsChecked = devices.v6; V6V.Value = devices.v6v; V7.IsChecked = devices.v7; V7V.Value = devices.v7v;
             g1.IsChecked = devices.g1; g1v.Value = devices.g1v; g2.IsChecked = devices.g2; g2v.Value = devices.g2v; g3.IsChecked = devices.g3; g3v.Value = devices.g3v; g4.IsChecked = devices.g4; g4v.Value = devices.g4v; g5.IsChecked = devices.g5; g5v.Value = devices.g5v; g6.IsChecked = devices.g6; g6v.Value = devices.g6v; g7.IsChecked = devices.g7; g7v.Value = devices.g7v; g8v.Value = devices.g8v; g8.IsChecked = devices.g8; g9v.Value = devices.g9v; g9.IsChecked = devices.g9; g10v.Value = devices.g10v; g10.IsChecked = devices.g10;
-            a1.IsChecked = devices.a1; a1v.Value = devices.a1v; a2.IsChecked = devices.a2; a2v.Value = devices.a2v; a3.IsChecked = devices.a3; a3v.Value = devices.a3v; a4.IsChecked = devices.a4; a4v.Value = devices.a4v; a5.IsChecked = devices.a5; a5v.Value = devices.a5v; a6.IsChecked = devices.a6; a6v.Value = devices.a6v; a7.IsChecked = devices.a7; a7v.Value = devices.a7v; a8v.Value = devices.a8v; a8.IsChecked = devices.a8; a9v.Value = devices.a9v; a9.IsChecked = devices.a9; a10v.Value = devices.a10v; a11v.Value = devices.a11v; a11.IsChecked = devices.a11; a12v.Value = devices.a12v; a12.IsChecked = devices.a12; a13m.SelectedIndex = devices.a13v;
+            a1.IsChecked = devices.a1; a1v.Value = devices.a1v; a2.IsChecked = devices.a2; a2v.Value = devices.a2v; a3.IsChecked = devices.a3; a3v.Value = devices.a3v; a4.IsChecked = devices.a4; a4v.Value = devices.a4v; a5.IsChecked = devices.a5; a5v.Value = devices.a5v; a6.IsChecked = devices.a6; a6v.Value = devices.a6v; a7.IsChecked = devices.a7; a7v.Value = devices.a7v; a8v.Value = devices.a8v; a8.IsChecked = devices.a8; a9v.Value = devices.a9v; a9.IsChecked = devices.a9; a10v.Value = devices.a10v; a11v.Value = devices.a11v; a11.IsChecked = devices.a11; a12v.Value = devices.a12v; a12.IsChecked = devices.a12; a13m.SelectedIndex = devices.a13v; a13.IsChecked = devices.a13;
             EnablePstates.IsOn = devices.enableps; Turbo_boost.IsOn = devices.turboboost; Autoapply_1.IsOn = devices.autopstate; IgnoreWarn.IsOn = devices.ignorewarn; Without_P0.IsOn = devices.p0ignorewarn;
             DID_0.Value = devices.did0; DID_1.Value = devices.did1; DID_2.Value = devices.did2; FID_0.Value = devices.fid0; FID_1.Value = devices.fid1; FID_2.Value = devices.fid2; VID_0.Value = devices.vid0; VID_1.Value = devices.vid1; VID_2.Value = devices.vid2;
             EnableSMU.IsOn = devices.smuenabled;
@@ -640,7 +653,7 @@ public sealed partial class ПараметрыPage : Page
             c1.IsChecked = profile[index].cpu1; c1v.Value = profile[index].cpu1value; c2.IsChecked = profile[index].cpu2; c2v.Value = profile[index].cpu2value; c3.IsChecked = profile[index].cpu3; c3v.Value = profile[index].cpu3value; c4.IsChecked = profile[index].cpu4; c4v.Value = profile[index].cpu4value; c5.IsChecked = profile[index].cpu5; c5v.Value = profile[index].cpu5value; c6.IsChecked = profile[index].cpu6; c6v.Value = profile[index].cpu6value;
             V1.IsChecked = profile[index].vrm1; V1V.Value = profile[index].vrm1value; V2.IsChecked = profile[index].vrm2; V2V.Value = profile[index].vrm2value; V3.IsChecked = profile[index].vrm3; V3V.Value = profile[index].vrm3value; V4.IsChecked = profile[index].vrm4; V4V.Value = profile[index].vrm4value; V5.IsChecked = profile[index].vrm5; V5V.Value = profile[index].vrm5value; V6.IsChecked = profile[index].vrm6; V6V.Value = profile[index].vrm6value; V7.IsChecked = profile[index].vrm7; V7V.Value = profile[index].vrm7value;
             g1.IsChecked = profile[index].gpu1; g1v.Value = profile[index].gpu1value; g2.IsChecked = profile[index].gpu2; g2v.Value = profile[index].gpu2value; g3.IsChecked = profile[index].gpu3; g3v.Value = profile[index].gpu3value; g4.IsChecked = profile[index].gpu4; g4v.Value = profile[index].gpu4value; g5.IsChecked = profile[index].gpu5; g5v.Value = profile[index].gpu5value; g6.IsChecked = profile[index].gpu6; g6v.Value = profile[index].gpu6value; g7.IsChecked = profile[index].gpu7; g7v.Value = profile[index].gpu7value; g8v.Value = profile[index].gpu8value; g8.IsChecked = profile[index].gpu8; g9v.Value = profile[index].gpu9value; g9.IsChecked = profile[index].gpu9; g10v.Value = profile[index].gpu10value; g10.IsChecked = profile[index].gpu10;
-            a1.IsChecked = profile[index].advncd1; a1v.Value = profile[index].advncd1value; a2.IsChecked = profile[index].advncd2; a2v.Value = profile[index].advncd2value; a3.IsChecked = profile[index].advncd3; a3v.Value = profile[index].advncd3value; a4.IsChecked = profile[index].advncd4; a4v.Value = profile[index].advncd4value; a5.IsChecked = profile[index].advncd5; a5v.Value = profile[index].advncd5value; a6.IsChecked = profile[index].advncd6; a6v.Value = profile[index].advncd6value; a7.IsChecked = profile[index].advncd7; a7v.Value = profile[index].advncd7value; a8v.Value = profile[index].advncd8value; a8.IsChecked = profile[index].advncd8; a9v.Value = profile[index].advncd9value; a9.IsChecked = profile[index].advncd9; a10v.Value = profile[index].advncd10value; a11v.Value = profile[index].advncd11value; a11.IsChecked = profile[index].advncd11; a12v.Value = profile[index].advncd12value; a12.IsChecked = profile[index].advncd12; a13m.SelectedIndex = profile[index].advncd13value;
+            a1.IsChecked = profile[index].advncd1; a1v.Value = profile[index].advncd1value; a2.IsChecked = profile[index].advncd2; a2v.Value = profile[index].advncd2value; a3.IsChecked = profile[index].advncd3; a3v.Value = profile[index].advncd3value; a4.IsChecked = profile[index].advncd4; a4v.Value = profile[index].advncd4value; a5.IsChecked = profile[index].advncd5; a5v.Value = profile[index].advncd5value; a6.IsChecked = profile[index].advncd6; a6v.Value = profile[index].advncd6value; a7.IsChecked = profile[index].advncd7; a7v.Value = profile[index].advncd7value; a8v.Value = profile[index].advncd8value; a8.IsChecked = profile[index].advncd8; a9v.Value = profile[index].advncd9value; a9.IsChecked = profile[index].advncd9; a10v.Value = profile[index].advncd10value; a11v.Value = profile[index].advncd11value; a11.IsChecked = profile[index].advncd11; a12v.Value = profile[index].advncd12value; a12.IsChecked = profile[index].advncd12; a13.IsChecked = profile[index].advncd13; a13m.SelectedIndex = profile[index].advncd13value;
             EnablePstates.IsOn = profile[index].enablePstateEditor; Turbo_boost.IsOn = profile[index].turboBoost; Autoapply_1.IsOn = profile[index].autoPstate; IgnoreWarn.IsOn = profile[index].ignoreWarn; Without_P0.IsOn = profile[index].p0Ignorewarn;
             DID_0.Value = profile[index].did0; DID_1.Value = profile[index].did1; DID_2.Value = profile[index].did2; FID_0.Value = profile[index].fid0; FID_1.Value = profile[index].fid1; FID_2.Value = profile[index].fid2; VID_0.Value = profile[index].vid0; VID_1.Value = profile[index].vid1; VID_2.Value = profile[index].vid2;
             EnableSMU.IsOn = profile[index].smuEnabled;
@@ -1560,6 +1573,10 @@ public sealed partial class ПараметрыPage : Page
         {
             adjline += " --slow-time=" + c6v.Value;
         }
+        if (c7.IsChecked == true)
+        {
+            adjline += " --cHTC-temp=" + c7v.Value;
+        }
 
         //vrm
         if (V1.IsChecked == true)
@@ -1595,6 +1612,18 @@ public sealed partial class ПараметрыPage : Page
         if (V7.IsChecked == true)
         {
             adjline += " --prochot-deassertion-ramp=" + V7V.Value;
+        }
+        if (V8.IsChecked == true)
+        {
+            adjline += " --oc-volt-scalar=" + V8V.Value;
+        }
+        if (V9.IsChecked == true)
+        {
+            adjline += " --oc-volt-modular=" + V9V.Value;
+        }
+        if (V10.IsChecked == true)
+        {
+            adjline += " --oc-volt-variable=" + V10V.Value;
         }
 
         //gpu
@@ -1640,12 +1669,38 @@ public sealed partial class ПараметрыPage : Page
 
         if (g9.IsChecked == true)
         {
-            adjline += " --max-gfxclk=" + g9v.Value;
+            adjline += " --min-gfxclk=" + g9v.Value;
         }
 
         if (g10.IsChecked == true)
         {
-            adjline += " --min-socclk-frequency=" + g10v.Value;
+            adjline += " --max-gfxclk=" + g10v.Value;
+        }
+        if (g11.IsChecked == true)
+        {
+            adjline += " --min-cpuclk=" + g11v.Value;
+        }
+        if (g12.IsChecked == true)
+        {
+            adjline += " --max-cpuclk=" + g12v.Value;
+        }
+        if (g13.IsChecked == true)
+        {
+            adjline += " --setgpu-arerture-low=" + g13v.Value;
+        }
+        if (g14.IsChecked == true)
+        {
+            adjline += " --setgpu-arerture-high=" + g14v.Value;
+        }
+        if (g15.IsChecked == true)
+        {
+            if (g15m.SelectedIndex != 0) { adjline += " --start-gpu-link=" + (g15m.SelectedIndex - 1).ToString(); } 
+            else { adjline += " --stop-gpu-link=0"; }
+        }
+        if (g16.IsChecked == true)
+        {
+            if (g16m.SelectedIndex != 0) { adjline += " --setcpu-freqto-ramstate=" + (g16m.SelectedIndex - 1).ToString(); }
+            else { adjline += " --stopcpu-freqto-ramstate"; }
         }
         //advanced
         if (a1.IsChecked == true)
@@ -1712,23 +1767,43 @@ public sealed partial class ПараметрыPage : Page
         {
             if (a13m.SelectedIndex == 1)
             {
-                adjline += " --max-performance";
+                adjline += " --max-performance=1";
             }
 
             if (a13m.SelectedIndex == 2)
             {
-                adjline += " --power-saving";
+                adjline += " --power-saving=1";
+            }
+        }
+        if (a14.IsChecked == true)
+        {
+            if (a14m.SelectedIndex == 0)
+            {
+                adjline += " --disable-oc=1";
+            }
+
+            if (a14m.SelectedIndex == 1)
+            {
+                adjline += " --enable-oc=1";
             }
         }
         ConfigLoad();
         config.adjline = adjline + " ";
+        config.ApplyInfo = "";
         adjline = "";
         ConfigSave();
-        MainWindow.Applyer.Apply();
+        
+        MainWindow.Applyer.Apply(true); 
         if (EnablePstates.IsOn) { BtnPstateWrite_Click(); }
+        await Task.Delay(1000);
+        ConfigLoad();
+        var timer = 1000;
+        timer *= config.ApplyInfo.Split('\n').Length + 1;
+        Apply_tooltip.Title = "Apply_Success".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized();
+        Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
         Apply_tooltip.IsOpen = true;
-        await Task.Delay(3000);
-        Apply_tooltip.IsOpen = false;
+        if (config.ApplyInfo != "") { Apply_tooltip.Title = "Apply_Warn".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + config.ApplyInfo; Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked }; await Task.Delay(timer); Apply_tooltip.IsOpen = false; }
+        else { await Task.Delay(3000); Apply_tooltip.IsOpen = false; } 
         if (textBoxARG0 != null && textBoxARGAddress != null && textBoxCMD != null && textBoxCMDAddress != null && textBoxRSPAddress != null && EnableSMU.IsOn) { ApplySettings(0, 0); }
         if (cpusend == null) { cpusend = new SendSMUCommand(); cpusend.Play_Invernate_QuickSMU(0); }
        
@@ -3106,7 +3181,7 @@ public sealed partial class ПараметрыPage : Page
         var argStart = new TextBox
         {
             Margin = new Thickness(0, 105, 0, 0),
-            PlaceholderText = "Начать с",
+            PlaceholderText = "Param_Start".GetLocalized(),
             HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
             VerticalAlignment = VerticalAlignment.Top,
             Height = 40,
@@ -3117,7 +3192,7 @@ public sealed partial class ПараметрыPage : Page
             HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
             VerticalAlignment = VerticalAlignment.Top,
             Margin = new Thickness(180, 105, 0, 0),
-            PlaceholderText = "Закончить на",
+            PlaceholderText = "Param_EndW".GetLocalized(),
             Height = 40,
             Width = 179
         };
@@ -3126,7 +3201,7 @@ public sealed partial class ПараметрыPage : Page
             Margin = new Thickness(1, 155, 0, 0),
             HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
             VerticalAlignment = VerticalAlignment.Top,
-            Content = "Логироовать в файл",
+            Content = "Logging".GetLocalized(),
             IsChecked = false
         };
         try
@@ -3155,7 +3230,7 @@ public sealed partial class ПараметрыPage : Page
                         autoRun
                     }
                 },
-                PrimaryButtonText = "Применить",
+                PrimaryButtonText = "Apply".GetLocalized(),
                 CloseButtonText = "Cancel".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
             };
@@ -3363,6 +3438,116 @@ public sealed partial class ПараметрыPage : Page
     public void CloseInfoRange()
     { 
        RangeStarted.IsOpen = false; 
+    }
+
+    private void C7_Checked(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void C7_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+
+    }
+
+    private void V8_Checked(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void V8V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+
+    }
+
+    private void V9_Checked(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void V9V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+
+    }
+
+    private void V10_Checked(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void V10V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+
+    }
+
+    private void G11_Checked(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void G11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+
+    }
+
+    private void G12_Checked(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void G12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+
+    }
+
+    private void G13_Checked(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void G13v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+
+    }
+
+    private void G14_Checked(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void G14v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+
+    }
+
+    private void G15_Checked(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void G15m_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+
+    }
+
+    private void G16_Checked(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void G16m_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+
+    }
+
+    private void A14_Checked(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void A14m_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+
     }
 #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

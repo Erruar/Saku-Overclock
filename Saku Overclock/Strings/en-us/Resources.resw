@@ -276,7 +276,7 @@
     <value>Time of fast frequency rise (S)</value>
   </data>
   <data name="Param_Name.Text" xml:space="preserve">
-    <value>Custom preset parameters</value>
+    <value>Overclocking parameters</value>
   </data>
   <data name="Param_Preset.Text" xml:space="preserve">
     <value>Saved presets:</value>
@@ -682,7 +682,7 @@ IT IS NOT RECOMMENDED TO TOUCH IT</value>
     <value>CPU Overclocking</value>
   </data>
   <data name="Param_GPU_Pdesc.Text" xml:space="preserve">
-    <value>Freq overclocking for every Ryzen Picasso and up processors</value>
+    <value>Cpu subsystems frequency overclocking</value>
   </data>
   <data name="Param_VRM_Pdesc.Text" xml:space="preserve">
     <value>Edit all your VRM values</value>
@@ -863,7 +863,7 @@ the information page!</value>
     <value>Laptop Power Limit (W)</value>
   </data>
   <data name="Param_ADV_Pdesc.Text" xml:space="preserve">
-    <value>Experimental parameters for every Ryzen Renoir and up processors</value>
+    <value>Experimental CPU parameters</value>
   </data>
   <data name="Param_ADV_Text.Text" xml:space="preserve">
     <value>Advanced CPU parameters</value>
@@ -1310,5 +1310,50 @@ Changing P0 state have MORE chances to crash your system</value>
   </data>
   <data name="SMURange" xml:space="preserve">
     <value>Range is applying</value>
+  </data>
+  <data name="Add_Target_Error.Subtitle" xml:space="preserve">
+    <value>You can't add profile without name</value>
+  </data>
+  <data name="Add_Target_Error.Title" xml:space="preserve">
+    <value>Error while adding</value>
+  </data>
+  <data name="Add_Target_Max.Subtitle" xml:space="preserve">
+    <value>You can't have more profiles!</value>
+  </data>
+  <data name="Add_Target_Max.Title" xml:space="preserve">
+    <value>Error while adding</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Logging" xml:space="preserve">
+    <value>Log into file</value>
+  </data>
+  <data name="Param_EndW" xml:space="preserve">
+    <value>End with</value>
+  </data>
+  <data name="Param_SMURange.Text" xml:space="preserve">
+    <value>Apply range to SMU command</value>
+  </data>
+  <data name="Param_SMURangeDesc.Text" xml:space="preserve">
+    <value>You can apply range to one SMU command</value>
+  </data>
+  <data name="Param_Start" xml:space="preserve">
+    <value>Start from</value>
+  </data>
+  <data name="Apply_Success" xml:space="preserve">
+    <value>Applied success!</value>
+  </data>
+  <data name="Apply_Success_Desc" xml:space="preserve">
+    <value>You have applied your settings without errors</value>
+  </data>
+  <data name="Apply_Warn" xml:space="preserve">
+    <value>Applied with warnings!</value>
+  </data>
+  <data name="Apply_Warn_Desc" xml:space="preserve">
+    <value>You have applied your settings without those:</value>
+  </data>
+  <data name="Param_CPU_c7.Text" xml:space="preserve">
+    <value>Maximum cHTC temp (C)</value>
   </data>
 </root>

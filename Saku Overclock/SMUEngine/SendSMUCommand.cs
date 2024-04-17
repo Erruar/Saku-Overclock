@@ -60,6 +60,7 @@ internal class SendSMUCommand
     {
         get; set;
     }
+    public bool saveinfo = false;
     private readonly Cpu cpu;
     private Smusettings smusettings = new();
     private Config config = new();
@@ -171,7 +172,7 @@ internal class SendSMUCommand
         try
         {
             Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config,Formatting.Indented));
         }
         catch
         {
@@ -446,8 +447,9 @@ internal class SendSMUCommand
 
     //From RyzenADJ string to SMU Calls
     [Obsolete]
-    public async void Translate(string _ryzenAdjString)
+    public async void Translate(string _ryzenAdjString, bool save)
     {
+        saveinfo = save;
         try
         {
             if (cpu.info.codeName == Cpu.CodeName.SummitRidge || cpu.info.codeName == Cpu.CodeName.PinnacleRidge) { Socket_AM4_V1(); }
@@ -494,6 +496,7 @@ internal class SendSMUCommand
                     catch { /*Ignored*/ }
                 });
             }
+            saveinfo = false;
         }
         catch { /*Ignored*/ }
     }
@@ -501,6 +504,7 @@ internal class SendSMUCommand
     [Obsolete]
     public void ApplySettings(string commandName, uint value)
     {
+        if (saveinfo) { ConfigLoad();/* config.ApplyInfo += "Applyed success!";*/  }
         try
         {
             var Args = new uint[6];
@@ -515,23 +519,25 @@ internal class SendSMUCommand
                     tasks.Add(Task.Run(() =>
                     {
                         // Применить уже эту команду наконец-то!
-                        if (command.Item2 == true) { ApplyThis(1, command.Item3, Args); }
-                        else { ApplyThis(0, command.Item3, Args); }
+                        if (command.Item2 == true) { ApplyThis(1, command.Item3, Args, command.Item1); }
+                        else { ApplyThis(0, command.Item3, Args, command.Item1); }
                     }));
                 }
 
                 Task.WaitAll(tasks.ToArray());
             }
-            else { throw new ArgumentException($"Command '{commandName}' not found"); }
+            else { config.ApplyInfo += $"\nCommand '{commandName}' not found"; }
         }
         catch
         {
-            throw new ArgumentException($"Command '{commandName}' not found");
-        } 
+            config.ApplyInfo += $"\nCommand '{commandName}' not found";
+        }
+        if (saveinfo) { ConfigSave(); }
     }
     [Obsolete]
-    public void ApplyThis(int Mailbox, uint Command, uint[] args)
+    public void ApplyThis(int Mailbox, uint Command, uint[] args, string CommandName)
     {
+        if (saveinfo) { ConfigLoad(); }
         try
         {
             if (cpu.info.codeName == Cpu.CodeName.SummitRidge || cpu.info.codeName == Cpu.CodeName.PinnacleRidge) { Socket_AM4_V1(); }
@@ -539,7 +545,7 @@ internal class SendSMUCommand
             else if (cpu.info.codeName == Cpu.CodeName.Matisse || cpu.info.codeName == Cpu.CodeName.Vermeer) { Socket_AM4_V2(); }
             else if (cpu.info.codeName == Cpu.CodeName.Renoir || cpu.info.codeName == Cpu.CodeName.Lucienne || cpu.info.codeName == Cpu.CodeName.Cezanne) { Socket_FP6_AM4(); }
             else if (cpu.info.codeName == Cpu.CodeName.VanGogh) { Socket_FF3(); }
-            else if (cpu.info.codeName == Cpu.CodeName.Mendocino || cpu.info.codeName == Cpu.CodeName.Rembrandt /*|| cpu.info.codeName == Cpu.CodeName.PhoenixPoint || cpu.info.codeName == Cpu.CodeName.PhoenixPoint2 || cpu.info.codeName == Cpu.CodeName.StrixPoint*/ || cpu.info.codeName == Cpu.CodeName.DragonRange) { Socket_FT6_FP7_FP8(); }
+            else if (cpu.info.codeName == Cpu.CodeName.Mendocino || cpu.info.codeName == Cpu.CodeName.Rembrandt || cpu.info.codeName == Cpu.CodeName.Phoenix || cpu.info.codeName == Cpu.CodeName.Phoenix2 /*|| cpu.info.codeName == Cpu.CodeName.Strix*/ || cpu.info.codeName == Cpu.CodeName.DragonRange || cpu.info.codeName == Cpu.CodeName.HawkPoint) { Socket_FT6_FP7_FP8(); }
             else if (cpu.info.codeName == Cpu.CodeName.Raphael /*|| cpu.info.codeName == Cpu.CodeName.GraniteRidge*/) { Socket_AM5_V1(); }
             else 
             {
@@ -569,11 +575,13 @@ internal class SendSMUCommand
             testMailbox.SMU_ADDR_RSP = addrRsp;
             testMailbox.SMU_ADDR_ARG = addrArg; 
             var status = cpu.smu.SendSmuCommand(testMailbox, Command, ref args);
+            if (status != SMU.Status.OK) { config.ApplyInfo += $"\nCommand '{CommandName}' applied with status {status}"; }
         }
         catch
         {
-            throw new ArgumentException($"Command can't be applied!");
+            config.ApplyInfo += $"\nCommand '{CommandName}' can't be applied";
         }
+        if (saveinfo) { ConfigSave(); }
     }
     public void CancelRange()
     {
@@ -666,32 +674,49 @@ internal class SendSMUCommand
                 ("vrmmax-current",true , 0x22),
                 ("vrmsoc-current",true , 0x21),
                 ("vrmsocmax-current",true , 0x23),
-                ("prochot-deassertion-ramp",true , 0x25),
+                ("psi0-current",true , 0x24),
+                ("psi0soc-current",true , 0x25),
+                ("prochot-deassertion-ramp",true , 0x26),
                 ("pbo-scalar",false , 0x68),
                 ("power-saving",true , 0x19),
                 ("max-performance",true , 0x18),
                 ("oc-clk",false , 0x7d),
+                ("oc-clk", true , 0x3C),
+                ("oc-clk", true , 0x41), 
                 ("per-core-oc-clk",false , 0x7e),
                 ("oc-volt",false , 0x7f),
+                ("oc-volt", true , 0x40),
                 ("enable-oc",false , 0x69),
                 ("disable-oc",false , 0x6a),
+                ("disable-oc", true , 0x3F), 
                 ("max-cpuclk",true, 0x44),
                 ("min-cpuclk",true, 0x45),
                 ("max-gfxclk",true, 0x46),
                 ("min-gfxclk",true, 0x47),
-                ("max-socclk-frequency",true, 0x48), //НЕ идёт
-                ("min-socclk-frequency",true, 0x49), //НЕ идёт
-                ("max-fclk-frequency",true, 0x4a), //НЕ идёт
-                ("min-fclk-frequency",true, 0x4b), //НЕ идёт
-                ("max-vcn",true, 0x4c), //Норм
-                ("min-vcn",true, 0x4d),//Норм
-                ("max-lclk",true, 0x4e),//Норм
-                ("min-lclk",true, 0x4f),//Норм
-                //58 - 11 - НАПРЯЖЕНИЕ 
-                //59 - 0-10 - НАПРЯЖЕНИЕ
-                //5E-5F и далее - отвечают за стабильность. лучше поставить им 12
-                //61 - не идёт никак
-                //2E - STAPM 1, 2F - STAPM 2, 30 - STAPM 3,31-33 - хз,34 - VRM 1,35 - VRM 2,36 - VRM 3,37 VRM 4, 38 - ??? Или 100 или 0, 39 - ??? всегда 100, 3a,60, 61 - не раб,5D и 5B и 5A не раб, 62, 63, 64, 65 - хз что, но 3400 становится
+                ("max-socclk-frequency",true, 0x48), 
+                ("min-socclk-frequency",true, 0x49), 
+                ("max-fclk-frequency",true, 0x4a), 
+                ("min-fclk-frequency",true, 0x4b), 
+                ("max-vcn",true, 0x4c), 
+                ("min-vcn",true, 0x4d), 
+                ("max-lclk",true, 0x4e), 
+                ("min-lclk",true, 0x4f), 
+                ("oc-volt-scalar",false, 0x58), 
+                ("oc-volt-modular",false, 0x59), 
+                ("oc-volt-variable",false, 0x62),
+                ("update-skintemp-error", true, 0x27),  
+                ("setgpu-arerture-low", true, 0x28), 
+                ("setgpu-arerture-high", true , 0x29), 
+                ("start-gpu-link", true , 0x2A),  
+                ("stop-gpu-link", true , 0x2B),  
+                ("setcpu-freqto-ramstate", true , 0x2F),  
+                ("stopcpu-freqto-ramstate", true , 0x30), 
+                ("set-ulv-vid", true , 0x35),  
+                ("set-vddoff-vid", true , 0x3A),  
+                ("set-vmin-freq", true , 0x3B),  
+                ("set-gpuclockoverdrive-byvid", true , 0x3D), 
+                ("set-powergate-xgbe", true , 0x3E), 
+                ("enable-cc6filter",  true , 0x42)  
             };
     }
 
@@ -710,7 +735,7 @@ internal class SendSMUCommand
                 // Store the commands
                 ("stapm-limit",true , 0x14), // Use MP1 address
                 ("stapm-limit",false , 0x31), // Use RSMU address
-                ("ppt-limit",false , 0x33),
+                ("stapm-limit",false , 0x33),
                 ("stapm-time",true , 0x18),
                 ("fast-limit",true , 0x15),
                 ("slow-limit",true , 0x16),
@@ -718,10 +743,14 @@ internal class SendSMUCommand
                 ("tctl-temp",true , 0x19),
                 ("cHTC-temp",false , 0x37),
                 ("apu-skin-temp",true , 0x38),
+                ("apu-slow-limit",true , 0x21),
+                ("skin-temp-limit",true , 0x53),
                 ("vrm-current",true , 0x1a),
                 ("vrmmax-current",true , 0x1c),
                 ("vrmsoc-current",true , 0x1b),
                 ("vrmsocmax-current",true , 0x1d),
+                ("psi0-current",true , 0x1e),
+                ("psi0soc-current",true , 0x1f),
                 ("prochot-deassertion-ramp",true , 0x20),
                 ("gfx-clk",false , 0x89),
                 ("dgpu-skin-temp",true , 0x37),
@@ -782,6 +811,7 @@ internal class SendSMUCommand
                 ("tctl-temp", true, 0x19),
                 ("cHTC-temp", false, 0x37),
                 ("apu-skin-temp", true, 0x33),
+                ("apu-slow-limit",true , 0x23),
                 ("vrm-current", true, 0x1a),
                 ("vrmmax-current", true, 0x1c),
                 ("vrmsoc-current", true, 0x1b),
@@ -829,9 +859,12 @@ internal class SendSMUCommand
                 ("vrmmax-current",true , 0x1e),
                 ("vrmsoc-current",true , 0x1b),
                 ("vrmsocmax-current",true , 0x1d),
+                ("vrmcvip-current",true , 0x1d),
                 ("vrmgfx-current",true , 0x1c),
                 ("vrmgfxmax-current",true , 0x1f),
                 ("prochot-deassertion-ramp",true , 0x22),
+                ("psi3cpu_current",true , 0x20),
+                ("psi3gfx_current",true , 0x21),
                 ("gfx-clk",false , 0x89),
                 ("power-saving",true , 0x12),
                 ("max-performance",true , 0x11),
@@ -855,9 +888,9 @@ internal class SendSMUCommand
         commands = new List<(string, bool, uint)>
             {
                 // Store the commands
-                ("ppt-limit",false, 0x64), // Use RSMU address
-                ("tdc-limit",false , 0x65),
-                ("edc-limit",false , 0x66),
+                ("stapm-limit",false, 0x64), // Use RSMU address
+                ("vrm-current",false , 0x65),
+                ("vrmmax-current",false , 0x66),
                 ("tctl-temp",false , 0x68),
                 ("pbo-scalar",false , 0x6a),
                 ("oc-clk", false, 0x6c),
@@ -882,12 +915,12 @@ internal class SendSMUCommand
         commands = new List<(string, bool, uint)>
             {
                 // Store the commands
-                ("ppt-limit",true, 0x3D), // Use MP1 address
-                ("ppt-limit",false, 0x53), // Use RSMU address
-                ("tdc-limit",true , 0x3B),
-                ("tdc-limit",false , 0x54),
-                ("edc-limit",true , 0x3c),
-                ("edc-limit",false , 0x55),
+                ("stapm-limit",true, 0x3D), // Use MP1 address
+                ("stapm-limit",false, 0x53), // Use RSMU address
+                ("vrm-current",true , 0x3B),
+                ("vrm-current",false , 0x54),
+                ("vrmmax-current",true , 0x3c),
+                ("vrmmax-current",false , 0x55),
                 ("tctl-temp",true , 0x23),
                 ("tctl-temp",false , 0x56),
                 ("pbo-scalar",false , 0x58),
@@ -920,12 +953,12 @@ internal class SendSMUCommand
         commands = new List<(string, bool, uint)>
             {
                 // Store the commands
-                ("ppt-limit",true, 0x3e), // Use MP1 address
-                ("ppt-limit",false, 0x56), // Use RSMU address
-                ("tdc-limit",true , 0x3c),
-                ("tdc-limit",false , 0x57),
-                ("edc-limit",true , 0x3d),
-                ("edc-limit",false , 0x58),
+                ("stapm-limit",true, 0x3e), // Use MP1 address
+                ("stapm-limit",false, 0x56), // Use RSMU address
+                ("vrm-current",true , 0x3c),
+                ("vrm-current",false , 0x57),
+                ("vrmmax-current",true , 0x3d),
+                ("vrmmax-current",false , 0x58),
                 ("tctl-temp",true , 0x3f),
                 ("tctl-temp",false , 0x59),
                 ("pbo-scalar",false , 0x5b),
