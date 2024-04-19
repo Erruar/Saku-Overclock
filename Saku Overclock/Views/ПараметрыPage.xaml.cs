@@ -140,6 +140,7 @@ public sealed partial class ПараметрыPage : Page
         }
         comboBoxMailboxSelect.SelectedIndex = index;
         QuickCommand.IsEnabled = true;
+        QuickCommand2.IsEnabled = true;
         await Send_Message("SMUScanText".GetLocalized(), "SMUScanDesc".GetLocalized(), Symbol.Message);
     }
 
@@ -161,6 +162,7 @@ public sealed partial class ПараметрыPage : Page
                 case ZenStates.Core.Cpu.CodeName.Renoir:
                     ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
                     ScanSmuRange(0x03B10A00, 0x03B10AFF, 4, 0x60);
+                    //ScanSmuRange(0x03B10A00, 0x03B10BFF, 2, 0x60);
                     break;
                 case ZenStates.Core.Cpu.CodeName.PinnacleRidge:
                 case ZenStates.Core.Cpu.CodeName.SummitRidge:
@@ -639,10 +641,10 @@ public sealed partial class ПараметрыPage : Page
         if (config.Preset == -1 || index == -1) //Load from unsaved
         {
             DeviceLoad();
-            c1.IsChecked = devices.c1; c1v.Value = devices.c1v; c2.IsChecked = devices.c2; c1v.Value = devices.c2v; c3.IsChecked = devices.c3; c1v.Value = devices.c3v; c4.IsChecked = devices.c4; c1v.Value = devices.c4v; c5.IsChecked = devices.c5; c1v.Value = devices.c5v; c6.IsChecked = devices.c6; c1v.Value = devices.c6v;
-            V1.IsChecked = devices.v1; V1V.Value = devices.v1v; V2.IsChecked = devices.v2; V2V.Value = devices.v2v; V3.IsChecked = devices.v3; V3V.Value = devices.v3v; V4.IsChecked = devices.v4; V4V.Value = devices.v4v; V5.IsChecked = devices.v5; V5V.Value = devices.v5v; V6.IsChecked = devices.v6; V6V.Value = devices.v6v; V7.IsChecked = devices.v7; V7V.Value = devices.v7v;
-            g1.IsChecked = devices.g1; g1v.Value = devices.g1v; g2.IsChecked = devices.g2; g2v.Value = devices.g2v; g3.IsChecked = devices.g3; g3v.Value = devices.g3v; g4.IsChecked = devices.g4; g4v.Value = devices.g4v; g5.IsChecked = devices.g5; g5v.Value = devices.g5v; g6.IsChecked = devices.g6; g6v.Value = devices.g6v; g7.IsChecked = devices.g7; g7v.Value = devices.g7v; g8v.Value = devices.g8v; g8.IsChecked = devices.g8; g9v.Value = devices.g9v; g9.IsChecked = devices.g9; g10v.Value = devices.g10v; g10.IsChecked = devices.g10;
-            a1.IsChecked = devices.a1; a1v.Value = devices.a1v; a2.IsChecked = devices.a2; a2v.Value = devices.a2v; a3.IsChecked = devices.a3; a3v.Value = devices.a3v; a4.IsChecked = devices.a4; a4v.Value = devices.a4v; a5.IsChecked = devices.a5; a5v.Value = devices.a5v; a6.IsChecked = devices.a6; a6v.Value = devices.a6v; a7.IsChecked = devices.a7; a7v.Value = devices.a7v; a8v.Value = devices.a8v; a8.IsChecked = devices.a8; a9v.Value = devices.a9v; a9.IsChecked = devices.a9; a10v.Value = devices.a10v; a11v.Value = devices.a11v; a11.IsChecked = devices.a11; a12v.Value = devices.a12v; a12.IsChecked = devices.a12; a13m.SelectedIndex = devices.a13v; a13.IsChecked = devices.a13;
+            c1.IsChecked = devices.c1; c1v.Value = devices.c1v; c2.IsChecked = devices.c2; c1v.Value = devices.c2v; c3.IsChecked = devices.c3; c1v.Value = devices.c3v; c4.IsChecked = devices.c4; c1v.Value = devices.c4v; c5.IsChecked = devices.c5; c1v.Value = devices.c5v; c6.IsChecked = devices.c6; c1v.Value = devices.c6v; c7.IsChecked = devices.c7; c7v.Value = devices.c7v;
+            V1.IsChecked = devices.v1; V1V.Value = devices.v1v; V2.IsChecked = devices.v2; V2V.Value = devices.v2v; V3.IsChecked = devices.v3; V3V.Value = devices.v3v; V4.IsChecked = devices.v4; V4V.Value = devices.v4v; V5.IsChecked = devices.v5; V5V.Value = devices.v5v; V6.IsChecked = devices.v6; V6V.Value = devices.v6v; V7.IsChecked = devices.v7; V7V.Value = devices.v7v; V8.IsChecked = devices.v8; V8V.Value = devices.v8v; V9.IsChecked = devices.v9; V9V.Value = devices.v9v;
+            g1.IsChecked = devices.g1; g1v.Value = devices.g1v; g2.IsChecked = devices.g2; g2v.Value = devices.g2v; g3.IsChecked = devices.g3; g3v.Value = devices.g3v; g4.IsChecked = devices.g4; g4v.Value = devices.g4v; g5.IsChecked = devices.g5; g5v.Value = devices.g5v; g6.IsChecked = devices.g6; g6v.Value = devices.g6v; g7.IsChecked = devices.g7; g7v.Value = devices.g7v; g8v.Value = devices.g8v; g8.IsChecked = devices.g8; g9v.Value = devices.g9v; g9.IsChecked = devices.g9; g10v.Value = devices.g10v; g10.IsChecked = devices.g10; g11v.Value = devices.g11v; g11.IsChecked = devices.g11; g12v.Value = devices.g12v; g12.IsChecked = devices.g12; g13v.Value = devices.g13v; g13.IsChecked = devices.g13; g14v.Value = devices.g14v; g14.IsChecked = devices.g14; g15m.SelectedIndex = devices.g15v; g15.IsChecked = devices.g15; g16m.SelectedIndex = devices.g16v; g16.IsChecked = devices.g16;
+            a1.IsChecked = devices.a1; a1v.Value = devices.a1v; a2.IsChecked = devices.a2; a2v.Value = devices.a2v; a3.IsChecked = devices.a3; a3v.Value = devices.a3v; a4.IsChecked = devices.a4; a4v.Value = devices.a4v; a5.IsChecked = devices.a5; a5v.Value = devices.a5v; a6.IsChecked = devices.a6; a6v.Value = devices.a6v; a7.IsChecked = devices.a7; a7v.Value = devices.a7v; a8v.Value = devices.a8v; a8.IsChecked = devices.a8; a9v.Value = devices.a9v; a9.IsChecked = devices.a9; a10v.Value = devices.a10v; a11v.Value = devices.a11v; a11.IsChecked = devices.a11; a12v.Value = devices.a12v; a12.IsChecked = devices.a12; a13m.SelectedIndex = devices.a13v; a13.IsChecked = devices.a13; a14m.SelectedIndex = devices.a14v; a14.IsChecked = devices.a14; a15v.Value = devices.a15v; a15.IsChecked = devices.a15;
             EnablePstates.IsOn = devices.enableps; Turbo_boost.IsOn = devices.turboboost; Autoapply_1.IsOn = devices.autopstate; IgnoreWarn.IsOn = devices.ignorewarn; Without_P0.IsOn = devices.p0ignorewarn;
             DID_0.Value = devices.did0; DID_1.Value = devices.did1; DID_2.Value = devices.did2; FID_0.Value = devices.fid0; FID_1.Value = devices.fid1; FID_2.Value = devices.fid2; VID_0.Value = devices.vid0; VID_1.Value = devices.vid1; VID_2.Value = devices.vid2;
             EnableSMU.IsOn = devices.smuenabled;
@@ -650,10 +652,10 @@ public sealed partial class ПараметрыPage : Page
         else
         {
             ProfileLoad();
-            c1.IsChecked = profile[index].cpu1; c1v.Value = profile[index].cpu1value; c2.IsChecked = profile[index].cpu2; c2v.Value = profile[index].cpu2value; c3.IsChecked = profile[index].cpu3; c3v.Value = profile[index].cpu3value; c4.IsChecked = profile[index].cpu4; c4v.Value = profile[index].cpu4value; c5.IsChecked = profile[index].cpu5; c5v.Value = profile[index].cpu5value; c6.IsChecked = profile[index].cpu6; c6v.Value = profile[index].cpu6value;
-            V1.IsChecked = profile[index].vrm1; V1V.Value = profile[index].vrm1value; V2.IsChecked = profile[index].vrm2; V2V.Value = profile[index].vrm2value; V3.IsChecked = profile[index].vrm3; V3V.Value = profile[index].vrm3value; V4.IsChecked = profile[index].vrm4; V4V.Value = profile[index].vrm4value; V5.IsChecked = profile[index].vrm5; V5V.Value = profile[index].vrm5value; V6.IsChecked = profile[index].vrm6; V6V.Value = profile[index].vrm6value; V7.IsChecked = profile[index].vrm7; V7V.Value = profile[index].vrm7value;
-            g1.IsChecked = profile[index].gpu1; g1v.Value = profile[index].gpu1value; g2.IsChecked = profile[index].gpu2; g2v.Value = profile[index].gpu2value; g3.IsChecked = profile[index].gpu3; g3v.Value = profile[index].gpu3value; g4.IsChecked = profile[index].gpu4; g4v.Value = profile[index].gpu4value; g5.IsChecked = profile[index].gpu5; g5v.Value = profile[index].gpu5value; g6.IsChecked = profile[index].gpu6; g6v.Value = profile[index].gpu6value; g7.IsChecked = profile[index].gpu7; g7v.Value = profile[index].gpu7value; g8v.Value = profile[index].gpu8value; g8.IsChecked = profile[index].gpu8; g9v.Value = profile[index].gpu9value; g9.IsChecked = profile[index].gpu9; g10v.Value = profile[index].gpu10value; g10.IsChecked = profile[index].gpu10;
-            a1.IsChecked = profile[index].advncd1; a1v.Value = profile[index].advncd1value; a2.IsChecked = profile[index].advncd2; a2v.Value = profile[index].advncd2value; a3.IsChecked = profile[index].advncd3; a3v.Value = profile[index].advncd3value; a4.IsChecked = profile[index].advncd4; a4v.Value = profile[index].advncd4value; a5.IsChecked = profile[index].advncd5; a5v.Value = profile[index].advncd5value; a6.IsChecked = profile[index].advncd6; a6v.Value = profile[index].advncd6value; a7.IsChecked = profile[index].advncd7; a7v.Value = profile[index].advncd7value; a8v.Value = profile[index].advncd8value; a8.IsChecked = profile[index].advncd8; a9v.Value = profile[index].advncd9value; a9.IsChecked = profile[index].advncd9; a10v.Value = profile[index].advncd10value; a11v.Value = profile[index].advncd11value; a11.IsChecked = profile[index].advncd11; a12v.Value = profile[index].advncd12value; a12.IsChecked = profile[index].advncd12; a13.IsChecked = profile[index].advncd13; a13m.SelectedIndex = profile[index].advncd13value;
+            c1.IsChecked = profile[index].cpu1; c1v.Value = profile[index].cpu1value; c2.IsChecked = profile[index].cpu2; c2v.Value = profile[index].cpu2value; c3.IsChecked = profile[index].cpu3; c3v.Value = profile[index].cpu3value; c4.IsChecked = profile[index].cpu4; c4v.Value = profile[index].cpu4value; c5.IsChecked = profile[index].cpu5; c5v.Value = profile[index].cpu5value; c6.IsChecked = profile[index].cpu6; c6v.Value = profile[index].cpu6value; c7.IsChecked = profile[index].cpu7; c7v.Value = profile[index].cpu7value;
+            V1.IsChecked = profile[index].vrm1; V1V.Value = profile[index].vrm1value; V2.IsChecked = profile[index].vrm2; V2V.Value = profile[index].vrm2value; V3.IsChecked = profile[index].vrm3; V3V.Value = profile[index].vrm3value; V4.IsChecked = profile[index].vrm4; V4V.Value = profile[index].vrm4value; V5.IsChecked = profile[index].vrm5; V5V.Value = profile[index].vrm5value; V6.IsChecked = profile[index].vrm6; V6V.Value = profile[index].vrm6value; V7.IsChecked = profile[index].vrm7; V7V.Value = profile[index].vrm7value; V8.IsChecked = profile[index].vrm8; V8V.Value = profile[index].vrm8value; V9.IsChecked = profile[index].vrm9; V9V.Value = profile[index].vrm9value; V10.IsChecked = profile[index].vrm10; V10V.Value = profile[index].vrm10value;
+            g1.IsChecked = profile[index].gpu1; g1v.Value = profile[index].gpu1value; g2.IsChecked = profile[index].gpu2; g2v.Value = profile[index].gpu2value; g3.IsChecked = profile[index].gpu3; g3v.Value = profile[index].gpu3value; g4.IsChecked = profile[index].gpu4; g4v.Value = profile[index].gpu4value; g5.IsChecked = profile[index].gpu5; g5v.Value = profile[index].gpu5value; g6.IsChecked = profile[index].gpu6; g6v.Value = profile[index].gpu6value; g7.IsChecked = profile[index].gpu7; g7v.Value = profile[index].gpu7value; g8v.Value = profile[index].gpu8value; g8.IsChecked = profile[index].gpu8; g9v.Value = profile[index].gpu9value; g9.IsChecked = profile[index].gpu9; g10v.Value = profile[index].gpu10value; g10.IsChecked = profile[index].gpu10; g11.IsChecked = profile[index].gpu11; g11v.Value = profile[index].gpu11value; g12.IsChecked = profile[index].gpu12; g12v.Value = profile[index].gpu12value; g13.IsChecked = profile[index].gpu13; g13v.Value = profile[index].gpu13value; g14.IsChecked = profile[index].gpu14; g14v.Value = profile[index].gpu14value; g15.IsChecked = profile[index].gpu15; g15m.SelectedIndex = profile[index].gpu15value; g16.IsChecked = profile[index].gpu16; g16m.SelectedIndex = profile[index].gpu16value;
+            a1.IsChecked = profile[index].advncd1; a1v.Value = profile[index].advncd1value; a2.IsChecked = profile[index].advncd2; a2v.Value = profile[index].advncd2value; a3.IsChecked = profile[index].advncd3; a3v.Value = profile[index].advncd3value; a4.IsChecked = profile[index].advncd4; a4v.Value = profile[index].advncd4value; a5.IsChecked = profile[index].advncd5; a5v.Value = profile[index].advncd5value; a6.IsChecked = profile[index].advncd6; a6v.Value = profile[index].advncd6value; a7.IsChecked = profile[index].advncd7; a7v.Value = profile[index].advncd7value; a8v.Value = profile[index].advncd8value; a8.IsChecked = profile[index].advncd8; a9v.Value = profile[index].advncd9value; a9.IsChecked = profile[index].advncd9; a10v.Value = profile[index].advncd10value; a11v.Value = profile[index].advncd11value; a11.IsChecked = profile[index].advncd11; a12v.Value = profile[index].advncd12value; a12.IsChecked = profile[index].advncd12; a13.IsChecked = profile[index].advncd13; a13m.SelectedIndex = profile[index].advncd13value; a14.IsChecked = profile[index].advncd14; a14m.SelectedIndex = profile[index].advncd14value; a15.IsChecked = profile[index].advncd15; a15v.Value = profile[index].advncd15value;
             EnablePstates.IsOn = profile[index].enablePstateEditor; Turbo_boost.IsOn = profile[index].turboBoost; Autoapply_1.IsOn = profile[index].autoPstate; IgnoreWarn.IsOn = profile[index].ignoreWarn; Without_P0.IsOn = profile[index].p0Ignorewarn;
             DID_0.Value = profile[index].did0; DID_1.Value = profile[index].did1; DID_2.Value = profile[index].did2; FID_0.Value = profile[index].fid0; FID_1.Value = profile[index].fid1; FID_2.Value = profile[index].fid2; VID_0.Value = profile[index].vid0; VID_1.Value = profile[index].vid1; VID_2.Value = profile[index].vid2;
             EnableSMU.IsOn = profile[index].smuEnabled;
@@ -1539,7 +1541,233 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd13value = a13m.SelectedIndex; ProfileSave(); }
         DeviceSave();
     }
+    //Новые
+    private void C7_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = c7.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].cpu7 = check; profile[indexprofile].cpu7value = c7v.Value; ProfileSave(); }
+        devices.c7 = check; devices.c7v = c7v.Value;
+        DeviceSave();
+    }
 
+    private void C7_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.c7v = c7v.Value;
+        if (indexprofile != -1) { profile[indexprofile].cpu7value = c7v.Value; ProfileSave(); }
+        DeviceSave();
+    }
+
+    private void V8_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = V8.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].vrm8 = check; profile[indexprofile].vrm8value = V8V.Value; ProfileSave(); }
+        devices.v8 = check; devices.v8v = V8V.Value;
+        DeviceSave();
+    }
+
+    private void V8V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.v8v = V8V.Value;
+        if (indexprofile != -1) { profile[indexprofile].vrm8value = V8V.Value; ProfileSave(); }
+        DeviceSave();
+    }
+
+    private void V9_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = V9.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].vrm9 = check; profile[indexprofile].vrm9value = V9V.Value; ProfileSave(); }
+        devices.v9 = check; devices.v9v = V9V.Value;
+        DeviceSave();
+    }
+
+    private void V9V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.v9v = V9V.Value;
+        if (indexprofile != -1) { profile[indexprofile].vrm9value = V9V.Value; ProfileSave(); }
+        DeviceSave();
+    }
+
+    private void V10_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = V10.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].vrm10 = check; profile[indexprofile].vrm8value = V10V.Value; ProfileSave(); }
+        devices.v10 = check; devices.v10v = V10V.Value;
+        DeviceSave();
+    }
+
+    private void V10V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.v10v = V10V.Value;
+        if (indexprofile != -1) { profile[indexprofile].vrm10value = V10V.Value; ProfileSave(); }
+        DeviceSave();
+    }
+
+    private void G11_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = g11.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].gpu11 = check; profile[indexprofile].gpu11value = g11v.Value; ProfileSave(); }
+        devices.g11 = check; devices.g11v = g11v.Value;
+        DeviceSave();
+    }
+
+    private void G11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.g11v = g11v.Value;
+        if (indexprofile != -1) { profile[indexprofile].gpu11value = g11v.Value; ProfileSave(); }
+        DeviceSave();
+    }
+
+    private void G12_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = g12.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].gpu12 = check; profile[indexprofile].gpu12value = g12v.Value; ProfileSave(); }
+        devices.g12 = check; devices.g12v = g12v.Value;
+        DeviceSave();
+    }
+
+    private void G12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.g11v = g12v.Value;
+        if (indexprofile != -1) { profile[indexprofile].gpu12value = g12v.Value; ProfileSave(); }
+        DeviceSave();
+    }
+
+    private void G13_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = g13.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].gpu13 = check; profile[indexprofile].gpu13value = g13v.Value; ProfileSave(); }
+        devices.g13 = check; devices.g13v = g13v.Value;
+        DeviceSave();
+    }
+
+    private void G13v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.g13v = g13v.Value;
+        if (indexprofile != -1) { profile[indexprofile].gpu13value = g13v.Value; ProfileSave(); }
+        DeviceSave();
+    }
+
+    private void G14_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = g14.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].gpu14 = check; profile[indexprofile].gpu14value = g14v.Value; ProfileSave(); }
+        devices.g14 = check; devices.g14v = g14v.Value;
+        DeviceSave();
+    }
+
+    private void G14v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.g14v = g14v.Value;
+        if (indexprofile != -1) { profile[indexprofile].gpu14value = g14v.Value; ProfileSave(); }
+        DeviceSave();
+    }
+
+    private void G15_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = g15.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].gpu15 = check; profile[indexprofile].gpu15value = g15m.SelectedIndex; ProfileSave(); }
+        devices.g15 = check; devices.g15v = g15m.SelectedIndex;
+        DeviceSave();
+    }
+
+    private void G15m_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.g15v = g15m.SelectedIndex;
+        if (indexprofile != -1) { profile[indexprofile].gpu15value = g15m.SelectedIndex; ProfileSave(); }
+        DeviceSave();
+    }
+
+    private void G16_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = g16.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].gpu16 = check; profile[indexprofile].gpu16value = g16m.SelectedIndex; ProfileSave(); }
+        devices.g16 = check; devices.g16v = g16m.SelectedIndex;
+        DeviceSave();
+    }
+
+    private void G16m_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.g16v = g16m.SelectedIndex;
+        if (indexprofile != -1) { profile[indexprofile].gpu16value = g16m.SelectedIndex; ProfileSave(); }
+        DeviceSave();
+    }
+
+    private void A14_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = a14.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].advncd14 = check; profile[indexprofile].advncd14value = a14m.SelectedIndex; ProfileSave(); }
+        devices.a14 = check; devices.a14v = a14m.SelectedIndex;
+        DeviceSave();
+    }
+
+    private void A14m_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.a14v = a14m.SelectedIndex;
+        if (indexprofile != -1) { profile[indexprofile].advncd14value = a14m.SelectedIndex; ProfileSave(); }
+        DeviceSave();
+    }
+    private void A15_Checked(object sender, RoutedEventArgs e)
+    { 
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = a15.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].advncd15 = check; profile[indexprofile].advncd15value = a15v.Value; ProfileSave(); }
+        devices.a15 = check; devices.a15v = a15v.Value;
+        DeviceSave();  
+    }
+
+    private void A15v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        DeviceLoad(); ProfileLoad();
+        devices.a15v = a15v.Value;
+        if (indexprofile != -1) { profile[indexprofile].advncd15value = a15v.Value; ProfileSave(); }
+        DeviceSave();
+    }
     //Кнопка применить, итоговый выход, Ryzen ADJ
     [Obsolete("Obsolete")]
     private async void Apply_Click(object sender, RoutedEventArgs e)
@@ -1700,7 +1928,7 @@ public sealed partial class ПараметрыPage : Page
         if (g16.IsChecked == true)
         {
             if (g16m.SelectedIndex != 0) { adjline += " --setcpu-freqto-ramstate=" + (g16m.SelectedIndex - 1).ToString(); }
-            else { adjline += " --stopcpu-freqto-ramstate"; }
+            else { adjline += " --stopcpu-freqto-ramstate=0"; }
         }
         //advanced
         if (a1.IsChecked == true)
@@ -1762,6 +1990,7 @@ public sealed partial class ПараметрыPage : Page
         {
             adjline += " --oc-volt=" + Math.Round((1.55 - a12v.Value / 1000) / 0.00625);
         }
+       
 
         if (a13.IsChecked == true)
         {
@@ -1786,6 +2015,10 @@ public sealed partial class ПараметрыPage : Page
             {
                 adjline += " --enable-oc=1";
             }
+        }
+        if (a15.IsChecked == true)
+        {
+            adjline += " --pbo-scalar=" + a15v.Value * 100;
         }
         ConfigLoad();
         config.adjline = adjline + " ";
@@ -3325,7 +3558,189 @@ public sealed partial class ПараметрыPage : Page
         {
             // ignored
         }
-    } 
+    }
+    [Obsolete("Obsolete")]
+    private async void UnlockFeature()
+    {
+        var comboSelSMU = new ComboBox
+        {
+            Margin = new Thickness(0, 20, 0, 0),
+            VerticalAlignment = VerticalAlignment.Top
+        };
+        var cmdStart = new TextBox
+        {
+            Margin = new Thickness(0, 60, 0, 0),
+            PlaceholderText = "Command".GetLocalized(),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Height = 40,
+            Width = 360
+        };
+        var argStart = new TextBox
+        {
+            Margin = new Thickness(0, 105, 0, 0),
+            PlaceholderText = "Feature ID",
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Height = 40,
+            Width = 360
+        }; 
+        try
+        {
+            foreach (var item in comboBoxMailboxSelect.Items)
+            {
+                comboSelSMU.Items.Add(item);
+            }
+            comboSelSMU.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
+            comboSelSMU.SelectionChanged += ComboSelSMU_SelectionChanged;
+        }
+        catch { }
+        try
+        {
+            var newQuickCommand = new ContentDialog
+            {
+                Title = "AdvancedCooler_Del_Action".GetLocalized(),
+                Content = new Grid
+                {
+                    Children =
+                    {
+                        comboSelSMU,
+                        cmdStart,
+                        argStart
+                    }
+                },
+                PrimaryButtonText = "Apply".GetLocalized(),
+                CloseButtonText = "Cancel".GetLocalized(),
+                DefaultButton = ContentDialogButton.Close
+            };
+            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            {
+                newQuickCommand.XamlRoot = XamlRoot;
+            }
+            newQuickCommand.Closed += (sender, args) =>
+            {
+                newQuickCommand?.Hide();
+                newQuickCommand = null;
+            };
+            // Отобразить ContentDialog и обработать результат
+            try
+            {
+                var saveIndex = 0;
+                var result = await newQuickCommand.ShowAsync();
+                // Создать ContentDialog 
+                if (result == ContentDialogResult.Primary)
+                {
+                    SmuSettingsLoad();
+                    saveIndex = comboSelSMU.SelectedIndex;
+                    for (var i = 0; i < comboSelSMU.Items.Count; i++)
+                    {
+                        var adressName = false;
+                        var adressIndex = 0;
+                        comboSelSMU.SelectedIndex = i;
+                        if (smusettings.MailBoxes == null)
+                        {
+                            smusettings.MailBoxes = new List<CustomMailBoxes>();
+                            adressIndex = smusettings.MailBoxes.Count;
+                            smusettings.MailBoxes.Add(new CustomMailBoxes
+                            {
+                                Name = comboSelSMU.SelectedItem.ToString(),
+                                CMD = textBoxCMDAddress.Text,
+                                RSP = textBoxRSPAddress.Text,
+                                ARG = textBoxARGAddress.Text
+                            });
+                        }
+                        else
+                        {
+                            for (var d = 0; d < smusettings.MailBoxes.Count; d++)
+                            {
+                                if (smusettings.MailBoxes[d].Name != null && smusettings.MailBoxes[d].Name == comboSelSMU.SelectedItem.ToString())
+                                {
+                                    adressName = true;
+                                    adressIndex = d;
+                                    break;
+                                }
+                            }
+                            if (adressName == false)
+                            {
+                                smusettings.MailBoxes.Add(new CustomMailBoxes
+                                {
+                                    Name = comboSelSMU.SelectedItem.ToString(),
+                                    CMD = textBoxCMDAddress.Text,
+                                    RSP = textBoxRSPAddress.Text,
+                                    ARG = textBoxARGAddress.Text
+                                });
+                            }
+                        }
+                    }
+                    SmuSettingsSave();
+                    comboBoxMailboxSelect.SelectedIndex = saveIndex;
+                    comboSelSMU.SelectedIndex = saveIndex;
+                    if (cmdStart.Text != string.Empty && argStart.Text != string.Empty)
+                    {
+                        var endString = "";
+                        var value = 1 << Convert.ToByte(argStart.Text);
+                        if (int.Parse(argStart.Text) > 31) { endString = "0,0x" + value.ToString(); }
+                        else { endString = value.ToString(); } 
+                        uint[]? args;
+                        var userArgs = endString.Trim().Split(',');
+                        uint addrMsg;
+                        uint addrRsp;
+                        uint addrArg;
+                        uint command;
+                        args = Utils.MakeCmdArgs();
+                        TryConvertToUint(smusettings.MailBoxes[comboSelSMU.SelectedIndex].CMD, out addrMsg);
+                        TryConvertToUint(smusettings.MailBoxes[comboSelSMU.SelectedIndex].RSP, out addrRsp);
+                        TryConvertToUint(smusettings.MailBoxes[comboSelSMU.SelectedIndex].ARG, out addrArg);
+                        TryConvertToUint(cmdStart.Text, out command);
+                        ZenStates.Core.Mailbox testMailbox2 = new()
+                        {
+                            SMU_ADDR_MSG = addrMsg,
+                            SMU_ADDR_RSP = addrRsp,
+                            SMU_ADDR_ARG = addrArg
+                        };
+                        var someFeature = "";
+                        for (var i = 0; i < userArgs.Length; i++)
+                        {
+                            if (i == args.Length)
+                            {
+                                break;
+                            }
+                            someFeature += userArgs[i] + " ";
+                            TryConvertToUint(userArgs[i], out var temp);
+                            args[i] = temp;
+                        }
+                        try
+                        {
+                            var status = cpu.smu.SendSmuCommand(testMailbox2, command, ref args);
+                           /* await Send_Message("Unlocked feature!","Command " + $"{command:X}"
+                            + " Args " + someFeature + status + " MailBox: " + smusettings.MailBoxes[saveIndex].Name 
+                            + "\n MSG: " + $"{testMailbox2.SMU_ADDR_MSG:X}" + "\n ARG: " + $"{testMailbox2.SMU_ADDR_ARG:X}"
+                            + "\n RSP: " + $"{testMailbox2.SMU_ADDR_RSP:X}", Symbol.Attach);*/
+                            await Send_Message("Unlocked feature!", " Args " + someFeature + status, Symbol.Attach);
+                        }
+                        catch { }
+                    }
+                    SmuSettingsSave(); 
+                    newQuickCommand?.Hide();
+                    newQuickCommand = null;
+                }
+                else
+                {
+                    newQuickCommand?.Hide();
+                    newQuickCommand = null;
+                }
+            }
+            catch
+            {
+                newQuickCommand?.Hide();
+                newQuickCommand = null;
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+    }
     private void SymbolButton_Click(object sender, RoutedEventArgs e)
     {
         SymbolFlyout.ShowAt(sender as Button);
@@ -3440,115 +3855,15 @@ public sealed partial class ПараметрыPage : Page
        RangeStarted.IsOpen = false; 
     }
 
-    private void C7_Checked(object sender, RoutedEventArgs e)
+    [Obsolete]
+    private void UnlockFeature_Click(object sender, RoutedEventArgs e)
     {
-
+        UnlockFeature();
     }
 
-    private void C7_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
+  
 
-    }
 
-    private void V8_Checked(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void V8V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-
-    }
-
-    private void V9_Checked(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void V9V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-
-    }
-
-    private void V10_Checked(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void V10V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-
-    }
-
-    private void G11_Checked(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void G11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-
-    }
-
-    private void G12_Checked(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void G12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-
-    }
-
-    private void G13_Checked(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void G13v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-
-    }
-
-    private void G14_Checked(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void G14v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-
-    }
-
-    private void G15_Checked(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void G15m_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-
-    }
-
-    private void G16_Checked(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void G16m_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-
-    }
-
-    private void A14_Checked(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void A14m_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-
-    }
 #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 }

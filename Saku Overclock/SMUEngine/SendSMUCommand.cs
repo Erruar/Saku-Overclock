@@ -574,6 +574,7 @@ internal class SendSMUCommand
             testMailbox.SMU_ADDR_MSG = addrMsg;
             testMailbox.SMU_ADDR_RSP = addrRsp;
             testMailbox.SMU_ADDR_ARG = addrArg; 
+            if (!saveinfo && CommandName == "stopcpu-freqto-ramstate") { return; }
             var status = cpu.smu.SendSmuCommand(testMailbox, Command, ref args);
             if (status != SMU.Status.OK) { config.ApplyInfo += $"\nCommand '{CommandName}' applied with status {status}"; }
         }
@@ -581,7 +582,7 @@ internal class SendSMUCommand
         {
             config.ApplyInfo += $"\nCommand '{CommandName}' can't be applied";
         }
-        if (saveinfo) { ConfigSave(); }
+        if (saveinfo) { config.adjline = config.adjline.Replace(" --stopcpu-freqto-ramstate=0",""); ConfigSave(); }
     }
     public void CancelRange()
     {
@@ -711,6 +712,7 @@ internal class SendSMUCommand
                 ("stop-gpu-link", true , 0x2B),  
                 ("setcpu-freqto-ramstate", true , 0x2F),  
                 ("stopcpu-freqto-ramstate", true , 0x30), 
+                ("stopcpu-freqto-ramstate", true , 0x31), 
                 ("set-ulv-vid", true , 0x35),  
                 ("set-vddoff-vid", true , 0x3A),  
                 ("set-vmin-freq", true , 0x3B),  
