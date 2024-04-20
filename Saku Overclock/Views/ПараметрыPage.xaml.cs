@@ -7,7 +7,8 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers; 
+using Saku_Overclock.Helpers;
+using Saku_Overclock.Core.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
@@ -149,7 +150,7 @@ public sealed partial class ПараметрыPage : Page
     {
       try
         {
-            if (cpu == null) { cpu = new Cpu(CpuInitSettings.defaultSetttings); }
+            cpu ??= new Cpu(CpuInitSettings.defaultSetttings);
             switch (cpu.info.codeName)
             {
                 case ZenStates.Core.Cpu.CodeName.BristolRidge:
@@ -160,8 +161,11 @@ public sealed partial class ПараметрыPage : Page
                 case ZenStates.Core.Cpu.CodeName.FireFlight:
                 case ZenStates.Core.Cpu.CodeName.Dali:
                 case ZenStates.Core.Cpu.CodeName.Renoir:
-                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
-                    ScanSmuRange(0x03B10A00, 0x03B10AFF, 4, 0x60);
+                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C); 
+                    //ScanSmuRange(0x03B10500, 0x03B10F98, 2, 0x3C);
+                    //ScanSmuRange(0x03B10500, 0x03B10F98, 2, 0x30);
+                    //ScanSmuRange(0x03B10500, 0x03B10F98, 2, 0x60);
+                    ScanSmuRange(0x03B10A00, 0x03B10AFF, 4, 0x60); 
                     //ScanSmuRange(0x03B10A00, 0x03B10BFF, 2, 0x60);
                     break;
                 case ZenStates.Core.Cpu.CodeName.PinnacleRidge:
@@ -635,6 +639,10 @@ public sealed partial class ПараметрыPage : Page
             A3_desc.Visibility = Visibility.Collapsed;
             A4_desc.Visibility = Visibility.Collapsed;
             A5_desc.Visibility = Visibility.Collapsed;
+        }
+        if (cpu.info.codeName != Cpu.CodeName.RavenRidge || cpu.info.codeName != Cpu.CodeName.Dali || cpu.info.codeName != Cpu.CodeName.Picasso)
+        {
+            iGPU_Subsystems.Visibility = Visibility.Collapsed; Dunger_Zone.Visibility = Visibility.Collapsed; V8_Main.Visibility = Visibility.Collapsed; V8_Desc.Visibility = Visibility.Collapsed; V9_Main.Visibility = Visibility.Collapsed; V9_Desc.Visibility = Visibility.Collapsed; V10_Main.Visibility = Visibility.Collapsed; V10_Desc.Visibility = Visibility.Collapsed;
         }
         waitforload = true;
         ConfigLoad();
@@ -1561,9 +1569,11 @@ public sealed partial class ПараметрыPage : Page
         DeviceSave();
     }
 
+    [Obsolete]
     private void V8_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
+        if (V8.IsChecked == true) { App.MainWindow.ShowMessageDialogAsync("Param_Voltage_warn_heavy".GetLocalized(), "Param_Super_heavywarn".GetLocalized()); }
         ProfileLoad(); DeviceLoad();
         var check = V8.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm8 = check; profile[indexprofile].vrm8value = V8V.Value; ProfileSave(); }
@@ -1579,10 +1589,11 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].vrm8value = V8V.Value; ProfileSave(); }
         DeviceSave();
     }
-
+    [Obsolete]
     private void V9_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
+        if (V9.IsChecked == true) { App.MainWindow.ShowMessageDialogAsync("Param_Voltage_warn_heavy".GetLocalized(), "Param_Super_heavywarn".GetLocalized()); }
         ProfileLoad(); DeviceLoad();
         var check = V9.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm9 = check; profile[indexprofile].vrm9value = V9V.Value; ProfileSave(); }
@@ -1598,10 +1609,11 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].vrm9value = V9V.Value; ProfileSave(); }
         DeviceSave();
     }
-
+    [Obsolete]
     private void V10_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
+        if (V10.IsChecked == true) { App.MainWindow.ShowMessageDialogAsync("Param_Voltage_warn_heavy".GetLocalized(), "Param_Super_heavywarn".GetLocalized()); }
         ProfileLoad(); DeviceLoad();
         var check = V10.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm10 = check; profile[indexprofile].vrm8value = V10V.Value; ProfileSave(); }

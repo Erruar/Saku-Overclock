@@ -343,50 +343,50 @@
                             <Grid Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock Text="                                     2(S)                            2(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <TextBlock Grid.Row="7" Text="SUPER DANGER ZONE!" FontWeight="Black" Foreground="{StaticResource SystemColorControlAccentColor}"/>
-                            <Grid Grid.Row="8" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock  Text="Voltage Scalar" FontSize="15"></TextBlock>
+                            <TextBlock x:Name="Dunger_Zone" Grid.Row="7" Text="SUPER DANGER ZONE!" FontWeight="Black" Foreground="{StaticResource SystemColorControlAccentColor}"/>
+                            <Grid Grid.Row="8" x:Name="V8_Main" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <TextBlock  x:Uid="Param_VRM_v8" Text="Voltage Scalar" FontSize="15"></TextBlock>
                                 <CheckBox Checked="V8_Checked" Unchecked="V8_Checked" x:Name="V8" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V8V" ValueChanged="V8V_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="340" Value="18">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="v8t" Margin="245,20,0,0" Content="{Binding ElementName=V8V, Path=Value}"></Button>
-                                <FontIcon Foreground="Red" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v7_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                <FontIcon Foreground="Red" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v8_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                            <Grid Grid.Row="8"  x:Name="V8_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                     -(?)                            -(?)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="9" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock  Text="Voltage Modular" FontSize="15"></TextBlock>
+                            <Grid Grid.Row="9"  x:Name="V9_Main" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <TextBlock  x:Uid="Param_VRM_v9" Text="Voltage Modular" FontSize="15"></TextBlock>
                                 <CheckBox Checked="V9_Checked" Unchecked="V9_Checked"  x:Name="V9" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V9V" ValueChanged="V9V_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="340" Value="18">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="v9t" Margin="245,20,0,0" Content="{Binding ElementName=V9V, Path=Value}"></Button>
-                                <FontIcon Foreground="Red" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v7_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                <FontIcon Foreground="Red" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v9_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="9" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                            <Grid Grid.Row="9"  x:Name="V9_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                     -(?)                            -(?)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="10" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock  Text="Voltage Variable" FontSize="15"></TextBlock>
+                            <Grid Grid.Row="10" x:Name="V10_Main"  Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <TextBlock  x:Uid="Param_VRM_v10" Text="Voltage Variable" FontSize="15"></TextBlock>
                                 <CheckBox Checked="V10_Checked" Unchecked="V10_Checked" x:Name="V10" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V10V" ValueChanged="V10V_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="340" Value="18">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="v10t" Margin="245,20,0,0" Content="{Binding ElementName=V10V, Path=Value}"></Button>
-                                <FontIcon Foreground="Red" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v7_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                <FontIcon Foreground="Red" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v10_Help" HorizontalAlignment="Left"  Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="10" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                            <Grid Grid.Row="10" x:Name="V10_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                     -(?)                            -(?)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
@@ -408,7 +408,7 @@
                         </Grid>
                     </Expander>
 
-                    <Expander  Grid.Row="2" VerticalAlignment="Top">
+                    <Expander  Grid.Row="2" x:Name="iGPU_Subsystems" VerticalAlignment="Top">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe9d9;"/>
@@ -583,12 +583,12 @@
                             </Grid>
 
                             <Grid Grid.Row="10" Grid.Column="0" Width="2000">
-                                <TextBlock Text="Минимальная частота CPU (MHz)" FontSize="15"></TextBlock>
+                                <TextBlock  x:Uid="Param_GPU_g11" Text="Минимальная частота CPU (MHz)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="G11_Checked" Unchecked="G11_Checked"  x:Name="g11" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g11v" ValueChanged="G11v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="5000" Value="400">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g11t" Margin="245,20,0,0" Content="{Binding ElementName=g11v, Path=Value}"></Button>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g10_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g11_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
@@ -598,12 +598,12 @@
                                 <TextBlock x:Uid="ADV_Change" Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="11" Grid.Column="0" Width="2000">
-                                <TextBlock  Text="Максимальная частота CPU (MHz)" FontSize="15"></TextBlock>
+                                <TextBlock  x:Uid="Param_GPU_g12" Text="Максимальная частота CPU (MHz)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="G12_Checked" Unchecked="G12_Checked" x:Name="g12" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g12v" ValueChanged="G12v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="410" Maximum="5000" Value="3800">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g12t" Margin="245,20,0,0" Content="{Binding ElementName=g12v, Path=Value}"></Button>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g10_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g12_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
@@ -613,12 +613,12 @@
                                 <TextBlock x:Uid="ADV_Change" Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="12" Grid.Column="0" Width="2000">
-                                <TextBlock   Text="Минимальный объём VRAM iGPU (MB)" FontSize="15"></TextBlock>
+                                <TextBlock  x:Uid="Param_GPU_g13"  Text="Минимальный объём VRAM iGPU (MB)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="G13_Checked" Unchecked="G13_Checked"  x:Name="g13" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g13v" ValueChanged="G13v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="2000" Value="1">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g13t" Margin="245,20,0,0" Content="{Binding ElementName=g13v, Path=Value}"></Button>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g10_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g13_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
@@ -628,12 +628,12 @@
                                 <TextBlock x:Uid="ADV_Change" Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="13" Grid.Column="0" Width="2000">
-                                <TextBlock  Text="Максимальный объём VRAM iGPU (MB)" FontSize="15"></TextBlock>
+                                <TextBlock  x:Uid="Param_GPU_g14"  Text="Максимальный объём VRAM iGPU (MB)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="G14_Checked" Unchecked="G14_Checked" x:Name="g14" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g14v" ValueChanged="G14v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1000" Maximum="32000" Value="5000">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="g14t" Margin="245,20,0,0" Content="{Binding ElementName=g14v, Path=Value}"></Button>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g10_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g14_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
@@ -643,19 +643,19 @@
                                 <TextBlock x:Uid="ADV_Change" Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="14" Grid.Column="0" Width="2000">
-                                <TextBlock  Text="Фиксировать частоту dGPU (Состояние)" FontSize="15"></TextBlock>
+                                <TextBlock  x:Uid="Param_GPU_g15" Text="Фиксировать частоту dGPU (Состояние)" FontSize="15"></TextBlock>
                                 <CheckBox  Checked="G15_Checked" Unchecked="G15_Checked" x:Name="g15" Margin="0,25,0,0"></CheckBox>
                                 <ComboBox x:Name="g15m" Margin="35,26,0,0" SelectedIndex="0" SelectionChanged="G15m_SelectionChanged" VerticalAlignment="Top" Width="270" HorizontalAlignment="Left">
-                                    <ComboBoxItem>Auto/Disabled</ComboBoxItem>
-                                    <ComboBoxItem>State 0</ComboBoxItem>
-                                    <ComboBoxItem>State 1</ComboBoxItem>
-                                    <ComboBoxItem>State 2</ComboBoxItem>
-                                    <ComboBoxItem>State 3</ComboBoxItem>
-                                    <ComboBoxItem>State 4</ComboBoxItem>
-                                    <ComboBoxItem>State 5</ComboBoxItem>
-                                    <ComboBoxItem>State 6</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_ADV_a14_A">Auto/Disabled</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State0">State 0</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State1">State 1</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State2">State 2</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State3">State 3</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State4">State 4</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State5">State 5</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State6">State 6</ComboBoxItem>
                                 </ComboBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a13_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_п15_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
@@ -665,19 +665,19 @@
                                 <TextBlock x:Uid="ADV_Auto" Text="                                              Keep auto " Grid.Column="1" Margin="0,26,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="15" Grid.Column="0" Width="2000">
-                                <TextBlock Text="Исправление 0,4 ГГц CPU (Состояние)" FontSize="15"></TextBlock>
+                                <TextBlock x:Uid="Param_GPU_g16" Text="Исправление 0,4 ГГц CPU (Состояние)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="G16_Checked" Unchecked="G16_Checked" x:Name="g16" Margin="0,25,0,0"></CheckBox>
                                 <ComboBox x:Name="g16m" Margin="35,26,0,0" SelectedIndex="0" SelectionChanged="G16m_SelectionChanged" VerticalAlignment="Top" Width="270" HorizontalAlignment="Left">
-                                    <ComboBoxItem>Auto/Disabled</ComboBoxItem>
-                                    <ComboBoxItem>Max performance</ComboBoxItem>
-                                    <ComboBoxItem>State 1</ComboBoxItem>
-                                    <ComboBoxItem>State 2</ComboBoxItem>
-                                    <ComboBoxItem>State 3</ComboBoxItem>
-                                    <ComboBoxItem>State 4</ComboBoxItem>
-                                    <ComboBoxItem>State 5</ComboBoxItem>
-                                    <ComboBoxItem>State 6</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_ADV_a14_A">Auto/Disabled</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_ADV_a13_U">Max performance</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State1">State 1</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State2">State 2</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State3">State 3</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State4">State 4</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State5">State 5</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_GPU_State6">State 6</ComboBoxItem>
                                 </ComboBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a13_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g16_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
@@ -912,9 +912,9 @@
                                 <TextBlock x:Uid="Param_ADV_a13" Text="Предпочтительный режим" FontSize="15"></TextBlock>
                                 <CheckBox Checked="A13_Checked" Unchecked="A13_Checked" x:Name="a13" Margin="0,25,0,0"></CheckBox>
                                 <ComboBox x:Name="a13m" Margin="35,26,0,0" SelectedIndex="0" SelectionChanged="A13m_SelectedIndexChanged" VerticalAlignment="Top" Width="270" HorizontalAlignment="Left">
-                                    <ComboBoxItem>Keep auto</ComboBoxItem>
-                                    <ComboBoxItem>Ultra performance</ComboBoxItem>
-                                    <ComboBoxItem>Energy efficiency</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_ADV_a14_A">Keep auto</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_ADV_a13_U">Ultra performance</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_ADV_a13_E">Energy efficiency</ComboBoxItem>
                                 </ComboBox>
                                 <Button Visibility="Collapsed" Height="30" Width="60" x:Name="a13t" Margin="245,20,0,0" Content="{Binding ElementName=a13m, Path=SelectedIndex}"></Button>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a13_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
@@ -928,14 +928,14 @@
                             </Grid>
                             <!-- Здесь начало... это нужно для фикса непрогрузки -->
                             <Grid Grid.Row="0" Grid.Column="0" Width="2000">
-                                <TextBlock Text="Режим разгона" FontSize="15"></TextBlock>
+                                <TextBlock x:Uid="Param_ADV_a14" Text="Режим разгона" FontSize="15"></TextBlock>
                                 <CheckBox Checked="A14_Checked" Unchecked="A14_Checked" x:Name="a14" Margin="0,25,0,0"></CheckBox>
                                 <ComboBox x:Name="a14m" Margin="35,26,0,0" SelectedIndex="0" SelectionChanged="A14m_SelectionChanged" VerticalAlignment="Top" Width="270" HorizontalAlignment="Left">
-                                    <ComboBoxItem>Auto/Disabled</ComboBoxItem>
-                                    <ComboBoxItem>OC Enabled</ComboBoxItem> 
+                                    <ComboBoxItem x:Uid="Param_ADV_a14_A">Auto/Disabled</ComboBoxItem>
+                                    <ComboBoxItem x:Uid="Param_ADV_a14_E">OC Enabled</ComboBoxItem> 
                                 </ComboBox>
                                 <Button Visibility="Collapsed" Height="30" Width="60" x:Name="a14t" Margin="245,20,0,0" Content="{Binding ElementName=a13m, Path=SelectedIndex}"></Button>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a13_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a14_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
@@ -960,12 +960,12 @@
                                 <TextBlock x:Name="A1_desc"  Text="                                    50(А)                         50(А)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="0" Width="2000">
-                                <TextBlock   Text="PBO Scalar (State)" FontSize="15"></TextBlock>
+                                <TextBlock x:Uid="Param_ADV_a15" Text="PBO Scalar (State)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="A15_Checked" Unchecked="A15_Checked" x:Name="a15" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a15v" ValueChanged="A15v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="10" Value="1">
                                 </Slider>
                                 <Button Height="30" Width="60" x:Name="a15t" Margin="245,20,0,0" Content="{Binding ElementName=a15v, Path=Value}"></Button>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g7_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a15_Help" HorizontalAlignment="Left" Margin="295,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>

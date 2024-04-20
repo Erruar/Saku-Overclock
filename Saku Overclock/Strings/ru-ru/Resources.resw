@@ -412,7 +412,7 @@
     <value>Максимальный ток PCI SoC (A)</value>
   </data>
   <data name="Param_VRM_v7.Text" xml:space="preserve">
-    <value>Отключить троттлинг на время (S)</value>
+    <value>Время восстановления частоты (S)</value>
   </data>
   <data name="Preset_Balance" xml:space="preserve">
     <value>Баланс мощности</value>
@@ -677,17 +677,11 @@
 НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
   </data>
   <data name="Param_v7_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Отключить троттлинг на время
-Отвечает за время продолжительности
-троттлинга процессора. Если у вас ситуация
-с 0,4 ГГц или вы хотите чтобы процессор
-стабильнее держал частоты и мощность
-найдите для себя значение этого параметра!
-Рекоммендуемые значения: 0, 2, 4, 8, 12,
-20, 26, 45, 60, 81, 90. Выше либо троттлинг
-постоянно возникает, либо не возникает
-вообще. Это может очень сильно 
-повлиять на производительность!
+    <value>Время восстановления частоты
+Отвечает за время, после которого
+частота восстановится после троттлинга
+из-за превышения максимальной 
+температуры процессора
 НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
   </data>
   <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
@@ -778,7 +772,7 @@ CPU на приблизительно указанное
     <value>Режим работы процессора, они
 переключаются при подключении и
 отключении зарядки. Если вы на
-зарядке и включите Ультра, это
+зарядке и включите Максимум, это
 ничего не сделает, так как ваш
 процессор уже в этом режиме,
 аналогично с работой от батареи и
@@ -1389,5 +1383,194 @@ AOD, Power, Temp, Load таблиц устройства.
   </data>
   <data name="Param_CPU_c7.Text" xml:space="preserve">
     <value>Максимальная температура cHTC (C)</value>
+  </data>
+  <data name="Param_a14_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Расширенный разгон
+Это свойство процессора, которое
+позволяет изменять его дополнительные
+параметры разгона. Без него параметры 
+этой секции будут проигнорированы</value>
+  </data>
+  <data name="Param_a15_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Множитель PBO
+Увеличение множителя PBO 
+увеличит температуру процессора 
+и будет более агрессивно поддерживать 
+ускоренные частоты, возможно, 
+при более высоком напряжении
+CPU VID
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_ADV_a13_E.Content" xml:space="preserve">
+    <value>Энергоэффективность</value>
+  </data>
+  <data name="Param_ADV_a13_U.Content" xml:space="preserve">
+    <value>Макс. производительность</value>
+  </data>
+  <data name="Param_ADV_a14.Text" xml:space="preserve">
+    <value>Расширенный разгон</value>
+  </data>
+  <data name="Param_ADV_a14_A.Content" xml:space="preserve">
+    <value>Авто/Выключено</value>
+  </data>
+  <data name="Param_ADV_a14_E.Content" xml:space="preserve">
+    <value>Режим разгона</value>
+  </data>
+  <data name="Param_ADV_a15.Text" xml:space="preserve">
+    <value>Множитель PBO</value>
+  </data>
+  <data name="Param_g11_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная частота CPU
+Этим параметром вы можете
+задать минимальную частоту CPU.
+Далеко не 100% что это будет работать 
+учтите, что высокие значения 
+процессору тяжелее держать
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_g12_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная частота CPU
+Этим параметром вы можете
+задать максимальную частоту CPU.
+Далеко не 100% что это будет работать 
+учтите, что высокие значения 
+процессору тяжелее держать
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_g13_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальный объём VRAM iGPU
+Задав минимальный объем видеопамяти 
+этим параметров, iGPU не будет потреблять 
+меньше видеопамяти чем указанное значение.
+Далеко не 100% что это будет работать 
+учтите, что высокие значения имеют больший
+шанс быть проигнорированными
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_g14_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальный объём VRAM iGPU
+Задав максимальный объем видеопамяти 
+этим параметров, iGPU не будет потреблять 
+больше видеопамяти чем указанное значение.
+Далеко не 100% что это будет работать 
+учтите, что низкие значения могут привести к
+крашу системы или видеокарты
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_g15_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Фиксировать частоту dGPU
+Вы можете заставить работать dGPU 
+на одном из состояний. Это работает 
+далеко не со всеми видеокартами и 
+не всегда есть эффект от этого.
+Если вы хотите выключить эту 
+функцию - поставьте на авто и примените, затем 
+отключайте
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_g16_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Исправление 0,4 ГГц
+Этот параметр поможет пользователям,
+у которых возникает 0,4 ГГц всегда или 
+иногда. Эта настройка переключит процессор
+в режим RAM-States, в котором его частота
+будет кратна частоте ОЗУ, а также частота
+его подсистем, включая iGPU. К сожалению,
+это единственный способ это исправить и
+в нём нет никаких настроек частоты, поэтому
+максимальная производительность даст вам 
+2400 МГц на процессоре и 1000 МГц на iGPU,
+что уже лучше чем 400 МГц. Остальные состояния
+нужны для тестов, если вы хотите выключить эту 
+функцию - поставьте на авто и примените, затем 
+отключайте</value>
+  </data>
+  <data name="Param_GPU_g11.Text" xml:space="preserve">
+    <value>Минимальная частота CPU (MHz)</value>
+  </data>
+  <data name="Param_GPU_g12.Text" xml:space="preserve">
+    <value>Максимальная частота CPU (MHz)</value>
+  </data>
+  <data name="Param_GPU_g13.Text" xml:space="preserve">
+    <value>Минимальный объём VRAM iGPU (MB)</value>
+  </data>
+  <data name="Param_GPU_g14.Text" xml:space="preserve">
+    <value>Максимальный объём VRAM iGPU (MB)</value>
+  </data>
+  <data name="Param_GPU_g15.Text" xml:space="preserve">
+    <value>Фиксировать частоту dGPU (Состояние)</value>
+  </data>
+  <data name="Param_GPU_g16.Text" xml:space="preserve">
+    <value>Исправление 0,4 ГГц CPU (Состояние)</value>
+  </data>
+  <data name="Param_GPU_State0.Content" xml:space="preserve">
+    <value>Состояние 0</value>
+  </data>
+  <data name="Param_GPU_State1.Content" xml:space="preserve">
+    <value>Состояние 1</value>
+  </data>
+  <data name="Param_GPU_State2.Content" xml:space="preserve">
+    <value>Состояние 2</value>
+  </data>
+  <data name="Param_GPU_State3.Content" xml:space="preserve">
+    <value>Состояние 3</value>
+  </data>
+  <data name="Param_GPU_State4.Content" xml:space="preserve">
+    <value>Состояние 4</value>
+  </data>
+  <data name="Param_GPU_State5.Content" xml:space="preserve">
+    <value>Состояние 5</value>
+  </data>
+  <data name="Param_GPU_State6.Content" xml:space="preserve">
+    <value>Состояние 6</value>
+  </data>
+  <data name="Param_Super_heavywarn" xml:space="preserve">
+    <value>ВНИМАНИЕ! СУПЕР ОПАСНАЯ ЗОНА!</value>
+  </data>
+  <data name="Param_v10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Стабильность напряжения
+Отвечает за стабильность подаваемого
+напряжения, в отличие от дискреции, 
+этот параметр абсолютно безопасен и
+не может привести к неисправимым
+последствиям
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_v8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Множитель напряжения
+Отвечает за коэффициент умножения
+базового напряжения. ЕГО ИЗМЕНЕНИЕ
+МОЖЕТ ПРИВЕСТИ К САМЫМ ОПАСНЫМ
+ПОСЛЕДСТВИЯМ, Я НЕ ОТВЕЧАЮ ЗА 
+ПОСЛЕДСТВИЯ!
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_v9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Дискреция напряжения
+Отвечает за резкие изменения
+напряжения процессора. ЕГО ИЗМЕНЕНИЕ
+МОЖЕТ ПРИВЕСТИ К САМЫМ ОПАСНЫМ
+ПОСЛЕДСТВИЯМ, Я НЕ ОТВЕЧАЮ ЗА 
+ПОСЛЕДСТВИЯ!
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_Voltage_warn_heavy" xml:space="preserve">
+    <value>ЭТИ ИЗМЕНЕНИЯ
+МОГУТ ПРИВЕСТИ К САМЫМ ОПАСНЫМ
+ПОСЛЕДСТВИЯМ, Я НЕ ОТВЕЧАЮ ЗА 
+ПОСЛЕДСТВИЯ!
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ!
+ЭТИ НАСТРОЙКИ РЕАЛЬНО МОГУТ
+СЖЕЧЬ ВАШ ПРОЦЕССОР! ПРОДОЛЖАЙТЕ
+ТОЛЬКО ЕСЛИ ВЫ ЗНАЕТЕ, ЧТО ВЫ ДЕЛАЕТЕ!</value>
+  </data>
+  <data name="Param_VRM_v10.Text" xml:space="preserve">
+    <value>Стабильность напряжения</value>
+  </data>
+  <data name="Param_VRM_v8.Text" xml:space="preserve">
+    <value>Множитель напряжения</value>
+  </data>
+  <data name="Param_VRM_v9.Text" xml:space="preserve">
+    <value>Дискреция напряжения</value>
   </data>
 </root>

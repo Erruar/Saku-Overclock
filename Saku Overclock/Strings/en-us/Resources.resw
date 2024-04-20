@@ -410,7 +410,7 @@ All presets have autosaving</value>
     <value>PCI SoC Maximum EDC (A)</value>
   </data>
   <data name="Param_VRM_v7.Text" xml:space="preserve">
-    <value>Disable BD Prochot timings every (S)</value>
+    <value>Restore Frequency time (S)</value>
   </data>
   <data name="Preset_Balance" xml:space="preserve">
     <value>Balance</value>
@@ -662,17 +662,11 @@ by the processor subsystems under load
 IT IS NOT RECOMMENDED TO TOUCH IT</value>
   </data>
   <data name="Param_v7_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Disable BD Prochot timings every
-It is responsible for the duration
-of the cpu throttling. If you have a situation
-with 0.4 GHz or you want the processor
-to keep frequencies and power more stable
-find the value of this parameter for yourself!
-Recommended values: 0, 2, 4, 8, 12,
-20, 26, 45, 60, 81, 90. Above, either trottling
-constantly occurs, or it does not occur
-at all. This can have a huge
-impact on performance!
+    <value>Restore Frequency time
+Affects to time limit to rise up 
+frequency again after a prochot 
+condition is met where throtthling 
+due max temperature reached
 IT IS NOT RECOMMENDED TO TOUCH IT</value>
   </data>
   <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
@@ -756,7 +750,7 @@ IT IS NOT RECOMMENDED TO TOUCH IT</value>
     <value>Processor operation mode, they
 switch when charging is connected and
 disconnected. If youre charging and turn 
-on Ultra, it won't do anything, since your
+on Max perf, it won't do anything, since your
 processor is already in this mode,
 similar to battery life and
 energy efficiency mode</value>
@@ -1355,5 +1349,184 @@ Changing P0 state have MORE chances to crash your system</value>
   </data>
   <data name="Param_CPU_c7.Text" xml:space="preserve">
     <value>Maximum cHTC temp (C)</value>
+  </data>
+  <data name="Param_a14_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Advanced Overclock
+This is the processor's permission 
+to change advanced settings.
+Without OC-Mode they will be ignored</value>
+  </data>
+  <data name="Param_a15_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>PBO Scalar
+Increasing the PBO scalar would 
+raise the temperature while also 
+causing the boost clocks to be more 
+aggressively maintained, potentially 
+at a higher CPU VID Voltage
+IT IS NOT RECOMMENDED TO CHANGE</value>
+  </data>
+  <data name="Param_ADV_a13_E.Content" xml:space="preserve">
+    <value>Energy efficiency</value>
+  </data>
+  <data name="Param_ADV_a13_U.Content" xml:space="preserve">
+    <value>Max performance</value>
+  </data>
+  <data name="Param_ADV_a14.Text" xml:space="preserve">
+    <value>Advanced Overclock</value>
+  </data>
+  <data name="Param_ADV_a14_A.Content" xml:space="preserve">
+    <value>Auto/Disabled</value>
+  </data>
+  <data name="Param_ADV_a14_E.Content" xml:space="preserve">
+    <value>OC-Mode</value>
+  </data>
+  <data name="Param_ADV_a15.Text" xml:space="preserve">
+    <value>PBO Scalar</value>
+  </data>
+  <data name="Param_g11_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Min CPU frequency
+You can control minimum
+CPU frequency by this 
+parameter. It is far from 100% 
+that this will work for you, keep 
+in mind that high values are harder 
+for the processor to keep
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g12_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Max CPU frequency
+You can control maximum
+CPU frequency by this 
+parameter. It is far from 100% 
+that this will work for you, keep 
+in mind that high values are harder 
+for the processor to keep
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g13_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Min iGPU VRAM Usage
+By setting the minimum amount 
+of video memory for these parameters, 
+your iGPU will not consume less video 
+memory than the specified value
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g14_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Max iGPU VRAM Usage
+By setting the maximum amount 
+of video memory for these parameters, 
+your iGPU will not consume more video 
+memory than the specified value
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g15_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Fix dGPU frequency
+By this setting you can lock dGPU power-state 
+with freq. Not 100% that it will work.
+To disable this option select Auto then apply. After
+that you can disable checkbox
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g16_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Fix 0,4 GHz frequency 
+This setting helps with 0,4 GHz CPU stuck.
+It set CPU in it RAM-States, where CPU freq
+should be multiple of RAM freq, not only CPU,
+but his subsystems and iGPU too. Unfortunately it 
+is the only one fix this problem which on max
+performance state give you 2400 MHz on CPU and 
+1000 MHz on iGPU, it is a way better than 400 MHz.
+It is impossible to change RAM-States, because of
+this we can't adjust this freq more than 2400 MHz.
+To disable this option select Auto then apply. After
+that you can disable checkbox
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_GPU_g11.Text" xml:space="preserve">
+    <value>Min CPU frequency (MHz)</value>
+  </data>
+  <data name="Param_GPU_g12.Text" xml:space="preserve">
+    <value>Max CPU frequency (MHz)</value>
+  </data>
+  <data name="Param_GPU_g13.Text" xml:space="preserve">
+    <value>Min iGPU VRAM Usage (MB)</value>
+  </data>
+  <data name="Param_GPU_g14.Text" xml:space="preserve">
+    <value>Max iGPU VRAM Usage (MB)</value>
+  </data>
+  <data name="Param_GPU_g15.Text" xml:space="preserve">
+    <value>Fix dGPU freq (State)</value>
+  </data>
+  <data name="Param_GPU_g16.Text" xml:space="preserve">
+    <value>Fix 0,4 GHz frequency </value>
+  </data>
+  <data name="Param_GPU_State0.Content" xml:space="preserve">
+    <value>State 0</value>
+  </data>
+  <data name="Param_GPU_State1.Content" xml:space="preserve">
+    <value>State 1</value>
+  </data>
+  <data name="Param_GPU_State2.Content" xml:space="preserve">
+    <value>State 2</value>
+  </data>
+  <data name="Param_GPU_State3.Content" xml:space="preserve">
+    <value>State 3</value>
+  </data>
+  <data name="Param_GPU_State4.Content" xml:space="preserve">
+    <value>State 4</value>
+  </data>
+  <data name="Param_GPU_State5.Content" xml:space="preserve">
+    <value>State 5</value>
+  </data>
+  <data name="Param_GPU_State6.Content" xml:space="preserve">
+    <value>State 6</value>
+  </data>
+  <data name="Param_Super_heavywarn" xml:space="preserve">
+    <value>ATTENTION! SUPER DANGEROUS ZONE!</value>
+  </data>
+  <data name="Param_v10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Voltage Variable 
+Responsible for the stability of 
+the VID and VDD voltage of the processor, 
+for its change and, in general, for 
+its behavior. To put it simply, this 
+is how often the processor will change 
+the voltage
+I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_v8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Voltage Scalar
+Affects on scalar of base CPU
+core VID and VDD. It can overclock or 
+undervolt voltage
+I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_v9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Voltage Modular
+Affects on how much voltage can change
+in voltage scalar
+I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_Voltage_warn_heavy" xml:space="preserve">
+    <value>I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS.
+IT IS NOT RECOMMENDED TO TOUCH IT.
+CONTINUE ONLY IF YOU KNOW WHAT YOU 
+ARE DOING!!! IT CAN BURN YOUR CPU!</value>
+  </data>
+  <data name="Param_VRM_v10.Text" xml:space="preserve">
+    <value>Voltage Variable</value>
+  </data>
+  <data name="Param_VRM_v8.Text" xml:space="preserve">
+    <value>Voltage Scalar</value>
+  </data>
+  <data name="Param_VRM_v9.Text" xml:space="preserve">
+    <value>Voltage Modular</value>
   </data>
 </root>
