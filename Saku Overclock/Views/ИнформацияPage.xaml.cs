@@ -1,29 +1,21 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Management;
-using System.Windows.Threading;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
-using Saku_Overclock.Services;
-using ZenStates.Core;
 using Saku_Overclock.ViewModels;
-using Windows.UI.Core;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 namespace Saku_Overclock.Views;
-#pragma warning disable IDE0059 // Ненужное присваивание значения
-#pragma warning disable IDE0044 // Ненужное присваивание значения
-#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
-#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 public sealed partial class ИнформацияPage : Page
 {
     private Config config = new();
     public double refreshtime;
-    private System.Windows.Threading.DispatcherTimer dispatcherTimer;
-    private readonly ZenStates.Core.Cpu cpu;
+    private System.Windows.Threading.DispatcherTimer? dispatcherTimer;
+    private readonly ZenStates.Core.Cpu? cpu;
     public ИнформацияViewModel ViewModel
     {
         get;
@@ -44,11 +36,11 @@ public sealed partial class ИнформацияPage : Page
         config.fanex = false;
         config.tempex = true;
         ConfigSave();
-        // Инициализация таймера
         GetCPUInfo();
         GetRAMInfo();
         ReadPstate();
     }
+    #region JSON and Initialization
     //JSON форматирование
     public void ConfigSave()
     {
@@ -63,7 +55,7 @@ public sealed partial class ИнформацияPage : Page
     {
         try
         {
-            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
+            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
         }
         catch
         {
@@ -114,7 +106,7 @@ public sealed partial class ИнформацияPage : Page
             {
                 try
                 { 
-                    tbCodename1.Text = $"{cpu.info.codeName}";
+                    tbCodename1.Text = $"{cpu?.info.codeName}";
                 }
                 catch
                 {
@@ -126,7 +118,7 @@ public sealed partial class ИнформацияPage : Page
             }
             try
             {
-                tbSMU.Text = cpu.systemInfo.GetSmuVersionString();
+                tbSMU.Text = cpu?.systemInfo.GetSmuVersionString();
             }
             catch
             {
@@ -181,9 +173,9 @@ public sealed partial class ИнформацияPage : Page
                 foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
                 {
                     if (producer == "") { producer = queryObj["Manufacturer"].ToString(); }
-                    else if (!producer!.Contains(value: queryObj["Manufacturer"].ToString())) { producer = $"{producer}/{queryObj["Manufacturer"]}"; }
+                    else if (!producer!.Contains(value: queryObj["Manufacturer"].ToString()!)) { producer = $"{producer}/{queryObj["Manufacturer"]}"; }
                     if (model == "") { model = queryObj["PartNumber"].ToString(); }
-                    else if (!model!.Contains(value: queryObj["PartNumber"].ToString()))
+                    else if (!model!.Contains(value: queryObj["PartNumber"].ToString()!))
                     {
                         model = $"{model}/{queryObj["PartNumber"]}";
                     }
@@ -218,7 +210,7 @@ public sealed partial class ИнформацияPage : Page
 
         }
     }
-    private void Pstate_Expanding(Microsoft.UI.Xaml.Controls.Expander sender, ExpanderExpandingEventArgs args)
+    private void Pstate_Expanding(Expander sender, ExpanderExpandingEventArgs args)
     {
         ReadPstate();
     }
@@ -253,7 +245,7 @@ public sealed partial class ИнформацияPage : Page
                 if (line.Contains("VCore (V):")) { try { VID_0.Content = double.Parse(line.Replace("VCore (V):", "").Replace(" ", ""), CultureInfo.InvariantCulture) * 1000; } catch { } }
                 if (line.Contains("MHz")) { P0_Freq.Content = line.Replace("Frequency (MHz):", "").Replace(" ", ""); }
             } line = outputWriter.ReadLine();
-        } p.WaitForExit(); line = null;
+        } p.WaitForExit();  
         var p1 = new Process();
         p1.StartInfo.UseShellExecute = false;
         p1.StartInfo.FileName = @"ryzenps.exe";
@@ -275,7 +267,7 @@ public sealed partial class ИнформацияPage : Page
                 if (line1.Contains("VCore (V):")) { try { VID_1.Content = double.Parse(line1.Replace("VCore (V):", "").Replace(" ", ""), CultureInfo.InvariantCulture) * 1000; } catch { } }
                 if (line1.Contains("Frequency (MHz):")) { P1_Freq.Content = line1.Replace("Frequency (MHz):", "").Replace(" ", ""); }
             } line1 = outputWriter1.ReadLine();
-        } p1.WaitForExit(); line1 = null;
+        } p1.WaitForExit();  
         var p2 = new Process();
         p2.StartInfo.UseShellExecute = false;
         p2.StartInfo.FileName = @"ryzenps.exe";
@@ -297,21 +289,20 @@ public sealed partial class ИнформацияPage : Page
                 if (line2.Contains("VCore (V):")) { try { VID_2.Content = double.Parse(line2.Replace("VCore (V):", "").Replace(" ", ""), CultureInfo.InvariantCulture) * 1000; } catch { } }
                 if (line2.Contains("Frequency (MHz):")) { P2_Freq.Content = line2.Replace("Frequency (MHz):", "").Replace(" ", ""); }
             } line2 = outputWriter2.ReadLine();
-        } p2.WaitForExit(); line2 = null;
-    }  
-    // Автообновление информации
-    private void StartInfoUpdate()
-    {
-        dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-        dispatcherTimer.Tick += async (sender, e) => await UpdateInfoAsync();
-        dispatcherTimer.Interval = TimeSpan.FromMilliseconds(300);  
-        App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
-        dispatcherTimer.Start();
-    }  
+        } p2.WaitForExit();  
+    }
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
     {
         if (args.Visible) { dispatcherTimer?.Start();  } else { dispatcherTimer?.Stop(); }
     } 
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e); StartInfoUpdate();
+    } 
+    protected override void OnNavigatedFrom(NavigationEventArgs e)
+    { 
+        base.OnNavigatedFrom(e); StopInfoUpdate();
+    }
     private async Task UpdateInfoAsync()
     {
         if (config.tempex)
@@ -323,7 +314,7 @@ public sealed partial class ИнформацияPage : Page
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true; 
+            p.StartInfo.RedirectStandardOutput = true;
             try { p.Start(); } catch { await App.MainWindow.ShowMessageDialogAsync("Unable to start info service. Error at ИнформацияPage.xaml.cs in com.sakuoverclock.org", "Critical Error!"); }
             var outputWriter = p.StandardOutput;
             var line = await outputWriter.ReadLineAsync();
@@ -331,38 +322,38 @@ public sealed partial class ИнформацияPage : Page
             {
                 if (line != "")
                 {
-                    if (line.Contains("STAPM LIMIT")) 
-                    { 
+                    if (line.Contains("STAPM LIMIT"))
+                    {
                         tbStapmL.Text = line.Replace("STAPM LIMIT", "").Replace("|", "").Replace(" ", "").Replace("stapm-limit", "") + " W";
                         infoPOWER.Maximum = double.Parse(tbStapmL.Text.Replace(" W", ""), CultureInfo.InvariantCulture);
                     }
-                    if (line.Contains("STAPM VALUE")) 
-                    { 
+                    if (line.Contains("STAPM VALUE"))
+                    {
                         tbStapmC.Text = line.Replace("STAPM VALUE", "").Replace("|", "").Replace(" ", "") + " W";
                         infoPOWER.Value = double.Parse(line.Replace("STAPM VALUE", "").Replace("|", "").Replace("W", "").Replace(" ", "").Replace("nan", "100"), CultureInfo.InvariantCulture);
                         infoPOWERI.Text = $"{(int)infoPOWER.Value}{" W"}";
                     }
-                    if (line.Contains("PPT LIMIT FAST")) 
-                    { 
+                    if (line.Contains("PPT LIMIT FAST"))
+                    {
                         tbActualL.Text = line.Replace("PPT LIMIT FAST", "").Replace("|", "").Replace(" ", "").Replace("fast-limit", "") + " W";
                         infoPOWER1.Maximum = double.Parse(tbActualL.Text.Replace(" W", ""), CultureInfo.InvariantCulture);
                     }
-                    if (line.Contains("PPT VALUE FAST")) 
-                    { 
+                    if (line.Contains("PPT VALUE FAST"))
+                    {
                         tbActualC.Text = line.Replace("PPT VALUE FAST", "").Replace("|", "").Replace(" ", "") + " W";
                         infoPOWER1.Value = double.Parse(line.Replace("PPT VALUE FAST", "").Replace("|", "").Replace("W", "").Replace(" ", "").Replace("nan", "100"), CultureInfo.InvariantCulture);
                         infoPOWERI1.Text = $"{(int)infoPOWER1.Value}{" W"}";
                     }
                     if (line.Contains("PPT LIMIT SLOW"))
-                    { 
+                    {
                         tbAVGL.Text = line.Replace("PPT LIMIT SLOW", "").Replace("|", "").Replace(" ", "").Replace("slow-limit", "") + " W";
-                        infoPOWER2.Maximum = double.Parse(tbAVGL.Text.Replace(" W", ""),CultureInfo.InvariantCulture);
+                        infoPOWER2.Maximum = double.Parse(tbAVGL.Text.Replace(" W", ""), CultureInfo.InvariantCulture);
                     }
                     if (line.Contains("PPT VALUE SLOW"))
-                    { 
-                        tbAVGC.Text = line.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "") + " W"; 
-                        infoPOWER2.Value = double.Parse(line.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace("W","").Replace(" ", "").Replace("nan", "100"), CultureInfo.InvariantCulture);
-                        infoPOWERI2.Text = $"{(int)infoPOWER2.Value}{" W"}"; 
+                    {
+                        tbAVGC.Text = line.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace(" ", "") + " W";
+                        infoPOWER2.Value = double.Parse(line.Replace("PPT VALUE SLOW", "").Replace("|", "").Replace("W", "").Replace(" ", "").Replace("nan", "100"), CultureInfo.InvariantCulture);
+                        infoPOWERI2.Text = $"{(int)infoPOWER2.Value}{" W"}";
                     }
                     if (line.Contains("StapmTimeConst")) { tbFast.Text = line.Replace("StapmTimeConst", "").Replace("|", "").Replace(" ", "").Replace("stapm-time", "") + " S"; }
                     if (line.Contains("SlowPPTTimeConst")) { tbSlow.Text = line.Replace("SlowPPTTimeConst", "").Replace("|", "").Replace(" ", "").Replace("slow-time", "") + " S"; }
@@ -382,7 +373,8 @@ public sealed partial class ИнформацияPage : Page
                             tbAPUMaxC.Visibility = Visibility.Collapsed;
                             tbDGPUMaxL.Visibility = Visibility.Collapsed;
                             tbDGPUMaxC.Visibility = Visibility.Collapsed;
-                        } else { tbAPUL.Text = line.Replace("PPT LIMIT APU", "").Replace("|", "").Replace(" ", "").Replace("apu-slow-limit", "") + " W"; }
+                        }
+                        else { tbAPUL.Text = line.Replace("PPT LIMIT APU", "").Replace("|", "").Replace(" ", "").Replace("apu-slow-limit", "") + " W"; }
                     }
                     if (line.Contains("PPT VALUE APU")) { tbAPUC.Text = line.Replace("PPT VALUE APU", "").Replace("|", "").Replace(" ", "") + " W"; }
                     if (line.Contains("TDC LIMIT VDD")) { tbVRMTDCL.Text = line.Replace("TDC LIMIT VDD", "").Replace("|", "").Replace(" ", "").Replace("vrm-current", "") + " A"; }
@@ -394,29 +386,31 @@ public sealed partial class ИнформацияPage : Page
                     if (line.Contains("EDC LIMIT SOC")) { tbSOCEDCL.Text = line.Replace("EDC LIMIT SOC", "").Replace("|", "").Replace(" ", "").Replace("vrmsocmax-current", "") + " A"; }
                     if (line.Contains("EDC VALUE SOC")) { tbSOCEDCC.Text = line.Replace("EDC VALUE SOC", "").Replace("|", "").Replace(" ", "") + " A"; }
                     if (line.Contains("THM LIMIT CORE")) { tbCPUMaxL.Text = line.Replace("THM LIMIT CORE", "").Replace("|", "").Replace(" ", "").Replace("tctl-temp", "") + " C"; infoCPU.Maximum = double.Parse(tbCPUMaxL.Text.Replace(" C", "").Replace("nan", "100"), CultureInfo.InvariantCulture); }
-                    if (line.Contains("THM VALUE CORE")) { tbCPUMaxC.Text = line.Replace("THM VALUE CORE", "").Replace("|", "").Replace(" ", "") + " C"; infoCPU.Value = double.Parse(tbCPUMaxC.Text.Replace(" C", "").Replace("nan", "000"),CultureInfo.InvariantCulture); infoCPUI.Text = ((int)infoCPU.Value).ToString() + " ℃";}
+                    if (line.Contains("THM VALUE CORE")) { tbCPUMaxC.Text = line.Replace("THM VALUE CORE", "").Replace("|", "").Replace(" ", "") + " C"; infoCPU.Value = double.Parse(tbCPUMaxC.Text.Replace(" C", "").Replace("nan", "000"), CultureInfo.InvariantCulture); infoCPUI.Text = ((int)infoCPU.Value).ToString() + " ℃"; }
                     if (line.Contains("STT LIMIT APU")) { tbAPUMaxL.Text = line.Replace("STT LIMIT APU", "").Replace("|", "").Replace(" ", "").Replace("apu-skin-temp", "") + " C"; }
                     if (line.Contains("STT VALUE APU")) { tbAPUMaxC.Text = line.Replace("STT VALUE APU", "").Replace("|", "").Replace(" ", "") + " C"; }
                     if (line.Contains("STT LIMIT dGPU")) { tbDGPUMaxL.Text = line.Replace("STT LIMIT dGPU", "").Replace("|", "").Replace(" ", "").Replace("dgpu-skin-temp", "") + " C"; }
                     if (line.Contains("STT VALUE dGPU")) { tbDGPUMaxC.Text = line.Replace("STT VALUE dGPU", "").Replace("|", "").Replace(" ", "") + " C"; }
                     if (line.Contains("CCLK BUSY VALUE")) { tbCPUUsage.Text = line.Replace("CCLK BUSY VALUE", "").Replace("|", "").Replace(" ", "").Replace("max-performance", "") + " %"; }
-                } line = await outputWriter.ReadLineAsync();
-            }  p.WaitForExit(); line = null;
+                }
+                line = await outputWriter.ReadLineAsync();
+            }
+            p.WaitForExit();
         }
-    } 
-    // Ваш метод, который будет вызываться при скрытии/переключении страницы
+    }
+    // Автообновление информации 
+    private void StartInfoUpdate()
+    {
+        dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+        dispatcherTimer.Tick += async (sender, e) => await UpdateInfoAsync();
+        dispatcherTimer.Interval = TimeSpan.FromMilliseconds(300);
+        App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
+        dispatcherTimer.Start();
+    }
+    // Метод, который будет вызываться при скрытии/переключении страницы
     private void StopInfoUpdate()
     {
         dispatcherTimer?.Stop();
-    } 
-    protected override void OnNavigatedTo(NavigationEventArgs e)
-    {
-        base.OnNavigatedTo(e); StartInfoUpdate();
-    } 
-    protected override void OnNavigatedFrom(NavigationEventArgs e)
-    { 
-        base.OnNavigatedFrom(e); StopInfoUpdate();
     }
+    #endregion
 }
-#pragma warning restore IDE0059 // Ненужное присваивание значения
-#pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

@@ -412,16 +412,15 @@
     <value>Максимальный ток PCI SoC (A)</value>
   </data>
   <data name="Param_VRM_v7.Text" xml:space="preserve">
-    <value>Время восстановления частоты (S)</value>
+    <value>Время восстановления частоты (mS)</value>
   </data>
   <data name="Preset_Balance" xml:space="preserve">
     <value>Баланс мощности</value>
   </data>
   <data name="Preset_Balance_Desc" xml:space="preserve">
     <value>Этот пресет позволит вашему
-процессору быть мощным
-не затрачивая много процентов
-батареи</value>
+процессору быть максимально 
+сбалансированным</value>
   </data>
   <data name="Preset_Balance_Name.Text" xml:space="preserve">
     <value>Баланс</value>
@@ -503,8 +502,8 @@
   <data name="Param_Edit_Preset.ToolTipService.ToolTip" xml:space="preserve">
     <value>Изменить имя пресета
 Для того, чтобы его изменить, в текстовом
-поле для сохранения нового пресета напишите 
-желаемое значение и нажмите на эту кнопку</value>
+поле напишите желаемое значение и 
+нажмите на кнопку</value>
   </data>
   <data name="Param_c1_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Максимальная температура
@@ -681,7 +680,9 @@
 Отвечает за время, после которого
 частота восстановится после троттлинга
 из-за превышения максимальной 
-температуры процессора
+температуры процессора. По умолчанию
+многие производители ставят 20, но вы 
+можете поэкспериментировать
 НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
   </data>
   <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
@@ -1572,5 +1573,23 @@ CPU VID
   </data>
   <data name="Param_VRM_v9.Text" xml:space="preserve">
     <value>Дискреция напряжения</value>
+  </data>
+  <data name="DeleteSuccessDesc" xml:space="preserve">
+    <value>Вы успешно навсегда удалили пресет </value>
+  </data>
+  <data name="DeleteSuccessTitle" xml:space="preserve">
+    <value>Пресет удалён</value>
+  </data>
+  <data name="Edit_TargetSubtitle" xml:space="preserve">
+    <value>Вы изменили имя пресета</value>
+  </data>
+  <data name="Edit_TargetTitle" xml:space="preserve">
+    <value>Изменение успешно!</value>
+  </data>
+  <data name="SaveSuccessDesc" xml:space="preserve">
+    <value>Вы успешно добавили новый пресет</value>
+  </data>
+  <data name="SaveSuccessTitle" xml:space="preserve">
+    <value>Новый пресет добавлен</value>
   </data>
 </root>

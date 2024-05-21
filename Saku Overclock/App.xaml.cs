@@ -13,12 +13,12 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.Notifications;
 using Saku_Overclock.Services;
+using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using Application = Microsoft.UI.Xaml.Application;
 using UIElement = Microsoft.UI.Xaml.UIElement;
 namespace Saku_Overclock;
-#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 // To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
 public partial class App : Application
 {
@@ -30,30 +30,23 @@ public partial class App : Application
     public IHost Host
     {
         get;
-    }
-
+    } 
     public static T GetService<T>()
         where T : class
     {
-        if ((App.Current as App)!.Host.Services.GetService(typeof(T)) is not T service)
+        if ((Current as App)!.Host.Services.GetService(typeof(T)) is not T service)
         {
             throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
         }
 
         return service;
-    }
-
-    [Obsolete]
-    public static WindowEx MainWindow { get; } = new MainWindow();
-
+    } 
+    public static WindowEx MainWindow { get; } = new MainWindow(); 
     public static UIElement? AppTitlebar { get; set; }
-
     private Config config = new();
-
     public App()
     {
         InitializeComponent();
-
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
         UseContentRoot(AppContext.BaseDirectory).
@@ -61,23 +54,18 @@ public partial class App : Application
         {
             // Default Activation Handler
             services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
-
             // Other Activation Handlers
             services.AddTransient<IActivationHandler, AppNotificationActivationHandler>();
-
             // Services
             services.AddSingleton<IAppNotificationService, AppNotificationService>();
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
             services.AddTransient<INavigationViewService, NavigationViewService>();
-
             services.AddSingleton<IActivationService, ActivationService>();
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
-
             // Core Services
             services.AddSingleton<IFileService, FileService>();
-
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
@@ -95,20 +83,19 @@ public partial class App : Application
             services.AddTransient<ГлавнаяPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ShellViewModel>();
-
+            services.AddTransient<MainWindow.Applyer>();
+            services.AddTransient<SendSMUCommand>();
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
         }).
         Build();
-
-        App.GetService<IAppNotificationService>().Initialize();
-
+        GetService<IAppNotificationService>().Initialize();
         UnhandledException += App_UnhandledException;
-
     }
+    #region JSON and Initialization
     public void ConfigLoad()
     {
-        config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
+        config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
     }
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     { 
@@ -116,39 +103,19 @@ public partial class App : Application
     } 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        // Проверяем, запущен ли уже экземпляр программы
-        bool isFirstInstance;
-        var mutex = new Mutex(true, "MyProgramMutex", out isFirstInstance);
-
+        base.OnLaunched(args);
+        GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
+        await GetService<IActivationService>().ActivateAsync(args);
+        bool isFirstInstance; // Проверяем, запущен ли уже экземпляр программы
+        var mutex = new Mutex(true, "MyProgramMutex", out isFirstInstance); 
         if (!isFirstInstance)
-        {
-            // Если программа уже запущена, завершаем текущий экземпляр 
+        { 
             MessageBox.Show("Текущий экземпляр будет завершен через 3 секунды...", "Другой экземпляр программы уже запущен.");
             Thread.Sleep(3000);
-            return;
-        }
-        mutex.ReleaseMutex();
-        /*string processName = "Saku Overclock"; // Замените "YourProcessName" на имя процесса, который вы хотите завершить
-
-        // Получаем все процессы с указанным именем
-        Process[] processes = Process.GetProcessesByName(processName);
-
-        // Завершаем каждый процесс
-        foreach (Process process in processes)
-        {
-            try
-            {
-                process.Kill(); // Завершаем процесс
-                Console.WriteLine($"Процесс {process.ProcessName} завершен.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка при завершении процесса {process.ProcessName}: {ex.Message}");
-            }
-        }*/
-        base.OnLaunched(args);
-        App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
-        await App.GetService<IActivationService>().ActivateAsync(args);
+            mutex.ReleaseMutex();
+            return; 
+        }  
+        
     }
-#pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
+    #endregion
 }

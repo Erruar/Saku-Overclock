@@ -342,7 +342,7 @@
                                     </Grid>
                                     <!-- Всё что ниже кривых -->
                                     <TextBlock Grid.Row="0" Margin="420,78,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" x:Uid="AdvancedCooler_Curve_Tresh" Text="Temperature tresholds"/>
-                                    <ToggleSplitButton Grid.Row="0" Width="205" IsChecked="True" Grid.Column="0" IsCheckedChanged="myListButton_IsCheckedChanged" x:Name="myListButton" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,112,0,0">
+                                    <ToggleSplitButton Grid.Row="0" Width="205" IsChecked="True" Grid.Column="0" IsCheckedChanged="MyListButton_IsCheckedChanged" x:Name="myListButton" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,112,0,0">
                                         <Grid>
                                             <ContentControl>
                                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xedad;"/>
@@ -423,7 +423,7 @@
                                         <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold"  x:Uid="AdvancedCooler_Curve_Fan1" FontSize="20" Margin="0,19,0,0" Text="Fan 1"/>
                                         <TextBlock Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,44,-195,0" Text="     Min           Max           SPD"/>
                                     </Grid>
-                                    <ToggleSplitButton IsChecked="True" Grid.Row="1" Width="205" IsCheckedChanged="myListButton1_IsCheckedChanged" x:Name="myListButton1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,33,0,0">
+                                    <ToggleSplitButton IsChecked="True" Grid.Row="1" Width="205" IsCheckedChanged="MyListButton1_IsCheckedChanged" x:Name="myListButton1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,33,0,0">
                                         <Grid>
                                             <ContentControl>
                                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xedad;"/>

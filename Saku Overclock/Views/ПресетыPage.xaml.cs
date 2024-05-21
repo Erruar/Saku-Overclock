@@ -5,28 +5,27 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Views;
-#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
+
 public sealed partial class ПресетыPage : Page
 {
     public ПресетыViewModel ViewModel
     {
         get;
     }
-    private Config config = new();
-    private Devices devices = new();
+    private Config config = new(); 
     private bool relay = false;
     public ПресетыPage()
     {
         ViewModel = App.GetService<ПресетыViewModel>();
         InitializeComponent();
-        ConfigLoad();
-        DeviceLoad(); 
+        ConfigLoad(); 
         InitSave();
         config.fanex = false;
         config.tempex = false;
         ConfigSave();
     }
-    private void InitSave()
+    #region JSON and Initialization
+    public void InitSave()
     {
         ConfigLoad();
         if (config.Max == true) { Max_btn.IsChecked = true; PrSource.ImageSource = new BitmapImage(new System.Uri("ms-appx:///Assets/max.png")); PrName.Text = "Preset_Max".GetLocalized(); PrDesc.Text = "Preset_Max_Desc".GetLocalized(); }
@@ -35,8 +34,26 @@ public sealed partial class ПресетыPage : Page
         if (config.Eco == true) { Eco.IsChecked = true; PrSource.ImageSource = new BitmapImage(new System.Uri("ms-appx:///Assets/eco.png")); PrName.Text = "Preset_Eco".GetLocalized(); PrDesc.Text = "Preset_Eco_Desc".GetLocalized(); }
         if (config.Min == true) { Min_btn.IsChecked = true; PrSource.ImageSource = new BitmapImage(new System.Uri("ms-appx:///Assets/min.png")); PrName.Text = "Preset_Min".GetLocalized(); PrDesc.Text = "Preset_Min_Desc".GetLocalized(); }
     }
-
-    [Obsolete]
+    public void ConfigSave()
+    {
+        try
+        {
+            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+        }
+        catch { }
+    }
+    public void ConfigLoad()
+    {
+        try
+        {
+            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
+            if (config == null) { config = new Config(); ConfigSave(); }
+        }
+        catch { }
+    }
+    #endregion
+    #region Event Handlers
     private void Min_btn_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         relay = true;
@@ -51,9 +68,7 @@ public sealed partial class ПресетыPage : Page
         ConfigSave();
         InitSave();
         MainWindow.Applyer.Apply(false);
-    }
-
-    [Obsolete]
+    } 
     private void Eco_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         relay = true; 
@@ -69,8 +84,6 @@ public sealed partial class ПресетыPage : Page
         InitSave();
         MainWindow.Applyer.Apply(false);
     }
-
-    [Obsolete]
     private void Balance_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         relay = true;
@@ -86,9 +99,6 @@ public sealed partial class ПресетыPage : Page
         InitSave();
         MainWindow.Applyer.Apply(false);
     }
-
-    //--prochot-deassertion-ramp=2
-    [Obsolete]
     private void Speed_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         relay = true;
@@ -104,8 +114,6 @@ public sealed partial class ПресетыPage : Page
         InitSave();
         MainWindow.Applyer.Apply(false);
     }
-
-    [Obsolete]
     private void Max_btn_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         relay = true;
@@ -121,79 +129,30 @@ public sealed partial class ПресетыPage : Page
         InitSave();
         MainWindow.Applyer.Apply(false);
     }
-
-    //JSON форматирование
-    public void ConfigSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
-        }
-        catch { }
-    }
-    public void ConfigLoad()
-    {
-        try
-        {
-            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
-        }
-        catch
-        {
-            App.MainWindow.ShowMessageDialogAsync("Пресеты 3", "Критическая ошибка!");
-        }
-    }
-
-    public void DeviceSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
-        }
-        catch { }
-    }
-
-    public void DeviceLoad()
-    {
-        try
-        {
-            devices = JsonConvert.DeserializeObject<Devices>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json"));
-        }
-        catch
-        {
-            App.MainWindow.ShowMessageDialogAsync("Пресеты 2", "Критическая ошибка!");
-        }
-    } 
-
     private void Min_btn_Unchecked_1(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         if (relay) { return; } 
         Min_btn.IsChecked = true;
     }
-
     private void Eco_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         if (relay) { return; }
         Eco.IsChecked = true;
     }
-
     private void Balance_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         if (relay) { return; }
         Balance.IsChecked = true;
     }
-
     private void Speed_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         if (relay) { return; }
         Speed.IsChecked = true;
     }
-
     private void Max_btn_Unchecked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         if (relay) { return; }
         Max_btn.IsChecked = true;
     }
+    #endregion
 }
-#pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

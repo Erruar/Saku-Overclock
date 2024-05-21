@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Saku_Overclock.Core.Helpers;
 
@@ -18,5 +19,5 @@ public static class Json
         {
             return JsonConvert.SerializeObject(value);
         });
-    }
+    } 
 }

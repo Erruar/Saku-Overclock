@@ -11,24 +11,17 @@ using System.Runtime.InteropServices;
 using Saku_Overclock.SMUEngine;
 
 namespace Saku_Overclock;
-#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
-#pragma warning disable CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).
-#pragma warning disable CA1041 // Укажите сообщение ObsoleteAttribute
 
 public sealed partial class MainWindow : WindowEx
 {
     private Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
     private UISettings settings;
     private Config config = new();
-    private Devices devices = new();
-    // The enum flag for DwmSetWindowAttribute's second parameter, which tells the function what attribute to set.
+    private Devices devices = new(); 
     public enum DWMWINDOWATTRIBUTE
     {
         DWMWA_WINDOW_CORNER_PREFERENCE = 33
-    }
-
-    // The DWM_WINDOW_CORNER_PREFERENCE enum for DwmSetWindowAttribute's third parameter, which tells the function
-    // what value of the enum to set.
+    } 
     public enum DWM_WINDOW_CORNER_PREFERENCE
     {
         DWMWCP_DEFAULT = 0,
@@ -36,23 +29,19 @@ public sealed partial class MainWindow : WindowEx
         DWMWCP_ROUND = 2,
         DWMWCP_ROUNDSMALL = 3
     }
-    public System.Windows.Forms.NotifyIcon ni = new();
-    // Import dwmapi.dll and define DwmSetWindowAttribute in C# corresponding to the native function.
+    public NotifyIcon ni = new(); 
     [LibraryImport("dwmapi.dll", SetLastError = true)]
     private static partial long DwmSetWindowAttribute(IntPtr hwnd,
                                                      DWMWINDOWATTRIBUTE attribute,
                                                      ref DWM_WINDOW_CORNER_PREFERENCE pvAttribute,
-                                                     uint cbAttribute);
-
-    [Obsolete]
+                                                     uint cbAttribute); 
     public MainWindow()
     {
         InitializeComponent();
         WindowStateChanged += (sender, e) =>
         {
             if(WindowState == WindowState.Minimized)
-            { 
-                // Скройте окно
+            {  
                 this.Hide();
             }
         };
@@ -69,25 +58,19 @@ public sealed partial class MainWindow : WindowEx
                     {
                         this.Show();
                         WindowState = WindowState.Normal;
-                    };
-            ni.ContextMenuStrip = new ContextMenuStrip();
-            var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE;
-            var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND;
-            DwmSetWindowAttribute(ni.ContextMenuStrip.Handle, attribute, ref preference, sizeof(uint));
-            System.Drawing.Image bmp = new System.Drawing.Bitmap(GetType(), "show.png");
-            System.Drawing.Image bmp1 = new System.Drawing.Bitmap(GetType(), "exit.png");
-            System.Drawing.Image bmp2 = new System.Drawing.Bitmap(GetType(), "WindowIcon.ico");
-            System.Drawing.Image bmp3 = new System.Drawing.Bitmap(GetType(), "preset.png");
-            System.Drawing.Image bmp4 = new System.Drawing.Bitmap(GetType(), "param.png");
-            System.Drawing.Image bmp5 = new System.Drawing.Bitmap(GetType(), "info.png");
-            ni.ContextMenuStrip.Items.Add("Tray_Saku_Overclock".GetLocalized(), bmp2, Menu_Show1);
+                    }!;
+            ni.ContextMenuStrip = new ContextMenuStrip(); //Трей меню
+            var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE; //Закруглить трей меню на Windows 11
+            var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND; //Закруглить трей меню на Windows 11
+            DwmSetWindowAttribute(ni.ContextMenuStrip.Handle, attribute, ref preference, sizeof(uint)); //Закруглить трей меню на Windows 11 
+            ni.ContextMenuStrip.Items.Add("Tray_Saku_Overclock".GetLocalized(), new System.Drawing.Bitmap(GetType(), "WindowIcon.ico"), Menu_Show1!);
             ni.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-            ni.ContextMenuStrip.Items.Add("Tray_Presets".GetLocalized(), bmp3, Open_Preset);
-            ni.ContextMenuStrip.Items.Add("Tray_Parameters".GetLocalized(), bmp4, Open_Param);
-            ni.ContextMenuStrip.Items.Add("Tray_Inforfation".GetLocalized(), bmp5, Open_Info);
+            ni.ContextMenuStrip.Items.Add("Tray_Presets".GetLocalized(), new System.Drawing.Bitmap(GetType(), "preset.png"), Open_Preset!);
+            ni.ContextMenuStrip.Items.Add("Tray_Parameters".GetLocalized(), new System.Drawing.Bitmap(GetType(), "param.png"), Open_Param!);
+            ni.ContextMenuStrip.Items.Add("Tray_Inforfation".GetLocalized(), new System.Drawing.Bitmap(GetType(), "info.png"), Open_Info!);
             ni.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-            ni.ContextMenuStrip.Items.Add("Tray_Show".GetLocalized(), bmp, Menu_Show1);
-            ni.ContextMenuStrip.Items.Add("Tray_Quit".GetLocalized(), bmp1, Menu_Exit1);
+            ni.ContextMenuStrip.Items.Add("Tray_Show".GetLocalized(), new System.Drawing.Bitmap(GetType(), "show.png"), Menu_Show1!);
+            ni.ContextMenuStrip.Items.Add("Tray_Quit".GetLocalized(), new System.Drawing.Bitmap(GetType(), "exit.png"), Menu_Exit1!);
             ni.ContextMenuStrip.Items[0].Enabled = false;
             ni.ContextMenuStrip.Opacity = 0.89;
             ni.ContextMenuStrip.ForeColor = System.Drawing.Color.Purple;
@@ -104,21 +87,10 @@ public sealed partial class MainWindow : WindowEx
         DeviceLoad(); 
         Tray_Start();
         Set_Blue();
-        Closed += Dispose_Tray;
+        Closed += Dispose_Tray; 
     }
-
-    private void Dispose_Tray(object sender, WindowEventArgs args)
-    {
-        try
-        {
-            ni.Dispose();
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-    private async void Set_Blue()
+    #region Colours
+    private async void Set_Blue() //Установить синюю тему, ТОЛЬКО на windows 11
     {
         try
         {
@@ -141,15 +113,26 @@ public sealed partial class MainWindow : WindowEx
         {
             JsonRepair('c');
         }
+    } 
+    // this handles updating the caption button colors correctly when indows system theme is changed
+    // while the app is open
+    private void Settings_ColorValuesChanged(UISettings sender, object args)
+    {
+        // This calls comes off-thread, hence we will need to dispatch it to current app's thread
+        dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
-
-    [Obsolete]
-    private async void Tray_Start()
+    #endregion
+    #region Tray utils
+    private void Dispose_Tray(object sender, WindowEventArgs args)
+    {
+        try { ni.Dispose(); } catch { }
+    }  
+    private async void Tray_Start() // Запустить все команды после запуска приложения если включен Автоприменять Разгон
     {
         ConfigLoad();
         try
         {
-            if (config.autooverclock == true) { var cpu = new ПараметрыPage(); Applyer.Apply(false); /*cpu.Play_Invernate_QuickSMU(1);*/ if (devices.autopstate == true && devices.enableps == true) { cpu.BtnPstateWrite_Click(); }  }
+            if (config.autooverclock == true) { var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(false); /*cpu.Play_Invernate_QuickSMU(1);*/ if (devices.autopstate == true && devices.enableps == true) { cpu.BtnPstateWrite_Click(); }  }
             if (config.traystart == true) { await Task.Delay(700); this.Hide(); }
         }
         catch
@@ -162,22 +145,19 @@ public sealed partial class MainWindow : WindowEx
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
-        this.Show();
-        BringToFront();
+        this.Show(); BringToFront();
     }
     private void Open_Param(object sender, EventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!);
-        this.Show();
-        BringToFront();
+        this.Show(); BringToFront();
     } 
     private void Open_Info(object sender, EventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!);
-        this.Show();
-        BringToFront();
+        this.Show(); BringToFront();
     } 
     private void Menu_Show1(object sender, EventArgs e)
     {
@@ -185,43 +165,38 @@ public sealed partial class MainWindow : WindowEx
         {
             Visible = true
         };
-        this.Show();
-        BringToFront();
+        this.Show(); BringToFront();
     } 
     private void Menu_Exit1(object sender, EventArgs e)
     {
         ni = new NotifyIcon
         {
             Visible = false
-        };
-        Close();
+        }; Close();
     }
+    #endregion
+    #region Applyer class
     public class Applyer
     {
         public bool execute = false;
-        private Config config = new(); 
-        [Obsolete]
-        private static SendSMUCommand sendSMUCommand;
-
-        [Obsolete]
+        private Config config = new();  
+        private static SendSMUCommand? sendSMUCommand;
+        private static readonly Applyer mc = App.GetService<Applyer>();
+         
         public static async void Apply(bool saveinfo)
         {
-            try { sendSMUCommand = new SendSMUCommand(); } catch { return; }
-            var mc = new Applyer();
-            var smu = new ПараметрыPage();
+            try { sendSMUCommand = App.GetService<SendSMUCommand>(); } catch { return; } 
+            var smu = App.GetService<ПараметрыPage>();
             void ConfigLoad()
             {
-                mc.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
+                mc.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
             }
             void ConfigSave()
             {
                     Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(mc.config,Formatting.Indented));
-            }
-
-            ConfigLoad();
-            
-
+            } 
+            ConfigLoad(); 
             if (mc.config.reapplytime == true)
             {
                 var timer = new DispatcherTimer();
@@ -242,13 +217,11 @@ public sealed partial class MainWindow : WindowEx
                     timer.Tick += async (sender, e) =>
                     {
                         if (mc.config.reapplytime == true)
-                        {
-                            // Запустите ryzenadj снова
-                            await Process(false);
-                            sendSMUCommand.Play_Invernate_QuickSMU(1);
+                        { 
+                            await Process(false); // Запустить ryzenadj снова, БЕЗ логирования, false
+                            sendSMUCommand.Play_Invernate_QuickSMU(1); //Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
                         }
-                    };
-                    timer.Start();
+                    }; timer.Start();
                 }
                 else
                 {
@@ -256,49 +229,26 @@ public sealed partial class MainWindow : WindowEx
                     timer.Tick += async (sender, e) =>
                     {
                         if (mc.config.reapplytime == true)
-                        {
-                            // Запустите ryzenadj снова
-                            await Process(false);
-                            sendSMUCommand.Play_Invernate_QuickSMU(1);
+                        { 
+                            await Process(false); // Запустить ryzenadj снова, БЕЗ логирования, false
+                            sendSMUCommand.Play_Invernate_QuickSMU(1); //Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
                         }
-                    };
-                    timer.Start();
-                }
-                
-            }
-         /*   else
-            {*/
-                await Process(saveinfo);
-         /*   }*/
-        }
-
-        [Obsolete]
+                    }; timer.Start();
+                } 
+            }  await Process(saveinfo); 
+        }  
         private static async Task Process(bool saveinfo)
         {
-          //  var sendSMUCommand = new SendSMUCommand();
-            var mc = new Applyer
-            {
-                config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))
-            };
+            mc.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
             if (mc.config == null) { return; }
             await Task.Run(() =>
             {
-                sendSMUCommand.Translate(mc.config.adjline, saveinfo); 
+                sendSMUCommand?.Translate(mc.config.adjline, saveinfo); 
             });
         } 
     }
-
-    // this handles updating the caption button colors correctly when indows system theme is changed
-    // while the app is open
-    private void Settings_ColorValuesChanged(UISettings sender, object args)
-    {
-        // This calls comes off-thread, hence we will need to dispatch it to current app's thread
-        dispatcherQueue.TryEnqueue(() =>
-        {
-            TitleBarHelper.ApplySystemThemeToCaptionButtons();
-        });
-    }
-    //Json
+    #endregion
+    #region JSON Containers voids
     public void JsonRepair(char file)
     {
         if (file == 'c')
@@ -390,7 +340,7 @@ public sealed partial class MainWindow : WindowEx
     {
         try
         {
-            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
+            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
         }
         catch
         {
@@ -412,14 +362,12 @@ public sealed partial class MainWindow : WindowEx
     {
         try
         {
-            devices = JsonConvert.DeserializeObject<Devices>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json"));
+            devices = JsonConvert.DeserializeObject<Devices>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json"))!;
         }
         catch
         {
             JsonRepair('d');
         }
     }
-     
+    #endregion
 }
-#pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
-#pragma warning restore CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).

@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <_LastSelectedProfileId>C:\Users\Sakura\source\repos\Saku Overclock\Saku Overclock\Properties\PublishProfiles\win10-arm64.pubxml</_LastSelectedProfileId>
-    <ActiveDebugProfile>Saku Overclock (Package)</ActiveDebugProfile>
+    <ActiveDebugProfile>Saku Overclock (Win-32)</ActiveDebugProfile>
     <UapAppxPackageBuildMode>SideloadOnly</UapAppxPackageBuildMode>
     <AppxShowAllApps>False</AppxShowAllApps>
     <AppxBuildConfigurationSelection>x64</AppxBuildConfigurationSelection>
@@ -21,6 +21,16 @@
     <Compile Update="Views\КулерPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\ToggleButtonCollapseLauncher.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\ComboBoxCollapseLauncher.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\PowerWindow.xaml">

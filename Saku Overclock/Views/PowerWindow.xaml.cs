@@ -2,22 +2,17 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Microsoft.UI.Xaml;
 using Newtonsoft.Json;
-using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using ZenStates.Core;
 
 namespace Saku_Overclock.Views;
-#pragma warning disable CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).
-#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
-#pragma warning disable CS8612 // Допустимость значения NULL для ссылочных типов в типе не совпадает с явно реализованным членом.
-#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 internal partial class PowerWindow : Window
 {
-    private readonly ZenStates.Core.Cpu CPU;
-    private Powercfg notes = new();
-    private ObservableCollection<PowerMonitorItem> PowerGridItems;
-    public PowerWindow(ZenStates.Core.Cpu cpu)
+    private Cpu? CPU;
+    private Powercfg? notes = new();
+    private ObservableCollection<PowerMonitorItem>? PowerGridItems; 
+    public PowerWindow(Cpu? cpu)
     {
         InitializeComponent();
         ExtendsContentIntoTitleBar = true;
@@ -28,62 +23,16 @@ internal partial class PowerWindow : Window
         this.SetWindowSize(342, 579);
         NoteLoad();
         PowerCfgTimer.Interval = 2000;
-        PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick);
+        PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick!);
         InitializeComponent();
-        cpu.RefreshPowerTable();
+        cpu?.RefreshPowerTable();
         notes = new Powercfg();
-        FillInData(cpu.powerTable.Table);
+        FillInData(cpu?.powerTable.Table!);
         CPU = cpu; // Добавим инициализацию CPU здесь
         PowerCfgTimer.Start();
+        Closed += PowerWindow_Closed;
     }
-    private void PowerWindow_Activated(object sender, WindowActivatedEventArgs args)
-    {
-        App.AppTitlebar = AppTitleBarText as UIElement;
-    }
-    private readonly System.Windows.Forms.Timer PowerCfgTimer = new();
-    private class PowerMonitorItem : INotifyPropertyChanged
-    {
-        private string _value;
-        private string _note;
-        public string Index
-        {
-            get; set;
-        }
-        public string Offset
-        {
-            get; set;
-        }
-        public string Value
-        {
-            get => _value;
-            set
-            {
-                if (_value != value)
-                {
-                    _value = value;
-                    OnPropertyChanged(nameof(Value));
-                }
-            }
-        }
-        public string Note
-        {
-            get => _note;
-            set
-            {
-                if (_note != value)
-                {
-                    _note = value;
-                    OnPropertyChanged(nameof(Note));
-                }
-            }
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        } 
-    }
+    #region JSON containers
     public void NoteSave()
     {
         try
@@ -98,7 +47,7 @@ internal partial class PowerWindow : Window
     {
         try
         {
-            notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json"));
+            notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json"))!;
         }
         catch
         {
@@ -106,7 +55,7 @@ internal partial class PowerWindow : Window
         }
     }
     public void JsonRepair(char file)
-    {  
+    {
         if (file == 'p')
         {
             try
@@ -157,61 +106,24 @@ internal partial class PowerWindow : Window
             }
         }
     }
-    private void FillInData(float[] table)
-    { 
-        DispatcherQueue.TryEnqueue(async () =>
-        {
-            await Task.Run(() =>
-            {
-                NoteLoad();
-                PowerGridItems = new ObservableCollection<PowerMonitorItem>();
-                for (var i = 0; i < table.Length; i++)
-                {
-                    try { if (notes._notelist.Count <= i) { notes._notelist.Add(" "); } } 
-                    catch {  }
-                    PowerGridItems.Add(new PowerMonitorItem
-                    {
-                        Index = $"{i:D4}",
-                        Offset = $"0x{i * 4:X4}",
-                        Value = $"{table[i]:F6}",
-                        Note = notes._notelist[i]
-                    });
-                }
-            });
-            PowerGridView.ItemsSource = PowerGridItems;
-        });
-    }
-    private void RefreshData(float[] table)
+    #endregion
+    #region Event Handlers
+    private void PowerWindow_Closed(object sender, WindowEventArgs args)
     {
-        try
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                var index = 0;
-                foreach (var item in PowerGridItems)
-                {
-                    item.Value = $"{table[index]:F6}";
-                    if (item.Note != notes._notelist[index])
-                    {
-                        notes._notelist[index] = item.Note;
-                        NoteSave();
-                    }
-                    index++;
-                }
-                // Явное обновление GridView
-                PowerGridView.ItemsSource = PowerGridItems;
-            });
-        }
-        catch
-        {
-            App.MainWindow.Close();
-            Close();
-        } 
+        CPU?.powerTable.Dispose();
+        CPU = null;
+        this.UnloadObject(PowerGridView);
+        GC.SuppressFinalize(this);
+        notes = null;
     }
-
+    private void PowerWindow_Activated(object sender, WindowActivatedEventArgs args)
+    {
+        App.AppTitlebar = AppTitleBarText as UIElement;
+    }
+    private readonly System.Windows.Forms.Timer PowerCfgTimer = new();
     private void PowerCfgTimer_Tick(object sender, EventArgs e)
     {
-        if (CPU.RefreshPowerTable() == ZenStates.Core.SMU.Status.OK)
+        if (CPU?.RefreshPowerTable() == ZenStates.Core.SMU.Status.OK)
         {
             RefreshData(CPU.powerTable.Table);
         }
@@ -228,7 +140,95 @@ internal partial class PowerWindow : Window
             PowerCfgTimer.Interval = Convert.ToInt32(numericUpDownInterval.Value);
         }
     }
+    #endregion
+    #region PowerMon PowerTable voids
+    private class PowerMonitorItem : INotifyPropertyChanged
+    {
+        private string? _value;
+        private string? _note;
+        public string? Index
+        {
+            get; set;
+        }
+        public string? Offset
+        {
+            get; set;
+        }
+        public string? Value
+        {
+            get => _value;
+            set
+            {
+                if (_value != value)
+                {
+                    _value = value;
+                    OnPropertyChanged(nameof(Value));
+                }
+            }
+        }
+        public string? Note
+        {
+            get => _note;
+            set
+            {
+                if (_note != value)
+                {
+                    _note = value;
+                    OnPropertyChanged(nameof(Note));
+                }
+            }
+        }
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+    private async void FillInData(float[] table)
+    {
+        await Task.Run(() =>
+        {
+            NoteLoad();
+            PowerGridItems = new ObservableCollection<PowerMonitorItem>();
+            for (var i = 0; i < table.Length; i++)
+            {
+                try { if (notes?._notelist.Count <= i) { notes._notelist.Add(" "); } }
+                catch { }
+                PowerGridItems.Add(new PowerMonitorItem
+                {
+                    Index = $"{i:D4}",
+                    Offset = $"0x{i * 4:X4}",
+                    Value = $"{table[i]:F6}",
+                    Note = notes?._notelist[i]
+                });
+            }
+        });
+        PowerGridView.ItemsSource = PowerGridItems;
+    }
+    private void RefreshData(float[] table)
+    {
+        try
+        {
+            var index = 0;
+            foreach (var item in PowerGridItems!)
+            {
+                item.Value = $"{table[index]:F6}";
+                if (item.Note != notes?._notelist[index])
+                {
+                    notes!._notelist[index] = item.Note!;
+                    NoteSave();
+                }
+                index++;
+            }
+            // Явное обновление GridView
+            PowerGridView.ItemsSource = PowerGridItems;
+        }
+        catch
+        {
+            App.MainWindow.Close();
+            Close();
+        }
+    }
+    #endregion
 }
-#pragma warning restore CS8622 // Допустимость значений NULL для ссылочных типов в типе параметра не соответствует целевому объекту делегирования (возможно, из-за атрибутов допустимости значений NULL).
-#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
-#pragma warning restore CS8612 // Допустимость значения NULL для ссылочных типов в типе не совпадает с явно реализованным членом.

@@ -7,9 +7,7 @@ using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
-using Windows.Foundation.Metadata;
-#pragma warning disable IDE0059 // Ненужное присваивание значения
-#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
+using Windows.Foundation.Metadata; 
 namespace Saku_Overclock.Views;
 public sealed partial class КулерPage : Page
 {
@@ -19,8 +17,8 @@ public sealed partial class КулерPage : Page
     {
         get;
     }
-    private System.Windows.Threading.DispatcherTimer tempUpdateTimer;
-    private System.Windows.Threading.DispatcherTimer fanUpdateTimer;
+    private System.Windows.Threading.DispatcherTimer? tempUpdateTimer;
+    private readonly System.Windows.Threading.DispatcherTimer? fanUpdateTimer;
     public КулерPage()
     {
         ViewModel = App.GetService<КулерViewModel>();
@@ -28,123 +26,58 @@ public sealed partial class КулерPage : Page
         ConfigLoad();
         FanInit();
         Update();
-        config.tempex = true;
+        config.tempex = true; //Автообновление информации о кулере включено! Это нужно для того, чтобы обновление информации не происходило нигде кроме страницы с оптимизацией кулера, так как контроллировать асинхронные методы бывает сложно
         ConfigSave();
         Loaded += Page_Loaded;
         fanUpdateTimer = new System.Windows.Threading.DispatcherTimer();
         fanUpdateTimer.Tick += async (sender, e) => await CheckFan();
         fanUpdateTimer.Interval = TimeSpan.FromMilliseconds(6000);
-    }
-    //Проверка на загрузку страницы
-    private void Page_Loaded(object sender, RoutedEventArgs e)
-    {
-        // Логика загрузки страницы
-
-        isPageLoaded = true;
-    }
-    //Проверка температуры
-
-    private void StartTempUpdate()
-    {
-        tempUpdateTimer = new System.Windows.Threading.DispatcherTimer();
-        tempUpdateTimer.Tick += async (sender, e) => await UpdateTemperatureAsync();
-        tempUpdateTimer.Interval = TimeSpan.FromMilliseconds(500);
-        // Подписка на событие потери фокуса
-        App.MainWindow.Activated += Window_Activated;
-
-        // Подписка на событие изменения видимости
-        App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
-        tempUpdateTimer.Start();
-    }
-    private void Window_Activated(object sender, Microsoft.UI.Xaml.WindowActivatedEventArgs args)
+    }  
+    #region Page Navigation and Window State
+    private void Window_Activated(object sender, WindowActivatedEventArgs args)
     {
         if (args.WindowActivationState == WindowActivationState.CodeActivated || args.WindowActivationState == WindowActivationState.PointerActivated)
-        {
-            // Окно активировано
+        { 
             tempUpdateTimer?.Start();
-            if (Fanauto.IsChecked == true)
-            fanUpdateTimer?.Start();
+            if (Fanauto.IsChecked == true) { fanUpdateTimer?.Start(); }
         }
         else
-        {
-            // Окно не активировано
+        { 
             tempUpdateTimer?.Stop();
             fanUpdateTimer?.Stop();
         }
 
-    }
-
+    } 
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
     {
         if (args.Visible)
-        {
-            // Окно видимо
+        { 
             tempUpdateTimer?.Start();
-            if (Fanauto.IsChecked == true)
-                fanUpdateTimer?.Start();
+            if (Fanauto.IsChecked == true) { fanUpdateTimer?.Start(); }
         }
         else
-        {
-            // Окно не видимо
+        { 
             tempUpdateTimer?.Stop();
             fanUpdateTimer?.Stop();
         }
     }
-    private async Task UpdateTemperatureAsync()
-    {
-        if (config.tempex)
-        {
-            var p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.FileName = @"ryzenadj.exe";
-            p.StartInfo.Arguments = "-i";
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            try
-            {
-                p.Start();
-            }
-            catch
-            { 
-
-            }
-            var outputWriter = p.StandardOutput;
-            var line = await outputWriter.ReadLineAsync();
-            while (line != null)
-            {
-                if (!string.IsNullOrWhiteSpace(line) && line.Contains("THM VALUE CORE"))
-                {
-                    Temp.Text = line.Replace("THM VALUE CORE", "").Replace(" ", "").Replace("|", "") + "℃";
-                }
-
-                line = await outputWriter.ReadLineAsync();
-            }
-
-            p.WaitForExit();
-            line = null;
-        }
-    }
-    // Метод, который будет вызываться при скрытии/переключении страницы
-    private void StopTempUpdate()
-    {
-        tempUpdateTimer?.Stop();
-    }
-
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
         StartTempUpdate();
-    }
-
+    } 
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
         base.OnNavigatedFrom(e);
         StopTempUpdate();
     }
-    //Конец проверки температуры
-    //JSON форматирование
+    private void AdvancedCooler_Click(object sender, RoutedEventArgs e)
+    {
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(AdvancedКулерViewModel).FullName!);
+    }
+    #endregion
+    #region JSON and Initialization
     public void ConfigSave()
     {
         try
@@ -161,51 +94,34 @@ public sealed partial class КулерPage : Page
     {
         try
         {
-            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
+            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
         }
         catch
         {
             App.MainWindow.ShowMessageDialogAsync("Пресеты 3", "Критическая ошибка!");
         }
     }
-
     public async void FanInit()
     {
-        ConfigLoad();
-        // Получить папку, в которой хранятся файлы XML
-        var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
-
-        // Получить все XML-файлы в этой папке
-        var xmlFiles = Directory.GetFiles(folderPath, "*.xml");
-
-        // Очистить ComboBox
-        Selfan.Items.Clear();
-
+        ConfigLoad(); 
+        var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs"; // Получить папку, в которой хранятся файлы XML с конфигами
+        var xmlFiles = Directory.GetFiles(folderPath, "*.xml");  
+        Selfan.Items.Clear();  
         foreach (var xmlFile in xmlFiles)
-        {
-            // Получить имя файла без расширения
-            var fileName = Path.GetFileNameWithoutExtension(xmlFile);
-
-            // Проверить, содержится ли .xml в имени файла
+        { 
+            var fileName = Path.GetFileNameWithoutExtension(xmlFile); 
             if (fileName.Contains(".xml"))
             {
                 fileName = fileName.Replace(".xml", "");
-            }
-
-            // Создать новый ComboBoxItem
+            } 
             var item = new ComboBoxItem
             {
                 Content = fileName,
-                Tag = xmlFile // Сохранить полный путь к файлу в Tag
-            };
-
-            // Добавить ComboBoxItem в ComboBox
-            Selfan.Items.Add(item);
-
-            // Проверить, соответствует ли fanValue значению в файле
+                Tag = xmlFile  
+            }; 
+            Selfan.Items.Add(item); 
             if (config.fanvalue == fileName)
-            {
-                // Установить выбранный элемент в ComboBox
+            { 
                 Selfan.SelectedItem = item;
             }
         }
@@ -213,7 +129,6 @@ public sealed partial class КулерPage : Page
         if (config.fanread == true) { Enabl.IsChecked = false; Readon.IsChecked = true; Disabl.IsChecked = false; };
         if (config.fandisabled == true) { Enabl.IsChecked = false; Readon.IsChecked = false; Disabl.IsChecked = true; };
         if (config.autofan == true) { await Task.Delay(20); Fanauto.IsChecked = true; }
-        //better fan init
         if (Enabl.IsChecked == true)
         {
             NbfcFan1();
@@ -239,29 +154,32 @@ public sealed partial class КулерPage : Page
             Update();
         }
     }
-    private void Disabl_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        isPageLoaded = true;
+    }
+    #endregion
+    #region Event Handlers
+    private void Disabl_Checked(object sender, RoutedEventArgs e)
     {
         config.fandisabled = true; config.fanread = false; config.fanenabled = false; config.fanex = false;
         ConfigSave();
         NbfcEnable();
-    }
-
-    private void Readon_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    } 
+    private void Readon_Checked(object sender, RoutedEventArgs e)
     {
         config.fanread = true; config.fanenabled = false; config.fandisabled = false;
         ConfigSave();
         NbfcEnable();
         Fan1Val.Text = "Auto";
         Update();
-    }
-
-    private void Enabl_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    } 
+    private void Enabl_Checked(object sender, RoutedEventArgs e)
     {
         config.fanenabled = true; config.fandisabled = false; config.fanread = false;
         ConfigSave();
         NbfcEnable();
-    }
-
+    } 
     private async void Fan1_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
         if (Enabl.IsChecked == true)
@@ -291,8 +209,7 @@ public sealed partial class КулерPage : Page
             Fan1Val.Text = "Auto";
             Update();
         }
-    }
-
+    } 
     private async void Fan2_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
         if (Enabl.IsChecked == true)
@@ -324,7 +241,59 @@ public sealed partial class КулерPage : Page
             Update();
         }
     }
+    private async void Selfan_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!isPageLoaded)
+        {
+            return;
+        }
+        await Task.Delay(200);
+        config.fanvalue = (string)((ComboBoxItem)Selfan.SelectedItem).Content;
+        ConfigSave();
+        NbfcFanState();
 
+    }
+    private async void Fanauto_Checked(object sender, RoutedEventArgs e)
+    {
+        if (Fanauto.IsChecked == true)
+        {
+            if (config.autofan == false)
+            {
+                var AutoDialog = new ContentDialog
+                {
+                    Title = "Cooler_FanAuto_Text".GetLocalized(),
+                    Content = "Cooler_FanAuto_Desc".GetLocalized(),
+                    CloseButtonText = "Cancel".GetLocalized(),
+                    PrimaryButtonText = "Enable".GetLocalized(),
+                    DefaultButton = ContentDialogButton.Close
+                };
+                // Use this code to associate the dialog to the appropriate AppWindow by setting
+                // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
+                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+                {
+                    AutoDialog.XamlRoot = XamlRoot;
+                }
+                var result = await AutoDialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    config.autofan = true; ConfigSave();
+                }
+                else { Fanauto.IsChecked = false; config.autofan = false; ConfigSave(); }
+            }
+            config.fanex = false; ConfigSave();
+            GetInfo0(true);
+        }
+        else { config.autofan = false; ConfigSave(); GetInfo0(false); }
+    }
+    private async void Update_Click(object sender, RoutedEventArgs e)
+    {
+        config.fanex = true; ConfigSave();
+        await CheckFan();
+        Fanauto.IsChecked = false;
+    }
+    private async void Suggest_Click(object sender, RoutedEventArgs e) => await SuggestClickAsync();
+    #endregion
+    #region NBFC Tasks
     public void NbfcEnable()
     {
         var p = new Process();
@@ -346,12 +315,9 @@ public sealed partial class КулерPage : Page
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
-        p.StartInfo.RedirectStandardOutput = true;
-
-        p.Start();
-        //App.MainWindow.ShowMessageDialogAsync("Вы успешно выставили свои настройки! \n" + mc.config.adjline, "Применение успешно!");
-    }
-
+        p.StartInfo.RedirectStandardOutput = true; 
+        p.Start(); 
+    } 
     public void NbfcFan1()
     {
         var p = new Process();
@@ -366,8 +332,7 @@ public sealed partial class КулерPage : Page
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
-        p.StartInfo.RedirectStandardOutput = true;
-
+        p.StartInfo.RedirectStandardOutput = true; 
         p.Start();
     }
     public void NbfcFan2()
@@ -384,14 +349,12 @@ public sealed partial class КулерPage : Page
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
-        p.StartInfo.RedirectStandardOutput = true;
-
+        p.StartInfo.RedirectStandardOutput = true; 
         p.Start();
     }
     public void NbfcFanState()
     {
-        const string quote = "\"";
-
+        const string quote = "\""; 
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.FileName = @"nbfc/nbfc.exe";
@@ -400,27 +363,9 @@ public sealed partial class КулерPage : Page
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
-        p.StartInfo.RedirectStandardOutput = true;
-
+        p.StartInfo.RedirectStandardOutput = true; 
         p.Start();
-    }
-
-    private async void Selfan_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        // Проверка флага, разрешено ли выполнение метода
-        if (!isPageLoaded)
-        {
-            return; // Прерывание выполнения метода
-        }
-        await Task.Delay(200);
-        config.fanvalue = (string)((ComboBoxItem)Selfan.SelectedItem).Content;
-        ConfigSave();
-        //Применить!
-        NbfcFanState();
-
-    }
-    //set --fan 0 --speed 100
-    //Информация о текущей скорости вращения кулеров
+    } 
     public void GetInfo0(bool start)
     {
         config.fanex = true;
@@ -457,11 +402,9 @@ public sealed partial class КулерPage : Page
                     }
 
                     line = await outputWriter.ReadLineAsync();
-                }
-                line = null;
-                p.WaitForExit();
-                //fan 2
-                var p1 = new Process();
+                } 
+                p.WaitForExit(); 
+                var p1 = new Process(); //fan 2
                 p1.StartInfo.UseShellExecute = false;
                 p1.StartInfo.FileName = @"nbfc/nbfc.exe";
                 p1.StartInfo.Arguments = " status --fan 1";
@@ -482,13 +425,11 @@ public sealed partial class КулерPage : Page
                     }
 
                     line1 = await outputWriter1.ReadLineAsync();
-                }
-                line1 = null;
+                } 
                 p1.WaitForExit();
                 Update();
             }
-        }
-
+        } 
     }
     private void Update()
     {
@@ -524,58 +465,6 @@ public sealed partial class КулерPage : Page
             }
         }
     }
-
-    private async void Fanauto_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        if (Fanauto.IsChecked == true)
-        {
-            if (config.autofan == false)
-            {
-                var AutoDialog = new ContentDialog
-                {
-                    Title = "Cooler_FanAuto_Text".GetLocalized(),
-                    Content = "Cooler_FanAuto_Desc".GetLocalized(),
-                    CloseButtonText = "Cancel".GetLocalized(),
-                    PrimaryButtonText = "Enable".GetLocalized(),
-                    DefaultButton = ContentDialogButton.Close
-                };
-
-                // Use this code to associate the dialog to the appropriate AppWindow by setting
-                // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
-                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-                {
-                    AutoDialog.XamlRoot = XamlRoot;
-                }
-                var result = await AutoDialog.ShowAsync();
-                if (result == ContentDialogResult.Primary)
-                {
-                    config.autofan = true; ConfigSave();
-                }
-                else { Fanauto.IsChecked = false; config.autofan = false; ConfigSave(); }
-            }
-            config.fanex = false; ConfigSave();
-            GetInfo0(true);
-        }
-        else { config.autofan = false; ConfigSave(); GetInfo0(false); }
-    }
-
-    private async void Update_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        config.fanex = true; ConfigSave();
-        await CheckFan();
-        Fanauto.IsChecked = false;
-    }
-
-    private void AdvancedCooler_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        var navigationService = App.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(AdvancedКулерViewModel).FullName!);
-    }
-
-    private async void Suggest_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        await SuggestClickAsync();
-    }
     private async Task SuggestClickAsync()
     {
         SuggestTip.Subtitle = "";
@@ -608,5 +497,44 @@ public sealed partial class КулерPage : Page
         p.WaitForExit();
         SuggestTip.IsOpen = true;
     }
-
+    private void StartTempUpdate()
+    {
+        tempUpdateTimer = new System.Windows.Threading.DispatcherTimer();
+        tempUpdateTimer.Tick += async (sender, e) => await UpdateTemperatureAsync();
+        tempUpdateTimer.Interval = TimeSpan.FromMilliseconds(500);
+        App.MainWindow.Activated += Window_Activated; //Проверка фокуса на программе для экономии ресурсов
+        App.MainWindow.VisibilityChanged += Window_VisibilityChanged; //Проверка программу на трей меню для экономии ресурсов
+        tempUpdateTimer.Start();
+    }
+    private async Task UpdateTemperatureAsync()
+    {
+        if (config.tempex)
+        {
+            var p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.FileName = @"ryzenadj.exe";
+            p.StartInfo.Arguments = "-i";
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            try { p.Start(); } catch { }
+            var outputWriter = p.StandardOutput;
+            var line = await outputWriter.ReadLineAsync();
+            while (line != null)
+            {
+                if (!string.IsNullOrWhiteSpace(line) && line.Contains("THM VALUE CORE"))
+                {
+                    Temp.Text = line.Replace("THM VALUE CORE", "").Replace(" ", "").Replace("|", "") + "℃";
+                }
+                line = await outputWriter.ReadLineAsync();
+            }
+            p.WaitForExit(); 
+        }
+    }
+    private void StopTempUpdate()
+    {
+        tempUpdateTimer?.Stop();
+    }
+    #endregion
 }

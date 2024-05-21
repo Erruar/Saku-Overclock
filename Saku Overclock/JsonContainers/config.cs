@@ -3,6 +3,8 @@ namespace Saku_Overclock;
 #pragma warning disable CS0649 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 internal class Config
 {
+    public bool OldTitleBar = false;
+    public bool FixedTitleBar = false;
     public string ApplyInfo;
     public int Preset = 0;
     public bool RangeApplied = true;

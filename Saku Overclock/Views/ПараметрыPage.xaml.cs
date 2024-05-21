@@ -18,12 +18,9 @@ using ComboBox = Microsoft.UI.Xaml.Controls.ComboBox;
 using Process = System.Diagnostics.Process;
 using TextBox = Microsoft.UI.Xaml.Controls.TextBox;
 using ZenStates.Core;
+using System.Collections.ObjectModel;
 
 namespace Saku_Overclock.Views;
-#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
-#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
-#pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
-#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 
 public sealed partial class ПараметрыPage : Page
 {
@@ -31,32 +28,30 @@ public sealed partial class ПараметрыPage : Page
     {
         get;
     }
-    private FontIcon SMUSymbol1;
-    private List<SmuAddressSet> matches;
+    private FontIcon? SMUSymbol1;
+    private List<SmuAddressSet>? matches;
     private Config config = new();
     private Devices devices = new();
     private Smusettings smusettings = new();
-    private Profile[] profile = new Profile[1]; 
+    private Profile[] profile = new Profile[1];
+    private JsonContainers.Notifications notify = new();
     private int indexprofile = 0;
     private string SMUSymbol = "\uE8C8";
     private bool isLoaded = false;
     private bool relay = false;
-    private ZenStates.Core.Cpu cpu; //Import source
-    private SendSMUCommand cpusend;
+    private Cpu? cpu; //Import Zen States core
+    private SendSMUCommand? cpusend;
     public bool turbobboost = true;
-    private bool waitforload = true;
-    private readonly string wmiAMDACPI = "AMD_ACPI";
-    private readonly string wmiScope = "root\\wmi";
-    private string instanceName;
-    public string adjline;
+    private bool waitforload = true; 
+    public string? adjline;
     private readonly ZenStates.Core.Mailbox testMailbox = new();
-    public string universalvid;
-    public string equalvid;
-    [Obsolete("Obsolete")]
+    public string? universalvid;
+    public string? equalvid;
+    
     public ПараметрыPage()
     {
         ViewModel = App.GetService<ПараметрыViewModel>();
-        InitializeComponent();
+        InitializeComponent(); 
         DeviceLoad();
         ConfigLoad();
         ProfileLoad();
@@ -66,10 +61,8 @@ public sealed partial class ПараметрыPage : Page
         ConfigSave(); 
         try
         {
-            cpu ??= CpuSingleton.GetInstance();
-            //Cpu.Cpu_Init();
-            cpusend ??= new SendSMUCommand();
-            //if (SendSMUCommand.OC_Detect(cpusend) == false) { OC_Advanced.Visibility = Visibility.Collapsed; }
+            cpu ??= CpuSingleton.GetInstance(); 
+            cpusend ??= App.GetService<SendSMUCommand>(); 
         }
         catch
         {
@@ -77,15 +70,14 @@ public sealed partial class ПараметрыPage : Page
         }
         Loaded += ПараметрыPage_Loaded;
     }
-
-    [Obsolete("Obsolete")]
+    #region JSON and initialization
     private async void ПараметрыPage_Loaded(object sender, RoutedEventArgs e)
     {
         isLoaded = true;
         try
         {
             ProfileLoad();
-            SlidersInit();
+            SlidersInit(); 
         }
         catch
         {
@@ -100,211 +92,6 @@ public sealed partial class ПараметрыPage : Page
             }
         }
     }
-    private static void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler)
-    {
-        try
-        {
-            var backgroundWorker1 = new BackgroundWorker();
-            backgroundWorker1.DoWork += task;
-            backgroundWorker1.RunWorkerCompleted += completedHandler;
-            backgroundWorker1.RunWorkerAsync();
-        }
-        catch
-        {
-            //Ignored
-        }
-    }
-    private void PopulateMailboxesList(ItemCollection l)
-    {
-        l.Clear();
-        l.Add(new MailboxListItem("RSMU", cpu.smu.Rsmu));
-        l.Add(new MailboxListItem("MP1", cpu.smu.Mp1Smu));
-        l.Add(new MailboxListItem("HSMP", cpu.smu.Hsmp));
-    }
-    private void AddMailboxToList(string label, SmuAddressSet addressSet)
-    {
-        comboBoxMailboxSelect.Items.Add(new MailboxListItem(label, addressSet));
-    }
-    private async void SmuScan_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-    {
-        var index = comboBoxMailboxSelect.SelectedIndex;
-        PopulateMailboxesList(comboBoxMailboxSelect.Items);
-        //DONT TOUCH
-        for (var i = 0; i < matches.Count; i++)
-        {
-            AddMailboxToList($"Mailbox {i + 1}", matches[i]);
-        }
-
-        if (index > comboBoxMailboxSelect.Items.Count)
-        {
-            index = 0;
-        }
-        comboBoxMailboxSelect.SelectedIndex = index;
-        QuickCommand.IsEnabled = true;
-        QuickCommand2.IsEnabled = true;
-        await Send_Message("SMUScanText".GetLocalized(), "SMUScanDesc".GetLocalized(), Symbol.Message);
-    }
-
-    [Obsolete("Obsolete")]
-    private void BackgroundWorkerTrySettings_DoWork(object sender, DoWorkEventArgs e)
-    {
-      try
-        {
-            cpu ??= new Cpu(CpuInitSettings.defaultSetttings);
-            switch (cpu.info.codeName)
-            {
-                case ZenStates.Core.Cpu.CodeName.BristolRidge:
-                    //ScanSmuRange(0x13000000, 0x13000F00, 4, 0x10);
-                    break;
-                case ZenStates.Core.Cpu.CodeName.RavenRidge:
-                case ZenStates.Core.Cpu.CodeName.Picasso:
-                case ZenStates.Core.Cpu.CodeName.FireFlight:
-                case ZenStates.Core.Cpu.CodeName.Dali:
-                case ZenStates.Core.Cpu.CodeName.Renoir:
-                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C); 
-                    //ScanSmuRange(0x03B10500, 0x03B10F98, 2, 0x3C);
-                    //ScanSmuRange(0x03B10500, 0x03B10F98, 2, 0x30);
-                    //ScanSmuRange(0x03B10500, 0x03B10F98, 2, 0x60);
-                    ScanSmuRange(0x03B10A00, 0x03B10AFF, 4, 0x60); 
-                    //ScanSmuRange(0x03B10A00, 0x03B10BFF, 2, 0x60);
-                    break;
-                case ZenStates.Core.Cpu.CodeName.PinnacleRidge:
-                case ZenStates.Core.Cpu.CodeName.SummitRidge:
-                case ZenStates.Core.Cpu.CodeName.Matisse:
-                case ZenStates.Core.Cpu.CodeName.Whitehaven:
-                case ZenStates.Core.Cpu.CodeName.Naples:
-                case ZenStates.Core.Cpu.CodeName.Colfax:
-                case ZenStates.Core.Cpu.CodeName.Vermeer:
-                    //case Cpu.CodeName.Raphael:
-                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
-                    ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
-                    break;
-                case ZenStates.Core.Cpu.CodeName.Raphael:
-                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
-                    // ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
-                    break;
-                case ZenStates.Core.Cpu.CodeName.Rome:
-                    ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
-                    break;
-                default:
-                    break;
-            }
-        }
-        catch (ApplicationException)
-        {
-        }
-    }
-
-    [Obsolete("Obsolete")]
-    private void ScanSmuRange(uint start, uint end, uint step, uint offset)
-    {
-        matches = new List<SmuAddressSet>();
-
-        var temp = new List<KeyValuePair<uint, uint>>();
-
-        while (start <= end)
-        {
-            var smuRspAddress = start + offset;
-
-            if (cpu.ReadDword(start) != 0xFFFFFFFF)
-            {
-                // Send unknown command 0xFF to each pair of this start and possible response addresses
-                if (cpu.WriteDwordEx(start, 0xFF))
-                {
-                    Thread.Sleep(10);
-
-                    while (smuRspAddress <= end)
-                    {
-                        // Expect UNKNOWN_CMD status to be returned if the mailbox works
-                        if (cpu.ReadDword(smuRspAddress) == 0xFE)
-                        {
-                            // Send Get_SMU_Version command
-                            if (cpu.WriteDwordEx(start, 0x2))
-                            {
-                                Thread.Sleep(10);
-                                if (cpu.ReadDword(smuRspAddress) == 0x1)
-                                {
-                                    temp.Add(new KeyValuePair<uint, uint>(start, smuRspAddress));
-                                }
-                            }
-                        }
-                        smuRspAddress += step;
-                    }
-                }
-            }
-            start += step;
-        }
-        if (temp.Count > 0)
-        {
-            foreach (var t in temp)
-            {
-                Console.WriteLine($"{t.Key:X8}: {t.Value:X8}");
-            }
-        }
-        var possibleArgAddresses = new List<uint>();
-        foreach (var pair in temp)
-        {
-            Console.WriteLine($"Testing {pair.Key:X8}: {pair.Value:X8}");
-
-            if (TrySettings(pair.Key, pair.Value, 0xFFFFFFFF, 0x2, 0xFF) == ZenStates.Core.SMU.Status.OK)
-            {
-                var smuArgAddress = pair.Value + 4;
-                while (smuArgAddress <= end)
-                {
-                    if (cpu.ReadDword(smuArgAddress) == cpu.smu.Version)//can you ctrl +z? I forgot what should be there
-                    {
-                        possibleArgAddresses.Add(smuArgAddress);
-                    }
-                    smuArgAddress += step;
-                }
-            }
-            // Verify the arg address returns correct value (should be test argument + 1)
-            foreach (var address in possibleArgAddresses)
-            {
-                var testArg = 0xFAFAFAFA;
-                var retries = 3;
-                while (retries > 0)
-                {
-                    testArg++;
-                    retries--;
-
-                    // Send test command
-                    if (TrySettings(pair.Key, pair.Value, address, 0x1, testArg) == ZenStates.Core.SMU.Status.OK)
-                    {
-                        if (cpu.ReadDword(address) != testArg + 1)
-                        {
-                            retries = -1;
-                        }
-                    }
-                }
-                if (retries == 0)
-                {
-                    matches.Add(new SmuAddressSet(pair.Key, pair.Value, address));
-                    break;
-                }
-            }
-        }
-    }
-    [Obsolete("Obsolete")]
-    private ZenStates.Core.SMU.Status TrySettings(uint msgAddr, uint rspAddr, uint argAddr, uint cmd, uint value)
-    {
-        var args = new uint[6];
-        args[0] = value;
-
-        testMailbox.SMU_ADDR_MSG = msgAddr;
-        testMailbox.SMU_ADDR_RSP = rspAddr;
-        testMailbox.SMU_ADDR_ARG = argAddr;
-
-        return cpu.smu.SendSmuCommand(testMailbox, cmd, ref args);
-    }
-    private void ResetSmuAddresses()
-    {
-        textBoxCMDAddress.Text = $@"0x{Convert.ToString(testMailbox.SMU_ADDR_MSG, 16).ToUpper()}";
-        textBoxRSPAddress.Text = $@"0x{Convert.ToString(testMailbox.SMU_ADDR_RSP, 16).ToUpper()}";
-        textBoxARGAddress.Text = $@"0x{Convert.ToString(testMailbox.SMU_ADDR_ARG, 16).ToUpper()}";
-    }
-
-    //JSON форматирование
     public void ConfigSave()
     {
         try
@@ -321,7 +108,7 @@ public sealed partial class ПараметрыPage : Page
     {
         try
         {
-            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
+            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
         }
         catch
         {
@@ -344,11 +131,46 @@ public sealed partial class ПараметрыPage : Page
     {
         try
         {
-            devices = JsonConvert.DeserializeObject<Devices>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json"));
+            devices = JsonConvert.DeserializeObject<Devices>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json"))!;
         }
         catch
         {
             JsonRepair('d');
+        }
+    }
+    public void NotifySave()
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify, Formatting.Indented));
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    public async void NotifyLoad()
+    {
+        var success = false;
+        var retryCount = 1;
+        while (!success && retryCount < 3)
+        {
+            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))
+            {
+                try
+                {
+                    notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))!;
+                    if (notify != null) { success = true; } else { JsonRepair('p'); }
+                }
+                catch { JsonRepair('n'); }
+            }
+            else { JsonRepair('n'); }
+            if (!success)
+            { 
+                await Task.Delay(30);
+                retryCount++;
+            }
         }
     }
     public void SmuSettingsSave()
@@ -367,7 +189,7 @@ public sealed partial class ПараметрыPage : Page
     {
         try
         {
-            smusettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json"));
+            smusettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json"))!;
         }
         catch
         {
@@ -391,7 +213,7 @@ public sealed partial class ПараметрыPage : Page
         try
         {
 
-            profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"));
+            profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
         }
         catch
         {
@@ -580,9 +402,51 @@ public sealed partial class ПараметрыPage : Page
                 }
             }
         }
-    }
+        if (file == 'n')
+        {
+            try
+            {
+                notify = new JsonContainers.Notifications();
+            }
+            catch
+            {
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                App.MainWindow.Close();
+            }
+            if (notify != null)
+            {
+                try
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
+                }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+            else
+            {
+                try
+                {
 
-    [Obsolete("Obsolete")]
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
+                    App.MainWindow.Close();
+                }
+                catch
+                {
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+        }
+    }
     public void SlidersInit()
     {
         //PLS don't beat me for this WEIRDEST initialization.
@@ -623,11 +487,9 @@ public sealed partial class ПараметрыPage : Page
         MainInit(indexprofile);
         waitforload = false;
     }
-
-    [Obsolete("Obsolete")]
     private void MainInit(int index)
     {
-        if (cpu.info.codeName != Cpu.CodeName.VanGogh)
+        if (cpu?.info.codeName.ToString().Contains("VanGogh") == false)
         {
             A1_main.Visibility = Visibility.Collapsed;
             A2_main.Visibility = Visibility.Collapsed;
@@ -640,7 +502,7 @@ public sealed partial class ПараметрыPage : Page
             A4_desc.Visibility = Visibility.Collapsed;
             A5_desc.Visibility = Visibility.Collapsed;
         }
-        if (cpu.info.codeName != Cpu.CodeName.RavenRidge || cpu.info.codeName != Cpu.CodeName.Dali || cpu.info.codeName != Cpu.CodeName.Picasso)
+        if (cpu?.info.codeName.ToString().Contains("Raven") == false && cpu?.info.codeName.ToString().Contains("Dali") == false && cpu?.info.codeName.ToString().Contains("Picasso") == false)
         {
             iGPU_Subsystems.Visibility = Visibility.Collapsed; Dunger_Zone.Visibility = Visibility.Collapsed; V8_Main.Visibility = Visibility.Collapsed; V8_Desc.Visibility = Visibility.Collapsed; V9_Main.Visibility = Visibility.Collapsed; V9_Desc.Visibility = Visibility.Collapsed; V10_Main.Visibility = Visibility.Collapsed; V10_Desc.Visibility = Visibility.Collapsed;
         }
@@ -679,10 +541,10 @@ public sealed partial class ПараметрыPage : Page
         }
         catch
         {
-
+            //Ignored
         }
         waitforload = false;
-        SmuSettingsLoad();
+        SmuSettingsLoad(); 
         if (smusettings.Note != string.Empty)
         {
             SMUNotes.Document.SetText(TextSetOptions.FormatRtf, smusettings.Note);
@@ -696,8 +558,6 @@ public sealed partial class ПараметрыPage : Page
             //Ignored
         }
     }
-
-    [Obsolete("Obsolete")]
     private void Init_QuickSMU()
     {
         SmuSettingsLoad();
@@ -708,7 +568,7 @@ public sealed partial class ПараметрыPage : Page
 
         QuickSMU.Children.Clear();
         QuickSMU.RowDefinitions.Clear();
-        for (var i = 0; i < smusettings.QuickSMUCommands.Count; i++)
+        for (var i = 0; i < smusettings?.QuickSMUCommands.Count; i++)
         {
             var grid = new Grid //Основной грид, куда всё добавляется
             {
@@ -815,7 +675,7 @@ public sealed partial class ПараметрыPage : Page
             };
             var rsmuTextBlock = new TextBlock
             {
-                Text = smusettings.MailBoxes[smusettings.QuickSMUCommands[i].MailIndex].Name
+                Text = smusettings?.MailBoxes![smusettings.QuickSMUCommands[i].MailIndex].Name
             };
             rsmuButton.Content = rsmuTextBlock;
             buttonsGrid.Children.Add(rsmuButton);
@@ -828,7 +688,7 @@ public sealed partial class ПараметрыPage : Page
             };
             var cmdTextBlock = new TextBlock
             {
-                Text = smusettings.QuickSMUCommands[i].Command + " / " + smusettings.QuickSMUCommands[i].Argument
+                Text = smusettings?.QuickSMUCommands![i].Command + " / " + smusettings?.QuickSMUCommands![i].Argument
             };
             cmdButton.Content = cmdTextBlock;
             buttonsGrid.Children.Add(cmdButton);
@@ -843,11 +703,11 @@ public sealed partial class ПараметрыPage : Page
             {
                 Text = "Apply"
             };
-            if (smusettings.QuickSMUCommands[i].Startup)
+            if (smusettings?.QuickSMUCommands![i].Startup == true)
             {
                 autoTextBlock.Text = "Autorun";
             }
-            if (smusettings.QuickSMUCommands[i].Startup || smusettings.QuickSMUCommands[i].ApplyWith)
+            if (smusettings?.QuickSMUCommands![i].Startup == true || smusettings?.QuickSMUCommands![i].ApplyWith == true)
             {
                 buttonsGrid.Children.Add(autoButton);
             }
@@ -859,22 +719,1140 @@ public sealed partial class ПараметрыPage : Page
             editButton.Click += EditButton_Click;
             playButton.Click += PlayButton_Click;
         }
+    } 
+    #endregion
+    #region SMU Related voids and Quick SMU Commands
+    private static void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler)
+    {
+        try
+        {
+            var backgroundWorker1 = new BackgroundWorker();
+            backgroundWorker1.DoWork += task;
+            backgroundWorker1.RunWorkerCompleted += completedHandler;
+            backgroundWorker1.RunWorkerAsync();
+        }
+        catch
+        {
+            //Ignored
+        }
     }
-    [Obsolete("Obsolete")]
+    private void PopulateMailboxesList(ItemCollection l)
+    {
+        l.Clear();
+        l.Add(new MailboxListItem("RSMU", cpu?.smu.Rsmu!));
+        l.Add(new MailboxListItem("MP1", cpu?.smu.Mp1Smu!));
+        l.Add(new MailboxListItem("HSMP", cpu?.smu.Hsmp!));
+    }
+    private void AddMailboxToList(string label, SmuAddressSet addressSet)
+    {
+        comboBoxMailboxSelect.Items.Add(new MailboxListItem(label, addressSet));
+    }
+    private async void SmuScan_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+    {
+        var index = comboBoxMailboxSelect.SelectedIndex;
+        PopulateMailboxesList(comboBoxMailboxSelect.Items);
+        //DONT TOUCH
+        for (var i = 0; i < matches?.Count; i++)
+        {
+            AddMailboxToList($"Mailbox {i + 1}", matches[i]);
+        }
+
+        if (index > comboBoxMailboxSelect.Items.Count)
+        {
+            index = 0;
+        }
+        comboBoxMailboxSelect.SelectedIndex = index;
+        QuickCommand.IsEnabled = true;
+        QuickCommand2.IsEnabled = true;
+        await Send_Message("SMUScanText".GetLocalized(), "SMUScanDesc".GetLocalized(), Symbol.Message);
+    }
+    private void BackgroundWorkerTrySettings_DoWork(object sender, DoWorkEventArgs e)
+    {
+      try
+        {
+            cpu ??= new Cpu(CpuInitSettings.defaultSetttings);
+            switch (cpu.info.codeName)
+            {
+                case ZenStates.Core.Cpu.CodeName.BristolRidge:
+                    //ScanSmuRange(0x13000000, 0x13000F00, 4, 0x10);
+                    break;
+                case ZenStates.Core.Cpu.CodeName.RavenRidge:
+                case ZenStates.Core.Cpu.CodeName.Picasso:
+                case ZenStates.Core.Cpu.CodeName.FireFlight:
+                case ZenStates.Core.Cpu.CodeName.Dali:
+                case ZenStates.Core.Cpu.CodeName.Renoir:
+                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C); 
+                    ScanSmuRange(0x03B10A00, 0x03B10AFF, 4, 0x60);
+                    break;
+                case ZenStates.Core.Cpu.CodeName.PinnacleRidge:
+                case ZenStates.Core.Cpu.CodeName.SummitRidge:
+                case ZenStates.Core.Cpu.CodeName.Matisse:
+                case ZenStates.Core.Cpu.CodeName.Whitehaven:
+                case ZenStates.Core.Cpu.CodeName.Naples:
+                case ZenStates.Core.Cpu.CodeName.Colfax:
+                case ZenStates.Core.Cpu.CodeName.Vermeer:
+                    //case Cpu.CodeName.Raphael:
+                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
+                    ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
+                    break;
+                case ZenStates.Core.Cpu.CodeName.Raphael:
+                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
+                    // ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
+                    break;
+                case ZenStates.Core.Cpu.CodeName.Rome:
+                    ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
+                    break;
+                default:
+                    break;
+            }
+        }
+        catch (ApplicationException)
+        {
+        }
+    }
+    private void ScanSmuRange(uint start, uint end, uint step, uint offset)
+    {
+        matches = new List<SmuAddressSet>();
+
+        var temp = new List<KeyValuePair<uint, uint>>();
+
+        while (start <= end)
+        {
+            var smuRspAddress = start + offset;
+
+            if (cpu?.ReadDword(start) != 0xFFFFFFFF)
+            {
+                // Send unknown command 0xFF to each pair of this start and possible response addresses
+                if (cpu?.WriteDwordEx(start, 0x120) == true) //CHANGED FROM 0xFF!!!!!!!!!!!!!!
+                {
+                    Thread.Sleep(10);
+
+                    while (smuRspAddress <= end)
+                    {
+                        // Expect UNKNOWN_CMD status to be returned if the mailbox works
+                        if (cpu?.ReadDword(smuRspAddress) == 0xFE)
+                        {
+                            // Send Get_SMU_Version command
+                            if (cpu?.WriteDwordEx(start, 0x2) == true) //CHANGED FROM 0x2!!!!!!!!!!!!!!
+                            {
+                                Thread.Sleep(10);
+                                if (cpu?.ReadDword(smuRspAddress) == 0x1)
+                                {
+                                    temp.Add(new KeyValuePair<uint, uint>(start, smuRspAddress));
+                                }
+                            }
+                        }
+                        smuRspAddress += step;
+                    }
+                }
+            }
+            start += step;
+        }
+        if (temp.Count > 0)
+        {
+            foreach (var t in temp)
+            {
+                Console.WriteLine($"{t.Key:X8}: {t.Value:X8}");
+            }
+        }
+        var possibleArgAddresses = new List<uint>();
+        foreach (var pair in temp)
+        {
+            Console.WriteLine($"Testing {pair.Key:X8}: {pair.Value:X8}");
+
+            if (TrySettings(pair.Key, pair.Value, 0xFFFFFFFF, 0x2, 0xFF) == ZenStates.Core.SMU.Status.OK)
+            {
+                var smuArgAddress = pair.Value + 4;
+                while (smuArgAddress <= end)
+                {
+                    if (cpu?.ReadDword(smuArgAddress) == cpu?.smu.Version) 
+                    {
+                        possibleArgAddresses.Add(smuArgAddress);
+                    }
+                    smuArgAddress += step;
+                }
+            }
+            // Verify the arg address returns correct value (should be test argument + 1)
+            foreach (var address in possibleArgAddresses)
+            {
+                var testArg = 0xFAFAFAFA;
+                var retries = 3;
+                while (retries > 0)
+                {
+                    testArg++;
+                    retries--;
+
+                    // Send test command
+                    if (TrySettings(pair.Key, pair.Value, address, 0x1, testArg) == ZenStates.Core.SMU.Status.OK)
+                    {
+                        if (cpu?.ReadDword(address) != testArg + 1)
+                        {
+                            retries = -1;
+                        }
+                    }
+                }
+                if (retries == 0)
+                {
+                    matches.Add(new SmuAddressSet(pair.Key, pair.Value, address));
+                    break;
+                }
+            }
+        }
+    } 
+    private SMU.Status? TrySettings(uint msgAddr, uint rspAddr, uint argAddr, uint cmd, uint value)
+    {
+        var args = new uint[6];
+        args[0] = value;
+
+        testMailbox.SMU_ADDR_MSG = msgAddr;
+        testMailbox.SMU_ADDR_RSP = rspAddr;
+        testMailbox.SMU_ADDR_ARG = argAddr;
+
+        return cpu?.smu.SendSmuCommand(testMailbox, cmd, ref args);
+    }
+    private void ResetSmuAddresses()
+    {
+        textBoxCMDAddress.Text = $@"0x{Convert.ToString(testMailbox.SMU_ADDR_MSG, 16).ToUpper()}";
+        textBoxRSPAddress.Text = $@"0x{Convert.ToString(testMailbox.SMU_ADDR_RSP, 16).ToUpper()}";
+        textBoxARGAddress.Text = $@"0x{Convert.ToString(testMailbox.SMU_ADDR_ARG, 16).ToUpper()}";
+    }
     private void PlayButton_Click(object sender, RoutedEventArgs e)
     {
         var button = sender as Button;
         SmuSettingsLoad();
         ApplySettings(1, int.Parse(button!.Name.Replace("Play_", "")));
     }
-    [Obsolete("Obsolete")]
     private void EditButton_Click(object sender, RoutedEventArgs e)
     {
         var button = sender as Button;
         SmuSettingsLoad();
         QuickDialog(1, int.Parse(button!.Name.Replace("Edit_", "")));
     }
-    [Obsolete("Obsolete")]
+    //SMU КОМАНДЫ
+    private async void ApplySettings(int mode, int CommandIndex)
+    {
+        try
+        {
+            uint[]? args;
+            string[]? userArgs;
+            uint addrMsg;
+            uint addrRsp;
+            uint addrArg;
+            uint command;
+            if (mode != 0)
+            {
+                SmuSettingsLoad();
+                args = ZenStates.Core.Utils.MakeCmdArgs();
+                userArgs = smusettings?.QuickSMUCommands![CommandIndex].Argument.Trim().Split(',');
+                TryConvertToUint(smusettings?.MailBoxes![smusettings!.QuickSMUCommands![CommandIndex].MailIndex].CMD!, out addrMsg);
+                TryConvertToUint(smusettings?.MailBoxes![smusettings!.QuickSMUCommands![CommandIndex].MailIndex].RSP!, out addrRsp);
+                TryConvertToUint(smusettings?.MailBoxes![smusettings!.QuickSMUCommands![CommandIndex].MailIndex].ARG!, out addrArg);
+                TryConvertToUint(smusettings?.QuickSMUCommands![CommandIndex].Command!, out command);
+            }
+            else
+            {
+                args = ZenStates.Core.Utils.MakeCmdArgs();
+                userArgs = textBoxARG0.Text.Trim().Split(',');
+                TryConvertToUint(textBoxCMDAddress.Text, out addrMsg);
+                TryConvertToUint(textBoxRSPAddress.Text, out addrRsp);
+                TryConvertToUint(textBoxARGAddress.Text, out addrArg);
+                TryConvertToUint(textBoxCMD.Text, out command);
+
+            }
+            testMailbox.SMU_ADDR_MSG = addrMsg;
+            testMailbox.SMU_ADDR_RSP = addrRsp;
+            testMailbox.SMU_ADDR_ARG = addrArg;
+            for (var i = 0; i < userArgs?.Length; i++)
+            {
+                if (i == args.Length)
+                {
+                    break;
+                }
+                TryConvertToUint(userArgs[i], out var temp);
+                args[i] = temp;
+            }
+            var status = cpu?.smu.SendSmuCommand(testMailbox, command, ref args);
+            if (status == SMU.Status.OK)
+            {
+                await Send_Message("SMUOKText".GetLocalized(), "SMUOKDesc".GetLocalized(), Symbol.Accept);
+            }
+            else
+            {
+                if (status == SMU.Status.CMD_REJECTED_PREREQ)
+                {
+                    await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorRejected".GetLocalized(), Symbol.Dislike);
+                }
+                else
+                {
+                    await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorNoCMD".GetLocalized(), Symbol.Filter);
+                }
+            }
+        }
+        catch
+        {
+            await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorDesc".GetLocalized(), Symbol.Dislike);
+        }
+    }
+    private static void TryConvertToUint(string text, out uint address)
+    {
+        try
+        {
+            address = Convert.ToUInt32(text.Trim().ToLower(), 16);
+        }
+        catch
+        {
+            throw new ApplicationException("Invalid hexadecimal value.");
+        }
+    }
+    private void DevEnv_Expanding(Expander sender, ExpanderExpandingEventArgs args)
+    {
+        RunBackgroundTask(BackgroundWorkerTrySettings_DoWork!, SmuScan_WorkerCompleted!);
+    }
+    private void ComboBoxMailboxSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (comboBoxMailboxSelect.SelectedItem is MailboxListItem item) { InitTestMailbox(item.msgAddr, item.rspAddr, item.argAddr); }
+    }
+    private void InitTestMailbox(uint msgAddr, uint rspAddr, uint argAddr)
+    {
+        testMailbox.SMU_ADDR_MSG = msgAddr;
+        testMailbox.SMU_ADDR_RSP = rspAddr;
+        testMailbox.SMU_ADDR_ARG = argAddr;
+        ResetSmuAddresses();
+    }
+    private async void Mon_Click(object sender, RoutedEventArgs e)
+    {
+        var MonDialog = new ContentDialog
+        {
+            Title = "PowerMonText".GetLocalized(),
+            Content = "PowerMonDesc".GetLocalized(),
+            CloseButtonText = "Cancel".GetLocalized(),
+            PrimaryButtonText = "Open".GetLocalized(),
+            DefaultButton = ContentDialogButton.Close
+        };
+
+        // Use this code to associate the dialog to the appropriate AppWindow by setting
+        // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+        {
+            MonDialog.XamlRoot = XamlRoot;
+        }
+
+        var result = await MonDialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            var newWindow = new PowerWindow(cpu);
+            var micaBackdrop = new MicaBackdrop
+            {
+                Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
+            };
+            newWindow.SystemBackdrop = micaBackdrop;
+            newWindow.Activate();
+        }
+    }
+    private void SMUEnabl_Click(object sender, RoutedEventArgs e)
+    {
+        if (EnableSMU.IsOn) { EnableSMU.IsOn = false; } else { EnableSMU.IsOn = true; }
+        SMUEnabl();
+    }
+    private void EnableSMU_Toggled(object sender, RoutedEventArgs e) => SMUEnabl();
+    private void SMUEnabl()
+    {
+        if (EnableSMU.IsOn) { devices.smuenabled = true; DeviceSave(); profile[indexprofile].smuEnabled = true; ProfileSave(); }
+        else { devices.smuenabled = false; DeviceSave(); profile[indexprofile].smuEnabled = false; ProfileSave(); }
+    }
+    private void CreateQuickCommandSMU_Click(object sender, RoutedEventArgs e)
+    {
+        QuickDialog(0, 0);
+    }
+    private void CreateQuickCommandSMU1_Click(object sender, RoutedEventArgs e)
+    {
+        RangeDialog();
+    }
+    private async void QuickDialog(int destination, int rowindex)
+    {
+        SMUSymbol1 = new FontIcon
+        {
+            FontFamily = new FontFamily("Segoe Fluent Icons"),
+            Glyph = SMUSymbol,
+            Margin = new Thickness(-4, -2, -5, -5),
+        };
+        var symbolButton = new Button
+        {
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(320, 60, 0, 0),
+            Width = 40,
+            Height = 40,
+            Content = new ContentControl
+            {
+                Content = SMUSymbol1
+            }
+        };
+        var comboSelSMU = new ComboBox
+        {
+            Margin = new Thickness(0, 20, 0, 0),
+            VerticalAlignment = VerticalAlignment.Top
+        };
+        var mainText = new TextBox
+        {
+            Margin = new Thickness(0, 60, 0, 0),
+            PlaceholderText = "New_Name".GetLocalized(),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Height = 39.5,
+            Width = 315
+        };
+        var descText = new TextBox
+        {
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(0, 105.5, 0, 0),
+            PlaceholderText = "Desc".GetLocalized(),
+            Height = 40,
+            Width = 360
+        };
+        var cmdText = new TextBox
+        {
+            Margin = new Thickness(0, 152, 0, 0),
+            PlaceholderText = "Command".GetLocalized(),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Height = 40,
+            Width = 176
+        };
+        var argText = new TextBox
+        {
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(180, 152, 0, 0),
+            PlaceholderText = "Arguments".GetLocalized(),
+            Height = 40,
+            Width = 179
+        };
+        var autoRun = new CheckBox
+        {
+            Margin = new Thickness(1, 195, 0, 0),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Content = "Param_Autorun".GetLocalized(),
+            IsChecked = false
+        };
+        var applyWith = new CheckBox
+        {
+            Margin = new Thickness(1, 225, 0, 0),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Content = "Param_WithApply".GetLocalized(),
+            IsChecked = false
+        };
+        try
+        {
+            foreach (var item in comboBoxMailboxSelect.Items)
+            {
+                comboSelSMU.Items.Add(item);
+            }
+            comboSelSMU.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
+            comboSelSMU.SelectionChanged += ComboSelSMU_SelectionChanged;
+            symbolButton.Click += SymbolButton_Click;
+            if (destination != 0)
+            {
+                SmuSettingsLoad();
+                SMUSymbol = smusettings?.QuickSMUCommands![rowindex].Symbol!;
+                SMUSymbol1.Glyph = smusettings?.QuickSMUCommands![rowindex].Symbol;
+                comboSelSMU.SelectedIndex = smusettings!.QuickSMUCommands![rowindex].MailIndex;
+                mainText.Text = smusettings?.QuickSMUCommands![rowindex].Name;
+                descText.Text = smusettings?.QuickSMUCommands![rowindex].Description;
+                cmdText.Text = smusettings?.QuickSMUCommands![rowindex].Command;
+                argText.Text = smusettings?.QuickSMUCommands![rowindex].Argument;
+                autoRun.IsChecked = smusettings?.QuickSMUCommands![rowindex].Startup;
+                applyWith.IsChecked = smusettings?.QuickSMUCommands![rowindex].ApplyWith;
+            }
+        }
+        catch { }
+        try
+        {
+            var newQuickCommand = new ContentDialog
+            {
+                Title = "AdvancedCooler_Del_Action".GetLocalized(),
+                Content = new Grid
+                {
+                    Children =
+                    {
+                        comboSelSMU,
+                        symbolButton,
+                        mainText,
+                        descText,
+                        cmdText,
+                        argText,
+                        autoRun,
+                        applyWith
+                    }
+                },
+                PrimaryButtonText = "Save".GetLocalized(),
+                CloseButtonText = "Cancel".GetLocalized(),
+                DefaultButton = ContentDialogButton.Close
+            };
+            if (destination != 0)
+            {
+                newQuickCommand.SecondaryButtonText = "Delete".GetLocalized();
+            }
+            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            {
+                newQuickCommand.XamlRoot = XamlRoot;
+            }
+            newQuickCommand.Closed += (sender, args) =>
+            {
+                newQuickCommand?.Hide();
+                newQuickCommand = null;
+            };
+            // Отобразить ContentDialog и обработать результат
+            try
+            {
+                var saveIndex = 0;
+                var result = await newQuickCommand.ShowAsync();
+                // Создать ContentDialog 
+                if (result == ContentDialogResult.Primary)
+                {
+                    SmuSettingsLoad();
+                    saveIndex = comboSelSMU.SelectedIndex;
+                    for (var i = 0; i < comboSelSMU.Items.Count; i++)
+                    {
+                        var adressName = false;
+                        var adressIndex = 0;
+                        comboSelSMU.SelectedIndex = i;
+                        if (smusettings?.MailBoxes == null && smusettings != null)
+                        {
+                            smusettings.MailBoxes = new List<CustomMailBoxes>();
+                            adressIndex = smusettings.MailBoxes.Count;
+                            smusettings.MailBoxes.Add(new CustomMailBoxes
+                            {
+                                Name = comboSelSMU.SelectedItem.ToString()!,
+                                CMD = textBoxCMDAddress.Text,
+                                RSP = textBoxRSPAddress.Text,
+                                ARG = textBoxARGAddress.Text
+                            });
+                        }
+                        else
+                        {
+                            for (var d = 0; d < smusettings?.MailBoxes?.Count; d++)
+                            {
+                                if (smusettings.MailBoxes[d].Name != null && smusettings.MailBoxes[d].Name == comboSelSMU.SelectedItem.ToString())
+                                {
+                                    adressName = true;
+                                    adressIndex = d;
+                                    break;
+                                }
+                            }
+                            if (adressName == false)
+                            {
+                                smusettings?.MailBoxes?.Add(new CustomMailBoxes
+                                {
+                                    Name = comboSelSMU.SelectedItem.ToString()!,
+                                    CMD = textBoxCMDAddress.Text,
+                                    RSP = textBoxRSPAddress.Text,
+                                    ARG = textBoxARGAddress.Text
+                                });
+                            }
+                        }
+                    }
+                    SmuSettingsSave();
+                    if (cmdText.Text != string.Empty && argText.Text != string.Empty && smusettings != null)
+                    {
+                        var run = false;
+                        var apply = false;
+                        if (autoRun.IsChecked == true) { run = true; }
+                        if (applyWith.IsChecked == true) { apply = true; }
+                        if (destination == 0)
+                        {
+                            smusettings.QuickSMUCommands ??= new List<QuickSMUCommands>();
+                            smusettings.QuickSMUCommands.Add(new QuickSMUCommands
+                            {
+                                Name = mainText.Text!,
+                                Description = descText.Text!,
+                                Symbol = SMUSymbol,
+                                MailIndex = saveIndex,
+                                Startup = run,
+                                ApplyWith = apply,
+                                Command = cmdText.Text!,
+                                Argument = argText.Text!
+                            });
+                        }
+                        else
+                        {
+                            smusettings.QuickSMUCommands![rowindex].Symbol = SMUSymbol;
+                            smusettings.QuickSMUCommands![rowindex].Symbol = SMUSymbol1.Glyph!;
+                            smusettings.QuickSMUCommands![rowindex].MailIndex = saveIndex;
+                            smusettings.QuickSMUCommands![rowindex].Name = mainText.Text!;
+                            smusettings.QuickSMUCommands![rowindex].Description = descText.Text!;
+                            smusettings.QuickSMUCommands![rowindex].Command = cmdText.Text!;
+                            smusettings.QuickSMUCommands![rowindex].Argument = argText.Text!;
+                            smusettings.QuickSMUCommands![rowindex].Startup = run;
+                            smusettings.QuickSMUCommands![rowindex].ApplyWith = apply;
+                        }
+                    }
+                    comboBoxMailboxSelect.SelectedIndex = saveIndex;
+                    SmuSettingsSave();
+                    Init_QuickSMU();
+                    newQuickCommand?.Hide();
+                    newQuickCommand = null;
+                }
+                else
+                {
+                    if (result == ContentDialogResult.Secondary)
+                    {
+                        SmuSettingsLoad();
+                        smusettings?.QuickSMUCommands!.RemoveAt(rowindex);
+                        SmuSettingsSave();
+                        Init_QuickSMU();
+                    }
+                    else
+                    {
+                        newQuickCommand?.Hide();
+                        newQuickCommand = null;
+                    }
+                }
+            }
+            catch
+            {
+                newQuickCommand?.Hide();
+                newQuickCommand = null;
+            }
+
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    private async void RangeDialog()
+    {
+        var comboSelSMU = new ComboBox
+        {
+            Margin = new Thickness(0, 20, 0, 0),
+            VerticalAlignment = VerticalAlignment.Top
+        };
+        var cmdStart = new TextBox
+        {
+            Margin = new Thickness(0, 60, 0, 0),
+            PlaceholderText = "Command".GetLocalized(),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Height = 40,
+            Width = 360
+        };
+        var argStart = new TextBox
+        {
+            Margin = new Thickness(0, 105, 0, 0),
+            PlaceholderText = "Param_Start".GetLocalized(),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Height = 40,
+            Width = 176
+        };
+        var argEnd = new TextBox
+        {
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(180, 105, 0, 0),
+            PlaceholderText = "Param_EndW".GetLocalized(),
+            Height = 40,
+            Width = 179
+        };
+        var autoRun = new CheckBox
+        {
+            Margin = new Thickness(1, 155, 0, 0),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Content = "Logging".GetLocalized(),
+            IsChecked = false
+        };
+        try
+        {
+            foreach (var item in comboBoxMailboxSelect.Items)
+            {
+                comboSelSMU.Items.Add(item);
+            }
+            comboSelSMU.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
+            comboSelSMU.SelectionChanged += ComboSelSMU_SelectionChanged;
+        }
+        catch { }
+        try
+        {
+            var newQuickCommand = new ContentDialog
+            {
+                Title = "AdvancedCooler_Del_Action".GetLocalized(),
+                Content = new Grid
+                {
+                    Children =
+                    {
+                        comboSelSMU,
+                        cmdStart,
+                        argStart,
+                        argEnd,
+                        autoRun
+                    }
+                },
+                PrimaryButtonText = "Apply".GetLocalized(),
+                CloseButtonText = "Cancel".GetLocalized(),
+                DefaultButton = ContentDialogButton.Close
+            };
+            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            {
+                newQuickCommand.XamlRoot = XamlRoot;
+            }
+            newQuickCommand.Closed += (sender, args) =>
+            {
+                newQuickCommand?.Hide();
+                newQuickCommand = null;
+            };
+            // Отобразить ContentDialog и обработать результат
+            try
+            {
+                var saveIndex = 0;
+                var result = await newQuickCommand.ShowAsync();
+                // Создать ContentDialog 
+                if (result == ContentDialogResult.Primary)
+                {
+                    SmuSettingsLoad();
+                    saveIndex = comboSelSMU.SelectedIndex;
+                    for (var i = 0; i < comboSelSMU.Items.Count; i++)
+                    {
+                        var adressName = false;
+                        var adressIndex = 0;
+                        comboSelSMU.SelectedIndex = i;
+                        if (smusettings.MailBoxes == null)
+                        {
+                            smusettings.MailBoxes = new List<CustomMailBoxes>();
+                            adressIndex = smusettings.MailBoxes.Count;
+                            smusettings.MailBoxes.Add(new CustomMailBoxes
+                            {
+                                Name = comboSelSMU.SelectedItem.ToString()!,
+                                CMD = textBoxCMDAddress.Text,
+                                RSP = textBoxRSPAddress.Text,
+                                ARG = textBoxARGAddress.Text
+                            });
+                        }
+                        else
+                        {
+                            for (var d = 0; d < smusettings.MailBoxes.Count; d++)
+                            {
+                                if (smusettings.MailBoxes[d].Name != null && smusettings.MailBoxes[d].Name == comboSelSMU.SelectedItem.ToString())
+                                {
+                                    adressName = true;
+                                    adressIndex = d;
+                                    break;
+                                }
+                            }
+                            if (adressName == false)
+                            {
+                                smusettings.MailBoxes.Add(new CustomMailBoxes
+                                {
+                                    Name = comboSelSMU.SelectedItem.ToString()!,
+                                    CMD = textBoxCMDAddress.Text,
+                                    RSP = textBoxRSPAddress.Text,
+                                    ARG = textBoxARGAddress.Text
+                                });
+                            }
+                        }
+                    }
+                    SmuSettingsSave();
+                    if (cmdStart.Text != string.Empty && argStart.Text != string.Empty && argEnd.Text != string.Empty)
+                    {
+                        var run = false;
+                        if (autoRun.IsChecked == true) { run = true; }
+                        // ConfigLoad(); config.RangeApplied = false; ConfigSave();
+                        cpusend?.SendRange(cmdStart.Text, argStart.Text, argEnd.Text, saveIndex, run);
+                        RangeStarted.IsOpen = true;
+                        RangeStarted.Title = "SMURange".GetLocalized() + ". " + argStart.Text + "-" + argEnd.Text;
+                    }
+                    comboBoxMailboxSelect.SelectedIndex = saveIndex;
+                    SmuSettingsSave();
+                    Init_QuickSMU();
+                    newQuickCommand?.Hide();
+                    newQuickCommand = null;
+                }
+                else
+                {
+                    newQuickCommand?.Hide();
+                    newQuickCommand = null;
+                }
+            }
+            catch
+            {
+                newQuickCommand?.Hide();
+                newQuickCommand = null;
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    private async void UnlockFeature()
+    {
+        var comboSelSMU = new ComboBox
+        {
+            Margin = new Thickness(0, 20, 0, 0),
+            VerticalAlignment = VerticalAlignment.Top
+        };
+        var cmdStart = new TextBox
+        {
+            Margin = new Thickness(0, 60, 0, 0),
+            PlaceholderText = "Command".GetLocalized(),
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Height = 40,
+            Width = 360
+        };
+        var argStart = new TextBox
+        {
+            Margin = new Thickness(0, 105, 0, 0),
+            PlaceholderText = "Feature ID",
+            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Height = 40,
+            Width = 360
+        };
+        try
+        {
+            foreach (var item in comboBoxMailboxSelect.Items)
+            {
+                comboSelSMU.Items.Add(item);
+            }
+            comboSelSMU.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
+            comboSelSMU.SelectionChanged += ComboSelSMU_SelectionChanged;
+        }
+        catch { }
+        try
+        {
+            var newQuickCommand = new ContentDialog
+            {
+                Title = "AdvancedCooler_Del_Action".GetLocalized(),
+                Content = new Grid
+                {
+                    Children =
+                    {
+                        comboSelSMU,
+                        cmdStart,
+                        argStart
+                    }
+                },
+                PrimaryButtonText = "Apply".GetLocalized(),
+                CloseButtonText = "Cancel".GetLocalized(),
+                DefaultButton = ContentDialogButton.Close
+            };
+            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            {
+                newQuickCommand.XamlRoot = XamlRoot;
+            }
+            newQuickCommand.Closed += (sender, args) =>
+            {
+                newQuickCommand?.Hide();
+                newQuickCommand = null;
+            };
+            // Отобразить ContentDialog и обработать результат
+            try
+            {
+                var saveIndex = 0;
+                var result = await newQuickCommand.ShowAsync();
+                // Создать ContentDialog 
+                if (result == ContentDialogResult.Primary)
+                {
+                    SmuSettingsLoad();
+                    saveIndex = comboSelSMU.SelectedIndex;
+                    for (var i = 0; i < comboSelSMU.Items.Count; i++)
+                    {
+                        var adressName = false;
+                        var adressIndex = 0;
+                        comboSelSMU.SelectedIndex = i;
+                        if (smusettings.MailBoxes == null)
+                        {
+                            smusettings.MailBoxes = new List<CustomMailBoxes>();
+                            adressIndex = smusettings.MailBoxes.Count;
+                            smusettings.MailBoxes.Add(new CustomMailBoxes
+                            {
+                                Name = comboSelSMU.SelectedItem.ToString()!,
+                                CMD = textBoxCMDAddress.Text,
+                                RSP = textBoxRSPAddress.Text,
+                                ARG = textBoxARGAddress.Text
+                            });
+                        }
+                        else
+                        {
+                            for (var d = 0; d < smusettings.MailBoxes.Count; d++)
+                            {
+                                if (smusettings.MailBoxes[d].Name != null && smusettings.MailBoxes[d].Name == comboSelSMU.SelectedItem.ToString())
+                                {
+                                    adressName = true;
+                                    adressIndex = d;
+                                    break;
+                                }
+                            }
+                            if (adressName == false)
+                            {
+                                smusettings.MailBoxes.Add(new CustomMailBoxes
+                                {
+                                    Name = comboSelSMU.SelectedItem.ToString()!,
+                                    CMD = textBoxCMDAddress.Text,
+                                    RSP = textBoxRSPAddress.Text,
+                                    ARG = textBoxARGAddress.Text
+                                });
+                            }
+                        }
+                    }
+                    SmuSettingsSave();
+                    comboBoxMailboxSelect.SelectedIndex = saveIndex;
+                    comboSelSMU.SelectedIndex = saveIndex;
+                    if (cmdStart.Text != string.Empty && argStart.Text != string.Empty && smusettings != null)
+                    {
+                        if (argStart.Text == "All")
+                        {
+                            var sdStatus = "";
+                            for (var g = 1; 63 > g; g++)
+                            {
+                                var endString = "";
+                                var value = 1 << g;
+                                if (g > 31) { endString = "0,0x" + value.ToString("X"); }
+                                else { endString = value.ToString("X"); }
+                                uint[]? args;
+                                var userArgs = endString.Trim().Split(',');
+                                uint addrMsg;
+                                uint addrRsp;
+                                uint addrArg;
+                                uint command;
+                                args = Utils.MakeCmdArgs();
+                                TryConvertToUint(smusettings.MailBoxes![comboSelSMU.SelectedIndex].CMD, out addrMsg);
+                                TryConvertToUint(smusettings.MailBoxes![comboSelSMU.SelectedIndex].RSP, out addrRsp);
+                                TryConvertToUint(smusettings.MailBoxes![comboSelSMU.SelectedIndex].ARG, out addrArg);
+                                TryConvertToUint(cmdStart.Text, out command);
+                                ZenStates.Core.Mailbox testMailbox2 = new()
+                                {
+                                    SMU_ADDR_MSG = addrMsg,
+                                    SMU_ADDR_RSP = addrRsp,
+                                    SMU_ADDR_ARG = addrArg
+                                };
+                                var someFeature = "";
+                                for (var i = 0; i < userArgs.Length; i++)
+                                {
+                                    if (i == args.Length)
+                                    {
+                                        break;
+                                    }
+                                    someFeature += userArgs[i] + " ";
+                                    TryConvertToUint(userArgs[i], out var temp);
+                                    args[i] = temp;
+                                }
+                                try
+                                {
+                                    var status = cpu?.smu.SendSmuCommand(testMailbox2, command, ref args);
+                                    sdStatus += someFeature + status + "\n";
+                                    /* await Send_Message("Unlocked feature!","Command " + $"{command:X}"
+                                     + " Args " + someFeature + status + " MailBox: " + smusettings.MailBoxes[saveIndex].Name 
+                                     + "\n MSG: " + $"{testMailbox2.SMU_ADDR_MSG:X}" + "\n ARG: " + $"{testMailbox2.SMU_ADDR_ARG:X}"
+                                     + "\n RSP: " + $"{testMailbox2.SMU_ADDR_RSP:X}", Symbol.Attach);*/
+                                }
+                                catch { }
+                            }
+                            await Send_Message("Unlocked 63 features!", "Check out! " + sdStatus, Symbol.Accept);
+                        }
+                        else
+                        {
+                            var endString = "";
+                            var value = 1 << Convert.ToByte(argStart.Text);
+                            if (int.Parse(argStart.Text) > 31) { endString = "0,0x" + value.ToString("X"); }
+                            else { endString = value.ToString("X"); }
+                            uint[]? args;
+                            var userArgs = endString.Trim().Split(',');
+                            uint addrMsg;
+                            uint addrRsp;
+                            uint addrArg;
+                            uint command;
+                            args = Utils.MakeCmdArgs();
+                            TryConvertToUint(smusettings.MailBoxes![comboSelSMU.SelectedIndex].CMD, out addrMsg);
+                            TryConvertToUint(smusettings.MailBoxes[comboSelSMU.SelectedIndex].RSP, out addrRsp);
+                            TryConvertToUint(smusettings.MailBoxes[comboSelSMU.SelectedIndex].ARG, out addrArg);
+                            TryConvertToUint(cmdStart.Text, out command);
+                            ZenStates.Core.Mailbox testMailbox2 = new()
+                            {
+                                SMU_ADDR_MSG = addrMsg,
+                                SMU_ADDR_RSP = addrRsp,
+                                SMU_ADDR_ARG = addrArg
+                            };
+                            var someFeature = "";
+                            for (var i = 0; i < userArgs.Length; i++)
+                            {
+                                if (i == args.Length)
+                                {
+                                    break;
+                                }
+                                someFeature += userArgs[i] + " ";
+                                TryConvertToUint(userArgs[i], out var temp);
+                                args[i] = temp;
+                            }
+                            try
+                            {
+                                var status = cpu?.smu.SendSmuCommand(testMailbox2, command, ref args);
+                                /* await Send_Message("Unlocked feature!","Command " + $"{command:X}"
+                                 + " Args " + someFeature + status + " MailBox: " + smusettings.MailBoxes[saveIndex].Name 
+                                 + "\n MSG: " + $"{testMailbox2.SMU_ADDR_MSG:X}" + "\n ARG: " + $"{testMailbox2.SMU_ADDR_ARG:X}"
+                                 + "\n RSP: " + $"{testMailbox2.SMU_ADDR_RSP:X}", Symbol.Attach);*/
+                                await Send_Message("Unlocked feature!", " Args " + someFeature + status, Symbol.Attach);
+                            }
+                            catch { }
+                        }
+
+                    }
+                    SmuSettingsSave();
+                    newQuickCommand?.Hide();
+                    newQuickCommand = null;
+                }
+                else
+                {
+                    newQuickCommand?.Hide();
+                    newQuickCommand = null;
+                }
+            }
+            catch
+            {
+                newQuickCommand?.Hide();
+                newQuickCommand = null;
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    private void SymbolButton_Click(object sender, RoutedEventArgs e)
+    {
+        SymbolFlyout.ShowAt(sender as Button);
+    }
+    private void ComboSelSMU_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            var comboBox = sender as ComboBox;
+            if (comboBox != null)
+            {
+                comboBoxMailboxSelect.SelectedIndex = comboBox.SelectedIndex;
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    private void SymbolList_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        var glypher = (FontIcon)e.ClickedItem;
+        if (glypher != null)
+        {
+            SMUSymbol = glypher.Glyph;
+            SMUSymbol1!.Glyph = glypher.Glyph;
+        }
+    }
+    private void SMUNotes_TextChanged(object sender, RoutedEventArgs e)
+    {
+        SmuSettingsLoad();
+        var documentRange = SMUNotes.Document.GetRange(0, TextConstants.MaxUnitCount);
+        string content;
+        documentRange.GetText(TextGetOptions.FormatRtf, out content);
+        smusettings.Note = content;
+        SmuSettingsSave();
+    }
+    private void ToHex_Click(object sender, RoutedEventArgs e)
+    {
+        // Преобразование выделенного текста в шестнадцатиричную систему
+        if (textBoxARG0.SelectedText != "")
+        {
+            try
+            {
+                var decimalValue = int.Parse(textBoxARG0.SelectedText);
+                var hexValue = decimalValue.ToString("X");
+                textBoxARG0.SelectedText = hexValue;
+            }
+            catch (FormatException)
+            {
+                // Отобразить сообщение об ошибке
+            }
+        }
+        else
+        {
+            try
+            {
+                var decimalValue = int.Parse(textBoxARG0.Text);
+                var hexValue = decimalValue.ToString("X");
+                textBoxARG0.Text = hexValue;
+            }
+            catch (FormatException)
+            {
+                // Отобразить сообщение об ошибке
+            }
+        }
+    }
+    private void CopyThis_Click(object sender, RoutedEventArgs e)
+    {
+        if (textBoxARG0.SelectedText != "")
+        {
+            // Скопировать текст в буфер обмена
+            Clipboard.SetText(textBoxARG0.SelectedText);
+        }
+        else
+        {
+            // Выделить весь текст
+            textBoxARG0.SelectAll();
+            // Скопировать текст в буфер обмена
+            Clipboard.SetText(textBoxARG0.Text);
+        }
+    }
+    private void CutThis_Click(object sender, RoutedEventArgs e)
+    {
+        if (textBoxARG0.SelectedText != "")
+        {
+            // Скопировать текст в буфер обмена
+            Clipboard.SetText(textBoxARG0.SelectedText);
+            textBoxARG0.SelectedText = "";
+        }
+        else
+        {
+            // Выделить весь текст
+            textBoxARG0.SelectAll();
+            // Скопировать текст в буфер обмена
+            Clipboard.SetText(textBoxARG0.Text);
+            textBoxARG0.Text = "";
+        }
+    }
+    private void SelectAllThis_Click(object sender, RoutedEventArgs e)
+    {
+        // Выделить весь текст
+        textBoxARG0.SelectAll();
+    }
+    private void CancelRange_Click(object sender, RoutedEventArgs e)
+    {
+        cpusend?.CancelRange(); CloseInfoRange();
+    }
+    public void CloseInfoRange()
+    {
+        RangeStarted.IsOpen = false;
+    }
+    private void UnlockFeature_Click(object sender, RoutedEventArgs e)
+    {
+        UnlockFeature();
+    }
+    //Send Message
+    public async Task Send_Message(string msg, string submsg, Symbol symbol)
+    {
+        UniToolTip.IconSource = new SymbolIconSource()
+        {
+            Symbol = symbol
+        };
+        UniToolTip.Title = msg;
+        UniToolTip.Subtitle = submsg;
+        UniToolTip.IsOpen = true;
+        await Task.Delay(3000);
+        UniToolTip.IsOpen = false;
+    }
+    #endregion
+    #region Event Handlers and Custom Profile voids 
     private async void ProfileCOM_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         ConfigLoad();
@@ -1018,7 +1996,6 @@ public sealed partial class ПараметрыPage : Page
         devices.v7 = check; devices.v7v = V7V.Value;
         DeviceSave();
     }
-
     //Параметры графики
     //Минимальная частота SOC 
     private void G1_Checked(object sender, RoutedEventArgs e)
@@ -1423,7 +2400,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].gpu9value = g9v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void G10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         DeviceLoad(); ProfileLoad();
@@ -1431,7 +2407,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].gpu10value = g10v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     //Расширенные параметры
     private void A1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
@@ -1441,7 +2416,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd1value = a1v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1450,7 +2424,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd2value = a2v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1459,7 +2432,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd3value = a3v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1468,7 +2440,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd4value = a4v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1477,7 +2448,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd5value = a5v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1486,7 +2456,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd6value = a6v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1495,7 +2464,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd7value = a7v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1504,7 +2472,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd8value = a8v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1513,7 +2480,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd9value = a9v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1522,7 +2488,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd10value = a10v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1531,7 +2496,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd11value = a11v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1540,7 +2504,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd12value = a12v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void A13m_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1559,7 +2522,6 @@ public sealed partial class ПараметрыPage : Page
         devices.c7 = check; devices.c7v = c7v.Value;
         DeviceSave();
     }
-
     private void C7_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1568,8 +2530,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].cpu7value = c7v.Value; ProfileSave(); }
         DeviceSave();
     }
-
-    [Obsolete]
     private void V8_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1580,7 +2540,6 @@ public sealed partial class ПараметрыPage : Page
         devices.v8 = check; devices.v8v = V8V.Value;
         DeviceSave();
     }
-
     private void V8V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1589,7 +2548,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].vrm8value = V8V.Value; ProfileSave(); }
         DeviceSave();
     }
-    [Obsolete]
     private void V9_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1600,7 +2558,6 @@ public sealed partial class ПараметрыPage : Page
         devices.v9 = check; devices.v9v = V9V.Value;
         DeviceSave();
     }
-
     private void V9V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1609,7 +2566,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].vrm9value = V9V.Value; ProfileSave(); }
         DeviceSave();
     }
-    [Obsolete]
     private void V10_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1620,7 +2576,6 @@ public sealed partial class ПараметрыPage : Page
         devices.v10 = check; devices.v10v = V10V.Value;
         DeviceSave();
     }
-
     private void V10V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1629,7 +2584,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].vrm10value = V10V.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void G11_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1639,7 +2593,6 @@ public sealed partial class ПараметрыPage : Page
         devices.g11 = check; devices.g11v = g11v.Value;
         DeviceSave();
     }
-
     private void G11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1648,7 +2601,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].gpu11value = g11v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void G12_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1658,7 +2610,6 @@ public sealed partial class ПараметрыPage : Page
         devices.g12 = check; devices.g12v = g12v.Value;
         DeviceSave();
     }
-
     private void G12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1667,7 +2618,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].gpu12value = g12v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void G13_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1677,7 +2627,6 @@ public sealed partial class ПараметрыPage : Page
         devices.g13 = check; devices.g13v = g13v.Value;
         DeviceSave();
     }
-
     private void G13v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1686,7 +2635,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].gpu13value = g13v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void G14_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1696,7 +2644,6 @@ public sealed partial class ПараметрыPage : Page
         devices.g14 = check; devices.g14v = g14v.Value;
         DeviceSave();
     }
-
     private void G14v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1705,7 +2652,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].gpu14value = g14v.Value; ProfileSave(); }
         DeviceSave();
     }
-
     private void G15_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1715,7 +2661,6 @@ public sealed partial class ПараметрыPage : Page
         devices.g15 = check; devices.g15v = g15m.SelectedIndex;
         DeviceSave();
     }
-
     private void G15m_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1724,7 +2669,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].gpu15value = g15m.SelectedIndex; ProfileSave(); }
         DeviceSave();
     }
-
     private void G16_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1734,7 +2678,6 @@ public sealed partial class ПараметрыPage : Page
         devices.g16 = check; devices.g16v = g16m.SelectedIndex;
         DeviceSave();
     }
-
     private void G16m_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1743,7 +2686,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].gpu16value = g16m.SelectedIndex; ProfileSave(); }
         DeviceSave();
     }
-
     private void A14_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1753,7 +2695,6 @@ public sealed partial class ПараметрыPage : Page
         devices.a14 = check; devices.a14v = a14m.SelectedIndex;
         DeviceSave();
     }
-
     private void A14m_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1771,7 +2712,6 @@ public sealed partial class ПараметрыPage : Page
         devices.a15 = check; devices.a15v = a15v.Value;
         DeviceSave();  
     }
-
     private void A15v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -1780,8 +2720,7 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd15value = a15v.Value; ProfileSave(); }
         DeviceSave();
     }
-    //Кнопка применить, итоговый выход, Ryzen ADJ
-    [Obsolete("Obsolete")]
+    //Кнопка применить, итоговый выход, Zen States-Core SMU Command
     private async void Apply_Click(object sender, RoutedEventArgs e)
     {
         if (c1.IsChecked == true)
@@ -2036,8 +2975,7 @@ public sealed partial class ПараметрыPage : Page
         config.adjline = adjline + " ";
         config.ApplyInfo = "";
         adjline = "";
-        ConfigSave();
-        
+        ConfigSave(); 
         MainWindow.Applyer.Apply(true); 
         if (EnablePstates.IsOn) { BtnPstateWrite_Click(); }
         await Task.Delay(1000);
@@ -2046,16 +2984,20 @@ public sealed partial class ПараметрыPage : Page
         timer *= config.ApplyInfo.Split('\n').Length + 1;
         Apply_tooltip.Title = "Apply_Success".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized();
         Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-        Apply_tooltip.IsOpen = true;
-        if (config.ApplyInfo != "") { Apply_tooltip.Title = "Apply_Warn".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + config.ApplyInfo; Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked }; await Task.Delay(timer); Apply_tooltip.IsOpen = false; }
+        Apply_tooltip.IsOpen = true; var infoSet = InfoBarSeverity.Success; 
+        if (config.ApplyInfo != "") { Apply_tooltip.Title = "Apply_Warn".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + config.ApplyInfo; Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked }; await Task.Delay(timer); Apply_tooltip.IsOpen = false; infoSet = InfoBarSeverity.Warning; }
         else { await Task.Delay(3000); Apply_tooltip.IsOpen = false; } 
+        NotifyLoad();
+        notify.Notifies ??= new List<Notify>();
+        notify.Notifies.Add(new Notify { Title = Apply_tooltip.Title, Msg = Apply_tooltip.Subtitle, Type = infoSet });
+        NotifySave(); 
         if (textBoxARG0 != null && textBoxARGAddress != null && textBoxCMD != null && textBoxCMDAddress != null && textBoxRSPAddress != null && EnableSMU.IsOn) { ApplySettings(0, 0); }
-        if (cpusend == null) { cpusend = new SendSMUCommand(); cpusend.Play_Invernate_QuickSMU(0); }
-       
+        cpusend ??= new SendSMUCommand();
+        cpusend.Play_Invernate_QuickSMU(0);
     }
     private async void Save_Click(object sender, RoutedEventArgs e)
     {
-        if (SaveName.Text != "")
+        if (SaveProfileN.Text != "")
         {
             ConfigLoad();
             ProfileLoad();
@@ -2064,15 +3006,19 @@ public sealed partial class ПараметрыPage : Page
                 config.Preset += 1;
                 indexprofile += 1;
                 waitforload = true;
-                ProfileCOM.Items.Add(SaveName.Text);
-                ProfileCOM.SelectedItem = SaveName.Text;
+                ProfileCOM.Items.Add(SaveProfileN.Text);
+                ProfileCOM.SelectedItem = SaveProfileN.Text;
                 var profileList = new List<Profile>(profile)
                 {
                     new()
                 };
                 profile = profileList.ToArray();
                 waitforload = false;
-                profile[indexprofile].profilename = SaveName.Text;
+                profile[indexprofile].profilename = SaveProfileN.Text;
+                NotifyLoad();
+                notify.Notifies ??= new List<Notify>();
+                notify.Notifies.Add(new Notify { Title = "SaveSuccessTitle".GetLocalized(), Msg = "SaveSuccessDesc".GetLocalized() + " " + SaveProfileN.Text, Type = InfoBarSeverity.Success });
+                NotifySave();
             }
             catch
             {
@@ -2083,6 +3029,10 @@ public sealed partial class ПараметрыPage : Page
         }
         else
         {
+            NotifyLoad();
+            notify.Notifies ??= new List<Notify>();
+            notify.Notifies.Add(new Notify { Title = Add_tooltip_Error.Title, Msg = Add_tooltip_Error.Subtitle, Type = InfoBarSeverity.Error }) ;
+            NotifySave();
             Add_tooltip_Error.IsOpen = true;
             await Task.Delay(3000);
             Add_tooltip_Error.IsOpen = false;
@@ -2092,7 +3042,8 @@ public sealed partial class ПараметрыPage : Page
     }
     private async void Edit_Click(object sender, RoutedEventArgs e)
     {
-        if (SaveName.Text != "")
+        EditProfileButton.Flyout.Hide();
+        if (EditProfileN.Text != "")
         {
             if (ProfileCOM.SelectedIndex == 0 || indexprofile + 1 == 0)
             {
@@ -2103,7 +3054,7 @@ public sealed partial class ПараметрыPage : Page
             else
             {
                 ProfileLoad();
-                profile[indexprofile].profilename = SaveName.Text;
+                profile[indexprofile].profilename = EditProfileN.Text;
                 ProfileSave();
                 waitforload = true;
                 ProfileCOM.Items.Clear();
@@ -2117,8 +3068,11 @@ public sealed partial class ПараметрыPage : Page
                 }
                 ProfileCOM.SelectedIndex = 0;
                 waitforload = false;
-                ProfileCOM.SelectedItem = SaveName.Text;
-
+                ProfileCOM.SelectedItem = EditProfileN.Text;
+                NotifyLoad();
+                notify.Notifies ??= new List<Notify>();
+                notify.Notifies.Add(new Notify { Title = Edit_tooltip.Title, Msg = Edit_tooltip.Subtitle + " " + SaveProfileN.Text, Type = InfoBarSeverity.Success });
+                NotifySave();
                 Edit_tooltip.IsOpen = true;
                 await Task.Delay(3000);
                 Edit_tooltip.IsOpen = false;
@@ -2126,11 +3080,15 @@ public sealed partial class ПараметрыPage : Page
         }
         else
         {
+            NotifyLoad();
+            notify.Notifies ??= new List<Notify>();
+            notify.Notifies.Add(new Notify { Title = Edit_tooltip_Error.Title, Msg = Edit_tooltip_Error.Subtitle, Type = InfoBarSeverity.Error });
+            NotifySave();
             Edit_tooltip_Error.IsOpen = true;
             await Task.Delay(3000);
             Edit_tooltip_Error.IsOpen = false;
         }
-    }
+    } 
     private async void Delete_Click(object sender, RoutedEventArgs e)
     {
         var DelDialog = new ContentDialog
@@ -2149,6 +3107,10 @@ public sealed partial class ПараметрыPage : Page
         {
             if (ProfileCOM.SelectedIndex == 0)
             {
+                NotifyLoad();
+                notify.Notifies ??= new List<Notify>();
+                notify.Notifies.Add(new Notify { Title = Delete_tooltip_error.Title, Msg = Delete_tooltip_error.Subtitle, Type = InfoBarSeverity.Error });
+                NotifySave();
                 Delete_tooltip_error.IsOpen = true;
                 await Task.Delay(3000);
                 Delete_tooltip_error.IsOpen = false;
@@ -2164,11 +3126,17 @@ public sealed partial class ПараметрыPage : Page
                 indexprofile = 0;
                 waitforload = false;
                 ProfileCOM.SelectedIndex = 0;
+                NotifyLoad();
+                notify.Notifies ??= new List<Notify>();
+                notify.Notifies.Add(new Notify { Title = "DeleteSuccessTitle".GetLocalized(), Msg = "DeleteSuccessDesc".GetLocalized(), Type = InfoBarSeverity.Success });
+                NotifySave();
             }
-            ProfileSave();
-        }
+            ProfileSave(); 
+        } 
     }
-    [Obsolete("Obsolete")]
+ 
+    #endregion
+    #region PState Section related voids
     public async void BtnPstateWrite_Click()
     {
         DeviceLoad();
@@ -2239,14 +3207,21 @@ public sealed partial class ПараметрыPage : Page
                     {
                         ApplyDialog.XamlRoot = XamlRoot;
                     }
-                    var result = await ApplyDialog.ShowAsync();
-                    if (result == ContentDialogResult.Primary) { WritePstates(); }
-                    if (result == ContentDialogResult.Secondary) { WritePstatesWithoutP0(); }
+                    try
+                    {
+                        var result = await ApplyDialog.ShowAsync();
+                        if (result == ContentDialogResult.Primary) { WritePstates(); }
+                        if (result == ContentDialogResult.Secondary) { WritePstatesWithoutP0(); }
+                    }
+                    catch
+                    {
+                        //Unable to set PStates
+                        WritePstatesWithoutP0();
+                    } 
                 }
             }
         }
     }
-    [Obsolete("Obsolete")]
     public void WritePstates()
     {
         try
@@ -2274,7 +3249,7 @@ public sealed partial class ПараметрыPage : Page
                 var Didtext = "12";
                 var Fidtext = "102";
                 var Vidtext = 56.0;
-                if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+                if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) == false)
                 {
                     MessageBox.Show("Error reading PState! ID = " + pstateId);
                     return;
@@ -2318,7 +3293,7 @@ public sealed partial class ПараметрыPage : Page
                     }
                 }
                 if (!WritePstateClick(pstateId, eax, edx)) { return; }
-                if (!cpu.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); }
+                if (cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false) { MessageBox.Show("Error writing PState! ID = " + pstateId); }
                 //if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); }
                 equalvid = Math.Round((1.55 - Vidtext / 1000) / 0.00625).ToString();
                 var f = new Process();
@@ -2339,7 +3314,6 @@ public sealed partial class ПараметрыPage : Page
             // ignored
         }
     }
-    [Obsolete("Obsolete")]
     public void WritePstatesWithoutP0()
     {
         try
@@ -2357,7 +3331,7 @@ public sealed partial class ПараметрыPage : Page
                 uint CpuFid = 0x0;
                 var Didtext = "12";
                 var Fidtext = "102";
-                if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+                if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) == false)
                 {
                     MessageBox.Show("Error reading PState! ID = " + pstateId);
                     return;
@@ -2398,7 +3372,7 @@ public sealed partial class ПараметрыPage : Page
                 {
                     return;
                 }
-                if (!cpu.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
+                if (cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false)
                 {
                     MessageBox.Show("Error writing PState! ID = " + pstateId);
                 }
@@ -2414,22 +3388,19 @@ public sealed partial class ПараметрыPage : Page
             // ignored
         }
     }
-    public static void CalculatePstateDetails(uint eax, ref uint IddDiv, ref uint IddVal, ref uint CpuVid,
-        ref uint CpuDfsId, ref uint CpuFid)
+    public static void CalculatePstateDetails(uint eax, ref uint IddDiv, ref uint IddVal, ref uint CpuVid, ref uint CpuDfsId, ref uint CpuFid)
     {
         IddDiv = eax >> 30;
         IddVal = (eax >> 22) & 0xFF;
         CpuVid = (eax >> 14) & 0xFF;
         CpuDfsId = (eax >> 8) & 0x3F;
         CpuFid = eax & 0xFF;
-    }
-    // P0 fix C001_0015 HWCR[21]=1
-    // Fixes timer issues when not using HPET
-    [Obsolete("Obsolete")]
+    }  
     public bool ApplyTscWorkaround()
-    {
+    { // P0 fix C001_0015 HWCR[21]=1
+      // Fixes timer issues when not using HPET
         uint eax = 0, edx = 0;
-        if (cpu.ReadMsr(0xC0010015, ref eax, ref edx))
+        if (cpu?.ReadMsr(0xC0010015, ref eax, ref edx) == true)
         {
             eax |= 0x200000;
             return cpu.WriteMsr(0xC0010015, eax, edx);
@@ -2438,8 +3409,6 @@ public sealed partial class ПараметрыPage : Page
         MessageBox.Show("Error applying TSC fix!");
         return false;
     }
-
-    [Obsolete("Obsolete")]
     private bool WritePstateClick(int pstateId, uint eax, uint edx, int numanode = 0)
     {
         try
@@ -2450,14 +3419,12 @@ public sealed partial class ПараметрыPage : Page
                 Enumerable.Range(0, Environment.ProcessorCount).ToArray());
             }
             if (!ApplyTscWorkaround()) { return false; }
-            if (!cpu.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; }
+            if (cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; }
           //  if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; }
             return true;
         }
         catch { return false; }
     }
-
-    [Obsolete("Obsolete")]
     private void ReadPstate()
     {
         try
@@ -2468,7 +3435,7 @@ public sealed partial class ПараметрыPage : Page
                 var pstateId = i;
                 try
                 {
-                    if (!cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx))
+                    if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) == false)
                     {
                         App.MainWindow.ShowMessageDialogAsync("Error while reading CPU Pstate", "Critical Error");
                         return;
@@ -2535,21 +3502,7 @@ public sealed partial class ПараметрыPage : Page
         {
             // ignored
         }
-    }
-
-    private string GetWmiInstanceName()
-    {
-        try
-        {
-            instanceName = ZenStates.Core.WMI.GetInstanceName(wmiScope, wmiAMDACPI);
-        }
-        catch
-        {
-            // ignored
-        }
-
-        return instanceName;
-    }
+    } 
     //Pstates section 
     private void EnablePstates_Click(object sender, RoutedEventArgs e)
     {
@@ -2571,7 +3524,6 @@ public sealed partial class ПараметрыPage : Page
         if (Without_P0.IsOn) { Without_P0.IsOn = false; } else { Without_P0.IsOn = true; }
         WithoutP0();
     }
-
     private void IgnoreWarn_Click(object sender, RoutedEventArgs e)
     {
         if (IgnoreWarn.IsOn) { IgnoreWarn.IsOn = false; } else { IgnoreWarn.IsOn = true; }
@@ -2991,891 +3943,5 @@ public sealed partial class ПараметрыPage : Page
     private void VID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID0();
     private void VID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID1();
     private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID2();
-    //Send Message
-    public async Task Send_Message(string msg, string submsg, Symbol symbol)
-    {
-        UniToolTip.IconSource = new SymbolIconSource()
-        {
-            Symbol = symbol
-        };
-        UniToolTip.Title = msg;
-        UniToolTip.Subtitle = submsg;
-        UniToolTip.IsOpen = true;
-        await Task.Delay(3000);
-        UniToolTip.IsOpen = false;
-    }
-    //SMU КОМАНДЫ
-    [Obsolete("Obsolete")]
-    private async void ApplySettings(int mode, int CommandIndex)
-    {
-        try
-        {
-            uint[]? args;
-            string[]? userArgs;
-            uint addrMsg;
-            uint addrRsp;
-            uint addrArg;
-            uint command;
-            if (mode != 0)
-            {
-                SmuSettingsLoad();
-                args = ZenStates.Core.Utils.MakeCmdArgs();
-                userArgs = smusettings.QuickSMUCommands[CommandIndex].Argument.Trim().Split(',');
-                TryConvertToUint(smusettings.MailBoxes[smusettings.QuickSMUCommands[CommandIndex].MailIndex].CMD, out addrMsg);
-                TryConvertToUint(smusettings.MailBoxes[smusettings.QuickSMUCommands[CommandIndex].MailIndex].RSP, out addrRsp);
-                TryConvertToUint(smusettings.MailBoxes[smusettings.QuickSMUCommands[CommandIndex].MailIndex].ARG, out addrArg);
-                TryConvertToUint(smusettings.QuickSMUCommands[CommandIndex].Command, out command);
-            }
-            else
-            {
-                args = ZenStates.Core.Utils.MakeCmdArgs();
-                userArgs = textBoxARG0.Text.Trim().Split(',');
-                TryConvertToUint(textBoxCMDAddress.Text, out addrMsg);
-                TryConvertToUint(textBoxRSPAddress.Text, out addrRsp);
-                TryConvertToUint(textBoxARGAddress.Text, out addrArg);
-                TryConvertToUint(textBoxCMD.Text, out command);
-
-            }
-            testMailbox.SMU_ADDR_MSG = addrMsg;
-            testMailbox.SMU_ADDR_RSP = addrRsp;
-            testMailbox.SMU_ADDR_ARG = addrArg;
-            for (var i = 0; i < userArgs.Length; i++)
-            {
-                if (i == args.Length)
-                {
-                    break;
-                }
-                TryConvertToUint(userArgs[i], out var temp);
-                args[i] = temp;
-            }
-            var status = cpu.smu.SendSmuCommand(testMailbox, command, ref args);
-            if (status == ZenStates.Core.SMU.Status.OK)
-            {
-                await Send_Message("SMUOKText".GetLocalized(), "SMUOKDesc".GetLocalized(), Symbol.Accept);
-            }
-            else
-            {
-                if (status == ZenStates.Core.SMU.Status.CMD_REJECTED_PREREQ)
-                {
-                    await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorRejected".GetLocalized(), Symbol.Dislike);
-                }
-                else
-                {
-                    await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorNoCMD".GetLocalized(), Symbol.Filter);
-                }
-            }
-        }
-        catch
-        {
-            await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorDesc".GetLocalized(), Symbol.Dislike);
-        }
-    }
-    private static void TryConvertToUint(string text, out uint address)
-    {
-        try
-        {
-            address = Convert.ToUInt32(text.Trim().ToLower(), 16);
-        }
-        catch
-        {
-            throw new ApplicationException("Invalid hexadecimal value.");
-        }
-    }
-    [Obsolete("Obsolete")]
-    private void DevEnv_Expanding(Expander sender, ExpanderExpandingEventArgs args)
-    {
-        RunBackgroundTask(BackgroundWorkerTrySettings_DoWork!, SmuScan_WorkerCompleted!);
-    }
-    private void ComboBoxMailboxSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (comboBoxMailboxSelect.SelectedItem is MailboxListItem item) { InitTestMailbox(item.msgAddr, item.rspAddr, item.argAddr); }
-    }
-    private void InitTestMailbox(uint msgAddr, uint rspAddr, uint argAddr)
-    {
-        testMailbox.SMU_ADDR_MSG = msgAddr;
-        testMailbox.SMU_ADDR_RSP = rspAddr;
-        testMailbox.SMU_ADDR_ARG = argAddr;
-        ResetSmuAddresses();
-    }
-    private async void Mon_Click(object sender, RoutedEventArgs e)
-    {
-        var MonDialog = new ContentDialog
-        {
-            Title = "PowerMonText".GetLocalized(),
-            Content = "PowerMonDesc".GetLocalized(),
-            CloseButtonText = "Cancel".GetLocalized(),
-            PrimaryButtonText = "Open".GetLocalized(),
-            DefaultButton = ContentDialogButton.Close
-        };
-
-        // Use this code to associate the dialog to the appropriate AppWindow by setting
-        // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
-        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-        {
-            MonDialog.XamlRoot = XamlRoot;
-        }
-
-        var result = await MonDialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            var newWindow = new PowerWindow(cpu);
-            var micaBackdrop = new MicaBackdrop
-            {
-                Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
-            };
-            newWindow.SystemBackdrop = micaBackdrop;
-            newWindow.Activate();
-        }
-    }
-
-    private void SMUEnabl_Click(object sender, RoutedEventArgs e)
-    {
-        if (EnableSMU.IsOn) { EnableSMU.IsOn = false; } else { EnableSMU.IsOn = true; }
-        SMUEnabl();
-    }
-    private void EnableSMU_Toggled(object sender, RoutedEventArgs e) => SMUEnabl();
-    private void SMUEnabl()
-    {
-        if (EnableSMU.IsOn) { devices.smuenabled = true; DeviceSave(); profile[indexprofile].smuEnabled = true; ProfileSave(); }
-        else { devices.smuenabled = false; DeviceSave(); profile[indexprofile].smuEnabled = false; ProfileSave(); }
-    }
-
-    [Obsolete("Obsolete")]
-    private void CreateQuickCommandSMU_Click(object sender, RoutedEventArgs e)
-    {
-        QuickDialog(0, 0);
-    }
-    [Obsolete("Obsolete")]
-    private void CreateQuickCommandSMU1_Click(object sender, RoutedEventArgs e)
-    {
-        RangeDialog();
-    }
-    [Obsolete("Obsolete")]
-    private async void QuickDialog(int destination, int rowindex)
-    {
-        SMUSymbol1 = new FontIcon
-        {
-            FontFamily = new FontFamily("Segoe Fluent Icons"),
-            Glyph = SMUSymbol,
-            Margin = new Thickness(-4, -2, -5, -5),
-        };
-        var symbolButton = new Button
-        {
-            VerticalAlignment = VerticalAlignment.Top,
-            Margin = new Thickness(320, 60, 0, 0),
-            Width = 40,
-            Height = 40,
-            Content = new ContentControl
-            {
-                Content = SMUSymbol1
-            }
-        };
-        var comboSelSMU = new ComboBox
-        {
-            Margin = new Thickness(0, 20, 0, 0),
-            VerticalAlignment = VerticalAlignment.Top
-        };
-        var mainText = new TextBox
-        {
-            Margin = new Thickness(0, 60, 0, 0),
-            PlaceholderText = "New_Name".GetLocalized(),
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Height = 39.5,
-            Width = 315
-        };
-        var descText = new TextBox
-        {
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Margin = new Thickness(0, 105.5, 0, 0),
-            PlaceholderText = "Desc".GetLocalized(),
-            Height = 40,
-            Width = 360
-        };
-        var cmdText = new TextBox
-        {
-            Margin = new Thickness(0, 152, 0, 0),
-            PlaceholderText = "Command".GetLocalized(),
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Height = 40,
-            Width = 176
-        };
-        var argText = new TextBox
-        {
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Margin = new Thickness(180, 152, 0, 0),
-            PlaceholderText = "Arguments".GetLocalized(),
-            Height = 40,
-            Width = 179
-        };
-        var autoRun = new CheckBox
-        {
-            Margin = new Thickness(1, 195, 0, 0),
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Content = "Param_Autorun".GetLocalized(),
-            IsChecked = false
-        };
-        var applyWith = new CheckBox
-        {
-            Margin = new Thickness(1, 225, 0, 0),
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Content = "Param_WithApply".GetLocalized(),
-            IsChecked = false
-        };
-        try
-        {
-            foreach (var item in comboBoxMailboxSelect.Items)
-            {
-                comboSelSMU.Items.Add(item);
-            }
-            comboSelSMU.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
-            comboSelSMU.SelectionChanged += ComboSelSMU_SelectionChanged;
-            symbolButton.Click += SymbolButton_Click;
-            if (destination != 0)
-            {
-                SmuSettingsLoad();
-                SMUSymbol = smusettings.QuickSMUCommands[rowindex].Symbol;
-                SMUSymbol1.Glyph = smusettings.QuickSMUCommands[rowindex].Symbol;
-                comboSelSMU.SelectedIndex = smusettings.QuickSMUCommands[rowindex].MailIndex;
-                mainText.Text = smusettings.QuickSMUCommands[rowindex].Name;
-                descText.Text = smusettings.QuickSMUCommands[rowindex].Description;
-                cmdText.Text = smusettings.QuickSMUCommands[rowindex].Command;
-                argText.Text = smusettings.QuickSMUCommands[rowindex].Argument;
-                autoRun.IsChecked = smusettings.QuickSMUCommands[rowindex].Startup;
-                applyWith.IsChecked = smusettings.QuickSMUCommands[rowindex].ApplyWith;
-            }
-        }
-        catch { }
-        try
-        {
-            var newQuickCommand = new ContentDialog
-            {
-                Title = "AdvancedCooler_Del_Action".GetLocalized(),
-                Content = new Grid
-                {
-                    Children =
-                    {
-                        comboSelSMU,
-                        symbolButton,
-                        mainText,
-                        descText,
-                        cmdText,
-                        argText,
-                        autoRun,
-                        applyWith
-                    }
-                },
-                PrimaryButtonText = "Save".GetLocalized(),
-                CloseButtonText = "Cancel".GetLocalized(),
-                DefaultButton = ContentDialogButton.Close
-            };
-            if (destination != 0)
-            {
-                newQuickCommand.SecondaryButtonText = "Delete".GetLocalized();
-            }
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                newQuickCommand.XamlRoot = XamlRoot;
-            }
-            newQuickCommand.Closed += (sender, args) =>
-            {
-                newQuickCommand?.Hide();
-                newQuickCommand = null;
-            };
-            // Отобразить ContentDialog и обработать результат
-            try
-            {
-                var saveIndex = 0;
-                var result = await newQuickCommand.ShowAsync();
-                // Создать ContentDialog 
-                if (result == ContentDialogResult.Primary)
-                {
-                    SmuSettingsLoad();
-                    saveIndex = comboSelSMU.SelectedIndex;
-                    for (var i = 0; i < comboSelSMU.Items.Count; i++)
-                    {
-                        var adressName = false;
-                        var adressIndex = 0;
-                        comboSelSMU.SelectedIndex = i;
-                        if (smusettings.MailBoxes == null)
-                        {
-                            smusettings.MailBoxes = new List<CustomMailBoxes>();
-                            adressIndex = smusettings.MailBoxes.Count;
-                            smusettings.MailBoxes.Add(new CustomMailBoxes
-                            {
-                                Name = comboSelSMU.SelectedItem.ToString(),
-                                CMD = textBoxCMDAddress.Text,
-                                RSP = textBoxRSPAddress.Text,
-                                ARG = textBoxARGAddress.Text
-                            });
-                        }
-                        else
-                        {
-                            for (var d = 0; d < smusettings.MailBoxes.Count; d++)
-                            {
-                                if (smusettings.MailBoxes[d].Name != null && smusettings.MailBoxes[d].Name == comboSelSMU.SelectedItem.ToString())
-                                {
-                                    adressName = true;
-                                    adressIndex = d;
-                                    break;
-                                }
-                            }
-                            if (adressName == false)
-                            {
-                                smusettings.MailBoxes.Add(new CustomMailBoxes
-                                {
-                                    Name = comboSelSMU.SelectedItem.ToString(),
-                                    CMD = textBoxCMDAddress.Text,
-                                    RSP = textBoxRSPAddress.Text,
-                                    ARG = textBoxARGAddress.Text
-                                });
-                            }
-                        }
-                    }
-                    SmuSettingsSave();
-                    if (cmdText.Text != string.Empty && argText.Text != string.Empty)
-                    {
-                        var run = false;
-                        var apply = false;
-                        if (autoRun.IsChecked == true) { run = true; }
-                        if (applyWith.IsChecked == true) { apply = true; }
-                        if (destination == 0)
-                        {
-                            smusettings.QuickSMUCommands ??= new List<QuickSMUCommands>();
-                            smusettings.QuickSMUCommands.Add(new QuickSMUCommands
-                            {
-                                Name = mainText.Text,
-                                Description = descText.Text,
-                                Symbol = SMUSymbol,
-                                MailIndex = saveIndex,
-                                Startup = run,
-                                ApplyWith = apply,
-                                Command = cmdText.Text,
-                                Argument = argText.Text
-                            });
-                        }
-                        else
-                        {
-                            smusettings.QuickSMUCommands[rowindex].Symbol = SMUSymbol;
-                            smusettings.QuickSMUCommands[rowindex].Symbol = SMUSymbol1.Glyph;
-                            smusettings.QuickSMUCommands[rowindex].MailIndex = saveIndex;
-                            smusettings.QuickSMUCommands[rowindex].Name = mainText.Text;
-                            smusettings.QuickSMUCommands[rowindex].Description = descText.Text;
-                            smusettings.QuickSMUCommands[rowindex].Command = cmdText.Text;
-                            smusettings.QuickSMUCommands[rowindex].Argument = argText.Text;
-                            smusettings.QuickSMUCommands[rowindex].Startup = run;
-                            smusettings.QuickSMUCommands[rowindex].ApplyWith = apply;
-                        }
-                    }
-                    comboBoxMailboxSelect.SelectedIndex = saveIndex;
-                    SmuSettingsSave();
-                    Init_QuickSMU();
-                    newQuickCommand?.Hide();
-                    newQuickCommand = null;
-                }
-                else
-                {
-                    if (result == ContentDialogResult.Secondary)
-                    {
-                        SmuSettingsLoad();
-                        smusettings.QuickSMUCommands.RemoveAt(rowindex);
-                        SmuSettingsSave();
-                        Init_QuickSMU();
-                    }
-                    else
-                    {
-                        newQuickCommand?.Hide();
-                        newQuickCommand = null;
-                    }
-                }
-            }
-            catch
-            {
-                newQuickCommand?.Hide();
-                newQuickCommand = null;
-            }
-
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-    [Obsolete("Obsolete")]
-    private async void RangeDialog()
-    {
-        var comboSelSMU = new ComboBox
-        {
-            Margin = new Thickness(0, 20, 0, 0),
-            VerticalAlignment = VerticalAlignment.Top
-        };
-        var cmdStart = new TextBox
-        {
-            Margin = new Thickness(0, 60, 0, 0),
-            PlaceholderText = "Command".GetLocalized(),
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Height = 40,
-            Width = 360
-        };
-        var argStart = new TextBox
-        {
-            Margin = new Thickness(0, 105, 0, 0),
-            PlaceholderText = "Param_Start".GetLocalized(),
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Height = 40,
-            Width = 176
-        };
-        var argEnd = new TextBox
-        {
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Margin = new Thickness(180, 105, 0, 0),
-            PlaceholderText = "Param_EndW".GetLocalized(),
-            Height = 40,
-            Width = 179
-        };
-        var autoRun = new CheckBox
-        {
-            Margin = new Thickness(1, 155, 0, 0),
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Content = "Logging".GetLocalized(),
-            IsChecked = false
-        };
-        try
-        {
-            foreach (var item in comboBoxMailboxSelect.Items)
-            {
-                comboSelSMU.Items.Add(item);
-            }
-            comboSelSMU.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
-            comboSelSMU.SelectionChanged += ComboSelSMU_SelectionChanged;
-        }
-        catch { }
-        try
-        {
-            var newQuickCommand = new ContentDialog
-            {
-                Title = "AdvancedCooler_Del_Action".GetLocalized(),
-                Content = new Grid
-                {
-                    Children =
-                    {
-                        comboSelSMU,
-                        cmdStart,
-                        argStart,
-                        argEnd,
-                        autoRun
-                    }
-                },
-                PrimaryButtonText = "Apply".GetLocalized(),
-                CloseButtonText = "Cancel".GetLocalized(),
-                DefaultButton = ContentDialogButton.Close
-            };
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                newQuickCommand.XamlRoot = XamlRoot;
-            }
-            newQuickCommand.Closed += (sender, args) =>
-            {
-                newQuickCommand?.Hide();
-                newQuickCommand = null;
-            };
-            // Отобразить ContentDialog и обработать результат
-            try
-            {
-                var saveIndex = 0;
-                var result = await newQuickCommand.ShowAsync();
-                // Создать ContentDialog 
-                if (result == ContentDialogResult.Primary)
-                {
-                    SmuSettingsLoad();
-                    saveIndex = comboSelSMU.SelectedIndex;
-                    for (var i = 0; i < comboSelSMU.Items.Count; i++)
-                    {
-                        var adressName = false;
-                        var adressIndex = 0;
-                        comboSelSMU.SelectedIndex = i;
-                        if (smusettings.MailBoxes == null)
-                        {
-                            smusettings.MailBoxes = new List<CustomMailBoxes>();
-                            adressIndex = smusettings.MailBoxes.Count;
-                            smusettings.MailBoxes.Add(new CustomMailBoxes
-                            {
-                                Name = comboSelSMU.SelectedItem.ToString(),
-                                CMD = textBoxCMDAddress.Text,
-                                RSP = textBoxRSPAddress.Text,
-                                ARG = textBoxARGAddress.Text
-                            });
-                        }
-                        else
-                        {
-                            for (var d = 0; d < smusettings.MailBoxes.Count; d++)
-                            {
-                                if (smusettings.MailBoxes[d].Name != null && smusettings.MailBoxes[d].Name == comboSelSMU.SelectedItem.ToString())
-                                {
-                                    adressName = true;
-                                    adressIndex = d;
-                                    break;
-                                }
-                            }
-                            if (adressName == false)
-                            {
-                                smusettings.MailBoxes.Add(new CustomMailBoxes
-                                {
-                                    Name = comboSelSMU.SelectedItem.ToString(),
-                                    CMD = textBoxCMDAddress.Text,
-                                    RSP = textBoxRSPAddress.Text,
-                                    ARG = textBoxARGAddress.Text
-                                });
-                            }
-                        }
-                    }
-                    SmuSettingsSave();
-                    if (cmdStart.Text != string.Empty && argStart.Text != string.Empty && argEnd.Text != string.Empty)
-                    {
-                        var run = false;
-                        if (autoRun.IsChecked == true) { run = true; }
-                       // ConfigLoad(); config.RangeApplied = false; ConfigSave();
-                        cpusend.SendRange(cmdStart.Text, argStart.Text, argEnd.Text, saveIndex, run);
-                        RangeStarted.IsOpen = true;
-                        RangeStarted.Title = "SMURange".GetLocalized() + ". " + argStart.Text + "-" + argEnd.Text;
-                    }
-                    comboBoxMailboxSelect.SelectedIndex = saveIndex;
-                    SmuSettingsSave();
-                    Init_QuickSMU();
-                    newQuickCommand?.Hide();
-                    newQuickCommand = null;
-                }
-                else
-                {
-                    newQuickCommand?.Hide();
-                    newQuickCommand = null;
-                }
-            }
-            catch
-            {
-                newQuickCommand?.Hide();
-                newQuickCommand = null;
-            } 
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-    [Obsolete("Obsolete")]
-    private async void UnlockFeature()
-    {
-        var comboSelSMU = new ComboBox
-        {
-            Margin = new Thickness(0, 20, 0, 0),
-            VerticalAlignment = VerticalAlignment.Top
-        };
-        var cmdStart = new TextBox
-        {
-            Margin = new Thickness(0, 60, 0, 0),
-            PlaceholderText = "Command".GetLocalized(),
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Height = 40,
-            Width = 360
-        };
-        var argStart = new TextBox
-        {
-            Margin = new Thickness(0, 105, 0, 0),
-            PlaceholderText = "Feature ID",
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Height = 40,
-            Width = 360
-        }; 
-        try
-        {
-            foreach (var item in comboBoxMailboxSelect.Items)
-            {
-                comboSelSMU.Items.Add(item);
-            }
-            comboSelSMU.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
-            comboSelSMU.SelectionChanged += ComboSelSMU_SelectionChanged;
-        }
-        catch { }
-        try
-        {
-            var newQuickCommand = new ContentDialog
-            {
-                Title = "AdvancedCooler_Del_Action".GetLocalized(),
-                Content = new Grid
-                {
-                    Children =
-                    {
-                        comboSelSMU,
-                        cmdStart,
-                        argStart
-                    }
-                },
-                PrimaryButtonText = "Apply".GetLocalized(),
-                CloseButtonText = "Cancel".GetLocalized(),
-                DefaultButton = ContentDialogButton.Close
-            };
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                newQuickCommand.XamlRoot = XamlRoot;
-            }
-            newQuickCommand.Closed += (sender, args) =>
-            {
-                newQuickCommand?.Hide();
-                newQuickCommand = null;
-            };
-            // Отобразить ContentDialog и обработать результат
-            try
-            {
-                var saveIndex = 0;
-                var result = await newQuickCommand.ShowAsync();
-                // Создать ContentDialog 
-                if (result == ContentDialogResult.Primary)
-                {
-                    SmuSettingsLoad();
-                    saveIndex = comboSelSMU.SelectedIndex;
-                    for (var i = 0; i < comboSelSMU.Items.Count; i++)
-                    {
-                        var adressName = false;
-                        var adressIndex = 0;
-                        comboSelSMU.SelectedIndex = i;
-                        if (smusettings.MailBoxes == null)
-                        {
-                            smusettings.MailBoxes = new List<CustomMailBoxes>();
-                            adressIndex = smusettings.MailBoxes.Count;
-                            smusettings.MailBoxes.Add(new CustomMailBoxes
-                            {
-                                Name = comboSelSMU.SelectedItem.ToString(),
-                                CMD = textBoxCMDAddress.Text,
-                                RSP = textBoxRSPAddress.Text,
-                                ARG = textBoxARGAddress.Text
-                            });
-                        }
-                        else
-                        {
-                            for (var d = 0; d < smusettings.MailBoxes.Count; d++)
-                            {
-                                if (smusettings.MailBoxes[d].Name != null && smusettings.MailBoxes[d].Name == comboSelSMU.SelectedItem.ToString())
-                                {
-                                    adressName = true;
-                                    adressIndex = d;
-                                    break;
-                                }
-                            }
-                            if (adressName == false)
-                            {
-                                smusettings.MailBoxes.Add(new CustomMailBoxes
-                                {
-                                    Name = comboSelSMU.SelectedItem.ToString(),
-                                    CMD = textBoxCMDAddress.Text,
-                                    RSP = textBoxRSPAddress.Text,
-                                    ARG = textBoxARGAddress.Text
-                                });
-                            }
-                        }
-                    }
-                    SmuSettingsSave();
-                    comboBoxMailboxSelect.SelectedIndex = saveIndex;
-                    comboSelSMU.SelectedIndex = saveIndex;
-                    if (cmdStart.Text != string.Empty && argStart.Text != string.Empty)
-                    {
-                        var endString = "";
-                        var value = 1 << Convert.ToByte(argStart.Text);
-                        if (int.Parse(argStart.Text) > 31) { endString = "0,0x" + value.ToString(); }
-                        else { endString = value.ToString(); } 
-                        uint[]? args;
-                        var userArgs = endString.Trim().Split(',');
-                        uint addrMsg;
-                        uint addrRsp;
-                        uint addrArg;
-                        uint command;
-                        args = Utils.MakeCmdArgs();
-                        TryConvertToUint(smusettings.MailBoxes[comboSelSMU.SelectedIndex].CMD, out addrMsg);
-                        TryConvertToUint(smusettings.MailBoxes[comboSelSMU.SelectedIndex].RSP, out addrRsp);
-                        TryConvertToUint(smusettings.MailBoxes[comboSelSMU.SelectedIndex].ARG, out addrArg);
-                        TryConvertToUint(cmdStart.Text, out command);
-                        ZenStates.Core.Mailbox testMailbox2 = new()
-                        {
-                            SMU_ADDR_MSG = addrMsg,
-                            SMU_ADDR_RSP = addrRsp,
-                            SMU_ADDR_ARG = addrArg
-                        };
-                        var someFeature = "";
-                        for (var i = 0; i < userArgs.Length; i++)
-                        {
-                            if (i == args.Length)
-                            {
-                                break;
-                            }
-                            someFeature += userArgs[i] + " ";
-                            TryConvertToUint(userArgs[i], out var temp);
-                            args[i] = temp;
-                        }
-                        try
-                        {
-                            var status = cpu.smu.SendSmuCommand(testMailbox2, command, ref args);
-                           /* await Send_Message("Unlocked feature!","Command " + $"{command:X}"
-                            + " Args " + someFeature + status + " MailBox: " + smusettings.MailBoxes[saveIndex].Name 
-                            + "\n MSG: " + $"{testMailbox2.SMU_ADDR_MSG:X}" + "\n ARG: " + $"{testMailbox2.SMU_ADDR_ARG:X}"
-                            + "\n RSP: " + $"{testMailbox2.SMU_ADDR_RSP:X}", Symbol.Attach);*/
-                            await Send_Message("Unlocked feature!", " Args " + someFeature + status, Symbol.Attach);
-                        }
-                        catch { }
-                    }
-                    SmuSettingsSave(); 
-                    newQuickCommand?.Hide();
-                    newQuickCommand = null;
-                }
-                else
-                {
-                    newQuickCommand?.Hide();
-                    newQuickCommand = null;
-                }
-            }
-            catch
-            {
-                newQuickCommand?.Hide();
-                newQuickCommand = null;
-            }
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-    private void SymbolButton_Click(object sender, RoutedEventArgs e)
-    {
-        SymbolFlyout.ShowAt(sender as Button);
-    }
-    private void ComboSelSMU_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        try
-        {
-            var comboBox = sender as ComboBox;
-            if (comboBox != null)
-            {
-                comboBoxMailboxSelect.SelectedIndex = comboBox.SelectedIndex;
-            }
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-    private void SymbolList_ItemClick(object sender, ItemClickEventArgs e)
-    {
-        var glypher = (FontIcon)e.ClickedItem;
-        if (glypher != null)
-        {
-            SMUSymbol = glypher.Glyph;
-            SMUSymbol1.Glyph = glypher.Glyph;
-        }
-    }
-    private void SMUNotes_TextChanged(object sender, RoutedEventArgs e)
-    {
-        SmuSettingsLoad();
-        var documentRange = SMUNotes.Document.GetRange(0, TextConstants.MaxUnitCount);
-        string content;
-        documentRange.GetText(TextGetOptions.FormatRtf, out content);
-        smusettings.Note = content;
-        SmuSettingsSave();
-    }
-    private void ToHex_Click(object sender, RoutedEventArgs e)
-    {
-        // Преобразование выделенного текста в шестнадцатиричную систему
-        if (textBoxARG0.SelectedText != "")
-        {
-            try
-            {
-                var decimalValue = int.Parse(textBoxARG0.SelectedText);
-                var hexValue = decimalValue.ToString("X");
-                textBoxARG0.SelectedText = hexValue;
-            }
-            catch (FormatException)
-            {
-                // Отобразить сообщение об ошибке
-            }
-        }
-        else
-        {
-            try
-            {
-                var decimalValue = int.Parse(textBoxARG0.Text);
-                var hexValue = decimalValue.ToString("X");
-                textBoxARG0.Text = hexValue;
-            }
-            catch (FormatException)
-            {
-                // Отобразить сообщение об ошибке
-            }
-        }
-    }
-    private void CopyThis_Click(object sender, RoutedEventArgs e)
-    {
-        if (textBoxARG0.SelectedText != "")
-        {
-            // Скопировать текст в буфер обмена
-            Clipboard.SetText(textBoxARG0.SelectedText);
-        }
-        else
-        {
-            // Выделить весь текст
-            textBoxARG0.SelectAll();
-            // Скопировать текст в буфер обмена
-            Clipboard.SetText(textBoxARG0.Text);
-        }
-    }
-    private void CutThis_Click(object sender, RoutedEventArgs e)
-    {
-        if (textBoxARG0.SelectedText != "")
-        {
-            // Скопировать текст в буфер обмена
-            Clipboard.SetText(textBoxARG0.SelectedText);
-            textBoxARG0.SelectedText = "";
-        }
-        else
-        {
-            // Выделить весь текст
-            textBoxARG0.SelectAll();
-            // Скопировать текст в буфер обмена
-            Clipboard.SetText(textBoxARG0.Text);
-            textBoxARG0.Text = "";
-        }
-    }
-    private void SelectAllThis_Click(object sender, RoutedEventArgs e)
-    {
-        // Выделить весь текст
-        textBoxARG0.SelectAll();
-    }
-
-    private void CancelRange_Click(object sender, RoutedEventArgs e)
-    {
-        cpusend.CancelRange(); CloseInfoRange();
-    }
-    public void CloseInfoRange()
-    { 
-       RangeStarted.IsOpen = false; 
-    }
-
-    [Obsolete]
-    private void UnlockFeature_Click(object sender, RoutedEventArgs e)
-    {
-        UnlockFeature();
-    }
-
-  
-
-
-#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
-#pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
+    #endregion 
 }

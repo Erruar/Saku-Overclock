@@ -59,7 +59,7 @@ internal class GetSystemInfo
             {
                 foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
                 {
-                    return GetAvailability(int.Parse(queryObj[nameof(Availability)].ToString()));
+                    return GetAvailability(int.Parse(queryObj[nameof(Availability)].ToString()!));
                 }
                 return "";
             }
@@ -102,7 +102,7 @@ internal class GetSystemInfo
             {
                 foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
                 {
-                    return ConvertToDateTime(queryObj[nameof(InstallDate)].ToString());
+                    return ConvertToDateTime(queryObj[nameof(InstallDate)].ToString()!);
                 }
                 return "";
             }

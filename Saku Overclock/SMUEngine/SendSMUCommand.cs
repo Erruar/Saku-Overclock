@@ -56,12 +56,12 @@ internal class SendSMUCommand
     {
         get; set;
     }
-    public static List<(string, bool, uint)> commands
+    public static List<(string, bool, uint)>? Commands
     {
         get; set;
     }
     public bool saveinfo = false;
-    private readonly Cpu cpu;
+    private readonly Cpu? cpu;
     private Smusettings smusettings = new();
     private Config config = new();
     private readonly ZenStates.Core.Mailbox testMailbox = new();
@@ -69,14 +69,11 @@ internal class SendSMUCommand
     private Profile[] profile = new Profile[1];
     public string? ocmode;
     private bool cancelrange = false;
- 
-    [Obsolete]
+  
     public SendSMUCommand()
     {
         try
-        {
-            /* cpu!.Dispose();
-             Thread.Sleep(15);*/ //Dangerous section!!!!
+        { 
             cpu ??= CpuSingleton.GetInstance();
         }
         catch
@@ -132,7 +129,7 @@ internal class SendSMUCommand
         {
             // ignored
         }
-    }
+    } 
     public void SmuSettingsLoad()
     {
         try
@@ -144,6 +141,7 @@ internal class SendSMUCommand
          JsonRepair('s');
         }
     }
+    
     public void ProfileLoad()
     {
         try
@@ -155,7 +153,7 @@ internal class SendSMUCommand
         {
            JsonRepair('p');
         }
-    }
+    } 
     public void ConfigLoad()
     {
         try
@@ -178,7 +176,7 @@ internal class SendSMUCommand
         {
             // ignored
         }
-    }
+    } 
     public void JsonRepair(char file)
     {
         if (file == 'c')
@@ -373,8 +371,7 @@ internal class SendSMUCommand
         {
             throw new ApplicationException("Invalid hexadecimal value.");
         }
-    }
-    [Obsolete("Obsolete")]
+    } 
     public void Play_Invernate_QuickSMU(int mode)
     {
         SmuSettingsLoad();
@@ -405,8 +402,7 @@ internal class SendSMUCommand
                 }
             }
         }
-    }
-    [Obsolete("Obsolete")]
+    } 
     public void ApplySettings(int CommandIndex)
     {
         try
@@ -420,15 +416,15 @@ internal class SendSMUCommand
             uint command;
             SmuSettingsLoad();
             args = Utils.MakeCmdArgs();
-            userArgs = smusettings.QuickSMUCommands[CommandIndex].Argument.Trim().Split(',');
-            TryConvertToUint(smusettings.MailBoxes[smusettings.QuickSMUCommands[CommandIndex].MailIndex].CMD, out addrMsg);
-            TryConvertToUint(smusettings.MailBoxes[smusettings.QuickSMUCommands[CommandIndex].MailIndex].RSP, out addrRsp);
-            TryConvertToUint(smusettings.MailBoxes[smusettings.QuickSMUCommands[CommandIndex].MailIndex].ARG, out addrArg);
-            TryConvertToUint(smusettings.QuickSMUCommands[CommandIndex].Command, out command);
+            userArgs = smusettings?.QuickSMUCommands?[CommandIndex].Argument.Trim().Split(',');
+            TryConvertToUint(smusettings?.MailBoxes?[smusettings.QuickSMUCommands![CommandIndex].MailIndex].CMD!, out addrMsg);
+            TryConvertToUint(smusettings?.MailBoxes?[smusettings.QuickSMUCommands![CommandIndex].MailIndex].RSP!, out addrRsp);
+            TryConvertToUint(smusettings?.MailBoxes?[smusettings.QuickSMUCommands![CommandIndex].MailIndex].ARG!, out addrArg);
+            TryConvertToUint(smusettings?.QuickSMUCommands?[CommandIndex].Command!, out command);
             quickMailbox1.SMU_ADDR_MSG = addrMsg;
             quickMailbox1.SMU_ADDR_RSP = addrRsp;
             quickMailbox1.SMU_ADDR_ARG = addrArg;
-            for (var i = 0; i < userArgs.Length; i++)
+            for (var i = 0; i < userArgs?.Length; i++)
             {
                 if (i == args.Length)
                 {
@@ -437,7 +433,7 @@ internal class SendSMUCommand
                 TryConvertToUint(userArgs[i], out var temp);
                 args[i] = temp;
             }
-            var status = cpu.smu.SendSmuCommand(quickMailbox1, command, ref args);
+            var status = cpu?.smu.SendSmuCommand(quickMailbox1, command, ref args);
         }
         catch
         {
@@ -445,20 +441,19 @@ internal class SendSMUCommand
         }
     }
 
-    //From RyzenADJ string to SMU Calls
-    [Obsolete]
+    //From RyzenADJ string to SMU Calls 
     public async void Translate(string _ryzenAdjString, bool save)
     {
         saveinfo = save;
         try
         {
-            if (cpu.info.codeName == Cpu.CodeName.SummitRidge || cpu.info.codeName == Cpu.CodeName.PinnacleRidge) { Socket_AM4_V1(); }
-            else if (cpu.info.codeName == Cpu.CodeName.RavenRidge || cpu.info.codeName == Cpu.CodeName.Picasso || cpu.info.codeName == Cpu.CodeName.Dali || /*cpu.info.codeName == Cpu.CodeName.Pollock || */ cpu.info.codeName == Cpu.CodeName.FireFlight) { Socket_FT5_FP5_AM4(); }
-            else if (cpu.info.codeName == Cpu.CodeName.Matisse || cpu.info.codeName == Cpu.CodeName.Vermeer) { Socket_AM4_V2(); }
-            else if (cpu.info.codeName == Cpu.CodeName.Renoir || cpu.info.codeName == Cpu.CodeName.Lucienne || cpu.info.codeName == Cpu.CodeName.Cezanne) { Socket_FP6_AM4(); }
-            else if (cpu.info.codeName == Cpu.CodeName.VanGogh) { Socket_FF3(); }
-            else if (cpu.info.codeName == Cpu.CodeName.Mendocino || cpu.info.codeName == Cpu.CodeName.Rembrandt /*|| cpu.info.codeName == Cpu.CodeName.PhoenixPoint || cpu.info.codeName == Cpu.CodeName.PhoenixPoint2 || cpu.info.codeName == Cpu.CodeName.StrixPoint*/ || cpu.info.codeName == Cpu.CodeName.DragonRange) { Socket_FT6_FP7_FP8(); }
-            else if (cpu.info.codeName == Cpu.CodeName.Raphael /*|| cpu.info.codeName == Cpu.CodeName.GraniteRidge*/) { Socket_AM5_V1(); }
+            if (cpu?.info.codeName == Cpu.CodeName.SummitRidge || cpu?.info.codeName == Cpu.CodeName.PinnacleRidge) { Socket_AM4_V1(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.RavenRidge || cpu?.info.codeName == Cpu.CodeName.Picasso || cpu?.info.codeName == Cpu.CodeName.Dali || /*cpu.info.codeName == Cpu.CodeName.Pollock || */ cpu?.info.codeName == Cpu.CodeName.FireFlight) { Socket_FT5_FP5_AM4(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.Matisse || cpu?.info.codeName == Cpu.CodeName.Vermeer) { Socket_AM4_V2(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.Renoir || cpu?.info.codeName == Cpu.CodeName.Lucienne || cpu?.info.codeName == Cpu.CodeName.Cezanne) { Socket_FP6_AM4(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.VanGogh) { Socket_FF3(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.Mendocino || cpu?.info.codeName == Cpu.CodeName.Rembrandt /*|| cpu.info.codeName == Cpu.CodeName.PhoenixPoint || cpu.info.codeName == Cpu.CodeName.PhoenixPoint2 || cpu.info.codeName == Cpu.CodeName.StrixPoint*/ || cpu?.info.codeName == Cpu.CodeName.DragonRange) { Socket_FT6_FP7_FP8(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.Raphael /*|| cpu.info.codeName == Cpu.CodeName.GraniteRidge*/) { Socket_AM5_V1(); }
             else
             {
                 MP1_CMD = 0x3B10528;
@@ -500,8 +495,7 @@ internal class SendSMUCommand
         }
         catch { /*Ignored*/ }
     }
-
-    [Obsolete]
+     
     public void ApplySettings(string commandName, uint value)
     {
         if (saveinfo) { ConfigLoad();/* config.ApplyInfo += "Applyed success!";*/  }
@@ -510,8 +504,8 @@ internal class SendSMUCommand
             var Args = new uint[6];
             Args[0] = value; 
             // Find the command by name
-            var matchingCommands = commands.Where(c => c.Item1 == commandName);
-            if (matchingCommands.Any())
+            var matchingCommands = Commands?.Where(c => c.Item1 == commandName);
+            if (matchingCommands?.Any() == true)
             {
                 var tasks = new List<Task>();
                 foreach (var command in matchingCommands)
@@ -534,19 +528,19 @@ internal class SendSMUCommand
         }
         if (saveinfo) { ConfigSave(); }
     }
-    [Obsolete]
+    
     public void ApplyThis(int Mailbox, uint Command, uint[] args, string CommandName)
     {
         if (saveinfo) { ConfigLoad(); }
         try
         {
-            if (cpu.info.codeName == Cpu.CodeName.SummitRidge || cpu.info.codeName == Cpu.CodeName.PinnacleRidge) { Socket_AM4_V1(); }
-            else if (cpu.info.codeName == Cpu.CodeName.RavenRidge || cpu.info.codeName == Cpu.CodeName.Picasso || cpu.info.codeName == Cpu.CodeName.Dali || /*cpu.info.codeName == Cpu.CodeName.Pollock || */ cpu.info.codeName == Cpu.CodeName.FireFlight) { Socket_FT5_FP5_AM4(); }
-            else if (cpu.info.codeName == Cpu.CodeName.Matisse || cpu.info.codeName == Cpu.CodeName.Vermeer) { Socket_AM4_V2(); }
-            else if (cpu.info.codeName == Cpu.CodeName.Renoir || cpu.info.codeName == Cpu.CodeName.Lucienne || cpu.info.codeName == Cpu.CodeName.Cezanne) { Socket_FP6_AM4(); }
-            else if (cpu.info.codeName == Cpu.CodeName.VanGogh) { Socket_FF3(); }
-            else if (cpu.info.codeName == Cpu.CodeName.Mendocino || cpu.info.codeName == Cpu.CodeName.Rembrandt || cpu.info.codeName == Cpu.CodeName.Phoenix || cpu.info.codeName == Cpu.CodeName.Phoenix2 /*|| cpu.info.codeName == Cpu.CodeName.Strix*/ || cpu.info.codeName == Cpu.CodeName.DragonRange || cpu.info.codeName == Cpu.CodeName.HawkPoint) { Socket_FT6_FP7_FP8(); }
-            else if (cpu.info.codeName == Cpu.CodeName.Raphael /*|| cpu.info.codeName == Cpu.CodeName.GraniteRidge*/) { Socket_AM5_V1(); }
+            if (cpu?.info.codeName == Cpu.CodeName.SummitRidge || cpu?.info.codeName == Cpu.CodeName.PinnacleRidge) { Socket_AM4_V1(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.RavenRidge || cpu?.info.codeName == Cpu.CodeName.Picasso || cpu?.info.codeName == Cpu.CodeName.Dali || /*cpu.info.codeName == Cpu.CodeName.Pollock || */ cpu?.info.codeName == Cpu.CodeName.FireFlight) { Socket_FT5_FP5_AM4(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.Matisse || cpu?.info.codeName == Cpu.CodeName.Vermeer) { Socket_AM4_V2(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.Renoir || cpu?.info.codeName == Cpu.CodeName.Lucienne || cpu?.info.codeName == Cpu.CodeName.Cezanne) { Socket_FP6_AM4(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.VanGogh) { Socket_FF3(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.Mendocino || cpu?.info.codeName == Cpu.CodeName.Rembrandt || cpu?.info.codeName == Cpu.CodeName.Phoenix || cpu?.info.codeName == Cpu.CodeName.Phoenix2 /*|| cpu.info.codeName == Cpu.CodeName.Strix*/ || cpu?.info.codeName == Cpu.CodeName.DragonRange || cpu?.info.codeName == Cpu.CodeName.HawkPoint) { Socket_FT6_FP7_FP8(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.Raphael /*|| cpu.info.codeName == Cpu.CodeName.GraniteRidge*/) { Socket_AM5_V1(); }
             else 
             {
                 MP1_CMD = 0x3B10528;
@@ -575,7 +569,7 @@ internal class SendSMUCommand
             testMailbox.SMU_ADDR_RSP = addrRsp;
             testMailbox.SMU_ADDR_ARG = addrArg; 
             if (!saveinfo && CommandName == "stopcpu-freqto-ramstate") { return; }
-            var status = cpu.smu.SendSmuCommand(testMailbox, Command, ref args);
+            var status = cpu?.smu.SendSmuCommand(testMailbox, Command, ref args);
             if (status != SMU.Status.OK) { config.ApplyInfo += $"\nCommand '{CommandName}' applied with status {status}"; }
         }
         catch
@@ -587,8 +581,7 @@ internal class SendSMUCommand
     public void CancelRange()
     {
         cancelrange = true;
-    }
-    [Obsolete("Obsolete")]
+    } 
     public async void SendRange(string CommandIndex, string StartIndex, string EndIndex, int Mailbox, bool Log)
     {
         cancelrange = false;
@@ -618,9 +611,9 @@ internal class SendSMUCommand
                     uint addrArg;
                     uint command;
                     args = Utils.MakeCmdArgs();
-                    TryConvertToUint(smusettings.MailBoxes[Mailbox].CMD, out addrMsg);
-                    TryConvertToUint(smusettings.MailBoxes[Mailbox].RSP, out addrRsp);
-                    TryConvertToUint(smusettings.MailBoxes[Mailbox].ARG, out addrArg);
+                    TryConvertToUint(smusettings?.MailBoxes![Mailbox].CMD!, out addrMsg);
+                    TryConvertToUint(smusettings?.MailBoxes![Mailbox].RSP!, out addrRsp);
+                    TryConvertToUint(smusettings?.MailBoxes![Mailbox].ARG!, out addrArg);
                     TryConvertToUint(CommandIndex, out command);
                     testMailbox.SMU_ADDR_MSG = addrMsg;
                     testMailbox.SMU_ADDR_RSP = addrRsp;
@@ -628,7 +621,7 @@ internal class SendSMUCommand
                     args[0] = j;
                     try
                     {
-                        var status = cpu.smu.SendSmuCommand(testMailbox, command, ref args);
+                        var status = cpu?.smu.SendSmuCommand(testMailbox, command, ref args);
                         if (Log) { sw.WriteLine($"{DateTime.Now:HH:mm:ss} | MailBox: {Mailbox} | CMD: {command:X} | Arg: {j:X} | Status: {status}"); }
                     }
                     catch (Exception ex)
@@ -644,9 +637,9 @@ internal class SendSMUCommand
         {
         }
     }
-    /*Commands and addresses. Commands basis from Universal x86 Tuning Utility. Its author is https://github.com/JamesCJ60, a lot of commands as well as various sources,
+    /*Commands and addresses. Commands architecture basis from Universal x86 Tuning Utility. Its author is https://github.com/JamesCJ60, a lot of commands as well as various sources,
      * I just put them together and found some news. 
-     * Here are just a few of the authors who found them:
+     * Here are just a few of the authors who found SMU commands:
      https://github.com/JamesCJ60
      https://github.com/Erruar
      https://github.com/Irusanov 
@@ -661,7 +654,7 @@ internal class SendSMUCommand
         RSMU_RSP = 0x3B10A80;
         RSMU_ARG = 0x3B10A88;
 
-        commands = new List<(string, bool, uint)>
+        Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
                 ("stapm-limit",true, 0x1a), // Use MP1 address
@@ -732,54 +725,55 @@ internal class SendSMUCommand
         RSMU_RSP = 0x3B10A80;
         RSMU_ARG = 0x3B10A88;
 
-        commands = new List<(string, bool, uint)>
+        Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
-                ("stapm-limit",true , 0x14), // Use MP1 address
-                ("stapm-limit",false , 0x31), // Use RSMU address
-                ("stapm-limit",false , 0x33),
-                ("stapm-time",true , 0x18),
-                ("fast-limit",true , 0x15),
-                ("slow-limit",true , 0x16),
-                ("slow-time",true , 0x17),
-                ("tctl-temp",true , 0x19),
-                ("cHTC-temp",false , 0x37),
-                ("apu-skin-temp",true , 0x38),
-                ("apu-slow-limit",true , 0x21),
-                ("skin-temp-limit",true , 0x53),
+                ("max-performance",true , 0x11), // Use MP1 address
+                ("power-saving",true , 0x12),
                 ("vrm-current",true , 0x1a),
                 ("vrmmax-current",true , 0x1c),
                 ("vrmsoc-current",true , 0x1b),
                 ("vrmsocmax-current",true , 0x1d),
                 ("psi0-current",true , 0x1e),
                 ("psi0soc-current",true , 0x1f),
+                ("stapm-limit",true , 0x14),
+                ("fast-limit",true , 0x15),
+                ("slow-limit",true , 0x16),
+                ("slow-time",true , 0x17),
+                ("stapm-time",true , 0x18),
+                ("tctl-temp",true , 0x19),
                 ("prochot-deassertion-ramp",true , 0x20),
-                ("gfx-clk",false , 0x89),
-                ("dgpu-skin-temp",true , 0x37),
-                ("power-saving",true , 0x12),
-                ("max-performance",true , 0x11),
-                ("pbo-scalar",false , 0x3F),
-                ("oc-clk",false , 0x19),
-                ("oc-clk",true , 0x31),
-                ("per-core-oc-clk",false , 0x1a),
-                ("per-core-oc-clk",true , 0x32),
-                ("oc-volt",false , 0x1b),
-                ("oc-volt",true , 0x33),
-                ("set-coall",true , 0x55),
-                ("set-coall",false , 0xB1),
-                ("set-coper",true , 0x54),
-                ("set-cogfx",true , 0x64),
-                ("set-cogfx",false , 0x57),
-                ("enable-oc",false , 0x17),
+                ("apu-slow-limit",true , 0x21),
                 ("enable-oc",true , 0x2f),
+                ("disable-oc",true , 0x30),
+                ("oc-clk",true , 0x31),
+                ("per-core-oc-clk",true , 0x32),
+                ("oc-volt",true , 0x33),
+                ("dgpu-skin-temp",true , 0x37),
+                ("apu-skin-temp",true , 0x39),
+                ("skin-temp-limit",true , 0x53),
+                ("set-coper",true , 0x54),
+                ("set-coall",true , 0x55),
+                ("set-cogfx",true , 0x64),
+
+                ("enable-oc",false , 0x17), // Use RSMU address
                 ("disable-oc",false , 0x18),
-                ("disable-oc",true , 0x30)
+                ("oc-clk",false , 0x19),
+                ("per-core-oc-clk",false , 0x1a),
+                ("oc-volt",false , 0x1b),
+                ("stapm-limit",false , 0x31),
+                ("stapm-limit",false , 0x33), 
+                ("cHTC-temp",false , 0x37), 
+                ("pbo-scalar",false , 0x3F),
+                ("set-cogfx",false , 0x57),
+                ("gfx-clk",false , 0x89),
+                ("set-coall",false , 0xB1)
             };
     }
 
     private void Socket_FT6_FP7_FP8()
     {
-        if (cpu.info.codeName == Cpu.CodeName.DragonRange)
+        if (cpu?.info.codeName == Cpu.CodeName.DragonRange)
         {
             MP1_CMD = 0x3010508;
             MP1_RSP = 0x3010988;
@@ -798,7 +792,7 @@ internal class SendSMUCommand
             RSMU_RSP = 0x3B10a80;
             RSMU_ARG = 0x3B10a88;
         }
-        commands = new List<(string, bool, uint)>
+        Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
                 ("stapm-limit", true, 0x14), // Use MP1 address
@@ -845,7 +839,7 @@ internal class SendSMUCommand
         RSMU_RSP = 0x3B10a80;
         RSMU_ARG = 0x3B10a88;
 
-        commands = new List<(string, bool, uint)>
+        Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
                 ("stapm-limit",true, 0x14), // Use MP1 address
@@ -887,7 +881,7 @@ internal class SendSMUCommand
         RSMU_RSP = 0X3B10568;
         RSMU_ARG = 0X3B10590;
 
-        commands = new List<(string, bool, uint)>
+        Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
                 ("stapm-limit",false, 0x64), // Use RSMU address
@@ -914,7 +908,7 @@ internal class SendSMUCommand
         RSMU_RSP = 0x3B10570;
         RSMU_ARG = 0x3B10A40;
 
-        commands = new List<(string, bool, uint)>
+        Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
                 ("stapm-limit",true, 0x3D), // Use MP1 address
@@ -952,7 +946,7 @@ internal class SendSMUCommand
         RSMU_RSP = 0x3B10570;
         RSMU_ARG = 0x3B10A40;
 
-        commands = new List<(string, bool, uint)>
+        Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
                 ("stapm-limit",true, 0x3e), // Use MP1 address

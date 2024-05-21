@@ -410,7 +410,7 @@ All presets have autosaving</value>
     <value>PCI SoC Maximum EDC (A)</value>
   </data>
   <data name="Param_VRM_v7.Text" xml:space="preserve">
-    <value>Restore Frequency time (S)</value>
+    <value>Restore Frequency time (mS)</value>
   </data>
   <data name="Preset_Balance" xml:space="preserve">
     <value>Balance</value>
@@ -500,8 +500,7 @@ performance</value>
   <data name="Param_Edit_Preset.ToolTipService.ToolTip" xml:space="preserve">
     <value>Edit preset name
 To change it, just write the desired 
-value in the text field to save the new 
-preset and click on this button</value>
+value in the text field and click on button</value>
   </data>
   <data name="Param_c1_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Maximum temperature
@@ -666,7 +665,10 @@ IT IS NOT RECOMMENDED TO TOUCH IT</value>
 Affects to time limit to rise up 
 frequency again after a prochot 
 condition is met where throtthling 
-due max temperature reached
+due max temperature reached. By 
+default, vendors set this value to 20, 
+but you can try experimenting 
+with this value.
 IT IS NOT RECOMMENDED TO TOUCH IT</value>
   </data>
   <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
@@ -1528,5 +1530,23 @@ ARE DOING!!! IT CAN BURN YOUR CPU!</value>
   </data>
   <data name="Param_VRM_v9.Text" xml:space="preserve">
     <value>Voltage Modular</value>
+  </data>
+  <data name="DeleteSuccessDesc" xml:space="preserve">
+    <value>You have successfully permanently deleted your profile </value>
+  </data>
+  <data name="DeleteSuccessTitle" xml:space="preserve">
+    <value>Profile was deleted</value>
+  </data>
+  <data name="Edit_TargetSubtitle" xml:space="preserve">
+    <value>New name of your preset is set</value>
+  </data>
+  <data name="Edit_TargetTitle" xml:space="preserve">
+    <value>Edited successfully!</value>
+  </data>
+  <data name="SaveSuccessDesc" xml:space="preserve">
+    <value>You have successfully added a new profile</value>
+  </data>
+  <data name="SaveSuccessTitle" xml:space="preserve">
+    <value>New profile has been added</value>
   </data>
 </root>

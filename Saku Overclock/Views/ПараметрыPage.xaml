@@ -3,9 +3,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="using:Saku_Overclock.Helpers"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="using:Saku_Overclock.Helpers" xmlns:local1="using:Saku_Overclock.ViewModels"
     mc:Ignorable="d">
-    <Page.Resources>
+    <Page.Resources>  
         <Flyout x:Name="SymbolFlyout" Placement="Bottom">
             <!-- flyout content -->
             <GridView ItemClick="SymbolList_ItemClick" IsItemClickEnabled="True">
@@ -612,7 +612,7 @@
                             <Grid Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="12" Grid.Column="0" Width="2000">
+                            <Grid Grid.Row="12" Grid.Column="0" Visibility="Collapsed" Width="2000">
                                 <TextBlock  x:Uid="Param_GPU_g13"  Text="Минимальный объём VRAM iGPU (MB)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="G13_Checked" Unchecked="G13_Checked"  x:Name="g13" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g13v" ValueChanged="G13v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="2000" Value="1">
@@ -624,10 +624,10 @@
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="12" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                            <Grid Grid.Row="12" Grid.Column="1" Visibility="Collapsed" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="13" Grid.Column="0" Width="2000">
+                            <Grid Grid.Row="13" Grid.Column="0" Width="2000" Visibility="Collapsed">
                                 <TextBlock  x:Uid="Param_GPU_g14"  Text="Максимальный объём VRAM iGPU (MB)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="G14_Checked" Unchecked="G14_Checked" x:Name="g14" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g14v" ValueChanged="G14v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1000" Maximum="32000" Value="5000">
@@ -639,7 +639,7 @@
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
                             </Grid>
-                            <Grid Grid.Row="13" Grid.Column="1" HorizontalAlignment="Left" Margin="-637,0,0,0">
+                            <Grid Grid.Row="13" Grid.Column="1" Visibility="Collapsed" HorizontalAlignment="Left" Margin="-637,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                 1200(MHz)              1200(MHz)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
                             </Grid>
                             <Grid Grid.Row="14" Grid.Column="0" Width="2000">
@@ -1594,6 +1594,18 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                             </StackPanel>
                         </Grid>
                     </Expander>
+                    <Expander Grid.Row="6" Visibility="Collapsed">
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xf8a6;"/>
+                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_States_Text" Text="Состояния CPU"></TextBlock>
+                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_States_Pdesc"  Text="Производительные состояния процессора"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid>
+                            
+                        </Grid>
+                    </Expander>
                 </Grid>
             </ScrollViewer>
 
@@ -1655,6 +1667,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
             </Grid>
             
             <!-- Конец -->
+            
             <TextBlock Grid.Row="2" x:Uid="Param_New" Text="Название нового пресета:" Margin="0,16,0,0" FontSize="20"></TextBlock>
             <TextBox Grid.Row="2" x:Name="SaveName" HorizontalAlignment="Left" Margin="260,0,0,0" Width="200" Height="40"></TextBox>
             <Button x:Uid="Param_Apply" Grid.Row="2" HorizontalAlignment="Right" Click="Apply_Click" Height="40" Width="40" Margin="0,0,-13,0" ToolTipService.ToolTip="Применить">
@@ -1663,12 +1676,28 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
             <Button x:Uid="Param_Delete" Click="Delete_Click" Grid.Row="2" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,0" ToolTipService.ToolTip="Удалить">
                 <SymbolIcon Symbol="Delete" HorizontalAlignment="Left" Margin="-3,0,-5,0"/>
             </Button>
-            <Button x:Uid="Param_Save_Preset" Grid.Row="2" Click="Save_Click" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,87,0" ToolTipService.ToolTip="Добавить">
+            <Button x:Uid="Param_Save_Preset" Grid.Row="2" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,87,0" ToolTipService.ToolTip="Добавить">
                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"   Margin="-3,0,-5,0"  Glyph="&#xeccd;"/>
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel>
+                            <TextBox x:Name="SaveProfileN" PlaceholderText="Enter new name" CornerRadius="7,7,0,0" Width="150"></TextBox>
+                            <Button  Click="Save_Click" Style="{StaticResource AccentButtonStyle}" CornerRadius="0,0,7,7" Width="{Binding ElementName=SaveProfileN, Path=ActualWidth}" Content="Edit name" />
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
             </Button>
-            <Button x:Uid="Param_Edit_Preset" Grid.Row="2" Click="Edit_Click"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,137,0" ToolTipService.ToolTip="Изменить">
+            <Button x:Name="EditProfileButton" x:Uid="Param_Edit_Preset" Grid.Row="2"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,137,0" ToolTipService.ToolTip="Изменить">
                 <!-- eccd	eb7e -->
                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-3,0,-5,0"  Glyph="&#xef15;"/>
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel>
+                            <TextBox x:Name="EditProfileN" PlaceholderText="Enter new name" CornerRadius="7,7,0,0" Width="150"></TextBox>
+                            <Button  Click="Edit_Click" Style="{StaticResource AccentButtonStyle}" CornerRadius="0,0,7,7" Width="{Binding ElementName=EditProfileN, Path=ActualWidth}" Content="Edit name" />
+                        </StackPanel>
+                    </Flyout> 
+                </Button.Flyout>
             </Button>
             <Button x:Uid="Param_PowerMon" Grid.Row="2" Click="Mon_Click"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,187,0" ToolTipService.ToolTip="Открыть PowerMon">
                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"   Margin="-5,0,-5,0"  Glyph="&#xec4a;"/>

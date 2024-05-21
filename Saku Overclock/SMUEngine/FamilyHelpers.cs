@@ -16,29 +16,29 @@ internal static class FamilyHelpers
     public static int CPUFamily = 0;
     public static int CPUModel = 0;
     public static int CPUStepping = 0;
-    public static async void setCpuFamily()
+    public static void SetCpuFamily()
     {
         try
         {
             var processorIdentifier = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER");
 
             // Split the string into individual words
-            var words = processorIdentifier.Split(' ');
+            var words = processorIdentifier?.Split(' ');
 
             // Find the indices of the words "Family", "Model", and "Stepping"
-            var familyIndex = Array.IndexOf(words, "Family") + 1;
-            var modelIndex = Array.IndexOf(words, "Model") + 1;
-            var steppingIndex = Array.IndexOf(words, "Stepping") + 1;
+            var familyIndex = Array.IndexOf(words!, "Family") + 1;
+            var modelIndex = Array.IndexOf(words!, "Model") + 1;
+            var steppingIndex = Array.IndexOf(words!, "Stepping") + 1;
 
             // Extract the family, model, and stepping values from the corresponding words
-            CPUFamily = int.Parse(words[familyIndex]);
+            CPUFamily = int.Parse(words![familyIndex]);
             CPUModel = int.Parse(words[modelIndex]);
             CPUStepping = int.Parse(words[steppingIndex].TrimEnd(','));
 
             var mos = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
             foreach (var mo in mos.Get().Cast<ManagementObject>())
             {
-                CPUName = mo["Name"].ToString();
+                CPUName = mo["Name"].ToString()!;
             }
         }
         catch (ManagementException e)
@@ -174,9 +174,6 @@ internal static class FamilyHelpers
             {
                 TYPE = ProcessorType.Amd_Apu;
             }
-        }
-
-        //Clipboard.SetText(System.Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER").ToString());
-        //MessageBox.Show(CPUFamily.ToString() + " "  + FAM.ToString());
+        } 
     }
 }
