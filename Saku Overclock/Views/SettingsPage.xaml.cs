@@ -1,8 +1,11 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Win32;
+using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
+using Task = System.Threading.Tasks.Task;
 namespace Saku_Overclock.Views; 
 
 public sealed partial class SettingsPage : Page
@@ -12,7 +15,8 @@ public sealed partial class SettingsPage : Page
         get;
     }
     private Config config = new(); 
-    private bool relay = true;  
+    private bool relay = true;
+    private bool isLoaded = false;
     public SettingsPage()
     {
         ViewModel = App.GetService<SettingsViewModel>();
@@ -22,7 +26,9 @@ public sealed partial class SettingsPage : Page
         config.fanex = false; //Автообновление информации выключено не зависимо от активированной страницы
         config.tempex = false;
         ConfigSave();
+        Loaded += LoadedApp;
     }
+
     #region JSON and Initialization
     private async void InitVal()
     {
@@ -39,6 +45,10 @@ public sealed partial class SettingsPage : Page
             Blue_sel.IsChecked = true;
         }
     }
+    private void LoadedApp(object sender, RoutedEventArgs e)
+    {
+        isLoaded = true;
+    } 
     public void ConfigSave()
     {
         try
@@ -61,50 +71,74 @@ public sealed partial class SettingsPage : Page
     #region Event Handlers
     private void CbStartBoot_Click(object sender, RoutedEventArgs e)
     {
+        if (!isLoaded) { return; }
+        var autoruns = new TaskService();
         if (CbStartBoot.IsChecked == true)
         {
+            ConfigLoad();
             config.autostart = true;
             ConfigSave(); 
             var pathToExecutableFile = System.Reflection.Assembly.GetExecutingAssembly().Location;  
             var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);  
-            var pathToStartupLnk = Path.Combine(pathToProgramDirectory!, "startup.lnk"); 
-            var pathToStartupFolder = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu) + "\\Programs\\Startup\\startup.lnk";  
-            File.Copy(pathToStartupLnk, pathToStartupFolder, true); // Добавить программу в автозагрузку
+            var pathToStartupLnk = Path.Combine(pathToProgramDirectory!, "Saku Overclock.exe");
+            // Добавить программу в автозагрузку
+            var SakuTask = autoruns.NewTask();
+            SakuTask.RegistrationInfo.Description = "An awesome ryzen laptop overclock utility for those who want real performance! Autostart Saku Overclock application task";
+            SakuTask.RegistrationInfo.Author = "Sakura Serzhik";
+            SakuTask.RegistrationInfo.Version = new Version("1.0.0");
+            SakuTask.Principal.RunLevel = TaskRunLevel.Highest;
+            SakuTask.Triggers.Add(new LogonTrigger { Enabled = true });
+            SakuTask.Actions.Add(new ExecAction(pathToStartupLnk));
+            autoruns.RootFolder.RegisterTaskDefinition(@"Saku Overclock", SakuTask); 
         }
         else
         {
+            ConfigLoad();
             config.autostart = false;
             ConfigSave();
-            File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu) + "\\Programs\\Startup", "startup.lnk"));
+            try { autoruns.RootFolder.DeleteTask("Saku Overclock"); } catch { }
         }
+        
     }
     private void CbStartMini_Click(object sender, RoutedEventArgs e)
     {
+        if (!isLoaded) { return; }
+        ConfigLoad();
         if (CbStartMini.IsChecked == true) { config.traystart = true; ConfigSave(); }
         else { config.traystart = false; ConfigSave(); };
     }
     private void CbApplyStart_Click(object sender, RoutedEventArgs e)
     {
+        if (!isLoaded) { return; }
+        ConfigLoad();
         if (CbApplyStart.IsChecked == true) { config.autooverclock = true; ConfigSave(); }
         else { config.autooverclock = false; ConfigSave(); };
     }
     private void CbAutoReapply_Click(object sender, RoutedEventArgs e)
     {
+        if (!isLoaded) { return; }
+        ConfigLoad();
         if (CbAutoReapply.IsChecked == true) { config.reapplytime = true; config.reapplytimer = nudAutoReapply.Value; ConfigSave(); }
         else { config.reapplytime = false; config.reapplytimer = 3; ConfigSave(); };
     }
     private void CbAutoCheck_Click(object sender, RoutedEventArgs e)
     {
+        if (!isLoaded) { return; }
+        ConfigLoad();
         if (CbAutoCheck.IsChecked == true) { config.autoupdates = true; ConfigSave(); }
         else { config.autoupdates = false; ConfigSave(); };
     }
     private async void NudAutoReapply_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
+        if (!isLoaded) { return; }
+        ConfigLoad();
         await Task.Delay(20);
         config.reapplytime = true; config.reapplytimer = nudAutoReapply.Value; ConfigSave();
     }
     private async void Blue_sel_Checked(object sender, RoutedEventArgs e)
     {
+        if (!isLoaded) { return; }
+        ConfigLoad();
         await Task.Delay(230);
         config.bluetheme = true;
         ConfigSave();
@@ -122,8 +156,10 @@ public sealed partial class SettingsPage : Page
     }
     private void Default_sel_Checked(object sender, RoutedEventArgs e)
     {
+        if (!isLoaded) { return; }
         if (relay == false)
         {
+            ConfigLoad();
             Blue_sel.IsChecked = false;
             config.bluetheme = false;
             ConfigSave();
@@ -136,8 +172,10 @@ public sealed partial class SettingsPage : Page
     }
     private void Dark_sel_Checked(object sender, RoutedEventArgs e)
     {
+        if (!isLoaded) { return; }
         if (relay == false)
         {
+            ConfigLoad();
             Blue_sel.IsChecked = false;
             config.bluetheme = false;
             ConfigSave();
@@ -150,8 +188,10 @@ public sealed partial class SettingsPage : Page
     }
     private void Light_sel_Checked(object sender, RoutedEventArgs e)
     {
+        if (!isLoaded) { return; }
         if (relay == false)
         {
+            ConfigLoad();
             Blue_sel.IsChecked = false;
             config.bluetheme = false;
             ConfigSave();
