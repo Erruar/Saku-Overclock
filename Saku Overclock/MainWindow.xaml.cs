@@ -37,7 +37,7 @@ public sealed partial class MainWindow : WindowEx
                                                      uint cbAttribute); 
     public MainWindow()
     {
-        InitializeComponent();
+        InitializeComponent(); 
         WindowStateChanged += (sender, e) =>
         {
             if(WindowState == WindowState.Minimized)
@@ -85,35 +85,10 @@ public sealed partial class MainWindow : WindowEx
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event   
         DeviceLoad(); 
-        Tray_Start();
-        Set_Blue();
-        Closed += Dispose_Tray; 
+        Tray_Start(); 
+        Closed += Dispose_Tray;   
     }
-    #region Colours
-    private async void Set_Blue() //Установить синюю тему, ТОЛЬКО на windows 11
-    {
-        try
-        {
-            await Task.Delay(120);
-            if (config.bluetheme)
-            {
-                if (App.MainWindow.Content is FrameworkElement rootElement)
-                {
-                    rootElement.RequestedTheme = ElementTheme.Dark;
-                    TitleBarHelper.UpdateTitleBar(ElementTheme.Dark);
-                }
-                var micaBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop
-                {
-                    Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
-                };
-                App.MainWindow.SystemBackdrop = micaBackdrop;
-            }
-        }
-        catch
-        {
-            JsonRepair('c');
-        }
-    } 
+    #region Colours 
     // this handles updating the caption button colors correctly when indows system theme is changed
     // while the app is open
     private void Settings_ColorValuesChanged(UISettings sender, object args)
@@ -133,7 +108,7 @@ public sealed partial class MainWindow : WindowEx
         try
         {
             if (config.autooverclock == true) { var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(false); /*cpu.Play_Invernate_QuickSMU(1);*/ if (devices.autopstate == true && devices.enableps == true) { cpu.BtnPstateWrite_Click(); }  }
-            if (config.traystart == true) { await Task.Delay(700); this.Hide(); }
+            if (config.AutostartType == 1 || config.AutostartType == 3) { await Task.Delay(700); this.Hide(); }
         }
         catch
         {

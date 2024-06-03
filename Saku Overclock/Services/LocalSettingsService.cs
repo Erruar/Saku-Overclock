@@ -79,8 +79,14 @@ public class LocalSettingsService : ILocalSettingsService
             await InitializeAsync();
 
             _settings[key] = await Json.StringifyAsync(value!);
-
-            await Task.Run(() => _fileService.Save(_applicationDataFolder, _localsettingsFile, _settings));
+            try
+            {
+                await Task.Run(() => _fileService.Save(_applicationDataFolder, _localsettingsFile, _settings));
+            }
+            catch
+            {
+                //Can't change theme!
+            }
         }
     }
 }

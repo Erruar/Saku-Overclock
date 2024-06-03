@@ -21,16 +21,24 @@ public partial class SettingsViewModel : ObservableRecipient
     private ElementTheme _elementTheme;
 
     [ObservableProperty]
-    private string _versionDescription;
-
+    private string _versionDescription; 
     public ICommand SwitchThemeCommand
     {
         get;
     }
-    
+
+    public int VersionId = 1; //"Consumer Creative" = 0; "Release Candidate" = 1
+    public static string? VersionString;
 
     public SettingsViewModel(IThemeSelectorService themeSelectorService)
     {
+        VersionString = VersionId switch
+        {
+            0 => "Consumer Creative", //Debug for tests
+            1 => "Release Candidate", 
+            2 => "Release",
+            _ => "Unknown Version"
+        };
         _themeSelectorService = themeSelectorService;
         _elementTheme = _themeSelectorService.Theme;
         _versionDescription = GetVersionDescription();
@@ -52,15 +60,14 @@ public partial class SettingsViewModel : ObservableRecipient
 
         if (RuntimeHelper.IsMSIX)
         {
-            var packageVersion = Package.Current.Id.Version;
-
+            var packageVersion = Package.Current.Id.Version; 
             version = new(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
         }
         else
         {
             version = Assembly.GetExecutingAssembly().GetName().Version!;
-        }
-
-        return $"{"AppDisplayName".GetLocalized()} - {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+        } 
+        return $"{"AppDisplayName".GetLocalized()} {version.Major}.{version.Minor}.{version.Build}.{version.Revision} {VersionString} \n@Serzhik Sakura 2023-2024";
     }
+    
 }

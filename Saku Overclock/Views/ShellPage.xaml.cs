@@ -1,24 +1,37 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows.Threading;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System.Windows.Input;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Navigation; 
+using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation;
 using Windows.System;
+using Button = Microsoft.UI.Xaml.Controls.Button;
 
 namespace Saku_Overclock.Views;
 
 // TODO: Update NavigationViewItem titles and icons in ShellPage.xaml.
 public sealed partial class ShellPage : Page
-{ 
+{
+    private const int WH_KEYBOARD_LL = 13; // ID хука на клавиатуру
+
+    private const int WM_KEYDOWN = 0x0100;// ID события нажатия клавиши
+
+    private static readonly LowLevelKeyboardProc _proc = HookCallback;// Коллбэк метод (вызывается при срабатывании хука)
+
+    private static IntPtr _hookID = IntPtr.Zero;// ID хука, используется, например, для удаления
     private System.Windows.Threading.DispatcherTimer? dispatcherTimer;
-    private bool loaded = false;
+    private bool loaded = true;
     private bool IsNotificationPanelShow;
     private int? compareList;
     private Config config = new();
@@ -26,25 +39,139 @@ public sealed partial class ShellPage : Page
     private Profile[] profile = new Profile[1];
     private readonly Microsoft.UI.Windowing.AppWindow m_AppWindow;
     private bool fixedTitleBar = false;
+    private Themer themer = new();
+
     public ShellViewModel ViewModel
     {
         get;
     }
-    
+
     public ShellPage(ShellViewModel viewModel)
     {
+        _hookID = SetHook(_proc);
         m_AppWindow = App.MainWindow.AppWindow;
         ViewModel = viewModel;
-        InitializeComponent(); 
+        InitializeComponent();
         ViewModel.NavigationService.Frame = NavigationFrame;
-        ViewModel.NavigationViewService.Initialize(NavigationViewControl); 
+        ViewModel.NavigationViewService.Initialize(NavigationViewControl);
         // A custom title bar is required for full window theme and Mica support.
         // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(AppTitleBar);
-        App.MainWindow.Activated += MainWindow_Activated; 
+        App.MainWindow.Activated += MainWindow_Activated;
+        App.MainWindow.Closed += MainWindow_Closed;
+       /* RTSSHandler.RunRTSS(); 
+        if (RTSSHandler.IsRTSSRunning)
+        {
+            RTSSHandler.Print("Welcome to Saku Overclock RTSS Addon");
+        }*/
     }
+
+
     #region JSON and Initialization
+    private static IntPtr SetHook(LowLevelKeyboardProc proc) //Эту функцию можно не изменять
+    {
+
+        using var curProcess = Process.GetCurrentProcess();//Получаем текущий процесс
+
+        using var curModule = curProcess?.MainModule!;//Получаем главный модуль процесса
+
+        return SetWindowsHookEx(WH_KEYBOARD_LL, proc,//Вызываем WinAPI функцию
+
+            GetModuleHandle(curModule?.ModuleName!), 0);//Получаем хэндл модуля
+
+    }
+
+    private delegate IntPtr LowLevelKeyboardProc(//Callback делегат(для вызова callback метода)
+
+        int nCode, IntPtr wParam, IntPtr lParam);
+    private void MainWindow_Closed(object sender, WindowEventArgs args)
+    {
+        UnhookWindowsHookEx(_hookID); //Убить хук клавиш при закрытии приложения
+    }
+    private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)//Собственно сам callback метод
+    {
+        //Проверяем следует ли перехватывать хук(первая половина), и то, 
+        //что произошло именно событие нажатия на клавишу (вторая половина)
+        if (nCode >= 0 && wParam == WM_KEYDOWN)
+        {
+            var vkCode = Marshal.ReadInt32(lParam); //Получаем код клавиши из неуправляемой памяти
+            //Переключить между своими пресетами - Switch profile to next Custom
+            if ((Keys)vkCode == Keys.W && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
+            {
+                //Прочитать уведомления
+                var notify = new JsonContainers.Notifications();
+                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))
+                {
+                    try
+                    {
+                        notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))!;
+                    }
+                    catch { }
+                }
+                notify.Notifies ??= new List<Notify>();
+                notify.Notifies.Add(new Notify { Title = "Смена пресета", Msg = "Вы успешно переключили ваши пресеты на следующий по счёту!", Type = InfoBarSeverity.Error });
+                try //Сохранить уведомления
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify, Formatting.Indented));
+                }
+                catch { }
+            }
+            //Переключить между готовыми пресетами - Switch profile to next Premaded
+            if ((Keys)vkCode == Keys.P && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
+            {
+                var notify = new JsonContainers.Notifications();
+                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))
+                {
+                    try
+                    {
+                        notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))!;
+                    }
+                    catch { }
+                }
+                notify.Notifies ??= new List<Notify>();
+                notify.Notifies.Add(new Notify { Title = "Смена пресета", Msg = "Вы успешно переключили готовые пресеты на следующий по счёту!", Type = InfoBarSeverity.Error });
+                try
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify, Formatting.Indented));
+                }
+                catch { }
+            }
+        }
+        return CallNextHookEx(_hookID, nCode, wParam, lParam);//Передаем нажатие в следующее приложение
+    }
+    //Импорт необходимых функций из WinApi
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+    private static extern IntPtr SetWindowsHookEx(int idHook,
+
+        LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+    private static extern short GetAsyncKeyState(int vKey);
+
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+    [return: MarshalAs(UnmanagedType.Bool)]
+
+    private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+    private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode,
+
+        IntPtr wParam, IntPtr lParam);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+    private static extern IntPtr GetModuleHandle(string lpModuleName);
+
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
@@ -54,6 +181,7 @@ public sealed partial class ShellPage : Page
         MandarinAddNotification("Overclock Started!\n" + DateTime.Today, "Now you can set up your Saku Overclock", InfoBarSeverity.Success); //DEBUG. TEST MESSAGE. WILL NOT BE DISPLAYED!!!
         StartInfoUpdate();
         GetProfileInit();
+
     }
     private void StartInfoUpdate()
     {
@@ -75,7 +203,7 @@ public sealed partial class ShellPage : Page
         {
             // Окно не активировано
             dispatcherTimer?.Stop();
-        } 
+        }
     }
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
     {
@@ -99,8 +227,8 @@ public sealed partial class ShellPage : Page
         if (IsNotificationPanelShow)
         {
             return Task.CompletedTask;
-        } 
-        NotifyLoad(); 
+        }
+        NotifyLoad();
         if (notify.Notifies == null) { return Task.CompletedTask; }
         DispatcherQueue?.TryEnqueue(() =>
         {
@@ -109,6 +237,11 @@ public sealed partial class ShellPage : Page
             ClearAllNotification(null, null);
             foreach (var notify1 in notify?.Notifies!)
             {
+                if (notify1.Title.Equals("Theme applied!")) //Если уведомление о изменении темы
+                {
+                    Theme_Loader();
+                    notify?.Notifies.Remove(notify1); NotifySave(); return; //Удалить и не показывать
+                }
                 MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.isClosable, notify1.Subcontent, notify1.CloseClickHandler);
                 if (notify1.Title.Contains("SaveSuccessTitle".GetLocalized()) || notify1.Title.Contains("DeleteSuccessTitle".GetLocalized()) || notify1.Title.Contains("Edit_TargetTitle".GetLocalized())) { contains = true; }
             }
@@ -117,12 +250,43 @@ public sealed partial class ShellPage : Page
         });
         return Task.CompletedTask;
     }
+    private void Theme_Loader()
+    {
+        ThemeLoad();
+        try
+        {
+            ConfigLoad();
+            ThemeOpacity.Opacity = themer!.Themes[config.ThemeType]!.ThemeOpacity;
+            ThemeMaskOpacity.Opacity = themer.Themes[config.ThemeType].ThemeMaskOpacity; 
+            if (config.ThemeType > 2)
+            {
+                ThemeBackground.ImageSource = new BitmapImage(new Uri(themer.Themes[config.ThemeType].ThemeBackground));
+            }
+        }
+        catch 
+        {
+            NotifyLoad(); notify.Notifies ??= new List<Notify>();
+            try
+            {
+                notify.Notifies.Add(new Notify { Title = "ThemeError".GetLocalized() + "\"" + $"{themer!.Themes[config.ThemeType]!.ThemeName}" + "\"", Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error });
+            }
+            catch
+            {
+                notify.Notifies.Add(new Notify { Title = "ThemeError".GetLocalized() + "\"" + ">> " + config.ThemeType + "\"", Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error });
+
+            }
+            NotifySave(); config.ThemeType = 0;
+            ConfigSave(); return; 
+        }
+    }
+
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
         // App.AppTitlebar = AppTitleBarText as UIElement;
         App.AppTitlebar = VersionNumberIndicator;
         AppTitleBar.Loaded += AppTitleBar_Loaded;
         AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
+        Theme_Loader(); //Загрузить тему
     }
     private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
     {
@@ -211,7 +375,7 @@ public sealed partial class ShellPage : Page
                 try
                 {
                     notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))!;
-                    if (notify != null) { success = true; } else { JsonRepair('p'); }
+                    if (notify != null) { success = true; } else { JsonRepair('n'); }
                 }
                 catch { JsonRepair('n'); }
             }
@@ -224,8 +388,72 @@ public sealed partial class ShellPage : Page
             }
         }
     }
+    public void ThemeSave()
+    {
+        try
+        {
+            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer, Formatting.Indented));
+        }
+        catch { } // No need for repairing!
+    }
+    public void ThemeLoad()
+    {
+        try
+        {
+            themer = JsonConvert.DeserializeObject<Themer>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json"))!;
+            if (themer.Themes.Count > 8)
+            {
+                themer.Themes.RemoveRange(0, 8);
+            }
+            if (themer == null) { JsonRepair('t'); }
+        }
+        catch
+        {
+            JsonRepair('t');
+        }
+    } 
     public void JsonRepair(char file)
     {
+        if (file == 't')
+        {
+            try
+            {
+                themer = new Themer();
+            }
+            catch
+            {
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+            }
+            if (themer != null)
+            {
+                try
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
+                }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                }
+            }
+            else
+            {
+                try
+                {
+
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
+                }
+                catch
+                {
+                }
+            }
+        }
         if (file == 'c')
         {
             try
@@ -370,7 +598,7 @@ public sealed partial class ShellPage : Page
             Itemz.Clear();
             var userProfiles = new ComboBoxItem
             {
-                Content = new TextBlock { Text = "User profiles", Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"] },
+                Content = new TextBlock { Text = "Shell_CustomProfiles".GetLocalized(), Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"] },
                 IsEnabled = false
             };
             Itemz.Add(userProfiles);
@@ -395,15 +623,15 @@ public sealed partial class ShellPage : Page
             Itemz.Add(separator);
             var premadedProfiles = new ComboBoxItem
             {
-                Content = new TextBlock { Text = "Premaded profiles", Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"] },
+                Content = new TextBlock { Text = "Shell_PremadedProfiles".GetLocalized(), Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"] },
                 IsEnabled = false
             };
             Itemz.Add(premadedProfiles);
-            Itemz.Add(new ComboBoxItem() { Content = "Minimum", Name = "PremadeSsAMin" });
-            Itemz.Add(new ComboBoxItem() { Content = "Eco", Name = "PremadeSsAEco" });
-            Itemz.Add(new ComboBoxItem() { Content = "Balance", Name = "PremadeSsABal" });
-            Itemz.Add(new ComboBoxItem() { Content = "Speed", Name = "PremadeSsASpd" });
-            Itemz.Add(new ComboBoxItem() { Content = "Maximum", Name = "PremadeSsAMax" });
+            Itemz.Add(new ComboBoxItem() { Content = "Shell_Preset_Min".GetLocalized(), Name = "PremadeSsAMin" });
+            Itemz.Add(new ComboBoxItem() { Content = "Shell_Preset_Eco".GetLocalized(), Name = "PremadeSsAEco" });
+            Itemz.Add(new ComboBoxItem() { Content = "Shell_Preset_Balance".GetLocalized(), Name = "PremadeSsABal" });
+            Itemz.Add(new ComboBoxItem() { Content = "Shell_Preset_Speed".GetLocalized(), Name = "PremadeSsASpd" });
+            Itemz.Add(new ComboBoxItem() { Content = "Shell_Preset_Max".GetLocalized(), Name = "PremadeSsAMax" });
             ViewModel.Items = Itemz;
             if (config.Preset == -1)
             {
@@ -436,7 +664,6 @@ public sealed partial class ShellPage : Page
     {
         int indexRequired;
         var element = ProfileSetComboBox.SelectedItem as ComboBoxItem;
-
         ConfigLoad();
         //Required index
         if (!element!.Name.Contains("PremadeSsA"))
@@ -444,11 +671,11 @@ public sealed partial class ShellPage : Page
             indexRequired = ProfileSetComboBox.SelectedIndex - 1;
             config.Preset = ProfileSetComboBox.SelectedIndex - 1;
             ConfigSave();
-            /*App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-                    {
-                        var navigationService = App.GetService<INavigationService>();
-                        if (App.MainWindow.Content as Frame == cpu.Frame) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!); navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!); }
-                    });*/
+            App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+            {
+                var navigationService = App.GetService<INavigationService>();
+                if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true); }
+            });
         }
         else
         {
@@ -504,11 +731,11 @@ public sealed partial class ShellPage : Page
                 MainWindow.Applyer.Apply(false);
             }
             ConfigSave();
-            /* App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-             {
-                 var navigationService = App.GetService<INavigationService>();
-                 if (App.MainWindow.Content as Frame == param.Frame) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!); navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!); }
-             });*/
+            App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+            {
+                var navigationService = App.GetService<INavigationService>();
+                if (navigationService.Frame!.GetPageViewModel() is ПресетыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!, null, true); }
+            });
             return;
         }
         ConfigLoad();
@@ -901,7 +1128,11 @@ public sealed partial class ShellPage : Page
     private void ProfileSetButton_Click(object sender, RoutedEventArgs e)
     {
         MandarinSparseUnit();
-        ProfileSetButton.IsEnabled = false; 
+        ProfileSetButton.IsEnabled = false;
+    }
+    private void ProfileSetButton_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (ProfileSetButton.IsEnabled) { ActivateText.Text = "Shell_Activate".GetLocalized(); } else { ActivateText.Text = "Shell_DeActivate".GetLocalized(); }
     }
     private void ProfileSetComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -1027,13 +1258,13 @@ public sealed partial class ShellPage : Page
                 Margin = new Thickness(0, 4, 4, 0),
                 Width = 600,
                 CornerRadius = new CornerRadius(8),
-                HorizontalAlignment = HorizontalAlignment.Right
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Right
             };
             if (Subcontent != null) { OtherContentContainer.Children.Add(Subcontent); Notification.Content = OtherContentContainer; }
             Notification.Name = Msg + " " + DateTime.Now.ToString();
             Notification.CloseButtonClick += CloseClickHandler;
             MandarinShowNotify(Name, Notification);
-            if (CloseClickHandler == null) { Notification.CloseButtonClick += CloseThisClickHandler; } 
+            if (CloseClickHandler == null) { Notification.CloseButtonClick += CloseThisClickHandler; }
         });
     }
     public void MandarinShowNotify(string Name, InfoBar Notification)
@@ -1062,5 +1293,5 @@ public sealed partial class ShellPage : Page
         Container.Children.Add(Notification);
         NotificationContainer.Children.Add(Container);
     }
-    #endregion
+    #endregion 
 }

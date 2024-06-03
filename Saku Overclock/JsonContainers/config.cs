@@ -7,8 +7,8 @@ internal class Config
     public bool FixedTitleBar = false;
     public string ApplyInfo;
     public int Preset = 0;
-    public bool RangeApplied = true;
-    public bool bluetheme;
+    public bool RangeApplied = true; 
+    public int ThemeType = 0; 
     public bool Infoupdate;
     public string fanvalue;
     public int fanconfig;
@@ -19,8 +19,7 @@ internal class Config
     public double fan1;
     public double fan2;
     public bool reapplyinfo;
-    public bool autostart;
-    public bool traystart;
+    public int AutostartType = 0; 
     public bool autooverclock;
     public bool reapplytime;
     public double reapplytimer;

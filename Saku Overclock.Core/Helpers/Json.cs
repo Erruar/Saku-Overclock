@@ -9,7 +9,7 @@ public static class Json
     {
         return await Task.Run<T>(() =>
         {
-            return JsonConvert.DeserializeObject<T>(value);
+            return JsonConvert.DeserializeObject<T>(value)!;
         });
     }
 

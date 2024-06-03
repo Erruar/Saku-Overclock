@@ -19,6 +19,8 @@ using Process = System.Diagnostics.Process;
 using TextBox = Microsoft.UI.Xaml.Controls.TextBox;
 using ZenStates.Core;
 using System.Collections.ObjectModel;
+using Microsoft.UI;
+using Windows.UI;
 
 namespace Saku_Overclock.Views;
 
@@ -66,7 +68,7 @@ public sealed partial class ПараметрыPage : Page
         }
         catch
         {
-            //App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+            App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash_CPU".GetLocalized(), AppContext.BaseDirectory));
         }
         Loaded += ПараметрыPage_Loaded;
     }
@@ -548,6 +550,7 @@ public sealed partial class ПараметрыPage : Page
         if (smusettings.Note != string.Empty)
         {
             SMUNotes.Document.SetText(TextSetOptions.FormatRtf, smusettings.Note);
+            ChangeRichEditBoxTextColor(SMUNotes, GetColorFromBrush(TextColor.Foreground));
         }
         try
         {
@@ -557,6 +560,24 @@ public sealed partial class ПараметрыPage : Page
         {
             //Ignored
         }
+    }
+    private static Color GetColorFromBrush(Brush brush)
+    {
+        if (brush is SolidColorBrush solidColorBrush)
+        {
+            return solidColorBrush.Color;
+        }
+        else
+        {
+            throw new InvalidOperationException("Brush is not a SolidColorBrush");
+        }
+    }
+    private static void ChangeRichEditBoxTextColor(RichEditBox richEditBox, Color color)
+    {
+        richEditBox.Document.ApplyDisplayUpdates(); 
+        var documentRange = richEditBox.Document.GetRange(0, TextConstants.MaxUnitCount);
+        documentRange.CharacterFormat.ForegroundColor = color; 
+        richEditBox.Document.ApplyDisplayUpdates();
     }
     private void Init_QuickSMU()
     {
@@ -762,8 +783,7 @@ public sealed partial class ПараметрыPage : Page
             index = 0;
         }
         comboBoxMailboxSelect.SelectedIndex = index;
-        QuickCommand.IsEnabled = true;
-        QuickCommand2.IsEnabled = true;
+        QuickCommand.IsEnabled = true; 
         await Send_Message("SMUScanText".GetLocalized(), "SMUScanDesc".GetLocalized(), Symbol.Message);
     }
     private void BackgroundWorkerTrySettings_DoWork(object sender, DoWorkEventArgs e)
@@ -3011,10 +3031,12 @@ public sealed partial class ПараметрыPage : Page
                 var profileList = new List<Profile>(profile)
                 {
                     new()
+                    {
+                        profilename =SaveProfileN.Text
+                    }
                 };
                 profile = profileList.ToArray();
-                waitforload = false;
-                profile[indexprofile].profilename = SaveProfileN.Text;
+                waitforload = false; 
                 NotifyLoad();
                 notify.Notifies ??= new List<Notify>();
                 notify.Notifies.Add(new Notify { Title = "SaveSuccessTitle".GetLocalized(), Msg = "SaveSuccessDesc".GetLocalized() + " " + SaveProfileN.Text, Type = InfoBarSeverity.Success });
@@ -3125,7 +3147,7 @@ public sealed partial class ПараметрыPage : Page
                 profile = profileList.ToArray();
                 indexprofile = 0;
                 waitforload = false;
-                ProfileCOM.SelectedIndex = 0;
+                ProfileCOM.SelectedIndex = 0; 
                 NotifyLoad();
                 notify.Notifies ??= new List<Notify>();
                 notify.Notifies.Add(new Notify { Title = "DeleteSuccessTitle".GetLocalized(), Msg = "DeleteSuccessDesc".GetLocalized(), Type = InfoBarSeverity.Success });
@@ -3532,20 +3554,27 @@ public sealed partial class ПараметрыPage : Page
     //Enable or disable pstate toggleswitches...
     private void EnablePstatess()
     {
-        if (EnablePstates.IsOn)
+        try
         {
-            devices.enableps = true;
-            DeviceSave();
-            profile[indexprofile].enablePstateEditor = true;
-            ProfileSave();
+            if (EnablePstates.IsOn)
+            {
+                devices.enableps = true;
+                DeviceSave();
+                profile[indexprofile].enablePstateEditor = true;
+                ProfileSave();
+            }
+            else
+            {
+                devices.enableps = false;
+                DeviceSave();
+                profile[indexprofile].enablePstateEditor = false;
+                ProfileSave();
+            }
         }
-        else
+        catch
         {
-            devices.enableps = false;
-            DeviceSave();
-            profile[indexprofile].enablePstateEditor = false;
-            ProfileSave();
-        }
+            indexprofile = 0;
+        } 
     }
     private void TurboBoost()
     {

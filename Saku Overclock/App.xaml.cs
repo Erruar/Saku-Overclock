@@ -105,17 +105,17 @@ public partial class App : Application
     {
         base.OnLaunched(args);
         GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
-        await GetService<IActivationService>().ActivateAsync(args);
         bool isFirstInstance; // Проверяем, запущен ли уже экземпляр программы
         var mutex = new Mutex(true, "MyProgramMutex", out isFirstInstance); 
         if (!isFirstInstance)
         { 
             MessageBox.Show("Текущий экземпляр будет завершен через 3 секунды...", "Другой экземпляр программы уже запущен.");
             Thread.Sleep(3000);
+            App.MainWindow.Close();
             mutex.ReleaseMutex();
             return; 
         }  
-        
+        await GetService<IActivationService>().ActivateAsync(args);
     }
     #endregion
 }

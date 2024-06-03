@@ -89,7 +89,7 @@
                             <Grid Height="65" Width="2000">
                                 <SymbolIcon Symbol="SelectAll" HorizontalAlignment="Left" Margin="0,0,9,0"/>
                                 <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_CPU_Text"  Text="Мощность процессора"></TextBlock>
-                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_CPU_Pdesc"  Text="Мощность процессора"></TextBlock>
+                                <TextBlock x:Name="TextColor" Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_CPU_Pdesc"  Text="Мощность процессора"></TextBlock>
                             </Grid>
                         </Expander.Header>
                         <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="2000">
@@ -1273,7 +1273,7 @@
                         </Expander.Header>
                         <Grid >
                             <ScrollViewer Margin="200,60,0,0"  HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="217">
-                                <RichEditBox HorizontalAlignment="Stretch" x:Name="SMUNotes" TextChanged="SMUNotes_TextChanged" VerticalAlignment="Stretch" PlaceholderText="Здесь могут быть ваши заметки..."> 
+                                <RichEditBox IsColorFontEnabled="True" HorizontalAlignment="Stretch" x:Name="SMUNotes" TextChanged="SMUNotes_TextChanged" VerticalAlignment="Stretch" PlaceholderText="Здесь могут быть ваши заметки..."> 
                                 </RichEditBox>
                             </ScrollViewer>
                             <Grid x:Name="SMU_MainSection" HorizontalAlignment="Stretch">
@@ -1393,24 +1393,8 @@
                                             </FontIcon.RenderTransform>
                                         </FontIcon>
                                     </Grid>
-                                </Grid>
-                                <Grid Grid.Row="9" Margin="0,10,0,0" HorizontalAlignment="Stretch">
-                                    <Button Height="50" HorizontalContentAlignment="Stretch" x:Name="QuickCommand2" IsEnabled="True" Click="UnlockFeature_Click"  HorizontalAlignment="Stretch">
-                                        <Grid Height="50">
-                                            <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe785;"/>
-                                            <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"   Text="Разблокировать возможности SMU"></TextBlock>
-                                            <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"    Text="Разблокирует заблокированные возможности SMU"></TextBlock>
-                                        </Grid>
-                                    </Button>
-                                    <Grid HorizontalAlignment="Right">
-                                        <FontIcon VerticalAlignment="Center" Margin="-40,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe974;">
-                                            <FontIcon.RenderTransform>
-                                                <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
-                                            </FontIcon.RenderTransform>
-                                        </FontIcon>
-                                    </Grid>
-                                </Grid>
-                                <Grid Grid.Row="10" Margin="0,0,0,0" x:Name="QuickSMU" HorizontalAlignment="Stretch" > 
+                                </Grid> 
+                                <Grid Grid.Row="9" Margin="0,0,0,0" x:Name="QuickSMU" HorizontalAlignment="Stretch" > 
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -1668,8 +1652,6 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
             
             <!-- Конец -->
             
-            <TextBlock Grid.Row="2" x:Uid="Param_New" Text="Название нового пресета:" Margin="0,16,0,0" FontSize="20"></TextBlock>
-            <TextBox Grid.Row="2" x:Name="SaveName" HorizontalAlignment="Left" Margin="260,0,0,0" Width="200" Height="40"></TextBox>
             <Button x:Uid="Param_Apply" Grid.Row="2" HorizontalAlignment="Right" Click="Apply_Click" Height="40" Width="40" Margin="0,0,-13,0" ToolTipService.ToolTip="Применить">
                 <SymbolIcon Symbol="Play" HorizontalAlignment="Left" Margin="-3,0,-5,0"/>
             </Button>

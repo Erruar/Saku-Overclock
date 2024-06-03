@@ -14,9 +14,9 @@
 	<UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <AssemblyVersion></AssemblyVersion>
-    <FileVersion>1.11.0.0</FileVersion>
+    <FileVersion>1.0.11.0</FileVersion>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>  
-    <Version>1.11.0.0</Version>
+    <Version>1.0.11.0</Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
     <UseWPF>False</UseWPF>
@@ -40,7 +40,13 @@
 	<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\discord.png" />
     <Content Remove="Assets\powermon.ico" />
+    <Content Remove="Assets\ThemeBg\folder.png" />
+    <Content Remove="Assets\ThemeBg\link.png" />
+    <Content Remove="Assets\Themes\DuwlKmK.png" />
+    <Content Remove="Assets\Themes\fw41KXN.png" />
+    <Content Remove="Assets\Themes\ZqjqlOs.png" />
     <Content Remove="Assets\xml.png" />
   </ItemGroup>
   <ItemGroup>
@@ -111,7 +117,7 @@
 
   <ItemGroup>
     <Reference Include="RTSSSharedMemoryNET">
-      <HintPath>..\..\..\..\Downloads\RTSSSharedMemoryNET.dll</HintPath>
+      <HintPath>RTSSSharedMemoryNET.dll</HintPath>
     </Reference>
     <Reference Include="System.Management">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Management.dll</HintPath>
@@ -181,7 +187,25 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\discord.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\powermon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\ThemeBg\folder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\ThemeBg\link.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Themes\DuwlKmK.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Themes\fw41KXN.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Themes\ZqjqlOs.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Assets\xml.png">
