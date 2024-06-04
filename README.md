@@ -113,10 +113,9 @@ Use the `README.md` to get started.
     <p align="left">The main page of my application will greet you at launch</p>
     <p> </p>
     <h1 align="center">White and blue main page</h1>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main-white.png"></img>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main-blue.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main-white.png"></img> 
     <p> </p>
-    <p align="left">My application has three themes - dark, light and blue, here you can see the light and blue theme. Note: You can use blue theme ONLY on windows 11 cuz Windows 10 haven't this function</p>
+    <p align="left">My application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it</p>
   </ol>
 </details>
 
