@@ -318,7 +318,7 @@ My program CANNOT cause you to burn down the processor if you do not:
 - Set the maximum temperature above 90 degrees,
 - Set extremely high Power Limits and at the same time very low Time of fast and Time of slow frequency rise(S),
 - Use SMU parameters without proper knowledge, manuals, warnings or by accident
-- If you are trying to create an NBFC configuration file for yourself to control the speed of the cooler, it MAY well STOP! Take this into account! Create such configurations ONLY when you have set the Fan Service Control Status to Disabled or Read Only,
+- If you are trying to create an NBFC configuration file for yourself to control the speed of the cooler, it MAY well STOP Spinning! Take this into account! Create such configurations ONLY when you have set the Fan Service Control Status to Disabled or Read Only,
 - If you are trying to increase the frequency above the maximum, I DO NOT GUARANTEE the safety of such actions. All potentially dangerous parameters are marked with a special icon, hover over it and **READ** what it changes before changing it
 
 <a href="https://github.com/Erruar/Saku-Overclock/issues/2"><strong>Seems like app isn't working for me »</strong></a>
@@ -334,6 +334,7 @@ My program CANNOT cause you to burn down the processor if you do not:
 - [x] Add Readme
 - [x] Add back to top links
 - [x] Add and create first Beta version
+- [x] Add and create first Release Candidate version
 - [ ] Add and create first Release version
 - [ ] Multi-language Support
     - [x] English
