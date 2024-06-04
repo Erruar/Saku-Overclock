@@ -39,7 +39,7 @@
     <a href="https://github.com/Erruar/Saku-Overclock/releases"><strong>Explore the releases »</strong></a>
     <br />
     <br />
-    <a href="https://youtu.be/wi1nCkhE1pI">View OLD installation</a>
+    <a href="https://www.youtube.com/watch?v=RToJMa5GZ7Q">View installation</a>
     ·
     <a href="https://github.com/Erruar/Saku-Overclock/issues">Report Bug</a>
     ·
@@ -284,8 +284,8 @@ Let's install my app!
 ### If you have any troubles 
 <a href="https://github.com/Erruar/Saku-Overclock/issues/new"><strong>Seems like app isn't working for me »</strong></a>
 
-## OLD APP Video installation (Click to open)
-[![Playback](https://i.ytimg.com/vi/wi1nCkhE1pI/maxresdefault.jpg)](https://youtu.be/wi1nCkhE1pI)
+## Video installation (Click to open)
+[![Playback](https://i.ytimg.com/vi/RToJMa5GZ7Q/maxresdefault.jpg)](https://www.youtube.com/watch?v=RToJMa5GZ7Q)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
