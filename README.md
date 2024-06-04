@@ -142,7 +142,7 @@ Use the `README.md` to get started.
     <h1 align="center">Maximum preset</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/max.png"></img>
     <p> </p>
-    <p align="left">Maximum preset will give you maximum performance of your cpu</p>
+    <p align="left">Maximum preset will give you almost maximum performance of your cpu</p>
     <p> </p>
   </ol>
 </details>
