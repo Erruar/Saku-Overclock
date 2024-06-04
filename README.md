@@ -248,7 +248,7 @@ Use the `README.md` to get started.
 
 ### Built With
 
-My program was built using Win UI 3.NET interface and is based on C#. She uses RyzenAdj which is written in C++
+My program was built using Win UI 3 .NET interface with UWP framework and is based on C#. The app uses RyzenAdj for viewing information on information page which is written on C++ programming language, Zen States Core and Collapse launcher elements.
 * [![Dotnet][Dotnet.com]][Dotnet-url]
 * [![Json][Json.org]][Json-url]
 * [![Csharp][Csharp.org]][Csharp-url]
