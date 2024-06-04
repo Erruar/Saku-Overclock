@@ -381,6 +381,7 @@ Project Link: [https://github.com/Erruar/Saku-Overclock/](https://github.com/Err
 
 Here you can see links to everything that was used in the development of the project:
 * [Zen States Core](https://github.com/irusanov/ZenStates-Core)
+* [Collapse launcher UI elements](https://github.com/CollapseLauncher/Collapse)
 * [Notebook fan control](https://github.com/hirschmann/nbfc)
 * [Ryzen ADJ](https://github.com/FlyGoat/RyzenAdj)
 * [Freepik icons](https://www.freepik.com/)
