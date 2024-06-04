@@ -273,33 +273,18 @@ In order for my app to work properly, you will first need to download Notebook f
 
 Let's install my app!
 
-1. Get a `certificate.pfx` from releases: [Releases link](https://github.com/Erruar/Saku-Overclock/releases)
-2. Double click on certificate then click next, don`t use any passwords, press next, then IMPORTANT: choose "Place all certificates in the following store" (second) and click "browse", then choose "Trusted Root Certification Authorities" (second), click "OK" and "Next", then "Finish" and "Ok"
-   <details>
-     <summary>Installation in pictures:</summary>
-     <ol>
-       <h1 align="center">How to install certificate</h1>
-       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/install/1.png"></img>
-       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/install/2.png"></img>
-       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/install/3.png"></img>
-       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/install/4.png"></img>
-       <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/install/5.png"></img>
-     </ol>
-   </details>
-3. Install `.appx` like normal `.exe` or `.msi` file
-4. Open app via Windows -> All apps
-5. Now you have installed my app!
+1. Get a `Saku Overclock.exe` from releases: [Releases link](https://github.com/Erruar/Saku-Overclock/releases)
+2. Double click on downloaded `.exe`
+3. Install it 
+4. Create desktop link: Go to `C:\Program Files (x86)\Saku Overclock` find a `Saku Overclock.exe` and right click on it. Select **Share** then select **Desktop (Create link)**
+5. Open new link from your Desktop
+6. Now you have installed my app!
 
-### If you have troubles with certificate
-How to install app without certificate:
-1. <a href="https://github.com/colinkiama/EasyCertInstall/releases"><strong>Download EasyCertInstall</strong></a>
-2. Put `EasyCertInstall.exe` into folder with my `.appx` app
-3. Run `EasyCertInstall.exe` as Administrator and wait for message from it
-4. Run my app from Windows button or from Windows Search and you can delete `EasyCertInstall.exe` and `.appx`!
+### If you have any troubles 
+<a href="https://github.com/Erruar/Saku-Overclock/issues/new"><strong>Seems like app isn't working for me »</strong></a>
 
-<a href="https://github.com/Erruar/Saku-Overclock/issues/2"><strong>Seems like app isn't working for me »</strong></a>
-## Video installation (Click to open)
-[![asciicast](https://i.stack.imgur.com/gHrep.png)](https://youtu.be/wi1nCkhE1pI)
+## OLD APP Video installation (Click to open)
+[![Playback](https://i.ytimg.com/vi/wi1nCkhE1pI/maxresdefault.jpg)](https://youtu.be/wi1nCkhE1pI)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
