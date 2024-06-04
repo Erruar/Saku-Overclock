@@ -268,6 +268,7 @@ To get a copy of my app and running follow these simple steps:
 
 In order for my app to work properly, you will first need to download Notebook fan controller
 [Link to download](https://github.com/hirschmann/nbfc/releases)
+If you don't want to control the coolers through my app, you can skip this step.
 
 ### Installation
 
@@ -363,9 +364,9 @@ Distributed under the GPL-3.0 License. See `LICENSE.md` for more information. Th
 <!-- CONTACT -->
 ## Contact
 
-Our Discord - [Saku Overclock Community](https://discord.com/invite/eFcP6TSjEZ) - erruarbrorder@gmail.com
+**Our Discord** - [Saku Overclock Community](https://discord.com/invite/eFcP6TSjEZ) - **erruarbrorder@gmail.com**
 
-Project Link: [https://github.com/Erruar/Saku-Overclock/](https://github.com/Erruar/Saku-Overclock/)
+**Project Link:** [https://github.com/Erruar/Saku-Overclock/](https://github.com/Erruar/Saku-Overclock/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
