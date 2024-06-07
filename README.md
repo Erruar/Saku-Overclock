@@ -306,9 +306,17 @@ Use the `README.md` to get started.
   <summary>Settings</summary>
   <ol>
     <h1 align="center">Settings page</h1>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings.png"></img>
-    <p> </p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings.png"></img> 
     <p align="left">There you can add app in autostart with windows, set close app to tray when it opening, set autoapply when opening, check for updates and I recommend to enable - Reapply latest setting every. Enable it and set to 1-7. This value is enough</p>
+    <br />
+    <br />
+    <h1 align="center">Settings startup options</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_startup.png"></img> 
+    <p align="left">You can chose preferred startup options</p> 
+    <p align="left"><span style="font-family: Open Sans; font-weight: 600; font-size: 16px; font-style: normal">There are no options:</span> The application does not run with the system and does not hide from the user in the system tray when launched.</p>
+    <p align="left">Hide in the tray: When the application is launched from the user, it will immediately hide in the tray, without distracting you from your work.</p>
+    <p align="left">startup with OS: The application will run with the system, but will not hide in the tray.</p>
+    <p align="left">Startup & Tray: The application will launch with the system and immediately hide in the tray, without distracting you from your work</p>
   </ol>
 </details>
 
