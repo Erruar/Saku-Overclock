@@ -320,6 +320,21 @@ Use the `README.md` to get started.
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themes.png"></img> 
     <p align="left">My application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it.</p> 
     <h3 align="left">PLEASE, AFTER APPLYING ANY THEME, CHANGE THE WINDOW SIZE SLIGHTLY, JUST ONCE IS ENOUGH AFTER APPLYING THEME, THIS IS IMPORTANT, BECAUSE THE THEME MAY NOT BE APPLIED ADEQUATELY!</h3>
+    <br />
+    <br />
+    <h1 align="center">Advanced theme settings</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_advancedthemes.png"></img> 
+    <p align="left">There you can adjust the transparency level of both the background image and the darkening mask after it and change theme background (only on custom themes).</p> 
+    <br />
+    <br />
+    <h1 align="center">Background theme settings</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themebg.png"></img> 
+    <p align="left">There you can change theme background from file or from link to image. Note: on some Windows 10 build we have huge problems with this feature!</p> 
+    <br />
+    <br />
+    <h1 align="center">Theme manager</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_thememanager.png"></img> 
+    <p align="left">There you can manage all your custom themes or create a new one (New name...). You can change theme names or delete themes.</p> 
   </ol>
 </details>
 
