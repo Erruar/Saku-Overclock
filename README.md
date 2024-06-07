@@ -168,13 +168,13 @@ Use the `README.md` to get started.
     <h1 align="center">CPU Overclocking</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_2.png"></img>
-    <p align="left">• CPU Overclocking: Allows users to adjust the power and temperature of their CPU, which can increase performance.</p>
+    <p align="left">• CPU Overclocking: Allows users to adjust the power and temperature of their CPU, which can significantly increase performance.</p>
     <br />
     <br />
     <h1 align="center">VRM Tuning</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_2.png"></img>
-    <p align="left">• VRM Tuning: Allows users to adjust VRM settings, Currents and timings of your CPU. Note: Super</p>
+    <p align="left">• VRM Tuning: Allows users to adjust VRM settings, Currents and timings of your CPU. Note: Super dangerous settings are CPU voltage relative and avaivable ONLY on Raven (2000), Dali (3000) and Picasso (3000) CPUs otherwise you shouldn't see those options. I actually don't recommend you to try those options.</p>
     <br />
     <br />
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/3.png"></img>
