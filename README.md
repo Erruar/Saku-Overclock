@@ -46,10 +46,7 @@
     <a href="https://github.com/Erruar/Saku-Overclock/issues">Request Feature</a>
   </p>
 </div>
-
-# Please wait a bit. I'm already updating this page for you!
-
-
+ 
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -317,6 +314,12 @@ Use the `README.md` to get started.
     <p align="left">• Hide to tray: When the application is launched from the user, it will immediately hide in the tray, without distracting you from your work.</p>
     <p align="left">• Startup with OS: The application will run with the system, but will not hide in the tray.</p>
     <p align="left">• Startup & Tray: The application will launch with the system and immediately hide in the tray, without distracting you from your work</p>
+    <br />
+    <br />
+    <h1 align="center">Application themes</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themes.png"></img> 
+    <p align="left">My application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it.</p> 
+    <h3 align="left">PLEASE, AFTER APPLYING ANY THEME, CHANGE THE WINDOW SIZE SLIGHTLY, JUST ONCE IS ENOUGH AFTER APPLYING THEME, THIS IS IMPORTANT, BECAUSE THE THEME MAY NOT BE APPLIED ADEQUATELY!</h3>
   </ol>
 </details>
 
