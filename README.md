@@ -191,10 +191,12 @@ Use the `README.md` to get started.
     <br />
     <br />
     <h1 align="center">CPU Power States</h1>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/7.png"></img>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/8.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_pst_1.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_pst_2.png"></img>
     <p> </p>
-    <p align="left">• CPU Power States: Allows users to adjust the power states of the CPU, even with system starts (if my app in autostart). everything is the same here as with the frequency of the iGPU and CPU subsystems. There is far from a 100% chance that the frequency will always be the same as you set here or the voltage, however, this way you bring your processor closer to the specified values</p>
+    <p align="left">• CPU Power States: Allows users to adjust the power states of the CPU, even with system starts (if my app in autostart). everything is the same here as with the frequency of the iGPU and CPU subsystems - "and changing these parameters DOES NOT GIVE a 100% chance that the frequency will always be equal to what you set" because the frequency and voltages of your processor depends on so many factors, which is why it is extremely problematic to set a specific frequency and voltages and make your processor keep it. However, this way you bring your processor closer to the specified values. Note: on some laptops NEEDED to activate OC1 mode in OC MODE in BIOS "AMD CBS/Zen common options" and disable CPB.</p>
+    <br />
+    <br />
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/9.png"></img>
     <p align="left">When you open SMU section - enable Quick commands to apply thems! Autodetect is there, pls DON'T CHANGE RSP, ARG and CMD Adresses! If you know SMU commands for your CPU, you can type them as a hint into Quick note box. You can highlight them if it needed or paste photo there. Autosaving is there</p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/10.png"></img>
