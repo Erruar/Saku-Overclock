@@ -396,7 +396,7 @@ Here you can see links to everything that was used in the development of the pro
 [donalerts-url]: https://www.donationalerts.com/r/RubyTrack
 [license-shield]: https://img.shields.io/badge/LICENSE%20-GPL-%230ff99C?style=for-the-badge
 [license-url]: https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md
-[product-screenshot]: https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png
+[product-screenshot]: https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main.png
 [Dotnet.com]: https://img.shields.io/badge/%20-Dotnet-%23512BD4?style=for-the-badge&logo=dotnet&logoColor=%23FFFFFF&link=https%3A%2F%2Fdotnet.microsoft.com%2F
 [Dotnet-url]: https://dotnet.microsoft.com/
 [Json.org]: https://img.shields.io/badge/%20-JSON-%23000000?style=for-the-badge&logo=json
