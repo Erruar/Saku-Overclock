@@ -171,6 +171,7 @@ Use the `README.md` to get started.
     <p align="left">• CPU Overclocking: Allows users to adjust the power and temperature of their CPU, which can increase performance.</p>
     <br />
     <br />
+    <h1 align="center">VRM Tuning</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_2.png"></img>
     <p align="left">• VRM Tuning: Allows users to adjust VRM settings, Currents and timings of your CPU. Note: Super</p>
