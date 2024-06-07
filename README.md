@@ -184,11 +184,10 @@ Use the `README.md` to get started.
     <p align="left">• iGPU and CPU subsystem clocks: Allows users to overclock clocks iGPU and other CPU subsystems. Note that this section works and visible only on processors Ryzen Raven Ridge (2000), Ryzen Dali (3000), Zen Athlon (3000) and Ryzen Picasso (3000) line, and changing these parameters DOES NOT GIVE a 100% chance that the frequency will always be equal to what you set. This will affect their base frequency, from which the main frequency is generated. In simple words, these frequencies are influenced by a lot of factors (temperature, load, power), which is why it is very difficult to make sure that the frequency is always the same. Also, I do not give any guarantees that these parameters will be unlocked for you, in case of an error you will see in the notification which parameters were not applied. About "Fix Ryzen 0,4 GHz frequency or fix Ryzen 0,39 GHz frequency: this really can fix Ryzen 0,4 GHz issue but it actually works also only for Ryzen Raven Ridge (2000), Ryzen Dali (3000), Zen Athlon (3000) and Ryzen Picasso (3000) CPU lines. "Max performance" will give your CPU the maximum RAM State - 2400 MHz for CPU and 1000 MHz for iGPU. We CAN NOT adjust it. And one note: fan speed can be MAXIMUM and there is NO WAY to fix it only if you have working for your laptop Notebook Fan Controller configuration. On other Ryzen CPU lines AMD have removed AcBtc state and there is no way to fix this issues on non 2000-3000 CPUs. But I've trying to found a solution! Thank you, testers!</p>
     <br />
     <br />
-    <p> </p>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/5.png"></img>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/6.png"></img>
-    <p> </p>
-    <p align="left">• Advanced CPU parameters: Allows users to adjust more advanced CPU parameters, which are intended for experienced overclockers and can be risky if not configured correctly. It will works only on Ryzen Renoir (4000) and above processors!</p>
+    <h1 align="center">Advanced CPU parameters</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_adv_1.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_adv_2.png"></img> 
+    <p align="left">• Advanced CPU parameters: Allows users to adjust more advanced CPU parameters, which are intended for experienced overclockers and can be risky if not configured correctly. Note: Some BIOS can Reject those options! Don't worry if nothing happens.</p>
     <p> </p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/7.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/8.png"></img>
