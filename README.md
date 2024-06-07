@@ -128,18 +128,26 @@ Use the `README.md` to get started.
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/min.png"></img>
     <p> </p>
     <p align="left">Minimum preset will keep your processor cold, but I don`t recommend to use it under CPU load! Use it only if u have latest battery percent and it is important to be online right now</p>
+    <br />
+    <br />
     <h1 align="center">Eco preset</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/eco.png"></img>
     <p> </p>
     <p align="left">Eco preset will save your battery and keep performance</p>
+    <br />
+    <br />
     <h1 align="center">Balance preset</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/balance.png"></img>
     <p> </p>
     <p align="left">Balance preset will allow you to play more without charging</p>
+    <br />
+    <br />
     <h1 align="center">Speed preset</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/speed.png"></img>
     <p> </p>
     <p align="left">Speed preset will provide better performance than normal</p>
+    <br />
+    <br />
     <h1 align="center">Maximum preset</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/max.png"></img>
     <p> </p>
@@ -156,13 +164,16 @@ Use the `README.md` to get started.
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main.png"></img>
     <p align="left"> Here you can see the contents of the Parameters page. This page is the most important in the entire application, as it allows you to configure overclocking the way you need it.</p>
     <br />
+    <br />
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_2.png"></img>
     <p align="left">• CPU Overclocking: Allows users to adjust the power and temperature of their CPU, which can increase performance.</p>
     <br />
+    <br />
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_2.png"></img>
     <p align="left">• VRM Tuning: Allows users to adjust VRM settings, Currents and timings of your CPU. Note: Super</p>
+    <br />
     <br />
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/3.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/4.png"></img>
