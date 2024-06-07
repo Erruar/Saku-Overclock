@@ -222,23 +222,23 @@ Use the `README.md` to get started.
     <p align="left"> Here you can see the contents of the Information page. This page is allowing you to see important values of you system</p>
     <br />
     <br />
-    <h1 align="center">SMU Parameters editor</h1>
+    <h1 align="center">Processor</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/1.png"></img>
     <p align="left">• Processor: Allows users to show the current properties of your processor</p>
     <br />
     <br />
-    <h1 align="center">SMU Parameters editor</h1>
+    <h1 align="center">Power Information</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/2.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/3.png"></img> 
     <p align="left">• Power Information: Allows users to watch VRM powers, Currents and timings of your CPU</p>
     <br />
     <br />
-    <h1 align="center">SMU Parameters editor</h1>
+    <h1 align="center">RAM Information</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/4.png"></img>
     <p align="left">• RAM Information: Allows users to know their common RAM info. Soon there were be more info options!</p>
     <br />
     <br />
-    <h1 align="center">SMU Parameters editor</h1>
+    <h1 align="center">CPU Power States</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/5.png"></img>
     <p align="left">• CPU Power States: There you can see PStates of you CPU</p> 
   </ol>
