@@ -155,15 +155,15 @@ Use the `README.md` to get started.
     <h1 align="center">Parameters page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main.png"></img>
     <p align="left"> Here you can see the contents of the Parameters page. This page is the most important in the entire application, as it allows you to configure overclocking the way you need it.</p>
-    <br>
+    <br />
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_2.png"></img>
     <p align="left">• CPU Overclocking: Allows users to adjust the power and temperature of their CPU, which can increase performance.</p>
-    <br>
+    <br />
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_2.png"></img>
     <p align="left">• VRM Tuning: Allows users to adjust VRM settings, Currents and timings of your CPU. Note: Super</p>
-    <br>
+    <br />
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/3.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/4.png"></img>
     <p align="left">• iGPU and CPU subsystem clocks: Allows users to overclock clocks iGPU and other CPU subsystems. Note that this section works and visible only on processors Ryzen Raven Ridge (2000), Ryzen Dali (3000), Zen Athlon (3000) and Ryzen Picasso (3000) line, and changing these parameters DOES NOT GIVE a 100% chance that the frequency will always be equal to what you set. This will affect their base frequency, from which the main frequency is generated. In simple words, these frequencies are influenced by a lot of factors (temperature, load, power), which is why it is very difficult to make sure that the frequency is always the same. Also, I do not give any guarantees that these parameters will be unlocked for you, in case of an error you will see in the notification which parameters were not applied.</p>
