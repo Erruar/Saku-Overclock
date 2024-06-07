@@ -82,7 +82,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main.png)
+[![Product Name Screen Shot][product-screenshot]](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main.png)
 
 Saku Overclock is an incredible utility for Ryzen laptop overclocking, providing precise control over various parameters to enhance your device's performance. Our program offers:
 
