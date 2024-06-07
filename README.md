@@ -188,7 +188,9 @@ Use the `README.md` to get started.
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_adv_1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_adv_2.png"></img> 
     <p align="left">• Advanced CPU parameters: Allows users to adjust more advanced CPU parameters, which are intended for experienced overclockers and can be risky if not configured correctly. Note: Some BIOS can Reject those options! Don't worry if nothing happens.</p>
-    <p> </p>
+    <br />
+    <br />
+    <h1 align="center">CPU Power States</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/7.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/8.png"></img>
     <p> </p>
