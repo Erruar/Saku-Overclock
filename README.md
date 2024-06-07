@@ -155,9 +155,11 @@ Use the `README.md` to get started.
     <h1 align="center">Parameters page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main.png"></img>
     <p align="left"> Here you can see the contents of the Parameters page. This page is the most important in the entire application, as it allows you to configure overclocking the way you need it.</p>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/1.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_1.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_2.png"></img>
     <p align="left">• CPU Overclocking: Allows users to adjust the power and temperature of their CPU, which can increase performance.</p>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/2.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_1.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_2.png"></img>
     <p align="left">• VRM Tuning: Allows users to adjust VRM settings, Currents and timings of your CPU.</p>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/3.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/4.png"></img>
