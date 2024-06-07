@@ -202,8 +202,12 @@ Use the `README.md` to get started.
     <br />
     <h3 align="center">Quick SMU commands</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_2.png"></img>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_3.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_4.png"></img>
     <p align="left">• SMU Parameters editor and Quick SMU commands: Allows users to edit  SMU parameters for extreme overclocking, and is likely best left to experienced overclockers only. These commands can do ANYTHING with your CPU even BURN IT!!! BE CAREFUL! If you know your CPU commands, you can add thems in Quick SMU Commands and apply them by pressing their buttons, by pressing Apply button or with app start (even with autostart with system!). You can give any name, description and icon for your quick command. It's very practical! For example, you need to quickly change the voltage to the desired value or return the frequency to normal or raise the PBO - you just click on the apply button on the desired command and your processor immediately applies this effect! Again, the commands are NOT freely available and you will have to search for them yourself. Please note that the commands are in HEX format!!! To quickly convert from decimal to HEX, highlight your value or just right-click on the Arguments field and select Convert to HEX. Note that you do NOT need to write 0x in the command. The commands usually look like 0x2E, 0x11, this is just an EXAMPLE. You don't need to write 0x. if the command accepts multiple arguments, separate them with "," (like: 17, 19, 20, 80). It can give you best experience of your laptop if you KNOW WHAT ARE YOU DOING. This is not a joke and your processor may well burn out from ignorance of commands. You can customize your Quick SMU commands, apply them with app start or with apply button and reapply every seconds automatically</p>
+    <br />
+    <h3 align="center">Apply range to SMU command</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_3.png"></img> 
+     <p align="left">• Apply range to SMU command: You can apply range to one SMU command. Its useful for unlocking all SMU features at once or in some other variants.</p>
     <p> </p>
   </ol>
 </details>
@@ -216,16 +220,27 @@ Use the `README.md` to get started.
     <h1 align="center">Information page</h1>
    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/main.png"></img>
     <p align="left"> Here you can see the contents of the Information page. This page is allowing you to see important values of you system</p>
+    <br />
+    <br />
+    <h1 align="center">SMU Parameters editor</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/1.png"></img>
     <p align="left">• Processor: Allows users to show the current properties of your processor</p>
+    <br />
+    <br />
+    <h1 align="center">SMU Parameters editor</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/2.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/3.png"></img> 
     <p align="left">• Power Information: Allows users to watch VRM powers, Currents and timings of your CPU</p>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/3.png"></img>
-    <p align="left">• RAM Information: Allows users to know their common RAM info. Soon there were be more info options!</p>
-    <p> </p>
+    <br />
+    <br />
+    <h1 align="center">SMU Parameters editor</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/4.png"></img>
-    <p align="left">• CPU Power States: There you can see PStates of you CPU</p>
-    <p> </p> 
+    <p align="left">• RAM Information: Allows users to know their common RAM info. Soon there were be more info options!</p>
+    <br />
+    <br />
+    <h1 align="center">SMU Parameters editor</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/5.png"></img>
+    <p align="left">• CPU Power States: There you can see PStates of you CPU</p> 
   </ol>
 </details>
 
