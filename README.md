@@ -150,7 +150,7 @@ Use the `README.md` to get started.
 
 
 <details>
-  <summary>Parameters & Custom presets</summary>
+  <summary>arameters</summary>
   <ol>
     <h1 align="center">Parameters page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main.png"></img>
