@@ -286,13 +286,14 @@ Use the `README.md` to get started.
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/7.png"></img>
     <p align="left">• Advanced Cooler Tweaking, Config Editor: You can edit config as you need or remove it and delete for custom. Note: THERE IS NO AUTOSAVING! PRESS ON SAVE BUTTON MANUALLY! NOW THERE IS NO ```CTRL + S```!!!</p>
     <br />
-    <br />
-    <h2 align="center">Fan Curve Editor</h1>
+    <br /> 
+    <h1 align="center">Config Editor</h1>
+    <h2 align="center">Common configs</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/8.png"></img> 
     <p align="left">• Config Editor, Common configs: You can only rename it, when you press button with icon like pencil</p>
     <br />
     <br />
-    <h2 align="center">Fan Curve Editor</h1>
+    <h2 align="center">Custom configs</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/9.png"></img>
     <p align="left">• Config Editor, Custom configs: You can only rename it or delete PERMANENTLY when you press button with icon like pencil</p>
   </ol>
@@ -305,7 +306,7 @@ Use the `README.md` to get started.
   <summary>Settings</summary>
   <ol>
     <h1 align="center">Settings page</h1>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings.png"></img>
     <p> </p>
     <p align="left">There you can add app in autostart with windows, set close app to tray when it opening, set autoapply when opening, check for updates and I recommend to enable - Reapply latest setting every. Enable it and set to 1-7. This value is enough</p>
   </ol>
