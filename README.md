@@ -108,12 +108,12 @@ Use the `README.md` to get started.
 <details>
   <summary>Main</summary>
   <ol>
-    <h1 align="center">Dark main page</h1>
+    <h1 align="center">Dark theme main page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main.png"></img>
     <p> </p>
     <p align="left">The main page of my application will greet you at launch</p>
     <p> </p>
-    <h1 align="center">White and blue main page</h1>
+    <h1 align="center">White theme main page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-white.png"></img> 
     <p> </p>
     <p align="left">My application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it</p>
@@ -165,6 +165,7 @@ Use the `README.md` to get started.
     <p align="left"> Here you can see the contents of the Parameters page. This page is the most important in the entire application, as it allows you to configure overclocking the way you need it.</p>
     <br />
     <br />
+    <h1 align="center">CPU Overclocking</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_1.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_2.png"></img>
     <p align="left">• CPU Overclocking: Allows users to adjust the power and temperature of their CPU, which can increase performance.</p>
