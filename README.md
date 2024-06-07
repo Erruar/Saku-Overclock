@@ -313,7 +313,7 @@ Use the `README.md` to get started.
     <h1 align="center">Settings startup options</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_startup.png"></img> 
     <p align="left">You can chose preferred startup options</p> 
-    <p align="left"><span>There are no options:</span> The application does not run with the system and does not hide from the user in the system tray when launched.</p>
+    <p align="left"> <h5 align="left">• There are no options:</h5> The application does not run with the system and does not hide from the user in the system tray when launched.</p>
     <p align="left">Hide in the tray: When the application is launched from the user, it will immediately hide in the tray, without distracting you from your work.</p>
     <p align="left">startup with OS: The application will run with the system, but will not hide in the tray.</p>
     <p align="left">Startup & Tray: The application will launch with the system and immediately hide in the tray, without distracting you from your work</p>
