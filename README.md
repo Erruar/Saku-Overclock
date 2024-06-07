@@ -253,24 +253,44 @@ Use the `README.md` to get started.
     <h1 align="center">Cooler tweaks page</h1> 
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/1.png"></img>
     <p align="left">• Page: There you can adjust your cooler spinning, but only if you have Notebook fan controller app on your pc <strong>AND ONLY IF YOU HAVE WORKING CONFIGURATION FOR YOUR LAPTOP!</strong> Just download it and install in C:/ drive. Without it app will crash at this pages. Then in my app set your laptop model at which Notebook fan controller is working for you and you can see and change values! How to use it - simply click on suggest button (button with question symbol). Choose config from saved configs. Choose Enabled in Fan Control status, choose target speed or auto. Autosaving is there. If you wanna more - go to Advanced mode, where you can change whole all config and fan curve!</p>
+    <br />
+    <br />
+    <h1 align="center">CPU Power States</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/2.png"></img>
     <p align="left">• Suggest button: It can help you to find configs which will (NOT 100%!!!) work with your laptop</p>
+    <br />
+    <br />
+    <h1 align="center">CPU Power States</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/3.png"></img>
     <p align="left">• Advanced Cooler Tweaking, Readme: There you can found an example of config, copy it to clipboard</p>
+    <br />
+    <br />
+    <h1 align="center">CPU Power States</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/4.png"></img>
-    <p align="left">• Advanced Cooler Tweaking, Fan Curve Editor: Allows users to change fan curves on your laptop. All values have autosaving when you change them! After changing I just recommend you to enter in normal mode and switch to Disabled and Enabled then it should working normally. Or reboot</p>
-    <p> </p>
+    <p align="left">• Advanced Cooler Tweaking, Fan Curve Editor: Allows users to change fan curves on your laptop. All values have autosaving when you change them! After changing I just recommend you to enter in normal mode and switch to Disabled and Enabled then it should working normally. Or reboot</p> 
+    <br />
+    <br />
+    <h1 align="center">CPU Power States</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/5.png"></img>
     <p align="left">• Advanced Cooler Tweaking, Fan Curve Editor, Color changing: you can highlight your fan curve into other color (haven't autosaving)</p>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/6.png"></img>
-    <p> </p>
+    <br />
+    <br />
+    <h1 align="center">CPU Power States</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/6.png"></img> 
     <p align="left">• Advanced Cooler Tweaking, menu: There you can open closed tab (CTRL + F4 to close tab) or edit existed config or create new one: empty (for PRO users), from example or from any others. Note: you can delete custom configs via Saku Overclock only if they have "Custom" in their name</p>
-    <p> </p>
+    <br />
+    <br />
+    <h1 align="center">CPU Power States</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/7.png"></img>
     <p align="left">• Advanced Cooler Tweaking, Config Editor: You can edit config as you need or remove it and delete for custom. Note: THERE IS NO AUTOSAVING! PRESS ON SAVE BUTTON MANUALLY! NOW THERE IS NO ```CTRL + S```!!!</p>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/8.png"></img>
-    <p> </p>
+    <br />
+    <br />
+    <h1 align="center">CPU Power States</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/8.png"></img> 
     <p align="left">• Config Editor, Common configs: You can only rename it, when you press button with icon like pencil</p>
+    <br />
+    <br />
+    <h1 align="center">CPU Power States</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/9.png"></img>
     <p align="left">• Config Editor, Custom configs: You can only rename it or delete PERMANENTLY when you press button with icon like pencil</p>
   </ol>
