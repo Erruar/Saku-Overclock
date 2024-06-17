@@ -199,6 +199,13 @@ Use the `README.md` to get started.
     <p align="left">• All cores curve optimizer settings: Allows users to adjust voltage/frequency curve of the CPU or iGPU with custom coefficient from user, even with system starts (if my app in autostart). Those settings gave you maximum control of your CPU voltage.</p>
     <br />
     <br />
+   <h1 align="center">Per core curve optimizer settings</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_1.png"></img>  
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_2.png"></img>  
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_3.png"></img>  
+    <p align="left">• Per core curve optimizer settings: Allows users to adjust voltage/frequency curve of each CPU core with custom coefficient from user, even with system starts (if my app in autostart). Those settings gave you maximum control of your CPU voltage. This setting is above than All cores curve optimizer and iGPU curve optimizer settings.</p>
+    <br />
+    <br />
     <h1 align="center">SMU Parameters editor</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_1.png"></img>
     <p align="left">When you open SMU section - enable "Apply SMU commands" to apply them! Autodetect is there, pls DON'T CHANGE RSP, ARG and CMD Adresses! If you know SMU commands for your CPU, you can type them as a hint into Quick note box. You can highlight them if it needed or paste photo there. Autosaving is there. Note: due to the various limitations of various laptop manufacturers, basically even if you know the SMU commands for your processor, there are no guarantees that all commands will work, and there is also no documentation on their use, so I recommend using them in extreme overclocking or only at the request of someone who really understands this topic! These parameters may well irretrievably burn your processor without leaving it a chance. Please note that if the command is blocked, it cannot be unblocked. If the command is "Not found", it is still possible to unlock it, but no one knows how, sometimes completely different actions help. Please note that the first status after application is the status of the Saku Overclock parameters, and the second message with the status of the SMU parameters!</p>
