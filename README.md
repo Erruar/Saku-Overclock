@@ -203,7 +203,7 @@ Use the `README.md` to get started.
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_1.png"></img>  
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_2.png"></img>  
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_3.png"></img>  
-    <p align="left">• Per core curve optimizer settings: Allows users to adjust voltage/frequency curve of each CPU core with custom coefficient from user, even with system starts (if my app in autostart). Those settings gave you maximum control of your CPU voltage. This setting is above than All cores curve optimizer and iGPU curve optimizer settings.</p>
+    <p align="left">• Per core curve optimizer settings: Allows users to adjust voltage/frequency curve of each CPU core with custom coefficient from user, even with system starts (if my app in autostart). Those settings gave you maximum control of your CPU voltage. This setting is above than All cores curve optimizer and iGPU curve optimizer settings. You have 3 different modes: Disabled - this section and all those settings are disabled (same if checkbox near this mode selector is unchecked), Saku Laptops - method for almost all Ryzen Laptops, Saku Desktop - method for almost all Ryzen Desktop CPUs *not all Desktop CPUs my app supports, Irusanov method - method for almost all CPUs most universal if others are not work properly. After changing those settings please CHECK stability and voltages! There are safe limits but also check!</p>
     <br />
     <br />
     <h1 align="center">SMU Parameters editor</h1>
