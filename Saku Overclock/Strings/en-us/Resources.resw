@@ -1717,4 +1717,124 @@ ARE DOING!!! IT CAN BURN YOUR CPU!</value>
   <data name="ThemeUnknownNewFile" xml:space="preserve">
     <value>New file!</value>
   </data>
+  <data name="Param_CCD1_CO_Section.Text" xml:space="preserve">
+    <value>Per core curve optimizer settings </value>
+  </data>
+  <data name="Param_CCD1_CO_Section_desc.Text" xml:space="preserve">
+    <value>Set your curve for CPU cores 0-7</value>
+  </data>
+  <data name="Param_CCD2_CO_Section.Text" xml:space="preserve">
+    <value>Per core curve optimizer settings+</value>
+  </data>
+  <data name="Param_CCD2_CO_Section_desc.Text" xml:space="preserve">
+    <value>Set your curve for CPU cores 8-15</value>
+  </data>
+  <data name="Param_CO_O1.Text" xml:space="preserve">
+    <value>All cores Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_O2.Text" xml:space="preserve">
+    <value>iGPU Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_Section.Text" xml:space="preserve">
+    <value>All cores curve optimizer settings</value>
+  </data>
+  <data name="Param_CO_Section_desc.Text" xml:space="preserve">
+    <value>Set your curve for all CPU cores</value>
+  </data>
+  <data name="Param_O1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>All cores Curve Optimizer
+With this parameter you can 
+change volt/freq curve of
+your CPU which can give you
+more energy efficiency or
+more performance. 
+I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS
+Safe limits are from -50 to 30 but if
+you noticed any unstability - immidiately
+set curves closer to 0 value.
+IT IS NOT RECOMMENDED TO TOUCH IT </value>
+  </data>
+  <data name="Param_O2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>iGPU Curve Optimizer
+With this parameter you can 
+change volt/freq curve of
+your iGPU which can give you
+more energy efficiency or
+more performance. 
+I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS
+Safe limits are from -50 to 30 but if
+you noticed any unstability - immidiately
+set curves closer to 0 value. If you see
+any artifacts - DON'T USE this parameter
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_CO_CCD1_1.Text" xml:space="preserve">
+    <value>Core 0 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_2.Text" xml:space="preserve">
+    <value>Core 1 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_3.Text" xml:space="preserve">
+    <value>Core 2 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_4.Text" xml:space="preserve">
+    <value>Core 3 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_5.Text" xml:space="preserve">
+    <value>Core 4 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_6.Text" xml:space="preserve">
+    <value>Core 5 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_7.Text" xml:space="preserve">
+    <value>Core 6 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_8.Text" xml:space="preserve">
+    <value>Core 7 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_1.Text" xml:space="preserve">
+    <value>Core 8 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_2.Text" xml:space="preserve">
+    <value>Core 9 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_3.Text" xml:space="preserve">
+    <value>Core 10 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_4.Text" xml:space="preserve">
+    <value>Core 11 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_5.Text" xml:space="preserve">
+    <value>Core 12 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_6.Text" xml:space="preserve">
+    <value>Core 13 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_7.Text" xml:space="preserve">
+    <value>Core 14 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_8.Text" xml:space="preserve">
+    <value>Core 7 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Per core curve optimizer settings
+With this parameter you can 
+change volt/freq curve of each
+CPU cores which can give you
+more energy efficiency or
+more performance. If you haven't 
+selected some cores - they will not
+be adjusted. Note: this setting is above
+iGPU curve optimizer and all core
+curve optimizer and they will not
+be applyed. I AM NOT RESPONSIBLE 
+FOR THE CONSEQUENCES OF THESE 
+COMMANDS. Safe limits are from -50 
+to 30 but if you noticed any unstability 
+immidiately set curves closer to 0 value.
+IT IS NOT RECOMMENDED TO TOUCH IT 
+  </value>
+  </data>
 </root>

@@ -2,9 +2,11 @@
 using System.Reflection.Emit;
 using System.Reflection.Metadata;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using ZenStates.Core;
+using static ZenStates.Core.Cpu;
 #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 
 namespace Saku_Overclock.SMUEngine;
@@ -62,6 +64,7 @@ internal class SendSMUCommand
     }
     public bool saveinfo = false;
     private readonly Cpu? cpu;
+    private static Cpu.CodeName Codename;
     private Smusettings smusettings = new();
     private Config config = new();
     private readonly ZenStates.Core.Mailbox testMailbox = new();
@@ -75,6 +78,7 @@ internal class SendSMUCommand
         try
         { 
             cpu ??= CpuSingleton.GetInstance();
+            Codename = cpu.info.codeName;
         }
         catch
         {
@@ -576,7 +580,20 @@ internal class SendSMUCommand
         {
             config.ApplyInfo += $"\nCommand '{CommandName}' can't be applied";
         }
-        if (saveinfo) { config.adjline = config.adjline.Replace(" --stopcpu-freqto-ramstate=0",""); ConfigSave(); }
+        if (saveinfo) 
+        {
+            try
+            {
+                if (config.adjline != null && config.adjline.Contains(" --stopcpu-freqto-ramstate=0"))
+                {
+                    config.adjline = config.adjline.Replace(" --stopcpu-freqto-ramstate=0", ""); ConfigSave();
+                }
+            }
+            catch
+            {
+                ConfigLoad();
+            } 
+        }
     }
     public void CancelRange()
     {
@@ -637,6 +654,49 @@ internal class SendSMUCommand
         {
         }
     }
+    public static uint ReturnCoGFX(Cpu.CodeName codeName)
+    {
+        Codename = codeName; //если класс неинициализирован - задать правильный Codename
+        if (Codename == Cpu.CodeName.SummitRidge || Codename == Cpu.CodeName.PinnacleRidge) { Socket_AM4_V1(); }
+        else if (Codename == Cpu.CodeName.RavenRidge || Codename == Cpu.CodeName.Picasso || Codename == Cpu.CodeName.Dali || /*cpu.info.codeName == Cpu.CodeName.Pollock || */ Codename == Cpu.CodeName.FireFlight) { Socket_FT5_FP5_AM4(); }
+        else if (Codename == Cpu.CodeName.Matisse || Codename == Cpu.CodeName.Vermeer) { Socket_AM4_V2(); }
+        else if (Codename == Cpu.CodeName.Renoir || Codename == Cpu.CodeName.Lucienne || Codename == Cpu.CodeName.Cezanne) { Socket_FP6_AM4(); }
+        else if (Codename == Cpu.CodeName.VanGogh) { Socket_FF3(); }
+        else if (Codename == Cpu.CodeName.Mendocino || Codename == Cpu.CodeName.Rembrandt || Codename == Cpu.CodeName.Phoenix || Codename == Cpu.CodeName.Phoenix2 /*|| cpu.info.codeName == Cpu.CodeName.Strix*/ || Codename == Cpu.CodeName.DragonRange || Codename == Cpu.CodeName.HawkPoint) { Socket_FT6_FP7_FP8(); }
+        else if (Codename == Cpu.CodeName.Raphael /*|| cpu.info.codeName == Cpu.CodeName.GraniteRidge*/) { Socket_AM5_V1(); }
+        else { return 0U; }  // Find the command by name
+        var matchingCommands = Commands?.Where(c => c.Item1 == "set-cogfx");
+        if (matchingCommands?.Any() == true)
+        { 
+            foreach (var command in matchingCommands)
+            { 
+                return command.Item3; 
+            }  
+        } 
+        return 0U;
+    }
+    public static uint ReturnCoPer(Cpu.CodeName codeName)
+    {
+        Codename = codeName; //если класс неинициализирован - задать правильный Codename
+        if (Codename == Cpu.CodeName.SummitRidge || Codename == Cpu.CodeName.PinnacleRidge) { Socket_AM4_V1(); }
+        else if (Codename == Cpu.CodeName.RavenRidge || Codename == Cpu.CodeName.Picasso || Codename == Cpu.CodeName.Dali || /*cpu.info.codeName == Cpu.CodeName.Pollock || */ Codename == Cpu.CodeName.FireFlight) { Socket_FT5_FP5_AM4(); }
+        else if (Codename == Cpu.CodeName.Matisse || Codename == Cpu.CodeName.Vermeer) { Socket_AM4_V2(); }
+        else if (Codename == Cpu.CodeName.Renoir || Codename == Cpu.CodeName.Lucienne || Codename == Cpu.CodeName.Cezanne) { Socket_FP6_AM4(); }
+        else if (Codename == Cpu.CodeName.VanGogh) { Socket_FF3(); }
+        else if (Codename == Cpu.CodeName.Mendocino || Codename == Cpu.CodeName.Rembrandt || Codename == Cpu.CodeName.Phoenix || Codename == Cpu.CodeName.Phoenix2 /*|| cpu.info.codeName == Cpu.CodeName.Strix*/ || Codename == Cpu.CodeName.DragonRange || Codename == Cpu.CodeName.HawkPoint) { Socket_FT6_FP7_FP8(); }
+        else if (Codename == Cpu.CodeName.Raphael /*|| cpu.info.codeName == Cpu.CodeName.GraniteRidge*/) { Socket_AM5_V1(); }
+        else { return 0U; }  // Find the command by name
+        var matchingCommands = Commands?.Where(c => c.Item1 == "set-coper");
+        if (matchingCommands?.Any() == true)
+        {
+            foreach (var command in matchingCommands)
+            {
+                return command.Item3;
+            }
+        }
+        return 0U;
+    }
+
     /*Commands and addresses. Commands architecture basis from Universal x86 Tuning Utility. Its author is https://github.com/JamesCJ60, a lot of commands as well as various sources,
      * I just put them together and found some news. 
      * Here are just a few of the authors who found SMU commands:
@@ -694,10 +754,11 @@ internal class SendSMUCommand
                 ("max-vcn",true, 0x4c), 
                 ("min-vcn",true, 0x4d), 
                 ("max-lclk",true, 0x4e), 
-                ("min-lclk",true, 0x4f), 
-                ("oc-volt-scalar",false, 0x58), 
-                ("oc-volt-modular",false, 0x59), 
-                ("oc-volt-variable",false, 0x62),
+                ("min-lclk",true, 0x4f),
+                ("set-coper",false , 0x58),
+                ("set-coall",false , 0x59),
+                ("set-cogfx",false , 0x59), //cuz Raven, Dali and Picasso have gfx voltage control in this command too but in different registers
+                ("oc-volt-variable",false, 0x62), //For future updates
                 ("update-skintemp-error", true, 0x27),  
                 ("setgpu-arerture-low", true, 0x28), 
                 ("setgpu-arerture-high", true , 0x29), 
@@ -708,9 +769,9 @@ internal class SendSMUCommand
                 ("stopcpu-freqto-ramstate", true , 0x31), 
                 ("set-ulv-vid", true , 0x35),  
                 ("set-vddoff-vid", true , 0x3A),  
-                ("set-vmin-freq", true , 0x3B),  
-                ("set-gpuclockoverdrive-byvid", true , 0x3D), 
-                ("set-powergate-xgbe", true , 0x3E), 
+                ("set-vmin-freq", true , 0x3B),  //GFX minimum Curve Optimizer diapazon
+                ("set-gpuclockoverdrive-byvid", true , 0x3D), //ONLY AM4!
+                ("set-powergate-xgbe", true , 0x3E), //SUPER DANGEROUS!!! WILL NOT BE IN SAKU OVERCLOCK UI
                 ("enable-cc6filter",  true , 0x42)  
             };
     }
@@ -754,8 +815,7 @@ internal class SendSMUCommand
                 ("skin-temp-limit",true , 0x53),
                 ("set-coper",true , 0x54),
                 ("set-coall",true , 0x55),
-                ("set-cogfx",true , 0x64),
-
+                ("set-cogfx",true , 0x64), 
                 ("enable-oc",false , 0x17), // Use RSMU address
                 ("disable-oc",false , 0x18),
                 ("oc-clk",false , 0x19),
@@ -771,9 +831,9 @@ internal class SendSMUCommand
             };
     }
 
-    private void Socket_FT6_FP7_FP8()
+    private static void Socket_FT6_FP7_FP8()
     {
-        if (cpu?.info.codeName == Cpu.CodeName.DragonRange)
+        if (Codename == Cpu.CodeName.DragonRange)
         {
             MP1_CMD = 0x3010508;
             MP1_RSP = 0x3010988;
@@ -884,17 +944,17 @@ internal class SendSMUCommand
         Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
-                ("stapm-limit",false, 0x64), // Use RSMU address
-                ("vrm-current",false , 0x65),
-                ("vrmmax-current",false , 0x66),
-                ("tctl-temp",false , 0x68),
-                ("pbo-scalar",false , 0x6a),
-                ("oc-clk", false, 0x6c),
-                ("per-core-oc-clk",false , 0x6d),
-                ("oc-volt", false, 0x6e),
-                ("enable-oc",true , 0x23),
-                ("enable-oc",false , 0x6b),
-                ("disable-oc",true , 0x24),
+                ("stapm-limit",false, 0x64), // Use RSMU address✓
+                ("vrm-current",false , 0x65), //✓
+                ("vrmmax-current",false , 0x66), //✓
+                ("tctl-temp",false , 0x68), //✓
+                ("pbo-scalar",false , 0x6a), //
+                ("oc-clk", false, 0x6c), //
+                ("per-core-oc-clk",false , 0x6d), //✕
+                ("oc-volt", false, 0x6e), //
+                ("enable-oc",true , 0x23), //
+                ("enable-oc",false , 0x6b), //
+                ("disable-oc",true , 0x24), //
             };
     }
 
@@ -962,6 +1022,7 @@ internal class SendSMUCommand
                 ("per-core-oc-clk",false , 0x60),
                 ("oc-volt", false, 0x61),
                 ("set-coall", false, 0x7),
+                ("set-cogfx", false, 0x7),
                 ("set-coper", false, 0x6),
                 ("enable-oc",false , 0x5d),
                 ("disable-oc",false , 0x5e),

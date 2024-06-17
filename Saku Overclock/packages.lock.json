@@ -444,6 +444,12 @@
         "dependencies": {
           "Newtonsoft.Json": "[13.0.2, )"
         }
+      },
+      "yakd": {
+        "type": "Project",
+        "dependencies": {
+          "RTSSSharedMemoryNET": "[1.0.0, )"
+        }
       }
     },
     "net7.0-windows10.0.19041/win10-arm64": {

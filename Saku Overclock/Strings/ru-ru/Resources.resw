@@ -1762,4 +1762,133 @@ CPU VID
   <data name="ThemeUnknownNewFile" xml:space="preserve">
     <value>Новый файл!</value>
   </data>
+  <data name="Param_CCD1_CO_Section.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для отдельных ядер</value>
+  </data>
+  <data name="Param_CCD1_CO_Section_desc.Text" xml:space="preserve">
+    <value>Настройте кривую частоты-напряжения для ядер 0-7</value>
+  </data>
+  <data name="Param_CCD2_CO_Section.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для отдельных ядер+</value>
+  </data>
+  <data name="Param_CCD2_CO_Section_desc.Text" xml:space="preserve">
+    <value>Настройте кривую частоты-напряжения для ядер 8-15</value>
+  </data>
+  <data name="Param_CO_O1.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для всех ядер (CO)</value>
+  </data>
+  <data name="Param_CO_O2.Text" xml:space="preserve">
+    <value>Оптимизатор кривой iGPU (CO)</value>
+  </data>
+  <data name="Param_CO_Section.Text" xml:space="preserve">
+    <value>Оптимизатор кривой</value>
+  </data>
+  <data name="Param_CO_Section_desc.Text" xml:space="preserve">
+    <value>Настройте кривую частоты-напряжения для всех ядер</value>
+  </data>
+  <data name="Param_O1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Оптимизатор кривой для всех ядер
+С помощью этой функции вы можете 
+регулировать кривую вольт-частотной 
+характеристики процессора, что 
+позволит вам повысить 
+энергоэффективность или увеличить 
+производительность вашего устройства.
+Учтите, ЧТО Я НЕ НЕСУ ОТВЕТСТВЕННОСТИ
+ЗА ПОВРЕЖДЁННЫЕ НОУТБУКИ! Здесь
+установлены безопасные лимиты, однако,
+если вы заметите любую нестабильность, 
+срочно уменьшите её изменение и 
+сделайте ближе к нулю.
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_O2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Оптимизатор кривой iGPU
+С помощью этой функции вы можете 
+регулировать кривую вольт-частотной 
+характеристики встроенной видеокарты,
+что позволит вам повысить 
+энергоэффективность или увеличить 
+производительность вашего устройства.
+Учтите, ЧТО Я НЕ НЕСУ ОТВЕТСТВЕННОСТИ
+ЗА ПОВРЕЖДЁННЫЕ НОУТБУКИ! Здесь
+установлены безопасные лимиты, однако,
+если вы заметите любую нестабильность, 
+срочно уменьшите её изменение и 
+сделайте ближе к нулю. Если на экране
+появились любые артефакты - ОТКАЖИТЕСЬ
+от использования этого параметра.
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_CO_CCD1_1.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 0 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_2.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 1 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_3.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 2 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_4.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 3 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_5.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 4 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_6.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 5 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_7.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 6 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_8.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 7 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_1.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 8 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_2.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 9 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_3.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 10 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_4.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 11 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_5.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 12 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_6.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 13 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_7.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 14 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_8.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 15 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Оптимизатор кривой для отдельного ядра
+С помощью этой функции вы можете 
+регулировать кривую вольт-частотной 
+характеристики процессора, для каждого
+отдельного ядра, если вы не включили
+какое-то ядро - оно не будет затронуто при 
+изменении, эти изменения позволят вам 
+повысить энергоэффективность или 
+увеличить производительность вашего 
+устройства. Эти настройки важнее чем 
+оптимизатор кривой для всех ядер или
+для iGPU, поэтому при включенных этих 
+параметрах, от параметров для всех
+ядер и iGPU толку не будет и они будут
+проигнорированы. Учтите, ЧТО Я НЕ НЕСУ 
+ОТВЕТСТВЕННОСТИ ЗА ПОВРЕЖДЁННЫЕ 
+НОУТБУКИ! Здесь установлены безопасные 
+лимиты, однако, если вы заметите любую 
+нестабильность, срочно уменьшите её 
+изменение и сделайте ближе к нулю.
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
 </root>

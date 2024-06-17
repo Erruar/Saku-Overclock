@@ -60,11 +60,7 @@ public sealed partial class ShellPage : Page
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated;
         App.MainWindow.Closed += MainWindow_Closed;
-       /* RTSSHandler.RunRTSS(); 
-        if (RTSSHandler.IsRTSSRunning)
-        {
-            RTSSHandler.Print("Welcome to Saku Overclock RTSS Addon");
-        }*/
+        //RTSSHandler.ChangeOSDText("<C0=FFA0A0><C1=A0FFA0><C0>Welcome to <Br><C1>Saku Overclock! <Br>For those who want maximum!");
     }
 
 
@@ -235,6 +231,7 @@ public sealed partial class ShellPage : Page
             var contains = false;
             if (compareList == notify?.Notifies.Count && NotificationContainer.Children.Count != 0) { return; } //нет новых уведомлений - пока
             ClearAllNotification(null, null);
+            var index = 0;
             foreach (var notify1 in notify?.Notifies!)
             {
                 if (notify1.Title.Equals("Theme applied!")) //Если уведомление о изменении темы
@@ -244,6 +241,12 @@ public sealed partial class ShellPage : Page
                 }
                 MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.isClosable, notify1.Subcontent, notify1.CloseClickHandler);
                 if (notify1.Title.Contains("SaveSuccessTitle".GetLocalized()) || notify1.Title.Contains("DeleteSuccessTitle".GetLocalized()) || notify1.Title.Contains("Edit_TargetTitle".GetLocalized())) { contains = true; }
+                if (index > 8) //Если 9 уведомлений - очистить для оптимизации производительности
+                { 
+                    index = 0; //Сброс счётчика циклов
+                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                }
+                index++;
             }
             if (contains) { GetProfileInit(); } //Чтобы обновить всего раз, а не много раз, чтобы не сбить конфиг
             compareList = notify?.Notifies.Count;
@@ -1235,7 +1238,11 @@ public sealed partial class ShellPage : Page
             NotificationLostFocusBackground.Opacity = 0.3;
         }
         else
-        {
+        { 
+            if (NotificationContainer.Children.Count > 7)
+            {
+                ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все, затем добавить один
+            }
             NotificationLostFocusBackground.Opacity = 0;
             await Task.Delay(200);
             NotificationLostFocusBackground.Visibility = Visibility.Collapsed;

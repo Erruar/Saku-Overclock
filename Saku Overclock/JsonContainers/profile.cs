@@ -127,4 +127,43 @@ internal class Profile
     public bool ignoreWarn = false;
     //SMU
     public bool smuEnabled = false;
+    //Curve Optimizer
+    public bool coall = false;
+    public bool cogfx = false;
+    public double coallvalue = 0.0;
+    public double cogfxvalue = 0.0;
+    public bool comode = false;
+    public int coprefmode = 0;
+    public bool coper0 = false;
+    public bool coper1 = false;
+    public bool coper2 = false;
+    public bool coper3 = false;
+    public bool coper4 = false;
+    public bool coper5 = false;
+    public bool coper6 = false;
+    public bool coper7 = false;
+    public bool coper8 = false;
+    public bool coper9 = false;
+    public bool coper10 = false;
+    public bool coper11 = false;
+    public bool coper12 = false;
+    public bool coper13 = false;
+    public bool coper14 = false;
+    public bool coper15 = false;
+    public double coper0value = 0.0;
+    public double coper1value = 0.0;
+    public double coper2value = 0.0;
+    public double coper3value = 0.0;
+    public double coper4value = 0.0;
+    public double coper5value = 0.0;
+    public double coper6value = 0.0;
+    public double coper7value = 0.0;
+    public double coper8value = 0.0;
+    public double coper9value = 0.0;
+    public double coper10value = 0.0;
+    public double coper11value = 0.0;
+    public double coper12value = 0.0;
+    public double coper13value = 0.0;
+    public double coper14value = 0.0;
+    public double coper15value = 0.0;
 }

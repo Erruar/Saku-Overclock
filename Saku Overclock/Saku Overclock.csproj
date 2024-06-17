@@ -116,9 +116,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="RTSSSharedMemoryNET">
-      <HintPath>RTSSSharedMemoryNET.dll</HintPath>
-    </Reference>
     <Reference Include="System.Management">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Management.dll</HintPath>
     </Reference>
@@ -848,6 +845,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ryzenps.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SakuRTSSCLI.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SakuRTSSCLI.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Page Update="Styles\ToggleButtonCollapseLauncher.xaml">

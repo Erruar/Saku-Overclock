@@ -14,6 +14,9 @@ public sealed partial class ИнформацияPage : Page
 {
     private Config config = new();
     public double refreshtime;
+    private static bool canUpdateOSDText = true;
+    private static readonly Timer osdTimer = new (_ => canUpdateOSDText = true, null, 1000, 1000);
+    private string? rtss_line;
     private System.Windows.Threading.DispatcherTimer? dispatcherTimer;
     private readonly ZenStates.Core.Cpu? cpu;
     public ИнформацияViewModel ViewModel
@@ -39,7 +42,9 @@ public sealed partial class ИнформацияPage : Page
         GetCPUInfo();
         GetRAMInfo();
         ReadPstate();
-    }
+        Unloaded += ИнформацияPage_Unloaded;
+    } 
+   
     #region JSON and Initialization
     //JSON форматирование
     public void ConfigSave()
@@ -61,6 +66,28 @@ public sealed partial class ИнформацияPage : Page
         {
             App.MainWindow.ShowMessageDialogAsync("Пресеты 3", "Критическая ошибка!");
         }
+    }
+    public static int GetCPUCores()
+    {
+        var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+        try
+        {
+            foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
+            {
+                var numberOfCores = Convert.ToInt32(queryObj["NumberOfCores"]);
+                var numberOfLogicalProcessors = Convert.ToInt32(queryObj["NumberOfLogicalProcessors"]);
+                var l2Size = Convert.ToDouble(queryObj["L2CacheSize"]) / 1024;
+
+                return numberOfLogicalProcessors == numberOfCores
+                    ? numberOfCores
+                    : int.Parse(GetSystemInfo.GetBigLITTLE(numberOfCores, l2Size));
+            }
+        }
+        catch
+        {
+            return 0;
+        }
+        return 0;
     }
     private async void GetCPUInfo()
     {
@@ -381,17 +408,46 @@ public sealed partial class ИнформацияPage : Page
                     if (line.Contains("TDC VALUE VDD")) { tbVRMTDCC.Text = line.Replace("TDC VALUE VDD", "").Replace("|", "").Replace(" ", "") + " A"; }
                     if (line.Contains("TDC LIMIT SOC")) { tbSOCTDCL.Text = line.Replace("TDC LIMIT SOC", "").Replace("|", "").Replace(" ", "").Replace("vrmsoc-current", "") + " A"; }
                     if (line.Contains("TDC VALUE SOC")) { tbSOCTDCC.Text = line.Replace("TDC VALUE SOC", "").Replace("|", "").Replace(" ", "") + " A"; }
-                    if (line.Contains("EDC LIMIT VDD")) { tbVRMEDCL.Text = line.Replace("EDC LIMIT VDD", "").Replace("|", "").Replace(" ", "").Replace("vrmmax-current", "") + " A"; infoVRM.Maximum = double.Parse(tbVRMEDCL.Text.Replace(" A", "").Replace("nan", "000"), CultureInfo.InvariantCulture); }
-                    if (line.Contains("EDC VALUE VDD")) { tbVRMEDCC.Text = line.Replace("EDC VALUE VDD", "").Replace("|", "").Replace(" ", "") + " A"; infoVRM.Value = double.Parse(tbVRMEDCC.Text.Replace(" A", "").Replace("nan", "000"), CultureInfo.InvariantCulture); infoVRMI.Text = ((int)infoVRM.Value).ToString() + " A"; }
+                    if (line.Contains("EDC LIMIT VDD")) 
+                    { 
+                        tbVRMEDCL.Text = line.Replace("EDC LIMIT VDD", "").Replace("|", "").Replace(" ", "").Replace("vrmmax-current", "") + " A"; 
+                        infoVRM.Maximum = double.Parse(tbVRMEDCL.Text.Replace(" A", "").Replace("nan", "000"), CultureInfo.InvariantCulture); 
+                    }
+                    if (line.Contains("EDC VALUE VDD")) 
+                    { 
+                        tbVRMEDCC.Text = line.Replace("EDC VALUE VDD", "").Replace("|", "").Replace(" ", "") + " A"; 
+                        infoVRM.Value = double.Parse(tbVRMEDCC.Text.Replace(" A", "").Replace("nan", "000"), CultureInfo.InvariantCulture); 
+                        infoVRMI.Text = ((int)infoVRM.Value).ToString() + " A";
+                    }
                     if (line.Contains("EDC LIMIT SOC")) { tbSOCEDCL.Text = line.Replace("EDC LIMIT SOC", "").Replace("|", "").Replace(" ", "").Replace("vrmsocmax-current", "") + " A"; }
                     if (line.Contains("EDC VALUE SOC")) { tbSOCEDCC.Text = line.Replace("EDC VALUE SOC", "").Replace("|", "").Replace(" ", "") + " A"; }
-                    if (line.Contains("THM LIMIT CORE")) { tbCPUMaxL.Text = line.Replace("THM LIMIT CORE", "").Replace("|", "").Replace(" ", "").Replace("tctl-temp", "") + " C"; infoCPU.Maximum = double.Parse(tbCPUMaxL.Text.Replace(" C", "").Replace("nan", "100"), CultureInfo.InvariantCulture); }
-                    if (line.Contains("THM VALUE CORE")) { tbCPUMaxC.Text = line.Replace("THM VALUE CORE", "").Replace("|", "").Replace(" ", "") + " C"; infoCPU.Value = double.Parse(tbCPUMaxC.Text.Replace(" C", "").Replace("nan", "000"), CultureInfo.InvariantCulture); infoCPUI.Text = ((int)infoCPU.Value).ToString() + " ℃"; }
+                    if (line.Contains("THM LIMIT CORE")) 
+                    { 
+                        tbCPUMaxL.Text = line.Replace("THM LIMIT CORE", "").Replace("|", "").Replace(" ", "").Replace("tctl-temp", "") + " C"; 
+                        infoCPU.Maximum = double.Parse(tbCPUMaxL.Text.Replace(" C", "").Replace("nan", "100"), CultureInfo.InvariantCulture); 
+                    }
+                    if (line.Contains("THM VALUE CORE")) 
+                    { 
+                        tbCPUMaxC.Text = line.Replace("THM VALUE CORE", "").Replace("|", "").Replace(" ", "") + " C"; 
+                        infoCPU.Value = double.Parse(tbCPUMaxC.Text.Replace(" C", "").Replace("nan", "000"), CultureInfo.InvariantCulture); 
+                        infoCPUI.Text = ((int)infoCPU.Value).ToString() + " ℃";
+                    }
                     if (line.Contains("STT LIMIT APU")) { tbAPUMaxL.Text = line.Replace("STT LIMIT APU", "").Replace("|", "").Replace(" ", "").Replace("apu-skin-temp", "") + " C"; }
                     if (line.Contains("STT VALUE APU")) { tbAPUMaxC.Text = line.Replace("STT VALUE APU", "").Replace("|", "").Replace(" ", "") + " C"; }
                     if (line.Contains("STT LIMIT dGPU")) { tbDGPUMaxL.Text = line.Replace("STT LIMIT dGPU", "").Replace("|", "").Replace(" ", "").Replace("dgpu-skin-temp", "") + " C"; }
                     if (line.Contains("STT VALUE dGPU")) { tbDGPUMaxC.Text = line.Replace("STT VALUE dGPU", "").Replace("|", "").Replace(" ", "") + " C"; }
                     if (line.Contains("CCLK BUSY VALUE")) { tbCPUUsage.Text = line.Replace("CCLK BUSY VALUE", "").Replace("|", "").Replace(" ", "").Replace("max-performance", "") + " %"; }
+                    rtss_line = "<C0=FFA0A0><C1=A0FFA0><C2=FC89AC><C3=fa2363><S1=50><C0>Saku Overclock<C1>RC-4";
+                    if (tbStapmC.Text != "nan") { rtss_line += "<Br><C2>STAPM: " + "<C3>" + tbStapmC.Text + "/" + tbStapmL.Text; }
+                    rtss_line += "<Br><C2>FAST: " + "<C3>" + tbActualC.Text + "/" + tbActualL.Text;
+                    rtss_line += "<Br><C2>SLOW: " + "<C3>" + tbAVGC.Text + "/" + tbAVGL.Text;
+                    rtss_line += "<Br><C2>EDC: " + "<C3>" + tbVRMEDCC.Text + "/" + tbVRMEDCL.Text;
+                    rtss_line += "<Br><C2>THM: " + "<C3>" + tbCPUMaxC.Text + "/" + tbCPUMaxL.Text;
+                    rtss_line += "<Br><C2>Framerate " + "<C3>" + "%FRAMERATE% %FRAMETIME%";
+                    if (canUpdateOSDText)
+                    {
+                        RTSSHandler.ChangeOSDText(rtss_line); canUpdateOSDText = false;
+                    }
                 }
                 line = await outputWriter.ReadLineAsync();
             }
@@ -411,6 +467,11 @@ public sealed partial class ИнформацияPage : Page
     private void StopInfoUpdate()
     {
         dispatcherTimer?.Stop();
+    }
+    private void ИнформацияPage_Unloaded(object sender, RoutedEventArgs e)
+    {
+        dispatcherTimer?.Stop();
+        RTSSHandler.ResetOSDText();
     }
     #endregion
 }

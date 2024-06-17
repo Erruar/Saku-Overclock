@@ -27,7 +27,7 @@ public partial class SettingsViewModel : ObservableRecipient
         get;
     }
 
-    public int VersionId = 1; //"Consumer Creative" = 0; "Release Candidate" = 1
+    public static int VersionId = 0; //"Consumer Creative" = 0; "Release Candidate" = 1
     public static string? VersionString;
 
     public SettingsViewModel(IThemeSelectorService themeSelectorService)
@@ -37,6 +37,7 @@ public partial class SettingsViewModel : ObservableRecipient
             0 => "Consumer Creative", //Debug for tests
             1 => "Release Candidate", 
             2 => "Release",
+            5 => "Debug Lanore",
             _ => "Unknown Version"
         };
         _themeSelectorService = themeSelectorService;

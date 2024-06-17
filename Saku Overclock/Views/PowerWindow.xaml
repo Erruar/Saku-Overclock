@@ -26,34 +26,43 @@
         </Grid>
         <ScrollViewer Margin="0,50,0,33"  Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Top">
             <Grid x:Name="Grid1">
-                <GridView x:Name="PowerGridView"  ItemsSource="{x:Bind PowerGridItems}" HorizontalAlignment="Left">
+                <GridView x:Name="PowerGridView"  ItemsSource="{x:Bind PowerGridItems}" HorizontalAlignment="Stretch">
                     <GridView.Header>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="65"/>
                                 <ColumnDefinition Width="65"/>
-                                <ColumnDefinition Width="65"/>
+                                <ColumnDefinition Width="65"/> 
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Index" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Column="0"/>
-                            <TextBlock Text="Offset" VerticalAlignment="Center" Margin="-24,0,0,0" HorizontalAlignment="Center" Grid.Column="1"/>
+                            <TextBlock Text="Index" x:Name="IndexName" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Column="0"/>
+                            <TextBlock Text="Offset" x:Name="OffsetName" VerticalAlignment="Center" Margin="-24,0,0,0" HorizontalAlignment="Center" Grid.Column="1"/>
                             <TextBlock Text="Value" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2"/>
-                            <TextBlock Text="Quick Note" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="3"/>
+                            <TextBlock Visibility="Collapsed" x:Name="NotePos" Margin="2,0,0,0"  Text="Row|Column" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Text="Quick Note" x:Name="NoteName" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="3"/>
                         </Grid>
                     </GridView.Header>
                     <GridView.ItemTemplate>
                         <DataTemplate>
-                            <Grid HorizontalAlignment="Left">
+                            <Grid HorizontalAlignment="Stretch">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="65"/>
                                     <ColumnDefinition Width="65"/>
-                                    <ColumnDefinition Width="65"/>
+                                    <ColumnDefinition Width="65"/> 
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Text="{Binding Index}" Grid.Column="0"/>
-                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Offset}" Grid.Column="1"/>
-                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Value}" Grid.Column="2"/>
-                                <TextBox Margin="10,0,0,0" Text="{Binding Note, Mode=TwoWay}" Width="2500"  Grid.Column="3"/>
+                         <!----><TextBlock Visibility="{Binding Normal}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Text="{Binding Index}" Grid.Column="0"/>
+                                <CheckBox Visibility="{Binding Rtss}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Column="0" IsChecked="{Binding Osd, Mode=TwoWay}"></CheckBox>
+                         <!----><TextBlock Visibility="{Binding Normal}" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Offset}" Grid.Column="1"/>
+                                <TextBox Margin="-20,0,9,0" Visibility="{Binding Rtss}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding NoteValue, Mode=TwoWay}" Grid.Column="1"/>
+                         <!----><TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Value}" Grid.Column="2"/>
+                                <StackPanel Grid.Column="3" Visibility="{Binding Rtss}" Orientation="Horizontal" Margin="10,0,-23,0">
+                                    <NumberBox Value="{Binding Row, Mode=TwoWay}" Minimum="1" Width="36" Margin="4,0,0,0" CornerRadius="15,0,0,15"/>
+                                    <StackPanel Margin="-4.50,0,-23,0" Width="40" CornerRadius="0,15,15,0">
+                                        <NumberBox Value="{Binding Column, Mode=TwoWay}" Minimum="1" Width="36" Margin="-15,0,-20,0" CornerRadius="0,15,15,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                         <!----><TextBox Margin="{Binding NoteColumn}" Text="{Binding Note, Mode=TwoWay}" HorizontalAlignment="Left" Width="2500" Grid.Column="3"/>
                             </Grid>
                         </DataTemplate>
                     </GridView.ItemTemplate>
@@ -68,6 +77,11 @@
             </Grid>
         </ScrollViewer>
         <NumberBox VerticalAlignment="Bottom" Minimum="200" HorizontalAlignment="Left" Value="2000" Height="33" SpinButtonPlacementMode="Inline" SmallChange="200"  LargeChange="400" Width="150" x:Name="numericUpDownInterval" ></NumberBox>
-        <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="173" Height="33" Click="Button_Click">Reapply every</Button>
+        <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="173" Height="33" x:Name="ReapplyButton" Click="Button_Click">
+            Reapply every
+        </Button>
+        <ToggleButton VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="33" Height="33" x:Name="Settings" Click="Settings_Click">
+            <FontIcon Glyph="&#xE713;" Margin="-10,0,-10,0"></FontIcon>
+        </ToggleButton>
     </Grid>
 </Window>

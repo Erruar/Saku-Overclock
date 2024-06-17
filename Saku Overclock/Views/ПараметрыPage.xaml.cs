@@ -8,19 +8,16 @@ using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Core.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
+using Windows.UI;
+using ZenStates.Core;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using CheckBox = Microsoft.UI.Xaml.Controls.CheckBox;
 using ComboBox = Microsoft.UI.Xaml.Controls.ComboBox;
 using Process = System.Diagnostics.Process;
 using TextBox = Microsoft.UI.Xaml.Controls.TextBox;
-using ZenStates.Core;
-using System.Collections.ObjectModel;
-using Microsoft.UI;
-using Windows.UI;
 
 namespace Saku_Overclock.Views;
 
@@ -44,27 +41,27 @@ public sealed partial class ПараметрыPage : Page
     private Cpu? cpu; //Import Zen States core
     private SendSMUCommand? cpusend;
     public bool turbobboost = true;
-    private bool waitforload = true; 
+    private bool waitforload = true;
     public string? adjline;
     private readonly ZenStates.Core.Mailbox testMailbox = new();
     public string? universalvid;
     public string? equalvid;
-    
+
     public ПараметрыPage()
     {
         ViewModel = App.GetService<ПараметрыViewModel>();
-        InitializeComponent(); 
+        InitializeComponent();
         DeviceLoad();
         ConfigLoad();
         ProfileLoad();
         indexprofile = config.Preset;
         config.fanex = false;
-        config.tempex = false; 
-        ConfigSave(); 
+        config.tempex = false;
+        ConfigSave();
         try
         {
-            cpu ??= CpuSingleton.GetInstance(); 
-            cpusend ??= App.GetService<SendSMUCommand>(); 
+            cpu ??= CpuSingleton.GetInstance();
+            cpusend ??= App.GetService<SendSMUCommand>();
         }
         catch
         {
@@ -79,7 +76,7 @@ public sealed partial class ПараметрыPage : Page
         try
         {
             ProfileLoad();
-            SlidersInit(); 
+            SlidersInit();
         }
         catch
         {
@@ -169,7 +166,7 @@ public sealed partial class ПараметрыPage : Page
             }
             else { JsonRepair('n'); }
             if (!success)
-            { 
+            {
                 await Task.Delay(30);
                 retryCount++;
             }
@@ -489,24 +486,123 @@ public sealed partial class ПараметрыPage : Page
         MainInit(indexprofile);
         waitforload = false;
     }
+    private void DesktopCPU_Delete_UselessParameters()
+    {
+        Laptops_Avg_Wattage.Visibility = Visibility.Collapsed; //Убрать параметры для ноутбуков
+        Laptops_Avg_Wattage_Desc.Visibility = Visibility.Collapsed;
+        Laptops_Fast_Speed.Visibility = Visibility.Collapsed;
+        Laptops_Fast_Speed_Desc.Visibility = Visibility.Collapsed;
+        Laptops_HTC_Temp.Visibility = Visibility.Collapsed;
+        Laptops_HTC_Temp_Desc.Visibility = Visibility.Collapsed;
+        Laptops_Real_Wattage.Visibility = Visibility.Collapsed;
+        Laptops_Real_Wattage_Desc.Visibility = Visibility.Collapsed;
+        Laptops_slow_Speed.Visibility = Visibility.Collapsed;
+        Laptops_slow_Speed_Desc.Visibility = Visibility.Collapsed;
+        VRM_Laptops_Prochot_Time.Visibility = Visibility.Collapsed; //Убрать настройки VRM
+        VRM_Laptops_Prochot_Time_Desc.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_SoC.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_SoC_Desc.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_VDD.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_VDD_Desc.Visibility = Visibility.Collapsed;
+        VRM_Laptops_SoC_Limit.Visibility = Visibility.Collapsed;
+        VRM_Laptops_SoC_Limit_Desc.Visibility = Visibility.Collapsed;
+        VRM_Laptops_SoC_Max.Visibility = Visibility.Collapsed;
+        VRM_Laptops_SoC_Max_Desc.Visibility = Visibility.Collapsed;
+        ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed; //Убрать расширенный разгон
+        ADV_Laptop_AplusA_Limit_Desc.Visibility = Visibility.Collapsed;
+        ADV_Laptop_dGPU_Temp.Visibility = Visibility.Collapsed;
+        ADV_Laptop_dGPU_Temp_Desc.Visibility = Visibility.Collapsed;
+        ADV_Laptop_iGPU_Freq.Visibility = Visibility.Collapsed;
+        ADV_Laptop_iGPU_Freq_Desc.Visibility = Visibility.Collapsed;
+        ADV_Laptop_iGPU_Limit.Visibility = Visibility.Collapsed;
+        ADV_Laptop_iGPU_Limit_Desc.Visibility = Visibility.Collapsed;
+        ADV_Laptop_iGPU_Temp.Visibility = Visibility.Collapsed;
+        ADV_Laptop_iGPU_Temp_Desc.Visibility = Visibility.Collapsed;
+        ADV_Laptop_Pref_Mode.Visibility = Visibility.Collapsed;
+        ADV_Laptop_Pref_Mode_Desc.Visibility = Visibility.Collapsed;
+    }
     private void MainInit(int index)
     {
-        if (cpu?.info.codeName.ToString().Contains("VanGogh") == false)
+        if (SettingsViewModel.VersionId != 5)
         {
-            A1_main.Visibility = Visibility.Collapsed;
-            A2_main.Visibility = Visibility.Collapsed;
-            A3_main.Visibility = Visibility.Collapsed;
-            A4_main.Visibility = Visibility.Collapsed;
-            A5_main.Visibility = Visibility.Collapsed;
-            A1_desc.Visibility = Visibility.Collapsed;
-            A2_desc.Visibility = Visibility.Collapsed;
-            A3_desc.Visibility = Visibility.Collapsed;
-            A4_desc.Visibility = Visibility.Collapsed;
-            A5_desc.Visibility = Visibility.Collapsed;
-        }
-        if (cpu?.info.codeName.ToString().Contains("Raven") == false && cpu?.info.codeName.ToString().Contains("Dali") == false && cpu?.info.codeName.ToString().Contains("Picasso") == false)
-        {
-            iGPU_Subsystems.Visibility = Visibility.Collapsed; Dunger_Zone.Visibility = Visibility.Collapsed; V8_Main.Visibility = Visibility.Collapsed; V8_Desc.Visibility = Visibility.Collapsed; V9_Main.Visibility = Visibility.Collapsed; V9_Desc.Visibility = Visibility.Collapsed; V10_Main.Visibility = Visibility.Collapsed; V10_Desc.Visibility = Visibility.Collapsed;
+
+            if (cpu?.info.codeName.ToString().Contains("VanGogh") == false)
+            {
+                A1_main.Visibility = Visibility.Collapsed;
+                A2_main.Visibility = Visibility.Collapsed;
+                A3_main.Visibility = Visibility.Collapsed;
+                A4_main.Visibility = Visibility.Collapsed;
+                A5_main.Visibility = Visibility.Collapsed;
+                A1_desc.Visibility = Visibility.Collapsed;
+                A2_desc.Visibility = Visibility.Collapsed;
+                A3_desc.Visibility = Visibility.Collapsed;
+                A4_desc.Visibility = Visibility.Collapsed;
+                A5_desc.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                //Если перед нами вангог (стимдек и его подобные)
+                VRM_Laptops_PSI_SoC.Visibility = Visibility.Collapsed;
+                VRM_Laptops_PSI_SoC_Desc.Visibility = Visibility.Collapsed;
+                VRM_Laptops_PSI_VDD.Visibility = Visibility.Collapsed;
+                VRM_Laptops_PSI_VDD_Desc.Visibility = Visibility.Collapsed;
+                ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed; //Убрать расширенный разгон
+                ADV_Laptop_AplusA_Limit_Desc.Visibility = Visibility.Collapsed;
+                ADV_Laptop_dGPU_Temp.Visibility = Visibility.Collapsed;
+                ADV_Laptop_dGPU_Temp_Desc.Visibility = Visibility.Collapsed;
+                ADV_Laptop_iGPU_Limit.Visibility = Visibility.Collapsed;
+                ADV_Laptop_iGPU_Limit_Desc.Visibility = Visibility.Collapsed;
+            }
+            if (cpu?.info.codeName.ToString().Contains("Raven") == false && cpu?.info.codeName.ToString().Contains("Dali") == false && cpu?.info.codeName.ToString().Contains("Picasso") == false)
+            {
+                iGPU_Subsystems.Visibility = Visibility.Collapsed;
+            }
+            if (cpu?.info.codeName.ToString().Contains("Mendocino") == true || cpu?.info.codeName.ToString().Contains("Rembrandt") == true || cpu?.info.codeName.ToString().Contains("Phoenix") == true || cpu?.info.codeName.ToString().Contains("DragonRange") == true || cpu?.info.codeName.ToString().Contains("HawkPoint") == true)
+            {
+                VRM_Laptops_PSI_SoC.Visibility = Visibility.Collapsed;
+                VRM_Laptops_PSI_SoC_Desc.Visibility = Visibility.Collapsed;
+                VRM_Laptops_PSI_VDD.Visibility = Visibility.Collapsed;
+                VRM_Laptops_PSI_VDD_Desc.Visibility = Visibility.Collapsed;
+                ADV_Laptop_OCVOLT.Visibility = Visibility.Collapsed;
+                ADV_Laptop_OCVOLT_Desc.Visibility = Visibility.Collapsed;
+                ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed; //Убрать расширенный разгон
+                ADV_Laptop_AplusA_Limit_Desc.Visibility = Visibility.Collapsed;
+            }
+            if (cpu?.info.codeName.ToString().Contains("Pinnacle") == true || cpu?.info.codeName.ToString().Contains("Summit") == true)
+            {
+                CCD1_Expander.Visibility = Visibility.Collapsed; //Убрать Оптимизатор кривой
+                CCD2_Expander.Visibility = Visibility.Collapsed;
+                CO_Expander.Visibility = Visibility.Collapsed;
+                DesktopCPU_Delete_UselessParameters();
+            }
+            if (cpu?.info.codeName.ToString().Contains("Matisse") == true || cpu?.info.codeName.ToString().Contains("Vermeer") == true)
+            {
+                DesktopCPU_Delete_UselessParameters();
+            }
+            var cores = ИнформацияPage.GetCPUCores();
+            if (cores > 8)
+            {
+                if (cores <= 15) { CCD2_Grid7_2.Visibility = Visibility.Collapsed; CCD2_Grid7_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 14) { CCD2_Grid6_2.Visibility = Visibility.Collapsed; CCD2_Grid6_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 13) { CCD2_Grid5_2.Visibility = Visibility.Collapsed; CCD2_Grid5_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 12) { CCD2_Grid4_2.Visibility = Visibility.Collapsed; CCD2_Grid4_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 11) { CCD2_Grid3_2.Visibility = Visibility.Collapsed; CCD2_Grid3_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 10) { CCD2_Grid2_2.Visibility = Visibility.Collapsed; CCD2_Grid2_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 9) { CCD2_Grid1_2.Visibility = Visibility.Collapsed; CCD2_Grid1_1.Visibility = Visibility.Collapsed; }
+            }
+            else
+            {
+                CO_Cores_Text.Text = CO_Cores_Text.Text.Replace("7", $"{cores - 1}");
+                CCD2_Expander.Visibility = Visibility.Collapsed;
+                if (cores <= 7) { CCD1_Grid8_2.Visibility = Visibility.Collapsed; CCD1_Grid8_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 6) { CCD1_Grid7_2.Visibility = Visibility.Collapsed; CCD1_Grid7_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 5) { CCD1_Grid6_2.Visibility = Visibility.Collapsed; CCD1_Grid6_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 4) { CCD1_Grid5_2.Visibility = Visibility.Collapsed; CCD1_Grid5_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 3) { CCD1_Grid4_2.Visibility = Visibility.Collapsed; CCD1_Grid4_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 2) { CCD1_Grid3_2.Visibility = Visibility.Collapsed; CCD1_Grid3_1.Visibility = Visibility.Collapsed; }
+                if (cores <= 1) { CCD1_Grid2_2.Visibility = Visibility.Collapsed; CCD1_Grid2_1.Visibility = Visibility.Collapsed; }
+                if (cores == 0) { CCD1_Expander.Visibility = Visibility.Collapsed; }
+            }
         }
         waitforload = true;
         ConfigLoad();
@@ -514,8 +610,8 @@ public sealed partial class ПараметрыPage : Page
         {
             DeviceLoad();
             c1.IsChecked = devices.c1; c1v.Value = devices.c1v; c2.IsChecked = devices.c2; c1v.Value = devices.c2v; c3.IsChecked = devices.c3; c1v.Value = devices.c3v; c4.IsChecked = devices.c4; c1v.Value = devices.c4v; c5.IsChecked = devices.c5; c1v.Value = devices.c5v; c6.IsChecked = devices.c6; c1v.Value = devices.c6v; c7.IsChecked = devices.c7; c7v.Value = devices.c7v;
-            V1.IsChecked = devices.v1; V1V.Value = devices.v1v; V2.IsChecked = devices.v2; V2V.Value = devices.v2v; V3.IsChecked = devices.v3; V3V.Value = devices.v3v; V4.IsChecked = devices.v4; V4V.Value = devices.v4v; V5.IsChecked = devices.v5; V5V.Value = devices.v5v; V6.IsChecked = devices.v6; V6V.Value = devices.v6v; V7.IsChecked = devices.v7; V7V.Value = devices.v7v; V8.IsChecked = devices.v8; V8V.Value = devices.v8v; V9.IsChecked = devices.v9; V9V.Value = devices.v9v;
-            g1.IsChecked = devices.g1; g1v.Value = devices.g1v; g2.IsChecked = devices.g2; g2v.Value = devices.g2v; g3.IsChecked = devices.g3; g3v.Value = devices.g3v; g4.IsChecked = devices.g4; g4v.Value = devices.g4v; g5.IsChecked = devices.g5; g5v.Value = devices.g5v; g6.IsChecked = devices.g6; g6v.Value = devices.g6v; g7.IsChecked = devices.g7; g7v.Value = devices.g7v; g8v.Value = devices.g8v; g8.IsChecked = devices.g8; g9v.Value = devices.g9v; g9.IsChecked = devices.g9; g10v.Value = devices.g10v; g10.IsChecked = devices.g10; g11v.Value = devices.g11v; g11.IsChecked = devices.g11; g12v.Value = devices.g12v; g12.IsChecked = devices.g12; g13v.Value = devices.g13v; g13.IsChecked = devices.g13; g14v.Value = devices.g14v; g14.IsChecked = devices.g14; g15m.SelectedIndex = devices.g15v; g15.IsChecked = devices.g15; g16m.SelectedIndex = devices.g16v; g16.IsChecked = devices.g16;
+            V1.IsChecked = devices.v1; V1V.Value = devices.v1v; V2.IsChecked = devices.v2; V2V.Value = devices.v2v; V3.IsChecked = devices.v3; V3V.Value = devices.v3v; V4.IsChecked = devices.v4; V4V.Value = devices.v4v; V5.IsChecked = devices.v5; V5V.Value = devices.v5v; V6.IsChecked = devices.v6; V6V.Value = devices.v6v; V7.IsChecked = devices.v7; V7V.Value = devices.v7v;
+            g1.IsChecked = devices.g1; g1v.Value = devices.g1v; g2.IsChecked = devices.g2; g2v.Value = devices.g2v; g3.IsChecked = devices.g3; g3v.Value = devices.g3v; g4.IsChecked = devices.g4; g4v.Value = devices.g4v; g5.IsChecked = devices.g5; g5v.Value = devices.g5v; g6.IsChecked = devices.g6; g6v.Value = devices.g6v; g7.IsChecked = devices.g7; g7v.Value = devices.g7v; g8v.Value = devices.g8v; g8.IsChecked = devices.g8; g9v.Value = devices.g9v; g9.IsChecked = devices.g9; g10v.Value = devices.g10v; g10.IsChecked = devices.g10; g11v.Value = devices.g11v; g11.IsChecked = devices.g11; g12v.Value = devices.g12v; g12.IsChecked = devices.g12; g15m.SelectedIndex = devices.g15v; g15.IsChecked = devices.g15; g16m.SelectedIndex = devices.g16v; g16.IsChecked = devices.g16;
             a1.IsChecked = devices.a1; a1v.Value = devices.a1v; a2.IsChecked = devices.a2; a2v.Value = devices.a2v; a3.IsChecked = devices.a3; a3v.Value = devices.a3v; a4.IsChecked = devices.a4; a4v.Value = devices.a4v; a5.IsChecked = devices.a5; a5v.Value = devices.a5v; a6.IsChecked = devices.a6; a6v.Value = devices.a6v; a7.IsChecked = devices.a7; a7v.Value = devices.a7v; a8v.Value = devices.a8v; a8.IsChecked = devices.a8; a9v.Value = devices.a9v; a9.IsChecked = devices.a9; a10v.Value = devices.a10v; a11v.Value = devices.a11v; a11.IsChecked = devices.a11; a12v.Value = devices.a12v; a12.IsChecked = devices.a12; a13m.SelectedIndex = devices.a13v; a13.IsChecked = devices.a13; a14m.SelectedIndex = devices.a14v; a14.IsChecked = devices.a14; a15v.Value = devices.a15v; a15.IsChecked = devices.a15;
             EnablePstates.IsOn = devices.enableps; Turbo_boost.IsOn = devices.turboboost; Autoapply_1.IsOn = devices.autopstate; IgnoreWarn.IsOn = devices.ignorewarn; Without_P0.IsOn = devices.p0ignorewarn;
             DID_0.Value = devices.did0; DID_1.Value = devices.did1; DID_2.Value = devices.did2; FID_0.Value = devices.fid0; FID_1.Value = devices.fid1; FID_2.Value = devices.fid2; VID_0.Value = devices.vid0; VID_1.Value = devices.vid1; VID_2.Value = devices.vid2;
@@ -525,9 +621,12 @@ public sealed partial class ПараметрыPage : Page
         {
             ProfileLoad();
             c1.IsChecked = profile[index].cpu1; c1v.Value = profile[index].cpu1value; c2.IsChecked = profile[index].cpu2; c2v.Value = profile[index].cpu2value; c3.IsChecked = profile[index].cpu3; c3v.Value = profile[index].cpu3value; c4.IsChecked = profile[index].cpu4; c4v.Value = profile[index].cpu4value; c5.IsChecked = profile[index].cpu5; c5v.Value = profile[index].cpu5value; c6.IsChecked = profile[index].cpu6; c6v.Value = profile[index].cpu6value; c7.IsChecked = profile[index].cpu7; c7v.Value = profile[index].cpu7value;
-            V1.IsChecked = profile[index].vrm1; V1V.Value = profile[index].vrm1value; V2.IsChecked = profile[index].vrm2; V2V.Value = profile[index].vrm2value; V3.IsChecked = profile[index].vrm3; V3V.Value = profile[index].vrm3value; V4.IsChecked = profile[index].vrm4; V4V.Value = profile[index].vrm4value; V5.IsChecked = profile[index].vrm5; V5V.Value = profile[index].vrm5value; V6.IsChecked = profile[index].vrm6; V6V.Value = profile[index].vrm6value; V7.IsChecked = profile[index].vrm7; V7V.Value = profile[index].vrm7value; V8.IsChecked = profile[index].vrm8; V8V.Value = profile[index].vrm8value; V9.IsChecked = profile[index].vrm9; V9V.Value = profile[index].vrm9value; V10.IsChecked = profile[index].vrm10; V10V.Value = profile[index].vrm10value;
-            g1.IsChecked = profile[index].gpu1; g1v.Value = profile[index].gpu1value; g2.IsChecked = profile[index].gpu2; g2v.Value = profile[index].gpu2value; g3.IsChecked = profile[index].gpu3; g3v.Value = profile[index].gpu3value; g4.IsChecked = profile[index].gpu4; g4v.Value = profile[index].gpu4value; g5.IsChecked = profile[index].gpu5; g5v.Value = profile[index].gpu5value; g6.IsChecked = profile[index].gpu6; g6v.Value = profile[index].gpu6value; g7.IsChecked = profile[index].gpu7; g7v.Value = profile[index].gpu7value; g8v.Value = profile[index].gpu8value; g8.IsChecked = profile[index].gpu8; g9v.Value = profile[index].gpu9value; g9.IsChecked = profile[index].gpu9; g10v.Value = profile[index].gpu10value; g10.IsChecked = profile[index].gpu10; g11.IsChecked = profile[index].gpu11; g11v.Value = profile[index].gpu11value; g12.IsChecked = profile[index].gpu12; g12v.Value = profile[index].gpu12value; g13.IsChecked = profile[index].gpu13; g13v.Value = profile[index].gpu13value; g14.IsChecked = profile[index].gpu14; g14v.Value = profile[index].gpu14value; g15.IsChecked = profile[index].gpu15; g15m.SelectedIndex = profile[index].gpu15value; g16.IsChecked = profile[index].gpu16; g16m.SelectedIndex = profile[index].gpu16value;
+            V1.IsChecked = profile[index].vrm1; V1V.Value = profile[index].vrm1value; V2.IsChecked = profile[index].vrm2; V2V.Value = profile[index].vrm2value; V3.IsChecked = profile[index].vrm3; V3V.Value = profile[index].vrm3value; V4.IsChecked = profile[index].vrm4; V4V.Value = profile[index].vrm4value; V5.IsChecked = profile[index].vrm5; V5V.Value = profile[index].vrm5value; V6.IsChecked = profile[index].vrm6; V6V.Value = profile[index].vrm6value; V7.IsChecked = profile[index].vrm7; V7V.Value = profile[index].vrm7value;
+            g1.IsChecked = profile[index].gpu1; g1v.Value = profile[index].gpu1value; g2.IsChecked = profile[index].gpu2; g2v.Value = profile[index].gpu2value; g3.IsChecked = profile[index].gpu3; g3v.Value = profile[index].gpu3value; g4.IsChecked = profile[index].gpu4; g4v.Value = profile[index].gpu4value; g5.IsChecked = profile[index].gpu5; g5v.Value = profile[index].gpu5value; g6.IsChecked = profile[index].gpu6; g6v.Value = profile[index].gpu6value; g7.IsChecked = profile[index].gpu7; g7v.Value = profile[index].gpu7value; g8v.Value = profile[index].gpu8value; g8.IsChecked = profile[index].gpu8; g9v.Value = profile[index].gpu9value; g9.IsChecked = profile[index].gpu9; g10v.Value = profile[index].gpu10value; g10.IsChecked = profile[index].gpu10; g11.IsChecked = profile[index].gpu11; g11v.Value = profile[index].gpu11value; g12.IsChecked = profile[index].gpu12; g12v.Value = profile[index].gpu12value; g15.IsChecked = profile[index].gpu15; g15m.SelectedIndex = profile[index].gpu15value; g16.IsChecked = profile[index].gpu16; g16m.SelectedIndex = profile[index].gpu16value;
             a1.IsChecked = profile[index].advncd1; a1v.Value = profile[index].advncd1value; a2.IsChecked = profile[index].advncd2; a2v.Value = profile[index].advncd2value; a3.IsChecked = profile[index].advncd3; a3v.Value = profile[index].advncd3value; a4.IsChecked = profile[index].advncd4; a4v.Value = profile[index].advncd4value; a5.IsChecked = profile[index].advncd5; a5v.Value = profile[index].advncd5value; a6.IsChecked = profile[index].advncd6; a6v.Value = profile[index].advncd6value; a7.IsChecked = profile[index].advncd7; a7v.Value = profile[index].advncd7value; a8v.Value = profile[index].advncd8value; a8.IsChecked = profile[index].advncd8; a9v.Value = profile[index].advncd9value; a9.IsChecked = profile[index].advncd9; a10v.Value = profile[index].advncd10value; a11v.Value = profile[index].advncd11value; a11.IsChecked = profile[index].advncd11; a12v.Value = profile[index].advncd12value; a12.IsChecked = profile[index].advncd12; a13.IsChecked = profile[index].advncd13; a13m.SelectedIndex = profile[index].advncd13value; a14.IsChecked = profile[index].advncd14; a14m.SelectedIndex = profile[index].advncd14value; a15.IsChecked = profile[index].advncd15; a15v.Value = profile[index].advncd15value;
+            CCD_CO_Mode_Sel.IsChecked = profile[index].comode; CCD_CO_Mode.SelectedIndex = profile[index].coprefmode;
+            O1.IsChecked = profile[index].coall; O1v.Value = profile[index].coallvalue; O2.IsChecked = profile[index].cogfx; O2v.Value = profile[index].cogfxvalue; CCD1_1.IsChecked = profile[index].coper0; CCD1_1v.Value = profile[index].coper0value; CCD1_2.IsChecked = profile[index].coper1; CCD1_2v.Value = profile[index].coper1value; CCD1_3.IsChecked = profile[index].coper2; CCD1_3v.Value = profile[index].coper2value; CCD1_4.IsChecked = profile[index].coper3; CCD1_4v.Value = profile[index].coper3value; CCD1_5.IsChecked = profile[index].coper4; CCD1_5v.Value = profile[index].coper4value; CCD1_6.IsChecked = profile[index].coper5; CCD1_6v.Value = profile[index].coper5value; CCD1_7.IsChecked = profile[index].coper6; CCD1_7v.Value = profile[index].coper6value; CCD1_8.IsChecked = profile[index].coper7; CCD1_8v.Value = profile[index].coper7value;
+            CCD2_1.IsChecked = profile[index].coper8; CCD2_1v.Value = profile[index].coper8value; CCD2_2.IsChecked = profile[index].coper9; CCD2_2v.Value = profile[index].coper9value; CCD2_3.IsChecked = profile[index].coper10; CCD2_3v.Value = profile[index].coper10value; CCD2_4.IsChecked = profile[index].coper11; CCD2_4v.Value = profile[index].coper11value; CCD2_5.IsChecked = profile[index].coper12; CCD2_5v.Value = profile[index].coper12value; CCD2_6.IsChecked = profile[index].coper13; CCD2_6v.Value = profile[index].coper13value; CCD2_7.IsChecked = profile[index].coper14; CCD2_7v.Value = profile[index].coper14value; CCD2_8.IsChecked = profile[index].coper15; CCD2_8v.Value = profile[index].coper15value;
             EnablePstates.IsOn = profile[index].enablePstateEditor; Turbo_boost.IsOn = profile[index].turboBoost; Autoapply_1.IsOn = profile[index].autoPstate; IgnoreWarn.IsOn = profile[index].ignoreWarn; Without_P0.IsOn = profile[index].p0Ignorewarn;
             DID_0.Value = profile[index].did0; DID_1.Value = profile[index].did1; DID_2.Value = profile[index].did2; FID_0.Value = profile[index].fid0; FID_1.Value = profile[index].fid1; FID_2.Value = profile[index].fid2; VID_0.Value = profile[index].vid0; VID_1.Value = profile[index].vid1; VID_2.Value = profile[index].vid2;
             EnableSMU.IsOn = profile[index].smuEnabled;
@@ -546,7 +645,7 @@ public sealed partial class ПараметрыPage : Page
             //Ignored
         }
         waitforload = false;
-        SmuSettingsLoad(); 
+        SmuSettingsLoad();
         if (smusettings.Note != string.Empty)
         {
             SMUNotes.Document.SetText(TextSetOptions.FormatRtf, smusettings.Note);
@@ -574,10 +673,20 @@ public sealed partial class ПараметрыPage : Page
     }
     private static void ChangeRichEditBoxTextColor(RichEditBox richEditBox, Color color)
     {
-        richEditBox.Document.ApplyDisplayUpdates(); 
-        var documentRange = richEditBox.Document.GetRange(0, TextConstants.MaxUnitCount);
-        documentRange.CharacterFormat.ForegroundColor = color; 
         richEditBox.Document.ApplyDisplayUpdates();
+        var documentRange = richEditBox.Document.GetRange(0, TextConstants.MaxUnitCount);
+        documentRange.CharacterFormat.ForegroundColor = color;
+        richEditBox.Document.ApplyDisplayUpdates();
+    }
+    private uint GetCoreMask(int coreIndex)
+    {
+        var ccxInCcd = cpu?.info.family == Cpu.Family.FAMILY_19H ? 1U : 2U;
+        var coresInCcx = 8 / ccxInCcd;
+
+        var ccd = Convert.ToUInt32(coreIndex / 8);
+        var ccx = Convert.ToUInt32(coreIndex / coresInCcx - ccxInCcd * ccd);
+        var core = Convert.ToUInt32(coreIndex % coresInCcx);
+        return cpu!.MakeCoreMask(core, ccd, ccx);
     }
     private void Init_QuickSMU()
     {
@@ -740,7 +849,7 @@ public sealed partial class ПараметрыPage : Page
             editButton.Click += EditButton_Click;
             playButton.Click += PlayButton_Click;
         }
-    } 
+    }
     #endregion
     #region SMU Related voids and Quick SMU Commands
     private static void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler)
@@ -783,12 +892,12 @@ public sealed partial class ПараметрыPage : Page
             index = 0;
         }
         comboBoxMailboxSelect.SelectedIndex = index;
-        QuickCommand.IsEnabled = true; 
+        QuickCommand.IsEnabled = true;
         await Send_Message("SMUScanText".GetLocalized(), "SMUScanDesc".GetLocalized(), Symbol.Message);
     }
     private void BackgroundWorkerTrySettings_DoWork(object sender, DoWorkEventArgs e)
     {
-      try
+        try
         {
             cpu ??= new Cpu(CpuInitSettings.defaultSetttings);
             switch (cpu.info.codeName)
@@ -801,7 +910,7 @@ public sealed partial class ПараметрыPage : Page
                 case ZenStates.Core.Cpu.CodeName.FireFlight:
                 case ZenStates.Core.Cpu.CodeName.Dali:
                 case ZenStates.Core.Cpu.CodeName.Renoir:
-                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C); 
+                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
                     ScanSmuRange(0x03B10A00, 0x03B10AFF, 4, 0x60);
                     break;
                 case ZenStates.Core.Cpu.CodeName.PinnacleRidge:
@@ -885,7 +994,7 @@ public sealed partial class ПараметрыPage : Page
                 var smuArgAddress = pair.Value + 4;
                 while (smuArgAddress <= end)
                 {
-                    if (cpu?.ReadDword(smuArgAddress) == cpu?.smu.Version) 
+                    if (cpu?.ReadDword(smuArgAddress) == cpu?.smu.Version)
                     {
                         possibleArgAddresses.Add(smuArgAddress);
                     }
@@ -918,7 +1027,7 @@ public sealed partial class ПараметрыPage : Page
                 }
             }
         }
-    } 
+    }
     private SMU.Status? TrySettings(uint msgAddr, uint rspAddr, uint argAddr, uint cmd, uint value)
     {
         var args = new uint[6];
@@ -2235,6 +2344,141 @@ public sealed partial class ПараметрыPage : Page
         devices.a13 = check; devices.a13v = a13m.SelectedIndex;
         DeviceSave();
     }
+    //Оптимизатор кривой
+    private void CCD2_8_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD2_8.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper15 = check; profile[indexprofile].coper15value = CCD2_8v.Value; ProfileSave(); }
+    }
+    private void CCD2_7_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD2_7.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper14 = check; profile[indexprofile].coper14value = CCD2_7v.Value; ProfileSave(); }
+    }
+    private void CCD2_6_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD2_6.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper13 = check; profile[indexprofile].coper13value = CCD2_6v.Value; ProfileSave(); }
+    }
+    private void CCD2_5_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD2_5.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper12 = check; profile[indexprofile].coper12value = CCD2_5v.Value; ProfileSave(); }
+    }
+    private void CCD2_4_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD2_4.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper11 = check; profile[indexprofile].coper11value = CCD2_4v.Value; ProfileSave(); }
+    }
+    private void CCD2_3_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD2_3.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper10 = check; profile[indexprofile].coper10value = CCD2_3v.Value; ProfileSave(); }
+    }
+    private void CCD2_2_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD2_2.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper9 = check; profile[indexprofile].coper9value = CCD2_2v.Value; ProfileSave(); }
+    }
+    private void CCD2_1_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD2_1.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper8 = check; profile[indexprofile].coper8value = CCD2_1v.Value; ProfileSave(); }
+    }
+    private void CCD1_8_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD1_8.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper7 = check; profile[indexprofile].coper7value = CCD1_8v.Value; ProfileSave(); }
+    }
+    private void CCD1_7_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD1_7.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper6 = check; profile[indexprofile].coper6value = CCD1_7v.Value; ProfileSave(); }
+    }
+    private void CCD1_6_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD1_6.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper5 = check; profile[indexprofile].coper5value = CCD1_6v.Value; ProfileSave(); }
+    }
+    private void CCD1_5_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD1_5.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper4 = check; profile[indexprofile].coper4value = CCD1_5v.Value; ProfileSave(); }
+    }
+    private void CCD1_4_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD1_4.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper3 = check; profile[indexprofile].coper3value = CCD1_4v.Value; ProfileSave(); }
+    }
+    private void CCD1_3_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD1_3.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper2 = check; profile[indexprofile].coper2value = CCD1_3v.Value; ProfileSave(); }
+    }
+    private void CCD1_2_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD1_2.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper1 = check; profile[indexprofile].coper1value = CCD1_2v.Value; ProfileSave(); }
+    }
+    private void CCD1_1_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD1_1.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coper0 = check; profile[indexprofile].coper0value = CCD1_1v.Value; ProfileSave(); }
+    }
+    private void O1_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad(); DeviceLoad();
+        var check = O1.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].coall = check; profile[indexprofile].coallvalue = O1v.Value; ProfileSave(); }
+    }
+    private void O2_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = O2.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].cogfx = check; profile[indexprofile].cogfxvalue = O2v.Value; ProfileSave(); }
+    }
+    private void CCD_CO_Mode_Sel_Checked(object sender, RoutedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        var check = CCD_CO_Mode_Sel.IsChecked == true;
+        if (indexprofile != -1) { profile[indexprofile].comode = check; profile[indexprofile].coprefmode = CCD_CO_Mode.SelectedIndex; ProfileSave(); }
+    }
+
     //Параметры процессора, при изменении слайдеров
     //Максимальная температура CPU (C)
     private void C1_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2550,60 +2794,6 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].cpu7value = c7v.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void V8_Checked(object sender, RoutedEventArgs e)
-    {
-        if (isLoaded == false || waitforload) { return; }
-        if (V8.IsChecked == true) { App.MainWindow.ShowMessageDialogAsync("Param_Voltage_warn_heavy".GetLocalized(), "Param_Super_heavywarn".GetLocalized()); }
-        ProfileLoad(); DeviceLoad();
-        var check = V8.IsChecked == true;
-        if (indexprofile != -1) { profile[indexprofile].vrm8 = check; profile[indexprofile].vrm8value = V8V.Value; ProfileSave(); }
-        devices.v8 = check; devices.v8v = V8V.Value;
-        DeviceSave();
-    }
-    private void V8V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.v8v = V8V.Value;
-        if (indexprofile != -1) { profile[indexprofile].vrm8value = V8V.Value; ProfileSave(); }
-        DeviceSave();
-    }
-    private void V9_Checked(object sender, RoutedEventArgs e)
-    {
-        if (isLoaded == false || waitforload) { return; }
-        if (V9.IsChecked == true) { App.MainWindow.ShowMessageDialogAsync("Param_Voltage_warn_heavy".GetLocalized(), "Param_Super_heavywarn".GetLocalized()); }
-        ProfileLoad(); DeviceLoad();
-        var check = V9.IsChecked == true;
-        if (indexprofile != -1) { profile[indexprofile].vrm9 = check; profile[indexprofile].vrm9value = V9V.Value; ProfileSave(); }
-        devices.v9 = check; devices.v9v = V9V.Value;
-        DeviceSave();
-    }
-    private void V9V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.v9v = V9V.Value;
-        if (indexprofile != -1) { profile[indexprofile].vrm9value = V9V.Value; ProfileSave(); }
-        DeviceSave();
-    }
-    private void V10_Checked(object sender, RoutedEventArgs e)
-    {
-        if (isLoaded == false || waitforload) { return; }
-        if (V10.IsChecked == true) { App.MainWindow.ShowMessageDialogAsync("Param_Voltage_warn_heavy".GetLocalized(), "Param_Super_heavywarn".GetLocalized()); }
-        ProfileLoad(); DeviceLoad();
-        var check = V10.IsChecked == true;
-        if (indexprofile != -1) { profile[indexprofile].vrm10 = check; profile[indexprofile].vrm8value = V10V.Value; ProfileSave(); }
-        devices.v10 = check; devices.v10v = V10V.Value;
-        DeviceSave();
-    }
-    private void V10V_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.v10v = V10V.Value;
-        if (indexprofile != -1) { profile[indexprofile].vrm10value = V10V.Value; ProfileSave(); }
-        DeviceSave();
-    }
     private void G11_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -2638,40 +2828,7 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].gpu12value = g12v.Value; ProfileSave(); }
         DeviceSave();
     }
-    private void G13_Checked(object sender, RoutedEventArgs e)
-    {
-        if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
-        var check = g13.IsChecked == true;
-        if (indexprofile != -1) { profile[indexprofile].gpu13 = check; profile[indexprofile].gpu13value = g13v.Value; ProfileSave(); }
-        devices.g13 = check; devices.g13v = g13v.Value;
-        DeviceSave();
-    }
-    private void G13v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g13v = g13v.Value;
-        if (indexprofile != -1) { profile[indexprofile].gpu13value = g13v.Value; ProfileSave(); }
-        DeviceSave();
-    }
-    private void G14_Checked(object sender, RoutedEventArgs e)
-    {
-        if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
-        var check = g14.IsChecked == true;
-        if (indexprofile != -1) { profile[indexprofile].gpu14 = check; profile[indexprofile].gpu14value = g14v.Value; ProfileSave(); }
-        devices.g14 = check; devices.g14v = g14v.Value;
-        DeviceSave();
-    }
-    private void G14v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g14v = g14v.Value;
-        if (indexprofile != -1) { profile[indexprofile].gpu14value = g14v.Value; ProfileSave(); }
-        DeviceSave();
-    }
+
     private void G15_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
@@ -2724,13 +2881,13 @@ public sealed partial class ПараметрыPage : Page
         DeviceSave();
     }
     private void A15_Checked(object sender, RoutedEventArgs e)
-    { 
+    {
         if (isLoaded == false || waitforload) { return; }
         ProfileLoad(); DeviceLoad();
         var check = a15.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd15 = check; profile[indexprofile].advncd15value = a15v.Value; ProfileSave(); }
         devices.a15 = check; devices.a15v = a15v.Value;
-        DeviceSave();  
+        DeviceSave();
     }
     private void A15v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
@@ -2740,6 +2897,122 @@ public sealed partial class ПараметрыPage : Page
         if (indexprofile != -1) { profile[indexprofile].advncd15value = a15v.Value; ProfileSave(); }
         DeviceSave();
     }
+    //Слайдеры из оптимизатора кривой 
+    private void O1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coallvalue = O1v.Value; ProfileSave(); }
+    }
+    private void O2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].cogfxvalue = O2v.Value; ProfileSave(); }
+    }
+    private void CCD1_1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper0value = CCD1_1v.Value; ProfileSave(); }
+    }
+    private void CCD1_2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper1value = CCD1_2v.Value; ProfileSave(); }
+    }
+    private void CCD1_3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper2value = CCD1_3v.Value; ProfileSave(); }
+    }
+    private void CCD1_4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper3value = CCD1_4v.Value; ProfileSave(); }
+    }
+    private void CCD1_5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper4value = CCD1_5v.Value; ProfileSave(); }
+    }
+    private void CCD1_6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper5value = CCD1_6v.Value; ProfileSave(); }
+    }
+    private void CCD1_7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper6value = CCD1_7v.Value; ProfileSave(); }
+    }
+    private void CCD1_8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper7value = CCD1_8v.Value; ProfileSave(); }
+    }
+    private void CCD2_1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper8value = CCD2_1v.Value; ProfileSave(); }
+    }
+    private void CCD2_2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper9value = CCD2_2v.Value; ProfileSave(); }
+    }
+    private void CCD2_3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper10value = CCD2_3v.Value; ProfileSave(); }
+    }
+    private void CCD2_4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper11value = CCD2_4v.Value; ProfileSave(); }
+    }
+    private void CCD2_5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper12value = CCD2_5v.Value; ProfileSave(); }
+    }
+    private void CCD2_6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper13value = CCD2_6v.Value; ProfileSave(); }
+    }
+    private void CCD2_7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper14value = CCD2_7v.Value; ProfileSave(); }
+    }
+    private void CCD2_8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coper15value = CCD2_8v.Value; ProfileSave(); }
+    }
+    private void CCD_CO_Mode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (isLoaded == false || waitforload) { return; }
+        ProfileLoad();
+        if (indexprofile != -1) { profile[indexprofile].coprefmode = CCD_CO_Mode.SelectedIndex; ProfileSave(); }
+    }
+
     //Кнопка применить, итоговый выход, Zen States-Core SMU Command
     private async void Apply_Click(object sender, RoutedEventArgs e)
     {
@@ -2812,18 +3085,6 @@ public sealed partial class ПараметрыPage : Page
         {
             adjline += " --prochot-deassertion-ramp=" + V7V.Value;
         }
-        if (V8.IsChecked == true)
-        {
-            adjline += " --oc-volt-scalar=" + V8V.Value;
-        }
-        if (V9.IsChecked == true)
-        {
-            adjline += " --oc-volt-modular=" + V9V.Value;
-        }
-        if (V10.IsChecked == true)
-        {
-            adjline += " --oc-volt-variable=" + V10V.Value;
-        }
 
         //gpu
         if (g1.IsChecked == true)
@@ -2883,17 +3144,9 @@ public sealed partial class ПараметрыPage : Page
         {
             adjline += " --max-cpuclk=" + g12v.Value;
         }
-        if (g13.IsChecked == true)
-        {
-            adjline += " --setgpu-arerture-low=" + g13v.Value;
-        }
-        if (g14.IsChecked == true)
-        {
-            adjline += " --setgpu-arerture-high=" + g14v.Value;
-        }
         if (g15.IsChecked == true)
         {
-            if (g15m.SelectedIndex != 0) { adjline += " --start-gpu-link=" + (g15m.SelectedIndex - 1).ToString(); } 
+            if (g15m.SelectedIndex != 0) { adjline += " --start-gpu-link=" + (g15m.SelectedIndex - 1).ToString(); }
             else { adjline += " --stop-gpu-link=0"; }
         }
         if (g16.IsChecked == true)
@@ -2961,7 +3214,7 @@ public sealed partial class ПараметрыPage : Page
         {
             adjline += " --oc-volt=" + Math.Round((1.55 - a12v.Value / 1000) / 0.00625);
         }
-       
+
 
         if (a13.IsChecked == true)
         {
@@ -2991,26 +3244,133 @@ public sealed partial class ПараметрыPage : Page
         {
             adjline += " --pbo-scalar=" + a15v.Value * 100;
         }
+        if (O1.IsChecked == true)
+        {
+            if (O1v.Value >= 0.0)
+            {
+                adjline += $"--set-coall={O1v.Value} ";
+            }
+            else
+            {
+                adjline += $"--set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)O1v.Value))} ";
+            }
+        }
+        if (O2.IsChecked == true)
+        {
+            cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSMUCommand.ReturnCoGFX(cpu.info.codeName);
+            //Using Irusanov method
+            for (var i = 0; i < cpu?.info.topology.physicalCores; i++)
+            {
+                if ((~cpu.info.topology.coreDisableMap.Length >> i & 1) == 1)
+                {
+                    if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
+                    {
+                        cpu.SetPsmMarginSingleCore(GetCoreMask(i), Convert.ToInt32(O2v.Value));
+                    }
+                }
+            }
+            cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSMUCommand.ReturnCoPer(cpu.info.codeName);
+        }
+        if (CCD_CO_Mode_Sel.IsChecked == true && CCD_CO_Mode.SelectedIndex != 0)
+        { //Если пользователь выбрал хотя-бы один режим и ...
+            if (CCD_CO_Mode.SelectedIndex == 1) //Если выбран режим ноутбук
+            {
+                if (cpu?.info.codeName == Cpu.CodeName.DragonRange) //Так как там как у компьютеров
+                {
+                    if (CCD1_1.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD1_1v.Value & 0xFFFF)} "; }
+                    if (CCD1_2.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD1_2v.Value & 0xFFFF)} "; }
+                    if (CCD1_3.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD1_3v.Value & 0xFFFF)} "; }
+                    if (CCD1_4.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD1_4v.Value & 0xFFFF)} "; }
+                    if (CCD1_5.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD1_5v.Value & 0xFFFF)} "; }
+                    if (CCD1_6.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD1_6v.Value & 0xFFFF)} "; }
+                    if (CCD1_7.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD1_7v.Value & 0xFFFF)} "; }
+                    if (CCD1_8.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 7 % 8 & 15) << 20 | ((int)CCD1_8v.Value & 0xFFFF)} "; }
+
+                    if (CCD2_1.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD2_1v.Value & 0xFFFF)} "; }
+                    if (CCD2_2.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD2_2v.Value & 0xFFFF)} "; }
+                    if (CCD2_3.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD2_3v.Value & 0xFFFF)} "; }
+                    if (CCD2_4.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD2_4v.Value & 0xFFFF)} "; }
+                    if (CCD2_5.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD2_5v.Value & 0xFFFF)} "; }
+                    if (CCD2_6.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD2_6v.Value & 0xFFFF)} "; }
+                    if (CCD2_7.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD2_7v.Value & 0xFFFF)} "; }
+                    if (CCD2_8.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 7 % 8 & 15) << 20 | ((int)CCD2_8v.Value & 0xFFFF)} "; }
+                }
+                else
+                {
+                    if (CCD1_1.IsChecked == true) { adjline += $"--set-coper={(0 << 20) | ((int)CCD1_1v.Value & 0xFFFF)} "; }
+                    if (CCD1_2.IsChecked == true) { adjline += $"--set-coper={(1 << 20) | ((int)CCD1_2v.Value & 0xFFFF)} "; }
+                    if (CCD1_3.IsChecked == true) { adjline += $"--set-coper={(2 << 20) | ((int)CCD1_3v.Value & 0xFFFF)} "; }
+                    if (CCD1_4.IsChecked == true) { adjline += $"--set-coper={(3 << 20) | ((int)CCD1_4v.Value & 0xFFFF)} "; }
+                    if (CCD1_5.IsChecked == true) { adjline += $"--set-coper={(4 << 20) | ((int)CCD1_5v.Value & 0xFFFF)} "; }
+                    if (CCD1_6.IsChecked == true) { adjline += $"--set-coper={(5 << 20) | ((int)CCD1_6v.Value & 0xFFFF)} "; }
+                    if (CCD1_7.IsChecked == true) { adjline += $"--set-coper={(6 << 20) | ((int)CCD1_7v.Value & 0xFFFF)} "; }
+                    if (CCD1_8.IsChecked == true) { adjline += $"--set-coper={(7 << 20) | ((int)CCD1_8v.Value & 0xFFFF)} "; }
+                }
+            }
+            else if (CCD_CO_Mode.SelectedIndex == 2) //Если выбран режим компьютер
+            {
+                if (CCD1_1.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD1_1v.Value & 0xFFFF)} "; }
+                if (CCD1_2.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD1_2v.Value & 0xFFFF)} "; }
+                if (CCD1_3.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD1_3v.Value & 0xFFFF)} "; }
+                if (CCD1_4.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD1_4v.Value & 0xFFFF)} "; }
+                if (CCD1_5.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD1_5v.Value & 0xFFFF)} "; }
+                if (CCD1_6.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD1_6v.Value & 0xFFFF)} "; }
+                if (CCD1_7.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD1_7v.Value & 0xFFFF)} "; }
+                if (CCD1_8.IsChecked == true) { adjline += $"--set-coper={7340032 | ((int)CCD1_8v.Value! & 0xFFFF)} "; }
+
+                if (CCD2_1.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD2_1v.Value & 0xFFFF)} "; }
+                if (CCD2_2.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD2_2v.Value & 0xFFFF)} "; }
+                if (CCD2_3.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD2_3v.Value & 0xFFFF)} "; }
+                if (CCD2_4.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD2_4v.Value & 0xFFFF)} "; }
+                if (CCD2_5.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD2_5v.Value & 0xFFFF)} "; }
+                if (CCD2_6.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD2_6v.Value & 0xFFFF)} "; }
+                if (CCD2_7.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD2_7v.Value & 0xFFFF)} "; }
+                if (CCD2_8.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 7 % 8 & 15) << 20 | ((int)CCD2_8v.Value & 0xFFFF)} "; }
+            }
+            else if (CCD_CO_Mode.SelectedIndex == 3) //Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
+            {
+                cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSMUCommand.ReturnCoPer(cpu.info.codeName);
+                //Using Irusanov method
+                for (var i = 0; i < cpu?.info.topology.physicalCores; i++)
+                {
+                    var checkbox = i < 8 ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i}") : (CheckBox)CCD1_Grid.FindName($"CCD2_{i}");
+                    if (checkbox != null && checkbox.IsChecked == true)
+                    {
+                        var setVal = i < 8 ? (Slider)CCD1_Grid.FindName($"CCD1_{i}v") : (Slider)CCD2_Grid.FindName($"CCD2_{i}v");
+                        if ((~cpu.info.topology.coreDisableMap.Length >> i & 1) == 1)
+                        {
+                            if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
+                            {
+                                cpu.SetPsmMarginSingleCore(GetCoreMask(i), Convert.ToInt32(setVal.Value));
+                            }
+                        }
+                    }
+                }
+            }
+        }
         ConfigLoad();
         config.adjline = adjline + " ";
         config.ApplyInfo = "";
         adjline = "";
-        ConfigSave(); 
-        MainWindow.Applyer.Apply(true); 
+        ConfigSave();
+        MainWindow.Applyer.Apply(true);
         if (EnablePstates.IsOn) { BtnPstateWrite_Click(); }
         await Task.Delay(1000);
         ConfigLoad();
         var timer = 1000;
-        timer *= config.ApplyInfo.Split('\n').Length + 1;
+        if (config.ApplyInfo != null)
+        {
+            timer *= config.ApplyInfo.Split('\n').Length + 1;
+        }
         Apply_tooltip.Title = "Apply_Success".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized();
         Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-        Apply_tooltip.IsOpen = true; var infoSet = InfoBarSeverity.Success; 
-        if (config.ApplyInfo != "") { Apply_tooltip.Title = "Apply_Warn".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + config.ApplyInfo; Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked }; await Task.Delay(timer); Apply_tooltip.IsOpen = false; infoSet = InfoBarSeverity.Warning; }
-        else { await Task.Delay(3000); Apply_tooltip.IsOpen = false; } 
+        Apply_tooltip.IsOpen = true; var infoSet = InfoBarSeverity.Success;
+        if (config.ApplyInfo != string.Empty && config.ApplyInfo != null) { Apply_tooltip.Title = "Apply_Warn".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + config.ApplyInfo; Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked }; await Task.Delay(timer); Apply_tooltip.IsOpen = false; infoSet = InfoBarSeverity.Warning; }
+        else { await Task.Delay(3000); Apply_tooltip.IsOpen = false; }
         NotifyLoad();
         notify.Notifies ??= new List<Notify>();
         notify.Notifies.Add(new Notify { Title = Apply_tooltip.Title, Msg = Apply_tooltip.Subtitle, Type = infoSet });
-        NotifySave(); 
+        NotifySave();
         if (textBoxARG0 != null && textBoxARGAddress != null && textBoxCMD != null && textBoxCMDAddress != null && textBoxRSPAddress != null && EnableSMU.IsOn) { ApplySettings(0, 0); }
         cpusend ??= new SendSMUCommand();
         cpusend.Play_Invernate_QuickSMU(0);
@@ -3036,7 +3396,7 @@ public sealed partial class ПараметрыPage : Page
                     }
                 };
                 profile = profileList.ToArray();
-                waitforload = false; 
+                waitforload = false;
                 NotifyLoad();
                 notify.Notifies ??= new List<Notify>();
                 notify.Notifies.Add(new Notify { Title = "SaveSuccessTitle".GetLocalized(), Msg = "SaveSuccessDesc".GetLocalized() + " " + SaveProfileN.Text, Type = InfoBarSeverity.Success });
@@ -3053,7 +3413,7 @@ public sealed partial class ПараметрыPage : Page
         {
             NotifyLoad();
             notify.Notifies ??= new List<Notify>();
-            notify.Notifies.Add(new Notify { Title = Add_tooltip_Error.Title, Msg = Add_tooltip_Error.Subtitle, Type = InfoBarSeverity.Error }) ;
+            notify.Notifies.Add(new Notify { Title = Add_tooltip_Error.Title, Msg = Add_tooltip_Error.Subtitle, Type = InfoBarSeverity.Error });
             NotifySave();
             Add_tooltip_Error.IsOpen = true;
             await Task.Delay(3000);
@@ -3110,7 +3470,7 @@ public sealed partial class ПараметрыPage : Page
             await Task.Delay(3000);
             Edit_tooltip_Error.IsOpen = false;
         }
-    } 
+    }
     private async void Delete_Click(object sender, RoutedEventArgs e)
     {
         var DelDialog = new ContentDialog
@@ -3147,16 +3507,16 @@ public sealed partial class ПараметрыPage : Page
                 profile = profileList.ToArray();
                 indexprofile = 0;
                 waitforload = false;
-                ProfileCOM.SelectedIndex = 0; 
+                ProfileCOM.SelectedIndex = 0;
                 NotifyLoad();
                 notify.Notifies ??= new List<Notify>();
                 notify.Notifies.Add(new Notify { Title = "DeleteSuccessTitle".GetLocalized(), Msg = "DeleteSuccessDesc".GetLocalized(), Type = InfoBarSeverity.Success });
                 NotifySave();
             }
-            ProfileSave(); 
-        } 
+            ProfileSave();
+        }
     }
- 
+
     #endregion
     #region PState Section related voids
     public async void BtnPstateWrite_Click()
@@ -3239,7 +3599,7 @@ public sealed partial class ПараметрыPage : Page
                     {
                         //Unable to set PStates
                         WritePstatesWithoutP0();
-                    } 
+                    }
                 }
             }
         }
@@ -3398,10 +3758,10 @@ public sealed partial class ПараметрыPage : Page
                 {
                     MessageBox.Show("Error writing PState! ID = " + pstateId);
                 }
-              /*  if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
-                {
-                    MessageBox.Show("Error writing PState! ID = " + pstateId);
-                }*/
+                /*  if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
+                  {
+                      MessageBox.Show("Error writing PState! ID = " + pstateId);
+                  }*/
             }
             ReadPstate();
         }
@@ -3417,7 +3777,7 @@ public sealed partial class ПараметрыPage : Page
         CpuVid = (eax >> 14) & 0xFF;
         CpuDfsId = (eax >> 8) & 0x3F;
         CpuFid = eax & 0xFF;
-    }  
+    }
     public bool ApplyTscWorkaround()
     { // P0 fix C001_0015 HWCR[21]=1
       // Fixes timer issues when not using HPET
@@ -3426,7 +3786,7 @@ public sealed partial class ПараметрыPage : Page
         {
             eax |= 0x200000;
             return cpu.WriteMsr(0xC0010015, eax, edx);
-           // return cpu.WriteMsrWn(0xC0010015, eax, edx);
+            // return cpu.WriteMsrWn(0xC0010015, eax, edx);
         }
         MessageBox.Show("Error applying TSC fix!");
         return false;
@@ -3442,7 +3802,7 @@ public sealed partial class ПараметрыPage : Page
             }
             if (!ApplyTscWorkaround()) { return false; }
             if (cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; }
-          //  if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; }
+            //  if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; }
             return true;
         }
         catch { return false; }
@@ -3466,7 +3826,7 @@ public sealed partial class ПараметрыPage : Page
                 catch
                 {
                     // ignored
-                } 
+                }
                 uint IddDiv = 0x0;
                 uint IddVal = 0x0;
                 uint CpuVid = 0x0;
@@ -3524,7 +3884,7 @@ public sealed partial class ПараметрыPage : Page
         {
             // ignored
         }
-    } 
+    }
     //Pstates section 
     private void EnablePstates_Click(object sender, RoutedEventArgs e)
     {
@@ -3574,7 +3934,7 @@ public sealed partial class ПараметрыPage : Page
         catch
         {
             indexprofile = 0;
-        } 
+        }
     }
     private void TurboBoost()
     {
@@ -3972,5 +4332,5 @@ public sealed partial class ПараметрыPage : Page
     private void VID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID0();
     private void VID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID1();
     private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID2();
-    #endregion 
+    #endregion
 }
