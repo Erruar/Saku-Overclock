@@ -159,6 +159,7 @@ Use the `README.md` to get started.
   <ol>
     <h1 align="center">Parameters page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main2.png"></img>
     <p align="left"> Here you can see the contents of the Parameters page. This page is the most important in the entire application, as it allows you to configure overclocking the way you need it.</p>
     <br />
     <br />
