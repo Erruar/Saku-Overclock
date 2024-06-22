@@ -224,7 +224,16 @@ Use the `README.md` to get started.
     <br />
     <h3 align="center">Apply range to SMU command</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_3.png"></img> 
-     <p align="left">• Apply range to SMU command: You can apply range to one SMU command. Its useful for unlocking all SMU features at once or in some other variants.</p>
+    <p align="left">• Apply range to SMU command: You can apply range to one SMU command. Its useful for unlocking all SMU features at once or in some other variants.</p>
+    <br />
+    <br />
+    <h1 align="center">SMU functions manager</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_fun_1.png"></img>  
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_fun_2.png"></img>  
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_fun_3.png"></img>  
+    <p align="left">• SMU functions manager: Allows users to change SMU functions on their devices. Those settings gave you maximum control of your SMU. There you can change common SMU functions.</p>
+    <br />
+    <br />
     <p> </p>
   </ol>
 </details>
