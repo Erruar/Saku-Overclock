@@ -166,4 +166,17 @@ internal class Profile
     public double coper13value = 0.0;
     public double coper14value = 0.0;
     public double coper15value = 0.0;
+    //SMU Functions
+    public bool smuFunctionsEnabl = false;
+    public bool smuFeatureCCLK = true;
+    public bool smuFeatureData = true;
+    public bool smuFeaturePPT = true;
+    public bool smuFeatureTDC = true;
+    public bool smuFeatureThermal = true;
+    public bool smuFeaturePowerDown = true;
+    public bool smuFeatureProchot = true;
+    public bool smuFeatureSTAPM = true;
+    public bool smuFeatureCStates = true;
+    public bool smuFeatureGfxDutyCycle = true;
+    public bool smuFeatureAplusA = true;
 }

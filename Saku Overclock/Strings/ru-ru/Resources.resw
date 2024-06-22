@@ -1891,4 +1891,224 @@ CPU VID
 изменение и сделайте ближе к нулю.
 НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
   </data>
+  <data name="TraceIt_Error" xml:space="preserve">
+    <value>Система TraceIt! - Кажется что-то пошло не так:</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode.Text" xml:space="preserve">
+    <value>A+A Режим производительности</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode_Desc.Text" xml:space="preserve">
+    <value>Максимальная производительность на iGPU + dGPU устройствах</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>A+A Режим производительности
+Это функция SMU, которая
+включает или выключает A+A 
+режим производительности. Он уже
+включен на AMD iGPU и AMD
+dGPU устройствах, но его можно
+также включить на других устройствах
+с dGPU и даже на устройствах без него.
+Рекоммендация - включить</value>
+  </data>
+  <data name="Param_SMU_Func_All.Text" xml:space="preserve">
+    <value>Настройки функций SMU</value>
+  </data>
+  <data name="Param_SMU_Func_All_Desc.Text" xml:space="preserve">
+    <value>Включить или выключить эту секцию настроек</value>
+  </data>
+  <data name="Param_SMU_Func_All_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Настройки функций SMU
+наведите курсор на эти кнопки 
+чтобы узнать детальную информацию. 
+Учтите, что все функции действуют до 
+перезагрузки, а некоторые до спящего 
+режима или подключения зарядки.</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK.Text" xml:space="preserve">
+    <value>Контроллер частот CPU</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK_Desc.Text" xml:space="preserve">
+    <value>Поведение частоты процессора</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Контроллер частот CPU
+Это функция SMU, которая
+включает или выключает
+контроллер частоты процессора
+Если выключено, то процессор 
+работает в фиксированном
+режиме с частотой близкой к 
+1600 МГц всегда, до включения.
+Рекоммендация - включить</value>
+  </data>
+  <data name="Param_SMU_Func_CStates.Text" xml:space="preserve">
+    <value>Состояния C-States</value>
+  </data>
+  <data name="Param_SMU_Func_CStates_Desc.Text" xml:space="preserve">
+    <value>Поможет сохранить проценты батареи</value>
+  </data>
+  <data name="Param_SMU_Func_CStates_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Состояния C-States
+Это функция SMU, которая
+включает или выключает 
+C-States в процессоре. 
+Если выключено - C-States 
+будут выключен. И процессор
+будет всегда работать на 
+P-States. Важно отметить: 
+На Renoir (4000) и выше
+это отключит только C6-State.
+Рекоммендация - отключить</value>
+  </data>
+  <data name="Param_SMU_Func_DATA.Text" xml:space="preserve">
+    <value>Датчики Power Table</value>
+  </data>
+  <data name="Param_SMU_Func_DATA_Desc.Text" xml:space="preserve">
+    <value>Обновление значений датчиков по всей системе</value>
+  </data>
+  <data name="Param_SMU_Func_DATA_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Датчики Power Table
+Это функция SMU, которая
+включает или выключает
+контроллер датчиков системы. 
+Если выключено, то все датчики
+системы не будут обновляться и 
+Power Table, пока эта функция не 
+будет включена обратно.
+Рекоммендация - включить</value>
+  </data>
+  <data name="Param_SMU_Func_Desc.Text" xml:space="preserve">
+    <value>Управляйте функциями вашего SMU</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty.Text" xml:space="preserve">
+    <value>Энергосбережение iGPU</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty_Desc.Text" xml:space="preserve">
+    <value>Сохранит iGPU максимально холодным</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Энергосбережение iGPU
+Это функция SMU, которая
+включает или выключает 
+APU GFX Duty cycle. Это работает
+также как и "Снижение мощности",
+чтобы ограничить iGPU лимитом 
+мощности.
+Рекоммендация - отключить</value>
+  </data>
+  <data name="Param_SMU_Func_PLL.Text" xml:space="preserve">
+    <value>Снижение мощности</value>
+  </data>
+  <data name="Param_SMU_Func_PLL_Desc.Text" xml:space="preserve">
+    <value>Снижать мощность для соответствия TDP</value>
+  </data>
+  <data name="Param_SMU_Func_PLL_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Снижение мощности
+Это функция SMU, которая
+включает или выключает
+контроллер пределов для 
+лимитов мощности в системе. 
+Если выключено, то процессор,
+сможет всегда работать на 
+выставленных в Saku Overclock 
+мощностях без особых снижений. 
+Рекоммендация - включить </value>
+  </data>
+  <data name="Param_SMU_Func_PPT.Text" xml:space="preserve">
+    <value>Лимиты мощности</value>
+  </data>
+  <data name="Param_SMU_Func_PPT_Desc.Text" xml:space="preserve">
+    <value>Ограничение мощности для эффективной производительности</value>
+  </data>
+  <data name="Param_SMU_Func_PPT_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимиты мощности
+Это функция SMU, которая
+включает или выключает
+контроллер лимитов мощности 
+в системе. Если выключено, то 
+процессор, сможет всегда работать
+без ограничений мощности, даже 
+выставленных в Saku Overclock 
+мощностях без снижений. 
+Рекоммендация - включить  </value>
+  </data>
+  <data name="Param_SMU_Func_Prochot.Text" xml:space="preserve">
+    <value>Сигнал Prochot</value>
+  </data>
+  <data name="Param_SMU_Func_Prochot_Desc.Text" xml:space="preserve">
+    <value>Управляйте сигналом Prochot для устранения проблем</value>
+  </data>
+  <data name="Param_SMU_Func_Prochot_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Сигнал Prochot
+Это функция SMU, которая
+включает или выключает
+сигнал Prochot в системе. Если 
+выключено, то сигнал prochot 
+будет выключен, до первого
+фатального момента, на нём
+ноутбук крашнет и зависнет.
+Рекоммендация - включить
+И НЕ ТРОГАТЬ ЭТОТ ПАРАМЕТР</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM.Text" xml:space="preserve">
+    <value>Лимит мощности STAPM</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM_Desc.Text" xml:space="preserve">
+    <value>Получите больше производительности без ограничений частоты</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимит мощности STAPM
+Это функция SMU, которая
+включает или выключает
+лимит мощности STAPM
+в системе. Если выключено, то 
+процессор, сможет работать
+без ограничений STAPM, даже 
+выставленных в Saku Overclock 
+мощности STAPM, при этом
+без снижений частоты. 
+Рекоммендация - отключить</value>
+  </data>
+  <data name="Param_SMU_Func_TDC.Text" xml:space="preserve">
+    <value>Лимиты тока</value>
+  </data>
+  <data name="Param_SMU_Func_TDC_Desc.Text" xml:space="preserve">
+    <value>Ограничения по току зоны VRM</value>
+  </data>
+  <data name="Param_SMU_Func_TDC_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимиты тока
+Это функция SMU, которая
+включает или выключает
+контроллер токов VRM. 
+Если выключено, то все 
+токи, выставленные в Saku
+Overclock будут проигнорированы,
+а все лимиты по току TDC будут 
+сняты с VRM до включения.
+Рекоммендация - отключить</value>
+  </data>
+  <data name="Param_SMU_Func_Text.Text" xml:space="preserve">
+    <value>Менеджер функций SMU</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal.Text" xml:space="preserve">
+    <value>Контроль температур</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal_Desc.Text" xml:space="preserve">
+    <value>Ограничение температур в системе</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Контроль температур
+Это функция SMU, которая
+включает или выключает
+контроллер температур в системе. 
+Если выключено, то температура,
+выставленная в Saku Overclock 
+будет проигнорирована,
+а все лимиты по температуре
+будут сняты с процессора и его
+подсистем до включения функции. 
+Рекоммендация - включить
+И НЕ ТРОГАТЬ ЭТОТ ПАРАМЕТР</value>
+  </data>
 </root>

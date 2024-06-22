@@ -237,11 +237,12 @@ public sealed partial class ShellPage : Page
                 if (notify1.Title.Equals("Theme applied!")) //Если уведомление о изменении темы
                 {
                     Theme_Loader();
-                    notify?.Notifies.Remove(notify1); NotifySave(); return; //Удалить и не показывать
+                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                    return; //Удалить и не показывать
                 }
                 MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.isClosable, notify1.Subcontent, notify1.CloseClickHandler);
                 if (notify1.Title.Contains("SaveSuccessTitle".GetLocalized()) || notify1.Title.Contains("DeleteSuccessTitle".GetLocalized()) || notify1.Title.Contains("Edit_TargetTitle".GetLocalized())) { contains = true; }
-                if (index > 8) //Если 9 уведомлений - очистить для оптимизации производительности
+                if (SettingsViewModel.VersionId != 5 && index > 8) //Если 9 уведомлений - очистить для оптимизации производительности
                 { 
                     index = 0; //Сброс счётчика циклов
                     ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё

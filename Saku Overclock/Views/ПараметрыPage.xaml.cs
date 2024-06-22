@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Forms;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -40,7 +41,7 @@ public sealed partial class ПараметрыPage : Page
     private bool relay = false;
     private Cpu? cpu; //Import Zen States core
     private SendSMUCommand? cpusend;
-    public bool turbobboost = true;
+    public bool turboboost = true;
     private bool waitforload = true;
     public string? adjline;
     private readonly ZenStates.Core.Mailbox testMailbox = new();
@@ -63,10 +64,11 @@ public sealed partial class ПараметрыPage : Page
             cpu ??= CpuSingleton.GetInstance();
             cpusend ??= App.GetService<SendSMUCommand>();
         }
-        catch
-        {
+        catch (Exception ex) 
+        { 
+            TraceIt_TraceError(ex.ToString()); 
             App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash_CPU".GetLocalized(), AppContext.BaseDirectory));
-        }
+        } 
         Loaded += ПараметрыPage_Loaded;
     }
     #region JSON and initialization
@@ -78,15 +80,17 @@ public sealed partial class ПараметрыPage : Page
             ProfileLoad();
             SlidersInit();
         }
-        catch
+        catch (Exception ex)
         {
+            TraceIt_TraceError(ex.ToString()); 
             try
             {
                 ConfigLoad(); config.Preset = -1; ConfigSave(); indexprofile = -1;
                 SlidersInit();
             }
-            catch
+            catch (Exception ex1)  
             {
+                TraceIt_TraceError(ex1.ToString()); 
                 await Send_Message("Critical Error!", "Can't load profiles. Tell this to developer", Symbol.Bookmarks);
             }
         }
@@ -98,10 +102,7 @@ public sealed partial class ПараметрыPage : Page
             Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     public void ConfigLoad()
     {
@@ -109,10 +110,11 @@ public sealed partial class ПараметрыPage : Page
         {
             config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
         }
-        catch
-        {
+        catch (Exception ex) 
+        { 
+            TraceIt_TraceError(ex.ToString()); 
             JsonRepair('c');
-        }
+        } 
     }
     public void DeviceSave()
     {
@@ -121,10 +123,7 @@ public sealed partial class ПараметрыPage : Page
             Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     public void DeviceLoad()
     {
@@ -132,10 +131,11 @@ public sealed partial class ПараметрыPage : Page
         {
             devices = JsonConvert.DeserializeObject<Devices>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json"))!;
         }
-        catch
-        {
+        catch (Exception ex) 
+        { 
             JsonRepair('d');
-        }
+            TraceIt_TraceError(ex.ToString()); 
+        } 
     }
     public void NotifySave()
     {
@@ -144,10 +144,7 @@ public sealed partial class ПараметрыPage : Page
             Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify, Formatting.Indented));
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     public async void NotifyLoad()
     {
@@ -162,7 +159,7 @@ public sealed partial class ПараметрыPage : Page
                     notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))!;
                     if (notify != null) { success = true; } else { JsonRepair('p'); }
                 }
-                catch { JsonRepair('n'); }
+                catch (Exception ex) { TraceIt_TraceError(ex.ToString()); JsonRepair('n'); } 
             }
             else { JsonRepair('n'); }
             if (!success)
@@ -179,10 +176,7 @@ public sealed partial class ПараметрыPage : Page
             Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json", JsonConvert.SerializeObject(smusettings, Formatting.Indented));
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     public void SmuSettingsLoad()
     {
@@ -190,10 +184,7 @@ public sealed partial class ПараметрыPage : Page
         {
             smusettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json"))!;
         }
-        catch
-        {
-            JsonRepair('s');
-        }
+        catch (Exception ex) { JsonRepair('s'); TraceIt_TraceError(ex.ToString()); } 
     }
     public void ProfileSave()
     {
@@ -202,10 +193,7 @@ public sealed partial class ПараметрыPage : Page
             Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile, Formatting.Indented));
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     public void ProfileLoad()
     {
@@ -214,10 +202,7 @@ public sealed partial class ПараметрыPage : Page
 
             profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
         }
-        catch
-        {
-            JsonRepair('p');
-        }
+        catch (Exception ex) { JsonRepair('p'); TraceIt_TraceError(ex.ToString()); } 
     }
     public void JsonRepair(char file)
     {
@@ -630,6 +615,18 @@ public sealed partial class ПараметрыPage : Page
             EnablePstates.IsOn = profile[index].enablePstateEditor; Turbo_boost.IsOn = profile[index].turboBoost; Autoapply_1.IsOn = profile[index].autoPstate; IgnoreWarn.IsOn = profile[index].ignoreWarn; Without_P0.IsOn = profile[index].p0Ignorewarn;
             DID_0.Value = profile[index].did0; DID_1.Value = profile[index].did1; DID_2.Value = profile[index].did2; FID_0.Value = profile[index].fid0; FID_1.Value = profile[index].fid1; FID_2.Value = profile[index].fid2; VID_0.Value = profile[index].vid0; VID_1.Value = profile[index].vid1; VID_2.Value = profile[index].vid2;
             EnableSMU.IsOn = profile[index].smuEnabled;
+            SMU_Func_Enabl.IsOn = profile[index].smuFunctionsEnabl;
+            Bit_0_FEATURE_CCLK_CONTROLLER.IsOn = profile[index].smuFeatureCCLK;
+            Bit_2_FEATURE_DATA_CALCULATION.IsOn = profile[index].smuFeatureData;
+            Bit_3_FEATURE_PPT.IsOn = profile[index].smuFeaturePPT;
+            Bit_4_FEATURE_TDC.IsOn = profile[index].smuFeatureTDC;
+            Bit_5_FEATURE_THERMAL.IsOn = profile[index].smuFeatureThermal;
+            Bit_8_FEATURE_PLL_POWER_DOWN.IsOn = profile[index].smuFeaturePowerDown;
+            Bit_37_FEATURE_PROCHOT.IsOn = profile[index].smuFeatureProchot;
+            Bit_39_FEATURE_STAPM.IsOn = profile[index].smuFeatureSTAPM;
+            Bit_40_FEATURE_CORE_CSTATES.IsOn = profile[index].smuFeatureCStates;
+            Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn = profile[index].smuFeatureGfxDutyCycle;
+            Bit_42_FEATURE_AA_MODE.IsOn = profile[index].smuFeatureAplusA;
         }
         try
         {
@@ -640,10 +637,7 @@ public sealed partial class ПараметрыPage : Page
             P2_Freq.Content = FID_2.Value * 25 / (DID_2.Value * 12.5) * 100;
             Mult_2.SelectedIndex = (int)(FID_2.Value * 25 / (DID_2.Value * 12.5)) - 4;
         }
-        catch
-        {
-            //Ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
         waitforload = false;
         SmuSettingsLoad();
         if (smusettings.Note != string.Empty)
@@ -655,10 +649,7 @@ public sealed partial class ПараметрыPage : Page
         {
             Init_QuickSMU();
         }
-        catch
-        {
-            //Ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     private static Color GetColorFromBrush(Brush brush)
     {
@@ -850,6 +841,17 @@ public sealed partial class ПараметрыPage : Page
             playButton.Click += PlayButton_Click;
         }
     }
+    private async void TraceIt_TraceError(string error) //Система TraceIt! позволит логгировать все ошибки
+    {
+        if (error != string.Empty)
+        {  
+            NotifyLoad(); //Добавить уведомление
+            notify.Notifies ??= new List<Notify>();
+            notify.Notifies.Add(new Notify { Title = "TraceIt_Error".GetLocalized(), Msg = error, Type = InfoBarSeverity.Error });
+            NotifySave();
+            await Send_Message("TraceIt_Error".GetLocalized(), error, Symbol.Cancel);
+        }
+    }
     #endregion
     #region SMU Related voids and Quick SMU Commands
     private static void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler)
@@ -861,10 +863,7 @@ public sealed partial class ПараметрыPage : Page
             backgroundWorker1.RunWorkerCompleted += completedHandler;
             backgroundWorker1.RunWorkerAsync();
         }
-        catch
-        {
-            //Ignored
-        }
+        catch { }
     }
     private void PopulateMailboxesList(ItemCollection l)
     {
@@ -935,9 +934,7 @@ public sealed partial class ПараметрыPage : Page
                     break;
             }
         }
-        catch (ApplicationException)
-        {
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     private void ScanSmuRange(uint start, uint end, uint step, uint offset)
     {
@@ -1296,7 +1293,7 @@ public sealed partial class ПараметрыPage : Page
                 applyWith.IsChecked = smusettings?.QuickSMUCommands![rowindex].ApplyWith;
             }
         }
-        catch { }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
         try
         {
             var newQuickCommand = new ContentDialog
@@ -1447,10 +1444,7 @@ public sealed partial class ПараметрыPage : Page
             }
 
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     private async void RangeDialog()
     {
@@ -1503,7 +1497,7 @@ public sealed partial class ПараметрыPage : Page
             comboSelSMU.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
             comboSelSMU.SelectionChanged += ComboSelSMU_SelectionChanged;
         }
-        catch { }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
         try
         {
             var newQuickCommand = new ContentDialog
@@ -1611,10 +1605,7 @@ public sealed partial class ПараметрыPage : Page
                 newQuickCommand = null;
             }
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     private async void UnlockFeature()
     {
@@ -1650,7 +1641,7 @@ public sealed partial class ПараметрыPage : Page
             comboSelSMU.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
             comboSelSMU.SelectionChanged += ComboSelSMU_SelectionChanged;
         }
-        catch { }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
         try
         {
             var newQuickCommand = new ContentDialog
@@ -1779,7 +1770,7 @@ public sealed partial class ПараметрыPage : Page
                                      + "\n MSG: " + $"{testMailbox2.SMU_ADDR_MSG:X}" + "\n ARG: " + $"{testMailbox2.SMU_ADDR_ARG:X}"
                                      + "\n RSP: " + $"{testMailbox2.SMU_ADDR_RSP:X}", Symbol.Attach);*/
                                 }
-                                catch { }
+                                catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
                             }
                             await Send_Message("Unlocked 63 features!", "Check out! " + sdStatus, Symbol.Accept);
                         }
@@ -1826,7 +1817,7 @@ public sealed partial class ПараметрыPage : Page
                                  + "\n RSP: " + $"{testMailbox2.SMU_ADDR_RSP:X}", Symbol.Attach);*/
                                 await Send_Message("Unlocked feature!", " Args " + someFeature + status, Symbol.Attach);
                             }
-                            catch { }
+                            catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
                         }
 
                     }
@@ -1846,10 +1837,7 @@ public sealed partial class ПараметрыPage : Page
                 newQuickCommand = null;
             }
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     private void SymbolButton_Click(object sender, RoutedEventArgs e)
     {
@@ -1865,10 +1853,7 @@ public sealed partial class ПараметрыPage : Page
                 comboBoxMailboxSelect.SelectedIndex = comboBox.SelectedIndex;
             }
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     private void SymbolList_ItemClick(object sender, ItemClickEventArgs e)
     {
@@ -1899,10 +1884,7 @@ public sealed partial class ПараметрыPage : Page
                 var hexValue = decimalValue.ToString("X");
                 textBoxARG0.SelectedText = hexValue;
             }
-            catch (FormatException)
-            {
-                // Отобразить сообщение об ошибке
-            }
+            catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
         }
         else
         {
@@ -1912,10 +1894,7 @@ public sealed partial class ПараметрыPage : Page
                 var hexValue = decimalValue.ToString("X");
                 textBoxARG0.Text = hexValue;
             }
-            catch (FormatException)
-            {
-                // Отобразить сообщение об ошибке
-            }
+            catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
         }
     }
     private void CopyThis_Click(object sender, RoutedEventArgs e)
@@ -3248,11 +3227,11 @@ public sealed partial class ПараметрыPage : Page
         {
             if (O1v.Value >= 0.0)
             {
-                adjline += $"--set-coall={O1v.Value} ";
+                adjline += $" --set-coall={O1v.Value} ";
             }
             else
             {
-                adjline += $"--set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)O1v.Value))} ";
+                adjline += $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)O1v.Value))} ";
             }
         }
         if (O2.IsChecked == true)
@@ -3277,55 +3256,55 @@ public sealed partial class ПараметрыPage : Page
             {
                 if (cpu?.info.codeName == Cpu.CodeName.DragonRange) //Так как там как у компьютеров
                 {
-                    if (CCD1_1.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD1_1v.Value & 0xFFFF)} "; }
-                    if (CCD1_2.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD1_2v.Value & 0xFFFF)} "; }
-                    if (CCD1_3.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD1_3v.Value & 0xFFFF)} "; }
-                    if (CCD1_4.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD1_4v.Value & 0xFFFF)} "; }
-                    if (CCD1_5.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD1_5v.Value & 0xFFFF)} "; }
-                    if (CCD1_6.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD1_6v.Value & 0xFFFF)} "; }
-                    if (CCD1_7.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD1_7v.Value & 0xFFFF)} "; }
-                    if (CCD1_8.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 7 % 8 & 15) << 20 | ((int)CCD1_8v.Value & 0xFFFF)} "; }
+                    if (CCD1_1.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD1_1v.Value & 0xFFFF)} "; }
+                    if (CCD1_2.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD1_2v.Value & 0xFFFF)} "; }
+                    if (CCD1_3.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD1_3v.Value & 0xFFFF)} "; }
+                    if (CCD1_4.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD1_4v.Value & 0xFFFF)} "; }
+                    if (CCD1_5.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD1_5v.Value & 0xFFFF)} "; }
+                    if (CCD1_6.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD1_6v.Value & 0xFFFF)} "; }
+                    if (CCD1_7.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD1_7v.Value & 0xFFFF)} "; }
+                    if (CCD1_8.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 7 % 8 & 15) << 20 | ((int)CCD1_8v.Value & 0xFFFF)} "; }
 
-                    if (CCD2_1.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD2_1v.Value & 0xFFFF)} "; }
-                    if (CCD2_2.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD2_2v.Value & 0xFFFF)} "; }
-                    if (CCD2_3.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD2_3v.Value & 0xFFFF)} "; }
-                    if (CCD2_4.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD2_4v.Value & 0xFFFF)} "; }
-                    if (CCD2_5.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD2_5v.Value & 0xFFFF)} "; }
-                    if (CCD2_6.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD2_6v.Value & 0xFFFF)} "; }
-                    if (CCD2_7.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD2_7v.Value & 0xFFFF)} "; }
-                    if (CCD2_8.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 7 % 8 & 15) << 20 | ((int)CCD2_8v.Value & 0xFFFF)} "; }
+                    if (CCD2_1.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD2_1v.Value & 0xFFFF)} "; }
+                    if (CCD2_2.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD2_2v.Value & 0xFFFF)} "; }
+                    if (CCD2_3.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD2_3v.Value & 0xFFFF)} "; }
+                    if (CCD2_4.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD2_4v.Value & 0xFFFF)} "; }
+                    if (CCD2_5.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD2_5v.Value & 0xFFFF)} "; }
+                    if (CCD2_6.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD2_6v.Value & 0xFFFF)} "; }
+                    if (CCD2_7.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD2_7v.Value & 0xFFFF)} "; }
+                    if (CCD2_8.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 7 % 8 & 15) << 20 | ((int)CCD2_8v.Value & 0xFFFF)} "; }
                 }
                 else
                 {
-                    if (CCD1_1.IsChecked == true) { adjline += $"--set-coper={(0 << 20) | ((int)CCD1_1v.Value & 0xFFFF)} "; }
-                    if (CCD1_2.IsChecked == true) { adjline += $"--set-coper={(1 << 20) | ((int)CCD1_2v.Value & 0xFFFF)} "; }
-                    if (CCD1_3.IsChecked == true) { adjline += $"--set-coper={(2 << 20) | ((int)CCD1_3v.Value & 0xFFFF)} "; }
-                    if (CCD1_4.IsChecked == true) { adjline += $"--set-coper={(3 << 20) | ((int)CCD1_4v.Value & 0xFFFF)} "; }
-                    if (CCD1_5.IsChecked == true) { adjline += $"--set-coper={(4 << 20) | ((int)CCD1_5v.Value & 0xFFFF)} "; }
-                    if (CCD1_6.IsChecked == true) { adjline += $"--set-coper={(5 << 20) | ((int)CCD1_6v.Value & 0xFFFF)} "; }
-                    if (CCD1_7.IsChecked == true) { adjline += $"--set-coper={(6 << 20) | ((int)CCD1_7v.Value & 0xFFFF)} "; }
-                    if (CCD1_8.IsChecked == true) { adjline += $"--set-coper={(7 << 20) | ((int)CCD1_8v.Value & 0xFFFF)} "; }
+                    if (CCD1_1.IsChecked == true) { adjline += $" --set-coper={(0 << 20) | ((int)CCD1_1v.Value & 0xFFFF)} "; }
+                    if (CCD1_2.IsChecked == true) { adjline += $" --set-coper={(1 << 20) | ((int)CCD1_2v.Value & 0xFFFF)} "; }
+                    if (CCD1_3.IsChecked == true) { adjline += $" --set-coper={(2 << 20) | ((int)CCD1_3v.Value & 0xFFFF)} "; }
+                    if (CCD1_4.IsChecked == true) { adjline += $" --set-coper={(3 << 20) | ((int)CCD1_4v.Value & 0xFFFF)} "; }
+                    if (CCD1_5.IsChecked == true) { adjline += $" --set-coper={(4 << 20) | ((int)CCD1_5v.Value & 0xFFFF)} "; }
+                    if (CCD1_6.IsChecked == true) { adjline += $" --set-coper={(5 << 20) | ((int)CCD1_6v.Value & 0xFFFF)} "; }
+                    if (CCD1_7.IsChecked == true) { adjline += $" --set-coper={(6 << 20) | ((int)CCD1_7v.Value & 0xFFFF)} "; }
+                    if (CCD1_8.IsChecked == true) { adjline += $" --set-coper={(7 << 20) | ((int)CCD1_8v.Value & 0xFFFF)} "; }
                 }
             }
             else if (CCD_CO_Mode.SelectedIndex == 2) //Если выбран режим компьютер
             {
-                if (CCD1_1.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD1_1v.Value & 0xFFFF)} "; }
-                if (CCD1_2.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD1_2v.Value & 0xFFFF)} "; }
-                if (CCD1_3.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD1_3v.Value & 0xFFFF)} "; }
-                if (CCD1_4.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD1_4v.Value & 0xFFFF)} "; }
-                if (CCD1_5.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD1_5v.Value & 0xFFFF)} "; }
-                if (CCD1_6.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD1_6v.Value & 0xFFFF)} "; }
-                if (CCD1_7.IsChecked == true) { adjline += $"--set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD1_7v.Value & 0xFFFF)} "; }
-                if (CCD1_8.IsChecked == true) { adjline += $"--set-coper={7340032 | ((int)CCD1_8v.Value! & 0xFFFF)} "; }
+                if (CCD1_1.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD1_1v.Value & 0xFFFF)} "; }
+                if (CCD1_2.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD1_2v.Value & 0xFFFF)} "; }
+                if (CCD1_3.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD1_3v.Value & 0xFFFF)} "; }
+                if (CCD1_4.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD1_4v.Value & 0xFFFF)} "; }
+                if (CCD1_5.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD1_5v.Value & 0xFFFF)} "; }
+                if (CCD1_6.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD1_6v.Value & 0xFFFF)} "; }
+                if (CCD1_7.IsChecked == true) { adjline += $" --set-coper={((0 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD1_7v.Value & 0xFFFF)} "; }
+                if (CCD1_8.IsChecked == true) { adjline += $" --set-coper={7340032 | ((int)CCD1_8v.Value! & 0xFFFF)} "; }
 
-                if (CCD2_1.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD2_1v.Value & 0xFFFF)} "; }
-                if (CCD2_2.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD2_2v.Value & 0xFFFF)} "; }
-                if (CCD2_3.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD2_3v.Value & 0xFFFF)} "; }
-                if (CCD2_4.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD2_4v.Value & 0xFFFF)} "; }
-                if (CCD2_5.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD2_5v.Value & 0xFFFF)} "; }
-                if (CCD2_6.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD2_6v.Value & 0xFFFF)} "; }
-                if (CCD2_7.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD2_7v.Value & 0xFFFF)} "; }
-                if (CCD2_8.IsChecked == true) { adjline += $"--set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 7 % 8 & 15) << 20 | ((int)CCD2_8v.Value & 0xFFFF)} "; }
+                if (CCD2_1.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 0 % 8 & 15) << 20 | ((int)CCD2_1v.Value & 0xFFFF)} "; }
+                if (CCD2_2.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 1 % 8 & 15) << 20 | ((int)CCD2_2v.Value & 0xFFFF)} "; }
+                if (CCD2_3.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 2 % 8 & 15) << 20 | ((int)CCD2_3v.Value & 0xFFFF)} "; }
+                if (CCD2_4.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 3 % 8 & 15) << 20 | ((int)CCD2_4v.Value & 0xFFFF)} "; }
+                if (CCD2_5.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 4 % 8 & 15) << 20 | ((int)CCD2_5v.Value & 0xFFFF)} "; }
+                if (CCD2_6.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 5 % 8 & 15) << 20 | ((int)CCD2_6v.Value & 0xFFFF)} "; }
+                if (CCD2_7.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 6 % 8 & 15) << 20 | ((int)CCD2_7v.Value & 0xFFFF)} "; }
+                if (CCD2_8.IsChecked == true) { adjline += $" --set-coper={((1 << 4 | 0 % 1 & 15) << 4 | 7 % 8 & 15) << 20 | ((int)CCD2_8v.Value & 0xFFFF)} "; }
             }
             else if (CCD_CO_Mode.SelectedIndex == 3) //Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
             {
@@ -3348,10 +3327,101 @@ public sealed partial class ПараметрыPage : Page
                 }
             }
         }
+        if (SMU_Func_Enabl.IsOn)
+        {
+            if (Bit_0_FEATURE_CCLK_CONTROLLER.IsOn)
+            {
+                adjline += " --enable-feature=1";
+            }
+            else
+            {
+                adjline += " --disable-feature=1";
+            }
+            if (Bit_2_FEATURE_DATA_CALCULATION.IsOn)
+            {
+                adjline += " --enable-feature=4";
+            }
+            else
+            {
+                adjline += " --disable-feature=4";
+            }
+            if (Bit_3_FEATURE_PPT.IsOn)
+            {
+                adjline += " --enable-feature=8";
+            }
+            else
+            {
+                adjline += " --disable-feature=8";
+            }
+            if (Bit_4_FEATURE_TDC.IsOn)
+            {
+                adjline += " --enable-feature=16";
+            }
+            else
+            {
+                adjline += " --disable-feature=16";
+            }
+            if (Bit_5_FEATURE_THERMAL.IsOn)
+            {
+                adjline += " --enable-feature=32";
+            }
+            else
+            {
+                adjline += " --disable-feature=32";
+            }
+            if (Bit_8_FEATURE_PLL_POWER_DOWN.IsOn)
+            {
+                adjline += " --enable-feature=256";
+            }
+            else
+            {
+                adjline += " --disable-feature=256";
+            }
+            if (Bit_37_FEATURE_PROCHOT.IsOn)
+            {
+                adjline += " --enable-feature=0,32";
+            }
+            else
+            {
+                adjline += " --disable-feature=0,32";
+            }
+            if (Bit_39_FEATURE_STAPM.IsOn)
+            {
+                adjline += " --enable-feature=0,128"; 
+            }
+            else
+            { 
+                adjline += " --disable-feature=0,128"; 
+            }
+            if (Bit_40_FEATURE_CORE_CSTATES.IsOn)
+            {
+                adjline += " --enable-feature=0,256";
+            }
+            else
+            {
+                adjline += " --disable-feature=0,256";
+            }
+            if (Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn)
+            {
+                adjline += " --enable-feature=0,512";
+            }
+            else
+            {
+                adjline += " --disable-feature=0,512";
+            }
+            if (Bit_42_FEATURE_AA_MODE.IsOn)
+            {
+                adjline += " --enable-feature=0,1024";
+            }
+            else
+            {
+                adjline += " --disable-feature=0,1024";
+            }
+        }
         ConfigLoad();
         config.adjline = adjline + " ";
-        config.ApplyInfo = "";
         adjline = "";
+        config.ApplyInfo = "";
         ConfigSave();
         MainWindow.Applyer.Apply(true);
         if (EnablePstates.IsOn) { BtnPstateWrite_Click(); }
@@ -3362,7 +3432,14 @@ public sealed partial class ПараметрыPage : Page
         {
             timer *= config.ApplyInfo.Split('\n').Length + 1;
         }
-        Apply_tooltip.Title = "Apply_Success".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized();
+        if (SettingsViewModel.VersionId != 5)
+        {
+            Apply_tooltip.Title = "Apply_Success".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized();
+        }
+        else
+        {
+            Apply_tooltip.Title = "Apply_Success".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + config.adjline;
+        }
         Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
         Apply_tooltip.IsOpen = true; var infoSet = InfoBarSeverity.Success;
         if (config.ApplyInfo != string.Empty && config.ApplyInfo != null) { Apply_tooltip.Title = "Apply_Warn".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + config.ApplyInfo; Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked }; await Task.Delay(timer); Apply_tooltip.IsOpen = false; infoSet = InfoBarSeverity.Warning; }
@@ -3516,7 +3593,102 @@ public sealed partial class ПараметрыPage : Page
             ProfileSave();
         }
     }
-
+    private void SMU_Func_Click(object sender, RoutedEventArgs e) => Save_SMUFunctions(true);
+    private void SMU_Func_Enabl_Toggled(object sender, RoutedEventArgs e) => Save_SMUFunctions(false);
+    private void FEATURE_CCLK_CONTROLLER_Click(object sender, RoutedEventArgs e) => Save_SMUFeatureCCLK(true);
+    private void Bit_0_FEATURE_CCLK_CONTROLLER_Toggled(object sender, RoutedEventArgs e) => Save_SMUFeatureCCLK(false);
+    private void FEATURE_DATA_CALCULATION_Click(object sender, RoutedEventArgs e) => Save_SMUFeatureData(true);
+    private void Bit_2_FEATURE_DATA_CALCULATION_Toggled(object sender, RoutedEventArgs e) => Save_SMUFeatureData(false);
+    private void FEATURE_PPT_Click(object sender, RoutedEventArgs e) => Save_SMUFeaturePPT(true);
+    private void Bit_3_FEATURE_PPT_Toggled(object sender, RoutedEventArgs e) => Save_SMUFeaturePPT(false);
+    private void FEATURE_TDC_Click(object sender, RoutedEventArgs e) => Save_SMUFeatureTDC(true);
+    private void Bit_4_FEATURE_TDC_Toggled(object sender, RoutedEventArgs e) => Save_SMUFeatureTDC(false);
+    private void Bit_5_FEATURE_THERMAL_Toggled(object sender, RoutedEventArgs e) => Save_SMUFeatureThermal(false);
+    private void FEATURE_THERMAL_Click(object sender, RoutedEventArgs e) => Save_SMUFeatureThermal(true);
+    private void Bit_8_FEATURE_PLL_POWER_DOWN_Toggled(object sender, RoutedEventArgs e) => Save_SMUFeaturePowerDown(false);
+    private void FEATURE_PLL_POWER_DOWN_Click(object sender, RoutedEventArgs e) => Save_SMUFeaturePowerDown(true);
+    private void FEATURE_PROCHOT_Click(object sender, RoutedEventArgs e) => Save_SMUFeatureProchot(true);
+    private void Bit_37_FEATURE_PROCHOT_Toggled(object sender, RoutedEventArgs e) => Save_SMUFeatureProchot(false);
+    private void FEATURE_STAPM_Click(object sender, RoutedEventArgs e) => Save_SMUFeatureSTAPM(true);
+    private void Bit_39_FEATURE_STAPM_Toggled(object sender, RoutedEventArgs e) => Save_SMUFeatureSTAPM(false);
+    private void FEATURE_CORE_CSTATES_Click(object sender, RoutedEventArgs e) => Save_SMUFeatureCStates(true);
+    private void Bit_40_FEATURE_CORE_CSTATES_Toggled(object sender, RoutedEventArgs e) => Save_SMUFeatureCStates(false);
+    private void FEATURE_GFX_DUTY_CYCLE_Click(object sender, RoutedEventArgs e) => Save_SMUFeatureGFXDutyCycle(true);
+    private void Bit_41_FEATURE_GFX_DUTY_CYCLE_Toggled(object sender, RoutedEventArgs e) => Save_SMUFeatureGFXDutyCycle(false);
+    private void FEATURE_AA_MODE_Click(object sender, RoutedEventArgs e) => Save_SMUFeaturAplusA(true);
+    private void Bit_42_FEATURE_AA_MODE_Toggled(object sender, RoutedEventArgs e) => Save_SMUFeaturAplusA(false);
+    private void Save_SMUFunctions(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { SMU_Func_Enabl.IsOn = SMU_Func_Enabl.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFunctionsEnabl = SMU_Func_Enabl.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void Save_SMUFeatureCCLK(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { Bit_0_FEATURE_CCLK_CONTROLLER.IsOn = Bit_0_FEATURE_CCLK_CONTROLLER.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeatureCCLK = Bit_0_FEATURE_CCLK_CONTROLLER.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void Save_SMUFeatureData(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { Bit_2_FEATURE_DATA_CALCULATION.IsOn = Bit_2_FEATURE_DATA_CALCULATION.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeatureData = Bit_2_FEATURE_DATA_CALCULATION.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void Save_SMUFeaturePPT(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { Bit_3_FEATURE_PPT.IsOn = Bit_3_FEATURE_PPT.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeaturePPT = Bit_3_FEATURE_PPT.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void Save_SMUFeatureTDC(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { Bit_4_FEATURE_TDC.IsOn = Bit_4_FEATURE_TDC.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeatureTDC = Bit_4_FEATURE_TDC.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void Save_SMUFeatureThermal(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { Bit_5_FEATURE_THERMAL.IsOn = Bit_5_FEATURE_THERMAL.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeatureThermal = Bit_5_FEATURE_THERMAL.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void Save_SMUFeaturePowerDown(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { Bit_8_FEATURE_PLL_POWER_DOWN.IsOn = Bit_8_FEATURE_PLL_POWER_DOWN.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeaturePowerDown = Bit_8_FEATURE_PLL_POWER_DOWN.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void Save_SMUFeatureProchot(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { Bit_37_FEATURE_PROCHOT.IsOn = Bit_37_FEATURE_PROCHOT.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeatureProchot = Bit_37_FEATURE_PROCHOT.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void Save_SMUFeatureSTAPM(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { Bit_39_FEATURE_STAPM.IsOn = Bit_39_FEATURE_STAPM.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeatureSTAPM = Bit_39_FEATURE_STAPM.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void Save_SMUFeatureCStates(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { Bit_40_FEATURE_CORE_CSTATES.IsOn = Bit_40_FEATURE_CORE_CSTATES.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeatureCStates = Bit_40_FEATURE_CORE_CSTATES.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void Save_SMUFeatureGFXDutyCycle(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn = Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeatureGfxDutyCycle = Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void Save_SMUFeaturAplusA(bool isButton)
+    {
+        if (!isLoaded) { return; }
+        if (isButton) { Bit_42_FEATURE_AA_MODE.IsOn = Bit_42_FEATURE_AA_MODE.IsOn != true; }
+        try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeatureAplusA = Bit_42_FEATURE_AA_MODE.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
     #endregion
     #region PState Section related voids
     public async void BtnPstateWrite_Click()
@@ -3595,11 +3767,11 @@ public sealed partial class ПараметрыPage : Page
                         if (result == ContentDialogResult.Primary) { WritePstates(); }
                         if (result == ContentDialogResult.Secondary) { WritePstatesWithoutP0(); }
                     }
-                    catch
-                    {
-                        //Unable to set PStates
+                    catch (Exception ex) 
+                    { 
+                        TraceIt_TraceError(ex.ToString()); 
                         WritePstatesWithoutP0();
-                    }
+                    } 
                 }
             }
         }
@@ -3691,10 +3863,7 @@ public sealed partial class ПараметрыPage : Page
             }
             ReadPstate();
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     public void WritePstatesWithoutP0()
     {
@@ -3765,10 +3934,7 @@ public sealed partial class ПараметрыPage : Page
             }
             ReadPstate();
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     public static void CalculatePstateDetails(uint eax, ref uint IddDiv, ref uint IddVal, ref uint CpuVid, ref uint CpuDfsId, ref uint CpuFid)
     {
@@ -3805,7 +3971,7 @@ public sealed partial class ПараметрыPage : Page
             //  if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; }
             return true;
         }
-        catch { return false; }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); return false; } 
     }
     private void ReadPstate()
     {
@@ -3823,10 +3989,7 @@ public sealed partial class ПараметрыPage : Page
                         return;
                     }
                 }
-                catch
-                {
-                    // ignored
-                }
+                catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
                 uint IddDiv = 0x0;
                 uint IddVal = 0x0;
                 uint CpuVid = 0x0;
@@ -3880,10 +4043,7 @@ public sealed partial class ПараметрыPage : Page
                 }
             }
         }
-        catch
-        {
-            // ignored
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     //Pstates section 
     private void EnablePstates_Click(object sender, RoutedEventArgs e)
@@ -3931,17 +4091,14 @@ public sealed partial class ПараметрыPage : Page
                 ProfileSave();
             }
         }
-        catch
-        {
-            indexprofile = 0;
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); indexprofile = 0; } 
     }
     private void TurboBoost()
     {
         Turboo_Boost(); //Турбобуст... 
         if (Turbo_boost.IsOn) //Сохранение
         {
-            turbobboost = true;
+            turboboost = true;
             devices.turboboost = true;
             DeviceSave();
             profile[indexprofile].turboBoost = true;
@@ -3949,7 +4106,7 @@ public sealed partial class ПараметрыPage : Page
         }
         else
         {
-            turbobboost = false;
+            turboboost = false;
             devices.turboboost = false;
             DeviceSave();
             profile[indexprofile].turboBoost = false;
@@ -4094,7 +4251,7 @@ public sealed partial class ПараметрыPage : Page
                     P0_Freq.Content = (Mult_0_v + 4) * 100;
                     Mult_0.SelectedIndex = (int)Mult_0_v;
                 }
-                catch { }
+                catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
             }
             else { relay = false; }
             Save_ID0();
@@ -4148,7 +4305,7 @@ public sealed partial class ПараметрыPage : Page
             {
                 Mult_0.SelectedIndex = (int)Mult_0_v;
             }
-            catch { }
+            catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
             Save_ID0();
         }
     }
@@ -4171,7 +4328,7 @@ public sealed partial class ПараметрыPage : Page
                     P1_Freq.Content = (Mult_1_v + 4) * 100;
                     Mult_1.SelectedIndex = (int)Mult_1_v;
                 }
-                catch { }
+                catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
             }
             else
             {
@@ -4227,7 +4384,7 @@ public sealed partial class ПараметрыPage : Page
             {
                 Mult_1.SelectedIndex = (int)Mult_2_v;
             }
-            catch { }
+            catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
             Save_ID1();
         }
     }
@@ -4268,7 +4425,7 @@ public sealed partial class ПараметрыPage : Page
                     P2_Freq.Content = (Mult_2_v + 4) * 100;
                     Mult_2.SelectedIndex = (int)Mult_2_v;
                 }
-                catch { }
+                catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
             }
             else { relay = false; }
             Save_ID2();
@@ -4283,7 +4440,7 @@ public sealed partial class ПараметрыPage : Page
             Mult_2_v = Fid_value / Did_value * 2; Mult_2_v -= 4;
             if (Mult_2_v <= 0) { Mult_2_v = 0; }
             P2_Freq.Content = (Mult_2_v + 4) * 100;
-            try { Mult_2.SelectedIndex = (int)Mult_2_v; } catch { }
+            try { Mult_2.SelectedIndex = (int)Mult_2_v; } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
             Save_ID2();
         }
     }

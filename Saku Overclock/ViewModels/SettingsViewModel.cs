@@ -27,18 +27,18 @@ public partial class SettingsViewModel : ObservableRecipient
         get;
     }
 
-    public static int VersionId = 0; //"Consumer Creative" = 0; "Release Candidate" = 1
+    public static int VersionId = 1; //"Consumer Creative" = 0; "Release Candidate" = 1
     public static string? VersionString;
 
     public SettingsViewModel(IThemeSelectorService themeSelectorService)
     {
         VersionString = VersionId switch
         {
-            0 => "Consumer Creative", //Debug for tests
-            1 => "Release Candidate", 
-            2 => "Release",
-            5 => "Debug Lanore",
-            _ => "Unknown Version"
+            0 => "Consumer Creative", //Debug for tests, for all
+            1 => "Release Candidate", //For all
+            2 => "Release", //For all
+            5 => "Debug Lanore", //ONLY FOR TESTS
+            _ => "Unknown Version" //Yes
         };
         _themeSelectorService = themeSelectorService;
         _elementTheme = _themeSelectorService.Theme;

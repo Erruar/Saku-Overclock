@@ -1816,7 +1816,7 @@ IT IS NOT RECOMMENDED TO TOUCH IT</value>
     <value>Core 14 Curve Optimizer (CO)</value>
   </data>
   <data name="Param_CO_CCD2_8.Text" xml:space="preserve">
-    <value>Core 7 Curve Optimizer (CO)</value>
+    <value>Core 15 Curve Optimizer (CO)</value>
   </data>
   <data name="Param_CO_CCD_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Per core curve optimizer settings
@@ -1836,5 +1836,206 @@ to 30 but if you noticed any unstability
 immidiately set curves closer to 0 value.
 IT IS NOT RECOMMENDED TO TOUCH IT 
   </value>
+  </data>
+  <data name="TraceIt_Error" xml:space="preserve">
+    <value>TraceIt! system - I found an error when executing the program:</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode.Text" xml:space="preserve">
+    <value>A+A Performance mode</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode_Desc.Text" xml:space="preserve">
+    <value>Max performance on any iGPU + dGPU systems</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>A+A Performance mode
+Its SMU function which allows you
+to enable or disable A+A 
+performance mode. Its already 
+enabled on AMD iGPU and AMD
+dGPU systems. This mode will 
+activate max performance mode 
+on systems with dGPU and on
+some systems without dGPU.
+Recommendation - enable</value>
+  </data>
+  <data name="Param_SMU_Func_All.Text" xml:space="preserve">
+    <value>SMU Functions manager enablement</value>
+  </data>
+  <data name="Param_SMU_Func_All_Desc.Text" xml:space="preserve">
+    <value>Enable those section or disable to manage SMU functions</value>
+  </data>
+  <data name="Param_SMU_Func_All_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>SMU Functions manager enablement
+Move cursor over these buttons to find 
+out detailed information. Note: all 
+functions are valid until reboot, and 
+some before hibernation or charging 
+connection</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK.Text" xml:space="preserve">
+    <value>CPU Clock controller</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK_Desc.Text" xml:space="preserve">
+    <value>CPU frequency behavior</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>CPU Clock controller
+Its SMU function which allows you
+to enable or disable CPU clocks
+controller. If it disabled - CPU
+will work on close to 1600 MHz
+frequency always.
+Recommendation - enable</value>
+  </data>
+  <data name="Param_SMU_Func_CStates.Text" xml:space="preserve">
+    <value>System CPU C-States</value>
+  </data>
+  <data name="Param_SMU_Func_CStates_Desc.Text" xml:space="preserve">
+    <value>Helps to save battery percentage</value>
+  </data>
+  <data name="Param_SMU_Func_CStates_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>System CPU C-States
+Its SMU function which allows you
+to enable or disable C-States of your
+CPU. If its disabled - C-States will be
+disabled! And CPU will work at Power
+States only. Note: On Renoir (4000) 
+and up CPUs this setting will disable
+ONLY C6-State.
+Recommendation - disable</value>
+  </data>
+  <data name="Param_SMU_Func_DATA.Text" xml:space="preserve">
+    <value>Power Table sensors</value>
+  </data>
+  <data name="Param_SMU_Func_DATA_Desc.Text" xml:space="preserve">
+    <value>Update data sensors in all system</value>
+  </data>
+  <data name="Param_SMU_Func_DATA_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Power Table sensors
+Its SMU function which allows you
+to enable or disable data sensors
+controller. If its disabled - all
+power table indexes will be fixed
+and will not be updated until this
+funtion will be enabled
+Recommendation - enable</value>
+  </data>
+  <data name="Param_SMU_Func_Desc.Text" xml:space="preserve">
+    <value>Enable or disable common SMU functions</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty.Text" xml:space="preserve">
+    <value>iGPU energy saving</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty_Desc.Text" xml:space="preserve">
+    <value>Helps keep your iGPU cold</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>iGPU energy saving
+Its SMU function which allows you
+to enable or disable APU GFX
+Duty cycle. It works like "Power 
+limits reduction" function, to 
+reduct max power limit for iGPU.
+Recommendation - disable</value>
+  </data>
+  <data name="Param_SMU_Func_PLL.Text" xml:space="preserve">
+    <value>Power limits reduction</value>
+  </data>
+  <data name="Param_SMU_Func_PLL_Desc.Text" xml:space="preserve">
+    <value>Reduct current powers to match the TDP</value>
+  </data>
+  <data name="Param_SMU_Func_PLL_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Power limits reduction
+Its SMU function which allows you
+to enable or disable power down limits
+controller. If its disabled - all power 
+limits will be uncapped and CPU can 
+always work at set in Saku Overclock 
+power limits without any limitations.
+Recommendation - enable</value>
+  </data>
+  <data name="Param_SMU_Func_PPT.Text" xml:space="preserve">
+    <value>Power limits</value>
+  </data>
+  <data name="Param_SMU_Func_PPT_Desc.Text" xml:space="preserve">
+    <value>Power limitations for optimal performance</value>
+  </data>
+  <data name="Param_SMU_Func_PPT_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Power limits
+Its SMU function which allows you
+to enable or disable power limits.
+If its disabled - all power limits will be
+unlimited! And CPU will ignore Saku
+Overclock power limits and will 
+heat without any limitations.
+Recommendation - enable </value>
+  </data>
+  <data name="Param_SMU_Func_Prochot.Text" xml:space="preserve">
+    <value>Prochot signal</value>
+  </data>
+  <data name="Param_SMU_Func_Prochot_Desc.Text" xml:space="preserve">
+    <value>Manage prochot function to fix problems</value>
+  </data>
+  <data name="Param_SMU_Func_Prochot_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Prochot signal
+Its SMU function which allows you
+to enable or disable prochot signal.
+If its disabled - prochot will be 
+disabled. Until first fatal moment
+after it your laptop will crash.
+Recommendation - enable
+AND DO NOT TOUCH IT!</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM.Text" xml:space="preserve">
+    <value>STAPM Power limit</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM_Desc.Text" xml:space="preserve">
+    <value>Get more performance without limitations</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>STAPM Power limit
+Its SMU function which allows you
+to enable or disable STAMP power limit.
+If its disabled - STAPM limit will be
+disabled! And CPU will ignore Saku
+Overclock STAPM limit and will not
+reduce frequency for energy efficiency.
+Recommendation - disable</value>
+  </data>
+  <data name="Param_SMU_Func_TDC.Text" xml:space="preserve">
+    <value>VRM Current limits</value>
+  </data>
+  <data name="Param_SMU_Func_TDC_Desc.Text" xml:space="preserve">
+    <value>VRM limitations for energy efficiency</value>
+  </data>
+  <data name="Param_SMU_Func_TDC_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>VRM Current limits
+Its SMU function which allows you
+to enable or disable VRM Currents
+limiter controller. If its disabled - all
+VRM will ignore Saku Overclock currents 
+parameters and will not be limited in
+TDC currents.
+Recommendation - disable</value>
+  </data>
+  <data name="Param_SMU_Func_Text.Text" xml:space="preserve">
+    <value>SMU functions manager</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal.Text" xml:space="preserve">
+    <value>Temperature control</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal_Desc.Text" xml:space="preserve">
+    <value>Control all temperatures in system</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Temperature control
+Its SMU function which allows you
+to enable or disable thermal controller.
+If its disabled - all temperatures will be
+unlimited! And CPU will ignore Saku
+Overclock temperature limit and will 
+heat without any limitations.
+Recommendation - enable
+AND DO NOT TOUCH IT!</value>
   </data>
 </root>

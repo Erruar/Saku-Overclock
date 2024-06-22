@@ -558,12 +558,15 @@ public sealed partial class SettingsPage : Page
         {
             if (endStringPath != "")
             {
-                ThemeLoad(); ConfigLoad();
-                themer.Themes[config.ThemeType].ThemeBackground = endStringPath;
+                var backupIndex = ThemeCombobox.SelectedIndex;
+                ThemeLoad(); 
+                themer.Themes[backupIndex].ThemeBackground = endStringPath;
                 ThemeSave();
                 NotifyLoad(); notify.Notifies ??= new List<Notify>();
                 notify.Notifies.Add(new Notify { Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success });
                 NotifySave();
+                ThemeCombobox.SelectedIndex = 0;
+                ThemeCombobox.SelectedIndex = backupIndex;
             }
         }
     }

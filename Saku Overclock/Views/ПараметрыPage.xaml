@@ -1746,7 +1746,6 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                             </Grid>
                         </Grid>
                     </Expander>
-
                     <Expander  Grid.Row="8" x:Name="DevEnv" HorizontalContentAlignment="Stretch" Expanding="DevEnv_Expanding">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
@@ -1883,27 +1882,174 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                             </Grid>
                         </Grid>
                     </Expander>
-                    <Expander Grid.Row="9" Visibility="Collapsed">
+                    <Expander Grid.Row="9" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xEC6C;"/>
-                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="SMU functions manager"></TextBlock>
-                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Enable or disable SMU functions"></TextBlock>
+                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" x:Uid="Param_SMU_Func_Text" VerticalAlignment="Top" Text="SMU functions manager"></TextBlock>
+                                <TextBlock Margin="35,30,0,0" FontWeight="Light" x:Uid="Param_SMU_Func_Desc" VerticalAlignment="Top" Text="Enable or disable SMU functions"></TextBlock>
                             </Grid>
                         </Expander.Header>
-                        <Grid HorizontalAlignment="Left" Margin=" 30,0,0,0" Width="2000">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
+                        <Grid>
                             <Grid.RowDefinitions>
-                                <!-- От 0 до 6 -->
+                                <!-- От 0 до 55 -->
                                 <RowDefinition></RowDefinition>
                                 <RowDefinition></RowDefinition>
                                 <RowDefinition></RowDefinition>
                                 <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition> 
+                                <RowDefinition></RowDefinition> 
+                                <RowDefinition></RowDefinition> 
                             </Grid.RowDefinitions>
-                             
+                            <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_All_Help" Click="SMU_Func_Click" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe930;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_All" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Настройки функций SMU"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_All_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="SMU_Func_Enabl" Toggled="SMU_Func_Enabl_Toggled" OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_CCLK_Help" Click="FEATURE_CCLK_CONTROLLER_Click" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xE9D9;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_CCLK" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Контроллер частот CPU"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_CCLK_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="Bit_0_FEATURE_CCLK_CONTROLLER" Toggled="Bit_0_FEATURE_CCLK_CONTROLLER_Toggled"  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid> 
+                            <Grid Grid.Row="2" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_DATA_Help" x:Name="FEATURE_DATA_CALCULATION" Click="FEATURE_DATA_CALCULATION_Click" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xE8E4;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_DATA" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Датчики Power Table"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_DATA_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="Bit_2_FEATURE_DATA_CALCULATION" Toggled="Bit_2_FEATURE_DATA_CALCULATION_Toggled"  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid> 
+                            <Grid Grid.Row="3" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_PPT_Help" x:Name="FEATURE_PPT" Click="FEATURE_PPT_Click"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xEA79;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_PPT" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Лимиты мощности"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_PPT_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="Bit_3_FEATURE_PPT" Toggled="Bit_3_FEATURE_PPT_Toggled"  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid> 
+                            <Grid Grid.Row="4" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_TDC_Help" x:Name="FEATURE_TDC" Click="FEATURE_TDC_Click"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xEBC0;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_TDC" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Лимиты тока"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_TDC_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="Bit_4_FEATURE_TDC" Toggled="Bit_4_FEATURE_TDC_Toggled"  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid> 
+                            <Grid Grid.Row="5" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_Thermal_Help" x:Name="FEATURE_THERMAL" Click="FEATURE_THERMAL_Click"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xE9CA;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_Thermal" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Контроль температур"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_Thermal_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="Bit_5_FEATURE_THERMAL" Toggled="Bit_5_FEATURE_THERMAL_Toggled"  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid> 
+                            <Grid Grid.Row="6" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_PLL_Help" x:Name="FEATURE_PLL_POWER_DOWN" Click="FEATURE_PLL_POWER_DOWN_Click"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xEC49;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_PLL" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Снижение мощности"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_PLL_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="Bit_8_FEATURE_PLL_POWER_DOWN" Toggled="Bit_8_FEATURE_PLL_POWER_DOWN_Toggled"  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid> 
+                            <Grid Grid.Row="7" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_Prochot_Help" x:Name="FEATURE_PROCHOT" Click="FEATURE_PROCHOT_Click"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xECAD;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_Prochot" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Сигнал Prochot"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_Prochot_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="Bit_37_FEATURE_PROCHOT" Toggled="Bit_37_FEATURE_PROCHOT_Toggled"  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="8" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_STAPM_Help" x:Name="FEATURE_STAPM" Click="FEATURE_STAPM_Click"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xF8A6;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_STAPM" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Лимиты мощности STAPM"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_STAPM_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="Bit_39_FEATURE_STAPM" Toggled="Bit_39_FEATURE_STAPM_Toggled"  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="9" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_CStates_Help" x:Name="FEATURE_CORE_CSTATES" Click="FEATURE_CORE_CSTATES_Click"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xECBA;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_CStates" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Состояния C-States"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_CStates_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="Bit_40_FEATURE_CORE_CSTATES" Toggled="Bit_40_FEATURE_CORE_CSTATES_Toggled"  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="10" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_GFXDuty_Help" x:Name="FEATURE_GFX_DUTY_CYCLE" Click="FEATURE_GFX_DUTY_CYCLE_Click"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xF211;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_GFXDuty" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Энергосбережение iGPU"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_GFXDuty_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="Bit_41_FEATURE_GFX_DUTY_CYCLE" Toggled="Bit_41_FEATURE_GFX_DUTY_CYCLE_Toggled"  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="11" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" x:Uid="Param_SMU_Func_AAMode_Help" x:Name="FEATURE_AA_MODE" Click="FEATURE_AA_MODE_Click"  HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xE90F;"/>
+                                        <TextBlock x:Uid="Param_SMU_Func_AAMode" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="A+A режим работы системы"></TextBlock>
+                                        <TextBlock x:Uid="Param_SMU_Func_AAMode_Desc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Включить эти настройки изменения SMU функций"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch x:Name="Bit_42_FEATURE_AA_MODE" Toggled="Bit_42_FEATURE_AA_MODE_Toggled"  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Expander>
                 </Grid>

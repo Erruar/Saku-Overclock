@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Reflection.Emit;
 using System.Reflection.Metadata;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Microsoft.UI.Xaml.Controls;
+using Newtonsoft.Json; 
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using ZenStates.Core;
-using static ZenStates.Core.Cpu;
+using ZenStates.Core;  
 #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
 
 namespace Saku_Overclock.SMUEngine;
@@ -67,11 +66,14 @@ internal class SendSMUCommand
     private static Cpu.CodeName Codename;
     private Smusettings smusettings = new();
     private Config config = new();
+    private static JsonContainers.Notifications notify = new();
     private readonly ZenStates.Core.Mailbox testMailbox = new();
     private Devices devices = new();
     private Profile[] profile = new Profile[1];
     public string? ocmode;
     private bool cancelrange = false;
+    private bool dangersettingsapplied = false;
+    public static bool SafeReapply { get; set; } = true;
   
     public SendSMUCommand()
     {
@@ -80,9 +82,10 @@ internal class SendSMUCommand
             cpu ??= CpuSingleton.GetInstance();
             Codename = cpu.info.codeName;
         }
-        catch
+        catch (Exception ex)
         {
             App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+            TraceIt_TraceError(ex.ToString());
         }
     }
     public static bool OC_Detect(SendSMUCommand sendcpu) // На неподдерживаемом оборудовании мгновенно отключит эти настройки
@@ -95,10 +98,7 @@ internal class SendSMUCommand
                 return false;
             }
         }
-        catch
-        {
-            return true;
-        }
+        catch (Exception ex) {  TraceIt_TraceError(ex.ToString()); return true; } 
         return false;
     }
     public async Task Init_OC_Mode()
@@ -140,10 +140,7 @@ internal class SendSMUCommand
         {
             smusettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json"));
         }
-        catch
-        {
-         JsonRepair('s');
-        }
+        catch (Exception ex) { JsonRepair('s'); TraceIt_TraceError(ex.ToString()); } 
     }
     
     public void ProfileLoad()
@@ -153,10 +150,7 @@ internal class SendSMUCommand
 
             profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"));
         }
-        catch
-        {
-           JsonRepair('p');
-        }
+        catch (Exception ex) { JsonRepair('p'); TraceIt_TraceError(ex.ToString()); } 
     } 
     public void ConfigLoad()
     {
@@ -164,10 +158,7 @@ internal class SendSMUCommand
         {
             config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
         }
-        catch
-        {
-         JsonRepair('c');
-        }
+        catch (Exception ex) { JsonRepair('c'); TraceIt_TraceError(ex.ToString()); } 
     }
     public void ConfigSave()
     {
@@ -176,11 +167,84 @@ internal class SendSMUCommand
             Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config,Formatting.Indented));
         }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); } 
+    }
+    public static async void NotifyLoad()
+    {
+        var success = false;
+        var retryCount = 1;
+        while (!success && retryCount < 3)
+        {
+            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))
+            {
+                try
+                {
+                    notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))!;
+                    if (notify != null) { success = true; } else { RepairTraceIt_Notify(); }
+                }
+                catch { RepairTraceIt_Notify(); }
+            }
+            else { RepairTraceIt_Notify(); }
+            if (!success)
+            {
+                await Task.Delay(30);
+                retryCount++;
+            }
+        }
+    }
+    public static void NotifySave()
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify, Formatting.Indented));
+        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private static void RepairTraceIt_Notify()
+    {
+        try
+        {
+            notify = new JsonContainers.Notifications();
+        }
         catch
         {
-            // ignored
+            App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+            App.MainWindow.Close();
         }
-    } 
+        if (notify != null)
+        {
+            try
+            {
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
+            }
+            catch
+            {
+                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json");
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                App.MainWindow.Close();
+            }
+        }
+        else
+        {
+            try
+            {
+
+                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json");
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
+                App.MainWindow.Close();
+            }
+            catch
+            {
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                App.MainWindow.Close();
+            }
+        }
+    }
     public void JsonRepair(char file)
     {
         if (file == 'c')
@@ -439,15 +503,53 @@ internal class SendSMUCommand
             }
             var status = cpu?.smu.SendSmuCommand(quickMailbox1, command, ref args);
         }
-        catch
-        {
-
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
 
     //From RyzenADJ string to SMU Calls 
     public async void Translate(string _ryzenAdjString, bool save)
     {
+        // Список строк для проверки на совпадение, если есть - не применять, так как это может привести к нестабильности системы
+        var terminateCommands = new List<string> 
+        {
+            "psi0-current",
+            "psi0soc-current",
+            "prochot-deassertion-ramp",
+            "min-socclk-frequency",
+            "max-socclk-frequency",
+            "min-fclk-frequency",
+            "max-fclk-frequency",
+            "min-vcn",
+            "max-vcn",
+            "min-lclk",
+            "max-lclk",
+            "min-gfxclk",
+            "max-gfxclk",
+            "min-cpuclk",
+            "max-cpuclk",
+            "start-gpu-link",
+            "stop-gpu-link",
+            "setcpu-freqto-ramstate",
+            "stopcpu-freqto-ramstate",
+            "vrmgfx-current",
+            "vrmcvip-current",
+            "vrmgfxmax_current",
+            "psi3cpu_current",
+            "psi3gfx_current",
+            "gfx-clk",
+            "oc-clk",
+            "oc-volt",
+            "max-performance",
+            "power-saving",
+            "disable-oc",
+            "enable-oc",
+            "pbo-scalar",
+            "set-coall",
+            "set-coper",
+            "enable-feature",
+            "disable-feature"
+        };
+
         saveinfo = save;
         try
         {
@@ -457,7 +559,7 @@ internal class SendSMUCommand
             else if (cpu?.info.codeName == Cpu.CodeName.Renoir || cpu?.info.codeName == Cpu.CodeName.Lucienne || cpu?.info.codeName == Cpu.CodeName.Cezanne) { Socket_FP6_AM4(); }
             else if (cpu?.info.codeName == Cpu.CodeName.VanGogh) { Socket_FF3(); }
             else if (cpu?.info.codeName == Cpu.CodeName.Mendocino || cpu?.info.codeName == Cpu.CodeName.Rembrandt /*|| cpu.info.codeName == Cpu.CodeName.PhoenixPoint || cpu.info.codeName == Cpu.CodeName.PhoenixPoint2 || cpu.info.codeName == Cpu.CodeName.StrixPoint*/ || cpu?.info.codeName == Cpu.CodeName.DragonRange) { Socket_FT6_FP7_FP8(); }
-            else if (cpu?.info.codeName == Cpu.CodeName.Raphael /*|| cpu.info.codeName == Cpu.CodeName.GraniteRidge*/) { Socket_AM5_V1(); }
+            else if (cpu?.info.codeName == Cpu.CodeName.Raphael /*|| cpu.info.codeName == Cpu.CodeName.GraniteRidge*/) { Socket_AM5_V1(); } //Не всё поддерживается, но это будет в будущем исправлено
             else
             {
                 MP1_CMD = 0x3B10528;
@@ -467,47 +569,73 @@ internal class SendSMUCommand
                 RSMU_RSP = 0x3B10A80;
                 RSMU_ARG = 0x3B10A88;
             }
-            //Remove last space off cli arguments 
-            _ryzenAdjString = _ryzenAdjString.Substring(0, _ryzenAdjString.Length - 1);
-            //Split cli arguments into array
+            //Убрать последний знак в строке аргументов для применения
+            _ryzenAdjString = _ryzenAdjString[..^1];
+            //Разделить команды в Array
             var ryzenAdjCommands = _ryzenAdjString.Split(' ');
             ryzenAdjCommands = ryzenAdjCommands.Distinct().ToArray(); 
-            //Run through array
+            //Выполнить через Array
             foreach (var ryzenAdjCommand in ryzenAdjCommands)
             {
                 await Task.Run(() =>
                 {
                     try
                     {
-                        var command = ryzenAdjCommand;
-                        if (!command.Contains('=')) { command = ryzenAdjCommand + "=0"; }
-                        // Extract the command string before the "=" sign
-                        var ryzenAdjCommandString = command.Split('=')[0].Replace("=", null).Replace("--", null);
-                        // Extract the command string after the "=" sign
-                        var ryzenAdjCommandValueString = command.Substring(ryzenAdjCommand.IndexOf('=') + 1);
-                        //Convert value of select cli argument to uint
-                        var ryzenAdjCommandValue = Convert.ToUInt32(ryzenAdjCommandValueString);
-                        if (ryzenAdjCommandValue <= 0 /*&& !ryzenAdjCommandString.Contains("co")*/)
-                        { ApplySettings(ryzenAdjCommandString, 0x0); }
-                        else { ApplySettings(ryzenAdjCommandString, ryzenAdjCommandValue); } 
-                        Task.Delay(50);
+                        //Проверить есть ли совпадения с листом опасных команд, которые нежелательно переприменять, чтобы не получить краш системы из-за перегрузки SMU
+                        if (dangersettingsapplied && SafeReapply && terminateCommands.Any(tc => ryzenAdjCommand.Contains(tc))) //Если включено безопасное применение и есть совпадения в командах
+                        {
+                            //Ничего не делать
+                        }
+                        else
+                        {
+                            var command = ryzenAdjCommand;
+                            if (!command.Contains('=')) { command = ryzenAdjCommand + "=0"; }
+                            //Выяснить какая команда стоит до знака равно
+                            var ryzenAdjCommandString = command.Split('=')[0].Replace("=", null).Replace("--", null); 
+                            if (command[(ryzenAdjCommand.IndexOf('=') + 1)..].Contains(',')) //Если это составная команда с не нулевым аргументом
+                            {
+                                var parts = command[(ryzenAdjCommand.IndexOf('=') + 1)..].Split(','); //узнать первый аргумент, разделив аргументы
+                                if (parts.Length == 2 && uint.TryParse(parts[1], out var commaValue))
+                                {
+                                    ApplySettings(ryzenAdjCommandString, 0x0, commaValue); //Применить преимущественно второй аргумент
+                                }
+                            }
+                            else
+                            {
+                                //А теперь узнаем что стоит после знака равно
+                                var ryzenAdjCommandValueString = command[(ryzenAdjCommand.IndexOf('=') + 1)..];
+                                //Конвертировать в Uint
+                                if (ryzenAdjCommandValueString.Contains('=')) { ryzenAdjCommandValueString = ryzenAdjCommandValueString.Replace("=", null); }
+                                var ryzenAdjCommandValue = Convert.ToUInt32(ryzenAdjCommandValueString);
+                                if (ryzenAdjCommandValue <= 0 && !ryzenAdjCommandString.Contains("coall") && !ryzenAdjCommandString.Contains("coper") && !ryzenAdjCommandString.Contains("cogfx"))
+                                {
+                                    ApplySettings(ryzenAdjCommandString, 0x0); //Если пользователь редактировал конфиги вручную, чтобы программа не крашнулась из-за непредвиденного отрицательного значения
+                                }
+                                else { ApplySettings(ryzenAdjCommandString, ryzenAdjCommandValue); }
+                            } 
+                        }
+                        Task.Delay(50); //Задержка перед применением следующей группы команд
                     }
-                    catch { /*Ignored*/ }
+                    catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
                 });
             }
             saveinfo = false;
         }
-        catch { /*Ignored*/ }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
      
-    public void ApplySettings(string commandName, uint value)
+    public void ApplySettings(string commandName, uint value, uint value1 = 0)
     {
-        if (saveinfo) { ConfigLoad();/* config.ApplyInfo += "Applyed success!";*/  }
+        if (saveinfo) { ConfigLoad(); }
         try
         {
             var Args = new uint[6];
             Args[0] = value; 
-            // Find the command by name
+            if (value1 != 0)
+            {
+                Args[1] = value1;
+            } 
+            //Найти код команды по имени
             var matchingCommands = Commands?.Where(c => c.Item1 == commandName);
             if (matchingCommands?.Any() == true)
             {
@@ -516,7 +644,7 @@ internal class SendSMUCommand
                 {
                     tasks.Add(Task.Run(() =>
                     {
-                        // Применить уже эту команду наконец-то!
+                        //Применить уже эту команду наконец-то!
                         if (command.Item2 == true) { ApplyThis(1, command.Item3, Args, command.Item1); }
                         else { ApplyThis(0, command.Item3, Args, command.Item1); }
                     }));
@@ -524,11 +652,18 @@ internal class SendSMUCommand
 
                 Task.WaitAll(tasks.ToArray());
             }
-            else { config.ApplyInfo += $"\nCommand '{commandName}' not found"; }
+            else 
+            {
+                if (!$"\nCommand '{commandName}' not found".Contains("Command '' not found"))
+                {
+                    config.ApplyInfo += $"\nCommand '{commandName}' not found"; 
+                }
+            }
         }
-        catch
+        catch (Exception ex)
         {
-            config.ApplyInfo += $"\nCommand '{commandName}' not found";
+            TraceIt_TraceError(ex.ToString()); 
+            config.ApplyInfo += $"\nCommand '{commandName}' not found"; 
         }
         if (saveinfo) { ConfigSave(); }
     }
@@ -572,9 +707,9 @@ internal class SendSMUCommand
             testMailbox.SMU_ADDR_MSG = addrMsg;
             testMailbox.SMU_ADDR_RSP = addrRsp;
             testMailbox.SMU_ADDR_ARG = addrArg; 
-            if (!saveinfo && CommandName == "stopcpu-freqto-ramstate") { return; }
+            if (!saveinfo && CommandName == "stopcpu-freqto-ramstate") { return; } //Чтобы уж точно не осталось в adjline, так как может крашнуть систему
             var status = cpu?.smu.SendSmuCommand(testMailbox, Command, ref args);
-            if (status != SMU.Status.OK) { config.ApplyInfo += $"\nCommand '{CommandName}' applied with status {status}"; }
+            if (status != SMU.Status.OK) { config.ApplyInfo += $"\nCommand '{CommandName}' applied with status {status}"; } //Если при применении что-то пошло не так - сказать об ошибке
         }
         catch
         {
@@ -584,15 +719,23 @@ internal class SendSMUCommand
         {
             try
             {
+                ConfigSave();
                 if (config.adjline != null && config.adjline.Contains(" --stopcpu-freqto-ramstate=0"))
                 {
-                    config.adjline = config.adjline.Replace(" --stopcpu-freqto-ramstate=0", ""); ConfigSave();
+                    config.adjline = config.adjline.Replace(" --stopcpu-freqto-ramstate=0", ""); 
                 }
             }
-            catch
-            {
-                ConfigLoad();
-            } 
+            catch (Exception ex) { ConfigLoad(); TraceIt_TraceError(ex.ToString()); } 
+        }
+    }
+    public static void TraceIt_TraceError(string error) //Система TraceIt! позволит логгировать все ошибки
+    {
+        if (error != string.Empty)
+        {
+            NotifyLoad(); //Добавить уведомление
+            notify.Notifies ??= new List<Notify>();
+            notify.Notifies.Add(new Notify { Title = "TraceIt_Error".GetLocalized(), Msg = error, Type = InfoBarSeverity.Error });
+            NotifySave(); 
         }
     }
     public void CancelRange()
@@ -650,9 +793,7 @@ internal class SendSMUCommand
                 if (Log) { sw.WriteLine("//------OK------\\\\"); }
             });
         }
-        catch
-        {
-        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
     public static uint ReturnCoGFX(Cpu.CodeName codeName)
     {
@@ -717,7 +858,9 @@ internal class SendSMUCommand
         Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
-                ("stapm-limit",true, 0x1a), // Use MP1 address
+                ("enable-feature",true , 0x5), // Use MP1 address
+                ("disable-feature",true , 0x6),
+                ("stapm-limit",true, 0x1a),
                 ("stapm-time",true , 0x1e),
                 ("fast-limit",true , 0x1b),
                 ("slow-limit",true , 0x1c),
@@ -789,7 +932,9 @@ internal class SendSMUCommand
         Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
-                ("max-performance",true , 0x11), // Use MP1 address
+                ("enable-feature",true , 0x5), // Use MP1 address
+                ("disable-feature",true , 0x7),
+                ("max-performance",true , 0x11), 
                 ("power-saving",true , 0x12),
                 ("vrm-current",true , 0x1a),
                 ("vrmmax-current",true , 0x1c),
@@ -855,7 +1000,9 @@ internal class SendSMUCommand
         Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
-                ("stapm-limit", true, 0x14), // Use MP1 address
+                ("enable-feature",true , 0x5), // Use MP1 address
+                ("disable-feature",true , 0x7),
+                ("stapm-limit", true, 0x14), 
                 ("stapm-limit", false, 0x31), // Use RSMU address
                 ("stapm-time", true, 0x18),
                 ("fast-limit", true, 0x15),
@@ -902,7 +1049,9 @@ internal class SendSMUCommand
         Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
-                ("stapm-limit",true, 0x14), // Use MP1 address
+                ("enable-feature",true , 0x5), // Use MP1 address
+                ("disable-feature",true , 0x7),
+                ("stapm-limit",true, 0x14), 
                 ("stapm-limit",false , 0x31), // Use RSMU address
                 ("stapm-time",true , 0x18),
                 ("fast-limit",true , 0x15),
@@ -944,6 +1093,8 @@ internal class SendSMUCommand
         Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
+                ("enable-feature",true , 0x5), // Use MP1 address
+                ("disable-feature",true , 0x6),
                 ("stapm-limit",false, 0x64), // Use RSMU address✓
                 ("vrm-current",false , 0x65), //✓
                 ("vrmmax-current",false , 0x66), //✓
@@ -971,7 +1122,9 @@ internal class SendSMUCommand
         Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
-                ("stapm-limit",true, 0x3D), // Use MP1 address
+                ("enable-feature",true , 0x5), // Use MP1 address
+                ("disable-feature",true , 0x6),
+                ("stapm-limit",true, 0x3D), 
                 ("stapm-limit",false, 0x53), // Use RSMU address
                 ("vrm-current",true , 0x3B),
                 ("vrm-current",false , 0x54),
@@ -1009,7 +1162,9 @@ internal class SendSMUCommand
         Commands = new List<(string, bool, uint)>
             {
                 // Store the commands
-                ("stapm-limit",true, 0x3e), // Use MP1 address
+                ("enable-feature",true , 0x5), // Use MP1 address
+                ("disable-feature",true , 0x7),
+                ("stapm-limit",true, 0x3e), 
                 ("stapm-limit",false, 0x56), // Use RSMU address
                 ("vrm-current",true , 0x3c),
                 ("vrm-current",false , 0x57),
