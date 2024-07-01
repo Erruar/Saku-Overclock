@@ -21,6 +21,7 @@
 [![Discord][discord-shield]][discord-url]
 [![Donalerts][donalerts-shield]][donalerts-url]
 [![GPL License][license-shield]][license-url]
+[![DMCA PROTECTED][dmca-shield]][dmca-url]
 
 
 
@@ -526,6 +527,8 @@ Here you can see links to everything that was used in the development of the pro
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [discord-shield]: https://img.shields.io/badge/Join%20our-discord-%23ff7f50?style=for-the-badge&logo=discord&logoColor=%23ff7f50
 [discord-url]: https://discord.gg/WzgsFvgTuh
+[dmca-shield]: https://www.dmca.com/Badges/dmca-badge-w150-5x1-02.png
+[dmca-url]: https://www.dmca.com/r/0l8wx4k
 [donalerts-shield]: https://img.shields.io/badge/Support%20me-DonAlerts-%23f13a13?style=for-the-badge&logo=disqus&logoColor=%23f13a13
 [donalerts-url]: https://www.donationalerts.com/r/RubyTrack
 [license-shield]: https://img.shields.io/badge/LICENSE%20-GPL-%230ff99C?style=for-the-badge
