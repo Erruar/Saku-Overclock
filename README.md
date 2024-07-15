@@ -348,7 +348,7 @@ Use the `README.md` to get started.
   <ol>
     <h1 align="center">Settings page</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings.png"></img> 
-    <p align="left">There you can add app in autostart with windows, set close app to tray when it opening, set autoapply when opening, check for updates and I recommend to enable - Reapply latest setting every. Enable it and set to 1-7. This value is enough</p>
+    <p align="left">There you can add app in autostart with windows, set close app to tray when it opening, set autoapply when opening, check for updates and I recommend to enable - Reapply latest setting every. Enable it and set to 3-7. This value is enough. Note: ROG Ally have issues with Power limits because this device has own app for tuning Powers, don’t enable this option if you are using ROG Ally (any revision).</p>
     <br />
     <br />
     <h1 align="center">Settings startup options</h1>
