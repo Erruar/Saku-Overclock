@@ -1,0 +1,79 @@
+﻿<Page
+    x:Class="Saku_Overclock.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="using:Saku_Overclock.Helpers"
+    xmlns:xaml="using:Microsoft.UI.Xaml" xmlns:local="using:Saku_Overclock.ViewModels"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+    </Page.Resources>
+    <Grid>
+        <TextBlock x:Uid="Settings_Name" Text="Настройки программы" FontSize="30" Margin="-1,-65,0,0"></TextBlock>
+        <ScrollViewer Margin="0,-10,-50,0">
+            <StackPanel
+            x:Name="ContentArea">
+                <TextBlock FontSize="20" FontWeight="SemiBold" x:Uid="Settings_AppBeh">Поведение приложения</TextBlock>
+                <TextBlock  Margin="{StaticResource XSmallTopMargin}"   x:Uid="Settings_AppStart" >Параметры запуска</TextBlock>
+                <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="190" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15" SelectedIndex="0" x:Name="AutostartCom" SelectionChanged="AutostartCom_SelectionChanged">
+                    <ComboBoxItem x:Uid="Settings_Start_Nothing" Content="Ничего не делать"/>
+                    <ComboBoxItem x:Uid="Settings_Start_Mini" Content="Скрываться в трей"/> 
+                    <ComboBoxItem x:Uid="Settings_Start_Boot" Content="Автостарт с ситемой"/>
+                    <ComboBoxItem x:Uid="Settings_Start_MiniBoot" Content="Автостарт в трее"/>
+                </ComboBox> 
+                <ToggleSwitch Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_Apply_Start" Name="CbApplyStart" Toggled="CbApplyStart_Click">Автоприменять разгон</ToggleSwitch>
+                <StackPanel Orientation="Horizontal">
+                    <ToggleSwitch x:Uid="Settings_Auto_Reapply" Name="CbAutoReapply" Toggled="CbAutoReapply_Click">Автоприменять каждые (с)</ToggleSwitch>
+                    <StackPanel x:Name="AutoReapplyNumberboxPanel" VerticalAlignment="Bottom" HorizontalAlignment="Right" CornerRadius="15" Margin="-200,0,0,5" Height="{Binding ElementName=nudAutoReapply, Path=ActualHeight}">
+                        <NumberBox Name="nudAutoReapply" CornerRadius="15"  SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  ValueChanged="NudAutoReapply_ValueChanged" Minimum="1" Value="3" Maximum="60" Margin="9,2,0,0"></NumberBox>
+                    </StackPanel>
+                </StackPanel>
+                <ToggleSwitch x:Uid="Settings_Reapply_Safe" Name="ReapplySafe" Toggled="ReapplySafe_Toggled">Автоприменять только безопасные параметры</ToggleSwitch>
+                <ToggleSwitch x:Uid="Settings_Auto_Updates" Name="CbAutoCheck" Toggled="CbAutoCheck_Click" >Автообновления</ToggleSwitch>
+                <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                    <TextBlock x:Uid="Settings_Theme" /> 
+                    <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                        <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="ThemeCombobox" SelectionChanged="ThemeCombobox_SelectionChanged" CornerRadius="15">
+                            <ComboBoxItem Content="System default"/>
+                            <ComboBoxItem Content="Light"/>
+                            <ComboBoxItem Content="Dark"/>
+                            <ComboBoxItem Content="Candy clouds"/>
+                            <ComboBoxItem Content="Neon glow"/>
+                            <ComboBoxItem Content="Raspberry"/>
+                            <ComboBoxItem Content="Desert lineage"/> 
+                        </ComboBox>
+                        <ToggleSwitch x:Uid="ThemeAdvanced" Toggled="ThemeCustom_Toggled" x:Name="ThemeCustom"  Margin="{StaticResource XSmallTopMargin}" Header="Toggle advanced theme settings" OnContent="On." OffContent="Off."></ToggleSwitch>
+                        <NumberBox Margin="{StaticResource XSmallTopMargin}" x:Uid="ThemeOpacity" ValueChanged="ThemeOpacity_ValueChanged" x:Name="ThemeOpacity" HorizontalAlignment="Left" Width="151" CornerRadius="15" Header="Background image opacity" Minimum="0.0" Maximum="1.0" Value="0.5" ></NumberBox>
+                        <NumberBox Margin="{StaticResource XSmallTopMargin}" x:Uid="ThemeMaskOpacity" ValueChanged="ThemeMaskOpacity_ValueChanged" x:Name="ThemeMaskOpacity" HorizontalAlignment="Left" Width="151" CornerRadius="15" Header="Background mask opacity" Minimum="0.0" Maximum="1.0" Value="0.5"></NumberBox>
+                        <ToggleSwitch Margin="{StaticResource XSmallTopMargin}" x:Uid="ThemeLight" Name="ThemeLight" OffContent="Светлая" OnContent="Тёмная" Toggled="ThemeLight_Toggled">Тип темы</ToggleSwitch>
+                        <ToggleSwitch Margin="{StaticResource XSmallTopMargin}"  x:Uid="ThemeCustomBg" Toggled="ThemeCustomBg_Toggled" x:Name="ThemeCustomBg" Header="Use custom background image" OnContent="On." OffContent="Off."></ToggleSwitch>
+                        <Button  Click="ThemeBgButton_Click" x:Name="ThemeBgButton" Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
+                            <TextBlock  x:Uid="ThemeChangeBgText" FontWeight="SemiBold"  Text="Change background"/>
+                        </Button>
+                        <Button Click="CustomTheme_Click" Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
+                            <TextBlock FontWeight="SemiBold"  x:Uid="ThemeManager"  Text="Theme manager"/>
+                        </Button>
+                    </StackPanel>
+                </StackPanel> 
+            </StackPanel>
+        </ScrollViewer>
+        <Grid VerticalAlignment="Top" HorizontalAlignment="Right">
+            <StackPanel VerticalAlignment="Top" Margin="0,-60,0,0" HorizontalAlignment="Left">
+                <ImageIcon Source="/Assets/SplashScreen.scale-200.png" Width="200" Height="200" HorizontalAlignment="Left"></ImageIcon>
+                <TextBlock Margin="0,10,0,0" x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
+                <TextBlock x:Uid="Settings_AboutDescription" Style="{ThemeResource BodyTextBlockStyle}" />
+                <Button CornerRadius="26" Height="50"  Margin="{StaticResource XSmallTopMargin}"  Width="300" HorizontalAlignment="Left" Style="{StaticResource AccentButtonStyle}" Click="Discord_Click">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Left">
+                        <BitmapIcon UriSource="/Assets/discord.png" VerticalAlignment="Center" Height="25" Margin="-90,0,0,0" HorizontalAlignment="Left"></BitmapIcon>
+                        <TextBlock Margin="0,2,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="ExtraBold">Discord</TextBlock>
+                    </Grid> 
+                </Button>
+                <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

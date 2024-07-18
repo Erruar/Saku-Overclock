@@ -1,0 +1,83 @@
+﻿<Page
+    x:Class="Saku_Overclock.Views.КулерPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+	<Grid x:Name="ContentArea">
+		<Grid>
+			<!-- Начало -->
+			<TextBlock x:Uid="Cooler_Name" Text="Скорости кулера" FontSize="30" Margin="0,-65,0,0"></TextBlock>
+            <ScrollViewer VerticalAlignment="Top" Margin="0,0,-50,0">
+                <Grid Margin="0,0,0,0">
+                    <TextBlock x:Uid="Cooler_Config" Text="Сохранённые конфиги:" FontSize="20" Margin="0,0,0,0"></TextBlock>
+                    <ComboBox x:Name="Selfan" Height="30" Width="200" Margin="230,0,0,0" SelectionChanged="Selfan_SelectionChanged"/>
+                    <Grid>
+                        <TextBlock x:Uid="Cooler_Service" Margin="0,40,0,0" Text="Сервис контроля скорости:" FontSize="16"/>
+                        <RadioButton x:Name="Disabl" Checked="Disabl_Checked"  VerticalAlignment="Top" Margin="0,70,0,0"/>
+                        <RadioButton x:Name="Readon" Checked="Readon_Checked"  VerticalAlignment="Top" Margin="0,100,0,0"/>
+                        <RadioButton x:Name="Enabl" Checked="Enabl_Checked" VerticalAlignment="Top" Margin="0,130,0,0"/>
+                        <TextBlock FontSize="13" x:Uid="Cooler_Service_Disabled" Text="Выключен" VerticalAlignment="Top" Margin="30,76,0,0"/>
+                        <TextBlock FontSize="13" x:Uid="Cooler_Service_Read" Text="Только для чтения" VerticalAlignment="Top" Margin="30,106,0,0"/>
+                        <TextBlock FontSize="13" x:Uid="Cooler_Service_Enabled" Text="Включен" VerticalAlignment="Top" Margin="30,136,0,0"/>
+                    </Grid>
+                    <Grid>
+                        <TextBlock FontSize="15" VerticalAlignment="Top" Margin="0,170,0,0" x:Uid="Cooler_Temp" Text="Текущая температура: 59 C"/>
+                        <TextBlock FontSize="15" FontFamily="Consolas" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="195,172,0,0" x:Name="Temp" Text="Undefined"/>
+
+                    </Grid>
+
+                    <Grid Margin="0,195,0,0">
+                        <Grid>
+                            <TextBlock VerticalAlignment="Top" x:Name="Fan1Val" Text="Auto" Margin="140,30,0,0"/>
+                            <TextBlock Text="Fan #1" VerticalAlignment="Top"/>
+                            <Slider x:Uid="Cooler_Fan" x:Name="Fan1" VerticalAlignment="Top" ValueChanged="Fan1_ValueChanged" HorizontalAlignment="Left" Width="200" Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
+                            <TextBlock x:Uid="Cooler_Current_Fan" VerticalAlignment="Top" x:Name="Fan1Cur" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
+                            <ProgressBar x:Name="Fan1Pr" Value="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Margin="0,120,0,0"></ProgressBar>
+                        </Grid>
+                        <Grid Margin="0,170,0,0">
+                            <TextBlock VerticalAlignment="Top" x:Name="Fan2Val" Text="Auto" Margin="140,30,0,0"/>
+                            <TextBlock Text="Fan #2" VerticalAlignment="Top"/>
+                            <Slider  x:Uid="Cooler_Fan" x:Name="Fan2" ValueChanged="Fan2_ValueChanged" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
+                            <TextBlock x:Uid="Cooler_Current_Fan" x:Name="Fan2Cur" Text="Текущая скорость: 25 %" VerticalAlignment="Top" Margin="0,90,0,0"/>
+                            <ProgressBar x:Name="Fan2Pr" Value="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Margin="0,120,0,0"></ProgressBar>
+                        </Grid>
+                    </Grid>
+
+                </Grid>
+            </ScrollViewer>
+            <ToggleButton Checked="Fanauto_Checked" Unchecked="Fanauto_Checked" x:Name="Fanauto" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-13,15" x:Uid="Cooler_Autoupdate">
+                <ContentControl>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe9d2;"/>
+                </ContentControl>
+            </ToggleButton>
+            <Button VerticalAlignment="Bottom" Click="Update_Click" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,37,15" x:Uid="Cooler_Refresh" ToolTipService.ToolTip="Обновить">
+                <Grid>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe9f3;">
+                    </FontIcon>
+                </Grid>
+            </Button>
+            <Button VerticalAlignment="Bottom" Click="Suggest_Click" x:Name="Suggest" x:Uid="Cooler_Suggest" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,87,15"  ToolTipService.ToolTip="Suggest">
+                <Grid>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe897;">
+                    </FontIcon>
+                </Grid>
+            </Button>
+            <TeachingTip x:Name="SuggestTip"
+    Target="{x:Bind Suggest}" x:Uid="Cooler_suggesttip"
+    Title="These configs are the best for you:"
+    Subtitle="error in line 257 of org.sakuoverclock.app">
+                <TeachingTip.IconSource>
+                    <SymbolIconSource Symbol="Refresh" />
+                </TeachingTip.IconSource>
+            </TeachingTip>
+            <Button VerticalAlignment="Bottom"  Click="AdvancedCooler_Click" x:Uid="Cooler_Advanced"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,137,15"  ToolTipService.ToolTip="Advanced mode">
+                <Grid>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe90f;">
+                    </FontIcon>
+                </Grid>
+            </Button>
+        </Grid>
+	</Grid>
+</Page>

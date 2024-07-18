@@ -1,0 +1,13 @@
+Saku Overclock\bin\
+Saku Overclock\obj\
+packages\
+.vs\
+.github\
+.git\
+.editorconfig
+.vsconfig
+global.json
+Saku Overclock.sln.DotSettings.user
+ZenStates-Core.dll
+ZenStates-Core-Backup-OLD.dll
+ZenStates-Core-new.dll

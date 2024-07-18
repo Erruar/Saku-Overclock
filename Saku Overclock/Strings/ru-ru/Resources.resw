@@ -1,0 +1,2162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>Saku Overclock</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Saku Overclock</value>
+  </data>
+  <data name="Shell_Главная.Content" xml:space="preserve">
+    <value>Главная</value>
+  </data>
+  <data name="Shell_Пресеты.Content" xml:space="preserve">
+    <value>Пресеты</value>
+  </data>
+  <data name="Shell_Параметры.Content" xml:space="preserve">
+    <value>Разгон</value>
+  </data>
+  <data name="Shell_Информация.Content" xml:space="preserve">
+    <value>Показатели</value>
+  </data>
+  <data name="Settings_Personalization.Text" xml:space="preserve">
+    <value>Персонализация</value>
+  </data>
+  <data name="Settings_Theme.Text" xml:space="preserve">
+    <value>Тема приложения</value>
+  </data>
+  <data name="Settings_Theme_Light.Content" xml:space="preserve">
+    <value>Светлая</value>
+  </data>
+  <data name="Settings_Theme_Dark.Content" xml:space="preserve">
+    <value>Тёмная</value>
+  </data>
+  <data name="Settings_Theme_Default.Content" xml:space="preserve">
+    <value>Системная</value>
+  </data>
+  <data name="Settings_About.Text" xml:space="preserve">
+    <value>О нас</value>
+  </data>
+  <data name="Settings_AboutDescription.Text" xml:space="preserve">
+    <value>Приложение для разгона процессоров Ryzen на ноутбуках</value>
+  </data>
+  <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
+    <value>Все права защищены лицензией GPL</value>
+  </data>
+  <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
+    <value>https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md</value>
+  </data>
+  <data name="AppNotificationSamplePayload" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;Программа запущена!&lt;/text&gt;
+      &lt;text&gt;&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="К настройкам!" arguments="action=Settings"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="Shell_Settings.Content" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Shell_Кулер.Content" xml:space="preserve">
+    <value>Кулер</value>
+  </data>
+  <data name="AppNotificationEco" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;Режим Эко применён!&lt;/text&gt;
+      &lt;text&gt;&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/noteco.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="К настройкам!" arguments="action=Settings"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="Cooler_Config.Text" xml:space="preserve">
+    <value>Сохранённые конфиги:</value>
+  </data>
+  <data name="Cooler_Current_Fan.Text" xml:space="preserve">
+    <value>Текущая скорость:</value>
+  </data>
+  <data name="Cooler_Fan.Header" xml:space="preserve">
+    <value>Желаемая скорость:</value>
+  </data>
+  <data name="Cooler_Name.Text" xml:space="preserve">
+    <value>Оптимизация кулера</value>
+  </data>
+  <data name="Cooler_Service.Text" xml:space="preserve">
+    <value>Состояние сервиса контроля скорости:</value>
+  </data>
+  <data name="Cooler_Service_Disabled.Text" xml:space="preserve">
+    <value>Выключен</value>
+  </data>
+  <data name="Cooler_Service_Enabled.Text" xml:space="preserve">
+    <value>Включен</value>
+  </data>
+  <data name="Cooler_Service_Read.Text" xml:space="preserve">
+    <value>Включен только для чтения</value>
+  </data>
+  <data name="Cooler_Temp.Text" xml:space="preserve">
+    <value>Температура процессора:</value>
+  </data>
+  <data name="Info_Autoupdate.Content" xml:space="preserve">
+    <value>Автообновлять каждые (Мс)</value>
+  </data>
+  <data name="Info_Name.Text" xml:space="preserve">
+    <value>Показатели процессора</value>
+  </data>
+  <data name="Info_Refresh.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="Info_Text.Text" xml:space="preserve">
+    <value>- Лимит CPU (W), Максимальное значение
+- Лимит CPU (W) Текущее значение 
+- Реальный CPU (W), Максимальное значение 
+- Реальный CPU (W) Текущее значение  
+- Средний CPU (W), Максимальное значение 
+- Средний CPU (W) Текущее значение 
+- Тик быстрого разгона (S) 
+- Тик медленного разгона (S) 
+- Мощность при быстром разгоне (W) 
+- Мощность при медленном разгоне (W) 
+- Лимит по току VRM (A), Максимальное значение 
+- Лимит по току VRM (A), Текущее значение 
+- Лимит по току SoC (A), Максимальное значение 
+- Лимит по току SoC (A), Текущее значение 
+- Максимальный ток VRM (A) 
+- Текущий ток VRM (A) 
+- Максимальный ток SoC (A) 
+- Текущий максимальный ток SoC (A) 
+- Максимальная температура (C) 
+- Текущая температура (C) 
+- Максимальная температура iGPU (C) 
+- Текущая температура iGPU (C) 
+- Максимальная температура dGPU (C)  
+- Текущая температура dGPU (C) 
+- Процент начала троттлинга (Загрузка CPU %)  
+- Текущая загрузка CPU (%)</value>
+  </data>
+  <data name="Param_CPU.Text" xml:space="preserve">
+    <value>Разгон</value>
+  </data>
+  <data name="Param_CPU_c2.Text" xml:space="preserve">
+    <value>Лимит CPU (W)</value>
+  </data>
+  <data name="Param_CPU_c3.Text" xml:space="preserve">
+    <value>Реальный CPU (W)</value>
+  </data>
+  <data name="Param_CPU_c4.Text" xml:space="preserve">
+    <value>Средний CPU (W)</value>
+  </data>
+  <data name="Param_CPU_c5.Text" xml:space="preserve">
+    <value>Тик медленного разгона (S)</value>
+  </data>
+  <data name="Param_Name.Text" xml:space="preserve">
+    <value>Разгон</value>
+  </data>
+  <data name="Param_Preset.Text" xml:space="preserve">
+    <value>Сохранённые пресеты:</value>
+  </data>
+  <data name="Settings_Apply_Start.Header" xml:space="preserve">
+    <value>Автоприменять последние применённые 
+параметры после запуска приложения</value>
+  </data>
+  <data name="Settings_Auto_Reapply.Header" xml:space="preserve">
+    <value>Переприменять последние применённые 
+параметры каждые (с)</value>
+  </data>
+  <data name="Settings_Name.Text" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Settings_Start_Boot.Content" xml:space="preserve">
+    <value>Автозапуск с ОС</value>
+  </data>
+  <data name="Settings_Start_Mini.Content" xml:space="preserve">
+    <value>В трей при открытии</value>
+  </data>
+  <data name="Main_Disc.Text" xml:space="preserve">
+    <value>Дискордик</value>
+  </data>
+  <data name="Main_Info.Text" xml:space="preserve">
+    <value>Показатели</value>
+  </data>
+  <data name="Main_Param.Text" xml:space="preserve">
+    <value>Разгон</value>
+  </data>
+  <data name="Main_Preset.Text" xml:space="preserve">
+    <value>Пресеты</value>
+  </data>
+  <data name="Main_Welcome.Text" xml:space="preserve">
+    <value>Добро пожаловать в</value>
+  </data>
+  <data name="Main_Welcome_1.Text" xml:space="preserve">
+    <value>Для тех, кто желает максимум!</value>
+  </data>
+  <data name="Param_Apply.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Применить параметры
+Применяет выбранные параметры.
+Если у вас включено "автоприменять
+каждые", то эти настройки будут
+переприменяться каждые несколько
+секунд</value>
+  </data>
+  <data name="Param_CPU_c1.Text" xml:space="preserve">
+    <value>Максимальная температура CPU (C)</value>
+  </data>
+  <data name="Param_CPU_c6.Text" xml:space="preserve">
+    <value>Тик быстрого разгона (S)</value>
+  </data>
+  <data name="Param_CPU_Recommend.Text" xml:space="preserve">
+    <value>Рекомендации:        Баланс          Производительность</value>
+  </data>
+  <data name="Param_Delete.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Удалить пресет
+Удалит ваш пресет после подтверждения</value>
+  </data>
+  <data name="Param_GPU_g1.Text" xml:space="preserve">
+    <value>Минимальная частота SoC (MHz)</value>
+  </data>
+  <data name="Param_GPU_g10.Text" xml:space="preserve">
+    <value>Максимальная частота iGPU (MHz)</value>
+  </data>
+  <data name="Param_GPU_g2.Text" xml:space="preserve">
+    <value>Максимальная частота SoC (MHz)</value>
+  </data>
+  <data name="Param_GPU_g3.Text" xml:space="preserve">
+    <value>Минимальная частота Infinity Fabric(MHz)</value>
+  </data>
+  <data name="Param_GPU_g4.Text" xml:space="preserve">
+    <value>Максимальная частота Infinity Fabric (MHz)</value>
+  </data>
+  <data name="Param_GPU_g5.Text" xml:space="preserve">
+    <value>Минимальная частота VCE (MHz)</value>
+  </data>
+  <data name="Param_GPU_g6.Text" xml:space="preserve">
+    <value>Максимальная частота VCE (MHz)</value>
+  </data>
+  <data name="Param_GPU_g7.Text" xml:space="preserve">
+    <value>Минимальная частота Data Latch (MHz)</value>
+  </data>
+  <data name="Param_GPU_g8.Text" xml:space="preserve">
+    <value>Максимальная частота Data Latch (MHz)</value>
+  </data>
+  <data name="Param_GPU_g9.Text" xml:space="preserve">
+    <value>Минимальная частота iGPU (MHz)</value>
+  </data>
+  <data name="Param_GPU_Ram.Text" xml:space="preserve">
+    <value>                                Частота оперативной памяти</value>
+  </data>
+  <data name="Param_GPU_Recommend.Text" xml:space="preserve">
+    <value>Рекомендации:        Баланс          Производительность</value>
+  </data>
+  <data name="Param_GPU_Text.Text" xml:space="preserve">
+    <value>Частоты iGPU и подсистем CPU</value>
+  </data>
+  <data name="Param_New.Text" xml:space="preserve">
+    <value>Создать новый пресет:</value>
+  </data>
+  <data name="Param_Save_Preset.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Добавить новый пресет
+Добавляет новый пресет для
+сохранения ваших настроек.
+После изменения параметров
+они сохраняются автоматически</value>
+  </data>
+  <data name="Param_VRM_desc.Text" xml:space="preserve">
+    <value>Рекомендации:        Баланс          Производительность</value>
+  </data>
+  <data name="Param_VRM_Name.Text" xml:space="preserve">
+    <value>Разгон VRM</value>
+  </data>
+  <data name="Param_VRM_v1.Text" xml:space="preserve">
+    <value>Максимальный ток VRM (A)</value>
+  </data>
+  <data name="Param_VRM_v2.Text" xml:space="preserve">
+    <value>Лимит по току VRM (A)</value>
+  </data>
+  <data name="Param_VRM_v3.Text" xml:space="preserve">
+    <value>Максимальный ток SoC (A)</value>
+  </data>
+  <data name="Param_VRM_v4.Text" xml:space="preserve">
+    <value>Лимит по току SoC (A)</value>
+  </data>
+  <data name="Param_VRM_v5.Text" xml:space="preserve">
+    <value>Максимальный ток PCI VDD (A)</value>
+  </data>
+  <data name="Param_VRM_v6.Text" xml:space="preserve">
+    <value>Максимальный ток PCI SoC (A)</value>
+  </data>
+  <data name="Param_VRM_v7.Text" xml:space="preserve">
+    <value>Время восстановления частоты (mS)</value>
+  </data>
+  <data name="Preset_Balance" xml:space="preserve">
+    <value>Баланс мощности</value>
+  </data>
+  <data name="Preset_Balance_Desc" xml:space="preserve">
+    <value>Этот пресет позволит вашему
+процессору быть максимально 
+сбалансированным</value>
+  </data>
+  <data name="Preset_Balance_Name.Text" xml:space="preserve">
+    <value>Баланс</value>
+  </data>
+  <data name="Preset_Eco" xml:space="preserve">
+    <value>Экономия энергии</value>
+  </data>
+  <data name="Preset_Eco_Desc" xml:space="preserve">
+    <value>Этот пресет позволит сэкономить 
+вам проценты аккумулятора, без 
+существенной потери производительности</value>
+  </data>
+  <data name="Preset_Eco_Name.Text" xml:space="preserve">
+    <value>Эко</value>
+  </data>
+  <data name="Preset_Max" xml:space="preserve">
+    <value>Максимум</value>
+  </data>
+  <data name="Preset_Max_Desc" xml:space="preserve">
+    <value>Этот пресет раскроет максимум 
+вашего процессора и снимет с него
+ограничения!</value>
+  </data>
+  <data name="Preset_Max_Name.Text" xml:space="preserve">
+    <value>Максимум</value>
+  </data>
+  <data name="Preset_Min" xml:space="preserve">
+    <value>Минимальная мощность</value>
+  </data>
+  <data name="Preset_Min_Desc" xml:space="preserve">
+    <value>Этот пресет позволит вашему 
+процессору быть по настоящему
+холодным!</value>
+  </data>
+  <data name="Preset_Min_Name.Text" xml:space="preserve">
+    <value>Минимум</value>
+  </data>
+  <data name="Preset_Name.Text" xml:space="preserve">
+    <value>Готовые пресеты</value>
+  </data>
+  <data name="Preset_Speed" xml:space="preserve">
+    <value>Скорость</value>
+  </data>
+  <data name="Preset_Speed_Desc" xml:space="preserve">
+    <value>Этот пресет позволит быть
+продуктивнее благодаря
+улучшенной производительности</value>
+  </data>
+  <data name="Preset_Speed_Name.Text" xml:space="preserve">
+    <value>Скорость</value>
+  </data>
+  <data name="Cooler_Current_Fan_Val" xml:space="preserve">
+    <value>Текущая скорость:</value>
+  </data>
+  <data name="Cooler_Temp_Val" xml:space="preserve">
+    <value>Температура процессора:</value>
+  </data>
+  <data name="Info_Text.ToolTipService.ToolTip" xml:space="preserve">
+    <value>О текущих и максимальных значениях: Текущие значения - текущие значения прямо сейчас, Максимальные значение - значения установленные в программе, теоретически процессор должен достигнуть их, чтобы убедиться в этом смотрите на текущие значения</value>
+  </data>
+  <data name="Tray_Inforfation" xml:space="preserve">
+    <value>Показатели</value>
+  </data>
+  <data name="Tray_Parameters" xml:space="preserve">
+    <value>Разгон</value>
+  </data>
+  <data name="Tray_Presets" xml:space="preserve">
+    <value>Пресеты</value>
+  </data>
+  <data name="Tray_Quit" xml:space="preserve">
+    <value>Выйти</value>
+  </data>
+  <data name="Tray_Saku_Overclock" xml:space="preserve">
+    <value>Saku Overclock</value>
+  </data>
+  <data name="Tray_Show" xml:space="preserve">
+    <value>Развернуть</value>
+  </data>
+  <data name="Param_Edit_Preset.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Изменить имя пресета
+Для того, чтобы его изменить, в текстовом
+поле напишите желаемое значение и 
+нажмите на кнопку</value>
+  </data>
+  <data name="Param_c1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная температура
+Этим значением вы можете ограничить 
+процессор по температуре, выше
+этого значения он не будет греться
+будет начинаться троттлинг</value>
+  </data>
+  <data name="Param_c2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимит потребления
+Это значение ограничит процессор
+по теплопакету на то значение
+которое вы установили. Выше этого
+значения он не будет греться и
+разгоняться</value>
+  </data>
+  <data name="Param_c3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Реальное потребление
+Это значение отвечает за ограничение
+мощности при быстром тике
+разгона процессора</value>
+  </data>
+  <data name="Param_c4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Среднее потребление
+Это значение отвечает за ограничение
+мощности при медленном тике
+разгона процессора</value>
+  </data>
+  <data name="Param_c5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Тик медленного разгона
+Это время, которое процессор будет
+увеличивать себе мощность, пока
+это будет необходимо или пока
+не достигнет максимума среднего
+потребления. Тик быстрого
+разгона чаще всего возникает при 
+недлительной нагрузке и повышает
+производительность процессора.
+Другими словами - это время за
+которое процессор повысит 
+частоты
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_c6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Тик быстрого разгона
+Это время, которое процессор будет
+увеличивать себе мощность, пока
+это будет необходимо или пока
+не достигнет максимума реального
+потребления. Тик медленного 
+разгона чаще всего возникает при 
+длительной нагрузке и повышает
+производительность процессора.
+Другими словами - это время
+действия турбобуста
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_g10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная частота iGPU
+Максимальная частота встроенного
+видеоядра</value>
+  </data>
+  <data name="Param_g1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная частота SoC
+Минимальная частота передачи
+данных между всеми подсистемами
+процессора, то есть частота
+контроллера  памяти, контроллера PCI,
+контроллера Sata и т.д</value>
+  </data>
+  <data name="Param_g2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная частота SoC
+Максимальная частота передачи
+данных между всеми подсистемами
+процессора, то есть частота
+контроллера  памяти, контроллера PCI,
+контроллера Sata и т.д</value>
+  </data>
+  <data name="Param_g3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная Infinity Fabric
+Это частота передачи данных между
+процессором, ОЗУ и хабом, а также
+интегрированной графикой</value>
+  </data>
+  <data name="Param_g4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная Infinity Fabric
+Это частота передачи данных между
+процессором, ОЗУ и хабом, а также
+интегрированной графикой</value>
+  </data>
+  <data name="Param_g5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная частота кодека VCE
+Это частота видеокодека, который
+обрабатывает видеоконтент например
+в видео на ютуб, в проигрывателях, 
+в видеоредакторах, фотошопе и при
+стриминге</value>
+  </data>
+  <data name="Param_g6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная частота кодека VCE
+Это частота видеокодека, который
+обрабатывает видеоконтент например
+в видео на ютуб, в проигрывателях, 
+в видеоредакторах, фотошопе и при
+стриминге</value>
+  </data>
+  <data name="Param_g7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная частота Data Latch
+Минимальная частота тактового
+генератора процессора, от которого
+зависит правильная его работа
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_g8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная частота Data Latch
+Максимальная частота тактового
+генератора процессора, от которого
+зависит правильная его работа
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_g9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная частота iGPU
+Минимальная частота встроенного
+видеоядра</value>
+  </data>
+  <data name="Param_v1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальный ток VRM 
+Отвечает за максимально возможный
+ток питания процессора и его
+подсистем. Не рекоммендуется ставить
+значения выше 80 А, хотя всё равно
+процессор не достигнет таких значений</value>
+  </data>
+  <data name="Param_v2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимит по току VRM 
+Отвечает за максимально возможный
+ток питания процессора и его
+подсистем под воздействием температур
+и нагрузки. Не рекоммендуется ставить
+значения выше 80 А, хотя всё равно
+процессор не достигнет таких значений</value>
+  </data>
+  <data name="Param_v3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальный ток SoC
+Отвечает за максимальный ток,
+потребляемый всеми подсистемами
+процессора, кроме ядер. То есть
+контроллер памяти, контроллер PCI
+контроллера Sata и т.д</value>
+  </data>
+  <data name="Param_v4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимит по току SoC
+Отвечает за максимальный ток,
+потребляемый всеми подсистемами
+процессора, кроме ядер, под воздействием
+температур и нагрузки. То есть ток 
+контроллера  памяти, контроллера PCI,
+контроллера Sata и т.д</value>
+  </data>
+  <data name="Param_v5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальный ток PCI VDD
+Отвечает за потребляемый ядрами
+процессора ток под нагрузкой
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_v6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальный ток PCI SoC
+Отвечает за потребляемый подсистемами
+процессора ток под нагрузкой
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_v7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Время восстановления частоты
+Отвечает за время, после которого
+частота восстановится после троттлинга
+из-за превышения максимальной 
+температуры процессора. По умолчанию
+многие производители ставят 20, но вы 
+можете поэкспериментировать
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
+    <value>Изменение мощности процессора</value>
+  </data>
+  <data name="Param_GPU_Pdesc.Text" xml:space="preserve">
+    <value>Изменение частот подсистем процессора</value>
+  </data>
+  <data name="Param_VRM_Pdesc.Text" xml:space="preserve">
+    <value>Изменение всех значений VRM</value>
+  </data>
+  <data name="Cooler_Autoupdate.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Автообновление информации
+Автоматически обновляет
+информацию о скорости
+кулера, раз в 6 секунд</value>
+  </data>
+  <data name="Cooler_Refresh.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Обновить информацию
+Выключает автообновление, 
+покажет текущую скорость
+вращения кулеров</value>
+  </data>
+  <data name="Param_States_Text.Text" xml:space="preserve">
+    <value>Состояния CPU</value>
+  </data>
+  <data name="Param_CPU_Text.Text" xml:space="preserve">
+    <value>Потребление CPU</value>
+  </data>
+  <data name="Param_enableps.Text" xml:space="preserve">
+    <value>Настройки состояний CPU</value>
+  </data>
+  <data name="Param_enableps_desc.Text" xml:space="preserve">
+    <value>Включить эти настройки изменения PState состояний</value>
+  </data>
+  <data name="Param_Ignore.Text" xml:space="preserve">
+    <value>Игнорировать предупреждение изменения</value>
+  </data>
+  <data name="Param_Ignorep0.Text" xml:space="preserve">
+    <value>Игнорировать предупреждение P0</value>
+  </data>
+  <data name="Param_Ignorep0_desc.Text" xml:space="preserve">
+    <value>Всегда применять параметры с состоянием P0, может привести к крашу системы!</value>
+  </data>
+  <data name="Param_Ignore_desc.Text" xml:space="preserve">
+    <value>Всегда применять параметры без предупреждений</value>
+  </data>
+  <data name="Param_reapplyps.Text" xml:space="preserve">
+    <value>Автоприменять параметры</value>
+  </data>
+  <data name="Param_reapplyps_desc.Text" xml:space="preserve">
+    <value>При запуске программа будет применять эти параметры, при включенном автоприменении</value>
+  </data>
+  <data name="Param_States_Pdesc.Text" xml:space="preserve">
+    <value>Производительные состояния процессора</value>
+  </data>
+  <data name="Param_turbo.Text" xml:space="preserve">
+    <value>Состояние Turbo Boost</value>
+  </data>
+  <data name="Param_turbo_desc.Text" xml:space="preserve">
+    <value>Позволяет вашему процессору разгоняться сильнее, но вызывает проблемы</value>
+  </data>
+  <data name="Param_a10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Это значение зафиксирует частоту
+iGPU на приблизительно указанной
+После перезагрузки оно сбросится
+если у вас не стоит автозагрузка и
+авторазгон
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_a11_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Это значение зафиксирует частоту
+CPU на приблизительно указанной
+После перезагрузки оно сбросится
+если у вас не стоит автозагрузка и
+авторазгон
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_a12_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Это значение зафиксирует напряжение
+CPU на приблизительно указанное
+После перезагрузки оно сбросится
+если у вас не стоит автозагрузка и
+авторазгон
+НЕ РЕКОММЕНДУЕТСЯ ЕГО ТРОГАТЬ</value>
+  </data>
+  <data name="Param_a13_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Режим работы процессора, они
+переключаются при подключении и
+отключении зарядки. Если вы на
+зарядке и включите Максимум, это
+ничего не сделает, так как ваш
+процессор уже в этом режиме,
+аналогично с работой от батареи и
+режимом энергоэффективности</value>
+  </data>
+  <data name="Param_a1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Вы можете ограничить потребление 
+тока вашей встроенной видеокарты 
+под воздействием тепла и нагрузки</value>
+  </data>
+  <data name="Param_a2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Вы можете ограничить потребление 
+тока вашего нейронного блока в 
+процессоре, при его наличии,
+под воздействием тепла и нагрузки</value>
+  </data>
+  <data name="Param_a3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отвечает за максимальный ток
+потребляемый интегрированной
+графикой</value>
+  </data>
+  <data name="Param_a4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отвечает за максимальный ток
+потребляемый процессором
+по линии PCI Express</value>
+  </data>
+  <data name="Param_a5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отвечает за максимальный ток
+потребляемый всеми GPU
+по линии PCI Express
+Он НЕ МОЖЕТ быть меньше
+чем максимальный ток
+Интегрированной графики!</value>
+  </data>
+  <data name="Param_a6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная температура
+Этим значением вы можете ограничить 
+iGPU по температуре, выше
+этого значения он не будет греться
+будет начинаться троттлинг
+Это сработает ТОЛЬКО если вы видите 
+значения температуры на странице 
+информации!</value>
+  </data>
+  <data name="Param_a7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная температура
+Этим значением вы можете ограничить 
+dGPU по температуре, выше
+этого значения он не будет греться
+будет начинаться троттлинг
+Это сработает ТОЛЬКО если вы видите 
+значения температуры на странице 
+информации!</value>
+  </data>
+  <data name="Param_a8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Это значение ограничит iGPU
+по теплопакету на то значение
+которое вы установили. Выше этого
+значения он не будет греться и
+разгоняться
+Это сработает ТОЛЬКО если вы видите 
+значения температуры на странице 
+информации!</value>
+  </data>
+  <data name="Param_a9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Это значение ограничит систему
+по теплопакету на то значение
+которое вы установили. Выше этого
+значения она не будет греться и
+разгоняться. Это ограничение 
+AMD APU + AMD dGPU
+Это сработает ТОЛЬКО если вы видите 
+значения температуры на странице 
+информации!</value>
+  </data>
+  <data name="Param_ADV_a1.Text" xml:space="preserve">
+    <value>Лимит по току iGPU (A)</value>
+  </data>
+  <data name="Param_ADV_a10.Text" xml:space="preserve">
+    <value>Зафиксировать частоту iGPU (MHz)</value>
+  </data>
+  <data name="Param_ADV_a11.Text" xml:space="preserve">
+    <value>Зафиксировать частоту CPU (MHz)</value>
+  </data>
+  <data name="Param_ADV_a12.Text" xml:space="preserve">
+    <value>Зафиксировать напряжение CPU (mV)</value>
+  </data>
+  <data name="Param_ADV_a13.Text" xml:space="preserve">
+    <value>Предпочтительный режим</value>
+  </data>
+  <data name="Param_ADV_a2.Text" xml:space="preserve">
+    <value>Лимит по току NPU (A)</value>
+  </data>
+  <data name="Param_ADV_a3.Text" xml:space="preserve">
+    <value>Максимальный ток iGPU (A)</value>
+  </data>
+  <data name="Param_ADV_a4.Text" xml:space="preserve">
+    <value>Максимальный ток CPU по линии PCI (A)</value>
+  </data>
+  <data name="Param_ADV_a5.Text" xml:space="preserve">
+    <value>Максимальный ток GPU по линии PCI (A)</value>
+  </data>
+  <data name="Param_ADV_a6.Text" xml:space="preserve">
+    <value>Максимальная температура iGPU (C)</value>
+  </data>
+  <data name="Param_ADV_a7.Text" xml:space="preserve">
+    <value>Максимальная температура dGPU (C)</value>
+  </data>
+  <data name="Param_ADV_a8.Text" xml:space="preserve">
+    <value>Лимит потребления iGPU (W)</value>
+  </data>
+  <data name="Param_ADV_a9.Text" xml:space="preserve">
+    <value>Общий лимит потребления (W)</value>
+  </data>
+  <data name="Param_ADV_Pdesc.Text" xml:space="preserve">
+    <value>Экспериментальные опасные параметры</value>
+  </data>
+  <data name="Param_ADV_Text.Text" xml:space="preserve">
+    <value>Расширенные параметры CPU</value>
+  </data>
+  <data name="Set_settings" xml:space="preserve">
+    <value>Вы успешно применили ваши настройки</value>
+  </data>
+  <data name="Set_succ" xml:space="preserve">
+    <value>Применение успешно!</value>
+  </data>
+  <data name="Add_Target_Max.Subtitle" xml:space="preserve">
+    <value>Нельзя добавить больше 10000 пресетов!</value>
+  </data>
+  <data name="Add_Target_Max.Title" xml:space="preserve">
+    <value>Ошибка добавления</value>
+  </data>
+  <data name="Add_Target_Error.Subtitle" xml:space="preserve">
+    <value>Нельзя добавить пресет без имени!</value>
+  </data>
+  <data name="Add_Target_Error.Title" xml:space="preserve">
+    <value>Ошибка добавления</value>
+  </data>
+  <data name="ADV_Auto.Text" xml:space="preserve">
+    <value>                                           Автоматически</value>
+  </data>
+  <data name="ADV_Change.Text" xml:space="preserve">
+    <value>                                        Не стоит менять!!!</value>
+  </data>
+  <data name="Apply_Target.Subtitle" xml:space="preserve">
+    <value>Вы успешно применили разгон</value>
+  </data>
+  <data name="Apply_Target.Title" xml:space="preserve">
+    <value>Значения применены!</value>
+  </data>
+  <data name="Delete_Target_Error.Subtitle" xml:space="preserve">
+    <value>Нельзя удалить несохранённый пресет!</value>
+  </data>
+  <data name="Delete_Target_Error.Title" xml:space="preserve">
+    <value>Ошибка удаления</value>
+  </data>
+  <data name="Edit_Target.Subtitle" xml:space="preserve">
+    <value>Вы изменили имя пресета</value>
+  </data>
+  <data name="Edit_Target.Title" xml:space="preserve">
+    <value>Изменение успешно!</value>
+  </data>
+  <data name="Edit_Target_Error.Subtitle" xml:space="preserve">
+    <value>Установите правильное имя!</value>
+  </data>
+  <data name="Edit_Target_Error.Title" xml:space="preserve">
+    <value>Ошибка изменения</value>
+  </data>
+  <data name="Settings_Theme_Blue.Content" xml:space="preserve">
+    <value>Тёмно-синяя</value>
+  </data>
+  <data name="Unsaved_Target.Subtitle" xml:space="preserve">
+    <value>Нельзя изменить имя несохранённому пресету!</value>
+  </data>
+  <data name="Unsaved_Target.Title" xml:space="preserve">
+    <value>Ошибка изменения</value>
+  </data>
+  <data name="infoAActualC.Text" xml:space="preserve">
+    <value>Текущее реальное потр</value>
+  </data>
+  <data name="infoAActualL.Text" xml:space="preserve">
+    <value>Реальная мощность</value>
+  </data>
+  <data name="infoAAVGC.Text" xml:space="preserve">
+    <value>Текущее среднее потр</value>
+  </data>
+  <data name="infoAAVGL.Text" xml:space="preserve">
+    <value>Средняя мощность</value>
+  </data>
+  <data name="infoAStapmC.Text" xml:space="preserve">
+    <value>Текущее потребление</value>
+  </data>
+  <data name="infoAStapmL.Text" xml:space="preserve">
+    <value>Мощности STAPM</value>
+  </data>
+  <data name="infoBaseC.Text" xml:space="preserve">
+    <value>Базовая частота</value>
+  </data>
+  <data name="infoCaptC.Text" xml:space="preserve">
+    <value>Серия</value>
+  </data>
+  <data name="infoCodeC.Text" xml:space="preserve">
+    <value>Кодовое имя</value>
+  </data>
+  <data name="infoCoresC.Text" xml:space="preserve">
+    <value>Ядра</value>
+  </data>
+  <data name="infoCPU_Expander.Text" xml:space="preserve">
+    <value>Процессор</value>
+  </data>
+  <data name="infoCPU_Expander_desc.Text" xml:space="preserve">
+    <value>Характеристики вашего процессора</value>
+  </data>
+  <data name="infoInstructC.Text" xml:space="preserve">
+    <value>Инструкции</value>
+  </data>
+  <data name="infoL1C.Text" xml:space="preserve">
+    <value>L1 Кеш</value>
+  </data>
+  <data name="infoL2C.Text" xml:space="preserve">
+    <value>L2 Кеш</value>
+  </data>
+  <data name="infoL3C.Text" xml:space="preserve">
+    <value>L3 Кеш</value>
+  </data>
+  <data name="infoProcC.Text" xml:space="preserve">
+    <value>ЦП</value>
+  </data>
+  <data name="infoProdC.Text" xml:space="preserve">
+    <value>Вендор</value>
+  </data>
+  <data name="infoThreadC.Text" xml:space="preserve">
+    <value>Потоки</value>
+  </data>
+  <data name="infoAAPUC.Text" xml:space="preserve">
+    <value>Текущее потр APU</value>
+  </data>
+  <data name="infoAAPUL.Text" xml:space="preserve">
+    <value>Лимит потр APU</value>
+  </data>
+  <data name="infoAAPUTEMPC.Text" xml:space="preserve">
+    <value>Текущая темп APU</value>
+  </data>
+  <data name="infoAAPUTEMPL.Text" xml:space="preserve">
+    <value>Макс темп APU</value>
+  </data>
+  <data name="infoACPUTEMPC.Text" xml:space="preserve">
+    <value>Текущая темп CPU</value>
+  </data>
+  <data name="infoACPUTEMPL.Text" xml:space="preserve">
+    <value>Температура</value>
+  </data>
+  <data name="infoACPUUSAGE.Text" xml:space="preserve">
+    <value>Загрузка процессора</value>
+  </data>
+  <data name="infoAFast.Text" xml:space="preserve">
+    <value>Тик быстрого разгона</value>
+  </data>
+  <data name="infoAGPUTEMPC.Text" xml:space="preserve">
+    <value>Текущая темп dGPU</value>
+  </data>
+  <data name="infoAGPUTEMPL.Text" xml:space="preserve">
+    <value>Макс темп dGPU</value>
+  </data>
+  <data name="infoASlow.Text" xml:space="preserve">
+    <value>Тик долгого разгона</value>
+  </data>
+  <data name="infoASOCEDCC.Text" xml:space="preserve">
+    <value>Текущий ток SoC</value>
+  </data>
+  <data name="infoASOCEDCL.Text" xml:space="preserve">
+    <value>Лимит тока SoC</value>
+  </data>
+  <data name="infoASOCTDCC.Text" xml:space="preserve">
+    <value>Текущее SoC TDC</value>
+  </data>
+  <data name="infoASOCTDCL.Text" xml:space="preserve">
+    <value>Лимит тока SoC TDC</value>
+  </data>
+  <data name="infoAVRMEDCC.Text" xml:space="preserve">
+    <value>Текущий ток VRM</value>
+  </data>
+  <data name="infoAVRMEDCL.Text" xml:space="preserve">
+    <value>Лимит тока VRM</value>
+  </data>
+  <data name="infoAVRMTDCC.Text" xml:space="preserve">
+    <value>Текущее VRM TDC</value>
+  </data>
+  <data name="infoAVRMTDCL.Text" xml:space="preserve">
+    <value>Лимит тока VRM TDC</value>
+  </data>
+  <data name="infoMMEM.Text" xml:space="preserve">
+    <value>Тип памяти</value>
+  </data>
+  <data name="infoMModel.Text" xml:space="preserve">
+    <value>Модель</value>
+  </data>
+  <data name="infoMModule.Text" xml:space="preserve">
+    <value>Количество модулей</value>
+  </data>
+  <data name="infoMProd.Text" xml:space="preserve">
+    <value>Вендор</value>
+  </data>
+  <data name="infoMWid.Text" xml:space="preserve">
+    <value>Ширина</value>
+  </data>
+  <data name="Param_infops_desc.Text" xml:space="preserve">
+    <value>Здесь вы сможете узнать текущие значения Pstate состояний</value>
+  </data>
+  <data name="Cooler_suggesttip.Title" xml:space="preserve">
+    <value>Эти конфигурации возможно вам подойдут:</value>
+  </data>
+  <data name="AppNotificationCrash" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;Не найдены файлы конфигурации&lt;/text&gt;
+      &lt;text&gt;Приложение уже создало для вас пару новых. Перезагрузите приложение чтобы применить изменения&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="Перезапуск" arguments="action=Settings"/&gt;
+    &lt;action content="Тех. Поддержка" arguments="action=Message"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="AdvancedCooler_Configs.Text" xml:space="preserve">
+    <value>Конфигурации</value>
+  </data>
+  <data name="AdvancedCooler_Curve.Header" xml:space="preserve">
+    <value>Кривая кулера</value>
+  </data>
+  <data name="AdvancedCooler_CurveDesc.Text" xml:space="preserve">
+    <value>Здесь вы можете изменить кривую
+конфигурации:</value>
+  </data>
+  <data name="AdvancedCooler_Curves.Text" xml:space="preserve">
+    <value>Кривая кулера</value>
+  </data>
+  <data name="AdvancedCooler_CurveText.Text" xml:space="preserve">
+    <value>Редактор кривой кулера</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Fan1.Text" xml:space="preserve">
+    <value>Кулер 1</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Fan2.Text" xml:space="preserve">
+    <value>Кулер 2</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Tresh.Margin" xml:space="preserve">
+    <value>390,78,0,0</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Tresh.Text" xml:space="preserve">
+    <value>Температурные зависимости</value>
+  </data>
+  <data name="AdvancedCooler_Custom.Text" xml:space="preserve">
+    <value>Новая конфигурация</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Em.Text" xml:space="preserve">
+    <value>Новая пустая конфигурация</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Ex.Text" xml:space="preserve">
+    <value>Создать из примера</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Fr.Text" xml:space="preserve">
+    <value>Скопировать из конфигурации</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action" xml:space="preserve">
+    <value>Выберите действие</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Delete" xml:space="preserve">
+    <value>Удалить файл</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Rename" xml:space="preserve">
+    <value>Переименовать файл и вкладку</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Sure" xml:space="preserve">
+    <value>Вы уверены в удалении?</value>
+  </data>
+  <data name="AdvancedCooler_Normal.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Обычный режим
+Вернуться обратно в обычный режим:
+Оптимизация кулера</value>
+  </data>
+  <data name="AdvancedCooler_Others.Text" xml:space="preserve">
+    <value>Другие конфигурации</value>
+  </data>
+  <data name="AdvancedCooler_Page.Text" xml:space="preserve">
+    <value>Оптимизация кулера ⟩ Расширенный режим</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Cooler_Advanced.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Расширенный режим
+Перейти в расширенный режим
+Тут вы сможете изменять файлы 
+конфигурации, изменять кривую 
+кулера, а также создавать свои 
+конфигурации управления кулерами</value>
+  </data>
+  <data name="Cooler_Suggest.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Получить совет
+Не знаете какая конфигурация вам
+может подойти? Нажмите сюда, 
+чтобы получить список возможно
+совместимых!</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="New_Name" xml:space="preserve">
+    <value>Новое имя</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Открыть!</value>
+  </data>
+  <data name="Param_PowerMon.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Открыть Saku PowerMon Pro
+Монитор всех параметров ACPI, FIRM, 
+AOD, Power, Temp, Load таблиц устройства.
+Учтите что его запуск может занять до 2 
+минут!</value>
+  </data>
+  <data name="PowerMonDesc" xml:space="preserve">
+    <value>Вы действительно хотите открыть PowerMon? Учтите, что его загрузка может занимать до 2 минут и оба приложения зависнут. Пожалуйста дождитесь полной загрузки, после чего можете его использовать, программы при этом не будут зависать</value>
+  </data>
+  <data name="PowerMonText" xml:space="preserve">
+    <value>Открыть Saku PowerMon Pro?</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="SMUARG.Text" xml:space="preserve">
+    <value>ARG Адрес</value>
+  </data>
+  <data name="SMUArguments.Text" xml:space="preserve">
+    <value>Аргументы</value>
+  </data>
+  <data name="SMUCMD.Text" xml:space="preserve">
+    <value>CMD Адрес</value>
+  </data>
+  <data name="SMUCommand.Text" xml:space="preserve">
+    <value>Команда</value>
+  </data>
+  <data name="SMUDesc.Text" xml:space="preserve">
+    <value>Измените параметры SMU для максимального разгона</value>
+  </data>
+  <data name="SMUErrorDesc" xml:space="preserve">
+    <value>Команда не установлена или IO чип её отклонил или IO драйвер не загружен. Перезапустите ноутбук и отключите Secure Boot в BIOS или измените команду!</value>
+  </data>
+  <data name="SMUErrorNoCMD" xml:space="preserve">
+    <value>Такой команды не существует для вашего SMU. Это не значит, что эта команда не существует вообще, возможно, чтобы получить доступ к ней нужно активировать какую-то функцию SMU или один из протоколов вашего BIOS не даёт вам с ней взаимодействовать</value>
+  </data>
+  <data name="SMUErrorRejected" xml:space="preserve">
+    <value>SMU отклонил команду из-за того, что она заблокирована SMU или BIOS. Обычно при таком статусе эту команду уже не разблокировать никак</value>
+  </data>
+  <data name="SMUErrorText" xml:space="preserve">
+    <value>Невозможно применить команду SMU</value>
+  </data>
+  <data name="SMUOKDesc" xml:space="preserve">
+    <value>Вы изменили значение для этой команды успешно</value>
+  </data>
+  <data name="SMUOKText" xml:space="preserve">
+    <value>Команда SMU применена успешно!</value>
+  </data>
+  <data name="SMUPath.Text" xml:space="preserve">
+    <value>Путь</value>
+  </data>
+  <data name="SMURSP.Text" xml:space="preserve">
+    <value>RSP Адрес</value>
+  </data>
+  <data name="SMUScanDesc" xml:space="preserve">
+    <value>Теперь вы можете изменять параметры SMU</value>
+  </data>
+  <data name="SMUScanText" xml:space="preserve">
+    <value>Адреса SMU найдены</value>
+  </data>
+  <data name="SMUText.Text" xml:space="preserve">
+    <value>Редактор параметров SMU</value>
+  </data>
+  <data name="SMUEnableDesc.Text" xml:space="preserve">
+    <value>Включить применение быстрых команд SMU </value>
+  </data>
+  <data name="SMUEnableText.Text" xml:space="preserve">
+    <value>Применять параметры SMU</value>
+  </data>
+  <data name="CancelThis.Text" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Copy.Text" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="Cut.Text" xml:space="preserve">
+    <value>Вырезать</value>
+  </data>
+  <data name="SelectAll.Text" xml:space="preserve">
+    <value>Выбрать всё</value>
+  </data>
+  <data name="ToHex.Text" xml:space="preserve">
+    <value>Перевести в Hex</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Изменить</value>
+  </data>
+  <data name="Cooler_FanAuto_Desc" xml:space="preserve">
+    <value>Вы действительно хотите включить автообновление
+информации о скорости кулеров? Это может
+негативно сказаться на загрузке вашего процессора!
+В связи с этим, программа была оптимизирована так,
+чтобы пока она в фоне информация не обновлялась</value>
+  </data>
+  <data name="Cooler_FanAuto_Text" xml:space="preserve">
+    <value>Автообновлять информацию?</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Включить</value>
+  </data>
+  <data name="Param_ChPstates_Desc" xml:space="preserve">
+    <value>Вы действительно хотите изменить состояния PState процессора?
+Учтите, это может крашнуть вашу систему моментально!
+Изменения P0 состояния имеет больше шансов на это</value>
+  </data>
+  <data name="Param_ChPstates_Text" xml:space="preserve">
+    <value>Изменить состояния процессора</value>
+  </data>
+  <data name="Param_DelPreset_Desc" xml:space="preserve">
+    <value>Вы действительно хотите удалить этот пресет? 
+Это действие отменить нельзя!</value>
+  </data>
+  <data name="Param_DelPreset_Text" xml:space="preserve">
+    <value>Удалить пресет</value>
+  </data>
+  <data name="Without_P0" xml:space="preserve">
+    <value>Без P0 состояния </value>
+  </data>
+  <data name="Arguments" xml:space="preserve">
+    <value>Аргументы</value>
+  </data>
+  <data name="Command" xml:space="preserve">
+    <value>Команда</value>
+  </data>
+  <data name="Desc" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="Info_CPU_desc.Text" xml:space="preserve">
+    <value>Информация о мощностях CPU</value>
+  </data>
+  <data name="Info_CPU_text.Text" xml:space="preserve">
+    <value>Информация </value>
+  </data>
+  <data name="Info_RAM_desc.Text" xml:space="preserve">
+    <value>Свойства оперативной памяти</value>
+  </data>
+  <data name="Info_RAM_text.Text" xml:space="preserve">
+    <value>Оперативная память</value>
+  </data>
+  <data name="Param_Autorun" xml:space="preserve">
+    <value>Применять при запуске программы</value>
+  </data>
+  <data name="Param_QSMU_Desc.Text" xml:space="preserve">
+    <value>Добавить новую команду</value>
+  </data>
+  <data name="Param_QSMU_Text.Text" xml:space="preserve">
+    <value>Быстрые команды SMU</value>
+  </data>
+  <data name="Param_WithApply" xml:space="preserve">
+    <value>Применять с кнопкой "Применить"</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="CancelToken.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отменить действие</value>
+  </data>
+  <data name="SMURange" xml:space="preserve">
+    <value>Применяется диапазон</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Применить</value>
+  </data>
+  <data name="Logging" xml:space="preserve">
+    <value>Логироовать в файл</value>
+  </data>
+  <data name="Param_EndW" xml:space="preserve">
+    <value>Закончить на</value>
+  </data>
+  <data name="Param_SMURange.Text" xml:space="preserve">
+    <value>Применить диапазон команд SMU</value>
+  </data>
+  <data name="Param_SMURangeDesc.Text" xml:space="preserve">
+    <value>Применяет диапазон значений в определённыый адрес SMU</value>
+  </data>
+  <data name="Param_Start" xml:space="preserve">
+    <value>Начать с</value>
+  </data>
+  <data name="Apply_Success" xml:space="preserve">
+    <value>Значения применены успешно!</value>
+  </data>
+  <data name="Apply_Success_Desc" xml:space="preserve">
+    <value>Все значения применены без ошибок</value>
+  </data>
+  <data name="Apply_Warn" xml:space="preserve">
+    <value>Значения применены с ошибками!</value>
+  </data>
+  <data name="Apply_Warn_Desc" xml:space="preserve">
+    <value>Вы применили параметры, но без:</value>
+  </data>
+  <data name="Param_CPU_c7.Text" xml:space="preserve">
+    <value>Максимальная температура cHTC (C)</value>
+  </data>
+  <data name="Param_a14_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Расширенный разгон
+Это свойство процессора, которое
+позволяет изменять его дополнительные
+параметры разгона. Без него параметры 
+этой секции будут проигнорированы</value>
+  </data>
+  <data name="Param_a15_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Множитель PBO
+Увеличение множителя PBO 
+увеличит температуру процессора 
+и будет более агрессивно поддерживать 
+ускоренные частоты, возможно, 
+при более высоком напряжении
+CPU VID
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_ADV_a13_E.Content" xml:space="preserve">
+    <value>Энергоэффективность</value>
+  </data>
+  <data name="Param_ADV_a13_U.Content" xml:space="preserve">
+    <value>Макс. производительность</value>
+  </data>
+  <data name="Param_ADV_a14.Text" xml:space="preserve">
+    <value>Расширенный разгон</value>
+  </data>
+  <data name="Param_ADV_a14_A.Content" xml:space="preserve">
+    <value>Авто/Выключено</value>
+  </data>
+  <data name="Param_ADV_a14_E.Content" xml:space="preserve">
+    <value>Режим разгона</value>
+  </data>
+  <data name="Param_ADV_a15.Text" xml:space="preserve">
+    <value>Множитель PBO</value>
+  </data>
+  <data name="Param_g11_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальная частота CPU
+Этим параметром вы можете
+задать минимальную частоту CPU.
+Далеко не 100% что это будет работать 
+учтите, что высокие значения 
+процессору тяжелее держать
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_g12_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальная частота CPU
+Этим параметром вы можете
+задать максимальную частоту CPU.
+Далеко не 100% что это будет работать 
+учтите, что высокие значения 
+процессору тяжелее держать
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_g13_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Минимальный объём VRAM iGPU
+Задав минимальный объем видеопамяти 
+этим параметров, iGPU не будет потреблять 
+меньше видеопамяти чем указанное значение.
+Далеко не 100% что это будет работать 
+учтите, что высокие значения имеют больший
+шанс быть проигнорированными
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_g14_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Максимальный объём VRAM iGPU
+Задав максимальный объем видеопамяти 
+этим параметров, iGPU не будет потреблять 
+больше видеопамяти чем указанное значение.
+Далеко не 100% что это будет работать 
+учтите, что низкие значения могут привести к
+крашу системы или видеокарты
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_g15_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Фиксировать частоту dGPU
+Вы можете заставить работать dGPU 
+на одном из состояний. Это работает 
+далеко не со всеми видеокартами и 
+не всегда есть эффект от этого.
+Если вы хотите выключить эту 
+функцию - поставьте на авто и примените, затем 
+отключайте
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_g16_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Исправление 0,4 ГГц
+Этот параметр поможет пользователям,
+у которых возникает 0,4 ГГц всегда или 
+иногда. Эта настройка переключит процессор
+в режим RAM-States, в котором его частота
+будет кратна частоте ОЗУ, а также частота
+его подсистем, включая iGPU. К сожалению,
+это единственный способ это исправить и
+в нём нет никаких настроек частоты, поэтому
+максимальная производительность даст вам 
+2400 МГц на процессоре и 1000 МГц на iGPU,
+что уже лучше чем 400 МГц. Остальные состояния
+нужны для тестов, если вы хотите выключить эту 
+функцию - поставьте на авто и примените, затем 
+отключайте</value>
+  </data>
+  <data name="Param_GPU_g11.Text" xml:space="preserve">
+    <value>Минимальная частота CPU (MHz)</value>
+  </data>
+  <data name="Param_GPU_g12.Text" xml:space="preserve">
+    <value>Максимальная частота CPU (MHz)</value>
+  </data>
+  <data name="Param_GPU_g13.Text" xml:space="preserve">
+    <value>Минимальный объём VRAM iGPU (MB)</value>
+  </data>
+  <data name="Param_GPU_g14.Text" xml:space="preserve">
+    <value>Максимальный объём VRAM iGPU (MB)</value>
+  </data>
+  <data name="Param_GPU_g15.Text" xml:space="preserve">
+    <value>Фиксировать частоту dGPU (Состояние)</value>
+  </data>
+  <data name="Param_GPU_g16.Text" xml:space="preserve">
+    <value>Исправление 0,4 ГГц CPU (Состояние)</value>
+  </data>
+  <data name="Param_GPU_State0.Content" xml:space="preserve">
+    <value>Состояние 0</value>
+  </data>
+  <data name="Param_GPU_State1.Content" xml:space="preserve">
+    <value>Состояние 1</value>
+  </data>
+  <data name="Param_GPU_State2.Content" xml:space="preserve">
+    <value>Состояние 2</value>
+  </data>
+  <data name="Param_GPU_State3.Content" xml:space="preserve">
+    <value>Состояние 3</value>
+  </data>
+  <data name="Param_GPU_State4.Content" xml:space="preserve">
+    <value>Состояние 4</value>
+  </data>
+  <data name="Param_GPU_State5.Content" xml:space="preserve">
+    <value>Состояние 5</value>
+  </data>
+  <data name="Param_GPU_State6.Content" xml:space="preserve">
+    <value>Состояние 6</value>
+  </data>
+  <data name="Param_Super_heavywarn" xml:space="preserve">
+    <value>ВНИМАНИЕ! СУПЕР ОПАСНАЯ ЗОНА!</value>
+  </data>
+  <data name="Param_v10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Стабильность напряжения
+Отвечает за стабильность подаваемого
+напряжения, в отличие от дискреции, 
+этот параметр абсолютно безопасен и
+не может привести к неисправимым
+последствиям
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_v8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Множитель напряжения
+Отвечает за коэффициент умножения
+базового напряжения. ЕГО ИЗМЕНЕНИЕ
+МОЖЕТ ПРИВЕСТИ К САМЫМ ОПАСНЫМ
+ПОСЛЕДСТВИЯМ, Я НЕ ОТВЕЧАЮ ЗА 
+ПОСЛЕДСТВИЯ!
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_v9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Дискреция напряжения
+Отвечает за резкие изменения
+напряжения процессора. ЕГО ИЗМЕНЕНИЕ
+МОЖЕТ ПРИВЕСТИ К САМЫМ ОПАСНЫМ
+ПОСЛЕДСТВИЯМ, Я НЕ ОТВЕЧАЮ ЗА 
+ПОСЛЕДСТВИЯ!
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_Voltage_warn_heavy" xml:space="preserve">
+    <value>ЭТИ ИЗМЕНЕНИЯ
+МОГУТ ПРИВЕСТИ К САМЫМ ОПАСНЫМ
+ПОСЛЕДСТВИЯМ, Я НЕ ОТВЕЧАЮ ЗА 
+ПОСЛЕДСТВИЯ!
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ!
+ЭТИ НАСТРОЙКИ РЕАЛЬНО МОГУТ
+СЖЕЧЬ ВАШ ПРОЦЕССОР! ПРОДОЛЖАЙТЕ
+ТОЛЬКО ЕСЛИ ВЫ ЗНАЕТЕ, ЧТО ВЫ ДЕЛАЕТЕ!</value>
+  </data>
+  <data name="Param_VRM_v10.Text" xml:space="preserve">
+    <value>Стабильность напряжения</value>
+  </data>
+  <data name="Param_VRM_v8.Text" xml:space="preserve">
+    <value>Множитель напряжения</value>
+  </data>
+  <data name="Param_VRM_v9.Text" xml:space="preserve">
+    <value>Дискреция напряжения</value>
+  </data>
+  <data name="DeleteSuccessDesc" xml:space="preserve">
+    <value>Вы успешно навсегда удалили пресет </value>
+  </data>
+  <data name="DeleteSuccessTitle" xml:space="preserve">
+    <value>Пресет удалён</value>
+  </data>
+  <data name="Edit_TargetSubtitle" xml:space="preserve">
+    <value>Вы изменили имя пресета</value>
+  </data>
+  <data name="Edit_TargetTitle" xml:space="preserve">
+    <value>Изменение успешно!</value>
+  </data>
+  <data name="SaveSuccessDesc" xml:space="preserve">
+    <value>Вы успешно добавили новый пресет</value>
+  </data>
+  <data name="SaveSuccessTitle" xml:space="preserve">
+    <value>Новый пресет добавлен</value>
+  </data>
+  <data name="Settings_AppBeh.Text" xml:space="preserve">
+    <value>Поведение приложения</value>
+  </data>
+  <data name="Settings_Apply_Start.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="Settings_Apply_Start.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="Settings_AppStart.Text" xml:space="preserve">
+    <value>Параметры запуска</value>
+  </data>
+  <data name="Settings_Auto_Reapply.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="Settings_Auto_Reapply.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="Settings_Start_MiniBoot.Content" xml:space="preserve">
+    <value>Автозапуск в трее</value>
+  </data>
+  <data name="Settings_Start_Nothing.Content" xml:space="preserve">
+    <value>Без автостарта и трея</value>
+  </data>
+  <data name="Shell_Activate" xml:space="preserve">
+    <value>Активировать</value>
+  </data>
+  <data name="Shell_CustomProfiles" xml:space="preserve">
+    <value>Свои пресеты</value>
+  </data>
+  <data name="Shell_DeActivate" xml:space="preserve">
+    <value>Активен</value>
+  </data>
+  <data name="Shell_PremadedProfiles" xml:space="preserve">
+    <value>Готовые пресеты</value>
+  </data>
+  <data name="Shell_Preset_Balance" xml:space="preserve">
+    <value>Баланс</value>
+  </data>
+  <data name="Shell_Preset_Eco" xml:space="preserve">
+    <value>Эко</value>
+  </data>
+  <data name="Shell_Preset_Max" xml:space="preserve">
+    <value>Максимум</value>
+  </data>
+  <data name="Shell_Preset_Min" xml:space="preserve">
+    <value>Минимум</value>
+  </data>
+  <data name="Shell_Preset_Speed" xml:space="preserve">
+    <value>Скорость</value>
+  </data>
+  <data name="AppNotificationCrash_CPU" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;IO Драйвер не загружен&lt;/text&gt;
+      &lt;text&gt;Приложение не будет работать. Windows блокирует замену драйвера CPU. Проверьте вашу Windows или отключите Secure boot в BIOS и "Изоляцию ядва" в приложении Безопасность windows&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="Rerun app" arguments="action=Settings"/&gt;
+    &lt;action content="Get help" arguments="action=Message"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="ThemeAdvanced.Header" xml:space="preserve">
+    <value>Расширенные параметры темы</value>
+  </data>
+  <data name="ThemeAdvanced.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="ThemeAdvanced.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="ThemeChangeBgText.Text" xml:space="preserve">
+    <value>Изменить фон</value>
+  </data>
+  <data name="ThemeCustomBg.Header" xml:space="preserve">
+    <value>Использовать свой фон</value>
+  </data>
+  <data name="ThemeCustomBg.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="ThemeCustomBg.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="ThemeManager.Text" xml:space="preserve">
+    <value>Менеджер тем</value>
+  </data>
+  <data name="ThemeMaskOpacity.Header" xml:space="preserve">
+    <value>Прозрачность маски</value>
+  </data>
+  <data name="ThemeOpacity.Header" xml:space="preserve">
+    <value>Прозрачность фона</value>
+  </data>
+  <data name="Theme_Clouds" xml:space="preserve">
+    <value>Облака</value>
+  </data>
+  <data name="Theme_Coffee" xml:space="preserve">
+    <value>Кофе</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Тёмная</value>
+  </data>
+  <data name="Theme_Default" xml:space="preserve">
+    <value>Системная</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Светлая</value>
+  </data>
+  <data name="Theme_Neon" xml:space="preserve">
+    <value>Неон</value>
+  </data>
+  <data name="Theme_Raspberry" xml:space="preserve">
+    <value>Малина</value>
+  </data>
+  <data name="Theme_Sand" xml:space="preserve">
+    <value>Пустыня</value>
+  </data>
+  <data name="ThemeBgDialog" xml:space="preserve">
+    <value>Изменить фон темы</value>
+  </data>
+  <data name="ThemeBgFromFile" xml:space="preserve">
+    <value>Фон из файла</value>
+  </data>
+  <data name="ThemeBgFromFileWhy" xml:space="preserve">
+    <value>Выберите файл любого фото. Не удаляйте файл! GIF анимированы но с высокой нагрузкой на GPU</value>
+  </data>
+  <data name="ThemeBgFromURL" xml:space="preserve">
+    <value>Фон из ссылки</value>
+  </data>
+  <data name="ThemeBgFromURLWhy" xml:space="preserve">
+    <value>Выберите ссылку на любое фото. Не работает без интернета! GIF анимированы но с высокой нагрузкой на GPU</value>
+  </data>
+  <data name="ThemeBgOr" xml:space="preserve">
+    <value>или</value>
+  </data>
+  <data name="ThemeDone" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="ThemeError" xml:space="preserve">
+    <value>Ошибка темы </value>
+  </data>
+  <data name="ThemeManagerTitle" xml:space="preserve">
+    <value>Менеджер тем</value>
+  </data>
+  <data name="ThemeNotFoundBg" xml:space="preserve">
+    <value>Фон темы не найден. Проверьте путь фона или измените его на другой</value>
+  </data>
+  <data name="ThemeSelect" xml:space="preserve">
+    <value>Установить фон</value>
+  </data>
+  <data name="ThemeNewName" xml:space="preserve">
+    <value>Новое имя...</value>
+  </data>
+  <data name="ThemeOpCancel" xml:space="preserve">
+    <value>Действие отменено или файл не выбран</value>
+  </data>
+  <data name="ThemePickedFile" xml:space="preserve">
+    <value>Выбранное фото: </value>
+  </data>
+  <data name="ThemeTypeFile" xml:space="preserve">
+    <value>Поддерживаются только .gif, .png, .jpg, .jpeg, .bmp!</value>
+  </data>
+  <data name="ThemeUnknownNewFile" xml:space="preserve">
+    <value>Новый файл!</value>
+  </data>
+  <data name="Param_CCD1_CO_Section.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для отдельных ядер</value>
+  </data>
+  <data name="Param_CCD1_CO_Section_desc.Text" xml:space="preserve">
+    <value>Настройте кривую частоты-напряжения для ядер 0-7</value>
+  </data>
+  <data name="Param_CCD2_CO_Section.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для отдельных ядер+</value>
+  </data>
+  <data name="Param_CCD2_CO_Section_desc.Text" xml:space="preserve">
+    <value>Настройте кривую частоты-напряжения для ядер 8-15</value>
+  </data>
+  <data name="Param_CO_O1.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для всех ядер (CO)</value>
+  </data>
+  <data name="Param_CO_O2.Text" xml:space="preserve">
+    <value>Оптимизатор кривой iGPU (CO)</value>
+  </data>
+  <data name="Param_CO_Section.Text" xml:space="preserve">
+    <value>Оптимизатор кривой</value>
+  </data>
+  <data name="Param_CO_Section_desc.Text" xml:space="preserve">
+    <value>Настройте кривую частоты-напряжения для всех ядер</value>
+  </data>
+  <data name="Param_O1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Оптимизатор кривой для всех ядер
+С помощью этой функции вы можете 
+регулировать кривую вольт-частотной 
+характеристики процессора, что 
+позволит вам повысить 
+энергоэффективность или увеличить 
+производительность вашего устройства.
+Учтите, ЧТО Я НЕ НЕСУ ОТВЕТСТВЕННОСТИ
+ЗА ПОВРЕЖДЁННЫЕ НОУТБУКИ! Здесь
+установлены безопасные лимиты, однако,
+если вы заметите любую нестабильность, 
+срочно уменьшите её изменение и 
+сделайте ближе к нулю.
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_O2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Оптимизатор кривой iGPU
+С помощью этой функции вы можете 
+регулировать кривую вольт-частотной 
+характеристики встроенной видеокарты,
+что позволит вам повысить 
+энергоэффективность или увеличить 
+производительность вашего устройства.
+Учтите, ЧТО Я НЕ НЕСУ ОТВЕТСТВЕННОСТИ
+ЗА ПОВРЕЖДЁННЫЕ НОУТБУКИ! Здесь
+установлены безопасные лимиты, однако,
+если вы заметите любую нестабильность, 
+срочно уменьшите её изменение и 
+сделайте ближе к нулю. Если на экране
+появились любые артефакты - ОТКАЖИТЕСЬ
+от использования этого параметра.
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="Param_CO_CCD1_1.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 0 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_2.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 1 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_3.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 2 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_4.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 3 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_5.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 4 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_6.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 5 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_7.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 6 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_8.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 7 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_1.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 8 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_2.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 9 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_3.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 10 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_4.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 11 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_5.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 12 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_6.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 13 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_7.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 14 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_8.Text" xml:space="preserve">
+    <value>Оптимизатор кривой для ядра 15 (CO)</value>
+  </data>
+  <data name="Param_CO_CCD_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Оптимизатор кривой для отдельного ядра
+С помощью этой функции вы можете 
+регулировать кривую вольт-частотной 
+характеристики процессора, для каждого
+отдельного ядра, если вы не включили
+какое-то ядро - оно не будет затронуто при 
+изменении, эти изменения позволят вам 
+повысить энергоэффективность или 
+увеличить производительность вашего 
+устройства. Эти настройки важнее чем 
+оптимизатор кривой для всех ядер или
+для iGPU, поэтому при включенных этих 
+параметрах, от параметров для всех
+ядер и iGPU толку не будет и они будут
+проигнорированы. Учтите, ЧТО Я НЕ НЕСУ 
+ОТВЕТСТВЕННОСТИ ЗА ПОВРЕЖДЁННЫЕ 
+НОУТБУКИ! Здесь установлены безопасные 
+лимиты, однако, если вы заметите любую 
+нестабильность, срочно уменьшите её 
+изменение и сделайте ближе к нулю.
+НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
+  </data>
+  <data name="TraceIt_Error" xml:space="preserve">
+    <value>Система TraceIt! - Кажется что-то пошло не так:</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode.Text" xml:space="preserve">
+    <value>A+A Режим производительности</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode_Desc.Text" xml:space="preserve">
+    <value>Максимальная производительность на iGPU + dGPU устройствах</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>A+A Режим производительности
+Это функция SMU, которая
+включает или выключает A+A 
+режим производительности. Он уже
+включен на AMD iGPU и AMD
+dGPU устройствах, но его можно
+также включить на других устройствах
+с dGPU и даже на устройствах без него.
+Рекоммендация - включить</value>
+  </data>
+  <data name="Param_SMU_Func_All.Text" xml:space="preserve">
+    <value>Настройки функций SMU</value>
+  </data>
+  <data name="Param_SMU_Func_All_Desc.Text" xml:space="preserve">
+    <value>Включить или выключить эту секцию настроек</value>
+  </data>
+  <data name="Param_SMU_Func_All_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Настройки функций SMU
+наведите курсор на эти кнопки 
+чтобы узнать детальную информацию. 
+Учтите, что все функции действуют до 
+перезагрузки, а некоторые до спящего 
+режима или подключения зарядки.</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK.Text" xml:space="preserve">
+    <value>Контроллер частот CPU</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK_Desc.Text" xml:space="preserve">
+    <value>Поведение частоты процессора</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Контроллер частот CPU
+Это функция SMU, которая
+включает или выключает
+контроллер частоты процессора
+Если выключено, то процессор 
+работает в фиксированном
+режиме с частотой близкой к 
+1600 МГц всегда, до включения.
+Рекоммендация - включить</value>
+  </data>
+  <data name="Param_SMU_Func_CStates.Text" xml:space="preserve">
+    <value>Состояния C-States</value>
+  </data>
+  <data name="Param_SMU_Func_CStates_Desc.Text" xml:space="preserve">
+    <value>Поможет сохранить проценты батареи</value>
+  </data>
+  <data name="Param_SMU_Func_CStates_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Состояния C-States
+Это функция SMU, которая
+включает или выключает 
+C-States в процессоре. 
+Если выключено - C-States 
+будут выключен. И процессор
+будет всегда работать на 
+P-States. Важно отметить: 
+На Renoir (4000) и выше
+это отключит только C6-State.
+Рекоммендация - отключить</value>
+  </data>
+  <data name="Param_SMU_Func_DATA.Text" xml:space="preserve">
+    <value>Датчики Power Table</value>
+  </data>
+  <data name="Param_SMU_Func_DATA_Desc.Text" xml:space="preserve">
+    <value>Обновление значений датчиков по всей системе</value>
+  </data>
+  <data name="Param_SMU_Func_DATA_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Датчики Power Table
+Это функция SMU, которая
+включает или выключает
+контроллер датчиков системы. 
+Если выключено, то все датчики
+системы не будут обновляться и 
+Power Table, пока эта функция не 
+будет включена обратно.
+Рекоммендация - включить</value>
+  </data>
+  <data name="Param_SMU_Func_Desc.Text" xml:space="preserve">
+    <value>Управляйте функциями вашего SMU</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty.Text" xml:space="preserve">
+    <value>Энергосбережение iGPU</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty_Desc.Text" xml:space="preserve">
+    <value>Сохранит iGPU максимально холодным</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Энергосбережение iGPU
+Это функция SMU, которая
+включает или выключает 
+APU GFX Duty cycle. Это работает
+также как и "Снижение мощности",
+чтобы ограничить iGPU лимитом 
+мощности.
+Рекоммендация - отключить</value>
+  </data>
+  <data name="Param_SMU_Func_PLL.Text" xml:space="preserve">
+    <value>Снижение мощности</value>
+  </data>
+  <data name="Param_SMU_Func_PLL_Desc.Text" xml:space="preserve">
+    <value>Снижать мощность для соответствия TDP</value>
+  </data>
+  <data name="Param_SMU_Func_PLL_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Снижение мощности
+Это функция SMU, которая
+включает или выключает
+контроллер пределов для 
+лимитов мощности в системе. 
+Если выключено, то процессор,
+сможет всегда работать на 
+выставленных в Saku Overclock 
+мощностях без особых снижений. 
+Рекоммендация - включить </value>
+  </data>
+  <data name="Param_SMU_Func_PPT.Text" xml:space="preserve">
+    <value>Лимиты мощности</value>
+  </data>
+  <data name="Param_SMU_Func_PPT_Desc.Text" xml:space="preserve">
+    <value>Ограничение мощности для эффективной производительности</value>
+  </data>
+  <data name="Param_SMU_Func_PPT_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимиты мощности
+Это функция SMU, которая
+включает или выключает
+контроллер лимитов мощности 
+в системе. Если выключено, то 
+процессор, сможет всегда работать
+без ограничений мощности, даже 
+выставленных в Saku Overclock 
+мощностях без снижений. 
+Рекоммендация - включить  </value>
+  </data>
+  <data name="Param_SMU_Func_Prochot.Text" xml:space="preserve">
+    <value>Сигнал Prochot</value>
+  </data>
+  <data name="Param_SMU_Func_Prochot_Desc.Text" xml:space="preserve">
+    <value>Управляйте сигналом Prochot для устранения проблем</value>
+  </data>
+  <data name="Param_SMU_Func_Prochot_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Сигнал Prochot
+Это функция SMU, которая
+включает или выключает
+сигнал Prochot в системе. Если 
+выключено, то сигнал prochot 
+будет выключен, до первого
+фатального момента, на нём
+ноутбук крашнет и зависнет.
+Рекоммендация - включить
+И НЕ ТРОГАТЬ ЭТОТ ПАРАМЕТР</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM.Text" xml:space="preserve">
+    <value>Лимит мощности STAPM</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM_Desc.Text" xml:space="preserve">
+    <value>Получите больше производительности без ограничений частоты</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимит мощности STAPM
+Это функция SMU, которая
+включает или выключает
+лимит мощности STAPM
+в системе. Если выключено, то 
+процессор, сможет работать
+без ограничений STAPM, даже 
+выставленных в Saku Overclock 
+мощности STAPM, при этом
+без снижений частоты. 
+Рекоммендация - отключить</value>
+  </data>
+  <data name="Param_SMU_Func_TDC.Text" xml:space="preserve">
+    <value>Лимиты тока</value>
+  </data>
+  <data name="Param_SMU_Func_TDC_Desc.Text" xml:space="preserve">
+    <value>Ограничения по току зоны VRM</value>
+  </data>
+  <data name="Param_SMU_Func_TDC_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимиты тока
+Это функция SMU, которая
+включает или выключает
+контроллер токов VRM. 
+Если выключено, то все 
+токи, выставленные в Saku
+Overclock будут проигнорированы,
+а все лимиты по току TDC будут 
+сняты с VRM до включения.
+Рекоммендация - отключить</value>
+  </data>
+  <data name="Param_SMU_Func_Text.Text" xml:space="preserve">
+    <value>Менеджер функций SMU</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal.Text" xml:space="preserve">
+    <value>Контроль температур</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal_Desc.Text" xml:space="preserve">
+    <value>Ограничение температур в системе</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Контроль температур
+Это функция SMU, которая
+включает или выключает
+контроллер температур в системе. 
+Если выключено, то температура,
+выставленная в Saku Overclock 
+будет проигнорирована,
+а все лимиты по температуре
+будут сняты с процессора и его
+подсистем до включения функции. 
+Рекоммендация - включить
+И НЕ ТРОГАТЬ ЭТОТ ПАРАМЕТР</value>
+  </data>
+  <data name="Settings_Auto_Updates.Header" xml:space="preserve">
+    <value>Автоматически проверять обновления на старте</value>
+  </data>
+  <data name="Settings_Auto_Updates.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="Settings_Auto_Updates.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="Settings_Reapply_Safe.Header" xml:space="preserve">
+    <value>Автоприменять только безопасные параметры</value>
+  </data>
+  <data name="Settings_Reapply_Safe.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="Settings_Reapply_Safe.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="ThemeLight.Header" xml:space="preserve">
+    <value>Тип темы</value>
+  </data>
+  <data name="ThemeLight.OffContent" xml:space="preserve">
+    <value>Тёмная</value>
+  </data>
+  <data name="ThemeLight.OnContent" xml:space="preserve">
+    <value>Светлая</value>
+  </data>
+  <data name="infoAFREQCPU.Text" xml:space="preserve">
+    <value>Частота</value>
+  </data>
+  <data name="infoAGHZ" xml:space="preserve">
+    <value>ГГц</value>
+  </data>
+  <data name="infoAVOLTCPU.Text" xml:space="preserve">
+    <value>Напряжение</value>
+  </data>
+  <data name="InfoCPU.Text" xml:space="preserve">
+    <value>ЦП</value>
+  </data>
+  <data name="InfoBATSectionName" xml:space="preserve">
+    <value>Батарея</value>
+  </data>
+  <data name="InfoCPUSectionName" xml:space="preserve">
+    <value>ЦП</value>
+  </data>
+  <data name="InfoGPUSectionName" xml:space="preserve">
+    <value>ГП</value>
+  </data>
+  <data name="InfoRAMSectionName" xml:space="preserve">
+    <value>ОЗУ</value>
+  </data>
+</root>

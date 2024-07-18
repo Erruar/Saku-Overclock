@@ -1,0 +1,2090 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>Saku Overclock</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Saku Overclock</value>
+  </data>
+  <data name="Shell_Главная.Content" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Shell_Пресеты.Content" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="Shell_Параметры.Content" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="Shell_Информация.Content" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Settings_Personalization.Text" xml:space="preserve">
+    <value>Personalization</value>
+  </data>
+  <data name="Settings_Theme.Text" xml:space="preserve">
+    <value>Theme of the application</value>
+  </data>
+  <data name="Settings_Theme_Light.Content" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Settings_Theme_Dark.Content" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Settings_Theme_Default.Content" xml:space="preserve">
+    <value>System default</value>
+  </data>
+  <data name="Settings_About.Text" xml:space="preserve">
+    <value>About us</value>
+  </data>
+  <data name="Settings_AboutDescription.Text" xml:space="preserve">
+    <value>Application for overclocking Ryzen processors on laptops</value>
+  </data>
+  <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
+    <value>All rights are reserved by GPL license</value>
+  </data>
+  <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
+    <value>https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md</value>
+  </data>
+  <data name="AppNotificationSamplePayload" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;Overclock started!&lt;/text&gt;
+      &lt;text&gt;&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="Settings" arguments="action=Settings"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="Shell_Settings.Content" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Shell_Кулер.Content" xml:space="preserve">
+    <value>Cooler</value>
+  </data>
+  <data name="AppNotificationEco" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;Eco mode applyed!&lt;/text&gt;
+      &lt;text&gt;&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/noteco.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="Settings" arguments="action=Settings"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="Cooler_Config.Text" xml:space="preserve">
+    <value>Saved configs:</value>
+  </data>
+  <data name="Cooler_Current_Fan.Text" xml:space="preserve">
+    <value>Current speed: </value>
+  </data>
+  <data name="Cooler_Fan.Header" xml:space="preserve">
+    <value>Target speed:</value>
+  </data>
+  <data name="Cooler_Name.Text" xml:space="preserve">
+    <value>Cooler tweaks</value>
+  </data>
+  <data name="Cooler_Service.Text" xml:space="preserve">
+    <value>Fan control service status:</value>
+  </data>
+  <data name="Cooler_Service_Disabled.Text" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="Cooler_Service_Enabled.Text" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Cooler_Service_Read.Text" xml:space="preserve">
+    <value>Read only</value>
+  </data>
+  <data name="Cooler_Temp.Text" xml:space="preserve">
+    <value>Current CPU temperature: </value>
+  </data>
+  <data name="Info_Autoupdate.Content" xml:space="preserve">
+    <value>Refresh every (Milliseconds)</value>
+  </data>
+  <data name="Info_Name.Text" xml:space="preserve">
+    <value>CPU Information</value>
+  </data>
+  <data name="Info_Refresh.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Info_Text.Text" xml:space="preserve">
+    <value>- Setted sustained power limit CPU (W)
+- Current sustained power limit CPU (W)
+- Setted actual power limit CPU (W)
+- Current actual power limit CPU (W)  
+- Setted average power limit CPU (W) 
+- Current average power limit CPU (W) 
+- Time of fast frequency rise (S) 
+- Time of slow frequency rise (S) 
+- Average power limit of fast frequency rise (W) 
+- Average power limit of slow frequency rise (W) 
+- Setted VRM Max TDC (A)
+- Current VRM Max TDC (A)
+- Setted SoC Max TDC (A)
+- Current SoC Max TDC (A)
+- Setted VRM Max EDC (A) 
+- Current VRM Max EDC (A) 
+- Setted VRM SoC Max EDC (A) 
+- Current VRM SoC Max EDC (A) 
+- Setted maximum CPU temperature (C) 
+- Current CPU temperature (C) 
+- Setted maximum iGPU temperature (C) 
+- Current maximum iGPU temperature (C) 
+- Setted maximum dGPU temperature (C)  
+- Current maximum dGPU temperature(C) 
+- The percentage of CPU usage when frequency reduction begins (%)  
+- Current CPU usage (%)</value>
+  </data>
+  <data name="Param_CPU.Text" xml:space="preserve">
+    <value>CPU Overclocking</value>
+  </data>
+  <data name="Param_CPU_c2.Text" xml:space="preserve">
+    <value>Sustained Power Limit (W)</value>
+  </data>
+  <data name="Param_CPU_c3.Text" xml:space="preserve">
+    <value>Actual Power Limit (W)</value>
+  </data>
+  <data name="Param_CPU_c4.Text" xml:space="preserve">
+    <value>Average Power Limit (W)</value>
+  </data>
+  <data name="Param_CPU_c5.Text" xml:space="preserve">
+    <value>Time of slow frequency rise (S)</value>
+  </data>
+  <data name="Param_Name.Text" xml:space="preserve">
+    <value>Overclocking parameters</value>
+  </data>
+  <data name="Param_Preset.Text" xml:space="preserve">
+    <value>Saved presets:</value>
+  </data>
+  <data name="Settings_Apply_Start.Header" xml:space="preserve">
+    <value>Autoapply latest settings when opening</value>
+  </data>
+  <data name="Settings_Auto_Reapply.Header" xml:space="preserve">
+    <value>Reapply latest settings every (S)</value>
+  </data>
+  <data name="Settings_Name.Text" xml:space="preserve">
+    <value>Settings page</value>
+  </data>
+  <data name="Settings_Start_Boot.Content" xml:space="preserve">
+    <value>Startup with OS</value>
+  </data>
+  <data name="Settings_Start_Mini.Content" xml:space="preserve">
+    <value>Hide to tray</value>
+  </data>
+  <data name="Main_Disc.Text" xml:space="preserve">
+    <value>Discord</value>
+  </data>
+  <data name="Main_Info.Text" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Main_Param.Text" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="Main_Preset.Text" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="Main_Welcome.Text" xml:space="preserve">
+    <value>Welcome to</value>
+  </data>
+  <data name="Main_Welcome_1.Text" xml:space="preserve">
+    <value>For those who want real performance!</value>
+  </data>
+  <data name="Param_Apply.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Apply values
+You can apply all enabled
+values by clicking at this button</value>
+  </data>
+  <data name="Param_CPU_c1.Text" xml:space="preserve">
+    <value>Maximum CPU temperature (C)</value>
+  </data>
+  <data name="Param_CPU_c6.Text" xml:space="preserve">
+    <value>Time of fast frequency rise (S)</value>
+  </data>
+  <data name="Param_CPU_Recommend.Text" xml:space="preserve">
+    <value>Recommendation:     Balance                 Performance</value>
+  </data>
+  <data name="Param_Delete.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Delete preset
+You can easily delete
+preset by clicking
+at this button</value>
+  </data>
+  <data name="Param_GPU_g1.Text" xml:space="preserve">
+    <value>Minimum SoC clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g10.Text" xml:space="preserve">
+    <value>Maximum iGPU clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g2.Text" xml:space="preserve">
+    <value>Maximum SoC clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g3.Text" xml:space="preserve">
+    <value>Minimum Infinity Fabric clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g4.Text" xml:space="preserve">
+    <value>Maximum Infinity Fabric clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g5.Text" xml:space="preserve">
+    <value>Minimum VCE clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g6.Text" xml:space="preserve">
+    <value>Maximum VCE clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g7.Text" xml:space="preserve">
+    <value>Minimum Data Latch clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g8.Text" xml:space="preserve">
+    <value>Maximum Data Latch clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_g9.Text" xml:space="preserve">
+    <value>Minimum iGPU clock (MHz)</value>
+  </data>
+  <data name="Param_GPU_Ram.Text" xml:space="preserve">
+    <value>                                       Your RAM frequency</value>
+  </data>
+  <data name="Param_GPU_Recommend.Text" xml:space="preserve">
+    <value>Recommendation:    Balance                Performance</value>
+  </data>
+  <data name="Param_GPU_Text.Text" xml:space="preserve">
+    <value>iGPU and CPU subsystem clocks</value>
+  </data>
+  <data name="Param_New.Text" xml:space="preserve">
+    <value>Create new preset:</value>
+  </data>
+  <data name="Param_Save_Preset.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Add new preset
+You can add new preset
+and add in it your values.
+All presets have autosaving</value>
+  </data>
+  <data name="Param_VRM_desc.Text" xml:space="preserve">
+    <value>Recommendation:     Balance                 Performance</value>
+  </data>
+  <data name="Param_VRM_Name.Text" xml:space="preserve">
+    <value>VRM Tuning</value>
+  </data>
+  <data name="Param_VRM_v1.Text" xml:space="preserve">
+    <value>VRM Maximum EDC (A)</value>
+  </data>
+  <data name="Param_VRM_v2.Text" xml:space="preserve">
+    <value>VRM Maximum TDC (A)</value>
+  </data>
+  <data name="Param_VRM_v3.Text" xml:space="preserve">
+    <value>SoC Maximum EDC (A)</value>
+  </data>
+  <data name="Param_VRM_v4.Text" xml:space="preserve">
+    <value>SoC Maximum TDC (A)</value>
+  </data>
+  <data name="Param_VRM_v5.Text" xml:space="preserve">
+    <value>PCI VDD Maximum EDC (A)</value>
+  </data>
+  <data name="Param_VRM_v6.Text" xml:space="preserve">
+    <value>PCI SoC Maximum EDC (A)</value>
+  </data>
+  <data name="Param_VRM_v7.Text" xml:space="preserve">
+    <value>Restore Frequency time (mS)</value>
+  </data>
+  <data name="Preset_Balance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Preset_Balance_Desc" xml:space="preserve">
+    <value>This preset will allow your
+processor to be powerful without
+wasting many percent of the
+battery</value>
+  </data>
+  <data name="Preset_Balance_Name.Text" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Preset_Eco" xml:space="preserve">
+    <value>Eco</value>
+  </data>
+  <data name="Preset_Eco_Desc" xml:space="preserve">
+    <value>This preset will save you battery
+percentage, without significant
+loss of performance.</value>
+  </data>
+  <data name="Preset_Eco_Name.Text" xml:space="preserve">
+    <value>Eco</value>
+  </data>
+  <data name="Preset_Max" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="Preset_Max_Desc" xml:space="preserve">
+    <value>This preset will unlock the maximum
+of your processor and remove all it`s
+limitations!</value>
+  </data>
+  <data name="Preset_Max_Name.Text" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="Preset_Min" xml:space="preserve">
+    <value>Minimum</value>
+  </data>
+  <data name="Preset_Min_Desc" xml:space="preserve">
+    <value>This preset will allow your
+processor to be really cold!</value>
+  </data>
+  <data name="Preset_Min_Name.Text" xml:space="preserve">
+    <value>Minimum</value>
+  </data>
+  <data name="Preset_Name.Text" xml:space="preserve">
+    <value>Premaded presets</value>
+  </data>
+  <data name="Preset_Speed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="Preset_Speed_Desc" xml:space="preserve">
+    <value>This preset will allow you to be
+more productive due to improved
+performance</value>
+  </data>
+  <data name="Preset_Speed_Name.Text" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="Cooler_Current_Fan_Val" xml:space="preserve">
+    <value>Current speed:</value>
+  </data>
+  <data name="Cooler_Temp_Val" xml:space="preserve">
+    <value>Current CPU temperature:</value>
+  </data>
+  <data name="Info_Text.ToolTipService.ToolTip" xml:space="preserve">
+    <value>About the Setted and Current values: Setted is the value that you set in the program for the processor. Theoretically, the processor should reach it under load. Current is the value that shows the current value of this parameter right now</value>
+  </data>
+  <data name="Tray_Inforfation" xml:space="preserve">
+    <value>Inforfation</value>
+  </data>
+  <data name="Tray_Parameters" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="Tray_Presets" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="Tray_Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="Tray_Saku_Overclock" xml:space="preserve">
+    <value>Saku Overclock</value>
+  </data>
+  <data name="Tray_Show" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="Param_Edit_Preset.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Edit preset name
+To change it, just write the desired 
+value in the text field and click on button</value>
+  </data>
+  <data name="Param_c1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum temperature
+With this value, you can limit
+the processor by temperature, above
+this value it will not warm
+up, trottling will begin</value>
+  </data>
+  <data name="Param_c2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Sustained Power Limit 
+This value will limit
+the processor by the heat package to the value
+that you have set. Above this
+value, it will not warm up and
+accelerate</value>
+  </data>
+  <data name="Param_c3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Actual Power Limit
+This value is responsible for limiting
+the power during a fast frequency rise</value>
+  </data>
+  <data name="Param_c4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Average Power Limit
+This value is responsible for limiting
+the power at slow frequency rise of the processor</value>
+  </data>
+  <data name="Param_c5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Time of slow frequency rise
+This is the time that the processor will
+increase its power until
+it is needed or until
+it reaches the actual power limit. 
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_c6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>
+Time of fast frequency rise
+This is the time that the processor will
+increase its power until
+it is needed or until
+it reaches the average power limit. A time of 
+frequency rise most often occurs under
+prolonged load and increases
+processor performance.
+In other words, this is the
+duration of the turbo boost
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum iGPU frequency
+Maximum frequency of iGPU video core</value>
+  </data>
+  <data name="Param_g1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimum SoC frequency
+The minimum frequency
+of data transfer between all
+processor subsystems, that is, the frequency
+of the memory controller, PCI
+controller, Sata controller, etc.</value>
+  </data>
+  <data name="Param_g2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum SoC frequency
+The maximum frequency
+of data transfer between all
+processor subsystems, that is, the frequency
+of the memory controller, PCI
+controller, Sata controller, etc.</value>
+  </data>
+  <data name="Param_g3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimum Infinity Fabric
+This is the frequency of data transfer between
+the processor, RAM and hub, as well
+as integrated graphics</value>
+  </data>
+  <data name="Param_g4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum Infinity Fabric
+This is the frequency of data transfer between
+the processor, RAM and hub, as well
+as integrated graphics</value>
+  </data>
+  <data name="Param_g5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimum VCE frequency
+This is the frequency of the video codec that
+processes video content, for example
+in YouTube videos, in players,
+in video editors, Photoshop and
+streaming</value>
+  </data>
+  <data name="Param_g6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum VCE frequency
+This is the frequency of the video codec that
+processes video content, for example
+in YouTube videos, in players,
+in video editors, Photoshop and
+streaming</value>
+  </data>
+  <data name="Param_g7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimum Data Latch Frequency
+The minimum frequency
+of the processor's clock generator, on which
+its correct operation depends
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum Data Latch Frequency
+The minimum frequency
+of the processor's clock generator, on which
+its correct operation depends
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Minimum iGPU frequency
+Minimum frequency of iGPU video core</value>
+  </data>
+  <data name="Param_v1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum VRM current EDC 
+It is responsible for the maximum possible
+power supply current of the processor and its
+subsystems. It is not recommended to set
+values above 80 A, although
+the processor will not reach such values anyway</value>
+  </data>
+  <data name="Param_v2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>VRM Current limit TDC 
+It is responsible for the maximum possible
+power supply current of the processor and its
+subsystems under the influence of temperatures
+and loads. It is not recommended to set
+values above 80 A, although
+the processor will not reach such values anyway</value>
+  </data>
+  <data name="Param_v3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum SoC current EDC
+It is responsible for the maximum current
+consumed by all
+processor subsystems except cores. That is
+a memory controller, a PCI
+controller, a Sata controller, etc</value>
+  </data>
+  <data name="Param_v4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>SoC current limit TDC
+It is responsible for the maximum current
+consumed by all
+processor subsystems, except cores, under the influence
+of temperatures and loads. That is, the current 
+memory controller, PCI
+controller, Sata controller, etc</value>
+  </data>
+  <data name="Param_v5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum PCI VDD current
+It is responsible for the current consumed 
+by the processor cores under load
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_v6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum PCI SoC current
+It is responsible for the current consumed 
+by the processor subsystems under load
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_v7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Restore Frequency time
+Affects to time limit to rise up 
+frequency again after a prochot 
+condition is met where throtthling 
+due max temperature reached. By 
+default, vendors set this value to 20, 
+but you can try experimenting 
+with this value.
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
+    <value>Edit power of your CPU</value>
+  </data>
+  <data name="Param_CPU_Text.Text" xml:space="preserve">
+    <value>CPU Overclocking</value>
+  </data>
+  <data name="Param_GPU_Pdesc.Text" xml:space="preserve">
+    <value>Cpu subsystems frequency overclocking</value>
+  </data>
+  <data name="Param_VRM_Pdesc.Text" xml:space="preserve">
+    <value>Edit all your VRM values</value>
+  </data>
+  <data name="Cooler_Autoupdate.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Autoupdate fan info
+Automatically updates
+info about fan speed</value>
+  </data>
+  <data name="Cooler_Refresh.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Refresh fan info
+Disable autoupdate
+and refresh fan info 
+once</value>
+  </data>
+  <data name="Param_enableps.Text" xml:space="preserve">
+    <value>Pstates control</value>
+  </data>
+  <data name="Param_enableps_desc.Text" xml:space="preserve">
+    <value>Allow pstate changing on your CPU</value>
+  </data>
+  <data name="Param_Ignore.Text" xml:space="preserve">
+    <value>Ignore all warnings</value>
+  </data>
+  <data name="Param_Ignorep0.Text" xml:space="preserve">
+    <value>Ignore P0 warning</value>
+  </data>
+  <data name="Param_Ignorep0_desc.Text" xml:space="preserve">
+    <value>Always apply parameters with P0 State. It can crash your system!</value>
+  </data>
+  <data name="Param_Ignore_desc.Text" xml:space="preserve">
+    <value>Ignore all warnings with PStates. It can easily crash your system!</value>
+  </data>
+  <data name="Param_reapplyps.Text" xml:space="preserve">
+    <value>Reapply this settings</value>
+  </data>
+  <data name="Param_reapplyps_desc.Text" xml:space="preserve">
+    <value>App will reapply this settings while starting if reapply enabled in settings</value>
+  </data>
+  <data name="Param_States_Pdesc.Text" xml:space="preserve">
+    <value>Edit all CPU pstates</value>
+  </data>
+  <data name="Param_States_Text.Text" xml:space="preserve">
+    <value>CPU Power States</value>
+  </data>
+  <data name="Param_turbo.Text" xml:space="preserve">
+    <value>CPU Turbo boost state</value>
+  </data>
+  <data name="Param_turbo_desc.Text" xml:space="preserve">
+    <value>Allows your CPU use Turbo boost state, can broke this settings</value>
+  </data>
+  <data name="Param_a10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>That value will fix iGPU freq
+This value will be reset after
+rebooting
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_a11_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>That value will fix CPU freq
+This value will be reset after
+rebooting
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_a12_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>That value will fix CPU voltage
+This value will be reset after
+rebooting
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_a13_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Processor operation mode, they
+switch when charging is connected and
+disconnected. If youre charging and turn 
+on Max perf, it won't do anything, since your
+processor is already in this mode,
+similar to battery life and
+energy efficiency mode</value>
+  </data>
+  <data name="Param_a1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>You can limit the current consumption 
+of your integrated graphics card under 
+the influence of temperatures and load</value>
+  </data>
+  <data name="Param_a2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>You can limit the current consumption 
+of your Neural Processor Unit under 
+the influence of temperatures and load
+(If you have it)</value>
+  </data>
+  <data name="Param_a3_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Responsible for the maximum current
+consumed by the integrated
+graphics</value>
+  </data>
+  <data name="Param_a4_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Responsible for the maximum current
+consumed by the CPU
+at PCI Express bus</value>
+  </data>
+  <data name="Param_a5_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Responsible for the maximum current
+consumed by the all GPUs
+at PCI Express bus
+IT CAN'T BE LOWER THAN iGPU
+Maximum EDC!</value>
+  </data>
+  <data name="Param_a6_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum temperature
+With this value, you can limit
+the iGPU by temperature, above
+this value it will not warm
+up, trottling will begin
+This will ONLY work if you see
+the temperature values on
+the information page!</value>
+  </data>
+  <data name="Param_a7_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximum temperature
+With this value, you can limit
+the dGPU by temperature, above
+this value it will not warm
+up, trottling will begin
+This will ONLY work if you see
+the temperature values on
+the information page!</value>
+  </data>
+  <data name="Param_a8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>This value is responsible for limiting
+the power of your iGPU
+This will ONLY work if you see
+the temperature values on
+the information page!</value>
+  </data>
+  <data name="Param_a9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>This value is responsible for limiting
+the power of your Laptop
+This will ONLY work on AMD APU + dGPU systems
+if you see the temperature values on
+the information page!</value>
+  </data>
+  <data name="Param_ADV_a1.Text" xml:space="preserve">
+    <value>iGPU Maximum TDC (A)</value>
+  </data>
+  <data name="Param_ADV_a10.Text" xml:space="preserve">
+    <value>Fixed iGPU freq (MHz)</value>
+  </data>
+  <data name="Param_ADV_a11.Text" xml:space="preserve">
+    <value>Fixed CPU freq (MHz)</value>
+  </data>
+  <data name="Param_ADV_a12.Text" xml:space="preserve">
+    <value>Fixed CPU voltage (mV)</value>
+  </data>
+  <data name="Param_ADV_a13.Text" xml:space="preserve">
+    <value>Preferred mode</value>
+  </data>
+  <data name="Param_ADV_a2.Text" xml:space="preserve">
+    <value>NPU Maximum TDC (A)</value>
+  </data>
+  <data name="Param_ADV_a3.Text" xml:space="preserve">
+    <value>iGPU Maximum EDC (A)</value>
+  </data>
+  <data name="Param_ADV_a4.Text" xml:space="preserve">
+    <value>CPU Maximum EDC (A)</value>
+  </data>
+  <data name="Param_ADV_a5.Text" xml:space="preserve">
+    <value>GPU Maximum EDC (A)</value>
+  </data>
+  <data name="Param_ADV_a6.Text" xml:space="preserve">
+    <value>iGPU Maximum temperature (C)</value>
+  </data>
+  <data name="Param_ADV_a7.Text" xml:space="preserve">
+    <value>dGPU Maximum temperature (C)</value>
+  </data>
+  <data name="Param_ADV_a8.Text" xml:space="preserve">
+    <value>iGPU Actual Power Limit (W)</value>
+  </data>
+  <data name="Param_ADV_a9.Text" xml:space="preserve">
+    <value>Laptop Power Limit (W)</value>
+  </data>
+  <data name="Param_ADV_Pdesc.Text" xml:space="preserve">
+    <value>Experimental CPU parameters</value>
+  </data>
+  <data name="Param_ADV_Text.Text" xml:space="preserve">
+    <value>Advanced CPU parameters</value>
+  </data>
+  <data name="Set_settings" xml:space="preserve">
+    <value>You have successfully set your settings</value>
+  </data>
+  <data name="Set_succ" xml:space="preserve">
+    <value>Сhanged successfully!</value>
+  </data>
+  <data name="Add_tooltip_Error.Subtitle" xml:space="preserve">
+    <value>Set other name!</value>
+  </data>
+  <data name="Add_tooltip_Error.Title" xml:space="preserve">
+    <value>Add profile error</value>
+  </data>
+  <data name="ADV_Auto.Text" xml:space="preserve">
+    <value>                                              Keep auto</value>
+  </data>
+  <data name="ADV_Change.Text" xml:space="preserve">
+    <value>                                        Don't change it!!!</value>
+  </data>
+  <data name="Apply_Target.Subtitle" xml:space="preserve">
+    <value>You have successfully set your settings</value>
+  </data>
+  <data name="Apply_Target.Title" xml:space="preserve">
+    <value>Сhanged successfully!</value>
+  </data>
+  <data name="Delete_Target_Error.Subtitle" xml:space="preserve">
+    <value>You can't delete Unsaved profile!</value>
+  </data>
+  <data name="Delete_Target_Error.Title" xml:space="preserve">
+    <value>Delete profile error</value>
+  </data>
+  <data name="Edit_Target.Subtitle" xml:space="preserve">
+    <value>New name of your preset is set</value>
+  </data>
+  <data name="Edit_Target.Title" xml:space="preserve">
+    <value>Edited successfully!</value>
+  </data>
+  <data name="Edit_Target_Error.Subtitle" xml:space="preserve">
+    <value>Set other name!</value>
+  </data>
+  <data name="Edit_Target_Error.Title" xml:space="preserve">
+    <value>Edit profile error</value>
+  </data>
+  <data name="Settings_Theme_Blue.Content" xml:space="preserve">
+    <value>Blue</value>
+  </data>
+  <data name="Unsaved_Target.Subtitle" xml:space="preserve">
+    <value>You can't rename Unsaved profile!</value>
+  </data>
+  <data name="Unsaved_Target.Title" xml:space="preserve">
+    <value>Edit profile error</value>
+  </data>
+  <data name="infoAActualC.Text" xml:space="preserve">
+    <value>Actual Current</value>
+  </data>
+  <data name="infoAActualL.Text" xml:space="preserve">
+    <value>Actual Power</value>
+  </data>
+  <data name="infoAAVGC.Text" xml:space="preserve">
+    <value>Average Current</value>
+  </data>
+  <data name="infoAAVGL.Text" xml:space="preserve">
+    <value>Average Power</value>
+  </data>
+  <data name="infoAStapmC.Text" xml:space="preserve">
+    <value>Stapm Current</value>
+  </data>
+  <data name="infoAStapmL.Text" xml:space="preserve">
+    <value>STAPM Power</value>
+  </data>
+  <data name="infoBaseC.Text" xml:space="preserve">
+    <value>Base clock</value>
+  </data>
+  <data name="infoCaptC.Text" xml:space="preserve">
+    <value>Caption</value>
+  </data>
+  <data name="infoCodeC.Text" xml:space="preserve">
+    <value>Codename</value>
+  </data>
+  <data name="infoCoresC.Text" xml:space="preserve">
+    <value>Cores</value>
+  </data>
+  <data name="infoCPU_Expander.Text" xml:space="preserve">
+    <value>Processor</value>
+  </data>
+  <data name="infoCPU_Expander_desc.Text" xml:space="preserve">
+    <value>Information about your CPU</value>
+  </data>
+  <data name="infoInstructC.Text" xml:space="preserve">
+    <value>Instructions</value>
+  </data>
+  <data name="infoL1C.Text" xml:space="preserve">
+    <value>L1 Cache</value>
+  </data>
+  <data name="infoL2C.Text" xml:space="preserve">
+    <value>L2 Cache</value>
+  </data>
+  <data name="infoL3C.Text" xml:space="preserve">
+    <value>L3 Cache</value>
+  </data>
+  <data name="infoProcC.Text" xml:space="preserve">
+    <value>CPU Name</value>
+  </data>
+  <data name="infoProdC.Text" xml:space="preserve">
+    <value>Producer</value>
+  </data>
+  <data name="infoThreadC.Text" xml:space="preserve">
+    <value>Threads</value>
+  </data>
+  <data name="infoAAPUC.Text" xml:space="preserve">
+    <value>APU Current</value>
+  </data>
+  <data name="infoAAPUL.Text" xml:space="preserve">
+    <value>APU Limit</value>
+  </data>
+  <data name="infoAAPUTEMPC.Text" xml:space="preserve">
+    <value>APU Curr Temp</value>
+  </data>
+  <data name="infoAAPUTEMPL.Text" xml:space="preserve">
+    <value>APU Max Temp</value>
+  </data>
+  <data name="infoACPUTEMPC.Text" xml:space="preserve">
+    <value>CPU Curr Temp</value>
+  </data>
+  <data name="infoACPUTEMPL.Text" xml:space="preserve">
+    <value>CPU Max Temp</value>
+  </data>
+  <data name="infoACPUUSAGE.Text" xml:space="preserve">
+    <value>CPU Usage</value>
+  </data>
+  <data name="infoAFast.Text" xml:space="preserve">
+    <value>Fast Freq Rise</value>
+  </data>
+  <data name="infoAGPUTEMPC.Text" xml:space="preserve">
+    <value>dGPU Curr Temp</value>
+  </data>
+  <data name="infoAGPUTEMPL.Text" xml:space="preserve">
+    <value>dGPU Max Temp</value>
+  </data>
+  <data name="infoASlow.Text" xml:space="preserve">
+    <value>Slow Freq Rise</value>
+  </data>
+  <data name="infoASOCEDCC.Text" xml:space="preserve">
+    <value>SoC Current EDC</value>
+  </data>
+  <data name="infoASOCEDCL.Text" xml:space="preserve">
+    <value>SoC Limit EDC</value>
+  </data>
+  <data name="infoASOCTDCC.Text" xml:space="preserve">
+    <value>SoC Current TDC</value>
+  </data>
+  <data name="infoASOCTDCL.Text" xml:space="preserve">
+    <value>SoC Limit TDC</value>
+  </data>
+  <data name="infoAVRMEDCC.Text" xml:space="preserve">
+    <value>VRM Current EDC</value>
+  </data>
+  <data name="infoAVRMEDCL.Text" xml:space="preserve">
+    <value>VRM Limit EDC</value>
+  </data>
+  <data name="infoAVRMTDCC.Text" xml:space="preserve">
+    <value>VRM Current TDC</value>
+  </data>
+  <data name="infoAVRMTDCL.Text" xml:space="preserve">
+    <value>VRM Limit TDC</value>
+  </data>
+  <data name="infoMMEM.Text" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="infoMModel.Text" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="infoMModule.Text" xml:space="preserve">
+    <value>Modules</value>
+  </data>
+  <data name="infoMProd.Text" xml:space="preserve">
+    <value>Producer</value>
+  </data>
+  <data name="infoMWid.Text" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="Param_infops_desc.Text" xml:space="preserve">
+    <value>There you can read current CPU Pstate freq and voltages</value>
+  </data>
+  <data name="Cooler_suggesttip.Title" xml:space="preserve">
+    <value>These configs probably will work for you:</value>
+  </data>
+  <data name="AppNotificationCrash" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;No configuration files&lt;/text&gt;
+      &lt;text&gt;You haven't any configuration files, app will create new ones for you. Restart it&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="Rerun app" arguments="action=Settings"/&gt;
+    &lt;action content="Get help" arguments="action=Message"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="AdvancedCooler_Configs.Text" xml:space="preserve">
+    <value>Configs</value>
+  </data>
+  <data name="AdvancedCooler_Curve.Header" xml:space="preserve">
+    <value>Fan Curve</value>
+  </data>
+  <data name="AdvancedCooler_CurveDesc.Text" xml:space="preserve">
+    <value>There you can change laptop fans behavior 
+for selected config:</value>
+  </data>
+  <data name="AdvancedCooler_Curves.Text" xml:space="preserve">
+    <value>Fan Curve</value>
+  </data>
+  <data name="AdvancedCooler_CurveText.Text" xml:space="preserve">
+    <value>Fan curve editor</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Fan1.Text" xml:space="preserve">
+    <value>Fan 1</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Fan2.Text" xml:space="preserve">
+    <value>Fan 2</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Tresh.Margin" xml:space="preserve">
+    <value>420,78,0,0</value>
+  </data>
+  <data name="AdvancedCooler_Curve_Tresh.Text" xml:space="preserve">
+    <value>Temperature tresholds</value>
+  </data>
+  <data name="AdvancedCooler_Custom.Text" xml:space="preserve">
+    <value>Create Custom</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Em.Text" xml:space="preserve">
+    <value>Empty Config</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Ex.Text" xml:space="preserve">
+    <value>Config From Example</value>
+  </data>
+  <data name="AdvancedCooler_Custom_Fr.Text" xml:space="preserve">
+    <value>Copy Config From</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action" xml:space="preserve">
+    <value>Choose an action</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Delete" xml:space="preserve">
+    <value>Delete file</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Rename" xml:space="preserve">
+    <value>Rename File and Tab</value>
+  </data>
+  <data name="AdvancedCooler_Del_Action_Sure" xml:space="preserve">
+    <value>Are you sure?</value>
+  </data>
+  <data name="AdvancedCooler_Normal.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Normal Mode
+Switch to normal mode</value>
+  </data>
+  <data name="AdvancedCooler_Others.Text" xml:space="preserve">
+    <value>Other Configs</value>
+  </data>
+  <data name="AdvancedCooler_Page.Text" xml:space="preserve">
+    <value>Cooler tweaks ⟩ Advanced cooler tweaking</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Cooler_Advanced.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Advanced mode
+Switch to advanced mode. 
+There you can change configuration 
+files, change the cooler curve, and 
+create your own cooler management 
+configurations</value>
+  </data>
+  <data name="Cooler_Suggest.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Suggest
+Get suggest on a possible configuration</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="New_Name" xml:space="preserve">
+    <value>New Name...</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open!</value>
+  </data>
+  <data name="Param_PowerMon.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Open Saku PowerMon Pro
+Monitor for all ACPI parameters, FIRM, 
+AOD, Power, Temp, Load tables of the device.
+Please note that it may take up to 2 minutes to launch!</value>
+  </data>
+  <data name="PowerMonDesc" xml:space="preserve">
+    <value>Did you really want to open monitor? It may take up to 2 minutes to load it, while both applications will freeze and you will have to wait for its full initialization</value>
+  </data>
+  <data name="PowerMonText" xml:space="preserve">
+    <value>Open Saku PowerMon</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="SMUARG.Text" xml:space="preserve">
+    <value>ARG Adr</value>
+  </data>
+  <data name="SMUArguments.Text" xml:space="preserve">
+    <value>Arguments</value>
+  </data>
+  <data name="SMUCMD.Text" xml:space="preserve">
+    <value>CMD Adr</value>
+  </data>
+  <data name="SMUCommand.Text" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="SMUDesc.Text" xml:space="preserve">
+    <value>Edit your SMU parameters for extreme overclocking</value>
+  </data>
+  <data name="SMUErrorDesc" xml:space="preserve">
+    <value>IO Chip can't keep parameters on or IO driver isn't loaded properly. Reboot and disable Secure Boot in BIOS or set another command</value>
+  </data>
+  <data name="SMUErrorNoCMD" xml:space="preserve">
+    <value>This command isn't exist. It doesn't means that there is no command, but it means that this command is locked by SMU feature or BIOS protocols are locking this command</value>
+  </data>
+  <data name="SMUErrorRejected" xml:space="preserve">
+    <value>This command is locked on your SMU by SMU or BIOS limitations. Usually no way to unlock those commands</value>
+  </data>
+  <data name="SMUErrorText" xml:space="preserve">
+    <value>Can't set SMU command!</value>
+  </data>
+  <data name="SMUOKDesc" xml:space="preserve">
+    <value>SMU changes this command success</value>
+  </data>
+  <data name="SMUOKText" xml:space="preserve">
+    <value>Set SMU command success!</value>
+  </data>
+  <data name="SMUPath.Text" xml:space="preserve">
+    <value>Mailbox</value>
+  </data>
+  <data name="SMURSP.Text" xml:space="preserve">
+    <value>RSP Adr</value>
+  </data>
+  <data name="SMUScanDesc" xml:space="preserve">
+    <value>Now you can change SMU commands for detected mailboxes</value>
+  </data>
+  <data name="SMUScanText" xml:space="preserve">
+    <value>SMU addresses have been detected</value>
+  </data>
+  <data name="SMUText.Text" xml:space="preserve">
+    <value>SMU Parameters editor</value>
+  </data>
+  <data name="SMUEnableDesc.Text" xml:space="preserve">
+    <value>Enable this quick SMU commands</value>
+  </data>
+  <data name="SMUEnableText.Text" xml:space="preserve">
+    <value>Apply SMU commands</value>
+  </data>
+  <data name="CancelThis.Text" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Copy.Text" xml:space="preserve">
+    <value>Copy this</value>
+  </data>
+  <data name="Cut.Text" xml:space="preserve">
+    <value>Cut this</value>
+  </data>
+  <data name="SelectAll.Text" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="ToHex.Text" xml:space="preserve">
+    <value>Convert to Hex</value>
+  </data>
+  <data name="Arguments" xml:space="preserve">
+    <value>Arguments</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Command" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="Cooler_FanAuto_Desc" xml:space="preserve">
+    <value>Did you really want to enable auto update? 
+This will negatively affect the performance of the application</value>
+  </data>
+  <data name="Cooler_FanAuto_Text" xml:space="preserve">
+    <value>Autoupdate info</value>
+  </data>
+  <data name="Desc" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Info_CPU_desc.Text" xml:space="preserve">
+    <value>Information about CPU and other powers</value>
+  </data>
+  <data name="Info_CPU_text.Text" xml:space="preserve">
+    <value>Power information</value>
+  </data>
+  <data name="Info_RAM_desc.Text" xml:space="preserve">
+    <value>Common RAM information</value>
+  </data>
+  <data name="Info_RAM_text.Text" xml:space="preserve">
+    <value>RAM Information</value>
+  </data>
+  <data name="Param_Autorun" xml:space="preserve">
+    <value>Apply with app start</value>
+  </data>
+  <data name="Param_ChPstates_Desc" xml:space="preserve">
+    <value>Did you really want to change pstates? 
+This can crash your system immediately. 
+Changing P0 state have MORE chances to crash your system</value>
+  </data>
+  <data name="Param_ChPstates_Text" xml:space="preserve">
+    <value>Change Pstates?</value>
+  </data>
+  <data name="Param_DelPreset_Desc" xml:space="preserve">
+    <value>Did you really want to delete this preset?</value>
+  </data>
+  <data name="Param_DelPreset_Text" xml:space="preserve">
+    <value>Delete preset</value>
+  </data>
+  <data name="Param_QSMU_Desc.Text" xml:space="preserve">
+    <value>Add new command</value>
+  </data>
+  <data name="Param_QSMU_Text.Text" xml:space="preserve">
+    <value>Quick SMU commands</value>
+  </data>
+  <data name="Param_WithApply" xml:space="preserve">
+    <value>Apply with "Apply button"</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Without_P0" xml:space="preserve">
+    <value>Without P0</value>
+  </data>
+  <data name="CancelToken.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Cancel operation</value>
+  </data>
+  <data name="SMURange" xml:space="preserve">
+    <value>Range is applying</value>
+  </data>
+  <data name="Add_Target_Error.Subtitle" xml:space="preserve">
+    <value>You can't add profile without name</value>
+  </data>
+  <data name="Add_Target_Error.Title" xml:space="preserve">
+    <value>Error while adding</value>
+  </data>
+  <data name="Add_Target_Max.Subtitle" xml:space="preserve">
+    <value>You can't have more profiles!</value>
+  </data>
+  <data name="Add_Target_Max.Title" xml:space="preserve">
+    <value>Error while adding</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Logging" xml:space="preserve">
+    <value>Log into file</value>
+  </data>
+  <data name="Param_EndW" xml:space="preserve">
+    <value>End with</value>
+  </data>
+  <data name="Param_SMURange.Text" xml:space="preserve">
+    <value>Apply range to SMU command</value>
+  </data>
+  <data name="Param_SMURangeDesc.Text" xml:space="preserve">
+    <value>You can apply range to one SMU command</value>
+  </data>
+  <data name="Param_Start" xml:space="preserve">
+    <value>Start from</value>
+  </data>
+  <data name="Apply_Success" xml:space="preserve">
+    <value>Applied success!</value>
+  </data>
+  <data name="Apply_Success_Desc" xml:space="preserve">
+    <value>You have applied your settings without errors</value>
+  </data>
+  <data name="Apply_Warn" xml:space="preserve">
+    <value>Applied with warnings!</value>
+  </data>
+  <data name="Apply_Warn_Desc" xml:space="preserve">
+    <value>You have applied your settings without those:</value>
+  </data>
+  <data name="Param_CPU_c7.Text" xml:space="preserve">
+    <value>Maximum cHTC temp (C)</value>
+  </data>
+  <data name="Param_a14_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Advanced Overclock
+This is the processor's permission 
+to change advanced settings.
+Without OC-Mode they will be ignored</value>
+  </data>
+  <data name="Param_a15_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>PBO Scalar
+Increasing the PBO scalar would 
+raise the temperature while also 
+causing the boost clocks to be more 
+aggressively maintained, potentially 
+at a higher CPU VID Voltage
+IT IS NOT RECOMMENDED TO CHANGE</value>
+  </data>
+  <data name="Param_ADV_a13_E.Content" xml:space="preserve">
+    <value>Energy efficiency</value>
+  </data>
+  <data name="Param_ADV_a13_U.Content" xml:space="preserve">
+    <value>Max performance</value>
+  </data>
+  <data name="Param_ADV_a14.Text" xml:space="preserve">
+    <value>Advanced Overclock</value>
+  </data>
+  <data name="Param_ADV_a14_A.Content" xml:space="preserve">
+    <value>Auto/Disabled</value>
+  </data>
+  <data name="Param_ADV_a14_E.Content" xml:space="preserve">
+    <value>OC-Mode</value>
+  </data>
+  <data name="Param_ADV_a15.Text" xml:space="preserve">
+    <value>PBO Scalar</value>
+  </data>
+  <data name="Param_g11_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Min CPU frequency
+You can control minimum
+CPU frequency by this 
+parameter. It is far from 100% 
+that this will work for you, keep 
+in mind that high values are harder 
+for the processor to keep
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g12_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Max CPU frequency
+You can control maximum
+CPU frequency by this 
+parameter. It is far from 100% 
+that this will work for you, keep 
+in mind that high values are harder 
+for the processor to keep
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g13_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Min iGPU VRAM Usage
+By setting the minimum amount 
+of video memory for these parameters, 
+your iGPU will not consume less video 
+memory than the specified value
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g14_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Max iGPU VRAM Usage
+By setting the maximum amount 
+of video memory for these parameters, 
+your iGPU will not consume more video 
+memory than the specified value
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g15_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Fix dGPU frequency
+By this setting you can lock dGPU power-state 
+with freq. Not 100% that it will work.
+To disable this option select Auto then apply. After
+that you can disable checkbox
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_g16_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Fix 0,4 GHz frequency 
+This setting helps with 0,4 GHz CPU stuck.
+It set CPU in it RAM-States, where CPU freq
+should be multiple of RAM freq, not only CPU,
+but his subsystems and iGPU too. Unfortunately it 
+is the only one fix this problem which on max
+performance state give you 2400 MHz on CPU and 
+1000 MHz on iGPU, it is a way better than 400 MHz.
+It is impossible to change RAM-States, because of
+this we can't adjust this freq more than 2400 MHz.
+To disable this option select Auto then apply. After
+that you can disable checkbox
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_GPU_g11.Text" xml:space="preserve">
+    <value>Min CPU frequency (MHz)</value>
+  </data>
+  <data name="Param_GPU_g12.Text" xml:space="preserve">
+    <value>Max CPU frequency (MHz)</value>
+  </data>
+  <data name="Param_GPU_g13.Text" xml:space="preserve">
+    <value>Min iGPU VRAM Usage (MB)</value>
+  </data>
+  <data name="Param_GPU_g14.Text" xml:space="preserve">
+    <value>Max iGPU VRAM Usage (MB)</value>
+  </data>
+  <data name="Param_GPU_g15.Text" xml:space="preserve">
+    <value>Fix dGPU freq (State)</value>
+  </data>
+  <data name="Param_GPU_g16.Text" xml:space="preserve">
+    <value>Fix 0,4 GHz frequency </value>
+  </data>
+  <data name="Param_GPU_State0.Content" xml:space="preserve">
+    <value>State 0</value>
+  </data>
+  <data name="Param_GPU_State1.Content" xml:space="preserve">
+    <value>State 1</value>
+  </data>
+  <data name="Param_GPU_State2.Content" xml:space="preserve">
+    <value>State 2</value>
+  </data>
+  <data name="Param_GPU_State3.Content" xml:space="preserve">
+    <value>State 3</value>
+  </data>
+  <data name="Param_GPU_State4.Content" xml:space="preserve">
+    <value>State 4</value>
+  </data>
+  <data name="Param_GPU_State5.Content" xml:space="preserve">
+    <value>State 5</value>
+  </data>
+  <data name="Param_GPU_State6.Content" xml:space="preserve">
+    <value>State 6</value>
+  </data>
+  <data name="Param_Super_heavywarn" xml:space="preserve">
+    <value>ATTENTION! SUPER DANGEROUS ZONE!</value>
+  </data>
+  <data name="Param_v10_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Voltage Variable 
+Responsible for the stability of 
+the VID and VDD voltage of the processor, 
+for its change and, in general, for 
+its behavior. To put it simply, this 
+is how often the processor will change 
+the voltage
+I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_v8_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Voltage Scalar
+Affects on scalar of base CPU
+core VID and VDD. It can overclock or 
+undervolt voltage
+I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_v9_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Voltage Modular
+Affects on how much voltage can change
+in voltage scalar
+I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_Voltage_warn_heavy" xml:space="preserve">
+    <value>I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS.
+IT IS NOT RECOMMENDED TO TOUCH IT.
+CONTINUE ONLY IF YOU KNOW WHAT YOU 
+ARE DOING!!! IT CAN BURN YOUR CPU!</value>
+  </data>
+  <data name="Param_VRM_v10.Text" xml:space="preserve">
+    <value>Voltage Variable</value>
+  </data>
+  <data name="Param_VRM_v8.Text" xml:space="preserve">
+    <value>Voltage Scalar</value>
+  </data>
+  <data name="Param_VRM_v9.Text" xml:space="preserve">
+    <value>Voltage Modular</value>
+  </data>
+  <data name="DeleteSuccessDesc" xml:space="preserve">
+    <value>You have successfully permanently deleted your profile </value>
+  </data>
+  <data name="DeleteSuccessTitle" xml:space="preserve">
+    <value>Profile was deleted</value>
+  </data>
+  <data name="Edit_TargetSubtitle" xml:space="preserve">
+    <value>New name of your preset is set</value>
+  </data>
+  <data name="Edit_TargetTitle" xml:space="preserve">
+    <value>Edited successfully!</value>
+  </data>
+  <data name="SaveSuccessDesc" xml:space="preserve">
+    <value>You have successfully added a new profile</value>
+  </data>
+  <data name="SaveSuccessTitle" xml:space="preserve">
+    <value>New profile has been added</value>
+  </data>
+  <data name="Settings_AppBeh.Text" xml:space="preserve">
+    <value>Application behavior</value>
+  </data>
+  <data name="Settings_Apply_Start.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="Settings_Apply_Start.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
+  <data name="Settings_AppStart.Text" xml:space="preserve">
+    <value>Startup options</value>
+  </data>
+  <data name="Settings_Auto_Reapply.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="Settings_Auto_Reapply.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
+  <data name="Settings_Start_MiniBoot.Content" xml:space="preserve">
+    <value>Startup &amp; tray</value>
+  </data>
+  <data name="Settings_Start_Nothing.Content" xml:space="preserve">
+    <value>No startup options</value>
+  </data>
+  <data name="Shell_Activate" xml:space="preserve">
+    <value>Activate</value>
+  </data>
+  <data name="Shell_CustomProfiles" xml:space="preserve">
+    <value>User profiles</value>
+  </data>
+  <data name="Shell_DeActivate" xml:space="preserve">
+    <value>Activated</value>
+  </data>
+  <data name="Shell_PremadedProfiles" xml:space="preserve">
+    <value>Premaded profiles</value>
+  </data>
+  <data name="Shell_Preset_Balance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Shell_Preset_Eco" xml:space="preserve">
+    <value>Eco</value>
+  </data>
+  <data name="Shell_Preset_Max" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="Shell_Preset_Min" xml:space="preserve">
+    <value>Minimum</value>
+  </data>
+  <data name="Shell_Preset_Speed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="AppNotificationCrash_CPU" xml:space="preserve">
+    <value>&lt;toast launch="action=ToastClick"&gt;
+  &lt;visual&gt;
+    &lt;binding template="ToastGeneric"&gt;
+      &lt;text&gt;IO Driver isn't loaded&lt;/text&gt;
+      &lt;text&gt;App will not work for you. Windows blocked CPU driver override. Check your windows or try to disable secure boot and "Core isolation" in windows security app&lt;/text&gt;
+      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
+    &lt;/binding&gt;
+  &lt;/visual&gt;
+  &lt;actions&gt;
+    &lt;action content="Rerun app" arguments="action=Settings"/&gt;
+    &lt;action content="Get help" arguments="action=Message"/&gt;
+  &lt;/actions&gt;
+&lt;/toast&gt;</value>
+  </data>
+  <data name="ThemeAdvanced.Header" xml:space="preserve">
+    <value>Toggle advanced theme settings</value>
+  </data>
+  <data name="ThemeAdvanced.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="ThemeAdvanced.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
+  <data name="ThemeChangeBgText.Text" xml:space="preserve">
+    <value>Change background</value>
+  </data>
+  <data name="ThemeCustomBg.Header" xml:space="preserve">
+    <value>Use custom background image</value>
+  </data>
+  <data name="ThemeCustomBg.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="ThemeCustomBg.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
+  <data name="ThemeManager.Text" xml:space="preserve">
+    <value>Theme manager</value>
+  </data>
+  <data name="ThemeMaskOpacity.Header" xml:space="preserve">
+    <value>Background mask opacity</value>
+  </data>
+  <data name="ThemeOpacity.Header" xml:space="preserve">
+    <value>Background image opacity</value>
+  </data>
+  <data name="Theme_Clouds" xml:space="preserve">
+    <value>Candy clouds</value>
+  </data>
+  <data name="Theme_Coffee" xml:space="preserve">
+    <value>Dark coffee</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Theme_Default" xml:space="preserve">
+    <value>System default</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Theme_Neon" xml:space="preserve">
+    <value>Neon glow</value>
+  </data>
+  <data name="Theme_Raspberry" xml:space="preserve">
+    <value>Raspberry</value>
+  </data>
+  <data name="Theme_Sand" xml:space="preserve">
+    <value>Sand castle</value>
+  </data>
+  <data name="ThemeBgDialog" xml:space="preserve">
+    <value>Change theme background</value>
+  </data>
+  <data name="ThemeBgFromFile" xml:space="preserve">
+    <value>Background from file</value>
+  </data>
+  <data name="ThemeBgFromFileWhy" xml:space="preserve">
+    <value>Choose any image or gif file. Don't delete the file! GIFs are animated but lead to to huge GPU usage</value>
+  </data>
+  <data name="ThemeBgFromURL" xml:space="preserve">
+    <value>Background from link</value>
+  </data>
+  <data name="ThemeBgFromURLWhy" xml:space="preserve">
+    <value>Choose any image or gif URL. It will not work without internet! GIFs are animated but lead to huge GPU usage</value>
+  </data>
+  <data name="ThemeBgOr" xml:space="preserve">
+    <value>or</value>
+  </data>
+  <data name="ThemeDone" xml:space="preserve">
+    <value>Done changing</value>
+  </data>
+  <data name="ThemeError" xml:space="preserve">
+    <value>Theme error </value>
+  </data>
+  <data name="ThemeManagerTitle" xml:space="preserve">
+    <value>Theme manager</value>
+  </data>
+  <data name="ThemeNotFoundBg" xml:space="preserve">
+    <value>Background image isn't founded. Check path or set another</value>
+  </data>
+  <data name="ThemeSelect" xml:space="preserve">
+    <value>Set background</value>
+  </data>
+  <data name="ThemeNewName" xml:space="preserve">
+    <value>New name...</value>
+  </data>
+  <data name="ThemeOpCancel" xml:space="preserve">
+    <value>Operation cancelled</value>
+  </data>
+  <data name="ThemePickedFile" xml:space="preserve">
+    <value>Picked photo: </value>
+  </data>
+  <data name="ThemeTypeFile" xml:space="preserve">
+    <value>Only .gif, .png, .jpg, .jpeg, .bmp are supported!</value>
+  </data>
+  <data name="ThemeUnknownNewFile" xml:space="preserve">
+    <value>New file!</value>
+  </data>
+  <data name="Param_CCD1_CO_Section.Text" xml:space="preserve">
+    <value>Per core curve optimizer settings </value>
+  </data>
+  <data name="Param_CCD1_CO_Section_desc.Text" xml:space="preserve">
+    <value>Set your curve for CPU cores 0-7</value>
+  </data>
+  <data name="Param_CCD2_CO_Section.Text" xml:space="preserve">
+    <value>Per core curve optimizer settings+</value>
+  </data>
+  <data name="Param_CCD2_CO_Section_desc.Text" xml:space="preserve">
+    <value>Set your curve for CPU cores 8-15</value>
+  </data>
+  <data name="Param_CO_O1.Text" xml:space="preserve">
+    <value>All cores Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_O2.Text" xml:space="preserve">
+    <value>iGPU Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_Section.Text" xml:space="preserve">
+    <value>All cores curve optimizer settings</value>
+  </data>
+  <data name="Param_CO_Section_desc.Text" xml:space="preserve">
+    <value>Set your curve for all CPU cores</value>
+  </data>
+  <data name="Param_O1_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>All cores Curve Optimizer
+With this parameter you can 
+change volt/freq curve of
+your CPU which can give you
+more energy efficiency or
+more performance. 
+I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS
+Safe limits are from -50 to 30 but if
+you noticed any unstability - immidiately
+set curves closer to 0 value.
+IT IS NOT RECOMMENDED TO TOUCH IT </value>
+  </data>
+  <data name="Param_O2_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>iGPU Curve Optimizer
+With this parameter you can 
+change volt/freq curve of
+your iGPU which can give you
+more energy efficiency or
+more performance. 
+I AM NOT RESPONSIBLE FOR THE 
+CONSEQUENCES OF THESE COMMANDS
+Safe limits are from -50 to 30 but if
+you noticed any unstability - immidiately
+set curves closer to 0 value. If you see
+any artifacts - DON'T USE this parameter
+IT IS NOT RECOMMENDED TO TOUCH IT</value>
+  </data>
+  <data name="Param_CO_CCD1_1.Text" xml:space="preserve">
+    <value>Core 0 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_2.Text" xml:space="preserve">
+    <value>Core 1 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_3.Text" xml:space="preserve">
+    <value>Core 2 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_4.Text" xml:space="preserve">
+    <value>Core 3 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_5.Text" xml:space="preserve">
+    <value>Core 4 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_6.Text" xml:space="preserve">
+    <value>Core 5 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_7.Text" xml:space="preserve">
+    <value>Core 6 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD1_8.Text" xml:space="preserve">
+    <value>Core 7 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_1.Text" xml:space="preserve">
+    <value>Core 8 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_2.Text" xml:space="preserve">
+    <value>Core 9 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_3.Text" xml:space="preserve">
+    <value>Core 10 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_4.Text" xml:space="preserve">
+    <value>Core 11 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_5.Text" xml:space="preserve">
+    <value>Core 12 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_6.Text" xml:space="preserve">
+    <value>Core 13 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_7.Text" xml:space="preserve">
+    <value>Core 14 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD2_8.Text" xml:space="preserve">
+    <value>Core 15 Curve Optimizer (CO)</value>
+  </data>
+  <data name="Param_CO_CCD_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Per core curve optimizer settings
+With this parameter you can 
+change volt/freq curve of each
+CPU cores which can give you
+more energy efficiency or
+more performance. If you haven't 
+selected some cores - they will not
+be adjusted. Note: this setting is above
+iGPU curve optimizer and all core
+curve optimizer and they will not
+be applyed. I AM NOT RESPONSIBLE 
+FOR THE CONSEQUENCES OF THESE 
+COMMANDS. Safe limits are from -50 
+to 30 but if you noticed any unstability 
+immidiately set curves closer to 0 value.
+IT IS NOT RECOMMENDED TO TOUCH IT 
+  </value>
+  </data>
+  <data name="TraceIt_Error" xml:space="preserve">
+    <value>TraceIt! system - I found an error when executing the program:</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode.Text" xml:space="preserve">
+    <value>A+A Performance mode</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode_Desc.Text" xml:space="preserve">
+    <value>Max performance on any iGPU + dGPU systems</value>
+  </data>
+  <data name="Param_SMU_Func_AAMode_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>A+A Performance mode
+Its SMU function which allows you
+to enable or disable A+A 
+performance mode. Its already 
+enabled on AMD iGPU and AMD
+dGPU systems. This mode will 
+activate max performance mode 
+on systems with dGPU and on
+some systems without dGPU.
+Recommendation - enable</value>
+  </data>
+  <data name="Param_SMU_Func_All.Text" xml:space="preserve">
+    <value>SMU Functions manager enablement</value>
+  </data>
+  <data name="Param_SMU_Func_All_Desc.Text" xml:space="preserve">
+    <value>Enable those section or disable to manage SMU functions</value>
+  </data>
+  <data name="Param_SMU_Func_All_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>SMU Functions manager enablement
+Move cursor over these buttons to find 
+out detailed information. Note: all 
+functions are valid until reboot, and 
+some before hibernation or charging 
+connection</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK.Text" xml:space="preserve">
+    <value>CPU Clock controller</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK_Desc.Text" xml:space="preserve">
+    <value>CPU frequency behavior</value>
+  </data>
+  <data name="Param_SMU_Func_CCLK_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>CPU Clock controller
+Its SMU function which allows you
+to enable or disable CPU clocks
+controller. If it disabled - CPU
+will work on close to 1600 MHz
+frequency always.
+Recommendation - enable</value>
+  </data>
+  <data name="Param_SMU_Func_CStates.Text" xml:space="preserve">
+    <value>System CPU C-States</value>
+  </data>
+  <data name="Param_SMU_Func_CStates_Desc.Text" xml:space="preserve">
+    <value>Helps to save battery percentage</value>
+  </data>
+  <data name="Param_SMU_Func_CStates_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>System CPU C-States
+Its SMU function which allows you
+to enable or disable C-States of your
+CPU. If its disabled - C-States will be
+disabled! And CPU will work at Power
+States only. Note: On Renoir (4000) 
+and up CPUs this setting will disable
+ONLY C6-State.
+Recommendation - disable</value>
+  </data>
+  <data name="Param_SMU_Func_DATA.Text" xml:space="preserve">
+    <value>Power Table sensors</value>
+  </data>
+  <data name="Param_SMU_Func_DATA_Desc.Text" xml:space="preserve">
+    <value>Update data sensors in all system</value>
+  </data>
+  <data name="Param_SMU_Func_DATA_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Power Table sensors
+Its SMU function which allows you
+to enable or disable data sensors
+controller. If its disabled - all
+power table indexes will be fixed
+and will not be updated until this
+funtion will be enabled
+Recommendation - enable</value>
+  </data>
+  <data name="Param_SMU_Func_Desc.Text" xml:space="preserve">
+    <value>Enable or disable common SMU functions</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty.Text" xml:space="preserve">
+    <value>iGPU energy saving</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty_Desc.Text" xml:space="preserve">
+    <value>Helps keep your iGPU cold</value>
+  </data>
+  <data name="Param_SMU_Func_GFXDuty_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>iGPU energy saving
+Its SMU function which allows you
+to enable or disable APU GFX
+Duty cycle. It works like "Power 
+limits reduction" function, to 
+reduct max power limit for iGPU.
+Recommendation - disable</value>
+  </data>
+  <data name="Param_SMU_Func_PLL.Text" xml:space="preserve">
+    <value>Power limits reduction</value>
+  </data>
+  <data name="Param_SMU_Func_PLL_Desc.Text" xml:space="preserve">
+    <value>Reduct current powers to match the TDP</value>
+  </data>
+  <data name="Param_SMU_Func_PLL_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Power limits reduction
+Its SMU function which allows you
+to enable or disable power down limits
+controller. If its disabled - all power 
+limits will be uncapped and CPU can 
+always work at set in Saku Overclock 
+power limits without any limitations.
+Recommendation - enable</value>
+  </data>
+  <data name="Param_SMU_Func_PPT.Text" xml:space="preserve">
+    <value>Power limits</value>
+  </data>
+  <data name="Param_SMU_Func_PPT_Desc.Text" xml:space="preserve">
+    <value>Power limitations for optimal performance</value>
+  </data>
+  <data name="Param_SMU_Func_PPT_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Power limits
+Its SMU function which allows you
+to enable or disable power limits.
+If its disabled - all power limits will be
+unlimited! And CPU will ignore Saku
+Overclock power limits and will 
+heat without any limitations.
+Recommendation - enable </value>
+  </data>
+  <data name="Param_SMU_Func_Prochot.Text" xml:space="preserve">
+    <value>Prochot signal</value>
+  </data>
+  <data name="Param_SMU_Func_Prochot_Desc.Text" xml:space="preserve">
+    <value>Manage prochot function to fix problems</value>
+  </data>
+  <data name="Param_SMU_Func_Prochot_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Prochot signal
+Its SMU function which allows you
+to enable or disable prochot signal.
+If its disabled - prochot will be 
+disabled. Until first fatal moment
+after it your laptop will crash.
+Recommendation - enable
+AND DO NOT TOUCH IT!</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM.Text" xml:space="preserve">
+    <value>STAPM Power limit</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM_Desc.Text" xml:space="preserve">
+    <value>Get more performance without limitations</value>
+  </data>
+  <data name="Param_SMU_Func_STAPM_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>STAPM Power limit
+Its SMU function which allows you
+to enable or disable STAMP power limit.
+If its disabled - STAPM limit will be
+disabled! And CPU will ignore Saku
+Overclock STAPM limit and will not
+reduce frequency for energy efficiency.
+Recommendation - disable</value>
+  </data>
+  <data name="Param_SMU_Func_TDC.Text" xml:space="preserve">
+    <value>VRM Current limits</value>
+  </data>
+  <data name="Param_SMU_Func_TDC_Desc.Text" xml:space="preserve">
+    <value>VRM limitations for energy efficiency</value>
+  </data>
+  <data name="Param_SMU_Func_TDC_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>VRM Current limits
+Its SMU function which allows you
+to enable or disable VRM Currents
+limiter controller. If its disabled - all
+VRM will ignore Saku Overclock currents 
+parameters and will not be limited in
+TDC currents.
+Recommendation - disable</value>
+  </data>
+  <data name="Param_SMU_Func_Text.Text" xml:space="preserve">
+    <value>SMU functions manager</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal.Text" xml:space="preserve">
+    <value>Temperature control</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal_Desc.Text" xml:space="preserve">
+    <value>Control all temperatures in system</value>
+  </data>
+  <data name="Param_SMU_Func_Thermal_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Temperature control
+Its SMU function which allows you
+to enable or disable thermal controller.
+If its disabled - all temperatures will be
+unlimited! And CPU will ignore Saku
+Overclock temperature limit and will 
+heat without any limitations.
+Recommendation - enable
+AND DO NOT TOUCH IT!</value>
+  </data>
+  <data name="Settings_Auto_Updates.Header" xml:space="preserve">
+    <value>Check for updates after start</value>
+  </data>
+  <data name="Settings_Auto_Updates.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="Settings_Auto_Updates.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
+  <data name="Settings_Reapply_Safe.Header" xml:space="preserve">
+    <value>Reapply only safe parameters</value>
+  </data>
+  <data name="Settings_Reapply_Safe.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="Settings_Reapply_Safe.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
+  <data name="ThemeLight.Header" xml:space="preserve">
+    <value>Theme type</value>
+  </data>
+  <data name="ThemeLight.OffContent" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="ThemeLight.OnContent" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="infoAFREQCPU.Text" xml:space="preserve">
+    <value>Frequency</value>
+  </data>
+  <data name="infoAGHZ" xml:space="preserve">
+    <value>GHz</value>
+  </data>
+  <data name="infoAVOLTCPU.Text" xml:space="preserve">
+    <value>Voltage</value>
+  </data>
+  <data name="InfoCPU.Text" xml:space="preserve">
+    <value>CPU</value>
+  </data>
+  <data name="InfoBATSectionName" xml:space="preserve">
+    <value>Battery</value>
+  </data>
+  <data name="InfoCPUSectionName" xml:space="preserve">
+    <value>CPU</value>
+  </data>
+  <data name="InfoGPUSectionName" xml:space="preserve">
+    <value>GPU</value>
+  </data>
+  <data name="InfoRAMSectionName" xml:space="preserve">
+    <value>RAM</value>
+  </data>
+</root>
