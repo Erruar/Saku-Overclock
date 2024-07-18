@@ -1,8 +1,12 @@
-﻿using System.Management;
+﻿using System.Diagnostics;
+using System.Globalization;
+using System.Management;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
+using Saku_Overclock.ViewModels;
+using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
@@ -48,7 +52,7 @@ public sealed partial class ИнформацияPage : Page
         ViewModel = App.GetService<ИнформацияViewModel>();
         InitializeComponent();
         try
-        {
+        { 
             cpu ??= CpuSingleton.GetInstance();
         }
         catch
@@ -65,14 +69,14 @@ public sealed partial class ИнформацияPage : Page
             SelectedBrush = CPUBannerButton.Background;
             SelectedBorderBrush = CPUBannerButton.BorderBrush;
             TransparentBrush = GPUBannerButton.Background;
-            GetCPUInfo();
-            GetRAMInfo();
-            ReadPstate();
+        GetCPUInfo();
+        GetRAMInfo();
+        ReadPstate();
             GetBATInfo();
         };
         Unloaded += ИнформацияPage_Unloaded;
-    }
-
+    } 
+   
     #region JSON and Initialization
     //JSON форматирование
     public void ConfigSave()
@@ -121,11 +125,15 @@ public sealed partial class ИнформацияPage : Page
     {
         try
         {
+            sdCPU.Visibility = Visibility.Collapsed;
             // CPU information using WMI
             var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
 
             var name = "";
             var description = "";
+            var manufacturer = "";
+            var numberOfCores = 0;
+            var numberOfLogicalProcessors = 0;
             double l2Size = 0;
             double l3Size = 0;
             var baseClock = "";
@@ -136,6 +144,7 @@ public sealed partial class ИнформацияPage : Page
                 {
                     name = queryObj["Name"].ToString();
                     description = queryObj["Description"].ToString();
+                    manufacturer = queryObj["Manufacturer"].ToString();
                     numberOfCores = Convert.ToInt32(queryObj["NumberOfCores"]);
                     numberOfLogicalProcessors = Convert.ToInt32(queryObj["NumberOfLogicalProcessors"]);
                     l2Size = Convert.ToDouble(queryObj["L2CacheSize"]) / 1024;
@@ -150,7 +159,7 @@ public sealed partial class ИнформацияPage : Page
                     }
                 }
                 catch (Exception ex) { SendSMUCommand.TraceIt_TraceError(ex.ToString()); }
-            });
+            }); 
             InfoCPUSectionGridBuilder();
             tbProcessor.Text = name;
             CPUName = name;
@@ -167,7 +176,7 @@ public sealed partial class ИнформацияPage : Page
             else
             {
                 try
-                {
+                { 
                     tbCodename1.Text = $"{cpu?.info.codeName}";
                 }
                 catch
@@ -187,33 +196,36 @@ public sealed partial class ИнформацияPage : Page
                 tbSMU.Visibility = Visibility.Collapsed;
                 infoSMU.Visibility = Visibility.Collapsed;
             }
+            tbProducer.Text = manufacturer;
             tbCores.Text = numberOfLogicalProcessors == numberOfCores ? numberOfCores.ToString() : GetSystemInfo.GetBigLITTLE(numberOfCores, l2Size);
             tbThreads.Text = numberOfLogicalProcessors.ToString();
-            tbL3Cache.Text = $"{l3Size:0.##} MB";
+            tbL3Cache.Text = $"{l3Size:0.##} MB"; 
             uint sum = 0;
             foreach (var number in GetSystemInfo.GetCacheSizes(GetSystemInfo.CacheLevel.Level1))
             {
                 sum += number;
-            }
+            } 
             decimal total = sum;
             total /= 1024;
-            tbL1Cache.Text = $"{total:0.##} MB";
+            tbL1Cache.Text = $"{total:0.##} MB"; 
             sum = 0;
             foreach (var number in GetSystemInfo.GetCacheSizes(GetSystemInfo.CacheLevel.Level2))
             {
                 sum += number;
-            }
+            } 
             total = sum;
             total /= 1024;
-            tbL2Cache.Text = $"{total:0.##} MB";
-            tbBaseClock.Text = $"{baseClock} MHz";
-            tbInstructions.Text = GetSystemInfo.InstructionSets();
+            tbL2Cache.Text = $"{total:0.##} MB"; 
+            tbBaseClock.Text = $"{baseClock} MHz"; 
+            tbInstructions.Text = GetSystemInfo.InstructionSets(); 
+            sdCPU.Visibility = Visibility.Visible;
+            sdCPU.IsExpanded = false;
         }
         catch (ManagementException ex)
         {
             Console.WriteLine("An error occurred while querying for WMI data: " + ex.Message);
         }
-    }
+    } 
     private void InfoCPUSectionGridBuilder()
     {
         InfoMainCPUFreqGrid.RowDefinitions.Clear();
@@ -364,8 +376,8 @@ public sealed partial class ИнформацияPage : Page
                     width += Convert.ToInt32(queryObj["DataWidth"]);
                     slots++;
                 }
-            });
-            capacity = capacity / 1024 / 1024 / 1024;
+            }); 
+            capacity = capacity / 1024 / 1024 / 1024; 
             var DDRType = "";
             DDRType = type switch
             {
@@ -410,7 +422,7 @@ public sealed partial class ИнформацияPage : Page
         CpuFid = eax & 0xFF;
     }
     private void ReadPstate()
-    {
+    {   
         try
         {
             for (var i = 0; i < 3; i++)
@@ -418,9 +430,9 @@ public sealed partial class ИнформацияPage : Page
                 uint eax = default, edx = default;
                 var pstateId = i;
                 try
-                {
+        {
                     if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) == false)
-                    {
+            {
                         App.MainWindow.ShowMessageDialogAsync("Error while reading CPU Pstate", "Critical Error");
                         return;
                     }
@@ -439,27 +451,27 @@ public sealed partial class ИнформацияPage : Page
         catch (Exception ex) { SendSMUCommand.TraceIt_TraceError(ex.ToString()); }
     }
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
-    {
-        if (args.Visible)
         {
+        if (args.Visible)
+            {
             dispatcherTimer?.Start();
             IsAppInTray = false;
-        }
+    }
         else
         {
             if (infoRTSSButton.IsChecked == false)
-            {
+    {
                 dispatcherTimer?.Stop();
                 IsAppInTray = true;
             }
         }
-    }
+    } 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e); StartInfoUpdate();
-    }
+    } 
     protected override void OnNavigatedFrom(NavigationEventArgs e)
-    {
+    { 
         base.OnNavigatedFrom(e); StopInfoUpdate();
     }
     private void UpdateInfoAsync()
@@ -604,15 +616,15 @@ public sealed partial class ИнформацияPage : Page
                         _ => RyzenADJWrapper.get_core_clk(ryzenAccess, f)
                     };
                     if (!float.IsNaN(currCore))
-                    {
+    {
                         if (!InfoMainCPUFreqGrid.IsLoaded) { return; }
                         var currText = (TextBlock)InfoMainCPUFreqGrid.FindName($"FreqButtonText_{f}");
                         if (currText != null)
-                        {
+        {
                             if (SelectedGroup == 0)
-                            {
+            {
                                 currText.Text = infoCPUSectionComboBox.SelectedIndex switch
-                                {
+                {
                                     0 => Math.Round(currCore, 3) + " " + "infoAGHZ".GetLocalized(),
                                     1 => Math.Round(currCore, 3) + "V",
                                     2 => Math.Round(currCore, 3) + "W",
@@ -621,42 +633,42 @@ public sealed partial class ИнформацияPage : Page
                                 };
                             }
                             else
-                            {
+                    {
                                 if (SelectedGroup == 1)
                                 {
                                     foreach (var element in (new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController").Get().Cast<ManagementObject>()))
                                     {
                                         currText.Text = GetSystemInfo.GetGPUName((int)f);
-                                    }
+                    }
                                 }
 
                                 if (SelectedGroup == 2)
-                                {
+                    {
                                     var reject = 0;
                                     foreach (var element in tbRAMModel.Text.Split('/'))
                                     {
                                         if (reject == (int)f)
                                         {
                                             currText.Text = element;
-                                        }
+                    }
                                         reject++;
                                     }
                                 }
                                 if (SelectedGroup == 3)
-                                {
+                    {
                                     currText.Text = f == 0 ?
                                         $"{Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3)} A/{Math.Round(RyzenADJWrapper.get_vrmmax_current(ryzenAccess), 3)}A"
                                         : (f == 1 ? $"{Math.Round(RyzenADJWrapper.get_vrm_current_value(ryzenAccess), 3)} A/{Math.Round(RyzenADJWrapper.get_vrm_current(ryzenAccess), 3)}A"
                                         : (f == 2 ? $"{Math.Round(RyzenADJWrapper.get_vrmsocmax_current_value(ryzenAccess), 3)} A/{Math.Round(RyzenADJWrapper.get_vrmsocmax_current(ryzenAccess), 3)}A"
                                         : (f == 3 ? $"{Math.Round(RyzenADJWrapper.get_vrmsoc_current_value(ryzenAccess), 3)} A/{Math.Round(RyzenADJWrapper.get_vrmsoc_current(ryzenAccess), 3)}A" : $"{0}A")));
-                                }
+                    }
                             }
                         }
                         if (f < numberOfCores)
-                        {
+                    {
                             core_Clk += RyzenADJWrapper.get_core_clk(ryzenAccess, f);
                             endtrace += 1;
-                        }
+                    }
                     }
                     var currVolt = RyzenADJWrapper.get_core_volt(ryzenAccess, f);
                     if (!float.IsNaN(currVolt))
@@ -666,21 +678,21 @@ public sealed partial class ИнформацияPage : Page
                     }
                 }
                 if (endtrace != 0)
-                {
+                    {
                     tbCPUFreq.Text = Math.Round(core_Clk / endtrace, 3) + " " + "infoAGHZ".GetLocalized();
-                }
+                    }
                 else
-                {
+                    {
                     tbCPUFreq.Text = "? " + "infoAGHZ".GetLocalized();
                 }
                 if (endtraced != 0)
-                {
+                        {
                     tbCPUVolt.Text = Math.Round(core_Volt / endtraced, 3) + "V";
-                }
+                        }
                 else
                 {
                     tbCPUVolt.Text = "?V";
-                }
+                    }
                 tbPSTFREQ.Text = tbCPUFreq.Text;
                 var gfxCLK = Math.Round(RyzenADJWrapper.get_gfx_clk(ryzenAccess) / 1000, 3);
                 var gfxVolt = Math.Round(RyzenADJWrapper.get_gfx_volt(ryzenAccess), 3);
@@ -789,7 +801,7 @@ public sealed partial class ИнформацияPage : Page
                 try
                 {
                     if (busyRam != 0 && totalRam != 0)
-                    {
+                    { 
                         InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
                         RAMPointer.Add(new InfoPageCPUPoints() { X = 60, Y = 48 - (int)(busyRam * 100 / totalRam * 0.48) });
                         InfoARAMBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 48 - (int)(busyRam * 100 / totalRam * 0.48)));
@@ -799,12 +811,12 @@ public sealed partial class ИнформацияPage : Page
                         if (element != null)
                         {
                             if (element.X < 0)
-                            {
+                    { 
                                 RAMPointer.Remove(element);
                                 InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(element.X, element.Y));
-                            }
+                    }
                             else
-                            {
+                    { 
                                 InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(element.X, element.Y));
                                 element.X -= 1;
                                 InfoARAMBannerPolygon.Points.Add(new Windows.Foundation.Point(element.X, element.Y));
@@ -812,12 +824,12 @@ public sealed partial class ИнформацияPage : Page
                         }
                     }
                     InfoARAMBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 49));
-                }
+                    }
                 catch (Exception ex)
-                {
+                    { 
                     SendSMUCommand.TraceIt_TraceError(ex.ToString());
                 }
-            }
+                    }
 
             rtss_line = "<C0=FFA0A0><C1=A0FFA0><C2=FC89AC><C3=fa2363><S1=70><S2=-50><C0>Saku Overclock <C1>RC-4: <S0>" + ShellPage.SelectedProfile.Replace('а', 'a').Replace('м', 'm').Replace('и', 'i').Replace('н', 'n').Replace('М', 'M').Replace('у', 'u').Replace('Э', 'E').Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c').Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' ');
             rtss_line += "<S1><Br><C2>STAPM, Fast, Slow: " + "<C3><S0>" + Math.Round(RyzenADJWrapper.get_stapm_value(ryzenAccess), 3) + "<S2>W<S1>" + Math.Round(RyzenADJWrapper.get_stapm_limit(ryzenAccess), 3) + "W"
@@ -830,14 +842,14 @@ public sealed partial class ИнформацияPage : Page
             for (var f = 0u; f < numberOfCores; f++)
             {
                 if (f < 8)
-                {
+                    {
                     var clk = Math.Round(RyzenADJWrapper.get_core_clk(ryzenAccess, f), 3);
                     var volt = Math.Round(RyzenADJWrapper.get_core_volt(ryzenAccess, f), 3);
                     avgCoreCLK += clk;
                     avgCoreVolt += volt;
                     endCLKString += f > 3 ? "<Br>        " : "" + "<S1><C2>" + f + ":<S0><C3> " + clk + "<S2>GHz<S1>" + volt + "V ";
+                    }
                 }
-            }
             rtss_line += endCLKString + "<Br><C2>AVG Clock, Volt: " + "<C3><S0>" + Math.Round(avgCoreCLK / numberOfCores, 3) + "<S2>GHz<S1>" + Math.Round(avgCoreVolt / numberOfCores, 3) + "V";
             rtss_line += "<Br><C2>APU Clock, Volt, Temp: " + "<C3><S0>" + Math.Round(RyzenADJWrapper.get_gfx_clk(ryzenAccess), 3) + "<S2>MHz<S1>" + Math.Round(RyzenADJWrapper.get_gfx_volt(ryzenAccess), 3) + "V " + "<S0>" + Math.Round(RyzenADJWrapper.get_gfx_temp(ryzenAccess), 3) + "<S1>C";
             rtss_line += "<Br><C2>Framerate " + "<C3><S0>" + "%FRAMERATE% %FRAMETIME%";
@@ -845,6 +857,7 @@ public sealed partial class ИнформацияPage : Page
             {
                 RTSSHandler.ChangeOSDText(rtss_line); canUpdateOSDText = false;
             }
+            p.WaitForExit();
         }
     }
     // Автообновление информации 
@@ -997,8 +1010,8 @@ public sealed partial class ИнформацияPage : Page
     {
         if (infoRTSSButton.IsChecked == false)
         {
-            RTSSHandler.ResetOSDText();
-        }
+        RTSSHandler.ResetOSDText();
+    }
     }
     #endregion
 }

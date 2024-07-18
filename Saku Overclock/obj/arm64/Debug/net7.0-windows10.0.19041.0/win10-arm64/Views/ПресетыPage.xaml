@@ -1,0 +1,79 @@
+﻿<Page
+    x:Class="Saku_Overclock.Views.ПресетыPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid x:ConnectionId='2' x:Name="ContentArea" Margin="-80,0,-80,0">
+        
+        <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="30" Margin="80,-65,0,0"></TextBlock>
+        <Grid >
+            <Border
+               CornerRadius="8" Margin="200,-180,0,0">
+            <Border.Background>
+                <ImageBrush x:ConnectionId='10' x:Name="PrSource" ImageSource="/Assets/eco.png"
+                           Stretch="UniformToFill" />
+            </Border.Background>
+        </Border>
+            <TextBlock x:ConnectionId='8' x:Name="PrName" VerticalAlignment="Center" Margin="80,-280,0,0" Text="Экономия энергии" FontSize="28"/>
+            <TextBlock x:ConnectionId='9' x:Name="PrDesc" VerticalAlignment="Center" Margin="80,-140,0,0" Text="Этот пресет позволит сэкономить &#x0a;вам проценты аккумулятора, без &#x0a;существенной потери производительности" FontSize="20"/>
+        </Grid>
+        
+        <Button HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="810" Height="70" IsEnabled="False"></Button>
+        <Grid HorizontalAlignment="Center">
+            <Grid HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ToggleButton x:ConnectionId='3' x:Name="Min_btn" Grid.Row="0" Grid.Column="0" Height="40" Width="150"                          >
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xebc0;"/>
+                        <TextBlock x:Uid="Preset_Min_Name" >Минимум</TextBlock>
+                    </StackPanel>
+                </ToggleButton>
+                <ToggleButton x:ConnectionId='4' x:Name="Eco" Grid.Row="0" Grid.Column="2" Height="40" Width="150"                      >
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xec0a;"/>
+                        <!-- 	ec0a -->
+                        <TextBlock x:Uid="Preset_Eco_Name">Эко</TextBlock>
+                    </StackPanel>
+                </ToggleButton>
+                <ToggleButton x:ConnectionId='5' x:Name="Balance" Grid.Row="0" Grid.Column="4" Height="40" Width="150"                          >
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xec49;"/>
+                        <TextBlock x:Uid="Preset_Balance_Name">Баланс</TextBlock>
+                    </StackPanel>
+                </ToggleButton>
+                <ToggleButton x:ConnectionId='6' x:Name="Speed" Grid.Row="0" Grid.Column="6" Height="40" Width="150"                        >
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xe945;"/>
+                        <TextBlock x:Uid="Preset_Speed_Name">Скорость</TextBlock>
+                    </StackPanel>
+                </ToggleButton>
+                <ToggleButton x:ConnectionId='7' x:Name="Max_btn" Grid.Row="0" Grid.Column="8" Height="40" Width="150"                          >
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"  Margin="0,0,10,0"    Glyph="&#xEcad;"/>
+                        <TextBlock x:Uid="Preset_Max_Name">Максимум</TextBlock>
+                    </StackPanel>
+                </ToggleButton>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text=" "/>
+            </Grid>
+
+        </Grid>
+    </Grid>
+</Page>
+

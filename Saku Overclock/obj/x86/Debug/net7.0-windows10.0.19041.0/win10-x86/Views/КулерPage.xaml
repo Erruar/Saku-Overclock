@@ -1,0 +1,232 @@
+﻿<Page
+    x:Class="Saku_Overclock.Views.КулерPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+	<Grid x:ConnectionId='2' x:Name="ContentArea">
+		<Grid>
+			<!-- Начало -->
+			<TextBlock x:Uid="Cooler_Name" Text="Скорости кулера" FontSize="30" Margin="0,-65,0,0"></TextBlock>
+			<TextBlock x:Uid="Cooler_Config" Text="Сохранённые конфиги:" FontSize="20" Margin="0,-10,0,0"></TextBlock>
+			<ComboBox x:ConnectionId='3' x:Name="Selfan" Height="30" Width="200" Margin="230,-10,0,0"                                            SelectedIndex="0">
+                <ComboBoxItem>Acer Aspire 1410</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire 1810T</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire 1810TZ</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire 1825PTZ</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire 5738G</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire 5745G</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire 5749</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire 5930</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire 7551G</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire 7735</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire 7740G</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire 7741G</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire E1-522</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire E1-772</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire E5-475G</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire E5-575G</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire E5-731</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire LT-10Q</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire One AO531h</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire One AO751h</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire One AOA110</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire One AOA150</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire S3</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire S7-191</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire S7-391</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire V13</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire V3-371</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire V3-571G</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire V5-551</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire V5-572G</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire VN7-572G V15 Nitro BE</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire VN7-591G V15 Nitro BE</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire VN7-791G V17 Nitro BE</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire VN7-792G V17 Nitro BE</ComboBoxItem>
+                <ComboBoxItem>Acer Aspire VN7-793G V17 Nitro BE</ComboBoxItem>
+                <ComboBoxItem>Acer Extensa 5220</ComboBoxItem>
+                <ComboBoxItem>Acer Extensa 5630Z</ComboBoxItem>
+                <ComboBoxItem>Acer LT-10Q</ComboBoxItem>
+                <ComboBoxItem>Acer Predator G3-572</ComboBoxItem>
+                <ComboBoxItem>Acer TravelMate 7730G</ComboBoxItem>
+                <ComboBoxItem>Asus F5SR</ComboBoxItem>
+                <ComboBoxItem>Asus G53SX</ComboBoxItem>
+                <ComboBoxItem>Asus K43SD</ComboBoxItem>
+                <ComboBoxItem>Asus K501LX</ComboBoxItem>
+                <ComboBoxItem>Asus K501UX</ComboBoxItem>
+                <ComboBoxItem>Asus M52VA</ComboBoxItem>
+                <ComboBoxItem>Asus N550JV</ComboBoxItem>
+                <ComboBoxItem>Asus N551JB</ComboBoxItem>
+                <ComboBoxItem>Asus N56JR</ComboBoxItem>
+                <ComboBoxItem>Asus N56VZ</ComboBoxItem>
+                <ComboBoxItem>Asus ROG G501JW</ComboBoxItem>
+                <ComboBoxItem>Asus ROG G751JL</ComboBoxItem>
+                <ComboBoxItem>Asus ROG G751JY</ComboBoxItem>
+                <ComboBoxItem>Asus ROG G752VS</ComboBoxItem>
+                <ComboBoxItem>Asus ROG G752VT</ComboBoxItem>
+                <ComboBoxItem>Asus ROG G752VY</ComboBoxItem>
+                <ComboBoxItem>Asus ROG G75VX</ComboBoxItem>
+                <ComboBoxItem>Asus ROG GL702VM</ComboBoxItem>
+                <ComboBoxItem>Asus ROG GL702ZC</ComboBoxItem>
+                <ComboBoxItem>Asus Transformer 3 Pro</ComboBoxItem>
+                <ComboBoxItem>Asus Vivobook S400CA</ComboBoxItem>
+                <ComboBoxItem>Asus Vivobook TP301UA</ComboBoxItem>
+                <ComboBoxItem>ASUS Vivobook X580VD</ComboBoxItem>
+                <ComboBoxItem>Asus X301A1</ComboBoxItem>
+                <ComboBoxItem>Asus X540LA</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook Flip UX360UAK</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook Pro UX550VE</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX21E</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX301LA</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX302LA</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX310UA</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX310UAK</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX31A</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX32A</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX32LN</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX32VD</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX410UQ</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX430UA</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX430UQ</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX51VZA</ComboBoxItem>
+                <ComboBoxItem>Asus Zenbook UX530U</ComboBoxItem>
+                <ComboBoxItem>Dell Inspiron 7348</ComboBoxItem>
+                <ComboBoxItem>Dell Inspiron 7375</ComboBoxItem>
+                <ComboBoxItem>Dell Vostro 3350</ComboBoxItem>
+                <ComboBoxItem>Dell XPS M1530</ComboBoxItem>
+                <ComboBoxItem>Fujitsu ESPRIMO Mobile V5505</ComboBoxItem>
+                <ComboBoxItem>Gateway AOA110</ComboBoxItem>
+                <ComboBoxItem>Gateway AOA150</ComboBoxItem>
+                <ComboBoxItem>Gateway LT31</ComboBoxItem>
+                <ComboBoxItem>Gigabyte p35w v3</ComboBoxItem>
+                <ComboBoxItem>HP Compaq 15-s103tx</ComboBoxItem>
+                <ComboBoxItem>HP Compaq 615</ComboBoxItem>
+                <ComboBoxItem>HP Compaq 625</ComboBoxItem>
+                <ComboBoxItem>HP Compaq 6735s Turion X2 RM-72</ComboBoxItem>
+                <ComboBoxItem>HP Compaq 8710p</ComboBoxItem>
+                <ComboBoxItem>HP Compaq nw9440</ComboBoxItem>
+                <ComboBoxItem>HP Compaq Presario CQ40 Turion X2 RM-74</ComboBoxItem>
+                <ComboBoxItem>HP EliteBook 2560p</ComboBoxItem>
+                <ComboBoxItem>HP EliteBook 2570p</ComboBoxItem>
+                <ComboBoxItem>HP EliteBook 2760p</ComboBoxItem>
+                <ComboBoxItem>HP EliteBook 8560p</ComboBoxItem>
+                <ComboBoxItem>HP EliteBook 8560w</ComboBoxItem>
+                <ComboBoxItem>HP EliteBook 8760w</ComboBoxItem>
+                <ComboBoxItem>HP EliteBook Folio 1040 G1</ComboBoxItem>
+                <ComboBoxItem>HP EliteBook Folio 9470m</ComboBoxItem>
+                <ComboBoxItem>HP EliteBook Folio 9470m_i5-3427u_bios-F.66</ComboBoxItem>
+                <ComboBoxItem>HP ENVY m6 1206dx</ComboBoxItem>
+                <ComboBoxItem>HP ENVY m6 Sleekbook</ComboBoxItem>
+                <ComboBoxItem>HP ENVY m6-1254eo</ComboBoxItem>
+                <ComboBoxItem>HP ENVY x360 Convertible 13-ag0xxx</ComboBoxItem>
+                <ComboBoxItem>HP ENVY x360 Convertible 15-cn0xxx</ComboBoxItem>
+                <ComboBoxItem>HP Laptop 14-cm0xxx</ComboBoxItem>
+                <ComboBoxItem>HP OMEN Notebook PC 15</ComboBoxItem>
+                <ComboBoxItem>HP Pavilion 14-v066br</ComboBoxItem>
+                <ComboBoxItem>HP Pavilion 17-ab240nd</ComboBoxItem>
+                <ComboBoxItem>HP Pavilion dv6 6190</ComboBoxItem>
+                <ComboBoxItem>HP Pavilion dv6</ComboBoxItem>
+                <ComboBoxItem>HP Pavilion HDX18</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 430 G1</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 440 G3</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 450 G1</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 4520s</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 4530s</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 4535s</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 4540s</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 4710s</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 4720s</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 5330m</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 6455b</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 6460b</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 6465b</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 650 G1</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 650 G2</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 6550b</ComboBoxItem>
+                <ComboBoxItem>HP ProBook 6560b</ComboBoxItem>
+                <ComboBoxItem>HP Spectre x360 Convertible 13-ae0xx</ComboBoxItem>
+                <ComboBoxItem>HP ZBook 15</ComboBoxItem>
+                <ComboBoxItem>HP ZBook Studio G3</ComboBoxItem>
+                <ComboBoxItem>Lenovo Ideapad 500S-13ISK</ComboBoxItem>
+                <ComboBoxItem>Lenovo Ideapad 500S-14ISK</ComboBoxItem>
+                <ComboBoxItem>Lenovo Ideapad 510s</ComboBoxItem>
+                <ComboBoxItem>Lenovo Ideapad 710S</ComboBoxItem>
+                <ComboBoxItem>Lenovo Ideapad U160</ComboBoxItem>
+                <ComboBoxItem>Lenovo Ideapad U330p</ComboBoxItem>
+                <ComboBoxItem>Lenovo Ideapad U430p</ComboBoxItem>
+                <ComboBoxItem>Lenovo IdeaPad Y580</ComboBoxItem>
+                <ComboBoxItem>Lenovo ThinkPad 13</ComboBoxItem>
+                <ComboBoxItem>Lenovo ThinkPad Edge E520</ComboBoxItem>
+                <ComboBoxItem>Lenovo ThinkPad Helix</ComboBoxItem>
+                <ComboBoxItem>Lenovo ThinkPad T430s</ComboBoxItem>
+                <ComboBoxItem>Lenovo ThinkPad T440s</ComboBoxItem>
+                <ComboBoxItem>Lenovo ThinkPad T540p</ComboBoxItem>
+                <ComboBoxItem>Lenovo ThinkPad x121e</ComboBoxItem>
+                <ComboBoxItem>Lenovo ThinkPad x220i</ComboBoxItem>
+                <ComboBoxItem>Lenovo ThinkPad x230</ComboBoxItem>
+                <ComboBoxItem>Lenovo U31-70</ComboBoxItem>
+                <ComboBoxItem>Lenovo U41-70</ComboBoxItem>
+                <ComboBoxItem>Lenovo V580</ComboBoxItem>
+                <ComboBoxItem>Lenovo Yoga 11s</ComboBoxItem>
+                <ComboBoxItem>Lenovo Yoga 13 2191</ComboBoxItem>
+                <ComboBoxItem>Lenovo Yoga 2 13</ComboBoxItem>
+                <ComboBoxItem>Lenovo Yoga 3 14</ComboBoxItem>
+                <ComboBoxItem>Lenovo Yoga 510</ComboBoxItem>
+                <ComboBoxItem>Lenovo Yoga 710</ComboBoxItem>
+                <ComboBoxItem>Medion Akoya P6612</ComboBoxItem>
+                <ComboBoxItem>Medion Akoya P6630</ComboBoxItem>
+                <ComboBoxItem>Packard Bell AOA110</ComboBoxItem>
+                <ComboBoxItem>Packard Bell AOA150</ComboBoxItem>
+                <ComboBoxItem>Packard Bell DOA150</ComboBoxItem>
+                <ComboBoxItem>Packard Bell DOTMA</ComboBoxItem>
+                <ComboBoxItem>Packard Bell DOTMU</ComboBoxItem>
+                <ComboBoxItem>Packard Bell DOTVR46</ComboBoxItem>
+                <ComboBoxItem>Packard Bell Easynote TJ65</ComboBoxItem>
+                <ComboBoxItem>Packard Bell ENBFT</ComboBoxItem>
+                <ComboBoxItem>Sony Vaio SVE1711</ComboBoxItem>
+                <ComboBoxItem>Sony Vaio SVE1713Y1E</ComboBoxItem>
+                <ComboBoxItem>Sony Vaio SVF13N190X</ComboBoxItem>
+                <ComboBoxItem>Sony Vaio SVF14N1C5E</ComboBoxItem>
+                <ComboBoxItem>Sony Vaio SVT1312M1ES</ComboBoxItem>
+                <ComboBoxItem>Sony Vaio VPCF12S1E</ComboBoxItem>
+                <ComboBoxItem>Toshiba Satellite L740</ComboBoxItem>
+                <ComboBoxItem>Toshiba Satellite L745</ComboBoxItem>
+                <ComboBoxItem>Xiaomi Mi Book</ComboBoxItem>
+            </ComboBox>
+			<Grid>
+				<TextBlock x:Uid="Cooler_Service" Margin="0,30,0,0" Text="Сервис контроля скорости:" FontSize="16"/>
+                <RadioButton x:ConnectionId='9' x:Name="Disabl"                           VerticalAlignment="Top" Margin="0,60,0,0"/>
+                <RadioButton x:ConnectionId='10' x:Name="Readon"                           VerticalAlignment="Top" Margin="0,90,0,0"/>
+                <RadioButton x:ConnectionId='11' x:Name="Enabl"                         VerticalAlignment="Top" Margin="0,120,0,0"/>
+                <TextBlock FontSize="13" x:Uid="Cooler_Service_Disabled" Text="Выключен" VerticalAlignment="Top" Margin="30,65,0,0"/>
+                <TextBlock FontSize="13" x:Uid="Cooler_Service_Read" Text="Только для чтения" VerticalAlignment="Top" Margin="30,95,0,0"/>
+                <TextBlock FontSize="13" x:Uid="Cooler_Service_Enabled" Text="Включен" VerticalAlignment="Top" Margin="30,125,0,0"/>
+            </Grid>
+            <Grid>
+                <TextBlock x:ConnectionId='8' FontSize="15" VerticalAlignment="Top" Margin="0,160,0,0" x:Uid="Cooler_Temp" x:Name="Temp" Text="Текущая температура: 59 C"/>
+            </Grid>
+            <ScrollViewer VerticalAlignment="Top" Margin="0,185,-50,0">
+                <Grid>
+                    <Grid>
+                        
+                        <TextBlock x:ConnectionId='6' VerticalAlignment="Top" x:Name="Fan1Val" Text="Auto" Margin="140,30,0,0"/>
+                        <TextBlock Text="Fan #1"/>
+                        <Slider x:ConnectionId='7' x:Uid="Cooler_Fan" x:Name="Fan1"                                  HorizontalAlignment="Left" Width="200" Header="Желаемая скорость вращения: " Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
+                        <TextBlock x:Uid="Cooler_Current_Fan" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
+                        <ProgressBar IsEnabled="False" Value="25" HorizontalAlignment="Left" Width="200" Margin="0,-50,0,0"></ProgressBar>
+                    </Grid>
+                    <Grid Margin="0,170,0,0">
+                        <TextBlock x:ConnectionId='4' VerticalAlignment="Top" x:Name="Fan2Val" Text="Auto" Margin="140,30,0,0"/>
+                        <TextBlock Text="Fan #2"/>
+                        <Slider x:ConnectionId='5'  x:Uid="Cooler_Fan" x:Name="Fan2"                                  HorizontalAlignment="Left" Width="200" Header="Желаемая скорость вращения:  " Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
+                        <TextBlock x:Uid="Cooler_Current_Fan" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
+                        <ProgressBar IsEnabled="False" Value="25" HorizontalAlignment="Left" Width="200" Margin="0,120,0,0"></ProgressBar>
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
+		</Grid>
+	</Grid>
+</Page>
+

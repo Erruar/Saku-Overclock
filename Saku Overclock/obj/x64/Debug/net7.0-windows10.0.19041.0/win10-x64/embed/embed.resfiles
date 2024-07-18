@@ -1,0 +1,17 @@
+App.xbf
+MainWindow.xbf
+ProfileSwitcher\ProfileSwitcher.xbf
+Styles\ComboBoxCollapseLauncher.xbf
+Styles\FontSizes.xbf
+Styles\TextBlock.xbf
+Styles\Thickness.xbf
+Styles\ToggleButtonCollapseLauncher.xbf
+Views\AdvancedКулерPage.xbf
+Views\PowerWindow.xbf
+Views\SettingsPage.xbf
+Views\ShellPage.xbf
+Views\ГлавнаяPage.xbf
+Views\ИнформацияPage.xbf
+Views\КулерPage.xbf
+Views\ПараметрыPage.xbf
+Views\ПресетыPage.xbf

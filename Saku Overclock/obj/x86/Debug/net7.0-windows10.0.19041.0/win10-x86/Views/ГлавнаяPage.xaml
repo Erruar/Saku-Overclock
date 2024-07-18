@@ -1,0 +1,79 @@
+﻿<Page
+    x:Class="Saku_Overclock.Views.ГлавнаяPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ui="using:ABI.Microsoft.UI.Xaml.Controls" xmlns:emit="using:System.Reflection.Emit"
+    mc:Ignorable="d">
+    <Grid x:ConnectionId='2' x:Name="ContentArea">
+        <Border
+               MinHeight="325"
+               CornerRadius="8" Margin="0,-180,0,0">
+            <Border.Background>
+                <ImageBrush
+                           ImageSource="/Assets/home.png"
+                           Stretch="UniformToFill" />
+            </Border.Background>
+        </Border>
+        <TextBlock x:Uid="Main_Welcome" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Добро пожаловать в" Margin="0,105,0,0"/>
+        <TextBlock FontSize="27" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Saku Overclock" Margin="0,130,0,0"/>
+        <TextBlock x:Uid="Main_Welcome_1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Для тех, кто желает максимум!" Margin="0,170,0,0"/>
+        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Ver 1.0.1.5 BETA" Margin="0,198,0,0"/>
+        
+        <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button x:ConnectionId='3' Grid.Column="0" Height="60"                     >
+                <Grid>
+                    <Grid Width="2000">
+                        <SymbolIcon Symbol="Favorite" HorizontalAlignment="Left"/>
+                        <TextBlock x:Uid="Main_Preset" HorizontalAlignment="Left" Margin="67,0,0,0" FontSize="17" Text="Пресеты"/>
+                    </Grid>
+                    <TextBlock Text=">" FontSize="20" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                </Grid>
+                
+            </Button>
+            <Button x:ConnectionId='4' Grid.Column="2" Height="60"                    >
+                <Grid>
+                    <Grid Width="2000">
+                        <SymbolIcon Symbol="Edit" HorizontalAlignment="Left"/>
+                        <TextBlock x:Uid="Main_Param" HorizontalAlignment="Left" Margin="60,0,0,0" FontSize="17" Text="Параметры"/>
+
+                    </Grid>
+                    <TextBlock Text=">" FontSize="20" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                </Grid>
+            </Button>
+            <Button x:ConnectionId='5' Grid.Column="4" Height="60"                   >
+                <Grid>
+                    <Grid Width="2000">
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe950;"/>
+                        <TextBlock x:Uid="Main_Info" HorizontalAlignment="Left" Margin="55,0,0,0" FontSize="17" Text="Информация"/>
+                    </Grid>
+                    <TextBlock Text=">" FontSize="20" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                </Grid>
+            </Button>
+            <Button x:ConnectionId='6' Grid.Column="6" Height="60" x:Name="Discrd"                     >
+                <Grid>
+                    <Grid Width="2000">
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Glyph="&#xe8aa;"/>
+                        <TextBlock x:Uid="Main_Disc" HorizontalAlignment="Left" Margin="60,0,0,0" FontSize="17" Text="Дискордик"/>
+                    </Grid>
+                    <TextBlock Text=">" FontSize="20" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                </Grid>
+            </Button>
+        </Grid>
+        
+    </Grid>
+</Page>
+

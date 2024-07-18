@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window x:ConnectionId='1'
+    x:Class="Saku_Overclock.Views.PowerWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Saku_Overclock.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" Title="Saku PowerMon PRO">
+    <Grid>
+        <Grid x:ConnectionId='2' x:Name="AppTitleBar"
+      Canvas.ZIndex="1"
+      Height="50"
+      IsHitTestVisible="True"
+      VerticalAlignment="Top">
+            <Image Margin="12,-6,0,0" Source="/Assets/powermon.png"
+           HorizontalAlignment="Left"
+           Width="24"
+           Height="24"/>
+            <TextBlock x:ConnectionId='9' x:Name="AppTitleBarText"
+               VerticalAlignment="Center"
+               TextWrapping="NoWrap" 
+               Style="{StaticResource CaptionTextBlockStyle}"
+               Margin="40,0,0,0"/>
+            <HyperlinkButton TabIndex="-1" Margin="120,1,0,0">PRO</HyperlinkButton>
+        </Grid>
+        <ScrollViewer Margin="0,50,0,33"  Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <Grid x:ConnectionId='5' x:Name="Grid1">
+                <GridView x:ConnectionId='6' x:Name="PowerGridView"                                        HorizontalAlignment="Left">
+                    <GridView.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="65"/>
+                                <ColumnDefinition Width="65"/>
+                                <ColumnDefinition Width="65"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Index" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Column="0"/>
+                            <TextBlock Text="Offset" VerticalAlignment="Center" Margin="-24,0,0,0" HorizontalAlignment="Center" Grid.Column="1"/>
+                            <TextBlock Text="Value" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2"/>
+                            <TextBlock Text="Quick Note" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="3"/>
+                        </Grid>
+                    </GridView.Header>
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="65"/>
+                                    <ColumnDefinition Width="65"/>
+                                    <ColumnDefinition Width="65"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Text="{Binding Index}" Grid.Column="0"/>
+                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Offset}" Grid.Column="1"/>
+                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Value}" Grid.Column="2"/>
+                                <TextBox Margin="10,0,0,0" Text="{Binding Note, Mode=TwoWay}" Width="2500"  Grid.Column="3"/>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid HorizontalAlignment="Left" x:Name="MaxItemsWrapGrid"
+                           MaximumRowsOrColumns="1"
+                           Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
+            </Grid>
+        </ScrollViewer>
+        <NumberBox x:ConnectionId='3' VerticalAlignment="Bottom" Minimum="200" HorizontalAlignment="Left" Value="2000" Height="33" SpinButtonPlacementMode="Inline" SmallChange="200"  LargeChange="400" Width="150" x:Name="numericUpDownInterval" ></NumberBox>
+        <Button x:ConnectionId='4' VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="173" Height="33"                     >Reapply every</Button>
+    </Grid>
+</Window>
+
