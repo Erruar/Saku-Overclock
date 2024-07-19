@@ -206,7 +206,7 @@ Translation="0,0,8">
                FontSize="8"
                FontWeight="Bold"
                Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-               Text="RC-3" />
+               Text="RC-5" />
                             </StackPanel>
                         </StackPanel>
                     </Button>

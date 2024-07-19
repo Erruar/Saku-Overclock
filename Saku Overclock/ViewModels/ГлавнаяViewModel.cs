@@ -26,6 +26,6 @@ public partial class ГлавнаяViewModel : ObservableRecipient
         {
             version = Assembly.GetExecutingAssembly().GetName().Version!;
         }
-        return $"Ver {version.Major}.{version.Minor}.{version.Build}.{version.Revision} Rel-Cand v4";
+        return $"Ver {version.Major}.{version.Minor}.{version.Build}.{version.Revision} Rel-Cand v5";
     }  
 }

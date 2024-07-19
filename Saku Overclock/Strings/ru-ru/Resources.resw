@@ -1029,7 +1029,7 @@ AMD APU + AMD dGPU
     <value>Загрузка процессора</value>
   </data>
   <data name="infoAFast.Text" xml:space="preserve">
-    <value>Тик быстрого разгона</value>
+    <value>Вр. быстр. разгона</value>
   </data>
   <data name="infoAGPUTEMPC.Text" xml:space="preserve">
     <value>Текущая темп dGPU</value>
@@ -1038,31 +1038,19 @@ AMD APU + AMD dGPU
     <value>Макс темп dGPU</value>
   </data>
   <data name="infoASlow.Text" xml:space="preserve">
-    <value>Тик долгого разгона</value>
+    <value>Вр. долг. разгона</value>
   </data>
   <data name="infoASOCEDCC.Text" xml:space="preserve">
-    <value>Текущий ток SoC</value>
-  </data>
-  <data name="infoASOCEDCL.Text" xml:space="preserve">
-    <value>Лимит тока SoC</value>
+    <value>Ток на SoC EDC</value>
   </data>
   <data name="infoASOCTDCC.Text" xml:space="preserve">
-    <value>Текущее SoC TDC</value>
-  </data>
-  <data name="infoASOCTDCL.Text" xml:space="preserve">
-    <value>Лимит тока SoC TDC</value>
+    <value>Ток на SoC TDC</value>
   </data>
   <data name="infoAVRMEDCC.Text" xml:space="preserve">
-    <value>Текущий ток VRM</value>
-  </data>
-  <data name="infoAVRMEDCL.Text" xml:space="preserve">
-    <value>Лимит тока VRM</value>
+    <value>Ток на VRM EDC</value>
   </data>
   <data name="infoAVRMTDCC.Text" xml:space="preserve">
-    <value>Текущее VRM TDC</value>
-  </data>
-  <data name="infoAVRMTDCL.Text" xml:space="preserve">
-    <value>Лимит тока VRM TDC</value>
+    <value>Ток на VRM TDC</value>
   </data>
   <data name="infoMMEM.Text" xml:space="preserve">
     <value>Тип памяти</value>
@@ -2157,6 +2145,99 @@ Overclock будут проигнорированы,
     <value>ГП</value>
   </data>
   <data name="InfoRAMSectionName" xml:space="preserve">
+    <value>ОЗУ</value>
+  </data>
+  <data name="infoAAPUPower.Text" xml:space="preserve">
+    <value>Мощность APU</value>
+  </data>
+  <data name="infoAAPUTemp.Text" xml:space="preserve">
+    <value>Температура APU</value>
+  </data>
+  <data name="infoABATChargeRate.Text" xml:space="preserve">
+    <value>Мощность зарядки</value>
+  </data>
+  <data name="infoABATCycles.Text" xml:space="preserve">
+    <value>Количество циклов</value>
+  </data>
+  <data name="infoABATFullCapacity.Text" xml:space="preserve">
+    <value>Полная ёмкость</value>
+  </data>
+  <data name="infoABATRemainTime.Text" xml:space="preserve">
+    <value>Оставшееся время</value>
+  </data>
+  <data name="infoABATState.Text" xml:space="preserve">
+    <value>Состояние</value>
+  </data>
+  <data name="infoABATWear.Text" xml:space="preserve">
+    <value>Степень износа</value>
+  </data>
+  <data name="infoADGPUTemp.Text" xml:space="preserve">
+    <value>Температура dGPU</value>
+  </data>
+  <data name="infoAPSTState.Text" xml:space="preserve">
+    <value>Состояние</value>
+  </data>
+  <data name="infoARAMInfFabric.Text" xml:space="preserve">
+    <value>Частота Infinity Fabric</value>
+  </data>
+  <data name="infoARAMMemCLK.Text" xml:space="preserve">
+    <value>Частота ОЗУ</value>
+  </data>
+  <data name="infoARAMSoCPower.Text" xml:space="preserve">
+    <value>Мощность SoC</value>
+  </data>
+  <data name="infoARAMSoCVolt.Text" xml:space="preserve">
+    <value>Напряжение SoC</value>
+  </data>
+  <data name="InfoARTSSShowText.Text" xml:space="preserve">
+    <value>Отображать метрики в RTSS</value>
+  </data>
+  <data name="InfoARTSSTooltip.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отображать метрики в RTSS
+Поможет вам смотреть показатели 
+вашего устройства прямо в игре 
+через RTSS</value>
+  </data>
+  <data name="InfoBattery.Text" xml:space="preserve">
+    <value>Батарея</value>
+  </data>
+  <data name="InfoBatteryAC" xml:space="preserve">
+    <value>От сети</value>
+  </data>
+  <data name="InfoBatteryName" xml:space="preserve">
+    <value>Батарея</value>
+  </data>
+  <data name="InfoCPUComboFreq.Content" xml:space="preserve">
+    <value>Частоты</value>
+  </data>
+  <data name="InfoCPUComboPowr.Content" xml:space="preserve">
+    <value>Мощности</value>
+  </data>
+  <data name="InfoCPUComboTemp.Content" xml:space="preserve">
+    <value>Температуры</value>
+  </data>
+  <data name="InfoCPUComboVolt.Content" xml:space="preserve">
+    <value>Напряжения</value>
+  </data>
+  <data name="InfoCPUCore" xml:space="preserve">
+    <value>Ядро</value>
+  </data>
+  <data name="InfoCPUThread" xml:space="preserve">
+    <value>Поток</value>
+  </data>
+  <data name="InfoFreqBoundsMHZ" xml:space="preserve">
+    <value>МГц</value>
+  </data>
+  <data name="InfoGFX.Text" xml:space="preserve">
+    <value>ГПУ</value>
+  </data>
+  <data name="InfoGPUName" xml:space="preserve">
+    <value>ГПУ</value>
+  </data>
+  <data name="InfoPSTState" xml:space="preserve">
+    <value>-Состояние</value>
+  </data>
+  <data name="InfoRAM.Text" xml:space="preserve">
     <value>ОЗУ</value>
   </data>
 </root>

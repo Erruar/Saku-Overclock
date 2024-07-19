@@ -308,16 +308,16 @@ public sealed partial class ИнформацияPage : Page
                                             VerticalAlignment = VerticalAlignment.Center,
                                             HorizontalAlignment = HorizontalAlignment.Right,
                                             Text = (SelectedGroup == 0 || SelectedGroup == 5) ? 
-                                            (currCore < numberOfCores ? "Core" 
-                                            : "Thread") 
-                                            : (SelectedGroup == 1 ? "GPU" 
+                                            (currCore < numberOfCores ? "InfoCPUCore".GetLocalized()
+                                            : "InfoCPUThread".GetLocalized()) 
+                                            : (SelectedGroup == 1 ? "InfoGPUName".GetLocalized()
                                             : (SelectedGroup == 2 ? tbSlots.Text.Split('*')[1].Replace("Bit","") 
                                             : (SelectedGroup == 3 ? 
                                               (currCore == 0 ? "VRM EDC" 
                                             : ( currCore == 1 ? "VRM TDC" 
                                             : (currCore == 2 ? "SoC EDC" 
                                             : "SoC TDC")))
-                                            : "Battery"))),
+                                            : "InfoBatteryName".GetLocalized()))),
                                             FontWeight = new Windows.UI.Text.FontWeight(200)
                                         }
                                     }
@@ -339,7 +339,7 @@ public sealed partial class ИнформацияPage : Page
         {
             tbBAT.Text = GetSystemInfo.GetBatteryPercent().ToString() + "W";
             tbBATState.Text = GetSystemInfo.GetBatteryStatus().ToString();
-            tbBATHealth.Text = $"{(GetSystemInfo.GetBatteryHealth() * 100):0.##}%";
+            tbBATHealth.Text = $"{100 - (GetSystemInfo.GetBatteryHealth() * 100):0.##}%";
             tbBATCycles.Text = $"{GetSystemInfo.GetBatteryCycle()}";
             tbBATCapacity.Text = $"{GetSystemInfo.ReadFullChargeCapacity()}mAh/{GetSystemInfo.ReadDesignCapacity()}mAh";
             tbBATChargeRate.Text = $"{(GetSystemInfo.GetBatteryRate() / 1000):0.##}W";
@@ -533,7 +533,7 @@ public sealed partial class ИнформацияPage : Page
                     }
                     if (SelectedGroup == 4)
                     {
-                        infoCPUSectionName.Text = "Battery";
+                        infoCPUSectionName.Text = "InfoBatteryName".GetLocalized();
                         InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
                         InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
                         InfoRAMSectionMetrics.Visibility = Visibility.Collapsed;
@@ -586,7 +586,7 @@ public sealed partial class ИнформацияPage : Page
                 tbBATChargeRate.Text = $"{batteryRate}W";
                 tbBAT.Text = GetSystemInfo.GetBatteryPercent() + "%";
                 var batLifeTime = GetSystemInfo.GetBatteryLifeTime() + 0d; 
-                tbBATTime.Text = batLifeTime == -1 ? "AC" : $"{Math.Round(batLifeTime / 60 / 60, 0)}h {Math.Round((batLifeTime / 60 / 60 - Math.Round(batLifeTime / 60 / 60, 0)) * 60, 0)}m {Math.Round(((batLifeTime / 60 / 60 - (int)(batLifeTime / 60 / 60)) * 60 - Math.Round((batLifeTime / 60 / 60 - Math.Round(batLifeTime / 60 / 60, 0)) * 60, 0)) * 60, 0)}s".Replace('-',char.MinValue);
+                tbBATTime.Text = batLifeTime == -1 ? "InfoBatteryAC".GetLocalized() : $"{Math.Round(batLifeTime / 60 / 60, 0)}h {Math.Round((batLifeTime / 60 / 60 - Math.Round(batLifeTime / 60 / 60, 0)) * 60, 0)}m {Math.Round(((batLifeTime / 60 / 60 - (int)(batLifeTime / 60 / 60)) * 60 - Math.Round((batLifeTime / 60 / 60 - Math.Round(batLifeTime / 60 / 60, 0)) * 60, 0)) * 60, 0)}s".Replace('-',char.MinValue);
                 InfoBATUsage.Text = tbBAT.Text + " " + tbBATChargeRate.Text + "\n" + tbBATTime.Text;
                 infoABATUsageBannerPolygonText.Text = tbBATChargeRate.Text;
                 tbBATState.Text = GetSystemInfo.GetBatteryStatus().ToString(); 
@@ -614,8 +614,8 @@ public sealed partial class ИнформацияPage : Page
                 tbSOCEDCL.Text = Math.Round(RyzenADJWrapper.get_vrmsocmax_current_value(ryzenAccess), 3) + "A/" + Math.Round(RyzenADJWrapper.get_vrmsocmax_current(ryzenAccess), 3) + "A";
                 tbSOCVOLT.Text = Math.Round(RyzenADJWrapper.get_soc_volt(ryzenAccess), 3) + "V";
                 tbSOCPOWER.Text = Math.Round(RyzenADJWrapper.get_soc_power(ryzenAccess), 3) + "W";
-                tbMEMCLOCK.Text = Math.Round(RyzenADJWrapper.get_mem_clk(ryzenAccess), 3) + "MHz";
-                tbFabricClock.Text = Math.Round(RyzenADJWrapper.get_fclk(ryzenAccess), 3) + "MHz";
+                tbMEMCLOCK.Text = Math.Round(RyzenADJWrapper.get_mem_clk(ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
+                tbFabricClock.Text = Math.Round(RyzenADJWrapper.get_fclk(ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
                 var core_Clk = 0f;
                 var endtrace = 0;
                 var core_Volt = 0f;
@@ -723,7 +723,7 @@ public sealed partial class ИнформацияPage : Page
                     {
                         tbPST.Text = "P0"; infoAPSTUsageBannerPolygonText.Text = "P0"; currentPstate = 3;
                     }
-                    InfoPSTUsage.Text = tbPST.Text + "-State";
+                    InfoPSTUsage.Text = tbPST.Text + "InfoPSTState".GetLocalized();
                 }
                 else
                 {

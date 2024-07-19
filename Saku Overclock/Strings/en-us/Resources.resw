@@ -992,7 +992,7 @@ the information page!</value>
     <value>CPU Usage</value>
   </data>
   <data name="infoAFast.Text" xml:space="preserve">
-    <value>Fast Freq Rise</value>
+    <value>Fast Time</value>
   </data>
   <data name="infoAGPUTEMPC.Text" xml:space="preserve">
     <value>dGPU Curr Temp</value>
@@ -1001,31 +1001,19 @@ the information page!</value>
     <value>dGPU Max Temp</value>
   </data>
   <data name="infoASlow.Text" xml:space="preserve">
-    <value>Slow Freq Rise</value>
+    <value>Slow Time</value>
   </data>
   <data name="infoASOCEDCC.Text" xml:space="preserve">
-    <value>SoC Current EDC</value>
-  </data>
-  <data name="infoASOCEDCL.Text" xml:space="preserve">
-    <value>SoC Limit EDC</value>
+    <value>EDC SoC Current</value>
   </data>
   <data name="infoASOCTDCC.Text" xml:space="preserve">
-    <value>SoC Current TDC</value>
-  </data>
-  <data name="infoASOCTDCL.Text" xml:space="preserve">
-    <value>SoC Limit TDC</value>
+    <value>TDC SoC Current</value>
   </data>
   <data name="infoAVRMEDCC.Text" xml:space="preserve">
-    <value>VRM Current EDC</value>
-  </data>
-  <data name="infoAVRMEDCL.Text" xml:space="preserve">
-    <value>VRM Limit EDC</value>
+    <value>EDC Current</value>
   </data>
   <data name="infoAVRMTDCC.Text" xml:space="preserve">
-    <value>VRM Current TDC</value>
-  </data>
-  <data name="infoAVRMTDCL.Text" xml:space="preserve">
-    <value>VRM Limit TDC</value>
+    <value>TDC Current</value>
   </data>
   <data name="infoMMEM.Text" xml:space="preserve">
     <value>Memory</value>
@@ -2085,6 +2073,99 @@ AND DO NOT TOUCH IT!</value>
     <value>GPU</value>
   </data>
   <data name="InfoRAMSectionName" xml:space="preserve">
+    <value>RAM</value>
+  </data>
+  <data name="infoAAPUPower.Text" xml:space="preserve">
+    <value>APU Power</value>
+  </data>
+  <data name="infoAAPUTemp.Text" xml:space="preserve">
+    <value>APU Temperature</value>
+  </data>
+  <data name="infoABATChargeRate.Text" xml:space="preserve">
+    <value>Charge rate</value>
+  </data>
+  <data name="infoABATCycles.Text" xml:space="preserve">
+    <value>Cycles</value>
+  </data>
+  <data name="infoABATFullCapacity.Text" xml:space="preserve">
+    <value>Full Capacity</value>
+  </data>
+  <data name="infoABATRemainTime.Text" xml:space="preserve">
+    <value>Remaining time</value>
+  </data>
+  <data name="infoABATState.Text" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="infoABATWear.Text" xml:space="preserve">
+    <value>Wear level</value>
+  </data>
+  <data name="infoADGPUTemp.Text" xml:space="preserve">
+    <value>dGPU Temperature</value>
+  </data>
+  <data name="infoAPSTState.Text" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="infoARAMInfFabric.Text" xml:space="preserve">
+    <value>Infinity Fabric</value>
+  </data>
+  <data name="infoARAMMemCLK.Text" xml:space="preserve">
+    <value>MEM CLK</value>
+  </data>
+  <data name="infoARAMSoCPower.Text" xml:space="preserve">
+    <value>SoC Power</value>
+  </data>
+  <data name="infoARAMSoCVolt.Text" xml:space="preserve">
+    <value>SoC Volt</value>
+  </data>
+  <data name="InfoARTSSShowText.Text" xml:space="preserve">
+    <value>Show metrics in RTSS</value>
+  </data>
+  <data name="InfoARTSSTooltip.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Show metrics in RTSS
+It will help you to view the 
+performance of your device 
+directly in the game via RTSS</value>
+  </data>
+  <data name="InfoBattery.Text" xml:space="preserve">
+    <value>Battery</value>
+  </data>
+  <data name="InfoBatteryAC" xml:space="preserve">
+    <value>AC</value>
+  </data>
+  <data name="InfoBatteryName" xml:space="preserve">
+    <value>Battery</value>
+  </data>
+  <data name="InfoCPUComboFreq.Content" xml:space="preserve">
+    <value>Frequency</value>
+  </data>
+  <data name="InfoCPUComboPowr.Content" xml:space="preserve">
+    <value>Powers</value>
+  </data>
+  <data name="InfoCPUComboTemp.Content" xml:space="preserve">
+    <value>Temperatures</value>
+  </data>
+  <data name="InfoCPUComboVolt.Content" xml:space="preserve">
+    <value>Voltages</value>
+  </data>
+  <data name="InfoCPUCore" xml:space="preserve">
+    <value>Core</value>
+  </data>
+  <data name="InfoCPUThread" xml:space="preserve">
+    <value>Thread</value>
+  </data>
+  <data name="InfoFreqBoundsMHZ" xml:space="preserve">
+    <value>MHz</value>
+  </data>
+  <data name="InfoGFX.Text" xml:space="preserve">
+    <value>GFX</value>
+  </data>
+  <data name="InfoGPUName" xml:space="preserve">
+    <value>GPU</value>
+  </data>
+  <data name="InfoPSTState" xml:space="preserve">
+    <value>-State</value>
+  </data>
+  <data name="InfoRAM.Text" xml:space="preserve">
     <value>RAM</value>
   </data>
 </root>
