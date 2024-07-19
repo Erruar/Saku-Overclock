@@ -99,14 +99,15 @@ public sealed partial class ShellPage : Page
             if ((Keys)vkCode == Keys.W && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
             { 
                 //Создать уведомление
-                AddNote("Смена пресета", "Вы успешно переключили ваши пресеты на следующий по счёту!", InfoBarSeverity.Error);
+                AddNote("Смена пресета", "Вы успешно переключили ваши пресеты на следующий по счёту!", InfoBarSeverity.Informational);
                 MainWindow.Applyer.Apply(false); 
             }
             //Переключить между готовыми пресетами - Switch profile to next Premaded
             if ((Keys)vkCode == Keys.P && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
             {
-                ProfileSwitcher.ProfileSwitcher.ShowOverlay(NextPremadeProfile_Switch());
-                AddNote("Смена пресета", "Вы успешно переключили готовые пресеты на следующий по счёту!", InfoBarSeverity.Error);
+                var nextProfile = NextPremadeProfile_Switch();
+                ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextProfile);
+                AddNote("Смена пресета", "Вы успешно переключили готовые пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
                 MainWindow.Applyer.Apply(false);
             }
         }

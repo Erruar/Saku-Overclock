@@ -237,7 +237,7 @@ public sealed partial class ИнформацияPage : Page
             InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
         }
         numberOfLogicalProcessors = backupNumberLogical;
-        var coreCounter = SelectedGroup == 0 ?
+        var coreCounter = (SelectedGroup == 0 || SelectedGroup == 5) ?
             (numberOfCores > 2 ? numberOfCores :
             (infoCPUSectionComboBox.SelectedIndex == 0 ? numberOfLogicalProcessors
             : numberOfCores))
@@ -254,7 +254,7 @@ public sealed partial class ИнформацияPage : Page
                 {
                     return;
                 }
-                var currCore = SelectedGroup == 0 ?
+                var currCore = (SelectedGroup == 0 || SelectedGroup == 5) ?
                     (numberOfCores > 2 ?
                     numberOfCores - coreCounter
                     : infoCPUSectionComboBox.SelectedIndex == 0 ?
@@ -303,7 +303,7 @@ public sealed partial class ИнформацияPage : Page
                                         {
                                             VerticalAlignment = VerticalAlignment.Center,
                                             HorizontalAlignment = HorizontalAlignment.Right,
-                                            Text = SelectedGroup == 0 ? (currCore < numberOfCores ? "Core" : "Thread") : (SelectedGroup == 1 ? "GPU" :  (SelectedGroup == 2 ? tbSlots.Text.Split('*')[1].Replace("Bit","") : currCore == 0 ? "VRM EDC" : ( currCore == 1 ? "VRM TDC" : (currCore == 2 ? "SoC EDC" : "SoC TDC")) )),
+                                            Text = (SelectedGroup == 0 || SelectedGroup == 5) ? (currCore < numberOfCores ? "Core" : "Thread") : (SelectedGroup == 1 ? "GPU" :  (SelectedGroup == 2 ? tbSlots.Text.Split('*')[1].Replace("Bit","") : currCore == 0 ? "VRM EDC" : ( currCore == 1 ? "VRM TDC" : (currCore == 2 ? "SoC EDC" : "SoC TDC")) )),
                                             FontWeight = new Windows.UI.Text.FontWeight(200)
                                         }
                                     }
@@ -435,6 +435,7 @@ public sealed partial class ИнформацияPage : Page
                 CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
                 var textBlock = (TextBlock)InfoPSTSectionMetrics.FindName($"tbPSTP{i}");
                 textBlock.Text = $"FID: {Convert.ToString(CpuFid, 10)}/DID: {Convert.ToString(CpuDfsId, 10)}\n{CpuFid * 25 / (CpuDfsId * 12.5) / 10}" + "infoAGHZ".GetLocalized();
+                PSTatesList[i] = CpuFid * 25 / (CpuDfsId * 12.5) / 10;
             }
         }
         catch (Exception ex) { SendSMUCommand.TraceIt_TraceError(ex.ToString()); }
@@ -561,6 +562,7 @@ public sealed partial class ИнформацияPage : Page
                 InfoAGPUBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoAVRMBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
 
 
                 _ = RyzenADJWrapper.refresh_table(ryzenAccess);
@@ -594,15 +596,22 @@ public sealed partial class ИнформацияPage : Page
                 var endtrace = 0;
                 var core_Volt = 0f;
                 var endtraced = 0;
+                var maxFreq = 0.0d;
+                var currentPstate = 4;
                 for (uint f = 0; f < 8; f++)
                 {
+                    var getCurrFreq = RyzenADJWrapper.get_core_clk(ryzenAccess, f);
+                    if (!float.IsNaN(getCurrFreq) && getCurrFreq > maxFreq)
+                    {
+                        maxFreq = getCurrFreq;
+                    }
                     var currCore = infoCPUSectionComboBox.SelectedIndex switch
                     {
-                        0 => RyzenADJWrapper.get_core_clk(ryzenAccess, f),
+                        0 => getCurrFreq,
                         1 => RyzenADJWrapper.get_core_volt(ryzenAccess, f),
                         2 => RyzenADJWrapper.get_core_power(ryzenAccess, f),
                         3 => RyzenADJWrapper.get_core_temp(ryzenAccess, f),
-                        _ => RyzenADJWrapper.get_core_clk(ryzenAccess, f)
+                        _ => getCurrFreq
                     };
                     if (!float.IsNaN(currCore))
                     {
@@ -610,7 +619,7 @@ public sealed partial class ИнформацияPage : Page
                         var currText = (TextBlock)InfoMainCPUFreqGrid.FindName($"FreqButtonText_{f}");
                         if (currText != null)
                         {
-                            if (SelectedGroup == 0)
+                            if (SelectedGroup == 0 || SelectedGroup == 5)
                             {
                                 currText.Text = infoCPUSectionComboBox.SelectedIndex switch
                                 {
@@ -620,7 +629,7 @@ public sealed partial class ИнформацияPage : Page
                                     3 => Math.Round(currCore, 3) + "C",
                                     _ => Math.Round(currCore, 3) + " " + "infoAGHZ".GetLocalized()
                                 };
-                            }
+                            } 
                             else
                             {
                                 if (SelectedGroup == 1)
@@ -655,20 +664,38 @@ public sealed partial class ИнформацияPage : Page
                         }
                         if (f < numberOfCores)
                         {
-                            core_Clk += RyzenADJWrapper.get_core_clk(ryzenAccess, f);
+                            core_Clk += getCurrFreq;
                             endtrace += 1;
                         }
                     }
                     var currVolt = RyzenADJWrapper.get_core_volt(ryzenAccess, f);
                     if (!float.IsNaN(currVolt))
                     {
-                        core_Volt += currVolt;
+                        core_Volt += currVolt; 
                         endtraced += 1;
                     }
                 }
                 if (endtrace != 0)
                 {
                     tbCPUFreq.Text = Math.Round(core_Clk / endtrace, 3) + " " + "infoAGHZ".GetLocalized();
+                    
+                    if (Math.Round(core_Clk / endtrace, 3) > PSTatesList[2])
+                    {
+                        tbPST.Text = "P2"; infoAPSTUsageBannerPolygonText.Text = "P2"; currentPstate = 1;
+                    }
+                    else
+                    {
+                        tbPST.Text = "C1"; infoAPSTUsageBannerPolygonText.Text = "C1"; currentPstate = 0;
+                    }
+                    if (Math.Round(core_Clk / endtrace, 3) > PSTatesList[1])
+                    {
+                        tbPST.Text = "P1"; infoAPSTUsageBannerPolygonText.Text = "P1"; currentPstate = 2;
+                    }
+                    if (Math.Round(core_Clk / endtrace, 3) > PSTatesList[0])
+                    {
+                        tbPST.Text = "P0"; infoAPSTUsageBannerPolygonText.Text = "P0"; currentPstate = 3;
+                    }
+                    InfoPSTUsage.Text = tbPST.Text + "-State";
                 }
                 else
                 {
@@ -771,6 +798,29 @@ public sealed partial class ИнформацияPage : Page
                     }
                 }
                 InfoAVRMBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 49));
+
+                //InfoAPSTBanner График
+                InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
+                PSTPointer.Add(new InfoPageCPUPoints() { X = 60, Y = 48 - (int)(currentPstate * 16) });
+                InfoAPSTBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 48 - (int)(currentPstate * 16)));
+                foreach (var element in PSTPointer.ToList())
+                {
+                    if (element != null)
+                    {
+                        if (element.X < 0)
+                        {
+                            PSTPointer.Remove(element);
+                            InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(element.X, element.Y));
+                        }
+                        else
+                        {
+                            InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(element.X, element.Y));
+                            element.X -= 1;
+                            InfoAPSTBannerPolygon.Points.Add(new Windows.Foundation.Point(element.X, element.Y));
+                        }
+                    }
+                }
+                InfoAPSTBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 49));
 
 
                 var totalRam = 0d;
@@ -896,103 +946,123 @@ public sealed partial class ИнформацияPage : Page
 
     private void CPUBannerButton_Click(object sender, RoutedEventArgs e)
     {
-        SelectedGroup = 0;
-        CPUBannerButton.Background = SelectedBrush;
-        CPUBannerButton.BorderBrush = SelectedBorderBrush;
-        GPUBannerButton.Background = TransparentBrush;
-        GPUBannerButton.BorderBrush = TransparentBrush;
-        RAMBannerButton.Background = TransparentBrush;
-        RAMBannerButton.BorderBrush = TransparentBrush;
-        VRMBannerButton.Background = TransparentBrush;
-        VRMBannerButton.BorderBrush = TransparentBrush;
-        PSTBannerButton.Background = TransparentBrush;
-        PSTBannerButton.BorderBrush = TransparentBrush;
-        InfoMainCPUFreqGrid.Children.Clear();
-        InfoCPUSectionGridBuilder();
+        if (SelectedGroup != 0)
+        {
+            SelectedGroup = 0;
+            CPUBannerButton.Background = SelectedBrush;
+            CPUBannerButton.BorderBrush = SelectedBorderBrush;
+            GPUBannerButton.Background = TransparentBrush;
+            GPUBannerButton.BorderBrush = TransparentBrush;
+            RAMBannerButton.Background = TransparentBrush;
+            RAMBannerButton.BorderBrush = TransparentBrush;
+            VRMBannerButton.Background = TransparentBrush;
+            VRMBannerButton.BorderBrush = TransparentBrush;
+            PSTBannerButton.Background = TransparentBrush;
+            PSTBannerButton.BorderBrush = TransparentBrush;
+            InfoMainCPUFreqGrid.Children.Clear();
+            InfoCPUSectionGridBuilder();
+        } 
     }
 
     private void GPUBannerButton_Click(object sender, RoutedEventArgs e)
     {
-        SelectedGroup = 1;
-        CPUBannerButton.Background = TransparentBrush;
-        CPUBannerButton.BorderBrush = TransparentBrush;
-        GPUBannerButton.Background = SelectedBrush;
-        GPUBannerButton.BorderBrush = SelectedBorderBrush;
-        RAMBannerButton.Background = TransparentBrush;
-        RAMBannerButton.BorderBrush = TransparentBrush;
-        VRMBannerButton.Background = TransparentBrush;
-        VRMBannerButton.BorderBrush = TransparentBrush;
-        PSTBannerButton.Background = TransparentBrush;
-        PSTBannerButton.BorderBrush = TransparentBrush;
-        InfoMainCPUFreqGrid.Children.Clear();
-        InfoCPUSectionGridBuilder();
+        if (SelectedGroup != 1)
+        {
+            SelectedGroup = 1;
+            CPUBannerButton.Background = TransparentBrush;
+            CPUBannerButton.BorderBrush = TransparentBrush;
+            GPUBannerButton.Background = SelectedBrush;
+            GPUBannerButton.BorderBrush = SelectedBorderBrush;
+            RAMBannerButton.Background = TransparentBrush;
+            RAMBannerButton.BorderBrush = TransparentBrush;
+            VRMBannerButton.Background = TransparentBrush;
+            VRMBannerButton.BorderBrush = TransparentBrush;
+            PSTBannerButton.Background = TransparentBrush;
+            PSTBannerButton.BorderBrush = TransparentBrush;
+            InfoMainCPUFreqGrid.Children.Clear();
+            InfoCPUSectionGridBuilder();
+        } 
     }
 
     private void RAMBannerButton_Click(object sender, RoutedEventArgs e)
     {
-        SelectedGroup = 2;
-        CPUBannerButton.Background = TransparentBrush;
-        CPUBannerButton.BorderBrush = TransparentBrush;
-        GPUBannerButton.Background = TransparentBrush;
-        GPUBannerButton.BorderBrush = TransparentBrush;
-        RAMBannerButton.Background = SelectedBrush;
-        RAMBannerButton.BorderBrush = SelectedBorderBrush;
-        VRMBannerButton.Background = TransparentBrush;
-        VRMBannerButton.BorderBrush = TransparentBrush;
-        PSTBannerButton.Background = TransparentBrush;
-        PSTBannerButton.BorderBrush = TransparentBrush;
-        InfoMainCPUFreqGrid.Children.Clear();
-        InfoCPUSectionGridBuilder();
+        if (SelectedGroup != 2)
+        {
+            SelectedGroup = 2;
+            CPUBannerButton.Background = TransparentBrush;
+            CPUBannerButton.BorderBrush = TransparentBrush;
+            GPUBannerButton.Background = TransparentBrush;
+            GPUBannerButton.BorderBrush = TransparentBrush;
+            RAMBannerButton.Background = SelectedBrush;
+            RAMBannerButton.BorderBrush = SelectedBorderBrush;
+            VRMBannerButton.Background = TransparentBrush;
+            VRMBannerButton.BorderBrush = TransparentBrush;
+            PSTBannerButton.Background = TransparentBrush;
+            PSTBannerButton.BorderBrush = TransparentBrush;
+            InfoMainCPUFreqGrid.Children.Clear();
+            InfoCPUSectionGridBuilder();
+        } 
     }
     private void VRMBannerButton_Click(object sender, RoutedEventArgs e)
     {
-        SelectedGroup = 3;
-        CPUBannerButton.Background = TransparentBrush;
-        CPUBannerButton.BorderBrush = TransparentBrush;
-        GPUBannerButton.Background = TransparentBrush;
-        GPUBannerButton.BorderBrush = TransparentBrush;
-        RAMBannerButton.Background = TransparentBrush;
-        RAMBannerButton.BorderBrush = TransparentBrush;
-        VRMBannerButton.Background = SelectedBrush;
-        VRMBannerButton.BorderBrush = SelectedBorderBrush;
-        BATBannerButton.Background = TransparentBrush;
-        BATBannerButton.BorderBrush = TransparentBrush;
-        PSTBannerButton.Background = TransparentBrush;
-        PSTBannerButton.BorderBrush = TransparentBrush;
-        InfoMainCPUFreqGrid.Children.Clear();
-        InfoCPUSectionGridBuilder();
+        if (SelectedGroup != 3)
+        {
+            SelectedGroup = 3;
+            CPUBannerButton.Background = TransparentBrush;
+            CPUBannerButton.BorderBrush = TransparentBrush;
+            GPUBannerButton.Background = TransparentBrush;
+            GPUBannerButton.BorderBrush = TransparentBrush;
+            RAMBannerButton.Background = TransparentBrush;
+            RAMBannerButton.BorderBrush = TransparentBrush;
+            VRMBannerButton.Background = SelectedBrush;
+            VRMBannerButton.BorderBrush = SelectedBorderBrush;
+            BATBannerButton.Background = TransparentBrush;
+            BATBannerButton.BorderBrush = TransparentBrush;
+            PSTBannerButton.Background = TransparentBrush;
+            PSTBannerButton.BorderBrush = TransparentBrush;
+            InfoMainCPUFreqGrid.Children.Clear();
+            InfoCPUSectionGridBuilder();
+        } 
     }
     private void BATBannerButton_Click(object sender, RoutedEventArgs e)
     {
-        SelectedGroup = 4;
-        CPUBannerButton.Background = TransparentBrush;
-        CPUBannerButton.BorderBrush = TransparentBrush;
-        GPUBannerButton.Background = TransparentBrush;
-        GPUBannerButton.BorderBrush = TransparentBrush;
-        RAMBannerButton.Background = TransparentBrush;
-        RAMBannerButton.BorderBrush = TransparentBrush;
-        VRMBannerButton.Background = SelectedBrush;
-        VRMBannerButton.BorderBrush = SelectedBorderBrush;
-        BATBannerButton.Background = SelectedBrush;
-        BATBannerButton.BorderBrush = SelectedBorderBrush;
-        PSTBannerButton.Background = TransparentBrush;
-        PSTBannerButton.BorderBrush = TransparentBrush;
+        if (SelectedGroup != 4)
+        {
+            SelectedGroup = 4;
+            CPUBannerButton.Background = TransparentBrush;
+            CPUBannerButton.BorderBrush = TransparentBrush;
+            GPUBannerButton.Background = TransparentBrush;
+            GPUBannerButton.BorderBrush = TransparentBrush;
+            RAMBannerButton.Background = TransparentBrush;
+            RAMBannerButton.BorderBrush = TransparentBrush;
+            VRMBannerButton.Background = TransparentBrush;
+            VRMBannerButton.BorderBrush = TransparentBrush;
+            BATBannerButton.Background = SelectedBrush;
+            BATBannerButton.BorderBrush = SelectedBorderBrush;
+            PSTBannerButton.Background = TransparentBrush;
+            PSTBannerButton.BorderBrush = TransparentBrush;
+        } 
     }
     private void PSTBannerButton_Click(object sender, RoutedEventArgs e)
     {
-        SelectedGroup = 5;
-        CPUBannerButton.Background = TransparentBrush;
-        CPUBannerButton.BorderBrush = TransparentBrush;
-        GPUBannerButton.Background = TransparentBrush;
-        GPUBannerButton.BorderBrush = TransparentBrush;
-        RAMBannerButton.Background = TransparentBrush;
-        RAMBannerButton.BorderBrush = TransparentBrush;
-        VRMBannerButton.Background = SelectedBrush;
-        VRMBannerButton.BorderBrush = SelectedBorderBrush;
-        BATBannerButton.Background = TransparentBrush;
-        BATBannerButton.BorderBrush = TransparentBrush;
-        PSTBannerButton.Background = SelectedBrush;
-        PSTBannerButton.BorderBrush = SelectedBorderBrush;
+        if (SelectedGroup != 5)
+        {
+            SelectedGroup = 5;
+            CPUBannerButton.Background = TransparentBrush;
+            CPUBannerButton.BorderBrush = TransparentBrush;
+            GPUBannerButton.Background = TransparentBrush;
+            GPUBannerButton.BorderBrush = TransparentBrush;
+            RAMBannerButton.Background = TransparentBrush;
+            RAMBannerButton.BorderBrush = TransparentBrush;
+            VRMBannerButton.Background = TransparentBrush;
+            VRMBannerButton.BorderBrush = TransparentBrush;
+            BATBannerButton.Background = TransparentBrush;
+            BATBannerButton.BorderBrush = TransparentBrush;
+            PSTBannerButton.Background = SelectedBrush;
+            PSTBannerButton.BorderBrush = SelectedBorderBrush;
+            InfoMainCPUFreqGrid.Children.Clear();
+            InfoCPUSectionGridBuilder();
+        } 
     }
     private void InfoRTSSButton_Click(object sender, RoutedEventArgs e)
     {
