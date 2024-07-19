@@ -32,10 +32,10 @@
                         <RowDefinition Height="64"/>
                         <RowDefinition Height="64"/>
                     </Grid.RowDefinitions>
-                    <Button x:ConnectionId='106' Grid.Row="0" Width="170" x:Name="CPUBannerButton" Margin="0,0,0,0"                               CornerRadius="3">
+                    <Button x:ConnectionId='107' Grid.Row="0" Width="170" x:Name="CPUBannerButton" Margin="0,0,0,0"                               CornerRadius="3">
                         <Grid>
                             <Grid Width="60" Margin="-99,2,0,0" CornerRadius="3,0,3,3">
-                                <Polygon x:ConnectionId='128' x:Name="InfoACPUBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+                                <Polygon x:ConnectionId='129' x:Name="InfoACPUBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
 StrokeThickness="1.5" >
                                     <Polygon.Stroke>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -54,18 +54,18 @@ StrokeThickness="1.5" >
                                         </LinearGradientBrush>
                                     </Polygon.Fill>
                                 </Polygon>
-                                <TextBlock x:ConnectionId='129' x:Name="infoACPUUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="13" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                                <TextBlock x:ConnectionId='130' x:Name="infoACPUUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="13" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
                             </Grid> 
                             <StackPanel Width="90" HorizontalAlignment="Left" Margin="60,0,0,0" Orientation="Vertical">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" x:Uid="InfoCPU" Text="ЦП"/>
-                                <TextBlock x:ConnectionId='127' FontWeight="Light" FontSize="13" x:Name="infoICPUUsageBanner" Text="0%"/>
+                                <TextBlock x:ConnectionId='128' FontWeight="Light" FontSize="13" x:Name="infoICPUUsageBanner" Text="0%"/>
                             </StackPanel>
                         </Grid>
                     </Button>
-                    <Button x:ConnectionId='107' Background="Transparent" x:Name="VRMBannerButton"                               BorderBrush="Transparent" Grid.Row="1" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button x:ConnectionId='108' Background="Transparent" x:Name="VRMBannerButton"                               BorderBrush="Transparent" Grid.Row="1" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid Width="60" Margin="-99,2,0,0" CornerRadius="3,0,3,3">
-                                <Polygon x:ConnectionId='125'  x:Name="InfoAVRMBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+                                <Polygon x:ConnectionId='126'  x:Name="InfoAVRMBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
 StrokeThickness="1.5">
                                     <Polygon.Stroke>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -84,18 +84,18 @@ StrokeThickness="1.5">
                                         </LinearGradientBrush>
                                     </Polygon.Fill>
                                 </Polygon>
-                                <TextBlock x:ConnectionId='126' x:Name="infoAVRMUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                                <TextBlock x:ConnectionId='127' x:Name="infoAVRMUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
                             </Grid>
                             <StackPanel Width="90" Margin="60,0,0,0" Orientation="Vertical">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" Text="VRM"/>
-                                <TextBlock x:ConnectionId='124' FontWeight="Light" FontSize="13" x:Name="infoVRMUsageBanner" Text="Unknown"/> 
+                                <TextBlock x:ConnectionId='125' FontWeight="Light" FontSize="13" x:Name="infoVRMUsageBanner" Text="Unknown"/> 
                             </StackPanel>
                         </Grid>
                     </Button>
-                    <Button x:ConnectionId='108' Background="Transparent" x:Name="GPUBannerButton"                               BorderBrush="Transparent" Grid.Row="2" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button x:ConnectionId='109' Background="Transparent" x:Name="GPUBannerButton"                               BorderBrush="Transparent" Grid.Row="2" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid Width="60" Margin="-99,2,0,0" CornerRadius="3,0,3,3">
-                                <Polygon x:ConnectionId='122'  x:Name="InfoAGPUBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+                                <Polygon x:ConnectionId='123'  x:Name="InfoAGPUBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
 StrokeThickness="1.5">
                                     <Polygon.Stroke>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -114,18 +114,18 @@ StrokeThickness="1.5">
                                         </LinearGradientBrush>
                                     </Polygon.Fill>
                                 </Polygon>
-                                <TextBlock x:ConnectionId='123' x:Name="infoAGPUUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                                <TextBlock x:ConnectionId='124' x:Name="infoAGPUUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
                             </Grid>
                             <StackPanel Width="90" Margin="60,0,0,0" Orientation="Vertical">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" Text="GFX"/>
-                                <TextBlock x:ConnectionId='121' FontWeight="Light" FontSize="13" x:Name="infoGPUUsageBanner" Text="Unknown"/> 
+                                <TextBlock x:ConnectionId='122' FontWeight="Light" FontSize="13" x:Name="infoGPUUsageBanner" Text="Unknown"/> 
                             </StackPanel>
                         </Grid>
                     </Button>
-                    <Button x:ConnectionId='109' Background="Transparent" x:Name="RAMBannerButton"                               BorderBrush="Transparent" Grid.Row="3" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button x:ConnectionId='110' Background="Transparent" x:Name="RAMBannerButton"                               BorderBrush="Transparent" Grid.Row="3" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid  Margin="-99,2,0,0" CornerRadius="3,0,3,3">
-                                <Polygon x:ConnectionId='119' x:Name="InfoARAMBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+                                <Polygon x:ConnectionId='120' x:Name="InfoARAMBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
 StrokeThickness="1.5">
                                     <Polygon.Stroke>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -144,18 +144,18 @@ StrokeThickness="1.5">
                                         </LinearGradientBrush>
                                     </Polygon.Fill>
                                 </Polygon>
-                                <TextBlock x:ConnectionId='120' x:Name="infoARAMUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                                <TextBlock x:ConnectionId='121' x:Name="infoARAMUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
                             </Grid> 
                             <StackPanel Width="90" Margin="60,0,0,0" Orientation="Vertical">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" Text="RAM"/>
-                                <TextBlock x:ConnectionId='118' FontWeight="Light" FontSize="13" x:Name="InfoRAMUsage" Text="?GB"/>
+                                <TextBlock x:ConnectionId='119' FontWeight="Light" FontSize="13" x:Name="InfoRAMUsage" Text="?GB"/>
                             </StackPanel>
                         </Grid>
                     </Button>
-                    <Button x:ConnectionId='110' Background="Transparent" x:Name="BATBannerButton"                                BorderBrush="Transparent" Grid.Row="4" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button x:ConnectionId='111' Background="Transparent" x:Name="BATBannerButton"                                BorderBrush="Transparent" Grid.Row="4" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid  Margin="-99,2,0,0" CornerRadius="3,0,3,3">
-                                <Polygon x:ConnectionId='116' x:Name="InfoABATBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+                                <Polygon x:ConnectionId='117' x:Name="InfoABATBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
 StrokeThickness="1.5">
                                     <Polygon.Stroke>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -174,18 +174,18 @@ StrokeThickness="1.5">
                                         </LinearGradientBrush>
                                     </Polygon.Fill>
                                 </Polygon>
-                                <TextBlock x:ConnectionId='117' x:Name="infoABATUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                                <TextBlock x:ConnectionId='118' x:Name="infoABATUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
                             </Grid> 
                             <StackPanel Width="90" Margin="60,0,0,0" Orientation="Vertical">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" Text="Battery"/>
-                                <TextBlock x:ConnectionId='115' FontWeight="Light" FontSize="13" x:Name="InfoBATUsage" Text="?%"/>
+                                <TextBlock x:ConnectionId='116' FontWeight="Light" FontSize="13" x:Name="InfoBATUsage" Text="?%"/>
                             </StackPanel>
                         </Grid>
                     </Button>
-                    <Button x:ConnectionId='111' Background="Transparent" x:Name="PSTBannerButton"                                BorderBrush="Transparent" Grid.Row="5" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button x:ConnectionId='112' Background="Transparent" x:Name="PSTBannerButton"                                BorderBrush="Transparent" Grid.Row="5" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid  Margin="-99,2,0,0" CornerRadius="3,0,3,3">
-                                <Polygon x:ConnectionId='113' x:Name="InfoAPSTBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+                                <Polygon x:ConnectionId='114' x:Name="InfoAPSTBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
 StrokeThickness="1.5">
                                     <Polygon.Stroke>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -204,11 +204,11 @@ StrokeThickness="1.5">
                                         </LinearGradientBrush>
                                     </Polygon.Fill>
                                 </Polygon>
-                                <TextBlock x:ConnectionId='114' x:Name="infoAPSTUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                                <TextBlock x:ConnectionId='115' x:Name="infoAPSTUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
                             </Grid>
                             <StackPanel Width="90" Margin="60,0,0,0" Orientation="Vertical">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" Text="P-States"/>
-                                <TextBlock x:ConnectionId='112' FontWeight="Light" FontSize="13" x:Name="InfoPSTUsage" Text="?-State"/>
+                                <TextBlock x:ConnectionId='113' FontWeight="Light" FontSize="13" x:Name="InfoPSTUsage" Text="?-State"/>
                             </StackPanel>
                         </Grid>
                     </Button>
@@ -226,19 +226,19 @@ StrokeThickness="1.5">
                     </Grid.RowDefinitions>
                     <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Row="0">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock x:ConnectionId='104' HorizontalAlignment="Left" x:Name="infoCPUSectionName" FontWeight="Bold" FontSize="24" x:Uid="InfoCPU" Text="ЦП"></TextBlock>
-                            <ComboBox x:ConnectionId='105' Width="134.5" SelectedIndex="0"                                                            Margin="10,1,0,-5" x:Name="infoCPUSectionComboBox">
+                            <TextBlock x:ConnectionId='105' HorizontalAlignment="Left" x:Name="infoCPUSectionName" FontWeight="Bold" FontSize="24" x:Uid="InfoCPU" Text="ЦП"></TextBlock>
+                            <ComboBox x:ConnectionId='106' Width="134.5" SelectedIndex="0"                                                            Margin="10,1,0,-5" x:Name="infoCPUSectionComboBox">
                                 <ComboBoxItem Content="Frequency"/>
                                 <ComboBoxItem Content="Voltages"/>
                                 <ComboBoxItem Content="Powers"/>
                                 <ComboBoxItem Content="Temperatures"/>
                             </ComboBox>
                         </StackPanel>
-                        <TextBlock x:ConnectionId='103' VerticalAlignment="Bottom" FontWeight="SemiBold" x:Name="tbProcessor" HorizontalAlignment="Right"></TextBlock>
+                        <TextBlock x:ConnectionId='104' VerticalAlignment="Bottom" FontWeight="SemiBold" x:Name="tbProcessor" HorizontalAlignment="Right"></TextBlock>
                         <TextBlock VerticalAlignment="Bottom" FontWeight="SemiBold" Visibility="Collapsed" HorizontalAlignment="Right">AMD Ryzen 7 4800H with Radeon Vega Mobile Gfx</TextBlock>
                     </Grid>
                     <Grid Margin="0,10,0,0" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid x:ConnectionId='102' x:Name="InfoMainCPUFreqGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"> 
+                        <Grid x:ConnectionId='103' x:Name="InfoMainCPUFreqGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"> 
                         </Grid>
                     </Grid>
                     <Grid Margin="0,10,0,0" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top">
@@ -250,40 +250,42 @@ StrokeThickness="1.5">
                             <StackPanel Orientation="Horizontal">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock x:Uid="infoACPUUSAGE" Text="CPU Usage" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='101' x:Name="tbCPUUsage" Text="?%" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='102' x:Name="tbCPUUsage" Text="?%" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock x:Uid="infoAFREQCPU" Text="Frequency" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='100' x:Name="tbCPUFreq" Text="? GHz" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='101' x:Name="tbCPUFreq" Text="? GHz" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock x:Uid="infoAVOLTCPU" Text="Voltage" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='99' x:Name="tbCPUVolt" Text="? V" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='100' x:Name="tbCPUVolt" Text="? V" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock x:Uid="infoAStapmL" Text="STAPM Power" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='98' x:Name="tbStapmL" Text="?W/?W" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='99' x:Name="tbStapmL" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock x:Uid="infoAActualL" Text="Real Power" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='97' x:Name="tbActualL" Text="?W/?W" FontWeight="Medium"/>
-                                </StackPanel>
-                                <StackPanel Padding="30,0,0,0" Orientation="Vertical">
-                                    <TextBlock x:Uid="infoAAVGL" Text="Average Power" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='96' x:Name="tbAVGL" Text="?W/?W" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='98' x:Name="tbActualL" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock x:Uid="infoAVRMEDCL" Text="VRM EDC Current" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='95' x:Name="tbVRMEDCL" Text="?A/?A" FontWeight="Medium"/>
+                                    <TextBlock x:Uid="infoAAVGL" Text="Average Power" FontWeight="Light"/>
+                                    <TextBlock x:ConnectionId='97' x:Name="tbAVGL" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
-                                    <TextBlock x:Uid="infoACPUTEMPL" Text="CPU Temperature" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='94' x:Name="tbCPUMaxL" Text="?C/?C" FontWeight="Medium"/>
+                                    <TextBlock x:Uid="infoAVRMEDCL" Text="VRM EDC Current" FontWeight="Light"/>
+                                    <TextBlock x:ConnectionId='96' x:Name="tbVRMEDCL" Text="?A/?A" FontWeight="Medium"/>
                                 </StackPanel> 
+                            </StackPanel>
+                            <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock x:Uid="infoACPUTEMPL" Text="CPU Temperature" FontWeight="Light"/>
+                                    <TextBlock x:ConnectionId='95' x:Name="tbCPUMaxL" Text="?C/?C" FontWeight="Medium"/>
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
 
@@ -291,35 +293,35 @@ StrokeThickness="1.5">
                             <StackPanel Orientation="Horizontal"> 
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock x:Uid="infoAFREQCPU" Text="Frequency" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='93' x:Name="tbGPUFreq" Text="? GHz" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='94' x:Name="tbGPUFreq" Text="? GHz" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock x:Uid="infoAVOLTCPU" Text="Voltage" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='92' x:Name="tbGPUVolt" Text="? V" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='93' x:Name="tbGPUVolt" Text="? V" FontWeight="Medium"/>
+                                </StackPanel>
+                                <StackPanel Padding="30,0,0,0" Orientation="Vertical">
+                                    <TextBlock x:Uid="infoAActualL" Text="Real Power" FontWeight="Light"/>
+                                    <TextBlock x:ConnectionId='92' x:Name="tbAclualPowerL" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>
-                            <StackPanel  Orientation="Horizontal">
-                                <StackPanel Padding="0,7,0,0" Orientation="Vertical">
-                                    <TextBlock x:Uid="infoAActualL" Text="Real Power" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='91' x:Name="tbAclualPowerL" Text="?W/?W" FontWeight="Medium"/>
-                                </StackPanel>
-                                <StackPanel x:ConnectionId='89' x:Name="infoAPUPowerMetric" Padding="30,7,0,0" Orientation="Vertical">
+                            <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
+                                <StackPanel x:ConnectionId='89' x:Name="infoAPUPowerMetric" Orientation="Vertical">
                                     <TextBlock Text="APU Power" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='90' x:Name="tbAPUL" Text="?W/?W" FontWeight="Medium"/>
-                                </StackPanel> 
+                                    <TextBlock x:ConnectionId='91' x:Name="tbAPUL" Text="?W/?W" FontWeight="Medium"/>
+                                </StackPanel>
+                                <StackPanel Padding="30,0,0,0" Orientation="Vertical">
+                                    <TextBlock Text="dGPU Temperature" FontWeight="Light"/>
+                                    <TextBlock x:ConnectionId='90' x:Name="tbDGPUMaxL" Text="?C/?C" FontWeight="Medium"/>
+                                </StackPanel>
                             </StackPanel>
                             <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Text="APU Temperature" FontWeight="Light"/>
                                     <TextBlock x:ConnectionId='88' x:Name="tbAPUMaxL" Text="?C/?C" FontWeight="Medium"/>
-                                </StackPanel>
-                                <StackPanel Padding="30,0,0,0" Orientation="Vertical">
-                                    <TextBlock Text="dGPU Temperature" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='87' x:Name="tbDGPUMaxL" Text="?C/?C" FontWeight="Medium"/>
-                                </StackPanel>
+                                </StackPanel> 
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock x:Uid="infoACPUTEMPL" Text="CPU Temperature" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='86' Width="84" x:Name="tbCPUMaxTempL" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='87' Width="84" x:Name="tbCPUMaxTempL" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -328,35 +330,35 @@ StrokeThickness="1.5">
                             <StackPanel Orientation="Horizontal"> 
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Text="EDC Current" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='85' x:Name="tbVRMEDCVRML" Text="?A/?A" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='86' x:Name="tbVRMEDCVRML" Text="?A/?A" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock Text="TDC Current" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='84' x:Name="tbVRMTDCL" Text="?A/?A" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='85' x:Name="tbVRMTDCL" Text="?A/?A" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel  Orientation="Horizontal">
                                 <StackPanel Padding="0,7,0,0" Orientation="Vertical">
                                     <TextBlock Text="EDC SoC Current" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='83' x:Name="tbSOCEDCL" Text="?A/?A" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='84' x:Name="tbSOCEDCL" Text="?A/?A" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,7,0,0" Orientation="Vertical">
                                     <TextBlock Text="TDC SoC Current" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='82' x:Name="tbSOCTDCL" Text="?A/?A" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='83' x:Name="tbSOCTDCL" Text="?A/?A" FontWeight="Medium"/>
                                 </StackPanel> 
                             </StackPanel>
                             <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Text="Slow Time" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='81' x:Name="tbFast" Text="?S" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='82' x:Name="tbFast" Text="?S" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock Text="Fast Time" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='80' x:Name="tbSlow" Text="?S" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='81' x:Name="tbSlow" Text="?S" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock x:Uid="infoACPUTEMPL" Text="CPU Temperature" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='79' Width="84" x:Name="tbCPUMaxTempVRML" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='80' Width="84" x:Name="tbCPUMaxTempVRML" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -365,29 +367,29 @@ StrokeThickness="1.5">
                             <StackPanel Orientation="Horizontal">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock x:Uid="infoAFREQCPU" Text="Frequency" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='78' x:Name="tbRAM" Text="? GHz" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='79' x:Name="tbRAM" Text="? GHz" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock x:Uid="infoMWid" Text="Width" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='77' x:Name="tbWidth" Text="? Bit" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='78' x:Name="tbWidth" Text="? Bit" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel  Orientation="Horizontal">
                                 <StackPanel Padding="0,7,0,0" Orientation="Vertical">
                                     <TextBlock x:Uid="infoMProd" Text="Producer" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='76' x:Name="tbRAMProducer" Text="?/?" TextWrapping="Wrap" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='77' x:Name="tbRAMProducer" Text="?/?" TextWrapping="Wrap" FontWeight="Medium"/>
                                 </StackPanel> 
                             </StackPanel>
                             <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock x:Uid="infoMModel" Text="Model" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='75' x:Name="tbRAMModel" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='76' x:Name="tbRAMModel" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
                                 </StackPanel> 
                             </StackPanel>
                             <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock x:Uid="infoMModule" Text="Modules" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='74' x:Name="tbSlots" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='75' x:Name="tbSlots" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
                                 </StackPanel> 
                             </StackPanel>
                         </StackPanel>
@@ -396,30 +398,36 @@ StrokeThickness="1.5">
                             <StackPanel Orientation="Horizontal">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Text="Battery" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='73' x:Name="tbBAT" Text="? %" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='74' x:Name="tbBAT" Text="? %" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock Text="State" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='72' x:Name="tbBATState" Text="?" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='73' x:Name="tbBATState" Text="?" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock Text="Health" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='71' x:Name="tbBATHealth" Text="?%" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='72' x:Name="tbBATHealth" Text="?%" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel  Orientation="Horizontal">
                                 <StackPanel Padding="0,7,0,0" Orientation="Vertical">
                                     <TextBlock Text="Cycles" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='70' x:Name="tbBATCycles" Text="?/?" TextWrapping="Wrap" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='71' x:Name="tbBATCycles" Text="?/?" TextWrapping="Wrap" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,7,0,0" Orientation="Vertical">
-                                    <TextBlock Text="Capacity" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='69' x:Name="tbBATCapacity" TextWrapping="Wrap" Text="?" FontWeight="Medium"/>
+                                    <TextBlock Text="Full Capacity" FontWeight="Light"/>
+                                    <TextBlock x:ConnectionId='70' x:Name="tbBATCapacity" TextWrapping="Wrap" Text="?" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,7,0,0" Orientation="Vertical">
                                     <TextBlock Text="Charge Rate" FontWeight="Light"/>
-                                    <TextBlock x:ConnectionId='68' x:Name="tbBATChargeRate" TextWrapping="Wrap" Text="?W" FontWeight="Medium"/>
+                                    <TextBlock x:ConnectionId='69' x:Name="tbBATChargeRate" TextWrapping="Wrap" Text="?W" FontWeight="Medium"/>
                                 </StackPanel> 
+                            </StackPanel>
+                            <StackPanel  Orientation="Horizontal">
+                                <StackPanel Padding="0,7,0,0" Orientation="Vertical">
+                                    <TextBlock Text="Remaining time:" FontWeight="Light"/>
+                                    <TextBlock x:ConnectionId='68' x:Name="tbBATTime" TextWrapping="Wrap" Text="?" FontWeight="Medium"/>
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
 
@@ -432,21 +440,23 @@ StrokeThickness="1.5">
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock Text="State" FontWeight="Light"/>
                                     <TextBlock x:ConnectionId='66' x:Name="tbPST" Text="P?" FontWeight="Medium"/>
-                                </StackPanel>
+                                </StackPanel> 
                             </StackPanel>
-                            <StackPanel  Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
                                 <StackPanel Padding="0,7,0,0" Orientation="Vertical">
                                     <TextBlock Text="P0" FontWeight="Light"/>
                                     <TextBlock x:ConnectionId='65' x:Name="tbPSTP0" Text="?/?" TextWrapping="Wrap" FontWeight="Medium"/>
                                 </StackPanel>
-                                <StackPanel Padding="30,7,0,0" Orientation="Vertical">
+                                <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock Text="P1" FontWeight="Light"/>
                                     <TextBlock x:ConnectionId='64' x:Name="tbPSTP1" TextWrapping="Wrap" Text="?/?" FontWeight="Medium"/>
                                 </StackPanel>
-                                <StackPanel Padding="30,7,0,0" Orientation="Vertical">
+                            </StackPanel>  
+                            <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
+                                <StackPanel Orientation="Vertical">
                                     <TextBlock Text="P2" FontWeight="Light"/>
                                     <TextBlock x:ConnectionId='63' x:Name="tbPSTP2" TextWrapping="Wrap" Text="?/?" FontWeight="Medium"/>
-                                </StackPanel> 
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
 
