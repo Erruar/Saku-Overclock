@@ -1,9 +1,9 @@
-Saku Overclock\bin\
-Saku Overclock\obj\
-packages\
-.vs\
-.github\
-.git\
+/Saku Overclock/bin/
+/Saku Overclock/obj/
+/packages/
+/.vs/
+/.github/
+/.git/
 .editorconfig
 .vsconfig
 global.json
@@ -40,3 +40,20 @@ ZenStates-Core-new.dll
 /Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/refint/Saku Overclock.dll
 /Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/ref/Saku Overclock.dll
 /Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/ProfileSwitcher/ProfileSwitcher.g.cs
+/Saku Overclock/bin/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/Saku Overclock.dll
+/Saku Overclock/bin/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/Saku Overclock.exe
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/embed/Views/ИнформацияPage.xbf
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/intermediatexaml/Saku Overclock.dll
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/ref/Saku Overclock.dll
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/refint/Saku Overclock.dll
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/Views/ИнформацияPage.g.cs
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/Views/ИнформацияPage.g.i.cs
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/Views/ИнформацияPage.xaml
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/Views/ИнформацияPage.xbf
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/apphost.exe
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/Saku Overclock.AssemblyInfo.cs
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/Saku Overclock.AssemblyInfoInputs.cache
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/Saku Overclock.dll
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/Saku Overclock.pdb
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/XamlSaveStateFile.xml
+/Saku Overclock/obj/x64/Debug/net7.0-windows10.0.19041.0/win10-x64/Saku Overclock.sourcelink.json
