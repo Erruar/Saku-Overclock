@@ -25,7 +25,8 @@ public sealed partial class ИнформацияPage : Page
     private readonly List<InfoPageCPUPoints> BATPointer = [];
     private readonly List<InfoPageCPUPoints> PSTPointer = [];
     private readonly List<double> PSTatesList = [0, 0, 0];
-    private double MaxGFXClock = 0.0;
+    private double MaxGFXClock = 0.1;
+    private decimal MaxBatRate = 0.1m;
     private Microsoft.UI.Xaml.Media.Brush? TransparentBrush;
     private Microsoft.UI.Xaml.Media.Brush? SelectedBrush;
     private Microsoft.UI.Xaml.Media.Brush? SelectedBorderBrush;
@@ -35,7 +36,7 @@ public sealed partial class ИнформацияPage : Page
     private string CPUName = "Unknown";
     private string GPUName = "Unknown";
     private string RAMName = "Unknown";
-    private string BATName = "Unknown";
+    private string? BATName = "Unknown";
     private int numberOfCores = 0;
     private int numberOfLogicalProcessors = 0;
     private System.Windows.Threading.DispatcherTimer? dispatcherTimer;
@@ -237,15 +238,16 @@ public sealed partial class ИнформацияPage : Page
             InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
         }
         numberOfLogicalProcessors = backupNumberLogical;
-        var coreCounter = (SelectedGroup == 0 || SelectedGroup == 5) ?
-            (numberOfCores > 2 ? numberOfCores :
-            (infoCPUSectionComboBox.SelectedIndex == 0 ? numberOfLogicalProcessors
-            : numberOfCores))
-            : SelectedGroup == 1 ?
-            new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController").Get().Cast<ManagementObject>().Count()
-            : (SelectedGroup == 2 ?
-            tbRAMModel.Text.Split('/').Length
-            : 4);
+        var coreCounter = (SelectedGroup == 0 || SelectedGroup == 5) ? /*Это секция процессор или PStates*/
+            (numberOfCores > 2 ? numberOfCores : /*Это секция процессор или PStates - да! Количество ядер больше 2? - да! тогда coreCounter - количество ядер numberOfCores*/
+            (infoCPUSectionComboBox.SelectedIndex == 0 ? numberOfLogicalProcessors /*Нет! У процессора менее или ровно 2 ядра, Выбрано отображение частоты? - да! - тогда numberOfLogicalProcessors*/
+            : numberOfCores)) /*Выбрана не частота, хотя при этом у нас меньше или ровно 2 ядра и это секция 0 или 5, тогда - numberOfCores*/
+            : SelectedGroup == 1 ? /*Это НЕ секция процессор или PStates. Это секция GFX?*/
+            new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController").Get().Cast<ManagementObject>().Count() /*Да! - Это секция GFX - тогда найти количество видеокарт*/
+            : (SelectedGroup == 2 ? /*Нет! Выбрана не секция 0, 1, 5, возможно что-то другое? Выбрана секция 2?*/
+            tbRAMModel.Text.Split('/').Length /*Да! Выбрана секция RAM, найти количество установленных плат ОЗУ*/
+            : (SelectedGroup == 3 ? 4 /*Это не секции 0, 1, 2, 5! Это секция 3? - да! Тогда - 4*/
+            : 1)); /*Это не секции 0, 1, 2, 3, 5! Тогда - 1*/
         for (var j = 0; j < InfoMainCPUFreqGrid.RowDefinitions.Count; j++)
         {
             for (var f = 0; f < InfoMainCPUFreqGrid.ColumnDefinitions.Count; f++)
@@ -264,7 +266,9 @@ public sealed partial class ИнформацияPage : Page
                     new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController").Get().Cast<ManagementObject>().Count() - coreCounter
                     : (SelectedGroup == 2 ?
                     tbRAMModel.Text.Split('/').Length - coreCounter
-                    : 4 - coreCounter);
+                    : (SelectedGroup == 3 ? 
+                    4 - coreCounter 
+                    : 0));
                 var elementButton = new Grid()
                 {
                     VerticalAlignment = VerticalAlignment.Stretch,
@@ -303,7 +307,17 @@ public sealed partial class ИнформацияPage : Page
                                         {
                                             VerticalAlignment = VerticalAlignment.Center,
                                             HorizontalAlignment = HorizontalAlignment.Right,
-                                            Text = (SelectedGroup == 0 || SelectedGroup == 5) ? (currCore < numberOfCores ? "Core" : "Thread") : (SelectedGroup == 1 ? "GPU" :  (SelectedGroup == 2 ? tbSlots.Text.Split('*')[1].Replace("Bit","") : currCore == 0 ? "VRM EDC" : ( currCore == 1 ? "VRM TDC" : (currCore == 2 ? "SoC EDC" : "SoC TDC")) )),
+                                            Text = (SelectedGroup == 0 || SelectedGroup == 5) ? 
+                                            (currCore < numberOfCores ? "Core" 
+                                            : "Thread") 
+                                            : (SelectedGroup == 1 ? "GPU" 
+                                            : (SelectedGroup == 2 ? tbSlots.Text.Split('*')[1].Replace("Bit","") 
+                                            : (SelectedGroup == 3 ? 
+                                              (currCore == 0 ? "VRM EDC" 
+                                            : ( currCore == 1 ? "VRM TDC" 
+                                            : (currCore == 2 ? "SoC EDC" 
+                                            : "SoC TDC")))
+                                            : "Battery"))),
                                             FontWeight = new Windows.UI.Text.FontWeight(200)
                                         }
                                     }
@@ -329,6 +343,7 @@ public sealed partial class ИнформацияPage : Page
             tbBATCycles.Text = $"{GetSystemInfo.GetBatteryCycle()}";
             tbBATCapacity.Text = $"{GetSystemInfo.ReadFullChargeCapacity()}mAh/{GetSystemInfo.ReadDesignCapacity()}mAh";
             tbBATChargeRate.Text = $"{(GetSystemInfo.GetBatteryRate() / 1000):0.##}W";
+            BATName = GetSystemInfo.GetBatteryName();
         }
         catch
         {
@@ -523,7 +538,7 @@ public sealed partial class ИнформацияPage : Page
                         InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
                         InfoRAMSectionMetrics.Visibility = Visibility.Collapsed;
                         InfoVRMSectionMetrics.Visibility = Visibility.Collapsed;
-                        tbProcessor.Text = CPUName;
+                        tbProcessor.Text = BATName;
                         infoRAMMAINSection.Visibility = Visibility.Collapsed;
                         infoCPUMAINSection.Visibility = Visibility.Visible;
                         InfoBATSectionMetrics.Visibility = Visibility.Visible;
@@ -562,13 +577,22 @@ public sealed partial class ИнформацияPage : Page
                 InfoAGPUBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoAVRMBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoABATBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
 
 
                 _ = RyzenADJWrapper.refresh_table(ryzenAccess);
-                tbBATChargeRate.Text = $"{(GetSystemInfo.GetBatteryRate() / 1000):0.##}W";
-                tbBAT.Text = GetSystemInfo.GetBatteryPercent().ToString() + "%";
-                tbBATState.Text = GetSystemInfo.GetBatteryStatus().ToString();
+                var batteryRate = GetSystemInfo.GetBatteryRate() / 1000;
+                tbBATChargeRate.Text = $"{batteryRate}W";
+                tbBAT.Text = GetSystemInfo.GetBatteryPercent() + "%";
+                var batLifeTime = GetSystemInfo.GetBatteryLifeTime() + 0d; 
+                tbBATTime.Text = batLifeTime == -1 ? "AC" : $"{Math.Round(batLifeTime / 60 / 60, 0)}h {Math.Round((batLifeTime / 60 / 60 - Math.Round(batLifeTime / 60 / 60, 0)) * 60, 0)}m {Math.Round(((batLifeTime / 60 / 60 - (int)(batLifeTime / 60 / 60)) * 60 - Math.Round((batLifeTime / 60 / 60 - Math.Round(batLifeTime / 60 / 60, 0)) * 60, 0)) * 60, 0)}s".Replace('-',char.MinValue);
+                InfoBATUsage.Text = tbBAT.Text + " " + tbBATChargeRate.Text + "\n" + tbBATTime.Text;
+                infoABATUsageBannerPolygonText.Text = tbBATChargeRate.Text;
+                tbBATState.Text = GetSystemInfo.GetBatteryStatus().ToString(); 
+                var currBatRate = batteryRate >= 0 ? batteryRate : -1 * batteryRate;
+                var beforeMaxBatRate = MaxBatRate;
+                if (MaxBatRate < currBatRate) { MaxBatRate = currBatRate; }
                 tbStapmL.Text = Math.Round(RyzenADJWrapper.get_stapm_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.get_stapm_limit(ryzenAccess), 3) + "W";
 
                 tbActualL.Text = Math.Round(RyzenADJWrapper.get_fast_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.get_fast_limit(ryzenAccess), 3) + "W";
@@ -659,6 +683,10 @@ public sealed partial class ИнформацияPage : Page
                                         : (f == 1 ? $"{Math.Round(RyzenADJWrapper.get_vrm_current_value(ryzenAccess), 3)} A/{Math.Round(RyzenADJWrapper.get_vrm_current(ryzenAccess), 3)}A"
                                         : (f == 2 ? $"{Math.Round(RyzenADJWrapper.get_vrmsocmax_current_value(ryzenAccess), 3)} A/{Math.Round(RyzenADJWrapper.get_vrmsocmax_current(ryzenAccess), 3)}A"
                                         : (f == 3 ? $"{Math.Round(RyzenADJWrapper.get_vrmsoc_current_value(ryzenAccess), 3)} A/{Math.Round(RyzenADJWrapper.get_vrmsoc_current(ryzenAccess), 3)}A" : $"{0}A")));
+                                }
+                                if (SelectedGroup == 4)
+                                {
+                                    currText.Text = BATName;
                                 }
                             }
                         }
@@ -822,6 +850,30 @@ public sealed partial class ИнформацияPage : Page
                 }
                 InfoAPSTBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 49));
 
+                //InfoABATBanner График
+                InfoABATBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
+                BATPointer.Add(new InfoPageCPUPoints() { X = 60, Y = 48 - (int)(currBatRate / MaxBatRate * 48) });
+                InfoABATBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 48 - (int)(currBatRate / MaxBatRate * 48)));
+                foreach (var element in BATPointer.ToList())
+                {
+                    if (element != null)
+                    {
+                        if (element.X < 0)
+                        {
+                            BATPointer.Remove(element);
+                            InfoABATBannerPolygon.Points.Remove(new Windows.Foundation.Point(element.X, element.Y));
+                        }
+                        else
+                        {
+                            InfoABATBannerPolygon.Points.Remove(new Windows.Foundation.Point(element.X, element.Y));
+                            element.X -= 1;
+                            element.Y = (int)(element.Y * beforeMaxBatRate / MaxBatRate);
+                            InfoABATBannerPolygon.Points.Add(new Windows.Foundation.Point(element.X, element.Y));
+                        }
+                    }
+                }
+                InfoABATBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 49));
+
 
                 var totalRam = 0d;
                 var busyRam = 0d;
@@ -957,6 +1009,8 @@ public sealed partial class ИнформацияPage : Page
             RAMBannerButton.BorderBrush = TransparentBrush;
             VRMBannerButton.Background = TransparentBrush;
             VRMBannerButton.BorderBrush = TransparentBrush;
+            BATBannerButton.Background = TransparentBrush;
+            BATBannerButton.BorderBrush = TransparentBrush;
             PSTBannerButton.Background = TransparentBrush;
             PSTBannerButton.BorderBrush = TransparentBrush;
             InfoMainCPUFreqGrid.Children.Clear();
@@ -977,6 +1031,8 @@ public sealed partial class ИнформацияPage : Page
             RAMBannerButton.BorderBrush = TransparentBrush;
             VRMBannerButton.Background = TransparentBrush;
             VRMBannerButton.BorderBrush = TransparentBrush;
+            BATBannerButton.Background = TransparentBrush;
+            BATBannerButton.BorderBrush = TransparentBrush;
             PSTBannerButton.Background = TransparentBrush;
             PSTBannerButton.BorderBrush = TransparentBrush;
             InfoMainCPUFreqGrid.Children.Clear();
@@ -997,6 +1053,8 @@ public sealed partial class ИнформацияPage : Page
             RAMBannerButton.BorderBrush = SelectedBorderBrush;
             VRMBannerButton.Background = TransparentBrush;
             VRMBannerButton.BorderBrush = TransparentBrush;
+            BATBannerButton.Background = TransparentBrush;
+            BATBannerButton.BorderBrush = TransparentBrush;
             PSTBannerButton.Background = TransparentBrush;
             PSTBannerButton.BorderBrush = TransparentBrush;
             InfoMainCPUFreqGrid.Children.Clear();
@@ -1040,7 +1098,9 @@ public sealed partial class ИнформацияPage : Page
             BATBannerButton.Background = SelectedBrush;
             BATBannerButton.BorderBrush = SelectedBorderBrush;
             PSTBannerButton.Background = TransparentBrush;
-            PSTBannerButton.BorderBrush = TransparentBrush;
+            PSTBannerButton.BorderBrush = TransparentBrush; 
+            InfoMainCPUFreqGrid.Children.Clear();
+            InfoCPUSectionGridBuilder();
         } 
     }
     private void PSTBannerButton_Click(object sender, RoutedEventArgs e)

@@ -270,20 +270,22 @@ StrokeThickness="1.5">
                                     <TextBlock x:Uid="infoAActualL" Text="Real Power" FontWeight="Light"/>
                                     <TextBlock x:Name="tbActualL" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
-                                <StackPanel Padding="30,0,0,0" Orientation="Vertical">
-                                    <TextBlock x:Uid="infoAAVGL" Text="Average Power" FontWeight="Light"/>
-                                    <TextBlock x:Name="tbAVGL" Text="?W/?W" FontWeight="Medium"/>
-                                </StackPanel>
                             </StackPanel>
                             <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock x:Uid="infoAVRMEDCL" Text="VRM EDC Current" FontWeight="Light"/>
-                                    <TextBlock x:Name="tbVRMEDCL" Text="?A/?A" FontWeight="Medium"/>
+                                    <TextBlock x:Uid="infoAAVGL" Text="Average Power" FontWeight="Light"/>
+                                    <TextBlock x:Name="tbAVGL" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
+                                    <TextBlock x:Uid="infoAVRMEDCL" Text="VRM EDC Current" FontWeight="Light"/>
+                                    <TextBlock x:Name="tbVRMEDCL" Text="?A/?A" FontWeight="Medium"/>
+                                </StackPanel> 
+                            </StackPanel>
+                            <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
+                                <StackPanel Orientation="Vertical">
                                     <TextBlock x:Uid="infoACPUTEMPL" Text="CPU Temperature" FontWeight="Light"/>
                                     <TextBlock x:Name="tbCPUMaxL" Text="?C/?C" FontWeight="Medium"/>
-                                </StackPanel> 
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
 
@@ -297,26 +299,26 @@ StrokeThickness="1.5">
                                     <TextBlock x:Uid="infoAVOLTCPU" Text="Voltage" FontWeight="Light"/>
                                     <TextBlock x:Name="tbGPUVolt" Text="? V" FontWeight="Medium"/>
                                 </StackPanel>
-                            </StackPanel>
-                            <StackPanel  Orientation="Horizontal">
-                                <StackPanel Padding="0,7,0,0" Orientation="Vertical">
+                                <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock x:Uid="infoAActualL" Text="Real Power" FontWeight="Light"/>
                                     <TextBlock x:Name="tbAclualPowerL" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
-                                <StackPanel x:Name="infoAPUPowerMetric" Padding="30,7,0,0" Orientation="Vertical">
-                                    <TextBlock Text="APU Power" FontWeight="Light"/>
-                                    <TextBlock x:Name="tbAPUL" Text="?W/?W" FontWeight="Medium"/>
-                                </StackPanel> 
                             </StackPanel>
                             <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="APU Temperature" FontWeight="Light"/>
-                                    <TextBlock x:Name="tbAPUMaxL" Text="?C/?C" FontWeight="Medium"/>
+                                <StackPanel x:Name="infoAPUPowerMetric" Orientation="Vertical">
+                                    <TextBlock Text="APU Power" FontWeight="Light"/>
+                                    <TextBlock x:Name="tbAPUL" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock Text="dGPU Temperature" FontWeight="Light"/>
                                     <TextBlock x:Name="tbDGPUMaxL" Text="?C/?C" FontWeight="Medium"/>
                                 </StackPanel>
+                            </StackPanel>
+                            <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="APU Temperature" FontWeight="Light"/>
+                                    <TextBlock x:Name="tbAPUMaxL" Text="?C/?C" FontWeight="Medium"/>
+                                </StackPanel> 
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock x:Uid="infoACPUTEMPL" Text="CPU Temperature" FontWeight="Light"/>
                                     <TextBlock Width="84" x:Name="tbCPUMaxTempL" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
@@ -413,13 +415,19 @@ StrokeThickness="1.5">
                                     <TextBlock x:Name="tbBATCycles" Text="?/?" TextWrapping="Wrap" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,7,0,0" Orientation="Vertical">
-                                    <TextBlock Text="Capacity" FontWeight="Light"/>
+                                    <TextBlock Text="Full Capacity" FontWeight="Light"/>
                                     <TextBlock x:Name="tbBATCapacity" TextWrapping="Wrap" Text="?" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,7,0,0" Orientation="Vertical">
                                     <TextBlock Text="Charge Rate" FontWeight="Light"/>
                                     <TextBlock x:Name="tbBATChargeRate" TextWrapping="Wrap" Text="?W" FontWeight="Medium"/>
                                 </StackPanel> 
+                            </StackPanel>
+                            <StackPanel  Orientation="Horizontal">
+                                <StackPanel Padding="0,7,0,0" Orientation="Vertical">
+                                    <TextBlock Text="Remaining time:" FontWeight="Light"/>
+                                    <TextBlock x:Name="tbBATTime" TextWrapping="Wrap" Text="?" FontWeight="Medium"/>
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
 
@@ -432,21 +440,23 @@ StrokeThickness="1.5">
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock Text="State" FontWeight="Light"/>
                                     <TextBlock x:Name="tbPST" Text="P?" FontWeight="Medium"/>
-                                </StackPanel>
+                                </StackPanel> 
                             </StackPanel>
-                            <StackPanel  Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
                                 <StackPanel Padding="0,7,0,0" Orientation="Vertical">
                                     <TextBlock Text="P0" FontWeight="Light"/>
                                     <TextBlock x:Name="tbPSTP0" Text="?/?" TextWrapping="Wrap" FontWeight="Medium"/>
                                 </StackPanel>
-                                <StackPanel Padding="30,7,0,0" Orientation="Vertical">
+                                <StackPanel Padding="30,0,0,0" Orientation="Vertical">
                                     <TextBlock Text="P1" FontWeight="Light"/>
                                     <TextBlock x:Name="tbPSTP1" TextWrapping="Wrap" Text="?/?" FontWeight="Medium"/>
                                 </StackPanel>
-                                <StackPanel Padding="30,7,0,0" Orientation="Vertical">
+                            </StackPanel>  
+                            <StackPanel Padding="0,7,0,0" Orientation="Horizontal">
+                                <StackPanel Orientation="Vertical">
                                     <TextBlock Text="P2" FontWeight="Light"/>
                                     <TextBlock x:Name="tbPSTP2" TextWrapping="Wrap" Text="?/?" FontWeight="Medium"/>
-                                </StackPanel> 
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
 

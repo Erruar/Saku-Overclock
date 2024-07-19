@@ -425,8 +425,7 @@ internal class GetSystemInfo
     }
 
     public static decimal GetBatteryRate()
-    {
-
+    { 
         try
         {
             var scope = new ManagementScope("root\\WMI");
@@ -435,8 +434,8 @@ internal class GetSystemInfo
             using var searcher = new ManagementObjectSearcher(scope, query);
             foreach (var obj in searcher.Get().Cast<ManagementObject>())
             {
-                var chargeRate = Convert.ToDecimal(obj["ChargeRate"]);
-                var dischargeRate = Convert.ToDecimal(obj["DischargeRate"]);
+                var chargeRate = Convert.ToUInt32(obj["ChargeRate"]);
+                var dischargeRate = Convert.ToUInt32(obj["DischargeRate"]);
                 if (chargeRate > 0)
                 {
                     return chargeRate;
@@ -445,10 +444,8 @@ internal class GetSystemInfo
                 {
                     return -dischargeRate;
                 }
-            }
-
-            return 0;
-
+            } 
+            return 0; 
         }
         catch  
         {
@@ -457,8 +454,7 @@ internal class GetSystemInfo
     }
 
     public static decimal ReadFullChargeCapacity()
-    {
-
+    { 
         try
         {
             var scope = new ManagementScope("root\\WMI");
@@ -474,8 +470,7 @@ internal class GetSystemInfo
         catch  
         {
             return 0;
-        }
-
+        } 
     }
 
     public static decimal ReadDesignCapacity()
@@ -507,8 +502,7 @@ internal class GetSystemInfo
                 "SELECT * FROM BatteryCycleCount");
 
             foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
-            {
-
+            { 
                 return Convert.ToInt32(queryObj["CycleCount"]);
             }
             return 0;
@@ -518,18 +512,65 @@ internal class GetSystemInfo
             return 0;
         }
     }
-    public static double GetBatteryPercent()
+
+    [DllImport("kernel32.dll")]
+    private static extern bool GetSystemPowerStatus(out SystemPowerStatus sps);
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SystemPowerStatus
+    {
+        public byte ACLineStatus;
+        public byte BatteryFlag;
+        public byte BatteryLifePercent;
+        public byte SystemStatusFlag;
+        public int BatteryLifeTime;
+        public int BatteryFullLifeTime;
+    }
+    public static decimal GetBatteryPercent()
+    {
+        if (GetSystemPowerStatus(out var sps))
+        {
+            return sps.BatteryLifePercent != 100 ? sps.BatteryLifePercent + 0.1m : sps.BatteryLifePercent; // Примерно добавляет 0.1 для иллюстрации, если Windows Power Management даст не точное значение
+        }
+        else
+        {
+            throw new InvalidOperationException("Unable to get power status.");
+        }
+    }
+    public static int GetBatteryLifeTime()
+    {
+        if (GetSystemPowerStatus(out var sps))
+        {
+            // Проверяем, подключено ли устройство к сети
+            if (sps.ACLineStatus == 1)
+            {
+                return -1; // От сети
+            }
+            else
+            {
+                return sps.BatteryLifeTime; // Возвращаем оставшееся время работы от батареи в секундах
+            }
+        }
+        else
+        {
+            throw new InvalidOperationException("Unable to get power status.");
+        }
+    }
+    public static string? GetBatteryName()
     {
         var wmi = new ManagementClass("Win32_Battery");
-        var allBatteries = wmi.GetInstances(); 
-        double batteryLevel = 0; 
+        var allBatteries = wmi.GetInstances();
+        var batteryName = "Battery not found";
         foreach (var battery in allBatteries)
         {
-            batteryLevel = Convert.ToDouble(battery["EstimatedChargeRemaining"]);
+            if (battery["Name"] != null)
+            {
+                batteryName = battery["Name"].ToString();
+                break;
+            }
         }
-
-        return batteryLevel;
-    }
+        return batteryName;
+    } 
     public static BatteryStatus GetBatteryStatus()
     {
         var wmi = new ManagementClass("Win32_Battery");
