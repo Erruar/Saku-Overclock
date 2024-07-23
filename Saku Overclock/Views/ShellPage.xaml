@@ -131,14 +131,15 @@
                Margin="28,0,0,0"/>
     <HyperlinkButton TabIndex="-1" Margin="107,2,0,0">Rel-Cand v2</HyperlinkButton>-->
                     <Button x:Name="Icon"
-Grid.Column="0"
-Height="33"
-Margin="8,8,0,0"
-HorizontalAlignment="Left"
-VerticalAlignment="Top"
-Click="Icon_Click"
-PointerEntered="TitleIcon_PointerEntered" 
-Translation="0,0,8">
+                            Grid.Column="0"
+                            Height="33"
+                            Margin="8,8,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Click="Icon_Click"
+                            PointerEntered="TitleIcon_PointerEntered" 
+                            Shadow="{ThemeResource SharedShadow}"
+                            Translation="0,0,12">
                         <Button.Transitions>
                             <RepositionThemeTransition />
                         </Button.Transitions>
@@ -206,42 +207,49 @@ Translation="0,0,8">
                FontSize="8"
                FontWeight="Bold"
                Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-               Text="RC-5" />
+               Text="{Binding Version}" >
+                                    <TextBlock.DataContext>
+                                        <local:ГлавнаяViewModel/>
+                                    </TextBlock.DataContext>
+                                </TextBlock>
                             </StackPanel>
                         </StackPanel>
                     </Button>
                 </Grid>
                 <Grid HorizontalAlignment="Center" Grid.Column="3" x:Name="ProfileSetup" Canvas.ZIndex="4" Margin="0,8,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="ProfileSetComboBox"  
+                    <Border Margin="0,-3,0,3" Height="{Binding ElementName=ProfileSetComboBox, Path=ActualHeight}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Shadow="{ThemeResource SharedShadow}" CornerRadius="15" Translation="0,0,22"/>
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox x:Name="ProfileSetComboBox"  
                               Grid.Column="0"
                               MinWidth="167" ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
                               Canvas.ZIndex="4" SelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"
                               CornerRadius="15,0,0,15" SelectionChanged="ProfileSetComboBox_SelectionChanged"
-                              Style="{ThemeResource AcrylicComboBoxStyle}" >
-                        <ComboBox.DataContext>
-                            <local:ПараметрыViewModel></local:ПараметрыViewModel>
-                        </ComboBox.DataContext>
-                        <ComboBoxItem Content="User profile..."/>
-                        <ComboBoxItem IsEnabled="False" >
-                            <NavigationViewItemSeparator BorderThickness="1"></NavigationViewItemSeparator>
-                        </ComboBoxItem>
-                        <ComboBoxItem Content="Min"/>
-                        <ComboBoxItem Content="Eco"/>
-                        <ComboBoxItem Content="Balance"/>
-                        <ComboBoxItem Content="Speed"/>
-                        <ComboBoxItem Content="Max"/>
-                    </ComboBox>
-                    <Button x:Name="ProfileSetButton" Margin="0,-10,0,0"
+                              Style="{ThemeResource AcrylicComboBoxStyle}">
+                            <ComboBox.DataContext>
+                                <local:ПараметрыViewModel></local:ПараметрыViewModel>
+                            </ComboBox.DataContext>
+                            <ComboBoxItem Content="User profile..."/>
+                            <ComboBoxItem IsEnabled="False" >
+                                <NavigationViewItemSeparator BorderThickness="1"></NavigationViewItemSeparator>
+                            </ComboBoxItem>
+                            <ComboBoxItem Content="Min"/>
+                            <ComboBoxItem Content="Eco"/>
+                            <ComboBoxItem Content="Balance"/>
+                            <ComboBoxItem Content="Speed"/>
+                            <ComboBoxItem Content="Max"/>
+                        </ComboBox>
+                        <Button x:Name="ProfileSetButton" Margin="0,-10,0,0"
                               Grid.Column="1"  IsEnabledChanged="ProfileSetButton_IsEnabledChanged"
                               MinWidth="148"   Click="ProfileSetButton_Click"
                               Canvas.ZIndex="4" Style="{StaticResource AccentButtonStyle}"
                               CornerRadius="0,15,15,0" Height="{Binding ElementName=ProfileSetComboBox, Path=ActualHeight}" >
-                        <TextBlock Text="Activate!" x:Name="ActivateText" FontWeight="ExtraBold"></TextBlock> 
-                    </Button>
+                            <TextBlock Text="Activate!" x:Name="ActivateText" FontWeight="ExtraBold"></TextBlock>
+                        </Button>
+                    </Grid>
                 </Grid>
                 <Grid Name="RingerNotifGrid"
       Grid.Column="5" Canvas.ZIndex="4"
@@ -255,7 +263,7 @@ Translation="0,0,8">
                   Padding="0"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch" Click="ToggleNotificationPanelBtn_Click"
-                  Shadow="{ThemeResource SharedShadow}"
+                  Shadow="{ThemeResource SharedShadow}" Translation="0,0,12"
                   Style="{ThemeResource AcrylicToggleButtonStyle}">
                         <FontIcon   
                   Glyph="&#xea8f;" />

@@ -14,8 +14,8 @@ namespace Saku_Overclock;
 
 public sealed partial class MainWindow : WindowEx
 {
-    private Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
-    private UISettings settings;
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
+    private readonly UISettings settings;
     private Config config = new();
     private Devices devices = new();
     public enum DWMWINDOWATTRIBUTE
@@ -117,6 +117,10 @@ public sealed partial class MainWindow : WindowEx
         {
             if (config.ReapplyLatestSettingsOnAppLaunch == true) { var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(false); /*cpu.Play_Invernate_QuickSMU(1);*/ if (devices.autopstate == true && devices.enableps == true) { cpu.BtnPstateWrite_Click(); } }
             if (config.AutostartType == 1 || config.AutostartType == 3) { await Task.Delay(700); this.Hide(); }
+            // Генерация строки с информацией о релизах
+            await UpdateChecker.GenerateReleaseInfoString();
+            // Вызов проверки обновлений
+            await UpdateChecker.CheckForUpdates();
         }
         catch
         {

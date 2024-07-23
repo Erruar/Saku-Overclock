@@ -5,6 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ui="using:ABI.Microsoft.UI.Xaml.Controls" xmlns:emit="using:System.Reflection.Emit" xmlns:viewmodels="using:Saku_Overclock.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:ГлавнаяViewModel}"
     mc:Ignorable="d">
+    <Page.Resources>
+        <ThemeShadow x:Name="SharedShadow" />  
+    </Page.Resources>
     <Grid x:Name="ContentArea">
         <Border
                MinHeight="325"
@@ -15,64 +18,116 @@
                            Stretch="UniformToFill" />
             </Border.Background>
         </Border>
-        <TextBlock x:Uid="Main_Welcome" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Добро пожаловать в" Margin="0,105,0,0"/>
-        <TextBlock FontSize="27" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Saku Overclock" Margin="0,130,0,0"/>
-        <TextBlock x:Uid="Main_Welcome_1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="Для тех, кто желает максимум!"  Margin="0,170,0,0"/>
-        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="17" Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Margin="0,198,0,0"/>
+        
+        <StackPanel CornerRadius="8,8,0,0" Width="300" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,90">
+            <FlipView Height="150" Background="Transparent">
+                <FlipViewItem>
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <TextBlock x:Uid="Main_Welcome"  FontSize="17" FontWeight="SemiBold" Text="Добро пожаловать в" />
+                        <StackPanel Orientation="Horizontal" Padding="0,3,0,0">
+                            <TextBlock FontSize="27" Text="Saku Overclock" FontWeight="ExtraBold" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                            <StackPanel HorizontalAlignment="Right" Margin="0,0,14,0" VerticalAlignment="Top" Background="{ThemeResource AccentColor}" CornerRadius="3">
+                                <TextBlock FontSize="10" Padding="3,0,3,0"
+               FontWeight="Bold"
+               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+               Text="{Binding Version}">
+                                    <TextBlock.DataContext>
+                                        <viewmodels:ГлавнаяViewModel/>
+                                    </TextBlock.DataContext>
+                                </TextBlock>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock x:Uid="Main_Welcome_1" FontSize="17" FontWeight="SemiBold" Text="Для тех, кто желает максимум!" Padding="0,2,0,0"/>
+                        <TextBlock FontSize="17" Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" FontWeight="Bold" Padding="0,3,0,0"/>
+                    </StackPanel>
+                </FlipViewItem>
+                <FlipViewItem>
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Source="ms-appx:///Assets/InfoBadge/Saku-Overclock-Github-Readme.png"/>
+                        <Button Click="MainGithubReadmeButton_Click" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.0"/>
+                    </Grid> 
+                </FlipViewItem> 
+                <FlipViewItem>
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Source="ms-appx:///Assets/InfoBadge/Saku-Overclock-Github-Issues.png"/>
+                        <Button Click="MainGithubIssuesButton_Click"  x:Name="MainGithubIssuesButton" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.0"/>
+                    </Grid>
+                </FlipViewItem>
+            </FlipView>
+            <Grid CornerRadius="8" Background="{ThemeResource PostAcrylicBrush}">
+                <Pivot Margin="0,-15,0,0" Height="125">
+                    <PivotItem>
+                        <PivotItem.Header>
+                            <TextBlock Margin="0,0,0,-8"
+                       FontSize="16"
+                       FontWeight="Bold" Text="Changelog"/>
+                        </PivotItem.Header>
+                        <ScrollViewer>
+                            <StackPanel Orientation="Vertical" x:Name="MainChangelogStackPanel" HorizontalAlignment="Stretch" IsHitTestVisible="True">
+                                <TextBlock Text="◆ Now you have better information page"/>
+                                <TextBlock Text="◆ Safe reapply feature"/>
+                                <TextBlock Text="◆ 5x Times faster information page"/>
+                                <TextBlock Text="◆ RTSS Support for information page"/>
+                            </StackPanel> 
+                        </ScrollViewer>
+                    </PivotItem>
+                    <PivotItem Content="Saku Overclock now supports more CPUs!">
+                        <PivotItem.Header>
+                            <TextBlock Margin="0,0,0,-8"
+                       FontSize="16"
+                       FontWeight="Bold" Text="News"/>
+                        </PivotItem.Header>
+
+                    </PivotItem>
+                    <PivotItem Content="Wait for new version!">
+                        <PivotItem.Header>
+                            <TextBlock Margin="0,0,0,-8"
+                       FontSize="16"
+                       FontWeight="Bold" Text="Actions"/>
+                        </PivotItem.Header>
+
+                    </PivotItem>
+                </Pivot>
+            </Grid>
+        </StackPanel>
         <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
             <Grid.RowDefinitions>
                 <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition Height="20"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="300"/>
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Height="60" Click="Preset_Click">
-                <Grid>
-                    <Grid Width="2000">
-                        <SymbolIcon Symbol="Favorite" HorizontalAlignment="Left"/>
-                        <TextBlock x:Uid="Main_Preset" HorizontalAlignment="Left" Margin="67,0,0,0" FontSize="17" Text="Пресеты"/>
-                    </Grid>
-                    <TextBlock Text=">" FontSize="20" FontFamily="Consolas" HorizontalAlignment="Right"/>
-                </Grid>
-                
+            </Grid.ColumnDefinitions> 
+            <Button Grid.Column="4" CornerRadius="20" Shadow="{ThemeResource SharedShadow}" Translation="0,0,62" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Height="40" x:Name="Discrd" Click="Discrd_Click">
+                <Grid HorizontalAlignment="Stretch">
+                    <Border Margin="0,2.3,-54,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="0.30" ScaleY="0.30"/>
+                        </Border.RenderTransform>
+                        <BitmapIcon  Margin="3,0,-3,-44" UriSource="/Assets/discord.png" Height="84"/>
+                    </Border> 
+                    <TextBlock VerticalAlignment="Center" x:Uid="Main_Disc" Padding="0,0,7,0" HorizontalAlignment="Left" FontSize="14" FontWeight="SemiBold" Text="Дискордик"/>
+                </Grid> 
             </Button>
-            <Button  Grid.Column="2" Height="60" Click="Param_Click">
-               
-                <Grid>
-                    <Grid Width="2000">
-                        <SymbolIcon Symbol="Edit" HorizontalAlignment="Left"/>
-                        <TextBlock x:Uid="Main_Param" HorizontalAlignment="Left" Margin="60,0,0,0" FontSize="17" Text="Параметры"/>
-
-                    </Grid>
-                    <TextBlock Text=">" FontSize="20" FontFamily="Consolas" HorizontalAlignment="Right"/>
+            <Button CornerRadius="20" Shadow="{ThemeResource SharedShadow}" Translation="0,0,62" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Grid.Column="6" Height="40" Click="Info_Click">
+                <Grid HorizontalAlignment="Stretch">
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Right"     Glyph="&#xe950;"/>
+                    <TextBlock VerticalAlignment="Center" x:Uid="Main_Info" Padding="0,0,7,0" HorizontalAlignment="Left" FontSize="14" FontWeight="SemiBold" Text="Информация"/>
                 </Grid>
             </Button>
-            <Button Grid.Column="4" Height="60" Click="Info_Click">
-                <Grid>
-                    <Grid Width="2000">
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe950;"/>
-                        <TextBlock x:Uid="Main_Info" HorizontalAlignment="Left" Margin="55,0,0,0" FontSize="17" Text="Информация"/>
-                    </Grid>
-                    <TextBlock Text=">" FontSize="20" FontFamily="Consolas" HorizontalAlignment="Right"/>
+            <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Grid.Column="0" Translation="0,0,62" Height="40" Style="{StaticResource AccentButtonStyle}" CornerRadius="20" Shadow="{ThemeResource SharedShadow}" Click="Param_Click">
+                <Grid HorizontalAlignment="Stretch">
+                    <FontIcon HorizontalAlignment="Left" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe945;"/>
+                    <TextBlock x:Uid="Main_Param" HorizontalAlignment="Center" FontSize="16" FontWeight="SemiBold" Text="Разгон"/>
+                    <TextBlock Text=">>" FontSize="20" FontFamily="Consolas" HorizontalAlignment="Right"/>
                 </Grid>
             </Button>
-            <Button Grid.Column="6" Height="60" x:Name="Discrd" Click="Discrd_Click">
-                <Grid>
-                    <Grid Width="2000">
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Glyph="&#xe8aa;"/>
-                        <TextBlock x:Uid="Main_Disc" HorizontalAlignment="Left" Margin="60,0,0,0" FontSize="17" Text="Дискордик"/>
-                    </Grid>
-                    <TextBlock Text=">" FontSize="20" FontFamily="Consolas" HorizontalAlignment="Right"/>
-                </Grid>
-            </Button>
-        </Grid>
-        
+        </Grid> 
     </Grid>
 </Page>
