@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea" Margin="-80,0,-80,0">
+    <Grid x:Name="ContentArea" Margin="-128,0,-150,0">
         
         <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="30" Margin="80,-65,0,0"></TextBlock>
         <Grid >

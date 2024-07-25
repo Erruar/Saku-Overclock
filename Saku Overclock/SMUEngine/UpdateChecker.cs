@@ -65,7 +65,7 @@ public class UpdateChecker
         var sb = new StringBuilder();
         foreach (var release in releases.OrderByDescending(r => r.CreatedAt))
         {
-            sb.AppendLine($"{release.Body}")
+            sb.AppendLine($"{release.Body}".Replace("### THATS ALL?\r\nDon't think that I'm not developing a project, I'm doing it every day for you friends, but so far I can't make a stable update because there are too many changes, but we're getting close to release!\r\nI hope you will appreciate my work as your **star** ⭐ , thank you!","") + "\n")
               .AppendLine();
         }
 

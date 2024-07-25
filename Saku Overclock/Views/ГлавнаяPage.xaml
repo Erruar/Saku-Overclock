@@ -8,10 +8,10 @@
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />  
     </Page.Resources>
-    <Grid x:Name="ContentArea">
+    <Grid x:Name="ContentArea" Margin="-48,-65,-50,0">
         <Border
                MinHeight="325"
-               CornerRadius="8" Margin="0,-180,0,0">
+               CornerRadius="8" Margin="0,-115,0,0">
             <Border.Background>
                 <ImageBrush
                            ImageSource="/Assets/home.png"
@@ -62,8 +62,8 @@
                        FontSize="16"
                        FontWeight="Bold" Text="Changelog"/>
                         </PivotItem.Header>
-                        <ScrollViewer>
-                            <StackPanel Orientation="Vertical" x:Name="MainChangelogStackPanel" HorizontalAlignment="Stretch" IsHitTestVisible="True">
+                        <ScrollViewer Margin="-10,0,-10,0">
+                            <StackPanel Width="274" Orientation="Vertical" x:Name="MainChangelogStackPanel" HorizontalAlignment="Stretch" IsHitTestVisible="True">
                                 <TextBlock Text="◆ Now you have better information page"/>
                                 <TextBlock Text="◆ Safe reapply feature"/>
                                 <TextBlock Text="◆ 5x Times faster information page"/>
@@ -103,6 +103,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="20"/>
             </Grid.ColumnDefinitions> 
             <Button Grid.Column="4" CornerRadius="20" Shadow="{ThemeResource SharedShadow}" Translation="0,0,62" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Height="40" x:Name="Discrd" Click="Discrd_Click">
                 <Grid HorizontalAlignment="Stretch">

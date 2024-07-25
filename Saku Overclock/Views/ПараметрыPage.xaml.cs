@@ -445,7 +445,15 @@ public sealed partial class ПараметрыPage : Page
         ProfileLoad();
         ConfigLoad();
         ProfileCOM.Items.Clear();
-        ProfileCOM.Items.Add("Unsaved");
+        ProfileCOM.Items.Add(new ComboBoxItem()
+        {
+            Content = new TextBlock
+            {
+                Text = "Other",
+                Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"]
+            },
+            IsEnabled = false
+        });
         for (var i = 0; i < profile.Length; i++)
         {
             if (profile[i].profilename != string.Empty)
@@ -3553,7 +3561,15 @@ public sealed partial class ПараметрыPage : Page
                 ProfileSave();
                 waitforload = true;
                 ProfileCOM.Items.Clear();
-                ProfileCOM.Items.Add("Unsaved");
+                ProfileCOM.Items.Add(new ComboBoxItem()
+                {
+                    Content = new TextBlock
+                    {
+                        Text = "Other",
+                        Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"]
+                    },
+                    IsEnabled = false
+                });
                 for (var i = 0; i < profile.Length; i++)
                 {
                     if (profile[i].profilename != string.Empty || profile[i].profilename != "Unsigned profile")

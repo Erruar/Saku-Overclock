@@ -1261,6 +1261,28 @@ public sealed partial class ShellPage : Page
         }
         if (button != null) { button.IsEnabled = true; NotifyLoad(); notify.Notifies = new List<SMUEngine.Notify>(); NotifySave(); }
     }
+    private async void Notif_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (NotificationsPivot.SelectedIndex == 0)
+        {
+            NotificationContainer.Visibility = Visibility.Visible;
+            if (NotificationContainer.Children.Count == 0)
+            {
+                NoNotificationIndicator.Visibility = Visibility.Visible;
+            }
+        }
+        else
+        {
+            NotificationContainer.Visibility = Visibility.Collapsed;
+            NoNotificationIndicator.Visibility = Visibility.Collapsed; 
+            NotifChangelogTexts.Children.Clear();
+            if (UpdateChecker.GitHubInfoString == string.Empty)
+            {
+                await UpdateChecker.GenerateReleaseInfoString();
+            }
+            await ГлавнаяPage.GenerateFormattedReleaseNotes(NotifChangelogTexts);
+        }
+    }
     #endregion
     #region Based on Collapse Launcher Notification voids
     private void ShowHideNotificationPanel(bool hider)
@@ -1343,5 +1365,7 @@ public sealed partial class ShellPage : Page
         Container.Children.Add(Notification);
         NotificationContainer.Children.Add(Container);
     }
-    #endregion 
+    #endregion
+
+
 }

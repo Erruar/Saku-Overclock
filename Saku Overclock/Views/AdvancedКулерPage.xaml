@@ -50,20 +50,20 @@
         </MenuFlyout>
     </Page.Resources>
     <!--Pages can be added as references or inline-->
-    <Grid x:Name="ContentArea">
+    <Grid x:Name="ContentArea" Margin="-48,0,-28,0">
         <TextBlock Text="Advanced cooler tweaking" x:Uid="AdvancedCooler_Page" FontSize="30" Margin="0,-65,0,0"></TextBlock>
-        <ContentControl>
-            <TabView x:Name="MainTab" Background="{ThemeResource LayerOnMicaBaseAltFillColorTransparentBrush}" AddTabButtonClick="Tabs_AddTabButtonClick" PointerMoved="TabView_PointerMoved" TabCloseRequested="Tabs_TabCloseRequested" CloseButtonOverlayMode="OnPointerOver" TabWidthMode="SizeToContent">
+        <ContentControl HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+            <TabView x:Name="MainTab" Background="{ThemeResource LayerOnMicaBaseAltFillColorTransparentBrush}" AddTabButtonClick="Tabs_AddTabButtonClick" PointerMoved="TabView_PointerMoved" TabCloseRequested="Tabs_TabCloseRequested" CloseButtonOverlayMode="OnPointerOver" TabWidthMode="SizeToContent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                 <TabView.TabItems>
                     <TabViewItem Header="Readme" x:Name="Example_1Tab">
                         <TabViewItem.IconSource>
                             <FontIconSource Glyph="&#xe718;"/>
                         </TabViewItem.IconSource>
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto">
-                            <ScrollViewer Padding="0,0,36,0" IsTabStop="False"
+                            <ScrollViewer IsTabStop="False"
          UseSystemFocusVisuals="False"
          VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-         VerticalScrollMode="Auto" Margin="0,0,-50,0">
+         VerticalScrollMode="Auto" Margin="0,0,-20,14">
                                 <Grid>
                                     <Expander  VerticalAlignment="Bottom" Opacity="0" IsEnabled="False">
                                         <Expander.Header>
@@ -80,7 +80,7 @@
                                             <Run x:Name="ReadEx"></Run>
                                         </Paragraph>
                                     </RichTextBlock>
-                                    <Button   VerticalAlignment="Top"  Click="CopyPath_Click"  HorizontalAlignment="Right"  Height="40" Width="40">
+                                    <Button Margin="0,0,19,0" VerticalAlignment="Top"  Click="CopyPath_Click"  HorizontalAlignment="Right"  Height="40" Width="40">
                                         <ContentControl>
                                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Margin="-3,0,0,0"    Glyph="&#xe8c8;"/>
                                         </ContentControl>
@@ -93,11 +93,11 @@
                         <TabViewItem.IconSource>
                             <FontIconSource Glyph="&#xe932;"/>
                         </TabViewItem.IconSource>
-                        <Grid>
-                            <ScrollViewer Padding="0,0,36,0" IsTabStop="False"
+                        <Grid HorizontalAlignment="Stretch">
+                            <ScrollViewer Margin="0,0,-21,15" IsTabStop="False"
          UseSystemFocusVisuals="False"
-         VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-         VerticalScrollMode="Auto" Margin="0,0,-50,0">
+         VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch"
+         VerticalScrollMode="Auto">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
@@ -341,7 +341,7 @@
                                         </Canvas>
                                     </Grid>
                                     <!-- Всё что ниже кривых -->
-                                    <TextBlock Grid.Row="0" Margin="420,78,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" x:Uid="AdvancedCooler_Curve_Tresh" Text="Temperature tresholds"/>
+                                    <TextBlock Grid.Row="0" Margin="420,78,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" x:Uid="AdvancedCooler_Curve_Tresh" Text="Temperature tresholds"/>
                                     <ToggleSplitButton Grid.Row="0" Width="205" IsChecked="True" Grid.Column="0" IsCheckedChanged="MyListButton_IsCheckedChanged" x:Name="myListButton" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,112,0,0">
                                         <Grid>
                                             <ContentControl>
@@ -509,7 +509,7 @@
             </TabView>
         </ContentControl>
 
-        <Button VerticalAlignment="Bottom"  Click="NormalMode_Click"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-13,15" x:Uid="AdvancedCooler_Normal" ToolTipService.ToolTip="Normal mode">
+        <Button VerticalAlignment="Bottom"  Click="NormalMode_Click"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-1,15" x:Uid="AdvancedCooler_Normal" ToolTipService.ToolTip="Normal mode">
             <Grid>
                 <ContentControl>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe90f;"/>
