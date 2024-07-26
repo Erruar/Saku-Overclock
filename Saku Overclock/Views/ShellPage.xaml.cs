@@ -311,7 +311,7 @@ public sealed partial class ShellPage : Page
         }
         catch 
         {
-            NotifyLoad(); notify.Notifies ??= new List<Notify>();
+            NotifyLoad(); notify.Notifies ??= [];
             try
             {
                 notify.Notifies.Add(new Notify { Title = "ThemeError".GetLocalized() + "\"" + $"{themer!.Themes[config.ThemeType]!.ThemeName}" + "\"", Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error });

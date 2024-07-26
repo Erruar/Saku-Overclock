@@ -9,6 +9,7 @@ using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using Windows.UI.ViewManagement;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Saku_Overclock;
 
@@ -16,8 +17,7 @@ public sealed partial class MainWindow : WindowEx
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
     private readonly UISettings settings;
-    private Config config = new();
-    private Devices devices = new();
+    private Config config = new(); 
     public enum DWMWINDOWATTRIBUTE
     {
         DWMWA_WINDOW_CORNER_PREFERENCE = 33
@@ -85,7 +85,6 @@ public sealed partial class MainWindow : WindowEx
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event   
-        DeviceLoad();
         Tray_Start();
         Closed += Dispose_Tray;
     }
@@ -115,7 +114,17 @@ public sealed partial class MainWindow : WindowEx
         ConfigLoad();
         try
         {
-            if (config.ReapplyLatestSettingsOnAppLaunch == true) { var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(false); /*cpu.Play_Invernate_QuickSMU(1);*/ if (devices.autopstate == true && devices.enableps == true) { cpu.BtnPstateWrite_Click(); } }
+            if (config.ReapplyLatestSettingsOnAppLaunch == true) 
+            { 
+                var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(false);
+                /*cpu.Play_Invernate_QuickSMU(1);*/
+                var profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
+
+                if (profile[config.Preset].autoPstate == true && profile[config.Preset].enablePstateEditor == true) 
+                { 
+                    ПараметрыPage.WritePstates(); 
+                } 
+            }
             if (config.AutostartType == 1 || config.AutostartType == 3) { await Task.Delay(700); this.Hide(); }
             // Генерация строки с информацией о релизах
             await UpdateChecker.GenerateReleaseInfoString();
@@ -282,45 +291,7 @@ public sealed partial class MainWindow : WindowEx
                     Close();
                 }
             }
-        }
-        if (file == 'd')
-        {
-            try
-            {
-                for (var j = 0; j < 5; j++)
-                {
-                    devices = new Devices();
-                }
-            }
-            catch
-            {
-                Close();
-            }
-            if (devices != null)
-            {
-                try
-                {
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices, Formatting.Indented));
-                }
-                catch
-                {
-                    Close();
-                }
-            }
-            else
-            {
-                try
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json");
-                    Close();
-                }
-                catch
-                {
-                    Close();
-                }
-            }
-        }
+        } 
     }
 
     public void ConfigSave()
@@ -343,28 +314,6 @@ public sealed partial class MainWindow : WindowEx
         {
             JsonRepair('c');
         }
-    }
-
-    public void DeviceSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices, Formatting.Indented));
-        }
-        catch { }
-    }
-
-    public void DeviceLoad()
-    {
-        try
-        {
-            devices = JsonConvert.DeserializeObject<Devices>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json"))!;
-        }
-        catch
-        {
-            JsonRepair('d');
-        }
-    }
+    } 
     #endregion
 }

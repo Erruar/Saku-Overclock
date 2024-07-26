@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows.Forms;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -28,31 +27,31 @@ public sealed partial class ПараметрыPage : Page
     {
         get;
     }
-    private FontIcon? SMUSymbol1;
-    private List<SmuAddressSet>? matches;
-    private Config config = new();
-    private Devices devices = new();
-    private Smusettings smusettings = new();
-    private Profile[] profile = new Profile[1];
-    private JsonContainers.Notifications notify = new();
-    private int indexprofile = 0;
-    private string SMUSymbol = "\uE8C8";
-    private bool isLoaded = false;
-    private bool relay = false;
-    private Cpu? cpu; //Import Zen States core
-    private SendSMUCommand? cpusend;
+    private FontIcon? SMUSymbol1; // тоже самое что и SMUSymbol
+    private List<SmuAddressSet>? matches; // Совпадения адресов SMU
+    private static Config config = new(); // Основной конфиг приложения
+    private static Smusettings smusettings = new(); // Загрузка настроек быстрых команд SMU
+    private static Profile[] profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
+    private static JsonContainers.Notifications notify = new(); // Уведомления приложения
+    private int indexprofile = 0; // Выбранный профиль
+    private string SMUSymbol = "\uE8C8"; // Изначальный символ копирования, для секции Редактор параметров SMU. Используется для быстрых команд SMU
+    private bool isLoaded = false; // Загружена ли корректно страница для применения изменений
+    private bool relay = false; // Задержка между изменениями ComboBox в секции Состояния CPU
+    private Cpu? cpu; // Импорт Zen States core
+    private SendSMUCommand? cpusend; // Импорт отправителя команд SMU
     public bool turboboost = true;
-    private bool waitforload = true;
-    public string? adjline;
-    private readonly ZenStates.Core.Mailbox testMailbox = new();
-    public string? universalvid;
-    public string? equalvid;
+    private bool waitforload = true; // Ожидание окончательной смены профиля на другой. Активируется при смене профиля
+    public string? adjline; // Команды RyzenADJ для применения
+    private readonly ZenStates.Core.Mailbox testMailbox = new(); // Новый адрес SMU
+    private static string? equalvid; // Преобразование из напряжения в его ID. Используется в секции Состояния CPU для указания напряжения PState
+    private static readonly List<double> pstatesFID = [0, 0, 0];
+    private static readonly List<double> pstatesDID = [0, 0, 0];
+    private static readonly List<double> pstatesVID = [0, 0, 0];
 
     public ПараметрыPage()
     {
         ViewModel = App.GetService<ПараметрыViewModel>();
         InitializeComponent();
-        DeviceLoad();
         ConfigLoad();
         ProfileLoad();
         indexprofile = config.Preset;
@@ -64,11 +63,11 @@ public sealed partial class ПараметрыPage : Page
             cpu ??= CpuSingleton.GetInstance();
             cpusend ??= App.GetService<SendSMUCommand>();
         }
-        catch (Exception ex) 
-        { 
-            TraceIt_TraceError(ex.ToString()); 
+        catch (Exception ex)
+        {
+            TraceIt_TraceError(ex.ToString());
             App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash_CPU".GetLocalized(), AppContext.BaseDirectory));
-        } 
+        }
         Loaded += ПараметрыPage_Loaded;
     }
     #region JSON and initialization
@@ -82,20 +81,20 @@ public sealed partial class ПараметрыPage : Page
         }
         catch (Exception ex)
         {
-            TraceIt_TraceError(ex.ToString()); 
+            TraceIt_TraceError(ex.ToString());
             try
             {
                 ConfigLoad(); config.Preset = -1; ConfigSave(); indexprofile = -1;
                 SlidersInit();
             }
-            catch (Exception ex1)  
+            catch (Exception ex1)
             {
-                TraceIt_TraceError(ex1.ToString()); 
+                TraceIt_TraceError(ex1.ToString());
                 await Send_Message("Critical Error!", "Can't load profiles. Tell this to developer", Symbol.Bookmarks);
             }
         }
     }
-    public void ConfigSave()
+    public static void ConfigSave()
     {
         try
         {
@@ -104,40 +103,19 @@ public sealed partial class ПараметрыPage : Page
         }
         catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
-    public void ConfigLoad()
+    public static void ConfigLoad()
     {
         try
         {
             config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
         }
-        catch (Exception ex) 
-        { 
-            TraceIt_TraceError(ex.ToString()); 
+        catch (Exception ex)
+        {
+            TraceIt_TraceError(ex.ToString());
             JsonRepair('c');
-        } 
-    }
-    public void DeviceSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
         }
-        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
-    public void DeviceLoad()
-    {
-        try
-        {
-            devices = JsonConvert.DeserializeObject<Devices>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json"))!;
-        }
-        catch (Exception ex) 
-        { 
-            JsonRepair('d');
-            TraceIt_TraceError(ex.ToString()); 
-        } 
-    }
-    public void NotifySave()
+    public static void NotifySave()
     {
         try
         {
@@ -146,7 +124,7 @@ public sealed partial class ПараметрыPage : Page
         }
         catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
-    public async void NotifyLoad()
+    public static async void NotifyLoad()
     {
         var success = false;
         var retryCount = 1;
@@ -159,7 +137,7 @@ public sealed partial class ПараметрыPage : Page
                     notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))!;
                     if (notify != null) { success = true; } else { JsonRepair('p'); }
                 }
-                catch (Exception ex) { TraceIt_TraceError(ex.ToString()); JsonRepair('n'); } 
+                catch (Exception ex) { TraceIt_TraceError(ex.ToString()); JsonRepair('n'); }
             }
             else { JsonRepair('n'); }
             if (!success)
@@ -169,7 +147,7 @@ public sealed partial class ПараметрыPage : Page
             }
         }
     }
-    public void SmuSettingsSave()
+    public static void SmuSettingsSave()
     {
         try
         {
@@ -178,15 +156,15 @@ public sealed partial class ПараметрыPage : Page
         }
         catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
-    public void SmuSettingsLoad()
+    public static void SmuSettingsLoad()
     {
         try
         {
             smusettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\smusettings.json"))!;
         }
-        catch (Exception ex) { JsonRepair('s'); TraceIt_TraceError(ex.ToString()); } 
+        catch (Exception ex) { JsonRepair('s'); TraceIt_TraceError(ex.ToString()); }
     }
-    public void ProfileSave()
+    public static void ProfileSave()
     {
         try
         {
@@ -195,16 +173,15 @@ public sealed partial class ПараметрыPage : Page
         }
         catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
-    public void ProfileLoad()
+    public static void ProfileLoad()
     {
         try
         {
-
             profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
         }
-        catch (Exception ex) { JsonRepair('p'); TraceIt_TraceError(ex.ToString()); } 
+        catch (Exception ex) { JsonRepair('p'); TraceIt_TraceError(ex.ToString()); }
     }
-    public void JsonRepair(char file)
+    public static void JsonRepair(char file)
     {
         if (file == 'c')
         {
@@ -241,51 +218,6 @@ public sealed partial class ПараметрыPage : Page
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
                     Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
-                    App.MainWindow.Close();
-                }
-                catch
-                {
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-        }
-        if (file == 'd')
-        {
-            try
-            {
-                for (var j = 0; j < 5; j++)
-                {
-                    devices = new Devices();
-                }
-            }
-            catch
-            {
-                App.MainWindow.Close();
-            }
-            if (devices != null)
-            {
-                try
-                {
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-            else
-            {
-                try
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
                     App.MainWindow.Close();
                 }
                 catch
@@ -449,7 +381,7 @@ public sealed partial class ПараметрыPage : Page
         {
             Content = new TextBlock
             {
-                Text = "Other",
+                Text = "Premaded",
                 Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"]
             },
             IsEnabled = false
@@ -532,7 +464,7 @@ public sealed partial class ПараметрыPage : Page
         CCD2_6.IsEnabled = locks; CCD2_6v.IsEnabled = locks;
         CCD2_7.IsEnabled = locks; CCD2_7v.IsEnabled = locks;
         CCD2_8.IsEnabled = locks; CCD2_8v.IsEnabled = locks;
-    } 
+    }
     private void MainInit(int index)
     {
         if (SettingsViewModel.VersionId != 5)
@@ -620,14 +552,7 @@ public sealed partial class ПараметрыPage : Page
         ConfigLoad();
         if (config.Preset == -1 || index == -1) //Load from unsaved
         {
-            DeviceLoad();
-            c1.IsChecked = devices.c1; c1v.Value = devices.c1v; c2.IsChecked = devices.c2; c1v.Value = devices.c2v; c3.IsChecked = devices.c3; c1v.Value = devices.c3v; c4.IsChecked = devices.c4; c1v.Value = devices.c4v; c5.IsChecked = devices.c5; c1v.Value = devices.c5v; c6.IsChecked = devices.c6; c1v.Value = devices.c6v; c7.IsChecked = devices.c7; c7v.Value = devices.c7v;
-            V1.IsChecked = devices.v1; V1V.Value = devices.v1v; V2.IsChecked = devices.v2; V2V.Value = devices.v2v; V3.IsChecked = devices.v3; V3V.Value = devices.v3v; V4.IsChecked = devices.v4; V4V.Value = devices.v4v; V5.IsChecked = devices.v5; V5V.Value = devices.v5v; V6.IsChecked = devices.v6; V6V.Value = devices.v6v; V7.IsChecked = devices.v7; V7V.Value = devices.v7v;
-            g1.IsChecked = devices.g1; g1v.Value = devices.g1v; g2.IsChecked = devices.g2; g2v.Value = devices.g2v; g3.IsChecked = devices.g3; g3v.Value = devices.g3v; g4.IsChecked = devices.g4; g4v.Value = devices.g4v; g5.IsChecked = devices.g5; g5v.Value = devices.g5v; g6.IsChecked = devices.g6; g6v.Value = devices.g6v; g7.IsChecked = devices.g7; g7v.Value = devices.g7v; g8v.Value = devices.g8v; g8.IsChecked = devices.g8; g9v.Value = devices.g9v; g9.IsChecked = devices.g9; g10v.Value = devices.g10v; g10.IsChecked = devices.g10; g11v.Value = devices.g11v; g11.IsChecked = devices.g11; g12v.Value = devices.g12v; g12.IsChecked = devices.g12; g15m.SelectedIndex = devices.g15v; g15.IsChecked = devices.g15; g16m.SelectedIndex = devices.g16v; g16.IsChecked = devices.g16;
-            a1.IsChecked = devices.a1; a1v.Value = devices.a1v; a2.IsChecked = devices.a2; a2v.Value = devices.a2v; a3.IsChecked = devices.a3; a3v.Value = devices.a3v; a4.IsChecked = devices.a4; a4v.Value = devices.a4v; a5.IsChecked = devices.a5; a5v.Value = devices.a5v; a6.IsChecked = devices.a6; a6v.Value = devices.a6v; a7.IsChecked = devices.a7; a7v.Value = devices.a7v; a8v.Value = devices.a8v; a8.IsChecked = devices.a8; a9v.Value = devices.a9v; a9.IsChecked = devices.a9; a10v.Value = devices.a10v; a11v.Value = devices.a11v; a11.IsChecked = devices.a11; a12v.Value = devices.a12v; a12.IsChecked = devices.a12; a13m.SelectedIndex = devices.a13v; a13.IsChecked = devices.a13; a14m.SelectedIndex = devices.a14v; a14.IsChecked = devices.a14; a15v.Value = devices.a15v; a15.IsChecked = devices.a15;
-            EnablePstates.IsOn = devices.enableps; Turbo_boost.IsOn = devices.turboboost; Autoapply_1.IsOn = devices.autopstate; IgnoreWarn.IsOn = devices.ignorewarn; Without_P0.IsOn = devices.p0ignorewarn;
-            DID_0.Value = devices.did0; DID_1.Value = devices.did1; DID_2.Value = devices.did2; FID_0.Value = devices.fid0; FID_1.Value = devices.fid1; FID_2.Value = devices.fid2; VID_0.Value = devices.vid0; VID_1.Value = devices.vid1; VID_2.Value = devices.vid2;
-            EnableSMU.IsOn = devices.smuenabled;
+            //Unknown
         }
         else
         {
@@ -868,15 +793,14 @@ public sealed partial class ПараметрыPage : Page
             playButton.Click += PlayButton_Click;
         }
     }
-    private async void TraceIt_TraceError(string error) //Система TraceIt! позволит логгировать все ошибки
+    private static void TraceIt_TraceError(string error) //Система TraceIt! позволит логгировать все ошибки
     {
         if (error != string.Empty)
-        {  
+        {
             NotifyLoad(); //Добавить уведомление
             notify.Notifies ??= new List<Notify>();
             notify.Notifies.Add(new Notify { Title = "TraceIt_Error".GetLocalized(), Msg = error, Type = InfoBarSeverity.Error });
             NotifySave();
-            await Send_Message("TraceIt_Error".GetLocalized(), error, Symbol.Cancel);
         }
     }
     #endregion
@@ -1210,8 +1134,8 @@ public sealed partial class ПараметрыPage : Page
     private void EnableSMU_Toggled(object sender, RoutedEventArgs e) => SMUEnabl();
     private void SMUEnabl()
     {
-        if (EnableSMU.IsOn) { devices.smuenabled = true; DeviceSave(); profile[indexprofile].smuEnabled = true; ProfileSave(); }
-        else { devices.smuenabled = false; DeviceSave(); profile[indexprofile].smuEnabled = false; ProfileSave(); }
+        if (EnableSMU.IsOn) { profile[indexprofile].smuEnabled = true; ProfileSave(); }
+        else { profile[indexprofile].smuEnabled = false; ProfileSave(); }
     }
     private void CreateQuickCommandSMU_Click(object sender, RoutedEventArgs e)
     {
@@ -2004,351 +1928,279 @@ public sealed partial class ПараметрыPage : Page
     private void C1_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = c1.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu1 = check; profile[indexprofile].cpu1value = c1v.Value; ProfileSave(); }
-        devices.c1 = check; devices.c1v = c1v.Value;
-        DeviceSave();
     }
     //Лимит CPU (W)
     private void C2_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = c2.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu2 = check; profile[indexprofile].cpu2value = c2v.Value; ProfileSave(); }
-        devices.c2 = check; devices.c2v = c2v.Value;
-        DeviceSave();
     }
     //Реальный CPU (W)
     private void C3_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = c3.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu3 = check; profile[indexprofile].cpu3value = c3v.Value; ProfileSave(); }
-        devices.c3 = check; devices.c3v = c3v.Value;
-        DeviceSave();
     }
     //Средний CPU (W)
     private void C4_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = c4.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu4 = check; profile[indexprofile].cpu4value = c4v.Value; ProfileSave(); }
-        devices.c4 = check; devices.c4v = c4v.Value;
-        DeviceSave();
     }
     //Тик быстрого разгона (S)
     private void C5_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = c5.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu5 = check; profile[indexprofile].cpu5value = c5v.Value; ProfileSave(); }
-        devices.c5 = check; devices.c5v = c5v.Value;
-        DeviceSave();
     }
     //Тик медленного разгона (S)
     private void C6_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = c6.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu6 = check; profile[indexprofile].cpu6value = c6v.Value; ProfileSave(); }
-        devices.c6 = check; devices.c6v = c6v.Value;
-        DeviceSave();
     }
     //Параметры VRM
     //Максимальный ток VRM A
     private void V1_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = V1.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm1 = check; profile[indexprofile].vrm1value = V1V.Value; ProfileSave(); }
-        devices.v1 = check; devices.v1v = V1V.Value;
-        DeviceSave();
     }
     //Лимит по току VRM A
     private void V2_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = V2.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm2 = check; profile[indexprofile].vrm2value = V2V.Value; ProfileSave(); }
-        devices.v2 = check; devices.v2v = V2V.Value;
-        DeviceSave();
     }
     //Максимальный ток SOC A
     private void V3_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = V3.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm3 = check; profile[indexprofile].vrm3value = V3V.Value; ProfileSave(); }
-        devices.v3 = check; devices.v3v = V3V.Value;
-        DeviceSave();
     }
     //Лимит по току SOC A
     private void V4_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = V4.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm4 = check; profile[indexprofile].vrm4value = V4V.Value; ProfileSave(); }
-        devices.v4 = check; devices.v4v = V4V.Value;
-        DeviceSave();
     }
     //Максимальный ток PCI VDD A
     private void V5_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = V5.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm5 = check; profile[indexprofile].vrm5value = V5V.Value; ProfileSave(); }
-        devices.v5 = check; devices.v5v = V5V.Value;
-        DeviceSave();
     }
     //Максимальный ток PCI SOC A
     private void V6_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = V6.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm6 = check; profile[indexprofile].vrm6value = V6V.Value; ProfileSave(); }
-        devices.v6 = check; devices.v6v = V6V.Value;
-        DeviceSave();
     }
     //Отключить троттлинг на время
     private void V7_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = V7.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].vrm7 = check; profile[indexprofile].vrm7value = V7V.Value; ProfileSave(); }
-        devices.v7 = check; devices.v7v = V7V.Value;
-        DeviceSave();
     }
     //Параметры графики
     //Минимальная частота SOC 
     private void G1_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g1.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu1 = check; profile[indexprofile].gpu1value = g1v.Value; ProfileSave(); }
-        devices.g1 = check; devices.g1v = g1v.Value;
-        DeviceSave();
     }
     //Максимальная частота SOC
     private void G2_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g2.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu2 = check; profile[indexprofile].gpu2value = g2v.Value; ProfileSave(); }
-        devices.g2 = check; devices.g2v = g2v.Value;
-        DeviceSave();
     }
     //Минимальная частота Infinity Fabric
     private void G3_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g3.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu3 = check; profile[indexprofile].gpu3value = g3v.Value; ProfileSave(); }
-        devices.g3 = check; devices.g3v = g3v.Value;
-        DeviceSave();
     }
     //Максимальная частота Infinity Fabric
     private void G4_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g4.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu4 = check; profile[indexprofile].gpu4value = g4v.Value; ProfileSave(); }
-        devices.g4 = check; devices.g4v = g4v.Value;
-        DeviceSave();
     }
     //Минимальная частота кодека VCE
     private void G5_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g5.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu5 = check; profile[indexprofile].gpu5value = g5v.Value; ProfileSave(); }
-        devices.g5 = check; devices.g5v = g5v.Value;
-        DeviceSave();
     }
     //Максимальная частота кодека VCE
     private void G6_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g6.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu6 = check; profile[indexprofile].gpu6value = g6v.Value; ProfileSave(); }
-        devices.g6 = check; devices.g6v = g6v.Value;
-        DeviceSave();
     }
     //Минимальная частота частота Data Latch
     private void G7_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g7.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu7 = check; profile[indexprofile].gpu7value = g7v.Value; ProfileSave(); }
-        devices.g7 = check; devices.g7v = g7v.Value;
-        DeviceSave();
     }
     //Максимальная частота Data Latch
     private void G8_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g8.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu8 = check; profile[indexprofile].gpu8value = g8v.Value; ProfileSave(); }
-        devices.g8 = check; devices.g8v = g8v.Value;
-        DeviceSave();
     }
     //Минимальная частота iGpu
     private void G9_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g9.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu9 = check; profile[indexprofile].gpu9value = g9v.Value; ProfileSave(); }
-        devices.g9 = check; devices.g9v = g9v.Value;
-        DeviceSave();
     }
     //Максимальная частота iGpu
     private void G10_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g10.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu10 = check; profile[indexprofile].gpu10value = g10v.Value; ProfileSave(); }
-        devices.g10 = check; devices.g10v = g10v.Value;
-        DeviceSave();
     }
     //Расширенные параметры
     private void A1_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a1.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd1 = check; profile[indexprofile].advncd1value = a1v.Value; ProfileSave(); }
-        devices.a1 = check; devices.a1v = a1v.Value;
-        DeviceSave();
     }
     private void A2_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a2.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd2 = check; profile[indexprofile].advncd2value = a2v.Value; ProfileSave(); }
-        devices.a2 = check; devices.a2v = a2v.Value;
-        DeviceSave();
     }
     private void A3_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a3.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd3 = check; profile[indexprofile].advncd3value = a3v.Value; ProfileSave(); }
-        devices.a3 = check; devices.a3v = a3v.Value;
-        DeviceSave();
     }
     private void A4_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a4.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd4 = check; profile[indexprofile].advncd4value = a4v.Value; ProfileSave(); }
-        devices.a4 = check; devices.a4v = a4v.Value;
-        DeviceSave();
     }
     private void A5_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a5.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd5 = check; profile[indexprofile].advncd5value = a5v.Value; ProfileSave(); }
-        devices.a5 = check; devices.a5v = a5v.Value;
-        DeviceSave();
     }
     private void A6_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a6.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd6 = check; profile[indexprofile].advncd6value = a6v.Value; ProfileSave(); }
-        devices.a6 = check; devices.a6v = a6v.Value;
-        DeviceSave();
     }
     private void A7_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a7.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd7 = check; profile[indexprofile].advncd7value = a7v.Value; ProfileSave(); }
-        devices.a7 = check; devices.a7v = a7v.Value;
-        DeviceSave();
     }
     private void A8_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a8.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd8 = check; profile[indexprofile].advncd8value = a8v.Value; ProfileSave(); }
-        devices.a8 = check; devices.a8v = a8v.Value;
-        DeviceSave();
     }
     private void A9_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a9.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd9 = check; profile[indexprofile].advncd9value = a9v.Value; ProfileSave(); }
-        devices.a9 = check; devices.a9v = a9v.Value;
-        DeviceSave();
     }
     private void A10_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a10.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd10 = check; profile[indexprofile].advncd10value = a10v.Value; ProfileSave(); }
-        devices.a10 = check; devices.a10v = a10v.Value;
-        DeviceSave();
     }
     private void A11_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a11.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd11 = check; profile[indexprofile].advncd11value = a11v.Value; ProfileSave(); }
-        devices.a11 = check; devices.a11v = a11v.Value;
-        DeviceSave();
     }
     private void A12_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a12.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd12 = check; profile[indexprofile].advncd12value = a12v.Value; ProfileSave(); }
-        devices.a12 = check; devices.a12v = a12v.Value;
-        DeviceSave();
     }
     private void A13_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a13.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd13 = check; profile[indexprofile].advncd1value = a13m.SelectedIndex; ProfileSave(); }
-        devices.a13 = check; devices.a13v = a13m.SelectedIndex;
-        DeviceSave();
     }
     //Оптимизатор кривой
     private void CCD2_8_Checked(object sender, RoutedEventArgs e)
@@ -2466,7 +2318,7 @@ public sealed partial class ПараметрыPage : Page
     private void O1_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = O1.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].coall = check; profile[indexprofile].coallvalue = O1v.Value; ProfileSave(); }
     }
@@ -2498,418 +2350,318 @@ public sealed partial class ПараметрыPage : Page
     private void C1_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.c1v = c1v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].cpu1value = c1v.Value; ProfileSave(); }
-        DeviceSave();
     }
     //Лимит CPU (W)
     private void C2_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.c2v = c2v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].cpu2value = c2v.Value; ProfileSave(); }
-        DeviceSave();
     }
     //Реальный CPU (W)
     private void C3_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.c3v = c3v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].cpu3value = c3v.Value; ProfileSave(); }
-        DeviceSave();
     }
     //Средний CPU(W)
     private void C4_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.c4v = c4v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].cpu4value = c4v.Value; ProfileSave(); }
-        DeviceSave();
     }
     //Тик быстрого разгона (S)
     private void C5_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.c5v = c5v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].cpu5value = c5v.Value; ProfileSave(); }
-        DeviceSave();
     }
     //Тик медленного разгона (S)
     private void C6_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.c6v = c6v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].cpu6value = c6v.Value; ProfileSave(); }
-        DeviceSave();
     }
     //Параметры VRM
     private void V1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.v1v = V1V.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].vrm1value = V1V.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void V2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.v2v = V2V.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].vrm2value = V2V.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void V3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.v3v = V3V.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].vrm3value = V3V.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void V4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.v4v = V4V.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].vrm4value = V4V.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void V5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.v5v = V5V.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].vrm5value = V5V.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void V6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.v6v = V6V.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].vrm6value = V6V.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void V7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.v7v = V7V.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].vrm7value = V7V.Value; ProfileSave(); }
-        DeviceSave();
     }
     //Параметры GPU
     private void G1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g1v = g1v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu1value = g1v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void G2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g2v = g2v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu2value = g2v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void G3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g3v = g3v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu3value = g3v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void G4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g4v = g4v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu4value = g4v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void G5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g5v = g5v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu5value = g5v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void G6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g6v = g6v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu6value = g6v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void G7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g7v = g7v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu7value = g7v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void G8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g8v = g8v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu8value = g8v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void G9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g9v = g9v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu9value = g9v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void G10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        DeviceLoad(); ProfileLoad();
-        devices.g10v = g10v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu10value = g10v.Value; ProfileSave(); }
-        DeviceSave();
     }
     //Расширенные параметры
     private void A1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a1v = a1v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd1value = a1v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a2v = a2v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd2value = a2v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a3v = a3v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd3value = a3v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a4v = a4v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd4value = a4v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A5v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a5v = a5v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd5value = a5v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A6v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a6v = a6v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd6value = a6v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A7v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a7v = a7v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd7value = a7v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A8v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a8v = a8v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd8value = a8v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a9v = a9v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd9value = a9v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a10v = a10v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd10value = a10v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a11v = a11v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd11value = a11v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a12v = a12v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd12value = a12v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void A13m_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a13v = a13m.SelectedIndex;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd13value = a13m.SelectedIndex; ProfileSave(); }
-        DeviceSave();
     }
     //Новые
     private void C7_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = c7.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].cpu7 = check; profile[indexprofile].cpu7value = c7v.Value; ProfileSave(); }
-        devices.c7 = check; devices.c7v = c7v.Value;
-        DeviceSave();
     }
     private void C7_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.c7v = c7v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].cpu7value = c7v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void G11_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g11.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu11 = check; profile[indexprofile].gpu11value = g11v.Value; ProfileSave(); }
-        devices.g11 = check; devices.g11v = g11v.Value;
-        DeviceSave();
     }
     private void G11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g11v = g11v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu11value = g11v.Value; ProfileSave(); }
-        DeviceSave();
     }
     private void G12_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g12.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu12 = check; profile[indexprofile].gpu12value = g12v.Value; ProfileSave(); }
-        devices.g12 = check; devices.g12v = g12v.Value;
-        DeviceSave();
     }
     private void G12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g11v = g12v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu12value = g12v.Value; ProfileSave(); }
-        DeviceSave();
     }
 
     private void G15_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g15.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu15 = check; profile[indexprofile].gpu15value = g15m.SelectedIndex; ProfileSave(); }
-        devices.g15 = check; devices.g15v = g15m.SelectedIndex;
-        DeviceSave();
     }
     private void G15m_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g15v = g15m.SelectedIndex;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu15value = g15m.SelectedIndex; ProfileSave(); }
-        DeviceSave();
     }
     private void G16_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = g16.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].gpu16 = check; profile[indexprofile].gpu16value = g16m.SelectedIndex; ProfileSave(); }
-        devices.g16 = check; devices.g16v = g16m.SelectedIndex;
-        DeviceSave();
     }
     private void G16m_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.g16v = g16m.SelectedIndex;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu16value = g16m.SelectedIndex; ProfileSave(); }
-        DeviceSave();
     }
     private void A14_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a14.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd14 = check; profile[indexprofile].advncd14value = a14m.SelectedIndex; ProfileSave(); }
-        devices.a14 = check; devices.a14v = a14m.SelectedIndex;
-        DeviceSave();
     }
     private void A14m_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a14v = a14m.SelectedIndex;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd14value = a14m.SelectedIndex; ProfileSave(); }
-        DeviceSave();
     }
     private void A15_Checked(object sender, RoutedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        ProfileLoad(); DeviceLoad();
+        ProfileLoad();
         var check = a15.IsChecked == true;
         if (indexprofile != -1) { profile[indexprofile].advncd15 = check; profile[indexprofile].advncd15value = a15v.Value; ProfileSave(); }
-        devices.a15 = check; devices.a15v = a15v.Value;
-        DeviceSave();
     }
     private void A15v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (isLoaded == false || waitforload) { return; }
-        DeviceLoad(); ProfileLoad();
-        devices.a15v = a15v.Value;
+        ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].advncd15value = a15v.Value; ProfileSave(); }
-        DeviceSave();
     }
     //Слайдеры из оптимизатора кривой 
     private void O1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -3430,11 +3182,11 @@ public sealed partial class ПараметрыPage : Page
             }
             if (Bit_39_FEATURE_STAPM.IsOn)
             {
-                adjline += " --enable-feature=0,128"; 
+                adjline += " --enable-feature=0,128";
             }
             else
-            { 
-                adjline += " --disable-feature=0,128"; 
+            {
+                adjline += " --disable-feature=0,128";
             }
             if (Bit_40_FEATURE_CORE_CSTATES.IsOn)
             {
@@ -3565,7 +3317,7 @@ public sealed partial class ПараметрыPage : Page
                 {
                     Content = new TextBlock
                     {
-                        Text = "Other",
+                        Text = "Premaded",
                         Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"]
                     },
                     IsEnabled = false
@@ -3633,7 +3385,7 @@ public sealed partial class ПараметрыPage : Page
                 ProfileCOM.Items.Remove(profile[indexprofile].profilename);
                 var profileList = new List<Profile>(profile);
                 profileList.RemoveAt(indexprofile);
-                profile = profileList.ToArray();
+                profile = [.. profileList];
                 indexprofile = 0;
                 waitforload = false;
                 ProfileCOM.SelectedIndex = 0;
@@ -3745,8 +3497,17 @@ public sealed partial class ПараметрыPage : Page
     #region PState Section related voids
     public async void BtnPstateWrite_Click()
     {
-        DeviceLoad();
-        if (devices.autopstate)
+        ConfigLoad();
+        profile[config.Preset].did0 = DID_0.Value;
+        profile[config.Preset].did1 = DID_1.Value;
+        profile[config.Preset].did2 = DID_2.Value;
+        profile[config.Preset].fid0 = FID_0.Value;
+        profile[config.Preset].fid1 = FID_1.Value;
+        profile[config.Preset].fid2 = FID_2.Value;
+        profile[config.Preset].vid0 = VID_0.Value;
+        profile[config.Preset].vid1 = VID_1.Value;
+        profile[config.Preset].vid2 = VID_2.Value; ProfileSave();
+        if (profile[config.Preset].autoPstate)
         {
             if (Without_P0.IsOn)
             {
@@ -3819,31 +3580,36 @@ public sealed partial class ПараметрыPage : Page
                         if (result == ContentDialogResult.Primary) { WritePstates(); }
                         if (result == ContentDialogResult.Secondary) { WritePstatesWithoutP0(); }
                     }
-                    catch (Exception ex) 
-                    { 
-                        TraceIt_TraceError(ex.ToString()); 
+                    catch (Exception ex)
+                    {
+                        TraceIt_TraceError(ex.ToString());
                         WritePstatesWithoutP0();
-                    } 
+                    }
                 }
             }
         }
     }
-    public void WritePstates()
+    public static void WritePstates()
     {
         try
         {
-            if (devices.autopstate)
-            {
-                DID_0.Value = devices.did0;
-                DID_1.Value = devices.did1;
-                DID_2.Value = devices.did2;
-                FID_0.Value = devices.fid0;
-                FID_1.Value = devices.fid1;
-                FID_2.Value = devices.fid2;
-            }
+            var cpu = CpuSingleton.GetInstance();
+            ConfigLoad(); ProfileLoad();
+            pstatesDID[0] = profile[config.Preset].did0;
+            pstatesDID[1] = profile[config.Preset].did1;
+            pstatesDID[2] = profile[config.Preset].did2;
+            pstatesFID[0] = profile[config.Preset].fid0;
+            pstatesFID[1] = profile[config.Preset].fid1;
+            pstatesFID[2] = profile[config.Preset].fid2;
+            pstatesVID[0] = profile[config.Preset].vid0;
+            pstatesVID[1] = profile[config.Preset].vid1;
+            pstatesVID[2] = profile[config.Preset].vid2;
             for (var p = 0; p < 3; p++)
             {
-                if (string.IsNullOrEmpty(DID_0.Text) || string.IsNullOrEmpty(FID_0.Text) || string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) || string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text)) { ReadPstate(); }
+                if (pstatesFID[p] == 0 || pstatesDID[p] == 0 || pstatesVID[p] == 0) 
+                { 
+                    ReadPstate(); MessageBox.Show("Corrupted Pstates in config","Critical Error!");
+                }
                 //Logic
                 var pstateId = p;
                 uint eax = default, edx = default;
@@ -3852,8 +3618,8 @@ public sealed partial class ПараметрыPage : Page
                 uint CpuVid = 0x0;
                 uint CpuDfsId = 0x0;
                 uint CpuFid = 0x0;
-                var Didtext = "12";
-                var Fidtext = "102";
+                var Didtext = 12d;
+                var Fidtext = 102d;
                 var Vidtext = 56.0;
                 if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) == false)
                 {
@@ -3861,26 +3627,11 @@ public sealed partial class ПараметрыPage : Page
                     return;
                 }
                 CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
-                switch (p)
-                {
-                    case 0:
-                        Didtext = DID_0.Text;
-                        Fidtext = FID_0.Text;
-                        Vidtext = VID_0.Value;
-                        break;
-                    case 1:
-                        Didtext = DID_1.Text;
-                        Fidtext = FID_1.Text;
-                        Vidtext = VID_1.Value;
-                        break;
-                    case 2:
-                        Didtext = DID_2.Text;
-                        Fidtext = FID_2.Text;
-                        Vidtext = VID_2.Value;
-                        break;
-                }
+                Didtext = pstatesDID[p];
+                Fidtext = pstatesFID[p];
+                Vidtext = pstatesVID[p];
                 eax = ((IddDiv & 0xFF) << 30) | ((IddVal & 0xFF) << 22) | ((CpuVid & 0xFF) << 14) |
-                      ((uint.Parse(Didtext) & 0xFF) << 8) | (uint.Parse(Fidtext) & 0xFF);
+                      (((uint)Math.Round(Didtext, 0) & 0xFF) << 8) | ((uint)Math.Round(Fidtext, 0) & 0xFF);
                 if (NUMAUtil.HighestNumaNode > 0)
                 {
                     for (var i = 0; i <= 2; i++)
@@ -3923,7 +3674,14 @@ public sealed partial class ПараметрыPage : Page
         {
             for (var p = 1; p < 3; p++)
             {
-                if (string.IsNullOrEmpty(DID_1.Text) || string.IsNullOrEmpty(FID_1.Text) || string.IsNullOrEmpty(DID_2.Text) || string.IsNullOrEmpty(FID_2.Text)) { ReadPstate(); }
+                if (string.IsNullOrEmpty(DID_1.Text) 
+                    || string.IsNullOrEmpty(FID_1.Text) 
+                    || string.IsNullOrEmpty(DID_2.Text) 
+                    || string.IsNullOrEmpty(FID_2.Text)) 
+                { 
+                    ReadPstates(); 
+                    ReadPstate(); 
+                }
                 //Logic
                 var pstateId = p;
                 uint eax = default, edx = default;
@@ -3953,7 +3711,7 @@ public sealed partial class ПараметрыPage : Page
                 }
 
                 eax = ((IddDiv & 0xFF) << 30) | ((IddVal & 0xFF) << 22) | ((CpuVid & 0xFF) << 14) |
-                      ((uint.Parse(Didtext) & 0xFF) << 8) | (uint.Parse(Fidtext) & 0xFF);
+                      (((uint)Math.Round(double.Parse(Didtext), 0) & 0xFF) << 8) | ((uint)Math.Round(double.Parse(Fidtext), 0) & 0xFF);
                 if (NUMAUtil.HighestNumaNode > 0)
                 {
                     for (var i = 0; i <= 2; i++)
@@ -3996,23 +3754,32 @@ public sealed partial class ПараметрыPage : Page
         CpuDfsId = (eax >> 8) & 0x3F;
         CpuFid = eax & 0xFF;
     }
-    public bool ApplyTscWorkaround()
+    public static bool ApplyTscWorkaround()
     { // P0 fix C001_0015 HWCR[21]=1
       // Fixes timer issues when not using HPET
-        uint eax = 0, edx = 0;
-        if (cpu?.ReadMsr(0xC0010015, ref eax, ref edx) == true)
+        try
         {
-            eax |= 0x200000;
-            return cpu.WriteMsr(0xC0010015, eax, edx);
-            // return cpu.WriteMsrWn(0xC0010015, eax, edx);
+            var cpu = CpuSingleton.GetInstance();
+            uint eax = 0, edx = 0;
+            if (cpu?.ReadMsr(0xC0010015, ref eax, ref edx) == true)
+            {
+                eax |= 0x200000;
+                return cpu.WriteMsr(0xC0010015, eax, edx);
+                // return cpu.WriteMsrWn(0xC0010015, eax, edx);
+            }
+            MessageBox.Show("Error applying TSC fix!");
+            return false;
         }
-        MessageBox.Show("Error applying TSC fix!");
-        return false;
+        catch
+        {
+            return false;
+        }
     }
-    private bool WritePstateClick(int pstateId, uint eax, uint edx, int numanode = 0)
+    private static bool WritePstateClick(int pstateId, uint eax, uint edx, int numanode = 0)
     {
         try
         {
+            var cpu = CpuSingleton.GetInstance();
             if (NUMAUtil.HighestNumaNode > 0)
             {
                 NUMAUtil.SetThreadProcessorAffinity((ushort)(numanode + 1),
@@ -4023,9 +3790,52 @@ public sealed partial class ПараметрыPage : Page
             //  if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; }
             return true;
         }
-        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); return false; } 
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); return false; }
     }
-    private void ReadPstate()
+    private static void ReadPstate()
+    {
+        try
+        {
+            var cpu = CpuSingleton.GetInstance();
+            for (var i = 0; i < 3; i++)
+            {
+                uint eax = default, edx = default;
+                var pstateId = i;
+                try
+                {
+                    if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) == false)
+                    {
+                        App.MainWindow.ShowMessageDialogAsync("Error while reading CPU Pstate", "Critical Error");
+                        return;
+                    }
+                }
+                catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+                uint IddDiv = 0x0;
+                uint IddVal = 0x0;
+                uint CpuVid = 0x0;
+                uint CpuDfsId = 0x0;
+                uint CpuFid = 0x0;
+                CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
+                switch (i)
+                {
+                    case 0:
+                        pstatesDID[0] = Convert.ToDouble(CpuDfsId);
+                        pstatesFID[0] = Convert.ToDouble(CpuFid);
+                        break;
+                    case 1:
+                        pstatesDID[1] = Convert.ToDouble(CpuDfsId);
+                        pstatesFID[1] = Convert.ToDouble(CpuFid);
+                        break;
+                    case 2:
+                        pstatesDID[2] = Convert.ToDouble(CpuDfsId);
+                        pstatesFID[2] = Convert.ToDouble(CpuFid);
+                        break;
+                }
+            }
+        }
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+    }
+    private void ReadPstates() // Прочитать и записать текущие Pstates
     {
         try
         {
@@ -4130,20 +3940,16 @@ public sealed partial class ПараметрыPage : Page
         {
             if (EnablePstates.IsOn)
             {
-                devices.enableps = true;
-                DeviceSave();
                 profile[indexprofile].enablePstateEditor = true;
                 ProfileSave();
             }
             else
             {
-                devices.enableps = false;
-                DeviceSave();
                 profile[indexprofile].enablePstateEditor = false;
                 ProfileSave();
             }
         }
-        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); indexprofile = 0; } 
+        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); indexprofile = 0; }
     }
     private void TurboBoost()
     {
@@ -4151,16 +3957,12 @@ public sealed partial class ПараметрыPage : Page
         if (Turbo_boost.IsOn) //Сохранение
         {
             turboboost = true;
-            devices.turboboost = true;
-            DeviceSave();
             profile[indexprofile].turboBoost = true;
             ProfileSave();
         }
         else
         {
             turboboost = false;
-            devices.turboboost = false;
-            DeviceSave();
             profile[indexprofile].turboBoost = false;
             ProfileSave();
         }
@@ -4231,15 +4033,11 @@ public sealed partial class ПараметрыPage : Page
     {
         if (Autoapply_1.IsOn)
         {
-            devices.autopstate = true;
-            DeviceSave();
             profile[indexprofile].autoPstate = true;
             ProfileSave();
         }
         else
         {
-            devices.autopstate = false;
-            DeviceSave();
             profile[indexprofile].autoPstate = false;
             ProfileSave();
         }
@@ -4248,15 +4046,11 @@ public sealed partial class ПараметрыPage : Page
     {
         if (Without_P0.IsOn)
         {
-            devices.p0ignorewarn = true;
-            DeviceSave();
             profile[indexprofile].p0Ignorewarn = true;
             ProfileSave();
         }
         else
         {
-            devices.p0ignorewarn = false;
-            DeviceSave();
             profile[indexprofile].p0Ignorewarn = false;
             ProfileSave();
         }
@@ -4265,15 +4059,11 @@ public sealed partial class ПараметрыPage : Page
     {
         if (IgnoreWarn.IsOn)
         {
-            devices.ignorewarn = true;
-            DeviceSave();
             profile[indexprofile].ignoreWarn = true;
             ProfileSave();
         }
         else
         {
-            devices.ignorewarn = false;
-            DeviceSave();
             profile[indexprofile].ignoreWarn = false;
             ProfileSave();
         }
@@ -4352,7 +4142,7 @@ public sealed partial class ПараметрыPage : Page
             {
                 Mult_0_v = 0;
             }
-            P2_Freq.Content = (Mult_0_v + 4) * 100;
+            P0_Freq.Content = (Mult_0_v + 4) * 100;
             try
             {
                 Mult_0.SelectedIndex = (int)Mult_0_v;
@@ -4415,26 +4205,26 @@ public sealed partial class ПараметрыPage : Page
         if (waitforload == false)
         {
             await Task.Delay(20);
-            double Mult_2_v;
+            double Mult_1_v;
             var Did_value = DID_1.Value;
             var Fid_value = FID_1.Value;
-            Mult_2_v = Fid_value / Did_value * 2;
+            Mult_1_v = Fid_value / Did_value * 2;
             if (Fid_value / Did_value % 2 == 5)
             {
-                Mult_2_v -= 3;
+                Mult_1_v -= 3;
             }
             else
             {
-                Mult_2_v -= 4;
+                Mult_1_v -= 4;
             }
-            if (Mult_2_v <= 0)
+            if (Mult_1_v <= 0)
             {
-                Mult_2_v = 0;
+                Mult_1_v = 0;
             }
-            P1_Freq.Content = (Mult_2_v + 4) * 100;
+            P1_Freq.Content = (Mult_1_v + 4) * 100;
             try
             {
-                Mult_1.SelectedIndex = (int)Mult_2_v;
+                Mult_1.SelectedIndex = (int)Mult_1_v;
             }
             catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
             Save_ID1();
@@ -4500,13 +4290,18 @@ public sealed partial class ПараметрыPage : Page
     {
         if (waitforload == false)
         {
-            devices.did0 = DID_0.Value;
-            devices.fid0 = FID_0.Value;
-            devices.vid0 = VID_0.Value;
-            DeviceSave();
             profile[indexprofile].did0 = DID_0.Value;
             profile[indexprofile].fid0 = FID_0.Value;
             profile[indexprofile].vid0 = VID_0.Value;
+            profile[indexprofile].did1 = DID_1.Value;
+            profile[indexprofile].fid1 = FID_1.Value;
+            profile[indexprofile].vid1 = VID_1.Value;
+            profile[indexprofile].did2 = DID_2.Value;
+            profile[indexprofile].fid2 = FID_2.Value;
+            profile[indexprofile].vid2 = VID_2.Value;
+            pstatesDID[0] = DID_0.Value;
+            pstatesFID[0] = FID_0.Value;
+            pstatesVID[0] = VID_0.Value;
             ProfileSave();
         }
     }
@@ -4514,13 +4309,18 @@ public sealed partial class ПараметрыPage : Page
     {
         if (waitforload == false)
         {
-            devices.did1 = DID_1.Value;
-            devices.fid1 = FID_1.Value;
-            devices.vid1 = VID_1.Value;
-            DeviceSave();
+            profile[indexprofile].did0 = DID_0.Value;
+            profile[indexprofile].fid0 = FID_0.Value;
+            profile[indexprofile].vid0 = VID_0.Value;
             profile[indexprofile].did1 = DID_1.Value;
             profile[indexprofile].fid1 = FID_1.Value;
             profile[indexprofile].vid1 = VID_1.Value;
+            profile[indexprofile].did2 = DID_2.Value;
+            profile[indexprofile].fid2 = FID_2.Value;
+            profile[indexprofile].vid2 = VID_2.Value;
+            pstatesDID[1] = DID_1.Value;
+            pstatesFID[1] = FID_1.Value;
+            pstatesVID[1] = VID_1.Value;
             ProfileSave();
         }
     }
@@ -4528,13 +4328,18 @@ public sealed partial class ПараметрыPage : Page
     {
         if (waitforload == false)
         {
-            devices.did2 = DID_2.Value;
-            devices.fid2 = FID_2.Value;
-            devices.vid2 = VID_2.Value;
-            DeviceSave();
+            profile[indexprofile].did0 = DID_0.Value;
+            profile[indexprofile].fid0 = FID_0.Value;
+            profile[indexprofile].vid0 = VID_0.Value;
+            profile[indexprofile].did1 = DID_1.Value;
+            profile[indexprofile].fid1 = FID_1.Value;
+            profile[indexprofile].vid1 = VID_1.Value;
             profile[indexprofile].did2 = DID_2.Value;
             profile[indexprofile].fid2 = FID_2.Value;
             profile[indexprofile].vid2 = VID_2.Value;
+            pstatesDID[2] = DID_0.Value;
+            pstatesFID[2] = FID_0.Value;
+            pstatesVID[2] = VID_0.Value;
             ProfileSave();
         }
     }

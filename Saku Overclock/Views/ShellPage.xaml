@@ -354,7 +354,7 @@
                                 </Grid>
                             </StackPanel>
                             <StackPanel x:Name="NotificationContainer"
-                             Margin="0,0,0,7">
+                             Margin="0,46,0,7">
                                 
                                 <StackPanel.ChildrenTransitions>
                                     <TransitionCollection>

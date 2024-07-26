@@ -71,7 +71,6 @@ internal class SendSMUCommand
     private Config config = new();
     private static JsonContainers.Notifications notify = new();
     private readonly ZenStates.Core.Mailbox testMailbox = new();
-    private Devices devices = new();
     private Profile[] profile = new Profile[1];
     public string? ocmode;
     private bool cancelrange = false;
@@ -300,52 +299,7 @@ internal class SendSMUCommand
                     App.MainWindow.Close();
                 }
             }
-        }
-        if (file == 'd')
-        {
-            try
-            {
-                for (var j = 0; j < 5; j++)
-                {
-                    devices = new Devices();
-                }
-            }
-            catch
-            {
-                App.MainWindow.Close();
-            }
-            if (devices != null)
-            {
-                try
-                {
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-            else
-            {
-                try
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\devices.json", JsonConvert.SerializeObject(devices));
-                    App.MainWindow.Close();
-                }
-                catch
-                {
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-        }
+        } 
         if (file == 's')
         {
             try
