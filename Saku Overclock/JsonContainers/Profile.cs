@@ -1,7 +1,9 @@
+using Saku_Overclock.Helpers;
+
 namespace Saku_Overclock;
 internal class Profile
 {  
-    public string profilename = "Unsigned profile";  
+    public string profilename = "Param_UnsignedProfile".GetLocalized();  
     //CPU config 
     public bool cpu1 = false;
     public bool cpu2 = false;

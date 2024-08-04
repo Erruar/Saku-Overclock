@@ -401,10 +401,10 @@ All presets have autosaving</value>
     <value>SoC Maximum TDC (A)</value>
   </data>
   <data name="Param_VRM_v5.Text" xml:space="preserve">
-    <value>PCI VDD Maximum EDC (A)</value>
+    <value>PSI0 VDD Maximum EDC (A)</value>
   </data>
   <data name="Param_VRM_v6.Text" xml:space="preserve">
-    <value>PCI SoC Maximum EDC (A)</value>
+    <value>PSI0 SoC Maximum EDC (A)</value>
   </data>
   <data name="Param_VRM_v7.Text" xml:space="preserve">
     <value>Restore Frequency time (mS)</value>
@@ -647,13 +647,13 @@ memory controller, PCI
 controller, Sata controller, etc</value>
   </data>
   <data name="Param_v5_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum PCI VDD current
+    <value>Maximum PSI0 VDD current
 It is responsible for the current consumed 
 by the processor cores under load
 IT IS NOT RECOMMENDED TO TOUCH IT</value>
   </data>
   <data name="Param_v6_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum PCI SoC current
+    <value>Maximum PSI0 SoC current
 It is responsible for the current consumed 
 by the processor subsystems under load
 IT IS NOT RECOMMENDED TO TOUCH IT</value>
@@ -2167,5 +2167,26 @@ directly in the game via RTSS</value>
   </data>
   <data name="InfoRAM.Text" xml:space="preserve">
     <value>RAM</value>
+  </data>
+  <data name="Param_IncompatibleProfile.Message" xml:space="preserve">
+    <value>You can't change premaded profiles! That's what they're "Premaded". Select one of your saved profiles</value>
+  </data>
+  <data name="Param_IncompatibleProfile.Title" xml:space="preserve">
+    <value>Oops... it looks like you're doing something wrong!</value>
+  </data>
+  <data name="Param_Premaded" xml:space="preserve">
+    <value>Premaded</value>
+  </data>
+  <data name="Param_PremadedCombo.Text" xml:space="preserve">
+    <value>Premaded</value>
+  </data>
+  <data name="Param_IncompatibleCPU.Message" xml:space="preserve">
+    <value>You can't use those parameters. If your CPU is AMD Ryzen - contact the app developer</value>
+  </data>
+  <data name="Param_IncompatibleCPU.Title" xml:space="preserve">
+    <value>Oops... it looks like your CPU isn't supported by this app!</value>
+  </data>
+  <data name="Param_UnsignedProfile" xml:space="preserve">
+    <value>My Profile</value>
   </data>
 </root>

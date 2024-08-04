@@ -13,6 +13,10 @@ public static partial class RTSSHandler
             displayText(text);
             isRTSSInitialized = true;
         } 
+        else
+        {
+            UpdateOSD(text.Replace("<Br>", "\n"));
+        }
     }
     public static void ResetOSDText()
     {

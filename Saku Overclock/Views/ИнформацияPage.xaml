@@ -5,15 +5,27 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    <Page.Resources>
+        <ThemeShadow x:Name="SharedShadow"></ThemeShadow>
+    </Page.Resources>
 
     <Grid x:Name="ContentArea">
         <TextBlock x:Uid="Info_Name" Text="Информация" FontSize="30" Margin="-48,-65,0,0"></TextBlock>
-        <ToggleButton Click="InfoRTSSButton_Click" x:Name="infoRTSSButton" x:Uid="InfoARTSSTooltip" ToolTipService.ToolTip="Enable RTSS updater" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Top"  Margin="0,-57,0,0" HorizontalAlignment="Right">
+        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="InfoRTSSButton_Click" x:Name="infoRTSSButton" x:Uid="InfoARTSSTooltip" ToolTipService.ToolTip="Enable RTSS updater" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Top"  Margin="0,-57,0,0" HorizontalAlignment="Right">
             <StackPanel Orientation="Horizontal">
                 <FontIcon Glyph="&#xE7AC;"/>
                 <TextBlock Padding="7,0,0,0" x:Uid="InfoARTSSShowText" FontWeight="Bold" Text="Show RTSS metrics"/>
             </StackPanel>
         </ToggleButton>
+        <TeachingTip x:Name="Info_RTSSTeacherTip" Target="{x:Bind infoRTSSButton}" Title="You have enabled RTSS metrics!" Subtitle="Now you can easily minimize Saku Overclock to tray menu and all information will be updated automatically. Saku Overclock will switch to the mode of reduced consumption of laptop resources">
+            <TeachingTip.IconSource>
+                <SymbolIconSource>
+                    <SymbolIconSource.Symbol>
+                        Refresh
+                    </SymbolIconSource.Symbol>
+                </SymbolIconSource>
+            </TeachingTip.IconSource>
+        </TeachingTip>
         <Grid Margin="-48,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
@@ -32,7 +44,7 @@
                         <RowDefinition Height="64"/>
                         <RowDefinition Height="64"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Width="170" x:Name="CPUBannerButton" Margin="0,0,0,0" Click="CPUBannerButton_Click" CornerRadius="3">
+                    <Button Translation="0,0,20" Grid.Row="0" Width="170" x:Name="CPUBannerButton" Margin="0,0,0,0" Click="CPUBannerButton_Click" CornerRadius="3">
                         <Grid>
                             <Grid Width="60" Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon x:Name="InfoACPUBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -62,7 +74,7 @@ StrokeThickness="1.5" >
                             </StackPanel>
                         </Grid>
                     </Button>
-                    <Button Background="Transparent" x:Name="VRMBannerButton" Click="VRMBannerButton_Click" BorderBrush="Transparent" Grid.Row="1" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button Translation="0,0,20" Background="Transparent" x:Name="VRMBannerButton" Click="VRMBannerButton_Click" BorderBrush="Transparent" Grid.Row="1" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid Width="60" Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon  x:Name="InfoAVRMBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -92,7 +104,7 @@ StrokeThickness="1.5">
                             </StackPanel>
                         </Grid>
                     </Button>
-                    <Button Background="Transparent" x:Name="GPUBannerButton" Click="GPUBannerButton_Click" BorderBrush="Transparent" Grid.Row="2" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button Translation="0,0,20" Background="Transparent" x:Name="GPUBannerButton" Click="GPUBannerButton_Click" BorderBrush="Transparent" Grid.Row="2" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid Width="60" Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon  x:Name="InfoAGPUBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -122,7 +134,7 @@ StrokeThickness="1.5">
                             </StackPanel>
                         </Grid>
                     </Button>
-                    <Button Background="Transparent" x:Name="RAMBannerButton" Click="RAMBannerButton_Click" BorderBrush="Transparent" Grid.Row="3" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button Translation="0,0,20" Background="Transparent" x:Name="RAMBannerButton" Click="RAMBannerButton_Click" BorderBrush="Transparent" Grid.Row="3" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid  Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon x:Name="InfoARAMBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -152,7 +164,7 @@ StrokeThickness="1.5">
                             </StackPanel>
                         </Grid>
                     </Button>
-                    <Button Background="Transparent" x:Name="BATBannerButton" Click="BATBannerButton_Click"  BorderBrush="Transparent" Grid.Row="4" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button Translation="0,0,20" Background="Transparent" x:Name="BATBannerButton" Click="BATBannerButton_Click"  BorderBrush="Transparent" Grid.Row="4" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid  Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon x:Name="InfoABATBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -182,7 +194,7 @@ StrokeThickness="1.5">
                             </StackPanel>
                         </Grid>
                     </Button>
-                    <Button Background="Transparent" x:Name="PSTBannerButton" Click="PSTBannerButton_Click"  BorderBrush="Transparent" Grid.Row="5" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button Translation="0,0,20" Background="Transparent" x:Name="PSTBannerButton" Click="PSTBannerButton_Click"  BorderBrush="Transparent" Grid.Row="5" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid  Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon x:Name="InfoAPSTBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -227,12 +239,15 @@ StrokeThickness="1.5">
                     <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Row="0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock HorizontalAlignment="Left" x:Name="infoCPUSectionName" FontWeight="Bold" FontSize="24" x:Uid="InfoCPU" Text="ЦП"></TextBlock>
-                            <ComboBox Width="134.5" SelectedIndex="0" SelectionChanged="InfoCPUSectionComboBox_SelectionChanged" Margin="10,1,0,-5" x:Name="infoCPUSectionComboBox">
-                                <ComboBoxItem x:Uid="InfoCPUComboFreq" Content="Frequency"/>
-                                <ComboBoxItem x:Uid="InfoCPUComboVolt" Content="Voltages"/>
-                                <ComboBoxItem x:Uid="InfoCPUComboPowr" Content="Powers"/>
-                                <ComboBoxItem x:Uid="InfoCPUComboTemp" Content="Temperatures"/>
-                            </ComboBox>
+                            <Grid Margin="10,1,0,-5">
+                                <Border x:Name="InfoCPUComboBoxBorderSharedShadow_Element" CornerRadius="5" Width="{Binding ElementName=infoCPUSectionComboBox, Path=ActualWidth}" Height="{Binding ElementName=infoCPUSectionComboBox, Path=ActualHeight}" Translation="0,0,28" Shadow="{StaticResource SharedShadow}"/>
+                                <ComboBox Margin="1,0,0,0" CornerRadius="5" Style="{ThemeResource AcrylicComboBoxStyle}" Width="134.5" SelectedIndex="0" SelectionChanged="InfoCPUSectionComboBox_SelectionChanged" x:Name="infoCPUSectionComboBox">
+                                    <ComboBoxItem x:Uid="InfoCPUComboFreq" Content="Frequency"/>
+                                    <ComboBoxItem x:Uid="InfoCPUComboVolt" Content="Voltages"/>
+                                    <ComboBoxItem x:Uid="InfoCPUComboPowr" Content="Powers"/>
+                                    <ComboBoxItem x:Uid="InfoCPUComboTemp" Content="Temperatures"/>
+                                </ComboBox>
+                            </Grid> 
                         </StackPanel>
                         <TextBlock VerticalAlignment="Bottom" FontWeight="SemiBold" x:Name="tbProcessor" HorizontalAlignment="Right"></TextBlock>
                         <TextBlock VerticalAlignment="Bottom" FontWeight="SemiBold" Visibility="Collapsed" HorizontalAlignment="Right">AMD Ryzen 7 4800H with Radeon Vega Mobile Gfx</TextBlock>

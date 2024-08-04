@@ -59,6 +59,9 @@ public class UpdateChecker
 
     public static async Task GenerateReleaseInfoString()
     {
+        try
+        {
+
         var client = new GitHubClient(new ProductHeaderValue("Saku-Overclock-Updater"));
         var releases = await client.Repository.Release.GetAll(repoOwner, repoName);
 
@@ -70,6 +73,11 @@ public class UpdateChecker
         }
 
         GitHubInfoString = sb.ToString();
+        }
+        catch
+        {
+            GitHubInfoString = "**Failed to fetch info**";
+        }
     }
 
     private static Version ParseVersion(string tagName)

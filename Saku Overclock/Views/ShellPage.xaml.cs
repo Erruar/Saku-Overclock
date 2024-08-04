@@ -389,9 +389,12 @@ public sealed partial class ShellPage : Page
     public void ProfileLoad()
     {
         try
-        {
-
+        { 
             profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
+            if (profile == null)
+            {
+                profile = new Profile[1]; ProfileSave();
+            }
         }
         catch
         {
@@ -508,8 +511,7 @@ public sealed partial class ShellPage : Page
             }
             catch
             {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                App.MainWindow.Close();
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory)); 
             }
             if (config != null)
             {
@@ -575,18 +577,16 @@ public sealed partial class ShellPage : Page
                 }
             }
             else
-            {
+            { 
                 try
                 {
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
                     Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-                    App.MainWindow.Close();
                 }
                 catch
                 {
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
                 }
             }
         }
@@ -599,7 +599,6 @@ public sealed partial class ShellPage : Page
             catch
             {
                 App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                App.MainWindow.Close();
             }
             if (notify != null)
             {
@@ -649,11 +648,18 @@ public sealed partial class ShellPage : Page
             };
             Itemz.Add(userProfiles);
             ProfileLoad();
+            if (profile == null)
+            {
+                profile = new Profile[1];
+                profile[0] = new Profile();
+                ProfileSave();
+            }
             foreach (var profile in profile)
             {
                 var comboBoxItem = new ComboBoxItem
                 {
-                    Content = profile.profilename
+                    Content = profile != null ? profile.profilename : "NO PROFILES",
+                    IsEnabled = profile != null
                 };
                 Itemz.Add(comboBoxItem);
             }
@@ -732,6 +738,7 @@ public sealed partial class ShellPage : Page
                 config.PremadeBalanceActivated = false;
                 config.PremadeSpeedActivated = false;
                 config.PremadeMaxActivated = false;
+                config.Preset = -1;
                 config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=64 --slow-limit=6000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
                 /*   param.InitSave();*/
                 MainWindow.Applyer.Apply(false);
@@ -743,6 +750,7 @@ public sealed partial class ShellPage : Page
                 config.PremadeBalanceActivated = false;
                 config.PremadeSpeedActivated = false;
                 config.PremadeMaxActivated = false;
+                config.Preset = -1;
                 config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=64 --slow-limit=16000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
                 MainWindow.Applyer.Apply(false);
             }
@@ -753,6 +761,7 @@ public sealed partial class ShellPage : Page
                 config.PremadeBalanceActivated = true;
                 config.PremadeSpeedActivated = false;
                 config.PremadeMaxActivated = false;
+                config.Preset = -1;
                 config.RyzenADJline = " --tctl-temp=75 --stapm-limit=18000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
                 MainWindow.Applyer.Apply(false);
             }
@@ -763,6 +772,7 @@ public sealed partial class ShellPage : Page
                 config.PremadeBalanceActivated = false;
                 config.PremadeSpeedActivated = true;
                 config.PremadeMaxActivated = false;
+                config.Preset = -1;
                 config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=64 --slow-limit=20000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
                 MainWindow.Applyer.Apply(false);
             }
@@ -773,6 +783,7 @@ public sealed partial class ShellPage : Page
                 config.PremadeBalanceActivated = false;
                 config.PremadeSpeedActivated = false;
                 config.PremadeMaxActivated = true;
+                config.Preset = -1;
                 config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=64 --slow-limit=60000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
                 MainWindow.Applyer.Apply(false);
             }
@@ -781,6 +792,7 @@ public sealed partial class ShellPage : Page
             {
                 var navigationService = App.GetService<INavigationService>();
                 if (navigationService.Frame!.GetPageViewModel() is ПресетыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!, null, true); }
+                else if(navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true); }
             });
             return;
         }

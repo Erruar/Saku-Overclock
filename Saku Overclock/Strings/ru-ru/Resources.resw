@@ -405,10 +405,10 @@
     <value>Лимит по току SoC (A)</value>
   </data>
   <data name="Param_VRM_v5.Text" xml:space="preserve">
-    <value>Максимальный ток PCI VDD (A)</value>
+    <value>Максимальный ток PSI0 VDD (A)</value>
   </data>
   <data name="Param_VRM_v6.Text" xml:space="preserve">
-    <value>Максимальный ток PCI SoC (A)</value>
+    <value>Максимальный ток PSI0 SoC (A)</value>
   </data>
   <data name="Param_VRM_v7.Text" xml:space="preserve">
     <value>Время восстановления частоты (mS)</value>
@@ -663,13 +663,13 @@
 контроллера Sata и т.д</value>
   </data>
   <data name="Param_v5_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Максимальный ток PCI VDD
+    <value>Максимальный ток PSI0 VDD
 Отвечает за потребляемый ядрами
 процессора ток под нагрузкой
 НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
   </data>
   <data name="Param_v6_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Максимальный ток PCI SoC
+    <value>Максимальный ток PSI0 SoC
 Отвечает за потребляемый подсистемами
 процессора ток под нагрузкой
 НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
@@ -2239,5 +2239,26 @@ Overclock будут проигнорированы,
   </data>
   <data name="InfoRAM.Text" xml:space="preserve">
     <value>ОЗУ</value>
+  </data>
+  <data name="Param_IncompatibleProfile.Message" xml:space="preserve">
+    <value>Вы не можете изменять готовые пресеты! На то они и готовые. Выберите один из своих сохранённых пресетов</value>
+  </data>
+  <data name="Param_IncompatibleProfile.Title" xml:space="preserve">
+    <value>Упс... кажется вы делаете что-то не так!</value>
+  </data>
+  <data name="Param_Premaded" xml:space="preserve">
+    <value>Готовый пресет</value>
+  </data>
+  <data name="Param_PremadedCombo.Text" xml:space="preserve">
+    <value>Готовый пресет</value>
+  </data>
+  <data name="Param_IncompatibleCPU.Message" xml:space="preserve">
+    <value>Вы не можете использовать эти настройки. Если ваш процессор от AMD Ryzen, напишите об этом автору приложения</value>
+  </data>
+  <data name="Param_IncompatibleCPU.Title" xml:space="preserve">
+    <value>Упс... кажется ваш процессор не поддерживается!</value>
+  </data>
+  <data name="Param_UnsignedProfile" xml:space="preserve">
+    <value>Мой профиль</value>
   </data>
 </root>

@@ -26,6 +26,9 @@
     <Page Update="ProfileSwitcher\ProfileSwitcher.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Styles\CopyButton.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Styles\ToggleButtonCollapseLauncher.xaml">

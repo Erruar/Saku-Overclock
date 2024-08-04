@@ -10,6 +10,8 @@ public static class RyzenADJWrapper
 {
     private const string DllName = "libryzenadj.dll";
     private static bool IsDllRunning = false;
+    private static bool IsTableRunning = false;
+    private static IntPtr endPtR = -1;
     public enum RyzenFamily
     {
         WAIT_FOR_LOAD = -2,
@@ -34,9 +36,22 @@ public static class RyzenADJWrapper
         {
             var endPtr = init_ryzenadj();
             IsDllRunning = true;
+            endPtR = endPtr;
             return endPtr;
         }
-        return -1;
+        return endPtR;
+    }
+    public static IntPtr Init_Table(IntPtr ryzenAccess)
+    {
+        if (IsDllRunning && !IsTableRunning)
+        {
+            IsTableRunning = true;
+            return init_table(ryzenAccess);
+        }
+        else
+        {
+            return 0;
+        }
     }
     public static void Cleanup_ryzenadj(IntPtr ry)
     {
@@ -44,6 +59,7 @@ public static class RyzenADJWrapper
         {
             cleanup_ryzenadj(ry);
             IsDllRunning = false;
+            IsTableRunning = false;
         }
     }
 
@@ -227,8 +243,6 @@ public static class RyzenADJWrapper
             _ = refresh_table(ryzenAccess); 
             Console.WriteLine($"CPU Family: {family}");
             Views.ShellPage.AddNote(DllName, family.ToString() + "\n" + get_stapm_value(ryzenAccess).ToString() + " / " + get_stapm_limit(ryzenAccess).ToString(), Microsoft.UI.Xaml.Controls.InfoBarSeverity.Informational);
-            // Не забыть очистить ресурсы
-            Cleanup_ryzenadj(ryzenAccess);
         }
     }
     public static string GetCPUCodename()
@@ -237,8 +251,7 @@ public static class RyzenADJWrapper
         if (ryzenAccess != IntPtr.Zero)
         {
             var family = get_cpu_family(ryzenAccess); 
-            endname = family.ToString();
-            Cleanup_ryzenadj(ryzenAccess);
+            endname = family.ToString(); 
         }
         return endname;
     }

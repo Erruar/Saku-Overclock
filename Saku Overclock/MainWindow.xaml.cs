@@ -29,7 +29,7 @@ public sealed partial class MainWindow : WindowEx
         DWMWCP_ROUND = 2,
         DWMWCP_ROUNDSMALL = 3
     }
-    public NotifyIcon ni = new();
+    public NotifyIcon ni = new(); 
     [LibraryImport("dwmapi.dll", SetLastError = true)]
     private static partial long DwmSetWindowAttribute(IntPtr hwnd,
                                                      DWMWINDOWATTRIBUTE attribute,
@@ -60,7 +60,7 @@ public sealed partial class MainWindow : WindowEx
                         WindowState = WindowState.Normal;
                     }
             !;
-            ni.ContextMenuStrip = new ContextMenuStrip(); //Трей меню
+            ni.ContextMenuStrip = new ContextMenuStrip() { Size = new System.Drawing.Size(300,300) }; //Трей меню
             var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE; //Закруглить трей меню на Windows 11
             var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND; //Закруглить трей меню на Windows 11
             DwmSetWindowAttribute(ni.ContextMenuStrip.Handle, attribute, ref preference, sizeof(uint)); //Закруглить трей меню на Windows 11 
@@ -120,7 +120,7 @@ public sealed partial class MainWindow : WindowEx
                 /*cpu.Play_Invernate_QuickSMU(1);*/
                 var profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
 
-                if (profile[config.Preset].autoPstate == true && profile[config.Preset].enablePstateEditor == true) 
+                if (profile != null && profile[config.Preset] != null && profile[config.Preset].autoPstate == true && profile[config.Preset].enablePstateEditor == true) 
                 { 
                     ПараметрыPage.WritePstates(); 
                 } 

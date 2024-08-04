@@ -273,19 +273,7 @@ public sealed partial class ПараметрыPage : Page
             }
         }
         if (file == 'p')
-        {
-            try
-            {
-                for (var j = 0; j < 3; j++)
-                {
-                    profile[j] = new Profile();
-                }
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                App.MainWindow.Close();
-            }
+        { 
             if (profile != null)
             {
                 try
@@ -381,32 +369,50 @@ public sealed partial class ПараметрыPage : Page
         {
             Content = new TextBlock
             {
-                Text = "Premaded",
+                Text = "Param_Premaded".GetLocalized(),
                 Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"]
             },
             IsEnabled = false
         });
-        for (var i = 0; i < profile.Length; i++)
+        if (profile == null) 
         {
-            if (profile[i].profilename != string.Empty)
-            {
-                ProfileCOM.Items.Add(profile[i].profilename);
-            }
+            profile = new Profile[1];
+            profile[0] = new Profile();
+            ProfileSave();
         }
-        if (config.Preset > profile.Length) { config.Preset = 0; ConfigSave(); }
         else
         {
-            if (config.Preset == -1)
+            for (var i = 0; i < profile.Length; i++)
             {
-                indexprofile = 0;
-                ProfileCOM.SelectedIndex = 0;
+                if (profile[i] == null) 
+                { 
+                    profile[i] = new Profile();
+                    ProfileSave();
+                    NotifyLoad();
+                    notify.Notifies ??= [];
+                    notify.Notifies.Add(new Notify { Title = "SaveSuccessTitle".GetLocalized(), Msg = "SaveSuccessDesc".GetLocalized() + " " + SaveProfileN.Text, Type = InfoBarSeverity.Success });
+                    NotifySave();
+                }
+                if (profile[i].profilename != string.Empty)
+                {
+                    ProfileCOM.Items.Add(profile[i].profilename);
+                }
             }
+            if (config.Preset > profile.Length) { config.Preset = 0; ConfigSave(); }
             else
             {
-                indexprofile = config.Preset;
-                ProfileCOM.SelectedIndex = indexprofile + 1;
+                if (config.Preset == -1)
+                {
+                    indexprofile = 0;
+                    ProfileCOM.SelectedIndex = 0;
+                }
+                else
+                {
+                    indexprofile = config.Preset;
+                    ProfileCOM.SelectedIndex = indexprofile + 1;
+                }
             }
-        }
+        } 
         //Main INIT. It will be better soon! - Serzhik Saku, Erruar
         MainInit(indexprofile);
         waitforload = false;
@@ -467,7 +473,7 @@ public sealed partial class ПараметрыPage : Page
     }
     private void MainInit(int index)
     {
-        if (SettingsViewModel.VersionId != 5)
+        if (SettingsViewModel.VersionId != 5) // Если не дебаг
         {
 
             if (cpu?.info.codeName.ToString().Contains("VanGogh") == false)
@@ -485,12 +491,12 @@ public sealed partial class ПараметрыPage : Page
             }
             else
             {
-                //Если перед нами вангог (стимдек и его подобные)
+                // Если перед нами вангог (стимдек и его подобные)
                 VRM_Laptops_PSI_SoC.Visibility = Visibility.Collapsed;
                 VRM_Laptops_PSI_SoC_Desc.Visibility = Visibility.Collapsed;
                 VRM_Laptops_PSI_VDD.Visibility = Visibility.Collapsed;
                 VRM_Laptops_PSI_VDD_Desc.Visibility = Visibility.Collapsed;
-                ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed; //Убрать расширенный разгон
+                ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed; // Убрать расширенный разгон
                 ADV_Laptop_AplusA_Limit_Desc.Visibility = Visibility.Collapsed;
                 ADV_Laptop_dGPU_Temp.Visibility = Visibility.Collapsed;
                 ADV_Laptop_dGPU_Temp_Desc.Visibility = Visibility.Collapsed;
@@ -523,6 +529,18 @@ public sealed partial class ПараметрыPage : Page
             {
                 DesktopCPU_Delete_UselessParameters();
             }
+            if (cpu == null || cpu?.info.codeName.ToString().Contains("Unsupported") == true)
+            {
+                MainScroll.IsEnabled = false;
+                ActionButton_Apply.IsEnabled = false;
+                ActionButton_Delete.IsEnabled = false;
+                ActionButton_Mon.IsEnabled = false;
+                ActionButton_Save.IsEnabled = false;
+                ActionButton_Share.IsEnabled = false;
+                EditProfileButton.IsEnabled = false;
+                Action_IncompatibleProfile.IsOpen = false;
+                Action_IncompatibleCPU.IsOpen = true;
+            }
             var cores = ИнформацияPage.GetCPUCores();
             if (cores > 8)
             {
@@ -551,34 +569,59 @@ public sealed partial class ПараметрыPage : Page
         waitforload = true;
         ConfigLoad();
         if (config.Preset == -1 || index == -1) //Load from unsaved
-        {
+        { 
+            MainScroll.IsEnabled = false;
+            ActionButton_Apply.IsEnabled = false;
+            ActionButton_Delete.IsEnabled = false;
+            ActionButton_Mon.IsEnabled = false;
+            ActionButton_Save.IsEnabled = false;
+            ActionButton_Share.IsEnabled = false;
+            EditProfileButton.IsEnabled = false;
+            Action_IncompatibleProfile.IsOpen = true;
             //Unknown
         }
         else
         {
+            MainScroll.IsEnabled = true;
+            ActionButton_Apply.IsEnabled = true;
+            ActionButton_Delete.IsEnabled = true;
+            ActionButton_Mon.IsEnabled = true;
+            ActionButton_Save.IsEnabled = true;
+            ActionButton_Share.IsEnabled = true;
+            EditProfileButton.IsEnabled = true;
+            Action_IncompatibleProfile.IsOpen = false;
             ProfileLoad();
-            c1.IsChecked = profile[index].cpu1; c1v.Value = profile[index].cpu1value; c2.IsChecked = profile[index].cpu2; c2v.Value = profile[index].cpu2value; c3.IsChecked = profile[index].cpu3; c3v.Value = profile[index].cpu3value; c4.IsChecked = profile[index].cpu4; c4v.Value = profile[index].cpu4value; c5.IsChecked = profile[index].cpu5; c5v.Value = profile[index].cpu5value; c6.IsChecked = profile[index].cpu6; c6v.Value = profile[index].cpu6value; c7.IsChecked = profile[index].cpu7; c7v.Value = profile[index].cpu7value;
-            V1.IsChecked = profile[index].vrm1; V1V.Value = profile[index].vrm1value; V2.IsChecked = profile[index].vrm2; V2V.Value = profile[index].vrm2value; V3.IsChecked = profile[index].vrm3; V3V.Value = profile[index].vrm3value; V4.IsChecked = profile[index].vrm4; V4V.Value = profile[index].vrm4value; V5.IsChecked = profile[index].vrm5; V5V.Value = profile[index].vrm5value; V6.IsChecked = profile[index].vrm6; V6V.Value = profile[index].vrm6value; V7.IsChecked = profile[index].vrm7; V7V.Value = profile[index].vrm7value;
-            g1.IsChecked = profile[index].gpu1; g1v.Value = profile[index].gpu1value; g2.IsChecked = profile[index].gpu2; g2v.Value = profile[index].gpu2value; g3.IsChecked = profile[index].gpu3; g3v.Value = profile[index].gpu3value; g4.IsChecked = profile[index].gpu4; g4v.Value = profile[index].gpu4value; g5.IsChecked = profile[index].gpu5; g5v.Value = profile[index].gpu5value; g6.IsChecked = profile[index].gpu6; g6v.Value = profile[index].gpu6value; g7.IsChecked = profile[index].gpu7; g7v.Value = profile[index].gpu7value; g8v.Value = profile[index].gpu8value; g8.IsChecked = profile[index].gpu8; g9v.Value = profile[index].gpu9value; g9.IsChecked = profile[index].gpu9; g10v.Value = profile[index].gpu10value; g10.IsChecked = profile[index].gpu10; g11.IsChecked = profile[index].gpu11; g11v.Value = profile[index].gpu11value; g12.IsChecked = profile[index].gpu12; g12v.Value = profile[index].gpu12value; g15.IsChecked = profile[index].gpu15; g15m.SelectedIndex = profile[index].gpu15value; g16.IsChecked = profile[index].gpu16; g16m.SelectedIndex = profile[index].gpu16value;
-            a1.IsChecked = profile[index].advncd1; a1v.Value = profile[index].advncd1value; a2.IsChecked = profile[index].advncd2; a2v.Value = profile[index].advncd2value; a3.IsChecked = profile[index].advncd3; a3v.Value = profile[index].advncd3value; a4.IsChecked = profile[index].advncd4; a4v.Value = profile[index].advncd4value; a5.IsChecked = profile[index].advncd5; a5v.Value = profile[index].advncd5value; a6.IsChecked = profile[index].advncd6; a6v.Value = profile[index].advncd6value; a7.IsChecked = profile[index].advncd7; a7v.Value = profile[index].advncd7value; a8v.Value = profile[index].advncd8value; a8.IsChecked = profile[index].advncd8; a9v.Value = profile[index].advncd9value; a9.IsChecked = profile[index].advncd9; a10v.Value = profile[index].advncd10value; a11v.Value = profile[index].advncd11value; a11.IsChecked = profile[index].advncd11; a12v.Value = profile[index].advncd12value; a12.IsChecked = profile[index].advncd12; a13.IsChecked = profile[index].advncd13; a13m.SelectedIndex = profile[index].advncd13value; a14.IsChecked = profile[index].advncd14; a14m.SelectedIndex = profile[index].advncd14value; a15.IsChecked = profile[index].advncd15; a15v.Value = profile[index].advncd15value;
-            CCD_CO_Mode_Sel.IsChecked = profile[index].comode; CCD_CO_Mode.SelectedIndex = profile[index].coprefmode;
-            O1.IsChecked = profile[index].coall; O1v.Value = profile[index].coallvalue; O2.IsChecked = profile[index].cogfx; O2v.Value = profile[index].cogfxvalue; CCD1_1.IsChecked = profile[index].coper0; CCD1_1v.Value = profile[index].coper0value; CCD1_2.IsChecked = profile[index].coper1; CCD1_2v.Value = profile[index].coper1value; CCD1_3.IsChecked = profile[index].coper2; CCD1_3v.Value = profile[index].coper2value; CCD1_4.IsChecked = profile[index].coper3; CCD1_4v.Value = profile[index].coper3value; CCD1_5.IsChecked = profile[index].coper4; CCD1_5v.Value = profile[index].coper4value; CCD1_6.IsChecked = profile[index].coper5; CCD1_6v.Value = profile[index].coper5value; CCD1_7.IsChecked = profile[index].coper6; CCD1_7v.Value = profile[index].coper6value; CCD1_8.IsChecked = profile[index].coper7; CCD1_8v.Value = profile[index].coper7value;
-            CCD2_1.IsChecked = profile[index].coper8; CCD2_1v.Value = profile[index].coper8value; CCD2_2.IsChecked = profile[index].coper9; CCD2_2v.Value = profile[index].coper9value; CCD2_3.IsChecked = profile[index].coper10; CCD2_3v.Value = profile[index].coper10value; CCD2_4.IsChecked = profile[index].coper11; CCD2_4v.Value = profile[index].coper11value; CCD2_5.IsChecked = profile[index].coper12; CCD2_5v.Value = profile[index].coper12value; CCD2_6.IsChecked = profile[index].coper13; CCD2_6v.Value = profile[index].coper13value; CCD2_7.IsChecked = profile[index].coper14; CCD2_7v.Value = profile[index].coper14value; CCD2_8.IsChecked = profile[index].coper15; CCD2_8v.Value = profile[index].coper15value;
-            EnablePstates.IsOn = profile[index].enablePstateEditor; Turbo_boost.IsOn = profile[index].turboBoost; Autoapply_1.IsOn = profile[index].autoPstate; IgnoreWarn.IsOn = profile[index].ignoreWarn; Without_P0.IsOn = profile[index].p0Ignorewarn;
-            DID_0.Value = profile[index].did0; DID_1.Value = profile[index].did1; DID_2.Value = profile[index].did2; FID_0.Value = profile[index].fid0; FID_1.Value = profile[index].fid1; FID_2.Value = profile[index].fid2; VID_0.Value = profile[index].vid0; VID_1.Value = profile[index].vid1; VID_2.Value = profile[index].vid2;
-            EnableSMU.IsOn = profile[index].smuEnabled;
-            SMU_Func_Enabl.IsOn = profile[index].smuFunctionsEnabl;
-            Bit_0_FEATURE_CCLK_CONTROLLER.IsOn = profile[index].smuFeatureCCLK;
-            Bit_2_FEATURE_DATA_CALCULATION.IsOn = profile[index].smuFeatureData;
-            Bit_3_FEATURE_PPT.IsOn = profile[index].smuFeaturePPT;
-            Bit_4_FEATURE_TDC.IsOn = profile[index].smuFeatureTDC;
-            Bit_5_FEATURE_THERMAL.IsOn = profile[index].smuFeatureThermal;
-            Bit_8_FEATURE_PLL_POWER_DOWN.IsOn = profile[index].smuFeaturePowerDown;
-            Bit_37_FEATURE_PROCHOT.IsOn = profile[index].smuFeatureProchot;
-            Bit_39_FEATURE_STAPM.IsOn = profile[index].smuFeatureSTAPM;
-            Bit_40_FEATURE_CORE_CSTATES.IsOn = profile[index].smuFeatureCStates;
-            Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn = profile[index].smuFeatureGfxDutyCycle;
-            Bit_42_FEATURE_AA_MODE.IsOn = profile[index].smuFeatureAplusA;
+            try
+            {
+                c1.IsChecked = profile[index].cpu1; c1v.Value = profile[index].cpu1value; c2.IsChecked = profile[index].cpu2; c2v.Value = profile[index].cpu2value; c3.IsChecked = profile[index].cpu3; c3v.Value = profile[index].cpu3value; c4.IsChecked = profile[index].cpu4; c4v.Value = profile[index].cpu4value; c5.IsChecked = profile[index].cpu5; c5v.Value = profile[index].cpu5value; c6.IsChecked = profile[index].cpu6; c6v.Value = profile[index].cpu6value; c7.IsChecked = profile[index].cpu7; c7v.Value = profile[index].cpu7value;
+                V1.IsChecked = profile[index].vrm1; V1V.Value = profile[index].vrm1value; V2.IsChecked = profile[index].vrm2; V2V.Value = profile[index].vrm2value; V3.IsChecked = profile[index].vrm3; V3V.Value = profile[index].vrm3value; V4.IsChecked = profile[index].vrm4; V4V.Value = profile[index].vrm4value; V5.IsChecked = profile[index].vrm5; V5V.Value = profile[index].vrm5value; V6.IsChecked = profile[index].vrm6; V6V.Value = profile[index].vrm6value; V7.IsChecked = profile[index].vrm7; V7V.Value = profile[index].vrm7value;
+                g1.IsChecked = profile[index].gpu1; g1v.Value = profile[index].gpu1value; g2.IsChecked = profile[index].gpu2; g2v.Value = profile[index].gpu2value; g3.IsChecked = profile[index].gpu3; g3v.Value = profile[index].gpu3value; g4.IsChecked = profile[index].gpu4; g4v.Value = profile[index].gpu4value; g5.IsChecked = profile[index].gpu5; g5v.Value = profile[index].gpu5value; g6.IsChecked = profile[index].gpu6; g6v.Value = profile[index].gpu6value; g7.IsChecked = profile[index].gpu7; g7v.Value = profile[index].gpu7value; g8v.Value = profile[index].gpu8value; g8.IsChecked = profile[index].gpu8; g9v.Value = profile[index].gpu9value; g9.IsChecked = profile[index].gpu9; g10v.Value = profile[index].gpu10value; g10.IsChecked = profile[index].gpu10; g11.IsChecked = profile[index].gpu11; g11v.Value = profile[index].gpu11value; g12.IsChecked = profile[index].gpu12; g12v.Value = profile[index].gpu12value; g15.IsChecked = profile[index].gpu15; g15m.SelectedIndex = profile[index].gpu15value; g16.IsChecked = profile[index].gpu16; g16m.SelectedIndex = profile[index].gpu16value;
+                a1.IsChecked = profile[index].advncd1; a1v.Value = profile[index].advncd1value; a2.IsChecked = profile[index].advncd2; a2v.Value = profile[index].advncd2value; a3.IsChecked = profile[index].advncd3; a3v.Value = profile[index].advncd3value; a4.IsChecked = profile[index].advncd4; a4v.Value = profile[index].advncd4value; a5.IsChecked = profile[index].advncd5; a5v.Value = profile[index].advncd5value; a6.IsChecked = profile[index].advncd6; a6v.Value = profile[index].advncd6value; a7.IsChecked = profile[index].advncd7; a7v.Value = profile[index].advncd7value; a8v.Value = profile[index].advncd8value; a8.IsChecked = profile[index].advncd8; a9v.Value = profile[index].advncd9value; a9.IsChecked = profile[index].advncd9; a10v.Value = profile[index].advncd10value; a11v.Value = profile[index].advncd11value; a11.IsChecked = profile[index].advncd11; a12v.Value = profile[index].advncd12value; a12.IsChecked = profile[index].advncd12; a13.IsChecked = profile[index].advncd13; a13m.SelectedIndex = profile[index].advncd13value; a14.IsChecked = profile[index].advncd14; a14m.SelectedIndex = profile[index].advncd14value; a15.IsChecked = profile[index].advncd15; a15v.Value = profile[index].advncd15value;
+                CCD_CO_Mode_Sel.IsChecked = profile[index].comode; CCD_CO_Mode.SelectedIndex = profile[index].coprefmode;
+                O1.IsChecked = profile[index].coall; O1v.Value = profile[index].coallvalue; O2.IsChecked = profile[index].cogfx; O2v.Value = profile[index].cogfxvalue; CCD1_1.IsChecked = profile[index].coper0; CCD1_1v.Value = profile[index].coper0value; CCD1_2.IsChecked = profile[index].coper1; CCD1_2v.Value = profile[index].coper1value; CCD1_3.IsChecked = profile[index].coper2; CCD1_3v.Value = profile[index].coper2value; CCD1_4.IsChecked = profile[index].coper3; CCD1_4v.Value = profile[index].coper3value; CCD1_5.IsChecked = profile[index].coper4; CCD1_5v.Value = profile[index].coper4value; CCD1_6.IsChecked = profile[index].coper5; CCD1_6v.Value = profile[index].coper5value; CCD1_7.IsChecked = profile[index].coper6; CCD1_7v.Value = profile[index].coper6value; CCD1_8.IsChecked = profile[index].coper7; CCD1_8v.Value = profile[index].coper7value;
+                CCD2_1.IsChecked = profile[index].coper8; CCD2_1v.Value = profile[index].coper8value; CCD2_2.IsChecked = profile[index].coper9; CCD2_2v.Value = profile[index].coper9value; CCD2_3.IsChecked = profile[index].coper10; CCD2_3v.Value = profile[index].coper10value; CCD2_4.IsChecked = profile[index].coper11; CCD2_4v.Value = profile[index].coper11value; CCD2_5.IsChecked = profile[index].coper12; CCD2_5v.Value = profile[index].coper12value; CCD2_6.IsChecked = profile[index].coper13; CCD2_6v.Value = profile[index].coper13value; CCD2_7.IsChecked = profile[index].coper14; CCD2_7v.Value = profile[index].coper14value; CCD2_8.IsChecked = profile[index].coper15; CCD2_8v.Value = profile[index].coper15value;
+                EnablePstates.IsOn = profile[index].enablePstateEditor; Turbo_boost.IsOn = profile[index].turboBoost; Autoapply_1.IsOn = profile[index].autoPstate; IgnoreWarn.IsOn = profile[index].ignoreWarn; Without_P0.IsOn = profile[index].p0Ignorewarn;
+                DID_0.Value = profile[index].did0; DID_1.Value = profile[index].did1; DID_2.Value = profile[index].did2; FID_0.Value = profile[index].fid0; FID_1.Value = profile[index].fid1; FID_2.Value = profile[index].fid2; VID_0.Value = profile[index].vid0; VID_1.Value = profile[index].vid1; VID_2.Value = profile[index].vid2;
+                EnableSMU.IsOn = profile[index].smuEnabled;
+                SMU_Func_Enabl.IsOn = profile[index].smuFunctionsEnabl;
+                Bit_0_FEATURE_CCLK_CONTROLLER.IsOn = profile[index].smuFeatureCCLK;
+                Bit_2_FEATURE_DATA_CALCULATION.IsOn = profile[index].smuFeatureData;
+                Bit_3_FEATURE_PPT.IsOn = profile[index].smuFeaturePPT;
+                Bit_4_FEATURE_TDC.IsOn = profile[index].smuFeatureTDC;
+                Bit_5_FEATURE_THERMAL.IsOn = profile[index].smuFeatureThermal;
+                Bit_8_FEATURE_PLL_POWER_DOWN.IsOn = profile[index].smuFeaturePowerDown;
+                Bit_37_FEATURE_PROCHOT.IsOn = profile[index].smuFeatureProchot;
+                Bit_39_FEATURE_STAPM.IsOn = profile[index].smuFeatureSTAPM;
+                Bit_40_FEATURE_CORE_CSTATES.IsOn = profile[index].smuFeatureCStates;
+                Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn = profile[index].smuFeatureGfxDutyCycle;
+                Bit_42_FEATURE_AA_MODE.IsOn = profile[index].smuFeatureAplusA;
+            }
+            catch
+            {
+                profile = new Profile[1];
+                profile[0] = new Profile();
+                ProfileSave();
+            } 
         }
         try
         {
@@ -589,7 +632,7 @@ public sealed partial class ПараметрыPage : Page
             P2_Freq.Content = FID_2.Value * 25 / (DID_2.Value * 12.5) * 100;
             Mult_2.SelectedIndex = (int)(FID_2.Value * 25 / (DID_2.Value * 12.5)) - 4;
         }
-        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
+        catch (Exception ex) { if (config.Preset != -1) { TraceIt_TraceError(ex.ToString()); } }
         waitforload = false;
         SmuSettingsLoad();
         if (smusettings.Note != string.Empty)
@@ -2488,6 +2531,7 @@ public sealed partial class ПараметрыPage : Page
     }
     private void G10v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
+        if (isLoaded == false || waitforload) { return; }
         ProfileLoad();
         if (indexprofile != -1) { profile[indexprofile].gpu10value = g10v.Value; ProfileSave(); }
     }
@@ -3261,17 +3305,25 @@ public sealed partial class ПараметрыPage : Page
                 waitforload = true;
                 ProfileCOM.Items.Add(SaveProfileN.Text);
                 ProfileCOM.SelectedItem = SaveProfileN.Text;
-                var profileList = new List<Profile>(profile)
+                if (profile == null) 
                 {
-                    new()
+                    profile = new Profile[1];
+                    profile[0] = new Profile() { profilename = SaveProfileN.Text };
+                }
+                else
+                {
+                    var profileList = new List<Profile>(profile)
                     {
-                        profilename =SaveProfileN.Text
-                    }
-                };
-                profile = profileList.ToArray();
+                        new()
+                        { 
+                            profilename = SaveProfileN.Text
+                        }
+                    };
+                    profile = [.. profileList];
+                } 
                 waitforload = false;
                 NotifyLoad();
-                notify.Notifies ??= new List<Notify>();
+                notify.Notifies ??= [];
                 notify.Notifies.Add(new Notify { Title = "SaveSuccessTitle".GetLocalized(), Msg = "SaveSuccessDesc".GetLocalized() + " " + SaveProfileN.Text, Type = InfoBarSeverity.Success });
                 NotifySave();
             }
@@ -3317,7 +3369,7 @@ public sealed partial class ПараметрыPage : Page
                 {
                     Content = new TextBlock
                     {
-                        Text = "Premaded",
+                        Text = "Param_Premaded".GetLocalized(),
                         Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"]
                     },
                     IsEnabled = false

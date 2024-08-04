@@ -1,6 +1,7 @@
 ﻿using System.Management;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
@@ -71,6 +72,15 @@ public sealed partial class ИнформацияPage : Page
             GetRAMInfo();
             ReadPstate();
             GetBATInfo();
+            if (CPUBannerButton.Shadow != new ThemeShadow())
+            {
+                CPUBannerButton.Shadow ??= new ThemeShadow();
+                GPUBannerButton.Shadow = null;
+                RAMBannerButton.Shadow = null;
+                BATBannerButton.Shadow = null;
+                PSTBannerButton.Shadow = null;
+                VRMBannerButton.Shadow = null;
+            }
         };
         Unloaded += ИнформацияPage_Unloaded;
     }
@@ -279,6 +289,8 @@ public sealed partial class ИнформацияPage : Page
 
                             new Button()
                             {
+                                Shadow = new ThemeShadow(),
+                                Translation = new System.Numerics.Vector3(0,0,20),
                                 HorizontalAlignment = HorizontalAlignment.Stretch,
                                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
                                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -307,15 +319,15 @@ public sealed partial class ИнформацияPage : Page
                                         {
                                             VerticalAlignment = VerticalAlignment.Center,
                                             HorizontalAlignment = HorizontalAlignment.Right,
-                                            Text = (SelectedGroup == 0 || SelectedGroup == 5) ? 
+                                            Text = (SelectedGroup == 0 || SelectedGroup == 5) ?
                                             (currCore < numberOfCores ? "InfoCPUCore".GetLocalized()
-                                            : "InfoCPUThread".GetLocalized()) 
+                                            : "InfoCPUThread".GetLocalized())
                                             : (SelectedGroup == 1 ? "InfoGPUName".GetLocalized()
-                                            : (SelectedGroup == 2 ? tbSlots.Text.Split('*')[1].Replace("Bit","") 
-                                            : (SelectedGroup == 3 ? 
-                                              (currCore == 0 ? "VRM EDC" 
-                                            : ( currCore == 1 ? "VRM TDC" 
-                                            : (currCore == 2 ? "SoC EDC" 
+                                            : (SelectedGroup == 2 ? tbSlots.Text.Split('*')[1].Replace("Bit","")
+                                            : (SelectedGroup == 3 ?
+                                              (currCore == 0 ? "VRM EDC"
+                                            : ( currCore == 1 ? "VRM TDC"
+                                            : (currCore == 2 ? "SoC EDC"
                                             : "SoC TDC")))
                                             : "InfoBatteryName".GetLocalized()))),
                                             FontWeight = new Windows.UI.Text.FontWeight(200)
@@ -489,9 +501,11 @@ public sealed partial class ИнформацияPage : Page
                 if (SelectedGroup != 0)
                 {
                     infoCPUSectionComboBox.Visibility = Visibility.Collapsed;
+                    InfoCPUComboBoxBorderSharedShadow_Element.Visibility = Visibility.Collapsed;
                     if (SelectedGroup == 1)
                     {
                         //Показать свойства видеокарты
+                        
                         infoCPUSectionName.Text = "InfoGPUSectionName".GetLocalized();
                         InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
                         InfoGPUSectionMetrics.Visibility = Visibility.Visible;
@@ -506,6 +520,7 @@ public sealed partial class ИнформацияPage : Page
                     if (SelectedGroup == 2)
                     {
                         //Показать свойства ОЗУ
+                        
                         infoCPUSectionName.Text = "InfoRAMSectionName".GetLocalized();
                         InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
                         InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
@@ -520,6 +535,7 @@ public sealed partial class ИнформацияPage : Page
                     if (SelectedGroup == 3)
                     {
                         //Зона VRM
+                        
                         infoCPUSectionName.Text = "VRM";
                         InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
                         InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
@@ -533,6 +549,7 @@ public sealed partial class ИнформацияPage : Page
                     }
                     if (SelectedGroup == 4)
                     {
+                        
                         infoCPUSectionName.Text = "InfoBatteryName".GetLocalized();
                         InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
                         InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
@@ -546,6 +563,7 @@ public sealed partial class ИнформацияPage : Page
                     }
                     if (SelectedGroup == 5)
                     {
+                        
                         infoCPUSectionName.Text = "P-States";
                         InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
                         InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
@@ -560,6 +578,7 @@ public sealed partial class ИнформацияPage : Page
                 }
                 else
                 {
+                    InfoCPUComboBoxBorderSharedShadow_Element.Visibility = Visibility.Visible;
                     infoCPUMAINSection.Visibility = Visibility.Visible;
                     infoRAMMAINSection.Visibility = Visibility.Collapsed;
                     infoCPUSectionComboBox.Visibility = Visibility.Visible;
@@ -922,7 +941,7 @@ public sealed partial class ИнформацияPage : Page
                 }
             }
 
-            rtss_line = "<C0=FFA0A0><C1=A0FFA0><C2=FC89AC><C3=fa2363><S1=70><S2=-50><C0>Saku Overclock <C1>RC-4: <S0>" + ShellPage.SelectedProfile.Replace('а', 'a').Replace('м', 'm').Replace('и', 'i').Replace('н', 'n').Replace('М', 'M').Replace('у', 'u').Replace('Э', 'E').Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c').Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' ');
+            rtss_line = "<C0=FFA0A0><C1=A0FFA0><C2=FC89AC><C3=fa2363><S1=70><S2=-50><C0>Saku Overclock <C1>" + ГлавнаяViewModel.GetVersion() + ": <S0>" + ShellPage.SelectedProfile.Replace('а', 'a').Replace('м', 'm').Replace('и', 'i').Replace('н', 'n').Replace('М', 'M').Replace('у', 'u').Replace('Э', 'E').Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c').Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' ');
             rtss_line += "<S1><Br><C2>STAPM, Fast, Slow: " + "<C3><S0>" + Math.Round(RyzenADJWrapper.get_stapm_value(ryzenAccess), 3) + "<S2>W<S1>" + Math.Round(RyzenADJWrapper.get_stapm_limit(ryzenAccess), 3) + "W"
                 + " <S0>" + Math.Round(RyzenADJWrapper.get_fast_value(ryzenAccess), 3) + "<S2>W<S1>" + Math.Round(RyzenADJWrapper.get_fast_limit(ryzenAccess), 3) + "W"
                 + " <S0>" + Math.Round(RyzenADJWrapper.get_slow_value(ryzenAccess), 3) + "<S2>W<S1>" + Math.Round(RyzenADJWrapper.get_slow_limit(ryzenAccess), 3) + "W";
@@ -944,8 +963,8 @@ public sealed partial class ИнформацияPage : Page
             rtss_line += endCLKString + "<Br><C2>AVG Clock, Volt: " + "<C3><S0>" + Math.Round(avgCoreCLK / numberOfCores, 3) + "<S2>GHz<S1>" + Math.Round(avgCoreVolt / numberOfCores, 3) + "V";
             rtss_line += "<Br><C2>APU Clock, Volt, Temp: " + "<C3><S0>" + Math.Round(RyzenADJWrapper.get_gfx_clk(ryzenAccess), 3) + "<S2>MHz<S1>" + Math.Round(RyzenADJWrapper.get_gfx_volt(ryzenAccess), 3) + "V " + "<S0>" + Math.Round(RyzenADJWrapper.get_gfx_temp(ryzenAccess), 3) + "<S1>C";
             rtss_line += "<Br><C2>Framerate " + "<C3><S0>" + "%FRAMERATE% %FRAMETIME%";
-            if (canUpdateOSDText && infoRTSSButton.IsChecked == true)
-            {
+            if (infoRTSSButton.IsChecked == true)
+            { 
                 RTSSHandler.ChangeOSDText(rtss_line); canUpdateOSDText = false;
             }
         }
@@ -966,7 +985,7 @@ public sealed partial class ИнформацияPage : Page
         InfoAPSTBannerPolygon.Points.Clear();
         InfoAPSTBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
         ryzenAccess = RyzenADJWrapper.Init_ryzenadj();
-        _ = RyzenADJWrapper.init_table(ryzenAccess);
+        _ = RyzenADJWrapper.Init_Table(ryzenAccess);
         dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
         dispatcherTimer.Tick += (sender, e) => UpdateInfoAsync();
         dispatcherTimer.Interval = TimeSpan.FromMilliseconds(300);
@@ -976,7 +995,6 @@ public sealed partial class ИнформацияPage : Page
     // Метод, который будет вызываться при скрытии/переключении страницы
     private void StopInfoUpdate()
     {
-        RyzenADJWrapper.Cleanup_ryzenadj(ryzenAccess);
         dispatcherTimer?.Stop();
     }
     private void ИнформацияPage_Unloaded(object sender, RoutedEventArgs e)
@@ -1000,6 +1018,15 @@ public sealed partial class ИнформацияPage : Page
     {
         if (SelectedGroup != 0)
         {
+            if (CPUBannerButton.Shadow != new ThemeShadow())
+            {
+                CPUBannerButton.Shadow ??= new ThemeShadow();
+                GPUBannerButton.Shadow = null;
+                RAMBannerButton.Shadow = null;
+                BATBannerButton.Shadow = null;
+                PSTBannerButton.Shadow = null;
+                VRMBannerButton.Shadow = null;
+            }
             SelectedGroup = 0;
             CPUBannerButton.Background = SelectedBrush;
             CPUBannerButton.BorderBrush = SelectedBorderBrush;
@@ -1022,6 +1049,15 @@ public sealed partial class ИнформацияPage : Page
     {
         if (SelectedGroup != 1)
         {
+            if (GPUBannerButton.Shadow != new ThemeShadow())
+            {
+                CPUBannerButton.Shadow = null;
+                GPUBannerButton.Shadow ??= new ThemeShadow();
+                RAMBannerButton.Shadow = null;
+                BATBannerButton.Shadow = null;
+                PSTBannerButton.Shadow = null;
+                VRMBannerButton.Shadow = null;
+            }
             SelectedGroup = 1;
             CPUBannerButton.Background = TransparentBrush;
             CPUBannerButton.BorderBrush = TransparentBrush;
@@ -1044,6 +1080,15 @@ public sealed partial class ИнформацияPage : Page
     {
         if (SelectedGroup != 2)
         {
+            if (RAMBannerButton.Shadow != new ThemeShadow())
+            {
+                CPUBannerButton.Shadow = null;
+                GPUBannerButton.Shadow = null;
+                RAMBannerButton.Shadow ??= new ThemeShadow();
+                BATBannerButton.Shadow = null;
+                PSTBannerButton.Shadow = null;
+                VRMBannerButton.Shadow = null;
+            }
             SelectedGroup = 2;
             CPUBannerButton.Background = TransparentBrush;
             CPUBannerButton.BorderBrush = TransparentBrush;
@@ -1065,6 +1110,15 @@ public sealed partial class ИнформацияPage : Page
     {
         if (SelectedGroup != 3)
         {
+            if (VRMBannerButton.Shadow != new ThemeShadow())
+            {
+                CPUBannerButton.Shadow = null;
+                GPUBannerButton.Shadow = null;
+                RAMBannerButton.Shadow = null;
+                BATBannerButton.Shadow = null;
+                PSTBannerButton.Shadow = null;
+                VRMBannerButton.Shadow ??= new ThemeShadow();
+            }
             SelectedGroup = 3;
             CPUBannerButton.Background = TransparentBrush;
             CPUBannerButton.BorderBrush = TransparentBrush;
@@ -1086,6 +1140,15 @@ public sealed partial class ИнформацияPage : Page
     {
         if (SelectedGroup != 4)
         {
+            if (BATBannerButton.Shadow != new ThemeShadow())
+            {
+                CPUBannerButton.Shadow = null;
+                GPUBannerButton.Shadow = null;
+                RAMBannerButton.Shadow = null;
+                BATBannerButton.Shadow ??= new ThemeShadow();
+                PSTBannerButton.Shadow = null;
+                VRMBannerButton.Shadow = null;
+            }
             SelectedGroup = 4;
             CPUBannerButton.Background = TransparentBrush;
             CPUBannerButton.BorderBrush = TransparentBrush;
@@ -1107,6 +1170,15 @@ public sealed partial class ИнформацияPage : Page
     {
         if (SelectedGroup != 5)
         {
+            if (PSTBannerButton.Shadow != new ThemeShadow())
+            {
+                CPUBannerButton.Shadow = null;
+                GPUBannerButton.Shadow = null;
+                RAMBannerButton.Shadow = null;
+                BATBannerButton.Shadow = null;
+                PSTBannerButton.Shadow ??= new ThemeShadow();
+                VRMBannerButton.Shadow = null;
+            }
             SelectedGroup = 5;
             CPUBannerButton.Background = TransparentBrush;
             CPUBannerButton.BorderBrush = TransparentBrush;
@@ -1121,14 +1193,27 @@ public sealed partial class ИнформацияPage : Page
             PSTBannerButton.Background = SelectedBrush;
             PSTBannerButton.BorderBrush = SelectedBorderBrush;
             InfoMainCPUFreqGrid.Children.Clear();
-            InfoCPUSectionGridBuilder();
+            if (infoCPUSectionComboBox.SelectedIndex != 0)
+            {
+                infoCPUSectionComboBox.SelectedIndex = 0;
+            }
+            else
+            {
+                InfoCPUSectionGridBuilder();
+            }
         } 
     }
-    private void InfoRTSSButton_Click(object sender, RoutedEventArgs e)
+    private async void InfoRTSSButton_Click(object sender, RoutedEventArgs e)
     {
         if (infoRTSSButton.IsChecked == false)
         {
             RTSSHandler.ResetOSDText();
+        }
+        else
+        {
+            Info_RTSSTeacherTip.IsOpen = true;
+            await Task.Delay(3000);
+            Info_RTSSTeacherTip.IsOpen = false;
         }
     }
     #endregion

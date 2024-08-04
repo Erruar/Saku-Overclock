@@ -15,9 +15,9 @@
 	<UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <AssemblyVersion></AssemblyVersion>
-    <FileVersion>1.0.14.0</FileVersion>
+    <FileVersion>1.0.15.0</FileVersion>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>  
-    <Version>1.0.14.0</Version>
+    <Version>1.0.15.0</Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
     <UseWPF>False</UseWPF>
@@ -63,6 +63,7 @@
     <None Remove="show.png" />
     <None Remove="startup.lnk" />
     <None Remove="Styles\ComboBoxCollapseLauncher.xaml" />
+    <None Remove="Styles\CopyButton.xaml" />
     <None Remove="Styles\ToggleButtonCollapseLauncher.xaml" />
     <None Remove="Views\AdvancedКулерPage.xaml" />
     <None Remove="Views\PowerWindow.xaml" />
@@ -930,4 +931,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'">
     <Optimize>True</Optimize>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <CustomAdditionalCompileInputs Remove="Styles\CopyButton.xaml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Remove="Styles\CopyButton.xaml" />
+  </ItemGroup>
 </Project>

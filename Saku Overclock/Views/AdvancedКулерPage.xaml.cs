@@ -2,6 +2,7 @@
 using System.Xml.Linq;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
@@ -111,6 +112,119 @@ public sealed partial class AdvancedКулерPage : Page
     {
         FanDef.Children.Clear();
         FanDef1.Children.Clear();
+        var FanDefGrid = FanDef;
+        for (var fdsa = 0; fdsa < 2; fdsa++)
+        {
+            if (fdsa != 0)
+            {
+                FanDefGrid = FanDef1;
+            }
+            var minimumButton = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Width = 65,
+                Height = 32,
+                Content = new Grid
+                {
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Stretch, 
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = "Min",
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            FontSize = 12,
+                            Margin = new Thickness(0,-12,0,0),
+                            FontWeight = new Windows.UI.Text.FontWeight(600)
+                        },
+                        new TextBlock
+                        {
+                            Text = "Temp (C)",
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Bottom,
+                            FontSize = 10,
+                            Margin = new Thickness(0,10,0,0)
+                        }
+                    }
+                }
+            };
+            var maximumButton = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Width = 65,
+                Height = 32,
+                Content = new Grid
+                {
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Stretch,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = "Max",
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            FontSize = 12,
+                            Margin = new Thickness(0,-12,0,0),
+                            FontWeight = new Windows.UI.Text.FontWeight(600)
+                        },
+                        new TextBlock
+                        {
+                            Text = "Temp (C)",
+                            FontSize = 10,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Bottom,
+                            Margin = new Thickness(0,10,0,0)
+                        }
+                    }
+                }
+            };
+            var fanspeedButton = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Width = 65,
+                Height = 32,
+                Content = new Grid
+                {
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Stretch, 
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = "Fan",
+                            FontSize = 12,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Margin = new Thickness(0,-12,0,0),
+                            FontWeight = new Windows.UI.Text.FontWeight(600)
+                        },
+                        new TextBlock
+                        {
+                            Text = "RPM (%)",
+                            FontSize = 10,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Bottom,
+                            Margin = new Thickness(0,10,0,0)
+                        }
+                    }
+                }
+            };
+            Grid.SetRow(minimumButton, 0);
+            Grid.SetRow(maximumButton, 0);
+            Grid.SetRow(fanspeedButton, 0);
+            Grid.SetColumn(minimumButton, 0);
+            Grid.SetColumn(maximumButton, 2);
+            Grid.SetColumn(fanspeedButton, 4);
+            FanDefGrid.Children.Add(minimumButton);
+            FanDefGrid.Children.Add(maximumButton);
+            FanDefGrid.Children.Add(fanspeedButton);
+        } 
         ExtFan1C.Points.Clear();
         ExtFan2C.Points.Clear();
         var currentFanDef = FanDef;
@@ -119,7 +233,7 @@ public sealed partial class AdvancedКулерPage : Page
         var currentDownThresholdBoxes = new List<NumberBox>();
         var currentUpThresholdBoxes = new List<NumberBox>();
         var currentFanSpeedBoxes = new List<NumberBox>();
-        var rowCounter = 0; // Счетчик строк в Grid
+        var rowCounter = 1; // Счетчик строк в Grid
         try
         {
             ConfigLoad();
@@ -162,7 +276,7 @@ public sealed partial class AdvancedКулерPage : Page
                             VerticalAlignment = VerticalAlignment.Top,
                             Width = 65,
                             Value = double.Parse(thresholdElement.Element("DownThreshold")!.Value),
-                            Name = $"DownThresholdBox_{rowCounter}" // Уникальное имя для идентификации NumberBox'а
+                            Name = $"DownThresholdBox_{rowCounter - 1}" // Уникальное имя для идентификации NumberBox'а
                         };
                         if (rowCounter == 0) { downThresholdBox.Margin = new Thickness(0, 65, 0, 0); }
                         else { downThresholdBox.Margin = new Thickness(0, 5, 0, 0); }
@@ -175,7 +289,7 @@ public sealed partial class AdvancedКулерPage : Page
                             VerticalAlignment = VerticalAlignment.Top,
                             Width = 65,
                             Value = double.Parse(thresholdElement.Element("UpThreshold")!.Value),
-                            Name = $"UpThresholdBox_{rowCounter}"
+                            Name = $"UpThresholdBox_{rowCounter - 1}"
                         };
                         if (rowCounter == 0) { upThresholdBox.Margin = new Thickness(0, 65, 0, 0); }
                         else { upThresholdBox.Margin = new Thickness(0, 5, 0, 0); }
@@ -187,7 +301,7 @@ public sealed partial class AdvancedКулерPage : Page
                             VerticalAlignment = VerticalAlignment.Top,
                             Width = 65,
                             Value = double.Parse(thresholdElement.Element("FanSpeed")!.Value.Trim(), CultureInfo.InvariantCulture),
-                            Name = $"FanSpeedBox_{rowCounter}"
+                            Name = $"FanSpeedBox_{rowCounter - 1}"
                         };
                         if (rowCounter == 0) { fanSpeedBox.Margin = new Thickness(0, 65, 0, 0); }
                         else { fanSpeedBox.Margin = new Thickness(0, 5, 0, 0); }
@@ -219,7 +333,7 @@ public sealed partial class AdvancedКулерPage : Page
                     // 2. Переключаемся на следующий FanDef, InvFanC и FanConfiguration
                     if (currentFanDef == FanDef)
                     {
-                        rowCounter = 0;
+                        rowCounter = 1;
                         currentFanDef = FanDef1;
                         currentInvFanC = ExtFan2C;
                     }
@@ -466,26 +580,36 @@ public sealed partial class AdvancedКулерPage : Page
 
         // Создать Grid с кнопкой и RichEditBox
         var tabContent = new Grid();
-
+        var copyButton = new Styles.CopyButton
+        {
+            VerticalAlignment = VerticalAlignment.Top,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Height = 40, 
+            Width = 40, 
+            Content = "\uE8C8"
+        };
+        AutomationProperties.SetName(copyButton, "Copy link");
         // Создать кнопку для копирования в буфер обмена
-        var copyButton = new Button
+        var copyButtonGrid = new Grid
         {
             VerticalAlignment = VerticalAlignment.Top,
             HorizontalAlignment = HorizontalAlignment.Right,
             Height = 40,
             Width = 40,
-            Margin = new Thickness(0, 3, 5, 0),
-            Content = new ContentControl
-            {
-                Content = new FontIcon
+            Margin = new Thickness(0, 3, -2, 0),
+            Children =
+            { 
+                new Border
                 {
-                    FontFamily = new FontFamily("Segoe MDL2 Assets"),
-                    Glyph = "\uE8C8",
-                    Margin = new Thickness(-4, -2, -5, -5)
-                }
-            }
-        };
-
+                    CornerRadius = new CornerRadius(4),
+                    Width = 40,
+                    Height = 40,
+                    Shadow = new ThemeShadow(),
+                    Translation = new System.Numerics.Vector3(0,0,20)
+                },
+                copyButton
+            } 
+        }; 
         // Добавить обработчик события для кнопки
         copyButton.Click += (sender, args) =>
         {
@@ -499,6 +623,7 @@ public sealed partial class AdvancedКулерPage : Page
         // Создать RichEditBox и загрузить в него содержимое файла .xml
         var xmlContent = new RichEditBox
         {
+            Margin = new Thickness(0,0,-19,-3),
             VerticalAlignment = VerticalAlignment.Stretch,
             HorizontalAlignment = HorizontalAlignment.Stretch
         };
@@ -510,12 +635,14 @@ public sealed partial class AdvancedКулерPage : Page
             HorizontalAlignment = HorizontalAlignment.Right,
             Height = 40,
             Width = 40,
-            Margin = new Thickness(0, 3, 50, 0),
+            Shadow = new ThemeShadow(),
+            Translation = new System.Numerics.Vector3(0, 0, 20),
+            Margin = new Thickness(0, 3, 43, 0),
             Content = new ContentControl
             {
                 Content = new FontIcon
                 {
-                    FontFamily = new FontFamily("Segoe MDL2 Assets"),
+                    FontFamily = BackButtonGlyph.FontFamily,
                     Glyph = "\uE74E",
                     Margin = new Thickness(-4, -2, -5, -5)
                 }
@@ -529,12 +656,14 @@ public sealed partial class AdvancedКулерPage : Page
             HorizontalAlignment = HorizontalAlignment.Right,
             Height = 40,
             Width = 40,
-            Margin = new Thickness(0, 3, 96, 0),
+            Margin = new Thickness(0, 3, 89, 0),
+            Shadow = new ThemeShadow(),
+            Translation = new System.Numerics.Vector3(0,0,20),
             Content = new ContentControl
             {
                 Content = new FontIcon
                 {
-                    FontFamily = new FontFamily("Segoe MDL2 Assets"),
+                    FontFamily = BackButtonGlyph.FontFamily,
                     Glyph = "\uE70F",
                     Margin = new Thickness(-4, -2, -5, -5)
                 }
@@ -547,7 +676,7 @@ public sealed partial class AdvancedКулерPage : Page
         };
         // Добавить элементы в Grid
         tabContent.Children.Add(xmlContent);
-        tabContent.Children.Add(copyButton);
+        tabContent.Children.Add(copyButtonGrid);
         tabContent.Children.Add(saveButton);
         tabContent.Children.Add(renameButton);
 
