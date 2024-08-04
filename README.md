@@ -254,24 +254,42 @@ Use the `README.md` to get started.
     <br />
     <br />
     <h1 align="center">Processor</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/main.png"></img>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/1.png"></img>
-    <p align="left">• Processor: Allows users to show the current properties of your processor</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/2.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/3.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/4.png"></img>
+    <p align="left">• Processor: Allows users to show the current properties of your processor. Such as Frequency, Voltages, Powers, Temperatures in real time!</p>
     <br />
     <br />
     <h1 align="center">Power Information</h1>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/2.png"></img>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/3.png"></img> 
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/5.png"></img> 
     <p align="left">• Power Information: Allows users to watch VRM powers, Currents and timings of your CPU</p>
+    <br />
+    <br /><h1 align="center">GPU Information</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/6.png"></img>
+    <p align="left">• GPU Information: Shows the common iGPU and dGPU power metrics.</p>
     <br />
     <br />
     <h1 align="center">RAM Information</h1>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/4.png"></img>
-    <p align="left">• RAM Information: Allows users to know their common RAM info. Soon there were be more info options!</p>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/7.png"></img>
+    <p align="left">• RAM Information: Allows users to know their common RAM information, SoC power, voltage, timings and current frequency!</p>
+    <br />
+    <br />
+    <h1 align="center">Battery Information</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/8.png"></img>
+    <p align="left">• Battery Information: Shows the most informatible battery information such as health, cycles, power charge rate, state and battery percent</p>
     <br />
     <br />
     <h1 align="center">CPU Power States</h1>
-    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/5.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/9.png"></img>
     <p align="left">• CPU Power States: There you can see PStates of you CPU</p> 
+    <br />
+    <br />
+    <h1 align="center">In-Game metrics</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/10.png"></img>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/11.png"></img>
+    <p align="left">• In-Game metrics: You can enable In-Game metrics via RTSS, Saku Overclock will show only needed metrics!</p> 
   </ol>
 </details>
 
