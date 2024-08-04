@@ -123,6 +123,29 @@ Use the `README.md` to get started.
 </details>
 
 
+<summary>App Taskbar</summary>
+  <ol>
+    <h1 align="center">Notifications</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-notifications.png"></img>
+    <p> </p>
+    <p align="left">The application has a convenient notification system. If you have applied something or not, or an error has occurred, you will find out about it first! To save laptop resources, notifications are cleared themselves if there are more than 6 of them</p>
+    <p> </p>
+    <br />
+    <br />
+    <h1 align="center">Changelog</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-changelog.png"></img> 
+    <p> </p>
+    <p align="left">To always stay up to date with all events, you can always open a changelog right in the notification window! The pictures are hidden in spoilers to save CPU resources and save your internet</p>
+    <br />
+    <br />
+    <h1 align="center">Profile Switcher</h1>
+    <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-profiles.png"></img> 
+    <p> </p>
+    <p align="left">let's say you are on the information page and want to switch the profile to see the difference in performance, but that's the problem! this can only be done on the page with your profiles. This is exactly what the quick profile switch was created for! Switch your settings comfortably or use the preset ones</p>
+  </ol>
+</details>
+
+
 <details>
   <summary>Premaded presets</summary>
   <ol>
