@@ -123,7 +123,8 @@ Use the `README.md` to get started.
 </details>
 
 
-<summary>App Taskbar</summary>
+<details>
+  <summary>App Taskbar</summary>
   <ol>
     <h1 align="center">Notifications</h1>
     <img src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-notifications.png"></img>
