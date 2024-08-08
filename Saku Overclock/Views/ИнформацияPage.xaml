@@ -44,7 +44,7 @@
                         <RowDefinition Height="64"/>
                         <RowDefinition Height="64"/>
                     </Grid.RowDefinitions>
-                    <Button Translation="0,0,20" Grid.Row="0" Width="170" x:Name="CPUBannerButton" Margin="0,0,0,0" Click="CPUBannerButton_Click" CornerRadius="3">
+                    <Button PointerEntered="CPUBannerButton_PointerEntered" PointerExited="CPUBannerButton_PointerEntered" Translation="0,0,20" Grid.Row="0" Width="170" x:Name="CPUBannerButton" Margin="0,0,0,0" Click="CPUBannerButton_Click" CornerRadius="3">
                         <Grid>
                             <Grid Width="60" Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon x:Name="InfoACPUBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -72,9 +72,50 @@ StrokeThickness="1.5" >
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" x:Uid="InfoCPU" Text="ЦП"/>
                                 <TextBlock FontWeight="Light" FontSize="13" x:Name="infoICPUUsageBanner" Text="0%"/>
                             </StackPanel>
+                            <Button x:Name="CPU_Expand_Button" Visibility="Collapsed" ToolTipService.ToolTip="Expand the graph" Margin="20,0,-20,-20" Width="32" Height="32" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="Transparent">
+                                <Button.RenderTransform>
+                                    <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
+                                </Button.RenderTransform>
+                                <Button.Flyout>
+                                    <Flyout x:Name="CPUFlyout" Closing="CPUFlyout_Opening" Opening="CPUFlyout_Opening" Placement="Right">
+                                        <Grid Width="420" Height="246">
+                                            <Grid>
+                                                <Polygon VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,-2,0,0" x:Name="InfoACPUBigBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+StrokeThickness="1.5" Shadow="{StaticResource SharedShadow}" Translation="0,0,32">
+                                                    <Polygon.RenderTransform>
+                                                        <ScaleTransform ScaleX="5" ScaleY="5"/>
+                                                    </Polygon.RenderTransform>
+                                                    <Polygon.Stroke>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#D09ADFDC" Offset="0.0"/>
+                                                                <GradientStop Color="#F0ABE3E0" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Stroke>
+                                                    <Polygon.Fill>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#D050C9C3" Offset="0.0"/>
+                                                                <GradientStop Color="#D096DEDA" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Fill>
+                                                </Polygon>
+                                                <TextBlock x:Name="infoACPUUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="120,0,0,16" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                                            </Grid>
+                                            <StackPanel Orientation="Vertical" Width="122"  Margin="310,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                <TextBlock FontWeight="Black" FontSize="23" x:Uid="InfoCPU" Text="ЦП"/>
+                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="infoICPUUsageBigBanner" Text="0%"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <FontIcon Margin="-7,-1,-5,-5" x:Name="CPU_Expand_FontIcon" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                            </Button>
                         </Grid>
                     </Button>
-                    <Button Translation="0,0,20" Background="Transparent" x:Name="VRMBannerButton" Click="VRMBannerButton_Click" BorderBrush="Transparent" Grid.Row="1" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button  PointerEntered="VRMBannerButton_PointerEntered" PointerExited="VRMBannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="VRMBannerButton" Click="VRMBannerButton_Click" BorderBrush="Transparent" Grid.Row="1" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid Width="60" Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon  x:Name="InfoAVRMBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -100,11 +141,52 @@ StrokeThickness="1.5">
                             </Grid>
                             <StackPanel Width="90" Margin="60,0,0,0" Orientation="Vertical">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" Text="VRM"/>
-                                <TextBlock FontWeight="Light" FontSize="13" x:Name="infoVRMUsageBanner" Text="Unknown"/> 
+                                <TextBlock FontWeight="Light" FontSize="13" x:Name="infoVRMUsageBanner" Text="Unknown"/>
                             </StackPanel>
+                            <Button Visibility="Collapsed" x:Name="VRM_Expand_Button" ToolTipService.ToolTip="Expand the graph" Margin="20,0,-20,-20" Width="32" Height="32" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="Transparent">
+                                <Button.RenderTransform>
+                                    <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
+                                </Button.RenderTransform>
+                                <Button.Flyout>
+                                    <Flyout x:Name="VRMFlyout" Closing="VRMFlyout_Opening" Opening="VRMFlyout_Opening"  Placement="Right">
+                                        <Grid Width="420" Height="246">
+                                            <Grid>
+                                                <Polygon VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,-2,0,0" x:Name="InfoAVRMBigBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+StrokeThickness="1.5" >
+                                                    <Polygon.RenderTransform>
+                                                        <ScaleTransform ScaleX="5" ScaleY="5"/>
+                                                    </Polygon.RenderTransform>
+                                                    <Polygon.Stroke>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#F0ff9472" Offset="0.0"/>
+                                                                <GradientStop Color="#F0D3959B" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Stroke>
+                                                    <Polygon.Fill>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#D0f2709c" Offset="0.0"/>
+                                                                <GradientStop Color="#D0ff9472" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Fill>
+                                                </Polygon>
+                                                <TextBlock x:Name="infoAVRMUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="120,0,0,16" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                                            </Grid>
+                                            <StackPanel Orientation="Vertical" Width="122"  Margin="310,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                <TextBlock FontWeight="Black" FontSize="23" Text="VRM"/>
+                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="infoIVRMUsageBigBanner" Text="0%"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <FontIcon x:Name="VRM_Expand_FontIcon" Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                            </Button>
                         </Grid>
                     </Button>
-                    <Button Translation="0,0,20" Background="Transparent" x:Name="GPUBannerButton" Click="GPUBannerButton_Click" BorderBrush="Transparent" Grid.Row="2" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button PointerEntered="GPUBannerButton_PointerEntered" PointerExited="GPUBannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="GPUBannerButton" Click="GPUBannerButton_Click" BorderBrush="Transparent" Grid.Row="2" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid Width="60" Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon  x:Name="InfoAGPUBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -130,11 +212,52 @@ StrokeThickness="1.5">
                             </Grid>
                             <StackPanel Width="90" Margin="60,0,0,0" Orientation="Vertical">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" x:Uid="InfoGFX" Text="GFX"/>
-                                <TextBlock FontWeight="Light" FontSize="13" x:Name="infoGPUUsageBanner" Text="Unknown"/> 
+                                <TextBlock FontWeight="Light" FontSize="13" x:Name="infoGPUUsageBanner" Text="Unknown"/>
                             </StackPanel>
+                            <Button Visibility="Collapsed" x:Name="GPU_Expand_Button" ToolTipService.ToolTip="Expand the graph" Margin="20,0,-20,-20" Width="32" Height="32" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="Transparent">
+                                <Button.RenderTransform>
+                                    <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
+                                </Button.RenderTransform>
+                                <Button.Flyout>
+                                    <Flyout x:Name="GPUFlyout" Opening="GPUFlyout_Opening"  Placement="Right">
+                                        <Grid Width="420" Height="246">
+                                            <Grid>
+                                                <Polygon VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,-2,0,0" x:Name="InfoAGPUBigBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+StrokeThickness="1.5" >
+                                                    <Polygon.RenderTransform>
+                                                        <ScaleTransform ScaleX="5" ScaleY="5"/>
+                                                    </Polygon.RenderTransform>
+                                                    <Polygon.Stroke>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#F09CB6EB" Offset="0.0"/>
+                                                                <GradientStop Color="#F0E993E6" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Stroke>
+                                                    <Polygon.Fill>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#D0B993D6" Offset="0.0"/>
+                                                                <GradientStop Color="#D08CA6DB" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Fill>
+                                                </Polygon>
+                                                <TextBlock x:Name="infoAGPUUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="120,0,0,16" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                                            </Grid>
+                                            <StackPanel Orientation="Vertical" Width="122"  Margin="310,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                <TextBlock FontWeight="Black" FontSize="23" x:Uid="InfoGFX" Text="GPU"/>
+                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="infoIGPUUsageBigBanner" Text="0%"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <FontIcon x:Name="GPU_Expand_FontIcon" Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                            </Button>
                         </Grid>
                     </Button>
-                    <Button Translation="0,0,20" Background="Transparent" x:Name="RAMBannerButton" Click="RAMBannerButton_Click" BorderBrush="Transparent" Grid.Row="3" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button PointerEntered="RAMBannerButton_PointerEntered" PointerExited="RAMBannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="RAMBannerButton" Click="RAMBannerButton_Click" BorderBrush="Transparent" Grid.Row="3" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid  Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon x:Name="InfoARAMBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -162,9 +285,50 @@ StrokeThickness="1.5">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" x:Uid="InfoRAM" Text="RAM"/>
                                 <TextBlock FontWeight="Light" FontSize="13" x:Name="InfoRAMUsage" Text="?GB"/>
                             </StackPanel>
+                            <Button Visibility="Collapsed" x:Name="RAM_Expand_Button" ToolTipService.ToolTip="Expand the graph" Margin="20,0,-20,-20" Width="32" Height="32" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="Transparent">
+                                <Button.RenderTransform>
+                                    <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
+                                </Button.RenderTransform>
+                                <Button.Flyout>
+                                    <Flyout x:Name="RAMFlyout" Opening="RAMFlyout_Opening"  Placement="Right">
+                                        <Grid Width="420" Height="246">
+                                            <Grid>
+                                                <Polygon VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,-2,0,0" x:Name="InfoARAMBigBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+StrokeThickness="1.5" >
+                                                    <Polygon.RenderTransform>
+                                                        <ScaleTransform ScaleX="5" ScaleY="5"/>
+                                                    </Polygon.RenderTransform>
+                                                    <Polygon.Stroke>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#F0BFE6BA" Offset="0.0"/>
+                                                                <GradientStop Color="#F0DAD299" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Stroke>
+                                                    <Polygon.Fill>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#D0DAD299" Offset="0.0"/>
+                                                                <GradientStop Color="#D0B0DAB9" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Fill>
+                                                </Polygon>
+                                                <TextBlock x:Name="infoARAMUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="120,0,0,16" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                                            </Grid>
+                                            <StackPanel Orientation="Vertical" Width="122"  Margin="310,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                <TextBlock FontWeight="Black" FontSize="23" x:Uid="InfoRAM" Text="RAM"/>
+                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="infoIRAMUsageBigBanner" Text="0%"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <FontIcon x:Name="RAM_Expand_FontIcon"  Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                            </Button>
                         </Grid>
                     </Button>
-                    <Button Translation="0,0,20" Background="Transparent" x:Name="BATBannerButton" Click="BATBannerButton_Click"  BorderBrush="Transparent" Grid.Row="4" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button PointerEntered="BATBannerButton_PointerEntered" PointerExited="BATBannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="BATBannerButton" Click="BATBannerButton_Click"  BorderBrush="Transparent" Grid.Row="4" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid  Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon x:Name="InfoABATBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -192,9 +356,50 @@ StrokeThickness="1.5">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" x:Uid="InfoBattery" Text="Battery"/>
                                 <TextBlock FontWeight="Light" FontSize="13" x:Name="InfoBATUsage" Text="?%"/>
                             </StackPanel>
+                            <Button Visibility="Collapsed" x:Name="BAT_Expand_Button" ToolTipService.ToolTip="Expand the graph" Margin="20,0,-20,-20" Width="32" Height="32" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="Transparent">
+                                <Button.RenderTransform>
+                                    <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
+                                </Button.RenderTransform>
+                                <Button.Flyout>
+                                    <Flyout x:Name="BATFlyout" Opening="BATFlyout_Opening"  Placement="Right">
+                                        <Grid Width="420" Height="246">
+                                            <Grid>
+                                                <Polygon VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,-2,0,0" x:Name="InfoABATBigBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+StrokeThickness="1.5" >
+                                                    <Polygon.RenderTransform>
+                                                        <ScaleTransform ScaleX="5" ScaleY="5"/>
+                                                    </Polygon.RenderTransform>
+                                                    <Polygon.Stroke>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#F0EAECC6" Offset="0.0"/>
+                                                                <GradientStop Color="#F02BC0E4" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Stroke>
+                                                    <Polygon.Fill>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#D02BC0E4" Offset="0.0"/>
+                                                                <GradientStop Color="#D0EAECC6" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Fill>
+                                                </Polygon>
+                                                <TextBlock x:Name="infoABATUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="120,0,0,16" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                                            </Grid>
+                                            <StackPanel Orientation="Vertical" Width="122"  Margin="310,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                <TextBlock FontWeight="Black" FontSize="23" x:Uid="InfoBattery" Text="Battery"/>
+                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="infoIBATUsageBigBanner" Text="0%"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <FontIcon x:Name="BAT_Expand_FontIcon" Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                            </Button>
                         </Grid>
                     </Button>
-                    <Button Translation="0,0,20" Background="Transparent" x:Name="PSTBannerButton" Click="PSTBannerButton_Click"  BorderBrush="Transparent" Grid.Row="5" Width="170" Margin="0,0,0,0" CornerRadius="3">
+                    <Button PointerEntered="PSTBannerButton_PointerEntered" PointerExited="PSTBannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="PSTBannerButton" Click="PSTBannerButton_Click"  BorderBrush="Transparent" Grid.Row="5" Width="170" Margin="0,0,0,0" CornerRadius="3">
                         <Grid>
                             <Grid  Margin="-99,2,0,0" CornerRadius="3,0,3,3">
                                 <Polygon x:Name="InfoAPSTBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -222,6 +427,47 @@ StrokeThickness="1.5">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" Text="P-States"/>
                                 <TextBlock FontWeight="Light" FontSize="13" x:Name="InfoPSTUsage" Text="?-State"/>
                             </StackPanel>
+                            <Button Visibility="Collapsed" x:Name="PST_Expand_Button" ToolTipService.ToolTip="Expand the graph" Margin="20,0,-20,-20" Width="32" Height="32" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="Transparent">
+                                <Button.RenderTransform>
+                                    <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
+                                </Button.RenderTransform>
+                                <Button.Flyout>
+                                    <Flyout x:Name="PSTFlyout" Opening="PSTFlyout_Opening"  Placement="Right">
+                                        <Grid Width="420" Height="246">
+                                            <Grid>
+                                                <Polygon VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,-2,0,0" x:Name="InfoAPSTBigBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
+StrokeThickness="1.5" >
+                                                    <Polygon.RenderTransform>
+                                                        <ScaleTransform ScaleX="5" ScaleY="5"/>
+                                                    </Polygon.RenderTransform>
+                                                    <Polygon.Stroke>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#F089A4CD" Offset="0.0"/>
+                                                                <GradientStop Color="#F000d2ff" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Stroke>
+                                                    <Polygon.Fill>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <LinearGradientBrush.GradientStops>
+                                                                <GradientStop Color="#D000d2ff" Offset="0.0"/>
+                                                                <GradientStop Color="#D03a7bd5" Offset="1.0"/>
+                                                            </LinearGradientBrush.GradientStops>
+                                                        </LinearGradientBrush>
+                                                    </Polygon.Fill>
+                                                </Polygon>
+                                                <TextBlock x:Name="infoAPSTUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="120,0,0,16" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                                            </Grid>
+                                            <StackPanel Orientation="Vertical" Width="122"  Margin="310,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                <TextBlock FontWeight="Black" FontSize="23" Text="P-States"/>
+                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="infoIPSTUsageBigBanner" Text="0%"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <FontIcon x:Name="PST_Expand_FontIcon" Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                            </Button>
                         </Grid>
                     </Button>
                 </Grid>

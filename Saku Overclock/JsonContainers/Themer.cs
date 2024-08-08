@@ -6,8 +6,8 @@ namespace Saku_Overclock;
  */
 public class Themer
 {
-    public List<ThemeClass> Themes = new ()
-    {
+    public List<ThemeClass> Themes =
+    [
         new ()
         {
             ThemeName = "Theme_Default",
@@ -88,5 +88,5 @@ public class Themer
             ThemeCustomBg = false,
             ThemeBackground = "https://i.imgur.com/ZqjqlOs.png"
         }
-    };
+    ];
 } 

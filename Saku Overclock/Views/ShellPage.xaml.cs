@@ -1271,7 +1271,7 @@ public sealed partial class ShellPage : Page
             IsNotificationPanelShow = false;
             ShowHideNotificationPanel(false);
         }
-        if (button != null) { button.IsEnabled = true; NotifyLoad(); notify.Notifies = new List<SMUEngine.Notify>(); NotifySave(); }
+        if (button != null) { button.IsEnabled = true; NotifyLoad(); notify.Notifies = []; NotifySave(); }
     }
     private async void Notif_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {

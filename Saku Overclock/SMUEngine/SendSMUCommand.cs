@@ -472,8 +472,7 @@ internal class SendSMUCommand
 
     //From RyzenADJ string to SMU Calls 
     public async void Translate(string _ryzenAdjString, bool save)
-    {
-        var saveFlag = false;
+    { 
         // Список строк для проверки на совпадение, если есть - не применять, так как такое переприменение может привести к нестабильности системы
         var terminateCommands = new List<string>
         {
@@ -569,8 +568,7 @@ internal class SendSMUCommand
                         && SafeReapply /*Если включено безопасное применение*/
                         && terminateCommands.Any(tc => ryzenAdjCommand.Contains(tc))) //Если есть совпадения в командах
                         {
-                            //Ничего не делать
-                            saveFlag = true;
+                            //Ничего не делать 
                             //TraceIt_TraceError("Вы хотите применить опасные параметры?");
                         }
                         else
@@ -639,7 +637,7 @@ internal class SendSMUCommand
                     }));
                 }
 
-                Task.WaitAll(tasks.ToArray());
+                Task.WaitAll([.. tasks]);
             }
             else
             {
@@ -738,7 +736,7 @@ internal class SendSMUCommand
         if (error != string.Empty)
         {
             NotifyLoad(); //Добавить уведомление
-            notify.Notifies ??= new List<Notify>();
+            notify.Notifies ??= [];
             notify.Notifies.Add(new Notify { Title = "TraceIt_Error".GetLocalized(), Msg = error, Type = InfoBarSeverity.Error });
             NotifySave();
         }
@@ -860,8 +858,8 @@ internal class SendSMUCommand
         RSMU_RSP = 0x3B10A80;
         RSMU_ARG = 0x3B10A88;
 
-        Commands = new List<(string, bool, uint)>
-            {
+        Commands =
+            [
                 // Store the commands
                 ("enable-feature",true , 0x5), // Use MP1 address
                 ("disable-feature",true , 0x6),
@@ -921,7 +919,7 @@ internal class SendSMUCommand
                 ("set-gpuclockoverdrive-byvid", true , 0x3D), //ONLY AM4!
                 ("set-powergate-xgbe", true , 0x3E), //SUPER DANGEROUS!!! WILL NOT BE IN SAKU OVERCLOCK UI
                 ("enable-cc6filter",  true , 0x42)
-            };
+            ];
     }
 
     private static void Socket_FP6_AM4()
@@ -934,8 +932,8 @@ internal class SendSMUCommand
         RSMU_RSP = 0x3B10A80;
         RSMU_ARG = 0x3B10A88;
 
-        Commands = new List<(string, bool, uint)>
-            {
+        Commands =
+            [
                 // Store the commands
                 ("enable-feature",true , 0x5), // Use MP1 address
                 ("disable-feature",true , 0x7),
@@ -978,7 +976,7 @@ internal class SendSMUCommand
                 ("set-cogfx",false , 0x57),
                 ("gfx-clk",false , 0x89),
                 ("set-coall",false , 0xB1)
-            };
+            ];
     }
 
     private static void Socket_FT6_FP7_FP8()
@@ -1051,8 +1049,8 @@ internal class SendSMUCommand
         RSMU_RSP = 0x3B10a80;
         RSMU_ARG = 0x3B10a88;
 
-        Commands = new List<(string, bool, uint)>
-            {
+        Commands =
+            [
                 // Store the commands
                 ("enable-feature",true , 0x5), // Use MP1 address
                 ("disable-feature",true , 0x7),
@@ -1082,7 +1080,7 @@ internal class SendSMUCommand
                 ("set-coall",false , 0x5d),
                 ("set-coper",true , 0x4b),
                 ("set-cogfx",false , 0xb7)
-            };
+            ];
     }
 
     private static void Socket_AM4_V1()
@@ -1095,8 +1093,8 @@ internal class SendSMUCommand
         RSMU_RSP = 0X3B10568;
         RSMU_ARG = 0X3B10590;
 
-        Commands = new List<(string, bool, uint)>
-            {
+        Commands =
+            [
                 // Store the commands
                 ("enable-feature",true , 0x5), // Use MP1 address
                 ("disable-feature",true , 0x6),
@@ -1111,7 +1109,7 @@ internal class SendSMUCommand
                 ("enable-oc",true , 0x23), //
                 ("enable-oc",false , 0x6b), //
                 ("disable-oc",true , 0x24), //
-            };
+            ];
     }
 
     private static void Socket_AM4_V2()
@@ -1124,8 +1122,8 @@ internal class SendSMUCommand
         RSMU_RSP = 0x3B10570;
         RSMU_ARG = 0x3B10A40;
 
-        Commands = new List<(string, bool, uint)>
-            {
+        Commands =
+            [
                 // Store the commands
                 ("enable-feature",true , 0x5), // Use MP1 address
                 ("disable-feature",true , 0x6),
@@ -1151,7 +1149,7 @@ internal class SendSMUCommand
                 ("enable-oc",false , 0x5a),
                 ("disable-oc",true , 0x25),
                 ("disable-oc",false , 0x5b),
-            };
+            ];
     }
 
     private static void Socket_AM5_V1()
@@ -1164,8 +1162,8 @@ internal class SendSMUCommand
         RSMU_RSP = 0x3B10570;
         RSMU_ARG = 0x3B10A40;
 
-        Commands = new List<(string, bool, uint)>
-            {
+        Commands =
+            [
                 // Store the commands
                 ("enable-feature",true , 0x5), // Use MP1 address
                 ("disable-feature",true , 0x7),
@@ -1186,7 +1184,7 @@ internal class SendSMUCommand
                 ("set-coper", false, 0x6),
                 ("enable-oc",false , 0x5d),
                 ("disable-oc",false , 0x5e),
-            };
+            ];
     }
 }
 #pragma warning restore CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.

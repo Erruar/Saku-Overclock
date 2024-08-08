@@ -3,5 +3,5 @@
 namespace Saku_Overclock.JsonContainers;
 internal class PowerMonRTSS
 {
-    public List<PowerMonRTSSElement> Elements { get; set; }
+    public List<PowerMonRTSSElement>? Elements { get; set; }
 }

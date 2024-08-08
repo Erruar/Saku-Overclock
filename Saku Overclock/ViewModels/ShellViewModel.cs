@@ -31,8 +31,8 @@ public partial class ShellViewModel : ObservableRecipient
 
     public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService)
     {
-        items = new ObservableCollection<ComboBoxItem> 
-        { 
+        items =
+        [
             new() { 
                 Content = new TextBlock 
                 { 
@@ -42,7 +42,7 @@ public partial class ShellViewModel : ObservableRecipient
                 },
             new() { Content = "dd" },
             new() { Content = "dd1" }
-        };
+        ];
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;

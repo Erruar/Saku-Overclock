@@ -841,7 +841,7 @@ public sealed partial class ПараметрыPage : Page
         if (error != string.Empty)
         {
             NotifyLoad(); //Добавить уведомление
-            notify.Notifies ??= new List<Notify>();
+            notify.Notifies ??= [];
             notify.Notifies.Add(new Notify { Title = "TraceIt_Error".GetLocalized(), Msg = error, Type = InfoBarSeverity.Error });
             NotifySave();
         }
@@ -932,7 +932,7 @@ public sealed partial class ПараметрыPage : Page
     }
     private void ScanSmuRange(uint start, uint end, uint step, uint offset)
     {
-        matches = new List<SmuAddressSet>();
+        matches = [];
 
         var temp = new List<KeyValuePair<uint, uint>>();
 
@@ -1341,7 +1341,7 @@ public sealed partial class ПараметрыPage : Page
                         comboSelSMU.SelectedIndex = i;
                         if (smusettings?.MailBoxes == null && smusettings != null)
                         {
-                            smusettings.MailBoxes = new List<CustomMailBoxes>();
+                            smusettings.MailBoxes = [];
                             adressIndex = smusettings.MailBoxes.Count;
                             smusettings.MailBoxes.Add(new CustomMailBoxes
                             {
@@ -1383,7 +1383,7 @@ public sealed partial class ПараметрыPage : Page
                         if (applyWith.IsChecked == true) { apply = true; }
                         if (destination == 0)
                         {
-                            smusettings.QuickSMUCommands ??= new List<QuickSMUCommands>();
+                            smusettings.QuickSMUCommands ??= [];
                             smusettings.QuickSMUCommands.Add(new QuickSMUCommands
                             {
                                 Name = mainText.Text!,
@@ -1538,7 +1538,7 @@ public sealed partial class ПараметрыPage : Page
                         comboSelSMU.SelectedIndex = i;
                         if (smusettings.MailBoxes == null)
                         {
-                            smusettings.MailBoxes = new List<CustomMailBoxes>();
+                            smusettings.MailBoxes = [];
                             adressIndex = smusettings.MailBoxes.Count;
                             smusettings.MailBoxes.Add(new CustomMailBoxes
                             {
@@ -1600,239 +1600,7 @@ public sealed partial class ПараметрыPage : Page
             }
         }
         catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
-    }
-    private async void UnlockFeature()
-    {
-        var comboSelSMU = new ComboBox
-        {
-            Margin = new Thickness(0, 20, 0, 0),
-            VerticalAlignment = VerticalAlignment.Top
-        };
-        var cmdStart = new TextBox
-        {
-            Margin = new Thickness(0, 60, 0, 0),
-            PlaceholderText = "Command".GetLocalized(),
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Height = 40,
-            Width = 360
-        };
-        var argStart = new TextBox
-        {
-            Margin = new Thickness(0, 105, 0, 0),
-            PlaceholderText = "Feature ID",
-            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top,
-            Height = 40,
-            Width = 360
-        };
-        try
-        {
-            foreach (var item in comboBoxMailboxSelect.Items)
-            {
-                comboSelSMU.Items.Add(item);
-            }
-            comboSelSMU.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
-            comboSelSMU.SelectionChanged += ComboSelSMU_SelectionChanged;
-        }
-        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
-        try
-        {
-            var newQuickCommand = new ContentDialog
-            {
-                Title = "AdvancedCooler_Del_Action".GetLocalized(),
-                Content = new Grid
-                {
-                    Children =
-                    {
-                        comboSelSMU,
-                        cmdStart,
-                        argStart
-                    }
-                },
-                PrimaryButtonText = "Apply".GetLocalized(),
-                CloseButtonText = "Cancel".GetLocalized(),
-                DefaultButton = ContentDialogButton.Close
-            };
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                newQuickCommand.XamlRoot = XamlRoot;
-            }
-            newQuickCommand.Closed += (sender, args) =>
-            {
-                newQuickCommand?.Hide();
-                newQuickCommand = null;
-            };
-            // Отобразить ContentDialog и обработать результат
-            try
-            {
-                var saveIndex = 0;
-                var result = await newQuickCommand.ShowAsync();
-                // Создать ContentDialog 
-                if (result == ContentDialogResult.Primary)
-                {
-                    SmuSettingsLoad();
-                    saveIndex = comboSelSMU.SelectedIndex;
-                    for (var i = 0; i < comboSelSMU.Items.Count; i++)
-                    {
-                        var adressName = false;
-                        var adressIndex = 0;
-                        comboSelSMU.SelectedIndex = i;
-                        if (smusettings.MailBoxes == null)
-                        {
-                            smusettings.MailBoxes = new List<CustomMailBoxes>();
-                            adressIndex = smusettings.MailBoxes.Count;
-                            smusettings.MailBoxes.Add(new CustomMailBoxes
-                            {
-                                Name = comboSelSMU.SelectedItem.ToString()!,
-                                CMD = textBoxCMDAddress.Text,
-                                RSP = textBoxRSPAddress.Text,
-                                ARG = textBoxARGAddress.Text
-                            });
-                        }
-                        else
-                        {
-                            for (var d = 0; d < smusettings.MailBoxes.Count; d++)
-                            {
-                                if (smusettings.MailBoxes[d].Name != null && smusettings.MailBoxes[d].Name == comboSelSMU.SelectedItem.ToString())
-                                {
-                                    adressName = true;
-                                    adressIndex = d;
-                                    break;
-                                }
-                            }
-                            if (adressName == false)
-                            {
-                                smusettings.MailBoxes.Add(new CustomMailBoxes
-                                {
-                                    Name = comboSelSMU.SelectedItem.ToString()!,
-                                    CMD = textBoxCMDAddress.Text,
-                                    RSP = textBoxRSPAddress.Text,
-                                    ARG = textBoxARGAddress.Text
-                                });
-                            }
-                        }
-                    }
-                    SmuSettingsSave();
-                    comboBoxMailboxSelect.SelectedIndex = saveIndex;
-                    comboSelSMU.SelectedIndex = saveIndex;
-                    if (cmdStart.Text != string.Empty && argStart.Text != string.Empty && smusettings != null)
-                    {
-                        if (argStart.Text == "All")
-                        {
-                            var sdStatus = "";
-                            for (var g = 1; 63 > g; g++)
-                            {
-                                var endString = "";
-                                var value = 1 << g;
-                                if (g > 31) { endString = "0,0x" + value.ToString("X"); }
-                                else { endString = value.ToString("X"); }
-                                uint[]? args;
-                                var userArgs = endString.Trim().Split(',');
-                                uint addrMsg;
-                                uint addrRsp;
-                                uint addrArg;
-                                uint command;
-                                args = Utils.MakeCmdArgs();
-                                TryConvertToUint(smusettings.MailBoxes![comboSelSMU.SelectedIndex].CMD, out addrMsg);
-                                TryConvertToUint(smusettings.MailBoxes![comboSelSMU.SelectedIndex].RSP, out addrRsp);
-                                TryConvertToUint(smusettings.MailBoxes![comboSelSMU.SelectedIndex].ARG, out addrArg);
-                                TryConvertToUint(cmdStart.Text, out command);
-                                ZenStates.Core.Mailbox testMailbox2 = new()
-                                {
-                                    SMU_ADDR_MSG = addrMsg,
-                                    SMU_ADDR_RSP = addrRsp,
-                                    SMU_ADDR_ARG = addrArg
-                                };
-                                var someFeature = "";
-                                for (var i = 0; i < userArgs.Length; i++)
-                                {
-                                    if (i == args.Length)
-                                    {
-                                        break;
-                                    }
-                                    someFeature += userArgs[i] + " ";
-                                    TryConvertToUint(userArgs[i], out var temp);
-                                    args[i] = temp;
-                                }
-                                try
-                                {
-                                    var status = cpu?.smu.SendSmuCommand(testMailbox2, command, ref args);
-                                    sdStatus += someFeature + status + "\n";
-                                    /* await Send_Message("Unlocked feature!","Command " + $"{command:X}"
-                                     + " Args " + someFeature + status + " MailBox: " + smusettings.MailBoxes[saveIndex].Name 
-                                     + "\n MSG: " + $"{testMailbox2.SMU_ADDR_MSG:X}" + "\n ARG: " + $"{testMailbox2.SMU_ADDR_ARG:X}"
-                                     + "\n RSP: " + $"{testMailbox2.SMU_ADDR_RSP:X}", Symbol.Attach);*/
-                                }
-                                catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
-                            }
-                            await Send_Message("Unlocked 63 features!", "Check out! " + sdStatus, Symbol.Accept);
-                        }
-                        else
-                        {
-                            var endString = "";
-                            var value = 1 << Convert.ToByte(argStart.Text);
-                            if (int.Parse(argStart.Text) > 31) { endString = "0,0x" + value.ToString("X"); }
-                            else { endString = value.ToString("X"); }
-                            uint[]? args;
-                            var userArgs = endString.Trim().Split(',');
-                            uint addrMsg;
-                            uint addrRsp;
-                            uint addrArg;
-                            uint command;
-                            args = Utils.MakeCmdArgs();
-                            TryConvertToUint(smusettings.MailBoxes![comboSelSMU.SelectedIndex].CMD, out addrMsg);
-                            TryConvertToUint(smusettings.MailBoxes[comboSelSMU.SelectedIndex].RSP, out addrRsp);
-                            TryConvertToUint(smusettings.MailBoxes[comboSelSMU.SelectedIndex].ARG, out addrArg);
-                            TryConvertToUint(cmdStart.Text, out command);
-                            ZenStates.Core.Mailbox testMailbox2 = new()
-                            {
-                                SMU_ADDR_MSG = addrMsg,
-                                SMU_ADDR_RSP = addrRsp,
-                                SMU_ADDR_ARG = addrArg
-                            };
-                            var someFeature = "";
-                            for (var i = 0; i < userArgs.Length; i++)
-                            {
-                                if (i == args.Length)
-                                {
-                                    break;
-                                }
-                                someFeature += userArgs[i] + " ";
-                                TryConvertToUint(userArgs[i], out var temp);
-                                args[i] = temp;
-                            }
-                            try
-                            {
-                                var status = cpu?.smu.SendSmuCommand(testMailbox2, command, ref args);
-                                /* await Send_Message("Unlocked feature!","Command " + $"{command:X}"
-                                 + " Args " + someFeature + status + " MailBox: " + smusettings.MailBoxes[saveIndex].Name 
-                                 + "\n MSG: " + $"{testMailbox2.SMU_ADDR_MSG:X}" + "\n ARG: " + $"{testMailbox2.SMU_ADDR_ARG:X}"
-                                 + "\n RSP: " + $"{testMailbox2.SMU_ADDR_RSP:X}", Symbol.Attach);*/
-                                await Send_Message("Unlocked feature!", " Args " + someFeature + status, Symbol.Attach);
-                            }
-                            catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
-                        }
-
-                    }
-                    SmuSettingsSave();
-                    newQuickCommand?.Hide();
-                    newQuickCommand = null;
-                }
-                else
-                {
-                    newQuickCommand?.Hide();
-                    newQuickCommand = null;
-                }
-            }
-            catch
-            {
-                newQuickCommand?.Hide();
-                newQuickCommand = null;
-            }
-        }
-        catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
-    }
+    } 
     private void SymbolButton_Click(object sender, RoutedEventArgs e)
     {
         SymbolFlyout.ShowAt(sender as Button);
@@ -1935,11 +1703,7 @@ public sealed partial class ПараметрыPage : Page
     public void CloseInfoRange()
     {
         RangeStarted.IsOpen = false;
-    }
-    private void UnlockFeature_Click(object sender, RoutedEventArgs e)
-    {
-        UnlockFeature();
-    }
+    } 
     //Send Message
     public async Task Send_Message(string msg, string submsg, Symbol symbol)
     {
@@ -3278,14 +3042,16 @@ public sealed partial class ПараметрыPage : Page
         }
         else
         {
+#pragma warning disable CS0162 // Обнаружен недостижимый код
             Apply_tooltip.Title = "Apply_Success".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + config.RyzenADJline;
+#pragma warning restore CS0162 // Обнаружен недостижимый код
         }
         Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
         Apply_tooltip.IsOpen = true; var infoSet = InfoBarSeverity.Success;
         if (config.ApplyInfo != string.Empty && config.ApplyInfo != null) { Apply_tooltip.Title = "Apply_Warn".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + config.ApplyInfo; Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked }; await Task.Delay(timer); Apply_tooltip.IsOpen = false; infoSet = InfoBarSeverity.Warning; }
         else { await Task.Delay(3000); Apply_tooltip.IsOpen = false; }
         NotifyLoad();
-        notify.Notifies ??= new List<Notify>();
+        notify.Notifies ??= [];
         notify.Notifies.Add(new Notify { Title = Apply_tooltip.Title, Msg = Apply_tooltip.Subtitle, Type = infoSet });
         NotifySave();
         if (textBoxARG0 != null && textBoxARGAddress != null && textBoxCMD != null && textBoxCMDAddress != null && textBoxRSPAddress != null && EnableSMU.IsOn) { ApplySettings(0, 0); }
@@ -3337,7 +3103,7 @@ public sealed partial class ПараметрыPage : Page
         else
         {
             NotifyLoad();
-            notify.Notifies ??= new List<Notify>();
+            notify.Notifies ??= [];
             notify.Notifies.Add(new Notify { Title = Add_tooltip_Error.Title, Msg = Add_tooltip_Error.Subtitle, Type = InfoBarSeverity.Error });
             NotifySave();
             Add_tooltip_Error.IsOpen = true;
@@ -3385,7 +3151,7 @@ public sealed partial class ПараметрыPage : Page
                 waitforload = false;
                 ProfileCOM.SelectedItem = EditProfileN.Text;
                 NotifyLoad();
-                notify.Notifies ??= new List<Notify>();
+                notify.Notifies ??= [];
                 notify.Notifies.Add(new Notify { Title = Edit_tooltip.Title, Msg = Edit_tooltip.Subtitle + " " + SaveProfileN.Text, Type = InfoBarSeverity.Success });
                 NotifySave();
                 Edit_tooltip.IsOpen = true;
@@ -3396,7 +3162,7 @@ public sealed partial class ПараметрыPage : Page
         else
         {
             NotifyLoad();
-            notify.Notifies ??= new List<Notify>();
+            notify.Notifies ??= [];
             notify.Notifies.Add(new Notify { Title = Edit_tooltip_Error.Title, Msg = Edit_tooltip_Error.Subtitle, Type = InfoBarSeverity.Error });
             NotifySave();
             Edit_tooltip_Error.IsOpen = true;
@@ -3423,7 +3189,7 @@ public sealed partial class ПараметрыPage : Page
             if (ProfileCOM.SelectedIndex == 0)
             {
                 NotifyLoad();
-                notify.Notifies ??= new List<Notify>();
+                notify.Notifies ??= [];
                 notify.Notifies.Add(new Notify { Title = Delete_tooltip_error.Title, Msg = Delete_tooltip_error.Subtitle, Type = InfoBarSeverity.Error });
                 NotifySave();
                 Delete_tooltip_error.IsOpen = true;
@@ -3442,7 +3208,7 @@ public sealed partial class ПараметрыPage : Page
                 waitforload = false;
                 ProfileCOM.SelectedIndex = 0;
                 NotifyLoad();
-                notify.Notifies ??= new List<Notify>();
+                notify.Notifies ??= [];
                 notify.Notifies.Add(new Notify { Title = "DeleteSuccessTitle".GetLocalized(), Msg = "DeleteSuccessDesc".GetLocalized(), Type = InfoBarSeverity.Success });
                 NotifySave();
             }

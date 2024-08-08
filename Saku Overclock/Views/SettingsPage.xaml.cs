@@ -335,7 +335,7 @@ public sealed partial class SettingsPage : Page
             ThemeLight.Visibility = ThemeCombobox.SelectedIndex > 7 ? Visibility.Visible : Visibility.Collapsed;
             ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
             Theme_Custom();
-            NotifyLoad(); notify.Notifies ??= new List<Notify>();
+            NotifyLoad(); notify.Notifies ??= [];
             notify.Notifies.Add(new Notify { Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success });
             NotifySave();
         }
@@ -354,7 +354,7 @@ public sealed partial class SettingsPage : Page
         ThemeLoad();
         themer.Themes[config.ThemeType].ThemeOpacity = ThemeOpacity.Value;
         ThemeSave();
-        NotifyLoad(); notify.Notifies ??= new List<Notify>();
+        NotifyLoad(); notify.Notifies ??= [];
         notify.Notifies.Add(new Notify { Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success });
         NotifySave();
     }
@@ -364,7 +364,7 @@ public sealed partial class SettingsPage : Page
         ThemeLoad();
         themer.Themes[config.ThemeType].ThemeMaskOpacity = ThemeMaskOpacity.Value;
         ThemeSave();
-        NotifyLoad(); notify.Notifies ??= new List<Notify>();
+        NotifyLoad(); notify.Notifies ??= [];
         notify.Notifies.Add(new Notify { Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success });
         NotifySave();
     }
@@ -577,7 +577,7 @@ public sealed partial class SettingsPage : Page
                 ThemeLoad(); 
                 themer.Themes[backupIndex].ThemeBackground = endStringPath;
                 ThemeSave();
-                NotifyLoad(); notify.Notifies ??= new List<Notify>();
+                NotifyLoad(); notify.Notifies ??= [];
                 notify.Notifies.Add(new Notify { Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success });
                 NotifySave();
                 ThemeCombobox.SelectedIndex = 0;
@@ -897,7 +897,7 @@ public sealed partial class SettingsPage : Page
         themer.Themes[config.ThemeType].ThemeLight = ThemeLight.IsOn;
         ThemeSave();
         //if (ThemeLight.IsOn) { ViewModel.SwitchThemeCommand.Execute(ElementTheme.Light); } else { ViewModel.SwitchThemeCommand.Execute(ElementTheme.Dark); }
-        NotifyLoad(); notify.Notifies ??= new List<Notify>();
+        NotifyLoad(); notify.Notifies ??= [];
         notify.Notifies.Add(new Notify { Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success });
         NotifySave();
     }

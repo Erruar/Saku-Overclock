@@ -25,9 +25,9 @@ public sealed partial class AdvancedКулерPage : Page
     private Config config = new();
     private Windows.Foundation.Point cursorPosition; 
     // Создаём списки для хранения NumberBox'ов каждого типа для каждого FanConfiguration
-    private readonly List<List<NumberBox>> downThresholdBoxes = new();
-    private readonly List<List<NumberBox>> upThresholdBoxes = new();
-    private readonly List<List<NumberBox>> fanSpeedBoxes = new();
+    private readonly List<List<NumberBox>> downThresholdBoxes = [];
+    private readonly List<List<NumberBox>> upThresholdBoxes = [];
+    private readonly List<List<NumberBox>> fanSpeedBoxes = [];
     public AdvancedКулерPage()
     {
         ViewModel = App.GetService<AdvancedКулерViewModel>();

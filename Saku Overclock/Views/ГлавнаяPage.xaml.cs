@@ -39,13 +39,7 @@ public sealed partial class ГлавнаяPage : Page
     private void Discrd_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo("https://discord.com/invite/yVsKxqAaa7") { UseShellExecute = true });
-    }
-
-    private void Preset_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        var navigationService = App.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
-    }
+    } 
 
     private void Param_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
@@ -81,7 +75,7 @@ public sealed partial class ГлавнаяPage : Page
         }
     }
 
-    private static UIElement[] FormatReleaseNotes(string releaseNotes)
+    private static UIElement[] FormatReleaseNotes(string? releaseNotes)
     {
         // Удаление ненужных частей текста
         var cleanedNotes = CleanReleaseNotes(releaseNotes); 
@@ -90,11 +84,11 @@ public sealed partial class ГлавнаяPage : Page
         return formattedElements;
     }
 
-    private static string CleanReleaseNotes(string releaseNotes)
+    private static string CleanReleaseNotes(string? releaseNotes)
     {
-        var lines = releaseNotes.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+        var lines = releaseNotes?.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
         var cleanedLines = new List<string>();  
-        for (var i = 0; i < lines.Length; i++)
+        for (var i = 0; i < lines?.Length; i++)
         {
             var line = lines[i]; 
             if (line.StartsWith("Highlights:"))

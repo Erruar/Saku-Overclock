@@ -7,7 +7,7 @@ namespace Saku_Overclock.ViewModels;
 
 public partial class ГлавнаяViewModel : ObservableRecipient
 {
-    private const string Versioning = "RC-6";
+    private const string Versioning = "RC-7";
     public ГлавнаяViewModel()
     {
         _versionDescription = GetVersionDescription();

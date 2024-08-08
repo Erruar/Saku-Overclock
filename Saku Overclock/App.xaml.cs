@@ -99,7 +99,7 @@ public partial class App : Application
     }
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     { 
-        MessageBox.Show(e.Message + "\nRerun application and contact developer", "Critical Error!", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1); 
+        MessageBox.Show(e.Message + "\n" + e.Exception + "\n" + e.Handled + "\n" + e.ToString()  + "\nRerun application and contact developer", "Critical Error!", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1); 
     } 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {

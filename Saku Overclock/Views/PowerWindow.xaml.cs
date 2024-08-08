@@ -10,7 +10,7 @@ using Saku_Overclock.SMUEngine;
 using ZenStates.Core;
 
 namespace Saku_Overclock.Views;
-internal partial class PowerWindow : Window
+internal partial class PowerWindow : Window, IDisposable
 {
     private Cpu? CPU;
     private Visibility mode = Visibility.Visible;
@@ -189,12 +189,14 @@ internal partial class PowerWindow : Window
     }
     #endregion
     #region Event Handlers
+    public void Dispose() => GC.SuppressFinalize(this);
+
     private void PowerWindow_Closed(object sender, WindowEventArgs args)
     {
-        CPU?.powerTable.Dispose();
+        //CPU?.powerTable.Dispose();
         CPU = null;
-        this.UnloadObject(PowerGridView);
-        GC.SuppressFinalize(this);
+        UnloadObject(PowerGridView);
+        Dispose();
         notes = null;
     }
     private void PowerWindow_Activated(object sender, WindowActivatedEventArgs args)
@@ -374,7 +376,7 @@ internal partial class PowerWindow : Window
         {
             NoteLoad();
             RtssLoad();
-            PowerGridItems = new ObservableCollection<PowerMonitorItem>();
+            PowerGridItems = [];
             for (var i = 0; i < table.Length; i++)
             {
                 if (notes?._notelist.Count <= i)
@@ -491,9 +493,9 @@ internal partial class PowerWindow : Window
                     }
 
                 }*/
-                if (saveFlag)
+                if (saveFlag && rtssTable != null && rtssTable.Elements != null)
                 {
-                    rtssTable!.Elements[index].Offset = $"0x{index * 4:X4}";
+                    rtssTable.Elements[index].Offset = $"0x{index * 4:X4}";
                     RtssSave();
                 }
 
@@ -515,6 +517,6 @@ internal partial class PowerWindow : Window
             App.MainWindow.Close();
             Close();
         }
-    }
+    } 
     #endregion
 }

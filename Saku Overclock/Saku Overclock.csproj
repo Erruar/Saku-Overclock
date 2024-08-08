@@ -15,9 +15,9 @@
 	<UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <AssemblyVersion></AssemblyVersion>
-    <FileVersion>1.0.15.0</FileVersion>
+    <FileVersion>1.0.16.0</FileVersion>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>  
-    <Version>1.0.15.0</Version>
+    <Version>1.0.16.0</Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
     <UseWPF>False</UseWPF>
