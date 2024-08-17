@@ -2189,4 +2189,90 @@ directly in the game via RTSS</value>
   <data name="Param_UnsignedProfile" xml:space="preserve">
     <value>My Profile</value>
   </data>
+  <data name="Settings_ni_Add_Element.Text" xml:space="preserve">
+    <value>Add new element</value>
+  </data>
+  <data name="Settings_ni_Color_Picker.Text" xml:space="preserve">
+    <value>Pick the color</value>
+  </data>
+  <data name="Settings_ni_Elements.Text" xml:space="preserve">
+    <value>Selected element</value>
+  </data>
+  <data name="Settings_ni_Fontsize.Header" xml:space="preserve">
+    <value>Font Size (px)</value>
+  </data>
+  <data name="Settings_ni_Icon.Text" xml:space="preserve">
+    <value>Metrics in system tray</value>
+  </data>
+  <data name="Settings_ni_Opacity.Header" xml:space="preserve">
+    <value>Background icon opacity</value>
+  </data>
+  <data name="Settings_ni_ShapeSelector.Text" xml:space="preserve">
+    <value>Tray icon shape</value>
+  </data>
+  <data name="Settings_ni_Shape_Circle.Content" xml:space="preserve">
+    <value>Circle</value>
+  </data>
+  <data name="Settings_ni_Shape_Cube.Content" xml:space="preserve">
+    <value>Cube</value>
+  </data>
+  <data name="Settings_ni_Shape_Leaf.Content" xml:space="preserve">
+    <value>Leaf</value>
+  </data>
+  <data name="Settings_ni_Shape_Round.Content" xml:space="preserve">
+    <value>Rounded cube</value>
+  </data>
+  <data name="Settings_ni_Shape_Saku.Content" xml:space="preserve">
+    <value>Saku Overclock</value>
+  </data>
+  <data name="Settings_ni_Shape_Star.Content" xml:space="preserve">
+    <value>Star</value>
+  </data>
+  <data name="Settings_ni_Traymon.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="Settings_ni_Traymon.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
+  <data name="Settings_ni_Traymon.ToolTipService.ToolTip" xml:space="preserve">
+    <value>TrayMon
+It's modern monitoring system tracks 
+your laptop's metrics by using data from 
+the information page and displays them 
+in the Windows tray menu. This way, you 
+can easily monitor the key metrics you 
+need, never miss important details, and 
+always stay informed about your 
+laptop's current performance.
+
+The application's CPU consumption 
+increases slightly</value>
+  </data>
+  <data name="Settings_RTSS_Updater.Text" xml:space="preserve">
+    <value>In-Game Overlay</value>
+  </data>
+  <data name="Settings_ni_ContextMenu.Text" xml:space="preserve">
+    <value>Tooltip</value>
+  </data>
+  <data name="Settings_ni_Context_Base.Content" xml:space="preserve">
+    <value>Base</value>
+  </data>
+  <data name="Settings_ni_Context_Disabled.Content" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Settings_ni_Context_Extended.Content" xml:space="preserve">
+    <value>Extended</value>
+  </data>
+  <data name="Settings_ni_Delete.Text" xml:space="preserve">
+    <value>Delete element</value>
+  </data>
+  <data name="Settings_ni_ResetDef.Text" xml:space="preserve">
+    <value>Reset to defaults</value>
+  </data>
+  <data name="Settings_ni_Traymon.Header" xml:space="preserve">
+    <value>TrayMon - metrics in your tray</value>
+  </data>
+  <data name="Settings_RTSS_Elements.Text" xml:space="preserve">
+    <value>Showing elements</value>
+  </data>
 </root>

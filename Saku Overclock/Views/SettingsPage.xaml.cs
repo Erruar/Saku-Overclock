@@ -30,7 +30,7 @@ public sealed partial class SettingsPage : Page
     {
         ViewModel = App.GetService<SettingsViewModel>();
         InitializeComponent();
-        ConfigLoad();
+        ConfigLoad(); 
         InitVal();
         config.NBFCFlagConsoleCheckSpeedRunning = false; //Автообновление информации выключено не зависимо от активированной страницы
         config.FlagRyzenADJConsoleTemperatureCheckRunning = false;
@@ -902,4 +902,59 @@ public sealed partial class SettingsPage : Page
         NotifySave();
     }
     #endregion
+
+    private void NiIconCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+
+    }
+
+    private void Settings_ni_Icons_Toggled(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void Settings_RTSS_Enable_Toggled(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void Settings_ni_Fontsize_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+
+    }
+
+    private void Settings_ni_Opacity_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+
+    }
+
+    private void NiIconComboboxElements_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+
+    }
+
+    private void Settings_ni_Add_Element_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void Settings_ni_Color_Picker_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void Settings_ni_Delete_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void Settings_ni_ResetDef_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void NiIconShapeCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+
+    }
 }

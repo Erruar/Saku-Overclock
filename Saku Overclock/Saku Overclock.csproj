@@ -62,6 +62,7 @@
     <None Remove="Services\Cpu.cs.bak.zip" />
     <None Remove="show.png" />
     <None Remove="startup.lnk" />
+    <None Remove="Styles\ButtonCollapseLauncher.xaml" />
     <None Remove="Styles\ComboBoxCollapseLauncher.xaml" />
     <None Remove="Styles\CopyButton.xaml" />
     <None Remove="Styles\ToggleButtonCollapseLauncher.xaml" />
@@ -853,9 +854,6 @@
     <None Update="nbfc\Xceed.Wpf.Toolkit.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SakuRTSSCLI.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Page Update="ProfileSwitcher\ProfileSwitcher.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -866,9 +864,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SakuRTSSCLI.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="SakuRTSSCLI.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Page Update="Styles\ToggleButtonCollapseLauncher.xaml">

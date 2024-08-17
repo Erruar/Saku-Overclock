@@ -12,7 +12,12 @@
                 <ResourceDictionary>
                     <ResourceDictionary.ThemeDictionaries>
                         <ResourceDictionary x:Key="Default">
-                            <!--Основное окно-->
+                            <!--Основное окно--> 
+                    <AcrylicBrush x:Key="AcrylicSemiButtonBackground"
+                                          FallbackColor="#88222222"
+                                          TintColor="#AA222222"
+                                          TintLuminosityOpacity="0.75"
+                                          TintOpacity="0"/> 
                     <AcrylicBrush x:Key="AccentColorBrush"
                    TintColor="{ThemeResource SystemAccentColor}"/>
                     <SolidColorBrush x:Key="AccentColor"
@@ -588,7 +593,12 @@
                                           FallbackColor="#FFFFFFFF"
                                           TintColor="#FFFFFF"
                                           TintLuminosityOpacity="0.60"
-                                          TintOpacity="0.0"/>
+                                          TintOpacity="0.0"/> 
+                            <AcrylicBrush x:Key="AcrylicSemiButtonBackground"
+                                          FallbackColor="#D0EEEEEE"
+                                          TintColor="#EEEEEE"
+                                          TintLuminosityOpacity="0.8"
+                                          TintOpacity="0.0"/>   
                             <AcrylicBrush x:Key="AcrylicButtonBackgroundDisabled"
                                           FallbackColor="#FFFFFFFF"
                                           TintColor="#FFFFFF"
@@ -605,6 +615,8 @@
                 <ResourceDictionary Source="/Styles/ComboBoxCollapseLauncher.xaml" />
                 <!-- Toggle button style-->
                 <ResourceDictionary Source="/Styles/ToggleButtonCollapseLauncher.xaml" />
+                <!-- Button style-->
+                <ResourceDictionary Source="/Styles/ButtonCollapseLauncher.xaml" />
             </ResourceDictionary.MergedDictionaries> 
         </ResourceDictionary>
     </Application.Resources>

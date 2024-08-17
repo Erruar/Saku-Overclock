@@ -1,10 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "kjQPvRHm4Pg=",
+  "dgSpecHash": "uJXTXtb2590=",
   "success": true,
   "projectFilePath": "C:\\Users\\Sakura\\source\\repos\\Saku Overclock\\Saku Overclock.Core\\Saku Overclock.Core.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Sakura\\.nuget\\packages\\newtonsoft.json\\13.0.2\\newtonsoft.json.13.0.2.nupkg.sha512"
+    "C:\\Users\\Sakura\\.nuget\\packages\\newtonsoft.json\\13.0.2\\newtonsoft.json.13.0.2.nupkg.sha512",
+    "C:\\Users\\Sakura\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.20\\microsoft.windowsdesktop.app.ref.7.0.20.nupkg.sha512",
+    "C:\\Users\\Sakura\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.20\\microsoft.netcore.app.ref.7.0.20.nupkg.sha512",
+    "C:\\Users\\Sakura\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.20\\microsoft.aspnetcore.app.ref.7.0.20.nupkg.sha512"
   ],
   "logs": []
 }

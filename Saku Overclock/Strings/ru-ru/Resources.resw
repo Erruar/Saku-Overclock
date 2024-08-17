@@ -2261,4 +2261,91 @@ Overclock будут проигнорированы,
   <data name="Param_UnsignedProfile" xml:space="preserve">
     <value>Мой профиль</value>
   </data>
+  <data name="Settings_ni_Add_Element.Text" xml:space="preserve">
+    <value>Добавить элемент</value>
+  </data>
+  <data name="Settings_ni_Color_Picker.Text" xml:space="preserve">
+    <value>Выбрать цвет</value>
+  </data>
+  <data name="Settings_ni_ContextMenu.Text" xml:space="preserve">
+    <value>Контекстное меню</value>
+  </data>
+  <data name="Settings_ni_Context_Base.Content" xml:space="preserve">
+    <value>Базовое</value>
+  </data>
+  <data name="Settings_ni_Context_Disabled.Content" xml:space="preserve">
+    <value>Выключено</value>
+  </data>
+  <data name="Settings_ni_Context_Extended.Content" xml:space="preserve">
+    <value>Расширенное</value>
+  </data>
+  <data name="Settings_ni_Delete.Text" xml:space="preserve">
+    <value>Удалить элемент</value>
+  </data>
+  <data name="Settings_ni_Elements.Text" xml:space="preserve">
+    <value>Настраиваемый элемент</value>
+  </data>
+  <data name="Settings_ni_Fontsize.Header" xml:space="preserve">
+    <value>Размер текста (px)</value>
+  </data>
+  <data name="Settings_ni_Icon.Text" xml:space="preserve">
+    <value>Мониторинг в трее</value>
+  </data>
+  <data name="Settings_ni_Opacity.Header" xml:space="preserve">
+    <value>Прозрачность фона</value>
+  </data>
+  <data name="Settings_ni_ResetDef.Text" xml:space="preserve">
+    <value>По умолчанию</value>
+  </data>
+  <data name="Settings_ni_ShapeSelector.Text" xml:space="preserve">
+    <value>Форма иконки</value>
+  </data>
+  <data name="Settings_ni_Shape_Circle.Content" xml:space="preserve">
+    <value>Круг</value>
+  </data>
+  <data name="Settings_ni_Shape_Cube.Content" xml:space="preserve">
+    <value>Куб</value>
+  </data>
+  <data name="Settings_ni_Shape_Leaf.Content" xml:space="preserve">
+    <value>Лист</value>
+  </data>
+  <data name="Settings_ni_Shape_Round.Content" xml:space="preserve">
+    <value>Круглый куб</value>
+  </data>
+  <data name="Settings_ni_Shape_Saku.Content" xml:space="preserve">
+    <value>Saku Overclock</value>
+  </data>
+  <data name="Settings_ni_Shape_Star.Content" xml:space="preserve">
+    <value>Звезда</value>
+  </data>
+  <data name="Settings_ni_Traymon.Header" xml:space="preserve">
+    <value>TrayMon - датчики всегда под рукой</value>
+  </data>
+  <data name="Settings_ni_Traymon.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="Settings_ni_Traymon.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="Settings_ni_Traymon.ToolTipService.ToolTip" xml:space="preserve">
+    <value>TrayMon 
+Это современная система мониторинга
+показателей вашего ноутбука, которая
+использует показатели со страницы 
+информации, чтобы отобразить их в 
+трей меню Windows. Так вы сможете 
+наблюдать нужные вам показатели, 
+не пропустите самое важное и всегда
+будете в курсе о текущих показателях
+вашего ноутбука
+
+Незначительно увеличит потребление
+приложением вашего процессора</value>
+  </data>
+  <data name="Settings_RTSS_Elements.Text" xml:space="preserve">
+    <value>Отображаемые элементы</value>
+  </data>
+  <data name="Settings_RTSS_Updater.Text" xml:space="preserve">
+    <value>Показатели в играх</value>
+  </data>
 </root>
