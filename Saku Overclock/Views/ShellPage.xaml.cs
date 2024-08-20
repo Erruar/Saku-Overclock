@@ -100,7 +100,7 @@ public sealed partial class ShellPage : Page
             { 
                 //Создать уведомление
                 AddNote("Смена пресета", "Вы успешно переключили ваши пресеты на следующий по счёту!", InfoBarSeverity.Informational);
-                MainWindow.Applyer.Apply(false); 
+                MainWindow.Applyer.ApplyWithoutADJLine(false); 
             }
             //Переключить между готовыми пресетами - Switch profile to next Premaded
             if ((Keys)vkCode == Keys.P && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
@@ -108,7 +108,7 @@ public sealed partial class ShellPage : Page
                 var nextProfile = NextPremadeProfile_Switch();
                 ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextProfile);
                 AddNote("Смена пресета", "Вы успешно переключили готовые пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
-                MainWindow.Applyer.Apply(false);
+                MainWindow.Applyer.ApplyWithoutADJLine(false);
             }
         }
         return CallNextHookEx(_hookID, nCode, wParam, lParam);//Передаем нажатие в следующее приложение
@@ -741,7 +741,7 @@ public sealed partial class ShellPage : Page
                 config.Preset = -1;
                 config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=64 --slow-limit=6000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
                 /*   param.InitSave();*/
-                MainWindow.Applyer.Apply(false);
+                MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
             }
             if (element!.Name.Contains("Eco"))
             {
@@ -752,7 +752,7 @@ public sealed partial class ShellPage : Page
                 config.PremadeMaxActivated = false;
                 config.Preset = -1;
                 config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=64 --slow-limit=16000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(false);
+                MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
             }
             if (element!.Name.Contains("Bal"))
             {
@@ -763,7 +763,7 @@ public sealed partial class ShellPage : Page
                 config.PremadeMaxActivated = false;
                 config.Preset = -1;
                 config.RyzenADJline = " --tctl-temp=75 --stapm-limit=18000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(false);
+                MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
             }
             if (element!.Name.Contains("Spd"))
             {
@@ -774,7 +774,7 @@ public sealed partial class ShellPage : Page
                 config.PremadeMaxActivated = false;
                 config.Preset = -1;
                 config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=64 --slow-limit=20000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(false);
+                MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
             }
             if (element!.Name.Contains("Max"))
             {
@@ -785,7 +785,7 @@ public sealed partial class ShellPage : Page
                 config.PremadeMaxActivated = true;
                 config.Preset = -1;
                 config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=64 --slow-limit=60000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(false);
+                MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
             }
             ConfigSave();
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
@@ -1049,7 +1049,7 @@ public sealed partial class ShellPage : Page
         }
         config.RyzenADJline = adjline + " ";
         ConfigSave();
-        MainWindow.Applyer.Apply(false); //false - logging disabled 
+        MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer); //false - logging disabled 
         /*   if (profile[indexRequired].enablePstateEditor) { cpu.BtnPstateWrite_Click(); }*/
     }
     #endregion

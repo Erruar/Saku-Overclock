@@ -6,6 +6,7 @@
 /.git/
 .editorconfig
 .vsconfig
+.filenesting.json
 global.json
 Saku Overclock.sln.DotSettings.user
 ZenStates-Core.dll

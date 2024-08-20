@@ -613,7 +613,6 @@ internal class SendSMUCommand
 
     public void ApplySettings(string commandName, uint value, uint value1 = 0)
     {
-        if (saveinfo) { ConfigLoad(); }
         try
         {
             var Args = new uint[6];
@@ -643,21 +642,19 @@ internal class SendSMUCommand
             {
                 if (!$"\nCommand '{commandName}' not found".Contains("Command '' not found"))
                 {
-                    config.ApplyInfo += $"\nCommand '{commandName}' not found";
+                    ПараметрыPage.ApplyInfo += $"\nCommand '{commandName}' not found";
                 }
             }
         }
         catch (Exception ex)
         {
             TraceIt_TraceError(ex.ToString());
-            config.ApplyInfo += $"\nCommand '{commandName}' not found";
+            ПараметрыPage.ApplyInfo += $"\nCommand '{commandName}' not found";
         }
-        if (saveinfo) { ConfigSave(); }
     }
 
     public void ApplyThis(int Mailbox, uint Command, uint[] args, string CommandName)
     {
-        if (saveinfo) { ConfigLoad(); }
         try
         {
             cpu ??= CpuSingleton.GetInstance();
@@ -712,23 +709,11 @@ internal class SendSMUCommand
             testMailbox.SMU_ADDR_ARG = addrArg;
             if (!saveinfo && CommandName == "stopcpu-freqto-ramstate") { return; } //Чтобы уж точно не осталось в RyzenADJline, так как может крашнуть систему
             var status = cpu?.smu.SendSmuCommand(testMailbox, Command, ref args);
-            if (status != SMU.Status.OK) { config.ApplyInfo += $"\nCommand '{CommandName}' applied with status {status}"; } //Если при применении что-то пошло не так - сказать об ошибке
+            if (status != SMU.Status.OK) { ПараметрыPage.ApplyInfo += $"\nCommand '{CommandName}' applied with status {status}"; } //Если при применении что-то пошло не так - сказать об ошибке
         }
         catch
         {
-            config.ApplyInfo += $"\nCommand '{CommandName}' can't be applied";
-        }
-        if (saveinfo)
-        {
-            try
-            {
-                ConfigSave();
-                if (config.RyzenADJline != null && config.RyzenADJline.Contains(" --stopcpu-freqto-ramstate=0"))
-                {
-                    config.RyzenADJline = config.RyzenADJline.Replace(" --stopcpu-freqto-ramstate=0", "");
-                }
-            }
-            catch (Exception ex) { ConfigLoad(); TraceIt_TraceError(ex.ToString()); }
+            ПараметрыPage.ApplyInfo += $"\nCommand '{CommandName}' can't be applied";
         }
     }
     public static void TraceIt_TraceError(string error) //Система TraceIt! позволит логгировать все ошибки

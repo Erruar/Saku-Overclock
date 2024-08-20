@@ -67,7 +67,7 @@ public sealed partial class ПресетыPage : Page
         config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
         ConfigSave();
         InitSave();
-        MainWindow.Applyer.Apply(false);
+        MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
     } 
     private void Eco_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
@@ -82,7 +82,7 @@ public sealed partial class ПресетыPage : Page
         config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
         ConfigSave();
         InitSave();
-        MainWindow.Applyer.Apply(false);
+        MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
     }
     private void Balance_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
@@ -97,7 +97,7 @@ public sealed partial class ПресетыPage : Page
         config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2";
         ConfigSave();
         InitSave();
-        MainWindow.Applyer.Apply(false);
+        MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
     }
     private void Speed_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
@@ -112,7 +112,7 @@ public sealed partial class ПресетыPage : Page
         config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2";
         ConfigSave();
         InitSave();
-        MainWindow.Applyer.Apply(false);
+        MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
     }
     private void Max_btn_Checked(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
@@ -127,7 +127,7 @@ public sealed partial class ПресетыPage : Page
         config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2";
         ConfigSave();
         InitSave();
-        MainWindow.Applyer.Apply(false);
+        MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
     }
     private void Min_btn_Unchecked_1(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {

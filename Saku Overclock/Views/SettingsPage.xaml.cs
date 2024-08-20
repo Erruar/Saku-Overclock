@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Win32;
@@ -23,6 +24,7 @@ public sealed partial class SettingsPage : Page
     }
     private Config config = new();
     private Themer themer = new();
+    private JsonContainers.RTSSsettings rtssset = new();
     private bool isLoaded = false;
     private JsonContainers.Notifications notify = new();
 
@@ -49,6 +51,7 @@ public sealed partial class SettingsPage : Page
         ReapplySafe.IsOn = config.ReapplySafeOverclock;
         ThemeLight.Visibility = config.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
         ThemeCustomBg.IsEnabled = config.ThemeType > 7; 
+        RTSS_LoadAndApply();
         UpdateTheme_ComboBox();
         await Task.Delay(390);
     }
@@ -113,6 +116,124 @@ public sealed partial class SettingsPage : Page
     {
         isLoaded = true;
     }
+    private void RTSS_LoadAndApply()
+    {
+        // Загрузка данных из JSON файла
+        RtssLoad();
+
+        // Проход по элементам RTSS_Elements
+        for (var i = 0; i <= 8; i++)
+        {
+            // Получаем имя элемента в зависимости от текущего значения i
+            var toggleName = string.Empty;
+            var checkBoxName = string.Empty;
+            var textBoxName = string.Empty;
+            var colorPickerName = string.Empty;
+
+            switch (i)
+            {
+                case 0:
+                    toggleName = "RTSS_MainColor_CompactToggle";
+                    checkBoxName = "RTSS_MainColor_Checkbox";
+                    textBoxName = string.Empty; // Здесь TextBox нет
+                    colorPickerName = "RTSS_MainColor_ColorPicker";
+                    break;
+                case 1:
+                    toggleName = "RTSS_AllCompact_Toggle";
+                    checkBoxName = "RTSS_SecondColor_Checkbox";
+                    textBoxName = string.Empty; // Здесь TextBox нет
+                    colorPickerName = "RTSS_SecondColor_ColorPicker";
+                    break;
+                case 2:
+                    toggleName = "RTSS_SakuProfile_CompactToggle";
+                    checkBoxName = "RTSS_SakuOverclockProfile_Checkbox";
+                    textBoxName = "RTSS_SakuOverclockProfile_TextBox";
+                    colorPickerName = "RTSS_SakuOverclockProfile_ColorPicker";
+                    break;
+                case 3:
+                    toggleName = "RTSS_StapmFastSlow_CompactToggle";
+                    checkBoxName = "RTSS_StapmFastSlow_Checkbox";
+                    textBoxName = "RTSS_StapmFastSlow_TextBox";
+                    colorPickerName = "RTSS_StapmFastSlow_ColorPicker";
+                    break;
+                case 4:
+                    toggleName = "RTSS_EDCThermUsage_CompactToggle";
+                    checkBoxName = "RTSS_EDCThermUsage_Checkbox";
+                    textBoxName = "RTSS_EDCThermUsage_TextBox";
+                    colorPickerName = "RTSS_EDCThermUsage_ColorPicker";
+                    break;
+                case 5:
+                    toggleName = "RTSS_CPUClocks_CompactToggle";
+                    checkBoxName = "RTSS_CPUClocks_Checkbox";
+                    textBoxName = "RTSS_CPUClocks_TextBox";
+                    colorPickerName = "RTSS_CPUClocks_ColorPicker";
+                    break;
+                case 6:
+                    toggleName = "RTSS_AVGCPUClockVolt_CompactToggle";
+                    checkBoxName = "RTSS_AVGCPUClockVolt_Checkbox";
+                    textBoxName = "RTSS_AVGCPUClockVolt_TextBox";
+                    colorPickerName = "RTSS_AVGCPUClockVolt_ColorPicker";
+                    break;
+                case 7:
+                    toggleName = "RTSS_APUClockVoltTemp_CompactToggle";
+                    checkBoxName = "RTSS_APUClockVoltTemp_Checkbox";
+                    textBoxName = "RTSS_APUClockVoltTemp_TextBox";
+                    colorPickerName = "RTSS_APUClockVoltTemp_ColorPicker";
+                    break;
+                case 8:
+                    toggleName = "RTSS_FrameRate_CompactToggle";
+                    checkBoxName = "RTSS_FrameRate_Checkbox";
+                    textBoxName = "RTSS_FrameRate_TextBox";
+                    colorPickerName = "RTSS_FrameRate_ColorPicker";
+                    break;
+            }
+
+            // Применение значения ToggleButton
+            if (!string.IsNullOrEmpty(toggleName))
+            {
+                var toggleButton = (ToggleButton)FindName(toggleName);
+                if (toggleButton != null)
+                {
+                    toggleButton.IsChecked = rtssset.RTSS_Elements[i].UseCompact;
+                }
+            }
+
+            // Применение значения CheckBox
+            if (!string.IsNullOrEmpty(checkBoxName))
+            {
+                var checkBox = (CheckBox)FindName(checkBoxName);
+                if (checkBox != null)
+                {
+                    checkBox.IsChecked = rtssset.RTSS_Elements[i].Enabled;
+                }
+            }
+
+            // Применение значения TextBox
+            if (!string.IsNullOrEmpty(textBoxName))
+            {
+                var textBox = (TextBox)FindName(textBoxName);
+                if (textBox != null)
+                {
+                    textBox.Text = rtssset.RTSS_Elements[i].Name;
+                }
+            }
+
+            // Применение значения ColorPicker
+            if (!string.IsNullOrEmpty(colorPickerName))
+            {
+                var colorPicker = (ColorPicker)FindName(colorPickerName);
+                if (colorPicker != null)
+                {
+                    var color = rtssset.RTSS_Elements[i].Color;
+                    var r = Convert.ToByte(color.Substring(1, 2), 16);
+                    var g = Convert.ToByte(color.Substring(3, 2), 16);
+                    var b = Convert.ToByte(color.Substring(5, 2), 16);
+                    colorPicker.Color = Windows.UI.Color.FromArgb(255, r, g, b);
+                }
+            }
+        } 
+    }
+
     public void ConfigSave()
     {
         try
@@ -130,6 +251,25 @@ public sealed partial class SettingsPage : Page
             if (config == null) { config = new Config(); ConfigSave(); }
         }
         catch { }
+    }
+    public void RtssSave()
+    {
+        try
+        {
+            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json", JsonConvert.SerializeObject(rtssset, Formatting.Indented));
+        }
+        catch { }
+    }
+    public void RtssLoad()
+    {
+        try
+        {
+            rtssset = JsonConvert.DeserializeObject<JsonContainers.RTSSsettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json"))!;
+            rtssset.RTSS_Elements.RemoveRange(0, 9);
+            //if (rtssset == null) { rtssset = new JsonContainers.RTSSsettings(); RtssSave(); }
+        }
+        catch { rtssset = new JsonContainers.RTSSsettings(); RtssSave(); }
     }
     public void ThemeSave()
     {
@@ -903,6 +1043,8 @@ public sealed partial class SettingsPage : Page
     }
     #endregion
 
+    #region Ni Icons (tray icons) Related Section
+
     private void NiIconCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
 
@@ -911,12 +1053,7 @@ public sealed partial class SettingsPage : Page
     private void Settings_ni_Icons_Toggled(object sender, RoutedEventArgs e)
     {
 
-    }
-
-    private void Settings_RTSS_Enable_Toggled(object sender, RoutedEventArgs e)
-    {
-
-    }
+    } 
 
     private void Settings_ni_Fontsize_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
@@ -957,4 +1094,97 @@ public sealed partial class SettingsPage : Page
     {
 
     }
+    #endregion
+    #region RTSS Related Section
+
+    private void RTSSChanged_Checked(object s, object e)
+    {
+        if (!isLoaded) { return; }
+        if (s is ToggleButton toggleButton)
+        { 
+            if (toggleButton.Name == "RTSS_AllCompact_Toggle")
+            {
+                isLoaded = false;
+                RTSS_SakuProfile_CompactToggle.IsChecked = RTSS_AllCompact_Toggle.IsChecked;
+                RTSS_StapmFastSlow_CompactToggle.IsChecked = RTSS_AllCompact_Toggle.IsChecked;
+                RTSS_EDCThermUsage_CompactToggle.IsChecked = RTSS_AllCompact_Toggle.IsChecked;
+                RTSS_CPUClocks_CompactToggle.IsChecked = RTSS_AllCompact_Toggle.IsChecked;
+                RTSS_AVGCPUClockVolt_CompactToggle.IsChecked = RTSS_AllCompact_Toggle.IsChecked;
+                RTSS_APUClockVoltTemp_CompactToggle.IsChecked = RTSS_AllCompact_Toggle.IsChecked;
+                RTSS_FrameRate_CompactToggle.IsChecked = RTSS_AllCompact_Toggle.IsChecked;
+                isLoaded = true;
+            }
+            else
+            {
+                isLoaded = false;
+                RTSS_AllCompact_Toggle.IsChecked = RTSS_SakuProfile_CompactToggle.IsChecked &
+                    RTSS_StapmFastSlow_CompactToggle.IsChecked &
+                    RTSS_EDCThermUsage_CompactToggle.IsChecked &
+                    RTSS_CPUClocks_CompactToggle.IsChecked &
+                    RTSS_AVGCPUClockVolt_CompactToggle.IsChecked &
+                    RTSS_APUClockVoltTemp_CompactToggle.IsChecked &
+                    RTSS_FrameRate_CompactToggle.IsChecked;
+                isLoaded = true;
+            }
+            if (toggleButton.Name == "RTSS_MainColor_CompactToggle") { rtssset.RTSS_Elements[0].UseCompact = toggleButton.IsChecked == true; }
+            if (toggleButton.Name == "RTSS_AllCompact_Toggle") { rtssset.RTSS_Elements[1].UseCompact = toggleButton.IsChecked == true; }
+            if (toggleButton.Name == "RTSS_SakuProfile_CompactToggle") { rtssset.RTSS_Elements[2].UseCompact = toggleButton.IsChecked == true; }
+            if (toggleButton.Name == "RTSS_StapmFastSlow_CompactToggle") { rtssset.RTSS_Elements[3].UseCompact = toggleButton.IsChecked == true; }
+            if (toggleButton.Name == "RTSS_EDCThermUsage_CompactToggle") { rtssset.RTSS_Elements[4].UseCompact = toggleButton.IsChecked == true; }
+            if (toggleButton.Name == "RTSS_CPUClocks_CompactToggle") { rtssset.RTSS_Elements[5].UseCompact = toggleButton.IsChecked == true; }
+            if (toggleButton.Name == "RTSS_AVGCPUClockVolt_CompactToggle") { rtssset.RTSS_Elements[6].UseCompact = toggleButton.IsChecked == true; }
+            if (toggleButton.Name == "RTSS_APUClockVoltTemp_CompactToggle") { rtssset.RTSS_Elements[7].UseCompact = toggleButton.IsChecked == true; }
+            if (toggleButton.Name == "RTSS_FrameRate_CompactToggle") { rtssset.RTSS_Elements[8].UseCompact = toggleButton.IsChecked == true; }
+        } 
+        if (s is CheckBox checkBox)
+        {
+            if (checkBox.Name == "RTSS_MainColor_Checkbox") { rtssset.RTSS_Elements[0].Enabled = checkBox.IsChecked == true; }
+            if (checkBox.Name == "RTSS_SecondColor_Checkbox") { rtssset.RTSS_Elements[1].Enabled = checkBox.IsChecked == true; }
+            if (checkBox.Name == "RTSS_SakuOverclockProfile_Checkbox") { rtssset.RTSS_Elements[2].Enabled = checkBox.IsChecked == true; }
+            if (checkBox.Name == "RTSS_StapmFastSlow_Checkbox") { rtssset.RTSS_Elements[3].Enabled = checkBox.IsChecked == true; }
+            if (checkBox.Name == "RTSS_EDCThermUsage_Checkbox") { rtssset.RTSS_Elements[4].Enabled = checkBox.IsChecked == true; }
+            if (checkBox.Name == "RTSS_CPUClocks_Checkbox") { rtssset.RTSS_Elements[5].Enabled = checkBox.IsChecked == true; }
+            if (checkBox.Name == "RTSS_AVGCPUClockVolt_Checkbox") { rtssset.RTSS_Elements[6].Enabled = checkBox.IsChecked == true; }
+            if (checkBox.Name == "RTSS_APUClockVoltTemp_Checkbox") { rtssset.RTSS_Elements[7].Enabled = checkBox.IsChecked == true; }
+            if (checkBox.Name == "RTSS_FrameRate_Checkbox") { rtssset.RTSS_Elements[8].Enabled = checkBox.IsChecked == true; }
+        }
+        if (s is TextBox textBox)
+        {
+            if (textBox.Name == "RTSS_SakuOverclockProfile_TextBox") { rtssset.RTSS_Elements[2].Name = textBox.Text; }
+            if (textBox.Name == "RTSS_StapmFastSlow_TextBox") { rtssset.RTSS_Elements[3].Name = textBox.Text; }
+            if (textBox.Name == "RTSS_EDCThermUsage_TextBox") { rtssset.RTSS_Elements[4].Name = textBox.Text; }
+            if (textBox.Name == "RTSS_CPUClocks_TextBox") { rtssset.RTSS_Elements[5].Name = textBox.Text; }
+            if (textBox.Name == "RTSS_AVGCPUClockVolt_TextBox") { rtssset.RTSS_Elements[6].Name = textBox.Text; }
+            if (textBox.Name == "RTSS_APUClockVoltTemp_TextBox") { rtssset.RTSS_Elements[7].Name = textBox.Text; }
+            if (textBox.Name == "RTSS_FrameRate_TextBox") { rtssset.RTSS_Elements[8].Name = textBox.Text; }
+        }
+        if (s is ColorPicker colorPicker)
+        {
+            if (colorPicker.Name == "RTSS_MainColor_ColorPicker") { rtssset.RTSS_Elements[0].Color = $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; }
+            if (colorPicker.Name == "RTSS_SecondColor_ColorPicker") { rtssset.RTSS_Elements[1].Color = $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; }
+            if (colorPicker.Name == "RTSS_SakuOverclockProfile_ColorPicker") { rtssset.RTSS_Elements[2].Color = $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; }
+            if (colorPicker.Name == "RTSS_StapmFastSlow_ColorPicker") { rtssset.RTSS_Elements[3].Color = $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; }
+            if (colorPicker.Name == "RTSS_EDCThermUsage_ColorPicker") { rtssset.RTSS_Elements[4].Color = $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; }
+            if (colorPicker.Name == "RTSS_CPUClocks_ColorPicker") { rtssset.RTSS_Elements[5].Color = $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; }
+            if (colorPicker.Name == "RTSS_AVGCPUClockVolt_ColorPicker") { rtssset.RTSS_Elements[6].Color = $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; }
+            if (colorPicker.Name == "RTSS_APUClockVoltTemp_ColorPicker") { rtssset.RTSS_Elements[7].Color = $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; }
+            if (colorPicker.Name == "RTSS_FrameRate_ColorPicker") { rtssset.RTSS_Elements[8].Color = $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; }
+        }
+        RtssSave();
+    }
+
+    private void Settings_RTSS_Enable_Toggled(object sender, RoutedEventArgs e)
+    {
+
+    }
+    private void RTSS_AdvancedCodeEditor_ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void RTSS_AdvancedCodeEditor_EditBox_TextChanged(object sender, RoutedEventArgs e)
+    {
+
+    }
+    #endregion
 }

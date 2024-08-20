@@ -18,6 +18,7 @@ public sealed partial class MainWindow : WindowEx
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
     private readonly UISettings settings;
     private Config config = new(); 
+    private static bool FlagSMUCommandApplyRunning = false;
     public enum DWMWINDOWATTRIBUTE
     {
         DWMWA_WINDOW_CORNER_PREFERENCE = 33
@@ -116,7 +117,7 @@ public sealed partial class MainWindow : WindowEx
         {
             if (config.ReapplyLatestSettingsOnAppLaunch == true) 
             { 
-                var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(false);
+                var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
                 /*cpu.Play_Invernate_QuickSMU(1);*/
                 var profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
 
@@ -175,46 +176,46 @@ public sealed partial class MainWindow : WindowEx
     public class Applyer
     {
         public bool execute = false;
-        private Config config = new();
+        private static Config config = new();
         private static SendSMUCommand? sendSMUCommand;
-        private static readonly Applyer mc = App.GetService<Applyer>();
+        public static void ApplyWithoutADJLine(bool saveinfo)
+        {
+            try
+            {
+                config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
+            }
+            catch
+            {
+                config = new Config();
+            } 
+            Apply(config.RyzenADJline, saveinfo, config.ReapplyOverclock, config.ReapplyOverclockTimer);
+        }
 
-        public static async void Apply(bool saveinfo)
+        public static async void Apply(string RyzenADJline, bool saveinfo, bool ReapplyOverclock, double ReapplyOverclockTimer)
         {
             try { sendSMUCommand = App.GetService<SendSMUCommand>(); } catch { return; }
-            var smu = App.GetService<ПараметрыPage>();
-            void ConfigLoad()
-            {
-                mc.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
-            }
-            void ConfigSave()
-            {
-                Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(mc.config, Formatting.Indented));
-            }
-            ConfigLoad();
-            if (mc.config.ReapplyOverclock == true)
+            var smu = App.GetService<ПараметрыPage>(); 
+            if (ReapplyOverclock == true)
             {
                 var timer = new DispatcherTimer();
                 try
                 {
-                    timer.Interval = TimeSpan.FromMilliseconds(mc.config.ReapplyOverclockTimer * 1000);
+                    timer.Interval = TimeSpan.FromMilliseconds(ReapplyOverclockTimer * 1000);
                 }
                 catch
                 {
                     await App.MainWindow.ShowMessageDialogAsync("Время автообновления разгона некорректно и было исправлено на 3000 мс", "Критическая ошибка!");
-                    mc.config.ReapplyOverclockTimer = 3000;
-                    timer.Interval = TimeSpan.FromMilliseconds(mc.config.ReapplyOverclockTimer);
+                    ReapplyOverclockTimer = 3000;
+                    timer.Interval = TimeSpan.FromMilliseconds(ReapplyOverclockTimer);
                 }
-                if (mc.config.FlagRyzenADJConsoleRunning == false)
+                if (FlagSMUCommandApplyRunning == false)
                 {
-                    mc.config.FlagRyzenADJConsoleRunning = true;
-                    ConfigSave();
+                    FlagSMUCommandApplyRunning = true;
                     timer.Tick += async (sender, e) =>
                     {
-                        if (mc.config.ReapplyOverclock == true)
+                        if (ReapplyOverclock == true)
                         {
-                            await Process(false); // Запустить ryzenadj снова, БЕЗ логирования, false
+                            await Process(RyzenADJline, false); // Запустить ryzenadj снова, БЕЗ логирования, false
                             sendSMUCommand.Play_Invernate_QuickSMU(1); //Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
                         }
                     }; timer.Start();
@@ -224,34 +225,30 @@ public sealed partial class MainWindow : WindowEx
                     timer.Stop();
                     timer.Tick += async (sender, e) =>
                     {
-                        if (mc.config.ReapplyOverclock == true)
+                        if (ReapplyOverclock == true)
                         {
-                            await Process(false); // Запустить ryzenadj снова, БЕЗ логирования, false
+                            await Process(RyzenADJline, false); // Запустить ryzenadj снова, БЕЗ логирования, false
                             sendSMUCommand.Play_Invernate_QuickSMU(1); //Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
                         }
                     }; timer.Start();
                 }
             }
-            await Process(saveinfo);
+            await Process(RyzenADJline, saveinfo);
         }
-        private static async Task Process(bool saveinfo)
+        private static async Task Process(string ADJLine, bool saveinfo)
         {
             try
             {
-                mc.config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
-                if (mc.config == null) { return; }
                 await Task.Run(() =>
-                {
-
-                    sendSMUCommand?.Translate(mc.config.RyzenADJline, saveinfo);
-
+                { 
+                    sendSMUCommand?.Translate(ADJLine, saveinfo);
                 });
             }
             catch
             {
 
             }
-        }
+        } 
     }
     #endregion
     #region JSON Containers voids

@@ -2348,4 +2348,51 @@ Overclock будут проигнорированы,
   <data name="Settings_RTSS_Updater.Text" xml:space="preserve">
     <value>Показатели в играх</value>
   </data>
+  <data name="Settings_RTSS_AdvancedCode_Enable.Header" xml:space="preserve">
+    <value>Редактор кода наложения RTSS</value>
+  </data>
+  <data name="Settings_RTSS_AdvancedCode_Enable.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="Settings_RTSS_AdvancedCode_Enable.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="Settings_RTSS_AdvancedCode_Enable.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Редактор кода наложения RTSS
+Позволит  вам настроить отображение 
+оверлея по своему усмотрению, добавляя 
+больше метрик, изменяя порядок их отображения 
+или внося любые другие изменения, которые 
+недоступны через стандартный интерфейс. Вы 
+можете редактировать код вручную в удобном 
+текстовом поле с функцией автосохранения, 
+чтобы ваши изменения всегда оставались 
+актуальными и сохранялись автоматически</value>
+  </data>
+  <data name="Settings_RTSS_Enabl.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Мониторинг в играх с RTSS
+Это современная система мониторинга
+показателей вашего ноутбука, которая
+использует показатели со страницы 
+информации, чтобы отобразить их в 
+оверлее OSD (on-screen display) во время 
+игры. Так вы сможете видеть нужные вам 
+показатели, не пропустите самое важное 
+и всегда будете в курсе о текущих 
+показателях вашего ноутбука. Эта функция
+идентична той, что вы видите на странице
+информации
+
+Незначительно увеличит потребление
+приложением вашего процессора</value>
+  </data>
+  <data name="Settings_RTSS_Enable.Header" xml:space="preserve">
+    <value>Мониторинг в играх с RTSS</value>
+  </data>
+  <data name="Settings_RTSS_Enable.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="Settings_RTSS_Enable.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
 </root>

@@ -47,6 +47,7 @@ public sealed partial class ПараметрыPage : Page
     private static readonly List<double> pstatesFID = [0, 0, 0];
     private static readonly List<double> pstatesDID = [0, 0, 0];
     private static readonly List<double> pstatesVID = [0, 0, 0];
+    public static string ApplyInfo = ""; // Информация об ошибках после применения
 
     public ПараметрыPage()
     {
@@ -3024,19 +3025,18 @@ public sealed partial class ПараметрыPage : Page
         ConfigLoad();
         config.RyzenADJline = adjline + " ";
         adjline = "";
-        config.ApplyInfo = "";
+        ApplyInfo = "";
         ConfigSave();
         SendSMUCommand.Codename = cpu!.info.codeName;
-        MainWindow.Applyer.Apply(true);
+        MainWindow.Applyer.Apply(config.RyzenADJline, true, config.ReapplyOverclock, config.ReapplyOverclockTimer);
         if (EnablePstates.IsOn) { BtnPstateWrite_Click(); }
         await Task.Delay(1000);
-        ConfigLoad();
         var timer = 1000;
-        if (config.ApplyInfo != null)
+        if (ApplyInfo != null)
         {
-            timer *= config.ApplyInfo.Split('\n').Length + 1;
+            timer *= ApplyInfo.Split('\n').Length + 1;
         }
-        if (SettingsViewModel.VersionId != 5)
+        if (SettingsViewModel.VersionId != 5) // Если версия не Debug Lanore
         {
             Apply_tooltip.Title = "Apply_Success".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized();
         }
@@ -3048,7 +3048,7 @@ public sealed partial class ПараметрыPage : Page
         }
         Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
         Apply_tooltip.IsOpen = true; var infoSet = InfoBarSeverity.Success;
-        if (config.ApplyInfo != string.Empty && config.ApplyInfo != null) { Apply_tooltip.Title = "Apply_Warn".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + config.ApplyInfo; Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked }; await Task.Delay(timer); Apply_tooltip.IsOpen = false; infoSet = InfoBarSeverity.Warning; }
+        if (ApplyInfo != string.Empty && ApplyInfo != null) { Apply_tooltip.Title = "Apply_Warn".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + ApplyInfo; Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked }; await Task.Delay(timer); Apply_tooltip.IsOpen = false; infoSet = InfoBarSeverity.Warning; }
         else { await Task.Delay(3000); Apply_tooltip.IsOpen = false; }
         NotifyLoad();
         notify.Notifies ??= [];

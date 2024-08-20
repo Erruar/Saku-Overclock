@@ -13,17 +13,19 @@ internal class Config
     public bool ReapplyOverclock = true; //Переприменять последние применённые параметры каждые
     public double ReapplyOverclockTimer = 3.0; //Переприменять последние применённые параметры каждые (время в секундах)
     public int ThemeType = 0; //Выбранная тема
+    public bool NiIconsEnabled = false;
+    public bool RTSSMetricsEnabled = false;
     //Пресеты, готовые пресеты и параметры
     public int Preset = 0; //Выбранный пользователем пресет
     public string RyzenADJline = ""; //Собственно RyzenADJline которая применяет все параметры, соединяя всё активированное в пресете
-    public string ApplyInfo = ""; //Информация об ошибках послежних применённых параметрах
-    public bool RangeApplied = false; //Применён ли диапазон для команды SMU
+    //public string ApplyInfo = ""; //Информация об ошибках послежних применённых параметрах
+    //public bool RangeApplied = false; //Применён ли диапазон для команды SMU
     public bool PremadeMinActivated = false; //Готовые пресеты
     public bool PremadeEcoActivated = false; //Готовые пресеты
     public bool PremadeBalanceActivated = false; //Готовые пресеты
     public bool PremadeSpeedActivated = false; //Готовые пресеты
     public bool PremadeMaxActivated = true; //Готовые пресеты
-    public bool FlagRyzenADJConsoleRunning = false; //Старый флаг если выполняется какое-то действие с консолью, например RyzenADJ
+    //public bool FlagSMUCommandApplyRunning = false; //Старый флаг если выполняется какое-то действие с консолью, например RyzenADJ
     //Страница управления кулером
     public string NBFCConfigXMLName; //Имя выбранного файла конфига nbfc
     public bool NBFCAutoUpdateInformation = true; //Автоматически обновлять информаци о скоростях кулеров

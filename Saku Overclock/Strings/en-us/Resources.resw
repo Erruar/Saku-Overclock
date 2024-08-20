@@ -2275,4 +2275,51 @@ increases slightly</value>
   <data name="Settings_RTSS_Elements.Text" xml:space="preserve">
     <value>Showing elements</value>
   </data>
+  <data name="Settings_RTSS_AdvancedCode_Enable.Header" xml:space="preserve">
+    <value>RTSS Overlay Code Editor</value>
+  </data>
+  <data name="Settings_RTSS_AdvancedCode_Enable.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="Settings_RTSS_AdvancedCode_Enable.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
+  <data name="Settings_RTSS_AdvancedCode_Enable.ToolTipService.ToolTip" xml:space="preserve">
+    <value>RTSS Overlay Code Editor
+It allows you to customize the overlay 
+display to your liking by adding more 
+metrics, rearranging their order, or making 
+other adjustments not possible through 
+the standard interface. You can manually 
+edit the code in a convenient text field with 
+autosave functionality, ensuring your 
+changes are always current and saved 
+automatically</value>
+  </data>
+  <data name="Settings_RTSS_Enabl.ToolTipService.ToolTip" xml:space="preserve">
+    <value>In-Game Monitoring with RTSS
+It's modern monitoring system tracks 
+your laptop's metrics by using data from 
+the information page and displays them 
+in an on-screen display (OSD) overlay 
+during gameplay. This way, you 
+can easily monitor the key metrics you 
+need, never miss important details, and 
+always stay informed about your 
+laptop's current performance.
+This feature mirrors what you see on 
+the Information page
+
+The application's CPU consumption 
+increases slightly</value>
+  </data>
+  <data name="Settings_RTSS_Enable.Header" xml:space="preserve">
+    <value>In-Game Monitoring with RTSS</value>
+  </data>
+  <data name="Settings_RTSS_Enable.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="Settings_RTSS_Enable.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
 </root>

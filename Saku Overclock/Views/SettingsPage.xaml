@@ -5,15 +5,17 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:Saku_Overclock.Helpers"
-    xmlns:xaml="using:Microsoft.UI.Xaml" xmlns:local="using:Saku_Overclock.ViewModels"
+    xmlns:xaml="using:Microsoft.UI.Xaml" xmlns:local="using:Saku_Overclock.ViewModels" xmlns:data="using:System.Windows.Data"
     mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"></ThemeShadow>
         <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
         <helpers:HexColorInverterConverter x:Key="HexColorInverterConverter" />
         <helpers:ColorToBrushConverter x:Key="ColorToBrushConverter" />
+        <helpers:BooleanToGlyphConverter x:Key="BooleanToGlyphConverter" />
     </Page.Resources>
-    <Grid Margin="-48,0,-40,0">
+   
+    <Grid Margin="-48,0,-40,0"> 
         <TextBlock x:Uid="Settings_Name" Text="Настройки программы" FontSize="30" Margin="-1,-65,0,0"></TextBlock>
         <ScrollViewer Margin="0,-10,-10,0">
             <StackPanel
@@ -77,7 +79,7 @@
                     <TextBlock Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_Elements" />
                     <Grid>
                         <Border Margin="-1,0,0,0" CornerRadius="15" HorizontalAlignment="Left" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="154" Height="33"></Border>
-                        <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconComboboxElements" SelectionChanged="NiIconComboboxElements_SelectionChanged"  CornerRadius="15">
+                        <ComboBox SelectedIndex="0" Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconComboboxElements" SelectionChanged="NiIconComboboxElements_SelectionChanged"  CornerRadius="15">
                             <ComboBoxItem Content="Nothing to show"/> 
                         </ComboBox>
                     </Grid>
@@ -88,7 +90,7 @@
                     <StackPanel Margin="{StaticResource XSmallTopMargin}">
                         <Grid>
                             <Border Margin="-1,0,0,0" CornerRadius="15" HorizontalAlignment="Left" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="154" Height="33"></Border>
-                            <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconCombobox" SelectionChanged="NiIconCombobox_SelectionChanged"  CornerRadius="15">
+                            <ComboBox SelectedIndex="0" Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconCombobox" SelectionChanged="NiIconCombobox_SelectionChanged"  CornerRadius="15">
                                 <ComboBoxItem x:Uid="Settings_ni_Context_Disabled" Content="Disabled"/>
                                 <ComboBoxItem x:Uid="Settings_ni_Context_Base" Content="Base title"/>
                                 <ComboBoxItem x:Uid="Settings_ni_Context_Extended" Content="Extended title"/> 
@@ -100,7 +102,7 @@
                         <TextBlock Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_ShapeSelector" />
                         <Grid>
                             <Border Margin="-1,0,0,0" CornerRadius="15" HorizontalAlignment="Left" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="154" Height="33"></Border>
-                            <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconShapeCombobox" SelectionChanged="NiIconShapeCombobox_SelectionChanged"  CornerRadius="15">
+                            <ComboBox SelectedIndex="0" Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconShapeCombobox" SelectionChanged="NiIconShapeCombobox_SelectionChanged"  CornerRadius="15">
                                 <ComboBoxItem x:Uid="Settings_ni_Shape_Cube" Content="Cube"/>
                                 <ComboBoxItem x:Uid="Settings_ni_Shape_Round" Content="Rounded cube"/>
                                 <ComboBoxItem x:Uid="Settings_ni_Shape_Circle" Content="Circle"/>
@@ -125,8 +127,7 @@
                     <ToggleSwitch x:Uid="Settings_RTSS_Enable" Name="Settings_RTSS_Enable" Toggled="Settings_RTSS_Enable_Toggled">Мониторинг в играх с RTSS</ToggleSwitch>
                     <TextBlock Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_RTSS_Elements" />
                     <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                        <ScrollViewer HorizontalAlignment="Left">
-                            <GridView MaxWidth="290" SelectionMode="None">
+                            <GridView x:Name="RTTS_GridView" HorizontalAlignment="Left" MaxWidth="290" SelectionMode="None">
                                 <GridView.Header>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -151,7 +152,7 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <!---->
-                                            <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
+                                            <CheckBox x:Name="RTSS_MainColor_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
                                             <TextBlock Margin="-10,0,9,0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Main Color" Grid.Column="1"/>
                                             <!---->
@@ -164,6 +165,7 @@
                                                         <Grid>
                                                             <ColorPicker  ColorSpectrumShape="Box"
                                                                           Color="#44FFAC"
+                                                                          ColorChanged="RTSSChanged_Checked"
                                                                           x:Name="RTSS_MainColor_ColorPicker"
                                                                           IsMoreButtonVisible="False"
                                                                           IsColorSliderVisible="True"
@@ -177,8 +179,8 @@
                                                 </Button.Flyout>
                                             </Button>
                                             <!---->
-                                            <ToggleButton Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
-                                                <FontIcon Glyph="&#xE73E;"/>
+                                            <ToggleButton Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" x:Name="RTSS_MainColor_CompactToggle" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
+                                                <FontIcon Glyph="{Binding ElementName=RTSS_MainColor_CompactToggle, Path=IsChecked, Converter={StaticResource BooleanToGlyphConverter}}"/>
                                             </ToggleButton>
                                         </Grid>
                                     </GridViewItem>
@@ -191,7 +193,7 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <!---->
-                                            <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
+                                            <CheckBox x:Name="RTSS_SecondColor_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
                                             <TextBlock Margin="-10,0,9,0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Second Color" Grid.Column="1"/>
                                             <!---->
@@ -206,6 +208,7 @@
                                                                           Color="#44AFAC"
                                                                           x:Name="RTSS_SecondColor_ColorPicker"
                                                                           IsMoreButtonVisible="False"
+                                                                          ColorChanged="RTSSChanged_Checked"
                                                                           IsColorSliderVisible="True"
                                                                           IsColorChannelTextInputVisible="True"
                                                                           IsHexInputVisible="True"
@@ -217,8 +220,8 @@
                                                 </Button.Flyout>
                                             </Button>
                                             <!---->
-                                            <ToggleButton Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
-                                                <FontIcon Glyph="&#xE73E;"/>
+                                            <ToggleButton Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" x:Name="RTSS_AllCompact_Toggle" IsChecked="True" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
+                                                <FontIcon Glyph="{Binding ElementName=RTSS_AllCompact_Toggle, Path=IsChecked, Converter={StaticResource BooleanToGlyphConverter}}"/>
                                             </ToggleButton>
                                         </Grid>
                                     </GridViewItem>
@@ -231,9 +234,9 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <!---->
-                                            <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
+                                            <CheckBox x:Name="RTSS_SakuOverclockProfile_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Saku Overclock RC-7: (Profile)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_SakuOverclockProfile_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Saku Overclock RC-7: (Profile)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_SakuOverclockProfile_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_SakuOverclockProfile_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -247,6 +250,7 @@
                                                                           x:Name="RTSS_SakuOverclockProfile_ColorPicker"
                                                                           IsMoreButtonVisible="False"
                                                                           IsColorSliderVisible="True"
+                                                                          ColorChanged="RTSSChanged_Checked"
                                                                           IsColorChannelTextInputVisible="True"
                                                                           IsHexInputVisible="True"
                                                                           IsAlphaEnabled="False"
@@ -257,8 +261,8 @@
                                                 </Button.Flyout>
                                             </Button>
                                             <!---->
-                                            <ToggleButton Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
-                                                <FontIcon Glyph="&#xE73E;"/>
+                                            <ToggleButton Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" x:Name="RTSS_SakuProfile_CompactToggle" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
+                                                <FontIcon Glyph="{Binding ElementName=RTSS_SakuProfile_CompactToggle, Path=IsChecked, Converter={StaticResource BooleanToGlyphConverter}}"/>
                                             </ToggleButton>
                                         </Grid>
                                     </GridViewItem>
@@ -271,9 +275,9 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <!---->
-                                            <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
+                                            <CheckBox x:Name="RTSS_StapmFastSlow_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="STAPM, Fast, Slow: (W)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_StapmFastSlow_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="STAPM, Fast, Slow: (W)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_StapmFastSlow_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_StapmFastSlow_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -286,6 +290,7 @@
                                                                           Color="#44AFAC"
                                                                           x:Name="RTSS_StapmFastSlow_ColorPicker"
                                                                           IsMoreButtonVisible="False"
+                                                                          ColorChanged="RTSSChanged_Checked"
                                                                           IsColorSliderVisible="True"
                                                                           IsColorChannelTextInputVisible="True"
                                                                           IsHexInputVisible="True"
@@ -297,8 +302,8 @@
                                                 </Button.Flyout>
                                             </Button>
                                             <!---->
-                                            <ToggleButton Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
-                                                <FontIcon Glyph="&#xE73E;"/>
+                                            <ToggleButton Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" x:Name="RTSS_StapmFastSlow_CompactToggle" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
+                                                <FontIcon Glyph="{Binding ElementName=RTSS_StapmFastSlow_CompactToggle, Path=IsChecked, Converter={StaticResource BooleanToGlyphConverter}}"/>
                                             </ToggleButton>
                                         </Grid>
                                     </GridViewItem>
@@ -311,9 +316,9 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <!---->
-                                            <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
+                                            <CheckBox x:Name="RTSS_EDCThermUsage_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="EDC, Therm, CPU Usage: (A),(C),(%)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_EDCThermUsage_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="EDC, Therm, CPU Usage: (A),(C),(%)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_EDCThermUsage_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_EDCThermUsage_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -323,22 +328,23 @@
                                                     <Flyout>
                                                         <Grid>
                                                             <ColorPicker  ColorSpectrumShape="Box"
-                          Color="#44AFAC"
-                          x:Name="RTSS_EDCThermUsage_ColorPicker"
-                          IsMoreButtonVisible="False"
-                          IsColorSliderVisible="True"
-                          IsColorChannelTextInputVisible="True"
-                          IsHexInputVisible="True"
-                          IsAlphaEnabled="False"
-                          IsAlphaSliderVisible="True"
-                          IsAlphaTextInputVisible="True"></ColorPicker>
+                                                                          Color="#44AFAC"
+                                                                          x:Name="RTSS_EDCThermUsage_ColorPicker"
+                                                                          ColorChanged="RTSSChanged_Checked"
+                                                                          IsMoreButtonVisible="False"
+                                                                          IsColorSliderVisible="True"
+                                                                          IsColorChannelTextInputVisible="True"
+                                                                          IsHexInputVisible="True"
+                                                                          IsAlphaEnabled="False"
+                                                                          IsAlphaSliderVisible="True"
+                                                                          IsAlphaTextInputVisible="True"></ColorPicker>
                                                         </Grid>
                                                     </Flyout>
                                                 </Button.Flyout>
                                             </Button>
                                             <!---->
-                                            <ToggleButton Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
-                                                <FontIcon Glyph="&#xE73E;"/>
+                                            <ToggleButton Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" x:Name="RTSS_EDCThermUsage_CompactToggle" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
+                                                <FontIcon Glyph="{Binding ElementName=RTSS_EDCThermUsage_CompactToggle, Path=IsChecked, Converter={StaticResource BooleanToGlyphConverter}}"/>
                                             </ToggleButton>
                                         </Grid>
                                     </GridViewItem>
@@ -351,9 +357,9 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <!---->
-                                            <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
+                                            <CheckBox x:Name="RTSS_CPUClocks_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Clocks: (GHz), (V)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_CPUClocks_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Clocks: (GHz), (V)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_CPUClocks_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_CPUClocks_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -363,22 +369,23 @@
                                                     <Flyout>
                                                         <Grid>
                                                             <ColorPicker  ColorSpectrumShape="Box"
-                          Color="#44AFAC"
-                          x:Name="RTSS_CPUClocks_ColorPicker"
-                          IsMoreButtonVisible="False"
-                          IsColorSliderVisible="True"
-                          IsColorChannelTextInputVisible="True"
-                          IsHexInputVisible="True"
-                          IsAlphaEnabled="False"
-                          IsAlphaSliderVisible="True"
-                          IsAlphaTextInputVisible="True"></ColorPicker>
+                                                                          Color="#44AFAC"
+                                                                          x:Name="RTSS_CPUClocks_ColorPicker"
+                                                                          ColorChanged="RTSSChanged_Checked"
+                                                                          IsMoreButtonVisible="False"
+                                                                          IsColorSliderVisible="True"
+                                                                          IsColorChannelTextInputVisible="True"
+                                                                          IsHexInputVisible="True"
+                                                                          IsAlphaEnabled="False"
+                                                                          IsAlphaSliderVisible="True"
+                                                                          IsAlphaTextInputVisible="True"></ColorPicker>
                                                         </Grid>
                                                     </Flyout>
                                                 </Button.Flyout>
                                             </Button>
                                             <!---->
-                                            <ToggleButton Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
-                                                <FontIcon Glyph="&#xE73E;"/>
+                                            <ToggleButton Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" x:Name="RTSS_CPUClocks_CompactToggle" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
+                                                <FontIcon Glyph="{Binding ElementName=RTSS_CPUClocks_CompactToggle, Path=IsChecked, Converter={StaticResource BooleanToGlyphConverter}}"/>
                                             </ToggleButton>
                                         </Grid>
                                     </GridViewItem>
@@ -391,9 +398,9 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <!---->
-                                            <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
+                                            <CheckBox x:Name="RTSS_AVGCPUClockVolt_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="AVG Clock, Volt: (GHz), (V)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_AVGCPUClockVolt_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="AVG Clock, Volt: (GHz), (V)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_AVGCPUClockVolt_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_AVGCPUClockVolt_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -403,22 +410,23 @@
                                                     <Flyout>
                                                         <Grid>
                                                             <ColorPicker  ColorSpectrumShape="Box"
-                          Color="#44AFAC"
-                          x:Name="RTSS_AVGCPUClockVolt_ColorPicker"
-                          IsMoreButtonVisible="False"
-                          IsColorSliderVisible="True"
-                          IsColorChannelTextInputVisible="True"
-                          IsHexInputVisible="True"
-                          IsAlphaEnabled="False"
-                          IsAlphaSliderVisible="True"
-                          IsAlphaTextInputVisible="True"></ColorPicker>
+                                                                          Color="#44AFAC"
+                                                                          x:Name="RTSS_AVGCPUClockVolt_ColorPicker"
+                                                                          ColorChanged="RTSSChanged_Checked"
+                                                                          IsMoreButtonVisible="False"
+                                                                          IsColorSliderVisible="True"
+                                                                          IsColorChannelTextInputVisible="True"
+                                                                          IsHexInputVisible="True"
+                                                                          IsAlphaEnabled="False"
+                                                                          IsAlphaSliderVisible="True"
+                                                                          IsAlphaTextInputVisible="True"></ColorPicker>
                                                         </Grid>
                                                     </Flyout>
                                                 </Button.Flyout>
                                             </Button>
                                             <!---->
-                                            <ToggleButton Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
-                                                <FontIcon Glyph="&#xE73E;"/>
+                                            <ToggleButton Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" x:Name="RTSS_AVGCPUClockVolt_CompactToggle" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
+                                                <FontIcon Glyph="{Binding ElementName=RTSS_AVGCPUClockVolt_CompactToggle, Path=IsChecked, Converter={StaticResource BooleanToGlyphConverter}}"/>
                                             </ToggleButton>
                                         </Grid>
                                     </GridViewItem>
@@ -431,9 +439,9 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <!---->
-                                            <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
+                                            <CheckBox x:Name="RTSS_APUClockVoltTemp_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="APU Clock, Volt, Temp: (GHz), (V), (C)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_APUClockVoltTemp_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="APU Clock, Volt, Temp: (GHz), (V), (C)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_APUClockVoltTemp_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_APUClockVoltTemp_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -443,22 +451,23 @@
                                                     <Flyout>
                                                         <Grid>
                                                             <ColorPicker  ColorSpectrumShape="Box"
-                          Color="#44AFAC"
-                          x:Name="RTSS_APUClockVoltTemp_ColorPicker"
-                          IsMoreButtonVisible="False"
-                          IsColorSliderVisible="True"
-                          IsColorChannelTextInputVisible="True"
-                          IsHexInputVisible="True"
-                          IsAlphaEnabled="False"
-                          IsAlphaSliderVisible="True"
-                          IsAlphaTextInputVisible="True"></ColorPicker>
+                                                                          Color="#44AFAC"
+                                                                          x:Name="RTSS_APUClockVoltTemp_ColorPicker"
+                                                                          ColorChanged="RTSSChanged_Checked"
+                                                                          IsMoreButtonVisible="False"
+                                                                          IsColorSliderVisible="True"
+                                                                          IsColorChannelTextInputVisible="True"
+                                                                          IsHexInputVisible="True"
+                                                                          IsAlphaEnabled="False"
+                                                                          IsAlphaSliderVisible="True"
+                                                                          IsAlphaTextInputVisible="True"></ColorPicker>
                                                         </Grid>
                                                     </Flyout>
                                                 </Button.Flyout>
                                             </Button>
                                             <!---->
-                                            <ToggleButton Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
-                                                <FontIcon Glyph="&#xE73E;"/>
+                                            <ToggleButton Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" x:Name="RTSS_APUClockVoltTemp_CompactToggle" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
+                                                <FontIcon Glyph="{Binding ElementName=RTSS_APUClockVoltTemp_CompactToggle, Path=IsChecked, Converter={StaticResource BooleanToGlyphConverter}}"/>
                                             </ToggleButton>
                                         </Grid>
                                     </GridViewItem>
@@ -471,9 +480,9 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <!---->
-                                            <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
+                                            <CheckBox x:Name="RTSS_FrameRate_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Framerate: (FPS)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_FrameRate_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Framerate: (FPS)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_FrameRate_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_FrameRate_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -483,24 +492,25 @@
                                                     <Flyout>
                                                         <Grid>
                                                             <ColorPicker  ColorSpectrumShape="Box"
-                          Color="#44AFAC"
-                          x:Name="RTSS_FrameRate_ColorPicker"
-                          IsMoreButtonVisible="False"
-                          IsColorSliderVisible="True"
-                          IsColorChannelTextInputVisible="True"
-                          IsHexInputVisible="True"
-                          IsAlphaEnabled="False"
-                          IsAlphaSliderVisible="True"
-                          IsAlphaTextInputVisible="True"></ColorPicker>
+                                                                          Color="#44AFAC"
+                                                                          x:Name="RTSS_FrameRate_ColorPicker"
+                                                                          ColorChanged="RTSSChanged_Checked"
+                                                                          IsMoreButtonVisible="False"
+                                                                          IsColorSliderVisible="True"
+                                                                          IsColorChannelTextInputVisible="True"
+                                                                          IsHexInputVisible="True"
+                                                                          IsAlphaEnabled="False"
+                                                                          IsAlphaSliderVisible="True"
+                                                                          IsAlphaTextInputVisible="True"></ColorPicker>
                                                         </Grid>
                                                     </Flyout>
                                                 </Button.Flyout>
                                             </Button>
                                             <!---->
-                                            <ToggleButton Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
-                                                <FontIcon Glyph="&#xE73E;"/>
-                                            </ToggleButton>
-                                        </Grid>
+                                            <ToggleButton Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" x:Name="RTSS_FrameRate_CompactToggle" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Left" Margin="2,0,0,0" Width="52" Height="32" Grid.Column="3">
+                                                <FontIcon Glyph="{Binding ElementName=RTSS_FrameRate_CompactToggle, Path=IsChecked, Converter={StaticResource BooleanToGlyphConverter}}"/>
+                                            </ToggleButton> 
+                                    </Grid>
                                     </GridViewItem>
                                 </GridView.Items> 
                                 <GridView.ItemsPanel>
@@ -509,21 +519,11 @@
        MaximumRowsOrColumns="1"
        Orientation="Horizontal"/>
                                     </ItemsPanelTemplate>
-                                </GridView.ItemsPanel>
-                            </GridView>
-                        </ScrollViewer>
-                        <ToggleSwitch x:Uid="ThemeAdvanced" Margin="{StaticResource XSmallTopMargin}" Header="Toggle advanced theme settings" OnContent="On." OffContent="Off."></ToggleSwitch>
-                        <NumberBox Margin="{StaticResource XSmallTopMargin}" x:Uid="ThemeOpacity" HorizontalAlignment="Left" Width="151" CornerRadius="15" Header="Background image opacity" Minimum="0.0" Maximum="1.0" Value="0.5" ></NumberBox>
-                        <NumberBox Margin="{StaticResource XSmallTopMargin}" x:Uid="ThemeMaskOpacity" HorizontalAlignment="Left" Width="151" CornerRadius="15" Header="Background mask opacity" Minimum="0.0" Maximum="1.0" Value="0.5"></NumberBox>
-                        <ToggleSwitch Margin="{StaticResource XSmallTopMargin}" x:Uid="ThemeLight" OffContent="Светлая" OnContent="Тёмная" >Тип темы</ToggleSwitch>
-                        <ToggleSwitch Margin="{StaticResource XSmallTopMargin}"  x:Uid="ThemeCustomBg" Toggled="ThemeCustomBg_Toggled" Header="Use custom background image" OnContent="On." OffContent="Off."></ToggleSwitch>
-                        <Button  Shadow="{StaticResource SharedShadow}" Translation="0,0,20"  Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
-                            <TextBlock  x:Uid="ThemeChangeBgText" FontWeight="SemiBold"  Text="Change background"/>
-                        </Button>
-                        <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
-                            <TextBlock FontWeight="SemiBold"  x:Uid="ThemeManager"  Text="Theme manager"/>
-                        </Button>
+                                </GridView.ItemsPanel> 
+                        </GridView> 
                     </StackPanel>
+                    <ToggleSwitch Toggled="RTSS_AdvancedCodeEditor_ToggleSwitch_Toggled" x:Uid="Settings_RTSS_AdvancedCode_Enable" Name="RTSS_AdvancedCodeEditor_ToggleSwitch">Расширенный редактор кода отображения наложения RTSS</ToggleSwitch>
+                    <RichEditBox TextChanged="RTSS_AdvancedCodeEditor_EditBox_TextChanged" x:Name="RTSS_AdvancedCodeEditor_EditBox" Width="430" HorizontalAlignment="Left"></RichEditBox>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
