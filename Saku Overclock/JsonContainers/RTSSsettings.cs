@@ -78,7 +78,7 @@ internal class RTSSsettings
         "<S1><C2>Clocks: $cpu_clock_cycle$<S1><C2>$currCore$:<S0><C3> $cpu_core_clock$<S2>GHz<S1>$cpu_core_voltage$V $cpu_clock_cycle_end$\n" +
         "<C2>AVG Clock, Volt: <C3><S0>$average_cpu_clock$<S2>GHz<S1>$average_cpu_voltage$V" +
         "<C2>APU Clock, Volt, Temp: <C3><S0>$gfx_clock$<S2>MHz<S1>$gfx_volt$V <S0>$gfx_temp$<S1>C\n" +
-        "<C2>Framerate <C3><S0>%FRAMERATE% %FRAMETIME%";
+        "<C2>Framerate <C3><S0>%FRAMERATE% %FRAMETIME%"; 
 }
 public class RTSSElementsClass
 {
