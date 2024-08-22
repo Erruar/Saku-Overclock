@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -13,6 +14,7 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
+using Windows.UI.Text;
 using Task = System.Threading.Tasks.Task;
 namespace Saku_Overclock.Views;
 
@@ -31,12 +33,8 @@ public sealed partial class SettingsPage : Page
     public SettingsPage()
     {
         ViewModel = App.GetService<SettingsViewModel>();
-        InitializeComponent();
-        ConfigLoad(); 
-        InitVal();
-        config.NBFCFlagConsoleCheckSpeedRunning = false; //Автообновление информации выключено не зависимо от активированной страницы
-        config.FlagRyzenADJConsoleTemperatureCheckRunning = false;
-        ConfigSave();
+        InitializeComponent(); 
+        InitVal();  
         Loaded += LoadedApp; //Приложение загружено - разрешить 
     }
 
@@ -50,7 +48,8 @@ public sealed partial class SettingsPage : Page
         CbAutoCheck.IsOn = config.CheckForUpdates;
         ReapplySafe.IsOn = config.ReapplySafeOverclock;
         ThemeLight.Visibility = config.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
-        ThemeCustomBg.IsEnabled = config.ThemeType > 7; 
+        ThemeCustomBg.IsEnabled = config.ThemeType > 7;
+        Settings_RTSS_Enable.IsOn = config.RTSSMetricsEnabled; 
         RTSS_LoadAndApply();
         UpdateTheme_ComboBox();
         await Task.Delay(390);
@@ -119,7 +118,9 @@ public sealed partial class SettingsPage : Page
     private void RTSS_LoadAndApply()
     {
         // Загрузка данных из JSON файла
-        RtssLoad();
+        RtssLoad(); 
+        LoadAndFormatAdvancedCodeEditor(rtssset.AdvancedCodeEditor);
+        RTSS_AdvancedCodeEditor_ToggleSwitch.IsOn = rtssset.IsAdvancedCodeEditorEnabled;
 
         // Проход по элементам RTSS_Elements
         for (var i = 0; i <= 8; i++)
@@ -233,6 +234,297 @@ public sealed partial class SettingsPage : Page
             }
         } 
     }
+    /*private void LoadAndFormatAdvancedCodeEditor()
+    {
+        // Загрузка строки из файла или иного источника
+        string advancedCode = rtssset.AdvancedCodeEditor;
+
+        // Переменная для хранения текущего цвета и размера
+        Windows.UI.Color currentColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
+        bool isSubscript = false;
+        bool isSuperscript = false;
+
+        // Очищаем текущее содержимое RichEditBox
+        RTSS_AdvancedCodeEditor_EditBox.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, "");
+
+        int currentIndex = 0;
+        while (currentIndex < advancedCode.Length)
+        {
+            // Ищем следующие управляющие символы
+            int nextIndex = advancedCode.IndexOfAny(new char[] { '<', '%', '$', '\\', '\n' }, currentIndex);
+
+            if (nextIndex == -1)
+            {
+                // Добавляем оставшуюся строку
+                AddFormattedText(advancedCode.Substring(currentIndex), currentColor, isSuperscript, isSubscript);
+                break;
+            }
+
+            // Добавляем текст перед управляющим символом
+            if (nextIndex > currentIndex)
+            {
+                AddFormattedText(advancedCode.Substring(currentIndex, nextIndex - currentIndex), currentColor, isSuperscript, isSubscript);
+                currentIndex = nextIndex;
+            }
+
+            // Обработка управляющих символов
+            if (advancedCode[nextIndex] == '<')
+            {
+                // Обрабатываем теги <C> и <S>
+                if (advancedCode[nextIndex + 1] == 'C')
+                {
+                    // Изменение цвета
+                    int closeIndex = advancedCode.IndexOf('>', nextIndex);
+                    if (closeIndex != -1)
+                    {
+                        string colorCode = advancedCode.Substring(nextIndex + 3, closeIndex - nextIndex - 3);
+                        currentColor = ParseColor(colorCode);
+                        currentIndex = closeIndex + 1;
+                    }
+                }
+                else if (advancedCode[nextIndex + 1] == 'S')
+                {
+                    // Обработка изменения размера текста
+                    int closeIndex = advancedCode.IndexOf('>', nextIndex);
+                    if (closeIndex != -1)
+                    {
+                        string sizeCode = advancedCode.Substring(nextIndex + 2, closeIndex - nextIndex - 2);
+                        int sizeValue = int.Parse(sizeCode);
+
+                        if (sizeValue > 0)
+                        {
+                            isSuperscript = true;
+                            isSubscript = false;
+                        }
+                        else
+                        {
+                            isSuperscript = false;
+                            isSubscript = true;
+                        }
+                        currentIndex = closeIndex + 1;
+                    }
+                }
+            }
+            else if (advancedCode[nextIndex] == '%')
+            {
+                // Обработка элементов с %...%
+                int endIndex = advancedCode.IndexOf('%', nextIndex + 1);
+                if (endIndex != -1)
+                {
+                    string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
+                    AddFormattedText(element, Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
+                    currentIndex = endIndex + 1;
+                }
+                else
+                {
+                    AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
+                    break;
+                }
+            }
+            else if (advancedCode[nextIndex] == '$')
+            {
+                // Обработка элементов с $...$
+                int endIndex = advancedCode.IndexOf('$', nextIndex + 1);
+                if (endIndex != -1)
+                {
+                    string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
+                    AddFormattedText(element, Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
+                    currentIndex = endIndex + 1;
+                }
+                else
+                {
+                    AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
+                    break;
+                }
+            }
+            else if (advancedCode[nextIndex] == '\\')
+            {
+                // Обработка перехода на новую строку
+                if (advancedCode[nextIndex + 1] == 'n')
+                {
+                    RTSS_AdvancedCodeEditor_EditBox.Document.Selection.TypeText("\n");
+                    currentIndex = nextIndex + 2;
+                }
+            }
+            else if (advancedCode[nextIndex] == '\n')
+            {
+                // Обработка символа новой строки
+                RTSS_AdvancedCodeEditor_EditBox.Document.Selection.TypeText("\n");
+                currentIndex++;
+            }
+        }
+    }*/
+/*    private void LoadAndFormatAdvancedCodeEditor()
+    {
+        // Загрузка строки из файла или иного источника
+        string advancedCode = rtssset.AdvancedCodeEditor;
+
+        // Переменная для хранения текущего цвета и размера
+        Windows.UI.Color currentColor = Windows.UI.Color.FromArgb(255,255,255,255);
+        bool isSubscript = false;
+        bool isSuperscript = false;
+
+        // Очищаем текущее содержимое RichEditBox
+        RTSS_AdvancedCodeEditor_EditBox.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, "");
+
+        int currentIndex = 0;
+        while (currentIndex < advancedCode.Length)
+        {
+            // Ищем следующие управляющие символы
+            int nextIndex = advancedCode.IndexOfAny(new char[] { '<', '%', '$', '\\', '\n' }, currentIndex);
+
+            if (nextIndex == -1)
+            {
+                // Добавляем оставшуюся строку
+                AddFormattedText(advancedCode.Substring(currentIndex), currentColor, isSuperscript, isSubscript);
+                break;
+            }
+
+            // Добавляем текст перед управляющим символом
+            if (nextIndex > currentIndex)
+            {
+                AddFormattedText(advancedCode.Substring(currentIndex, nextIndex - currentIndex), currentColor, isSuperscript, isSubscript);
+                currentIndex = nextIndex;
+            }
+
+            // Обработка управляющих символов
+            if (advancedCode[nextIndex] == '<')
+            {
+                // Обрабатываем теги <C> и <S>
+                if (advancedCode[nextIndex + 1] == 'C')
+                {
+                    // Изменение цвета
+                    int closeIndex = advancedCode.IndexOf('>', nextIndex);
+                    if (closeIndex != -1)
+                    {
+                        string colorCode = advancedCode.Substring(nextIndex + 3, closeIndex - nextIndex - 3);
+                        currentColor = ParseColor(colorCode);
+                        currentIndex = closeIndex + 1;
+                    }
+                }
+                else if (advancedCode[nextIndex + 1] == 'S')
+                {
+                    // Обработка изменения размера текста
+                    int closeIndex = advancedCode.IndexOf('>', nextIndex);
+                    if (closeIndex != -1 && advancedCode[nextIndex + 2] == '=')
+                    {
+                        string sizeCode = advancedCode.Substring(nextIndex + 3, closeIndex - nextIndex - 3);
+                        if (int.TryParse(sizeCode, out int sizeValue))
+                        {
+                            if (sizeValue > 0)
+                            {
+                                isSuperscript = true;
+                                isSubscript = false;
+                            }
+                            else
+                            {
+                                isSuperscript = false;
+                                isSubscript = true;
+                            }
+                        }
+                        currentIndex = closeIndex + 1;
+                    }
+                }
+            }
+            else if (advancedCode[nextIndex] == '%')
+            {
+                // Обработка элементов с %...%
+                int endIndex = advancedCode.IndexOf('%', nextIndex + 1);
+                if (endIndex != -1)
+                {
+                    string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
+                    AddFormattedText(element, Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
+                    currentIndex = endIndex + 1;
+                }
+                else
+                {
+                    AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
+                    break;
+                }
+            }
+            else if (advancedCode[nextIndex] == '$')
+            {
+                // Обработка элементов с $...$
+                int endIndex = advancedCode.IndexOf('$', nextIndex + 1);
+                if (endIndex != -1)
+                {
+                    string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
+                    AddFormattedText(element, Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
+                    currentIndex = endIndex + 1;
+                }
+                else
+                {
+                    AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
+                    break;
+                }
+            }
+            else if (advancedCode[nextIndex] == '\\')
+            {
+                // Обработка перехода на новую строку
+                if (advancedCode[nextIndex + 1] == 'n')
+                {
+                    RTSS_AdvancedCodeEditor_EditBox.Document.Selection.TypeText("\n");
+                    currentIndex = nextIndex + 2;
+                }
+            }
+            else if (advancedCode[nextIndex] == '\n')
+            {
+                // Обработка символа новой строки
+                RTSS_AdvancedCodeEditor_EditBox.Document.Selection.TypeText("\n");
+                currentIndex++;
+            }
+        }
+    }
+
+    private void AddFormattedText(string text, Windows.UI.Color color, bool isSuperscript, bool isSubscript)
+    {
+        var document = RTSS_AdvancedCodeEditor_EditBox.Document;
+        var selection = document.Selection;
+
+        selection.TypeText(text);
+        selection.CharacterFormat.ForegroundColor = color;
+
+        if (isSuperscript)
+        {
+            selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.Off;
+            selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.On;
+            selection.CharacterFormat.Size *= 0.5f;
+        }
+        else if (isSubscript)
+        {
+            selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.Off;
+            selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.On;
+            selection.CharacterFormat.Size *= 0.5f;
+        }
+        else
+        {
+            selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.Off;
+            selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.Off;
+        }
+    }
+
+    private Windows.UI.Color ParseColor(string hex)
+    {
+        if (hex.Length == 6)
+        {
+            return Windows.UI.Color.FromArgb(255,
+                byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber),
+                byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber),
+                byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber));
+        }
+        return Windows.UI.Color.FromArgb(255,255,255,255); // если цвет неизвестен
+    } */
+
+    // Вспомогательный метод для преобразования HEX в Windows.UI.Color
+    private void LoadAndFormatAdvancedCodeEditor(string advancedCode)
+    { 
+        if (string.IsNullOrEmpty(advancedCode))
+        {
+            return;
+        }
+        RTSS_AdvancedCodeEditor_EditBox.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, advancedCode.Replace("<Br>", "\n"));
+    }
+
 
     public void ConfigSave()
     {
@@ -1112,6 +1404,15 @@ public sealed partial class SettingsPage : Page
                 RTSS_AVGCPUClockVolt_CompactToggle.IsChecked = RTSS_AllCompact_Toggle.IsChecked;
                 RTSS_APUClockVoltTemp_CompactToggle.IsChecked = RTSS_AllCompact_Toggle.IsChecked;
                 RTSS_FrameRate_CompactToggle.IsChecked = RTSS_AllCompact_Toggle.IsChecked;
+
+                rtssset.RTSS_Elements[1].UseCompact = toggleButton.IsChecked == true;
+                rtssset.RTSS_Elements[2].UseCompact = toggleButton.IsChecked == true;
+                rtssset.RTSS_Elements[3].UseCompact = toggleButton.IsChecked == true;
+                rtssset.RTSS_Elements[4].UseCompact = toggleButton.IsChecked == true;
+                rtssset.RTSS_Elements[5].UseCompact = toggleButton.IsChecked == true;
+                rtssset.RTSS_Elements[6].UseCompact = toggleButton.IsChecked == true;
+                rtssset.RTSS_Elements[7].UseCompact = toggleButton.IsChecked == true;
+                rtssset.RTSS_Elements[8].UseCompact = toggleButton.IsChecked == true;
                 isLoaded = true;
             }
             else
@@ -1170,21 +1471,199 @@ public sealed partial class SettingsPage : Page
             if (colorPicker.Name == "RTSS_APUClockVoltTemp_ColorPicker") { rtssset.RTSS_Elements[7].Color = $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; }
             if (colorPicker.Name == "RTSS_FrameRate_ColorPicker") { rtssset.RTSS_Elements[8].Color = $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}"; }
         }
+        GenerateAdvancedCodeEditor();
+        RtssSave();
+    }
+    private void GenerateAdvancedCodeEditor()
+    {
+        // Шаг 1: Создание ColorLib
+        var ColorLib = new List<string>
+        {
+            "FFFFFF" // Добавляем белый цвет по умолчанию
+        };
+
+        void AddColorIfUnique(string color)
+        {
+            if (!ColorLib.Contains(color.Replace("#", "")))
+            {
+                ColorLib.Add(color.Replace("#",""));
+            }
+        }
+
+        AddColorIfUnique(rtssset.RTSS_Elements[0].Color);
+        AddColorIfUnique(rtssset.RTSS_Elements[1].Color);
+        AddColorIfUnique(rtssset.RTSS_Elements[2].Color);
+        AddColorIfUnique(rtssset.RTSS_Elements[3].Color);
+        AddColorIfUnique(rtssset.RTSS_Elements[4].Color);
+        AddColorIfUnique(rtssset.RTSS_Elements[5].Color);
+        AddColorIfUnique(rtssset.RTSS_Elements[6].Color);
+        AddColorIfUnique(rtssset.RTSS_Elements[7].Color);
+        AddColorIfUnique(rtssset.RTSS_Elements[8].Color);
+
+        // Шаг 2: Создание CompactLib
+        var CompactLib = new bool[9];
+        CompactLib[0] = rtssset.RTSS_Elements[0].UseCompact;
+        CompactLib[1] = rtssset.RTSS_Elements[1].UseCompact;
+        CompactLib[2] = rtssset.RTSS_Elements[1].UseCompact && rtssset.RTSS_Elements[1].Enabled ? rtssset.RTSS_Elements[1].UseCompact : rtssset.RTSS_Elements[2].UseCompact;
+        CompactLib[3] = rtssset.RTSS_Elements[1].UseCompact && rtssset.RTSS_Elements[1].Enabled ? rtssset.RTSS_Elements[1].UseCompact : rtssset.RTSS_Elements[3].UseCompact;
+        CompactLib[4] = rtssset.RTSS_Elements[1].UseCompact && rtssset.RTSS_Elements[1].Enabled ? rtssset.RTSS_Elements[1].UseCompact : rtssset.RTSS_Elements[4].UseCompact;
+        CompactLib[5] = rtssset.RTSS_Elements[1].UseCompact && rtssset.RTSS_Elements[1].Enabled ? rtssset.RTSS_Elements[1].UseCompact : rtssset.RTSS_Elements[5].UseCompact;
+        CompactLib[6] = rtssset.RTSS_Elements[1].UseCompact && rtssset.RTSS_Elements[1].Enabled ? rtssset.RTSS_Elements[1].UseCompact : rtssset.RTSS_Elements[6].UseCompact;
+        CompactLib[7] = rtssset.RTSS_Elements[1].UseCompact && rtssset.RTSS_Elements[1].Enabled ? rtssset.RTSS_Elements[1].UseCompact : rtssset.RTSS_Elements[7].UseCompact;
+        CompactLib[8] = rtssset.RTSS_Elements[1].UseCompact && rtssset.RTSS_Elements[1].Enabled ? rtssset.RTSS_Elements[1].UseCompact : rtssset.RTSS_Elements[8].UseCompact;
+
+        // Шаг 3: Создание EnableLib
+        var EnableLib = new bool[9];
+        EnableLib[0] = rtssset.RTSS_Elements[0].Enabled;
+        EnableLib[1] = rtssset.RTSS_Elements[1].Enabled;
+        EnableLib[2] = rtssset.RTSS_Elements[2].Enabled;
+        EnableLib[3] = rtssset.RTSS_Elements[3].Enabled;
+        EnableLib[4] = rtssset.RTSS_Elements[4].Enabled;
+        EnableLib[5] = rtssset.RTSS_Elements[5].Enabled;
+        EnableLib[6] = rtssset.RTSS_Elements[6].Enabled;
+        EnableLib[7] = rtssset.RTSS_Elements[7].Enabled;
+        EnableLib[8] = rtssset.RTSS_Elements[8].Enabled;
+
+        // Шаг 4: Создание TextLib
+        var TextLib = new string[7];
+        TextLib[0] = rtssset.RTSS_Elements[2].Name.TrimEnd();  // Saku Overclock Profile
+        TextLib[1] = rtssset.RTSS_Elements[3].Name.TrimEnd();  // STAPM Fast Slow
+        TextLib[2] = rtssset.RTSS_Elements[4].Name.TrimEnd();  // EDC Therm CPU Usage
+        TextLib[3] = rtssset.RTSS_Elements[5].Name.TrimEnd();  // CPU Clocks
+        TextLib[4] = rtssset.RTSS_Elements[6].Name.TrimEnd();  // AVG Clock Volt
+        TextLib[5] = rtssset.RTSS_Elements[7].Name.TrimEnd();  // APU Clock Volt Temp
+        TextLib[6] = rtssset.RTSS_Elements[8].Name.TrimEnd();  // Frame Rate
+
+        // Шаг 5: Генерация строки AdvancedCodeEditor
+        var advancedCodeEditor = new StringBuilder();
+
+        /*public string AdvancedCodeEditor =
+        "<C0=FFA0A0><C1=A0FFA0><C2=FC89AC><C3=fa2363><S1=70><S2=-50>\n" +
+        "<C0>Saku Overclock <C1>" + ViewModels.ГлавнаяViewModel.GetVersion() + ": <S0>$SelectedProfile$\n" +
+        "<S1><C2>STAPM, Fast, Slow: <C3><S0>$stapm_value$<S2>W<S1>$stapm_limit$W <S0>$fast_value$<S2>W<S1>$fast_limit$W <S0>$slow_value$<S2>W<S1>$slow_limit$W\n" +
+        "<C2>EDC, Therm, CPU Usage: <C3><S0>$vrmedc_value$<S2>A<S1>$vrmedc_max$A <C3><S0>$cpu_temp_value$<S2>C<S1>$cpu_temp_max$C<C3><S0> $cpu_usage$<S2>%<S1>\n" +
+        "<S1><C2>Clocks: $cpu_clock_cycle$<S1><C2>$currCore$:<S0><C3> $cpu_core_clock$<S2>GHz<S1>$cpu_core_voltage$V $cpu_clock_cycle_end$\n" +
+        "<C2>AVG Clock, Volt: <C3><S0>$average_cpu_clock$<S2>GHz<S1>$average_cpu_voltage$V" +
+        "<C2>APU Clock, Volt, Temp: <C3><S0>$gfx_clock$<S2>MHz<S1>$gfx_volt$V <S0>$gfx_temp$<S1>C\n" +
+        "<C2>Framerate <C3><S0>%FRAMERATE% %FRAMETIME%";*/
+
+        // 5.1 Первая строка с цветами и размерами
+        //Пример первой строки:
+        // "<C0=FFA0A0><C1=A0FFA0><C2=FC89AC><C3=fa2363><S1=70><S2=-50>\n" +
+        for (var i = 0; i < ColorLib.Count; i++)
+        {
+            advancedCodeEditor.Append($"<C{i}={ColorLib[i]}>");
+        }
+        advancedCodeEditor.Append("<S1=70><S2=-50>\n");
+
+        // 5.2 Вторая строка (Saku Overclock)
+        //Пример второй строки:
+        // "<C0>Saku Overclock <C1>" + ViewModels.ГлавнаяViewModel.GetVersion() + ": <S0>$SelectedProfile$\n" +
+        if (EnableLib[2])
+        {
+            var colorIndexMain = rtssset.RTSS_Elements[0].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[0].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[2].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = rtssset.RTSS_Elements[1].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[1].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[2].Color.Replace("#", "")).ToString();
+            var compactMain = rtssset.RTSS_Elements[0].Enabled ? (CompactLib[0] ? "<S1>" : "<S0>") : (CompactLib[2] ? "<S1>" : "<S0>");
+            var compactSecond = rtssset.RTSS_Elements[1].Enabled ? (CompactLib[1] ? "<S2>" : "<S0>") : (CompactLib[2] ? "<S2>" : "<S0>");
+            advancedCodeEditor.Append($"<C{colorIndexMain}>{compactMain}{TextLib[0]} {ГлавнаяViewModel.GetVersion()}: <C{colorIndexSecond}>{compactSecond}<S0>$SelectedProfile$\n");
+        }
+
+        // 5.3 Третья строка (STAPM Fast Slow)
+        //Пример третьей строки:
+        // "<S1><C2>STAPM, Fast, Slow: <C3><S0>$stapm_value$<S2>W<S1>$stapm_limit$W <S0>$fast_value$<S2>W<S1>$fast_limit$W <S0>$slow_value$<S2>W<S1>$slow_limit$W\n" +
+        if (EnableLib[3])
+        {
+            var colorIndexMain = rtssset.RTSS_Elements[0].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[0].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[3].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = rtssset.RTSS_Elements[1].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[1].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[3].Color.Replace("#", "")).ToString();
+            var compactMain = rtssset.RTSS_Elements[0].Enabled ? (CompactLib[0] ? "<S1>" : "<S0>") : (CompactLib[3] ? "<S1>" : "<S0>");
+            var compactSecond = rtssset.RTSS_Elements[1].Enabled ? (CompactLib[1] ? "<S2>" : "<S0>") : (CompactLib[3] ? "<S2>" : "<S0>");
+            var compactSign = rtssset.RTSS_Elements[1].Enabled ? (CompactLib[1] ? "" : "/") : (CompactLib[3] ? "" : "/");
+            advancedCodeEditor.Append($"<C{colorIndexMain}>{compactMain}{TextLib[1]}: <C{colorIndexSecond}><S0>$stapm_value${compactSecond}W{compactSign}{compactSecond.Replace("2","1")}$stapm_limit$W <S0>$fast_value${compactSecond}W{compactSign}{compactSecond.Replace("2", "1")}$fast_limit$W <S0>$slow_value${compactSecond}W{compactSign}{compactSecond.Replace("2", "1")}$slow_limit$W\n");
+        }
+        // - Для EDC Therm CPU Usage
+        //Пример четвёртой строки:
+        // "<C2>EDC, Therm, CPU Usage: <C3><S0>$vrmedc_value$<S2>A<S1>$vrmedc_max$A <C3><S0>$cpu_temp_value$<S2>C<S1>$cpu_temp_max$C<C3><S0> $cpu_usage$<S2>%<S1>\n" +
+        if (EnableLib[4])
+        {
+            var colorIndexMain = rtssset.RTSS_Elements[0].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[0].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[4].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = rtssset.RTSS_Elements[1].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[1].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[4].Color.Replace("#", "")).ToString();
+            var compactMain = rtssset.RTSS_Elements[0].Enabled ? (CompactLib[0] ? "<S1>" : "<S0>") : (CompactLib[4] ? "<S1>" : "<S0>");
+            var compactSecond = rtssset.RTSS_Elements[1].Enabled ? (CompactLib[1] ? "<S2>" : "<S0>") : (CompactLib[4] ? "<S2>" : "<S0>");
+            var compactSign = rtssset.RTSS_Elements[1].Enabled ? (CompactLib[1] ? "" : "/") : (CompactLib[4] ? "" : "/");
+            advancedCodeEditor.Append($"<C{colorIndexMain}>{compactMain}{TextLib[2]}: <C{colorIndexSecond}><S0>$vrmedc_value${compactSecond}A{compactSign}{compactSecond.Replace("2", "1")}$vrmedc_max$A <S0>$cpu_temp_value${compactSecond}C{compactSign}{compactSecond.Replace("2", "1")}$cpu_temp_max$C <S0>$cpu_usage${compactSecond}%\n");
+        }
+        // - Для CPU Clocks
+        //Пример пятой строки:
+        // "<S1><C2>Clocks: $cpu_clock_cycle$<S1><C2>$currCore$:<S0><C3> $cpu_core_clock$<S2>GHz<S1>$cpu_core_voltage$V $cpu_clock_cycle_end$\n" +
+        if (EnableLib[5])
+        {
+            var colorIndexMain = rtssset.RTSS_Elements[0].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[0].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[5].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = rtssset.RTSS_Elements[1].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[1].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[5].Color.Replace("#", "")).ToString();
+            var compactMain = rtssset.RTSS_Elements[0].Enabled ? (CompactLib[0] ? "<S1>" : "<S0>") : (CompactLib[5] ? "<S1>" : "<S0>");
+            var compactSecond = rtssset.RTSS_Elements[1].Enabled ? (CompactLib[1] ? "<S2>" : "<S0>") : (CompactLib[5] ? "<S2>" : "<S0>");
+            var compactSign = rtssset.RTSS_Elements[1].Enabled ? (CompactLib[1] ? "" : "/") : (CompactLib[5] ? "" : "/");
+            advancedCodeEditor.Append($"<C{colorIndexMain}>{compactMain}{TextLib[3]}: $cpu_clock_cycle$<C{colorIndexMain}>$currCore$: <C{colorIndexSecond}>$cpu_core_clock${compactSecond}GHz{compactSign}{compactSecond.Replace("2", "1")}$cpu_core_voltage$V $cpu_clock_cycle_end$\n");
+        }
+        // - Для AVG Clock Volt
+        //Пример шестой строки:
+        // "<C2>AVG Clock, Volt: <C3><S0>$average_cpu_clock$<S2>GHz<S1>$average_cpu_voltage$V" +
+        if (EnableLib[6])
+        {
+            var colorIndexMain = rtssset.RTSS_Elements[0].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[0].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[6].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = rtssset.RTSS_Elements[1].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[1].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[6].Color.Replace("#", "")).ToString();
+            var compactMain = rtssset.RTSS_Elements[0].Enabled ? (CompactLib[0] ? "<S1>" : "<S0>") : (CompactLib[6] ? "<S1>" : "<S0>");
+            var compactSecond = rtssset.RTSS_Elements[1].Enabled ? (CompactLib[1] ? "<S2>" : "<S0>") : (CompactLib[6] ? "<S2>" : "<S0>");
+            var compactSign = rtssset.RTSS_Elements[1].Enabled ? (CompactLib[1] ? "" : "/") : (CompactLib[6] ? "" : "/");
+            advancedCodeEditor.Append($"<C{colorIndexMain}>{compactMain}{TextLib[4]}: <C{colorIndexSecond}><S0>$average_cpu_clock${compactSecond}GHz{compactSign}{compactSecond.Replace("2", "1")}$average_cpu_voltage$V\n");
+        }
+        // - Для APU Clock Volt Temp
+        //Пример седьмой строки:
+        // "<C2>APU Clock, Volt, Temp: <C3><S0>$gfx_clock$<S2>MHz<S1>$gfx_volt$V <S0>$gfx_temp$<S1>C\n" +
+        if (EnableLib[7])
+        {
+            var colorIndexMain = rtssset.RTSS_Elements[0].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[0].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[7].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = rtssset.RTSS_Elements[1].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[1].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[7].Color.Replace("#", "")).ToString();
+            var compactMain = rtssset.RTSS_Elements[0].Enabled ? (CompactLib[0] ? "<S1>" : "<S0>") : (CompactLib[7] ? "<S1>" : "<S0>");
+            var compactSecond = rtssset.RTSS_Elements[1].Enabled ? (CompactLib[1] ? "<S2>" : "<S0>") : (CompactLib[7] ? "<S2>" : "<S0>");
+            var compactSign = rtssset.RTSS_Elements[1].Enabled ? (CompactLib[1] ? "" : "/") : (CompactLib[7] ? "" : "/");
+            advancedCodeEditor.Append($"<C{colorIndexMain}>{compactMain}{TextLib[5]}: <C{colorIndexSecond}><S0>$gfx_clock${compactSecond}MHz{compactSign}{compactSecond.Replace("2", "1")}$gfx_volt$V <S0>$gfx_temp${compactSecond}C\n");
+        }
+        // - Для Frame Rate
+        //Пример восьмой строки:
+        // "<C2>Framerate <C3><S0>%FRAMERATE% %FRAMETIME%";*/
+        if (EnableLib[8])
+        {
+            var colorIndexMain = rtssset.RTSS_Elements[0].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[0].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[8].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = rtssset.RTSS_Elements[1].Enabled ? ColorLib.IndexOf(rtssset.RTSS_Elements[1].Color.Replace("#", "")).ToString() : ColorLib.IndexOf(rtssset.RTSS_Elements[8].Color.Replace("#", "")).ToString();
+            var compactMain = rtssset.RTSS_Elements[0].Enabled ? (CompactLib[0] ? "<S1>" : "<S0>") : (CompactLib[8] ? "<S1>" : "<S0>");
+            advancedCodeEditor.Append($"<C{colorIndexMain}>{compactMain}{TextLib[6]}: <C{colorIndexSecond}><S0>%FRAMERATE% %FRAMETIME%");
+        }
+        // Финальная строка присваивается в rtssset.AdvancedCodeEditor
+        rtssset.AdvancedCodeEditor = advancedCodeEditor.ToString();
+        LoadAndFormatAdvancedCodeEditor(rtssset.AdvancedCodeEditor);
+        RTSSHandler.ChangeOSDText(rtssset.AdvancedCodeEditor);
         RtssSave();
     }
 
+
     private void Settings_RTSS_Enable_Toggled(object sender, RoutedEventArgs e)
     {
-
+        if (!isLoaded) { return; }
+        ConfigLoad(); config.RTSSMetricsEnabled = Settings_RTSS_Enable.IsOn; ConfigSave();
     }
     private void RTSS_AdvancedCodeEditor_ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-
+        RTSS_AdvancedCodeEditor_EditBox.Visibility = RTSS_AdvancedCodeEditor_ToggleSwitch.IsOn ? Visibility.Visible : Visibility.Collapsed;
+        if (!isLoaded) { return; }
+        RtssLoad(); rtssset.IsAdvancedCodeEditorEnabled = RTSS_AdvancedCodeEditor_ToggleSwitch.IsOn; RtssSave();
     }
 
     private void RTSS_AdvancedCodeEditor_EditBox_TextChanged(object sender, RoutedEventArgs e)
     {
-
+        var newString = "";
+        RTSS_AdvancedCodeEditor_EditBox.Document.GetText(Microsoft.UI.Text.TextGetOptions.None, out newString);
+        rtssset.AdvancedCodeEditor = newString.Replace("\r", "\n");
+        RtssSave();
     }
     #endregion
 }

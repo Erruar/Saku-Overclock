@@ -215,7 +215,7 @@ public sealed partial class MainWindow : WindowEx
                     {
                         if (ReapplyOverclock == true)
                         {
-                            await Process(RyzenADJline, false); // Запустить ryzenadj снова, БЕЗ логирования, false
+                            await Process(RyzenADJline, false); // Запустить SendSMUCommand снова, БЕЗ логирования, false
                             sendSMUCommand.Play_Invernate_QuickSMU(1); //Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
                         }
                     }; timer.Start();

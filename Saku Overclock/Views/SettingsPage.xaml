@@ -236,7 +236,7 @@
                                             <!---->
                                             <CheckBox x:Name="RTSS_SakuOverclockProfile_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox x:Name="RTSS_SakuOverclockProfile_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Saku Overclock RC-7: (Profile)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_SakuOverclockProfile_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="Saku Overclock RC-7: (Profile)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_SakuOverclockProfile_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_SakuOverclockProfile_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -277,7 +277,7 @@
                                             <!---->
                                             <CheckBox x:Name="RTSS_StapmFastSlow_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox x:Name="RTSS_StapmFastSlow_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="STAPM, Fast, Slow: (W)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_StapmFastSlow_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="STAPM, Fast, Slow: (W)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_StapmFastSlow_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_StapmFastSlow_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -318,7 +318,7 @@
                                             <!---->
                                             <CheckBox x:Name="RTSS_EDCThermUsage_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox x:Name="RTSS_EDCThermUsage_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="EDC, Therm, CPU Usage: (A),(C),(%)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_EDCThermUsage_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="EDC, Therm, CPU Usage: (A),(C),(%)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_EDCThermUsage_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_EDCThermUsage_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -359,7 +359,7 @@
                                             <!---->
                                             <CheckBox x:Name="RTSS_CPUClocks_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox x:Name="RTSS_CPUClocks_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Clocks: (GHz), (V)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_CPUClocks_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="Clocks: (GHz), (V)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_CPUClocks_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_CPUClocks_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -400,7 +400,7 @@
                                             <!---->
                                             <CheckBox x:Name="RTSS_AVGCPUClockVolt_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox x:Name="RTSS_AVGCPUClockVolt_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="AVG Clock, Volt: (GHz), (V)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_AVGCPUClockVolt_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="AVG Clock, Volt: (GHz), (V)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_AVGCPUClockVolt_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_AVGCPUClockVolt_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -441,7 +441,7 @@
                                             <!---->
                                             <CheckBox x:Name="RTSS_APUClockVoltTemp_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox x:Name="RTSS_APUClockVoltTemp_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="APU Clock, Volt, Temp: (GHz), (V), (C)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_APUClockVoltTemp_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="APU Clock, Volt, Temp: (GHz), (V), (C)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_APUClockVoltTemp_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_APUClockVoltTemp_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -482,7 +482,7 @@
                                             <!---->
                                             <CheckBox x:Name="RTSS_FrameRate_Checkbox" Checked="RTSSChanged_Checked" Unchecked="RTSSChanged_Checked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,0,0,0" Grid.Column="0"></CheckBox>
                                             <!---->
-                                            <TextBox x:Name="RTSS_FrameRate_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Framerate: (FPS)" Grid.Column="1"/>
+                                            <TextBox x:Name="RTSS_FrameRate_TextBox" TextChanged="RTSSChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="-10,0,9,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="Framerate: (FPS)" Grid.Column="1"/>
                                             <!---->
                                             <Button x:Name="RTSS_FrameRate_Button" Margin="1,0,0,0" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="2">
                                                 <Border Background="{Binding ElementName=RTSS_FrameRate_ColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
@@ -523,7 +523,9 @@
                         </GridView> 
                     </StackPanel>
                     <ToggleSwitch Toggled="RTSS_AdvancedCodeEditor_ToggleSwitch_Toggled" x:Uid="Settings_RTSS_AdvancedCode_Enable" Name="RTSS_AdvancedCodeEditor_ToggleSwitch">Расширенный редактор кода отображения наложения RTSS</ToggleSwitch>
-                    <RichEditBox TextChanged="RTSS_AdvancedCodeEditor_EditBox_TextChanged" x:Name="RTSS_AdvancedCodeEditor_EditBox" Width="430" HorizontalAlignment="Left"></RichEditBox>
+                    <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto" Visibility="{Binding ElementName=RTSS_AdvancedCodeEditor_EditBox, Path=Visibility}"  Width="430" HorizontalAlignment="Left">
+                        <RichEditBox Visibility="Collapsed" TextChanged="RTSS_AdvancedCodeEditor_EditBox_TextChanged" x:Name="RTSS_AdvancedCodeEditor_EditBox" MinWidth="500" HorizontalAlignment="Stretch"></RichEditBox>
+                    </ScrollViewer>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
