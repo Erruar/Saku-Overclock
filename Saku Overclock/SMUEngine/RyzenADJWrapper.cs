@@ -242,7 +242,7 @@ public static class RyzenADJWrapper
             _ = init_table(ryzenAccess);
             _ = refresh_table(ryzenAccess); 
             Console.WriteLine($"CPU Family: {family}");
-            Views.ShellPage.AddNote(DllName, family.ToString() + "\n" + get_stapm_value(ryzenAccess).ToString() + " / " + get_stapm_limit(ryzenAccess).ToString(), Microsoft.UI.Xaml.Controls.InfoBarSeverity.Informational);
+            SendSMUCommand.TraceIt_TraceError(DllName + "\n" + family.ToString() + "\n" + get_stapm_value(ryzenAccess).ToString() + " / " + get_stapm_limit(ryzenAccess).ToString());
         }
     }
     public static string GetCPUCodename()

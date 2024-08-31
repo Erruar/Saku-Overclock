@@ -17,6 +17,7 @@ using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation;
 using Windows.System;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 
 namespace Saku_Overclock.Views;
@@ -158,11 +159,11 @@ public sealed partial class ShellPage : Page
             ViewModel.Items = Itemz;
             if (config.Preset == -1)
             {
-                if (config.PremadeMinActivated) { SelectTru("PremadeSsAMin"); }
-                if (config.PremadeEcoActivated) { SelectTru("PremadeSsAEco"); }
-                if (config.PremadeBalanceActivated) { SelectTru("PremadeSsABal"); }
-                if (config.PremadeSpeedActivated) { SelectTru("PremadeSsASpd"); }
-                if (config.PremadeMaxActivated) { SelectTru("PremadeSsAMax"); }
+                if (config.PremadeMinActivated) { SelectRightPremadedProfileName("PremadeSsAMin"); }
+                if (config.PremadeEcoActivated) { SelectRightPremadedProfileName("PremadeSsAEco"); }
+                if (config.PremadeBalanceActivated) { SelectRightPremadedProfileName("PremadeSsABal"); }
+                if (config.PremadeSpeedActivated) { SelectRightPremadedProfileName("PremadeSsASpd"); }
+                if (config.PremadeMaxActivated) { SelectRightPremadedProfileName("PremadeSsAMax"); }
             }
             else
             {
@@ -171,7 +172,7 @@ public sealed partial class ShellPage : Page
             if (config.ReapplyLatestSettingsOnAppLaunch) { ProfileSetButton.IsEnabled = false; }
         }
     }
-    private void SelectTru(string Names)
+    private void SelectRightPremadedProfileName(string Names)
     {
         foreach (var box in ProfileSetComboBox.Items)
         {
@@ -188,45 +189,246 @@ public sealed partial class ShellPage : Page
         var nextProfile = string.Empty;
         ConfigLoad();
         if (config == null) { return string.Empty; }
-        if (config.Preset != -1)
+        if (config.Preset != -1) // У нас был готовый пресет
         {
-            if (config.PremadeMinActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Min".GetLocalized(); config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
-            else if (config.PremadeEcoActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Eco".GetLocalized(); config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
-            else if (config.PremadeBalanceActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Balance".GetLocalized(); config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
-            else if (config.PremadeSpeedActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Speed".GetLocalized(); config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
-            else if (config.PremadeMaxActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Max".GetLocalized(); config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
+            if (config.PremadeMinActivated) 
+            { 
+                config.Preset = -1; 
+                nextProfile = "Shell_Preset_Min".GetLocalized(); 
+                config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; 
+                foreach (var element in ProfileSetComboBox.Items)
+                {
+                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMin")
+                    {
+                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
+                        ProfileSetButton.IsEnabled = false;
+                    }
+                } 
+            }
+            else if (config.PremadeEcoActivated) 
+            { 
+                config.Preset = -1; 
+                nextProfile = "Shell_Preset_Eco".GetLocalized(); 
+                config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                foreach (var element in ProfileSetComboBox.Items)
+                {
+                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAEco")
+                    {
+                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
+                        ProfileSetButton.IsEnabled = false;
+                    }
+                }
+            }
+            else if (config.PremadeBalanceActivated) 
+            { 
+                config.Preset = -1; 
+                nextProfile = "Shell_Preset_Balance".GetLocalized(); 
+                config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                foreach (var element in ProfileSetComboBox.Items)
+                {
+                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsABal")
+                    {
+                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
+                        ProfileSetButton.IsEnabled = false;
+                    }
+                }
+            }
+            else if (config.PremadeSpeedActivated) 
+            { 
+                config.Preset = -1; 
+                nextProfile = "Shell_Preset_Speed".GetLocalized(); 
+                config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                foreach (var element in ProfileSetComboBox.Items)
+                {
+                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsASpd")
+                    {
+                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
+                        ProfileSetButton.IsEnabled = false;
+                    }
+                }
+            }
+            else if (config.PremadeMaxActivated) 
+            { 
+                config.Preset = -1; 
+                nextProfile = "Shell_Preset_Max".GetLocalized(); 
+                config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                foreach (var element in ProfileSetComboBox.Items)
+                {
+                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMax")
+                    {
+                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
+                        ProfileSetButton.IsEnabled = false;
+                    }
+                }
+            }
         }
-        else
+        else // У нас уже был выставлен какой-то профиль
         {
-            if (config.PremadeMinActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Eco".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = true; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Эко
-            else if (config.PremadeEcoActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Balance".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = true; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Баланс
-            else if (config.PremadeBalanceActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Speed".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = true; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Скорость
-            else if (config.PremadeSpeedActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Max".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = true; config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Максимум
-            else if (config.PremadeMaxActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Min".GetLocalized(); config.PremadeMinActivated = true; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Минимум
+            if (config.PremadeMinActivated) 
+            { 
+                config.Preset = -1; 
+                nextProfile = "Shell_Preset_Eco".GetLocalized(); 
+                config.PremadeMinActivated = false; 
+                config.PremadeEcoActivated = true; 
+                config.PremadeBalanceActivated = false;
+                config.PremadeSpeedActivated = false;
+                config.PremadeMaxActivated = false;
+                config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                foreach (var element in ProfileSetComboBox.Items)
+                {
+                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAEco")
+                    {
+                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
+                        ProfileSetButton.IsEnabled = false;
+                    }
+                }
+            } // Эко
+            else if (config.PremadeEcoActivated) 
+            { 
+                config.Preset = -1; 
+                nextProfile = "Shell_Preset_Balance".GetLocalized(); 
+                config.PremadeMinActivated = false; 
+                config.PremadeEcoActivated = false; 
+                config.PremadeBalanceActivated = true; 
+                config.PremadeSpeedActivated = false; 
+                config.PremadeMaxActivated = false; 
+                config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                foreach (var element in ProfileSetComboBox.Items)
+                {
+                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsABal")
+                    {
+                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
+                        ProfileSetButton.IsEnabled = false;
+                    }
+                }
+            } // Баланс
+            else if (config.PremadeBalanceActivated) 
+            { 
+                config.Preset = -1; 
+                nextProfile = "Shell_Preset_Speed".GetLocalized(); 
+                config.PremadeMinActivated = false;
+                config.PremadeEcoActivated = false;
+                config.PremadeBalanceActivated = false;
+                config.PremadeSpeedActivated = true;
+                config.PremadeMaxActivated = false;
+                config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                foreach (var element in ProfileSetComboBox.Items)
+                {
+                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsASpd")
+                    {
+                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
+                        ProfileSetButton.IsEnabled = false;
+                    }
+                }
+            } // Скорость
+            else if (config.PremadeSpeedActivated) 
+            { 
+                config.Preset = -1;
+                nextProfile = "Shell_Preset_Max".GetLocalized(); 
+                config.PremadeMinActivated = false;
+                config.PremadeEcoActivated = false;
+                config.PremadeBalanceActivated = false;
+                config.PremadeSpeedActivated = false; 
+                config.PremadeMaxActivated = true; 
+                config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                foreach (var element in ProfileSetComboBox.Items)
+                {
+                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMax")
+                    {
+                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
+                        ProfileSetButton.IsEnabled = false;
+                    }
+                }
+            } // Максимум
+            else if (config.PremadeMaxActivated) 
+            {
+                config.Preset = -1;
+                nextProfile = "Shell_Preset_Min".GetLocalized();
+                config.PremadeMinActivated = true;
+                config.PremadeEcoActivated = false;
+                config.PremadeBalanceActivated = false;
+                config.PremadeSpeedActivated = false;
+                config.PremadeMaxActivated = false; 
+                config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                foreach (var element in ProfileSetComboBox.Items)
+                {
+                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMin")
+                    {
+                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
+                        ProfileSetButton.IsEnabled = false;
+                    }
+                }
+            } // Минимум
         }
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
-        }
-        catch { }
+        ConfigSave();
         return nextProfile;
     }
     private string NextCustomProfile_Switch()
     {
         var nextProfile = string.Empty;
         ProfileLoad();
+        ConfigLoad();
         if (config.Preset == -1) // У нас был готовый пресет
         {
-            if (profile.Length > 0 && profile[0] != null && profile[0].profilename != null)
+            if (profile.Length > 0 && profile[0] != null && profile[0].profilename != null) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
             {
-                
+                config.Preset = 0;
+                try
+                {
+                    foreach (var element in ProfileSetComboBox.Items)
+                    {
+                        if (element != null && (element as ComboBoxItem) != null)
+                        {
+                            var selectedName = (element as ComboBoxItem)!.Content.ToString();
+                            if (selectedName != null && selectedName == profile[0].profilename)
+                            {
+                                ProfileSetComboBox.SelectedItem = element as ComboBoxItem;
+                                ProfileSetButton.IsEnabled = false;
+                                nextProfile = selectedName;
+                            } 
+                        }
+                        else { MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {(element as ComboBoxItem)!.Content}", InfoBarSeverity.Error); }
+                    }
+                    MandarinSparseUnit();
+                }
+                catch
+                {
+                    MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {profile[0].profilename}", InfoBarSeverity.Error); 
+                }
             }
         }
         else // У нас уже был выставлен какой-то профиль
         {
-
+            var nextProfileIndex = (profile.Length - 1 >= config.Preset + 1) ? (config.Preset + 1) : 0;
+            if (profile.Length > nextProfileIndex && profile[nextProfileIndex] != null && profile[nextProfileIndex].profilename != null) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
+            {
+                config.Preset = nextProfileIndex;
+                try
+                {
+                    foreach (var element in ProfileSetComboBox.Items)
+                    {
+                        if (element != null && (element as ComboBoxItem) != null)
+                        {
+                            var selectedName = (element as ComboBoxItem)!.Content.ToString();
+                            if (selectedName != null && selectedName == profile[nextProfileIndex].profilename)
+                            {
+                                ProfileSetComboBox.SelectedItem = element as ComboBoxItem;
+                                ProfileSetButton.IsEnabled = false;
+                                nextProfile = selectedName;
+                            } 
+                        }
+                        else { MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {(element as ComboBoxItem)!.Content}", InfoBarSeverity.Error); }
+                    }
+                    MandarinSparseUnit();
+                }
+                catch
+                {
+                    MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {profile[0].profilename}", InfoBarSeverity.Error);
+                }
+            }
+            else { MandarinAddNotification("TraceIt_Error".GetLocalized(), nextProfileIndex.ToString(), InfoBarSeverity.Error); }
         }
+        ConfigSave();
         return nextProfile;
     }
     public void MandarinSparseUnit()
@@ -313,7 +515,6 @@ public sealed partial class ShellPage : Page
             });
             return;
         }
-        ConfigLoad();
         ProfileLoad();
         var adjline = "";
         if (profile[indexRequired].cpu1)
@@ -990,17 +1191,18 @@ public sealed partial class ShellPage : Page
         //что произошло именно событие нажатия на клавишу (вторая половина)
         if (nCode >= 0 && wParam == WM_KEYDOWN)
         {
-            var vkCode = Marshal.ReadInt32(lParam); //Получаем код клавиши из неуправляемой памяти
+            var virtualkeyCode = Marshal.ReadInt32(lParam); //Получаем код клавиши из неуправляемой памяти
             //Переключить между своими пресетами - Switch profile to next Custom
-            if ((Keys)vkCode == Keys.W && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
+            if ((Keys)virtualkeyCode == Keys.W && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
             {
                 //Создать уведомление
                 var nextProfile = NextCustomProfile_Switch();
+                ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextProfile);
                 MandarinAddNotification("Смена пресета", "Вы успешно переключили ваши пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
                 MainWindow.Applyer.ApplyWithoutADJLine(false);
             }
             //Переключить между готовыми пресетами - Switch profile to next Premaded
-            if ((Keys)vkCode == Keys.P && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
+            if ((Keys)virtualkeyCode == Keys.P && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
             {
                 var nextProfile = NextPremadeProfile_Switch();
                 ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextProfile);
