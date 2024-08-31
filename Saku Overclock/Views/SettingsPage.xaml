@@ -77,17 +77,17 @@
                 <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
                     <ToggleSwitch x:Uid="Settings_ni_Traymon" Name="Settings_ni_Icons" Toggled="Settings_ni_Icons_Toggled">Включить мониторинг в трее?</ToggleSwitch>
                     <TextBlock Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_Elements" />
-                    <Grid>
-                        <Border Margin="-1,0,0,0" CornerRadius="15" HorizontalAlignment="Left" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="154" Height="33"></Border>
-                        <ComboBox SelectedIndex="0" Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconComboboxElements" SelectionChanged="NiIconComboboxElements_SelectionChanged"  CornerRadius="15">
-                            <ComboBoxItem Content="Nothing to show"/> 
+                    <Grid x:Name="Settings_NiIconComboboxElements">
+                        <Border Visibility="Collapsed" Margin="-1,0,0,0" CornerRadius="15" HorizontalAlignment="Left" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="154" Height="33"></Border>
+                        <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconComboboxElements" SelectionChanged="NiIconComboboxElements_SelectionChanged"  CornerRadius="15">
                         </ComboBox>
                     </Grid>
                     <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" x:Name="Settings_ni_Add_Element" Click="Settings_ni_Add_Element_Click" Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
                         <TextBlock FontWeight="SemiBold"  x:Uid="Settings_ni_Add_Element"  Text="Add element"/>
                     </Button>
-                    <TextBlock Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_ContextMenu" />
-                    <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                    <ToggleSwitch Visibility="Collapsed" Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_EnabledElement" Name="Settings_ni_EnabledElement" Toggled="Settings_ni_EnabledElement_Toggled">Отображать в трее</ToggleSwitch>
+                    <TextBlock Visibility="Collapsed" x:Name="Settings_ni_ContextMenu" Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_ContextMenu" />
+                    <StackPanel Visibility="Collapsed" x:Name="NiIcon_Stackpanel" Margin="{StaticResource XSmallTopMargin}">
                         <Grid>
                             <Border Margin="-1,0,0,0" CornerRadius="15" HorizontalAlignment="Left" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="154" Height="33"></Border>
                             <ComboBox SelectedIndex="0" Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconCombobox" SelectionChanged="NiIconCombobox_SelectionChanged"  CornerRadius="15">
@@ -96,8 +96,25 @@
                                 <ComboBoxItem x:Uid="Settings_ni_Context_Extended" Content="Extended title"/> 
                             </ComboBox>
                         </Grid>
-                        <Button  Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="Settings_ni_Color_Picker_Click"  x:Name="Settings_ni_Color_Picker" Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
+                        <Button  Shadow="{StaticResource SharedShadow}" Translation="0,0,20" x:Name="Settings_ni_Color_Picker" Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
                             <TextBlock  x:Uid="Settings_ni_Color_Picker" FontWeight="SemiBold"  Text="Color picker"/>
+                            <Button.Flyout>
+                                <Flyout x:Name="NiIcons_ColorPicker_Flyout">
+                                    <Grid>
+                                        <ColorPicker  ColorSpectrumShape="Box"
+                          Color="#FACAFA"
+                          ColorChanged="NiIcons_ColorPicker_ColorPicker_ColorChanged"
+                          x:Name="NiIcons_ColorPicker_ColorPicker"
+                          IsMoreButtonVisible="False"
+                          IsColorSliderVisible="True"
+                          IsColorChannelTextInputVisible="True"
+                          IsHexInputVisible="True"
+                          IsAlphaEnabled="False"
+                          IsAlphaSliderVisible="True"
+                          IsAlphaTextInputVisible="True"></ColorPicker>
+                                    </Grid>
+                                </Flyout>
+                            </Button.Flyout>
                         </Button>
                         <TextBlock Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_ShapeSelector" />
                         <Grid>
@@ -106,13 +123,14 @@
                                 <ComboBoxItem x:Uid="Settings_ni_Shape_Cube" Content="Cube"/>
                                 <ComboBoxItem x:Uid="Settings_ni_Shape_Round" Content="Rounded cube"/>
                                 <ComboBoxItem x:Uid="Settings_ni_Shape_Circle" Content="Circle"/>
-                                <ComboBoxItem x:Uid="Settings_ni_Shape_Leaf" Content="Leaf"/>
+                                <!-- Скоро... -->
+                                <!--<ComboBoxItem x:Uid="Settings_ni_Shape_Leaf" Content="Leaf"/>
                                 <ComboBoxItem x:Uid="Settings_ni_Shape_Star" Content="Star"/>
-                                <ComboBoxItem x:Uid="Settings_ni_Shape_Saku" Content="Saku Overclock"/>
+                                <ComboBoxItem x:Uid="Settings_ni_Shape_Saku" Content="Saku Overclock"/>-->
                             </ComboBox>
                         </Grid>
                         <NumberBox Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_Fontsize" ValueChanged="Settings_ni_Fontsize_ValueChanged"  x:Name="Settings_ni_Fontsize" HorizontalAlignment="Left" Width="151" CornerRadius="15" Header="Fontsize" Minimum="5" Maximum="30" Value="9"></NumberBox>
-                        <NumberBox Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_Opacity" ValueChanged="Settings_ni_Opacity_ValueChanged"  x:Name="Settings_ni_Opacity" HorizontalAlignment="Left" Width="151" CornerRadius="15" Header="Background opacity" Minimum="0.0" Maximum="1.0" Value="0.5" ></NumberBox>
+                        <NumberBox Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_Opacity" ValueChanged="Settings_ni_Opacity_ValueChanged"  x:Name="Settings_ni_Opacity" HorizontalAlignment="Left" Width="151" CornerRadius="15" Header="Background opacity" Minimum="0.0" Maximum="1.0" Value="1.0" ></NumberBox>
                         <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" x:Name="Settings_ni_Delete" Click="Settings_ni_Delete_Click"  Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
                             <TextBlock FontWeight="SemiBold"  x:Uid="Settings_ni_Delete"  Text="Delete element"/>
                         </Button>

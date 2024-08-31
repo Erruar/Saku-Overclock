@@ -13,8 +13,9 @@ internal class Config
     public bool ReapplyOverclock = true; //Переприменять последние применённые параметры каждые
     public double ReapplyOverclockTimer = 3.0; //Переприменять последние применённые параметры каждые (время в секундах)
     public int ThemeType = 0; //Выбранная тема
-    public bool NiIconsEnabled = false;
-    public bool RTSSMetricsEnabled = false;
+    public bool NiIconsEnabled = false; //Включён Треймон в ядре приложения
+    public bool RTSSMetricsEnabled = false; //Включёны RTSS Метрики в ядре приложения
+    public int NiIconsType = -1;
     //Пресеты, готовые пресеты и параметры
     public int Preset = 0; //Выбранный пользователем пресет
     public string RyzenADJline = ""; //Собственно RyzenADJline которая применяет все параметры, соединяя всё активированное в пресете

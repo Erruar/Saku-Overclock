@@ -2369,7 +2369,7 @@ Overclock будут проигнорированы,
 чтобы ваши изменения всегда оставались 
 актуальными и сохранялись автоматически</value>
   </data>
-  <data name="Settings_RTSS_Enabl.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="Settings_RTSS_Enable.ToolTipService.ToolTip" xml:space="preserve">
     <value>Мониторинг в играх с RTSS
 Это современная система мониторинга
 показателей вашего ноутбука, которая
@@ -2394,5 +2394,74 @@ Overclock будут проигнорированы,
   </data>
   <data name="Settings_RTSS_Enable.OnContent" xml:space="preserve">
     <value>Вкл.</value>
+  </data>
+  <data name="Settings_ni_EnabledElement.Header" xml:space="preserve">
+    <value>Отображать в трее</value>
+  </data>
+  <data name="Settings_ni_EnabledElement.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="Settings_ni_EnabledElement.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="Settings_ni_EnabledElement.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отображать в трее
+Вы можете добавить элемент, 
+как только вам надоест или он 
+будет не нужен определённое 
+время, вы можете скрыть этот
+элемент, выключив этот 
+параметр. Он не будет 
+отображаться в трей меню, но
+останется в элементах с вашими
+настройками. В дальнейшем вы
+сможете его включить обратно</value>
+  </data>
+  <data name="Settings_ni_icon_dialog" xml:space="preserve">
+    <value>Добавить элемент</value>
+  </data>
+  <data name="Settings_ni_Values_AVGCPUCLK" xml:space="preserve">
+    <value>Частота ЦП</value>
+  </data>
+  <data name="Settings_ni_Values_AVGCPUVOLT" xml:space="preserve">
+    <value>Напряжение ЦП</value>
+  </data>
+  <data name="Settings_ni_Values_CPUTEMP" xml:space="preserve">
+    <value>Температура ЦП</value>
+  </data>
+  <data name="Settings_ni_Values_CPUUsage" xml:space="preserve">
+    <value>Использование ЦП</value>
+  </data>
+  <data name="Settings_ni_Values_Fast" xml:space="preserve">
+    <value>Реальная мощн.</value>
+  </data>
+  <data name="Settings_ni_Values_GFXCLK" xml:space="preserve">
+    <value>Частота iGPU</value>
+  </data>
+  <data name="Settings_ni_Values_GFXTEMP" xml:space="preserve">
+    <value>Температура iGPU</value>
+  </data>
+  <data name="Settings_ni_Values_GFXVOLT" xml:space="preserve">
+    <value>Напряжение iGPU</value>
+  </data>
+  <data name="Settings_ni_Values_Slow" xml:space="preserve">
+    <value>Средняя мощн.</value>
+  </data>
+  <data name="Settings_ni_Values_STAPM" xml:space="preserve">
+    <value>Лимит STAPM</value>
+  </data>
+  <data name="Settings_ni_Values_VRMEDC" xml:space="preserve">
+    <value>Макс. ток VRM</value>
+  </data>
+  <data name="Settings_ni_Values_CurrentValue" xml:space="preserve">
+    <value>
+Текущее: </value>
+  </data>
+  <data name="Settings_ni_Values_MaxValue" xml:space="preserve">
+    <value>
+Максимум: </value>
+  </data>
+  <data name="Settings_ni_Values_MinValue" xml:space="preserve">
+    <value>Минимум: </value>
   </data>
 </root>

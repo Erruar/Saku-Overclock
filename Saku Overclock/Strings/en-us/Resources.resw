@@ -2296,7 +2296,7 @@ autosave functionality, ensuring your
 changes are always current and saved 
 automatically</value>
   </data>
-  <data name="Settings_RTSS_Enabl.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="Settings_RTSS_Enable.ToolTipService.ToolTip" xml:space="preserve">
     <value>In-Game Monitoring with RTSS
 It's modern monitoring system tracks 
 your laptop's metrics by using data from 
@@ -2321,5 +2321,73 @@ increases slightly</value>
   </data>
   <data name="Settings_RTSS_Enable.OnContent" xml:space="preserve">
     <value>On.</value>
+  </data>
+  <data name="Settings_ni_EnabledElement.Header" xml:space="preserve">
+    <value>Show in tray</value>
+  </data>
+  <data name="Settings_ni_EnabledElement.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="Settings_ni_EnabledElement.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
+  <data name="Settings_ni_EnabledElement.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Show in tray
+You can add an item as soon 
+as you get bored or don't need 
+it for a certain time, you can 
+hide this item by disabling this 
+option. It will not be displayed 
+in the tray menu, but will 
+remain in the items with your 
+settings. In the future, you will 
+be able to turn it back on</value>
+  </data>
+  <data name="Settings_ni_icon_dialog" xml:space="preserve">
+    <value>Add element</value>
+  </data>
+  <data name="Settings_ni_Values_AVGCPUCLK" xml:space="preserve">
+    <value>AVG CPU Freq</value>
+  </data>
+  <data name="Settings_ni_Values_AVGCPUVOLT" xml:space="preserve">
+    <value>AVG CPU Voltage</value>
+  </data>
+  <data name="Settings_ni_Values_CPUTEMP" xml:space="preserve">
+    <value>CPU Temperature</value>
+  </data>
+  <data name="Settings_ni_Values_CPUUsage" xml:space="preserve">
+    <value>CPU Usage</value>
+  </data>
+  <data name="Settings_ni_Values_Fast" xml:space="preserve">
+    <value>Fast value</value>
+  </data>
+  <data name="Settings_ni_Values_GFXCLK" xml:space="preserve">
+    <value>iGPU Frequency</value>
+  </data>
+  <data name="Settings_ni_Values_GFXTEMP" xml:space="preserve">
+    <value>iGPU Temperature</value>
+  </data>
+  <data name="Settings_ni_Values_GFXVOLT" xml:space="preserve">
+    <value>iGPU Voltage</value>
+  </data>
+  <data name="Settings_ni_Values_Slow" xml:space="preserve">
+    <value>Slow value</value>
+  </data>
+  <data name="Settings_ni_Values_STAPM" xml:space="preserve">
+    <value>Stapm value</value>
+  </data>
+  <data name="Settings_ni_Values_VRMEDC" xml:space="preserve">
+    <value>VRM EDC current</value>
+  </data>
+  <data name="Settings_ni_Values_CurrentValue" xml:space="preserve">
+    <value>
+Current: </value>
+  </data>
+  <data name="Settings_ni_Values_MaxValue" xml:space="preserve">
+    <value>
+Maximum: </value>
+  </data>
+  <data name="Settings_ni_Values_MinValue" xml:space="preserve">
+    <value>Minimum: </value>
   </data>
 </root>

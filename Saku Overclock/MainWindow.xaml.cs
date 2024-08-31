@@ -8,8 +8,7 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
-using Windows.UI.ViewManagement;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Windows.UI.ViewManagement; 
 
 namespace Saku_Overclock;
 
@@ -17,8 +16,7 @@ public sealed partial class MainWindow : WindowEx
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
     private readonly UISettings settings;
-    private Config config = new(); 
-    private static bool FlagSMUCommandApplyRunning = false;
+    private Config config = new();  
     public enum DWMWINDOWATTRIBUTE
     {
         DWMWA_WINDOW_CORNER_PREFERENCE = 33
@@ -178,6 +176,8 @@ public sealed partial class MainWindow : WindowEx
         public bool execute = false;
         private static Config config = new();
         private static SendSMUCommand? sendSMUCommand;
+        public static readonly DispatcherTimer timer = new() { Interval = TimeSpan.FromMilliseconds(3 * 1000) };
+        private static EventHandler<object>? tickHandler;
         public static void ApplyWithoutADJLine(bool saveinfo)
         {
             try
@@ -193,14 +193,13 @@ public sealed partial class MainWindow : WindowEx
 
         public static async void Apply(string RyzenADJline, bool saveinfo, bool ReapplyOverclock, double ReapplyOverclockTimer)
         {
-            try { sendSMUCommand = App.GetService<SendSMUCommand>(); } catch { return; }
-            var smu = App.GetService<ПараметрыPage>(); 
+            try { sendSMUCommand = App.GetService<SendSMUCommand>(); } catch { return; } 
             if (ReapplyOverclock == true)
-            {
-                var timer = new DispatcherTimer();
+            { 
                 try
                 {
                     timer.Interval = TimeSpan.FromMilliseconds(ReapplyOverclockTimer * 1000);
+                    timer.Stop();
                 }
                 catch
                 {
@@ -208,30 +207,25 @@ public sealed partial class MainWindow : WindowEx
                     ReapplyOverclockTimer = 3000;
                     timer.Interval = TimeSpan.FromMilliseconds(ReapplyOverclockTimer);
                 }
-                if (FlagSMUCommandApplyRunning == false)
+                if (tickHandler != null)
                 {
-                    FlagSMUCommandApplyRunning = true;
-                    timer.Tick += async (sender, e) =>
-                    {
-                        if (ReapplyOverclock == true)
-                        {
-                            await Process(RyzenADJline, false); // Запустить SendSMUCommand снова, БЕЗ логирования, false
-                            sendSMUCommand.Play_Invernate_QuickSMU(1); //Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
-                        }
-                    }; timer.Start();
+                    timer.Tick -= tickHandler;  // Удаляем старый обработчик
                 }
-                else
+                tickHandler = async (sender, e) =>
                 {
-                    timer.Stop();
-                    timer.Tick += async (sender, e) =>
+                    if (ReapplyOverclock)
                     {
-                        if (ReapplyOverclock == true)
-                        {
-                            await Process(RyzenADJline, false); // Запустить ryzenadj снова, БЕЗ логирования, false
-                            sendSMUCommand.Play_Invernate_QuickSMU(1); //Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
-                        }
-                    }; timer.Start();
-                }
+                        await Process(RyzenADJline, false); // Запустить SendSMUCommand снова, БЕЗ логирования, false
+                        sendSMUCommand?.Play_Invernate_QuickSMU(1); // Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
+                    }
+                };
+
+                timer.Tick += tickHandler;  // Добавляем новый обработчик
+                timer.Start();
+            }
+            else
+            {
+                timer.Stop();
             }
             await Process(RyzenADJline, saveinfo);
         }

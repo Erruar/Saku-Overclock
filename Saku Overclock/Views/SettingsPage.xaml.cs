@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Win32;
 using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
@@ -27,6 +28,7 @@ public sealed partial class SettingsPage : Page
     private Config config = new();
     private Themer themer = new();
     private JsonContainers.RTSSsettings rtssset = new();
+    private JsonContainers.NiIconsSettings niicons = new();
     private bool isLoaded = false;
     private JsonContainers.Notifications notify = new();
 
@@ -52,6 +54,7 @@ public sealed partial class SettingsPage : Page
         Settings_RTSS_Enable.IsOn = config.RTSSMetricsEnabled; 
         RTSS_LoadAndApply();
         UpdateTheme_ComboBox();
+        NiIcon_LoadValues();
         await Task.Delay(390);
     }
     private void UpdateTheme_ComboBox()
@@ -354,154 +357,156 @@ public sealed partial class SettingsPage : Page
             }
         }
     }*/
-/*    private void LoadAndFormatAdvancedCodeEditor()
-    {
-        // Загрузка строки из файла или иного источника
-        string advancedCode = rtssset.AdvancedCodeEditor;
-
-        // Переменная для хранения текущего цвета и размера
-        Windows.UI.Color currentColor = Windows.UI.Color.FromArgb(255,255,255,255);
-        bool isSubscript = false;
-        bool isSuperscript = false;
-
-        // Очищаем текущее содержимое RichEditBox
-        RTSS_AdvancedCodeEditor_EditBox.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, "");
-
-        int currentIndex = 0;
-        while (currentIndex < advancedCode.Length)
+    /*    private void LoadAndFormatAdvancedCodeEditor()
         {
-            // Ищем следующие управляющие символы
-            int nextIndex = advancedCode.IndexOfAny(new char[] { '<', '%', '$', '\\', '\n' }, currentIndex);
+            // Загрузка строки из файла или иного источника
+            string advancedCode = rtssset.AdvancedCodeEditor;
 
-            if (nextIndex == -1)
-            {
-                // Добавляем оставшуюся строку
-                AddFormattedText(advancedCode.Substring(currentIndex), currentColor, isSuperscript, isSubscript);
-                break;
-            }
+            // Переменная для хранения текущего цвета и размера
+            Windows.UI.Color currentColor = Windows.UI.Color.FromArgb(255,255,255,255);
+            bool isSubscript = false;
+            bool isSuperscript = false;
 
-            // Добавляем текст перед управляющим символом
-            if (nextIndex > currentIndex)
-            {
-                AddFormattedText(advancedCode.Substring(currentIndex, nextIndex - currentIndex), currentColor, isSuperscript, isSubscript);
-                currentIndex = nextIndex;
-            }
+            // Очищаем текущее содержимое RichEditBox
+            RTSS_AdvancedCodeEditor_EditBox.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, "");
 
-            // Обработка управляющих символов
-            if (advancedCode[nextIndex] == '<')
+            int currentIndex = 0;
+            while (currentIndex < advancedCode.Length)
             {
-                // Обрабатываем теги <C> и <S>
-                if (advancedCode[nextIndex + 1] == 'C')
+                // Ищем следующие управляющие символы
+                int nextIndex = advancedCode.IndexOfAny(new char[] { '<', '%', '$', '\\', '\n' }, currentIndex);
+
+                if (nextIndex == -1)
                 {
-                    // Изменение цвета
-                    int closeIndex = advancedCode.IndexOf('>', nextIndex);
-                    if (closeIndex != -1)
-                    {
-                        string colorCode = advancedCode.Substring(nextIndex + 3, closeIndex - nextIndex - 3);
-                        currentColor = ParseColor(colorCode);
-                        currentIndex = closeIndex + 1;
-                    }
+                    // Добавляем оставшуюся строку
+                    AddFormattedText(advancedCode.Substring(currentIndex), currentColor, isSuperscript, isSubscript);
+                    break;
                 }
-                else if (advancedCode[nextIndex + 1] == 'S')
+
+                // Добавляем текст перед управляющим символом
+                if (nextIndex > currentIndex)
                 {
-                    // Обработка изменения размера текста
-                    int closeIndex = advancedCode.IndexOf('>', nextIndex);
-                    if (closeIndex != -1 && advancedCode[nextIndex + 2] == '=')
+                    AddFormattedText(advancedCode.Substring(currentIndex, nextIndex - currentIndex), currentColor, isSuperscript, isSubscript);
+                    currentIndex = nextIndex;
+                }
+
+                // Обработка управляющих символов
+                if (advancedCode[nextIndex] == '<')
+                {
+                    // Обрабатываем теги <C> и <S>
+                    if (advancedCode[nextIndex + 1] == 'C')
                     {
-                        string sizeCode = advancedCode.Substring(nextIndex + 3, closeIndex - nextIndex - 3);
-                        if (int.TryParse(sizeCode, out int sizeValue))
+                        // Изменение цвета
+                        int closeIndex = advancedCode.IndexOf('>', nextIndex);
+                        if (closeIndex != -1)
                         {
-                            if (sizeValue > 0)
-                            {
-                                isSuperscript = true;
-                                isSubscript = false;
-                            }
-                            else
-                            {
-                                isSuperscript = false;
-                                isSubscript = true;
-                            }
+                            string colorCode = advancedCode.Substring(nextIndex + 3, closeIndex - nextIndex - 3);
+                            currentColor = ParseColor(colorCode);
+                            currentIndex = closeIndex + 1;
                         }
-                        currentIndex = closeIndex + 1;
+                    }
+                    else if (advancedCode[nextIndex + 1] == 'S')
+                    {
+                        // Обработка изменения размера текста
+                        int closeIndex = advancedCode.IndexOf('>', nextIndex);
+                        if (closeIndex != -1 && advancedCode[nextIndex + 2] == '=')
+                        {
+                            string sizeCode = advancedCode.Substring(nextIndex + 3, closeIndex - nextIndex - 3);
+                            if (int.TryParse(sizeCode, out int sizeValue))
+                            {
+                                if (sizeValue > 0)
+                                {
+                                    isSuperscript = true;
+                                    isSubscript = false;
+                                }
+                                else
+                                {
+                                    isSuperscript = false;
+                                    isSubscript = true;
+                                }
+                            }
+                            currentIndex = closeIndex + 1;
+                        }
                     }
                 }
-            }
-            else if (advancedCode[nextIndex] == '%')
-            {
-                // Обработка элементов с %...%
-                int endIndex = advancedCode.IndexOf('%', nextIndex + 1);
-                if (endIndex != -1)
+                else if (advancedCode[nextIndex] == '%')
                 {
-                    string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
-                    AddFormattedText(element, Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
-                    currentIndex = endIndex + 1;
+                    // Обработка элементов с %...%
+                    int endIndex = advancedCode.IndexOf('%', nextIndex + 1);
+                    if (endIndex != -1)
+                    {
+                        string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
+                        AddFormattedText(element, Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
+                        currentIndex = endIndex + 1;
+                    }
+                    else
+                    {
+                        AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
+                        break;
+                    }
                 }
-                else
+                else if (advancedCode[nextIndex] == '$')
                 {
-                    AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
-                    break;
+                    // Обработка элементов с $...$
+                    int endIndex = advancedCode.IndexOf('$', nextIndex + 1);
+                    if (endIndex != -1)
+                    {
+                        string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
+                        AddFormattedText(element, Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
+                        currentIndex = endIndex + 1;
+                    }
+                    else
+                    {
+                        AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
+                        break;
+                    }
                 }
-            }
-            else if (advancedCode[nextIndex] == '$')
-            {
-                // Обработка элементов с $...$
-                int endIndex = advancedCode.IndexOf('$', nextIndex + 1);
-                if (endIndex != -1)
+                else if (advancedCode[nextIndex] == '\\')
                 {
-                    string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
-                    AddFormattedText(element, Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
-                    currentIndex = endIndex + 1;
+                    // Обработка перехода на новую строку
+                    if (advancedCode[nextIndex + 1] == 'n')
+                    {
+                        RTSS_AdvancedCodeEditor_EditBox.Document.Selection.TypeText("\n");
+                        currentIndex = nextIndex + 2;
+                    }
                 }
-                else
+                else if (advancedCode[nextIndex] == '\n')
                 {
-                    AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
-                    break;
-                }
-            }
-            else if (advancedCode[nextIndex] == '\\')
-            {
-                // Обработка перехода на новую строку
-                if (advancedCode[nextIndex + 1] == 'n')
-                {
+                    // Обработка символа новой строки
                     RTSS_AdvancedCodeEditor_EditBox.Document.Selection.TypeText("\n");
-                    currentIndex = nextIndex + 2;
+                    currentIndex++;
                 }
             }
-            else if (advancedCode[nextIndex] == '\n')
+        }
+
+        private void AddFormattedText(string text, Windows.UI.Color color, bool isSuperscript, bool isSubscript)
+        {
+            var document = RTSS_AdvancedCodeEditor_EditBox.Document;
+            var selection = document.Selection;
+
+            selection.TypeText(text);
+            selection.CharacterFormat.ForegroundColor = color;
+
+            if (isSuperscript)
             {
-                // Обработка символа новой строки
-                RTSS_AdvancedCodeEditor_EditBox.Document.Selection.TypeText("\n");
-                currentIndex++;
+                selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.Off;
+                selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.On;
+                selection.CharacterFormat.Size *= 0.5f;
+            }
+            else if (isSubscript)
+            {
+                selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.Off;
+                selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.On;
+                selection.CharacterFormat.Size *= 0.5f;
+            }
+            else
+            {
+                selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.Off;
+                selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.Off;
             }
         }
-    }
 
-    private void AddFormattedText(string text, Windows.UI.Color color, bool isSuperscript, bool isSubscript)
-    {
-        var document = RTSS_AdvancedCodeEditor_EditBox.Document;
-        var selection = document.Selection;
-
-        selection.TypeText(text);
-        selection.CharacterFormat.ForegroundColor = color;
-
-        if (isSuperscript)
-        {
-            selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.Off;
-            selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.On;
-            selection.CharacterFormat.Size *= 0.5f;
-        }
-        else if (isSubscript)
-        {
-            selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.Off;
-            selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.On;
-            selection.CharacterFormat.Size *= 0.5f;
-        }
-        else
-        {
-            selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.Off;
-            selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.Off;
-        }
-    }
+         */
 
     private Windows.UI.Color ParseColor(string hex)
     {
@@ -512,9 +517,8 @@ public sealed partial class SettingsPage : Page
                 byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber),
                 byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber));
         }
-        return Windows.UI.Color.FromArgb(255,255,255,255); // если цвет неизвестен
-    } */
-
+        return Windows.UI.Color.FromArgb(255, 255, 255, 255); // если цвет неизвестен
+    }
     // Вспомогательный метод для преобразования HEX в Windows.UI.Color
     private void LoadAndFormatAdvancedCodeEditor(string advancedCode)
     { 
@@ -562,6 +566,23 @@ public sealed partial class SettingsPage : Page
             //if (rtssset == null) { rtssset = new JsonContainers.RTSSsettings(); RtssSave(); }
         }
         catch { rtssset = new JsonContainers.RTSSsettings(); RtssSave(); }
+    }
+    public void NiSave()
+    {
+        try
+        {
+            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json", JsonConvert.SerializeObject(niicons, Formatting.Indented));
+        }
+        catch { }
+    }
+    public void NiLoad()
+    {
+        try
+        {
+            niicons = JsonConvert.DeserializeObject<JsonContainers.NiIconsSettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json"))!;
+        }
+        catch { niicons = new JsonContainers.NiIconsSettings(); NiSave(); }
     }
     public void ThemeSave()
     {
@@ -1336,55 +1357,492 @@ public sealed partial class SettingsPage : Page
     #endregion
 
     #region Ni Icons (tray icons) Related Section
+    private void NiIcon_LoadValues()
+    {
+        ConfigLoad();
+        NiLoad(); 
+        try
+        {
+            Settings_ni_Icons.IsOn = config.NiIconsEnabled;
+            NiIconComboboxElements.Items.Clear();
+            if (niicons.Elements != null)
+            {
+                for (var element = 0; element < niicons.Elements.Count; element++)
+                {
+                    try
+                    {
+                        NiIconComboboxElements.Items.Add(niicons.Elements[element].Name.GetLocalized());
+                    }
+                    catch
+                    {
+                        NiIconComboboxElements.Items.Add(niicons.Elements[element].Name);
+                    }
+                }
+                NiIconComboboxElements.SelectedIndex = config.NiIconsType;
+                if (NiIconComboboxElements.SelectedIndex >= 0)
+                {
+                    NiIcon_Stackpanel.Visibility = Visibility.Visible;
+                    Settings_ni_ContextMenu.Visibility = Visibility.Visible;
+                    Settings_NiIconComboboxElements.Visibility = Visibility.Visible;
+                    Settings_ni_EnabledElement.Visibility = Visibility.Visible;
+                }
+                Settings_ni_EnabledElement.IsOn = niicons.Elements[config.NiIconsType].IsEnabled;
+                if (!niicons.Elements[config.NiIconsType].IsEnabled)
+                {
+                    NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
+                    Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
+                }
+                NiIconCombobox.SelectedIndex = niicons.Elements[config.NiIconsType].ContextMenuType;
+                NiIcons_ColorPicker_ColorPicker.Color = ParseColor(niicons.Elements[config.NiIconsType].Color);
+                NiIconShapeCombobox.SelectedIndex = niicons.Elements[config.NiIconsType].IconShape;
+                Settings_ni_Fontsize.Value = niicons.Elements[config.NiIconsType].FontSize;
+                Settings_ni_Opacity.Value = niicons.Elements[config.NiIconsType].BgOpacity;
+            }
+        }
+        catch
+        {
+            config.NiIconsType = -1; //Нет сохранённых
+            ConfigSave();
+        }
+    }
+    private void NiIconComboboxElements_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!isLoaded) { return; }
+        ConfigLoad();
+        config.NiIconsType = NiIconComboboxElements.SelectedIndex;
+        ConfigSave();
+        NiLoad();
+        if (niicons != null && niicons.Elements != null && config.NiIconsType != -1)
+        {
+            if (NiIconComboboxElements.SelectedIndex >= 0)
+            {
+                NiIcon_Stackpanel.Visibility = Visibility.Visible;
+                Settings_ni_ContextMenu.Visibility = Visibility.Visible;
+                Settings_NiIconComboboxElements.Visibility = Visibility.Visible;
+                Settings_ni_EnabledElement.Visibility = Visibility.Visible;
+            }
+            Settings_ni_EnabledElement.IsOn = niicons.Elements[config.NiIconsType].IsEnabled;
+            if (!niicons.Elements[config.NiIconsType].IsEnabled)
+            {
+                NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
+                Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
+            }
+            NiIconCombobox.SelectedIndex = niicons.Elements[config.NiIconsType].ContextMenuType;
+            NiIcons_ColorPicker_ColorPicker.Color = ParseColor(niicons.Elements[config.NiIconsType].Color);
+            NiIconShapeCombobox.SelectedIndex = niicons.Elements[config.NiIconsType].IconShape;
+            Settings_ni_Fontsize.Value = niicons.Elements[config.NiIconsType].FontSize;
+            Settings_ni_Opacity.Value = niicons.Elements[config.NiIconsType].BgOpacity;
+        }
+    }
 
     private void NiIconCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-
+        if (!isLoaded) { return; } 
+        NiLoad(); niicons.Elements[config.NiIconsType].ContextMenuType = NiIconCombobox.SelectedIndex; NiSave();
     }
 
     private void Settings_ni_Icons_Toggled(object sender, RoutedEventArgs e)
     {
-
-    } 
+        if (!isLoaded) { return; } 
+        ConfigLoad(); config.NiIconsEnabled = Settings_ni_Icons.IsOn; ConfigSave();
+    }
+    private void Settings_ni_EnabledElement_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (!isLoaded) { return; }
+        NiLoad(); niicons.Elements[config.NiIconsType].IsEnabled = Settings_ni_EnabledElement.IsOn; NiSave();
+        if (NiIconComboboxElements.SelectedIndex >= 0 && Settings_ni_EnabledElement.IsOn)
+        {
+            NiIcon_Stackpanel.Visibility = Visibility.Visible;
+            Settings_ni_ContextMenu.Visibility = Visibility.Visible; 
+        }
+        else
+        {
+            NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
+            Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
+        }
+    }
 
     private void Settings_ni_Fontsize_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
-
+        if (!isLoaded) { return; }
+        NiLoad(); niicons.Elements[config.NiIconsType].FontSize = Convert.ToInt32(Settings_ni_Fontsize.Value); NiSave();
     }
 
     private void Settings_ni_Opacity_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
-
-    }
-
-    private void NiIconComboboxElements_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        if (!isLoaded) { return; }
+        NiLoad(); niicons.Elements[config.NiIconsType].BgOpacity = Settings_ni_Opacity.Value; NiSave();
+    } 
+    private async void Settings_ni_Add_Element_Click(object sender, RoutedEventArgs e)
     {
+        var niLoaderPanel = new StackPanel
+        {
+            Orientation = Orientation.Vertical,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch
+        };
+        var niAddIconDialog = new ContentDialog
+        {
+            Title = "Settings_ni_icon_dialog".GetLocalized(),
+            Content = new ScrollViewer
+            {
+                MaxHeight = 300,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Content = new StackPanel
+                {
+                    Orientation = Orientation.Vertical,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Children =
+                    {
+                        niLoaderPanel
+                    }
+                }
+            },
+            CloseButtonText = "ThemeDone".GetLocalized(),
+            DefaultButton = ContentDialogButton.Close
+        };
+        var baseNiBackground = Windows.UI.Color.FromArgb(255, 255, 255, 255); // Белый 
+        var baseNiName = "New Element";
+        NiLoad();
+        try
+        {
+            if (niicons.Elements != null)
+            {
+                for (var element = 8; element < niicons.Elements.Count; element++)
+                {
+                    baseNiName = niicons.Elements[element].Name;
+                    if (niicons.Elements[element].Color != "")
+                    {
+                        try
+                        {
+                            baseNiBackground = ParseColor(niicons.Elements[element].Color);
+                        }
+                        catch
+                        {
+                            baseNiBackground = Windows.UI.Color.FromArgb(255, 255, 255, 255);
+                        }
+                    }
+                    else { baseNiBackground = Windows.UI.Color.FromArgb(255, 255, 255, 255); }
+                    var sureDelete =
+                    new Button
+                    {
+                        CornerRadius = new CornerRadius(15),
+                        Content = "Delete".GetLocalized()
+                    };
+                    var buttonDelete = new Button
+                    {
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Right,
+                        CornerRadius = new CornerRadius(15, 15, 15, 15),
+                        Content = new FontIcon
+                        {
+                            Glyph = "\uE74D"
+                        },
+                        Flyout = new Flyout
+                        {
+                            Content = sureDelete
+                        }
+                    };    
+                    var niElementName = new TextBlock
+                    {
+                        MaxWidth = 330,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        TextWrapping = TextWrapping.Wrap,
+                        Text = baseNiName,
+                        FontWeight = new Windows.UI.Text.FontWeight(800)
+                    };
+                    var buttonsPanel = new StackPanel
+                    {
+                        Visibility = Visibility.Collapsed,
+                        Orientation = Orientation.Horizontal,
+                        HorizontalAlignment = HorizontalAlignment.Right,
+                        Margin = new Thickness(0, 0, 4, 0),
+                        Children =
+                        {
+                            buttonDelete 
+                        }
+                    };
+                    var eachButton = new Button
+                    {
+                        CornerRadius = new CornerRadius(17),
+                        Width = 430,
+                        Content = new Grid
+                        {
+                            MinHeight = 40,
+                            Margin = new Thickness(-15, -5, -15, -6),
+                            CornerRadius = new CornerRadius(4),
+                            VerticalAlignment = VerticalAlignment.Stretch,
+                            HorizontalAlignment = HorizontalAlignment.Stretch,
+                            Children =
+                            {
+                                new Border
+                                {
+                                    MinHeight = 40,
+                                    CornerRadius = new CornerRadius(17),
+                                    Width = 430,
+                                    Opacity = niicons.Elements[element].BgOpacity,
+                                    VerticalAlignment = VerticalAlignment.Stretch,
+                                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                                    Background =  new SolidColorBrush
+                                    {
+                                        Color = baseNiBackground
+                                    }
+                                }, 
+                                new Grid
+                                {
+                                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                                    Children =
+                                    {
+                                        niElementName,
+                                        buttonsPanel
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    sureDelete.Name = element.ToString();
+                    if (element > 8)
+                    {
+                        eachButton.Margin = new Thickness(0, 10, 0, 0);
+                    } 
+                    eachButton.PointerEntered += (s, a) =>
+                    {
+                        niElementName.Margin = new Thickness(-90, 0, 0, 0);
+                        buttonsPanel.Visibility = Visibility.Visible;
+                    };
+                    eachButton.PointerExited += (s, a) =>
+                    {
+                        niElementName.Margin = new Thickness(0);
+                        buttonsPanel.Visibility = Visibility.Collapsed;
+                    };
+                    sureDelete.Click += (s, a) =>
+                    {
+                        try
+                        {
+                            niicons.Elements.RemoveAt(int.Parse(sureDelete.Name));
+                            NiSave(); 
+                            niLoaderPanel.Children.Remove(eachButton);
+                        }
+                        catch
+                        {
+                            niLoaderPanel.Children.Remove(eachButton);
+                        }
+                    };
+                    niLoaderPanel.Children.Add(eachButton);
+                }
+            }
+            var newNiIcon = new Button // Добавить новый элемент
+            {
+                CornerRadius = new CornerRadius(15),
+                Width = 430,
+                Style = (Style)Application.Current.Resources["AccentButtonStyle"],
+                Content = new TextBlock
+                {
+                    FontWeight = new Windows.UI.Text.FontWeight(700),
+                    Text = "ThemeNewName".GetLocalized()
+                }
+            };
+            if (niLoaderPanel.Children.Count > 0)
+            {
+                newNiIcon.Margin = new Thickness(0, 10, 0, 0);
+            }
+            niLoaderPanel.Children.Add(newNiIcon);
+            //Добавить новую тему
+            newNiIcon.Click += (s, a) =>
+            {
+                var niIconSelectedComboBox = new ComboBox
+                { 
+                    CornerRadius = new CornerRadius(15, 0, 0, 15),
+                    Width = 300 
+                };
+                if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_STAPM".GetLocalized()))
+                {
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Content = "Settings_ni_Values_STAPM".GetLocalized(),
+                        Name = "Settings_ni_Values_STAPM"
+                    });
+                }
+                if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_Fast".GetLocalized()))
+                {
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Content = "Settings_ni_Values_Fast".GetLocalized(),
+                        Name = "Settings_ni_Values_Fast"
+                    });
+                }
+                if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_Slow".GetLocalized()))
+                {
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Content = "Settings_ni_Values_Slow".GetLocalized(),
+                        Name = "Settings_ni_Values_Slow"
+                    });
+                }
+                if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_VRMEDC".GetLocalized()))
+                {
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Content = "Settings_ni_Values_VRMEDC".GetLocalized(),
+                        Name = "Settings_ni_Values_VRMEDC"
+                    });
+                }
+                if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_CPUTEMP".GetLocalized()))
+                {
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Content = "Settings_ni_Values_CPUTEMP".GetLocalized(),
+                        Name = "Settings_ni_Values_CPUTEMP"
+                    });
+                }
+                if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_CPUUsage".GetLocalized()))
+                {
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Content = "Settings_ni_Values_CPUUsage".GetLocalized(),
+                        Name = "Settings_ni_Values_CPUUsage"
+                    });
+                }
+                if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_AVGCPUCLK".GetLocalized()))
+                {
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Content = "Settings_ni_Values_AVGCPUCLK".GetLocalized(),
+                        Name = "Settings_ni_Values_AVGCPUCLK"
+                    });
+                }
+                if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_AVGCPUVOLT".GetLocalized()))
+                {
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Content = "Settings_ni_Values_AVGCPUVOLT".GetLocalized(),
+                        Name = "Settings_ni_Values_AVGCPUVOLT"
+                    });
+                }
+                if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_GFXCLK".GetLocalized()))
+                {
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Content = "Settings_ni_Values_GFXCLK".GetLocalized(),
+                        Name = "Settings_ni_Values_GFXCLK"
+                    });
+                }
+                if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_GFXTEMP".GetLocalized()))
+                {
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Content = "Settings_ni_Values_GFXTEMP".GetLocalized(),
+                        Name = "Settings_ni_Values_GFXTEMP"
+                    });
+                }
+                if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_GFXVOLT".GetLocalized()))
+                {
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    {
+                        Content = "Settings_ni_Values_GFXVOLT".GetLocalized(),
+                        Name = "Settings_ni_Values_GFXVOLT"
+                    });
+                }
+                if (niIconSelectedComboBox.Items.Count >= 1)
+                {
+                    niIconSelectedComboBox.SelectedIndex = 0;
+                }
+                var niIconAddButtonSuccess = new Button
+                {
+                    CornerRadius = new CornerRadius(0, 15, 15, 0),
+                    Content = new FontIcon
+                    {
+                        Glyph = "\uEC61"
+                    }
+                };
+                newNiIcon.Flyout = new Flyout
+                {
+                    Content = new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        Children =
+                        {
+                             niIconSelectedComboBox,
+                             niIconAddButtonSuccess
+                        }
+                    }
+                };
+                niIconAddButtonSuccess.Click += (s, a) =>
+                {
+                    if (niIconSelectedComboBox.SelectedIndex != -1)
+                    {
+                        try
+                        {
+                            niicons.Elements!.Add(new JsonContainers.NiIconsElements { Name = ((ComboBoxItem)niIconSelectedComboBox.SelectedItem).Name.ToString()! });
+                            newNiIcon.Flyout.Hide();
+                            niAddIconDialog.Hide();
+                            NiSave();
+                            NiIcon_LoadValues();
+                        }
+                        catch
+                        {
 
+                        }
+                    }
+                };
+            };
+        }
+        catch
+        {
+            throw new Exception("NiIcons:Error#1 Cant load themes to edit");
+        }
+
+
+        // Use this code to associate the dialog to the appropriate AppWindow by setting
+        // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+        {
+            niAddIconDialog.XamlRoot = XamlRoot;
+        }
+        _ = await niAddIconDialog.ShowAsync();
     }
-
-    private void Settings_ni_Add_Element_Click(object sender, RoutedEventArgs e)
+ 
+    private void NiIcons_ColorPicker_ColorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
     {
-
-    }
-
-    private void Settings_ni_Color_Picker_Click(object sender, RoutedEventArgs e)
-    {
-
+        if (!isLoaded) { return; }
+        NiLoad(); niicons.Elements[config.NiIconsType].Color = $"{NiIcons_ColorPicker_ColorPicker.Color.R:X2}{NiIcons_ColorPicker_ColorPicker.Color.G:X2}{NiIcons_ColorPicker_ColorPicker.Color.B:X2}"; NiSave();
     }
 
     private void Settings_ni_Delete_Click(object sender, RoutedEventArgs e)
     {
-
+        if (!isLoaded) { return; }
+        try
+        {
+            NiLoad(); niicons.Elements.RemoveAt(config.ThemeType); NiSave();
+            ConfigLoad();
+            config.ThemeType = -1;
+            ConfigSave();
+            NiIcon_LoadValues();
+        }
+        catch (Exception ex)
+        {
+            SendSMUCommand.TraceIt_TraceError(ex.ToString());
+        }
     }
 
     private void Settings_ni_ResetDef_Click(object sender, RoutedEventArgs e)
     {
-
+        if (!isLoaded) { return; }
+        NiLoad(); 
+        niicons.Elements[config.NiIconsType].IsEnabled = true;
+        niicons.Elements[config.NiIconsType].ContextMenuType = 1;
+        niicons.Elements[config.NiIconsType].Color = "FF6ACF";
+        niicons.Elements[config.NiIconsType].IconShape = 0;
+        niicons.Elements[config.NiIconsType].FontSize = 9;
+        niicons.Elements[config.NiIconsType].BgOpacity = 0.5d;
+        NiSave(); NiIconComboboxElements_SelectionChanged(NiIconComboboxElements, SelectionChangedEventArgs.FromAbi(0));
     }
 
     private void NiIconShapeCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-
+        if (!isLoaded) { return; }
+        NiLoad(); niicons.Elements[config.NiIconsType].IconShape = NiIconShapeCombobox.SelectedIndex; NiSave();
     }
     #endregion
     #region RTSS Related Section
@@ -1660,10 +2118,10 @@ public sealed partial class SettingsPage : Page
 
     private void RTSS_AdvancedCodeEditor_EditBox_TextChanged(object sender, RoutedEventArgs e)
     {
-        var newString = "";
+        string? newString;
         RTSS_AdvancedCodeEditor_EditBox.Document.GetText(Microsoft.UI.Text.TextGetOptions.None, out newString);
         rtssset.AdvancedCodeEditor = newString.Replace("\r", "\n");
         RtssSave();
     }
-    #endregion
+    #endregion 
 }

@@ -25,184 +25,48 @@ namespace Saku_Overclock.Views;
 public sealed partial class ShellPage : Page
 {
     private const int WH_KEYBOARD_LL = 13; // ID хука на клавиатуру
+    private const int WM_KEYDOWN = 0x0100; // ID события нажатия клавиши
+    private readonly LowLevelKeyboardProc _proc; // Коллбэк метод (вызывается при срабатывании хука)
+    private static IntPtr _hookID = IntPtr.Zero; // ID хука, используется, например, для удаления
+    private System.Windows.Threading.DispatcherTimer? dispatcherTimer; // Таймер обновления уведомлений
+    private bool loaded = true; // Запустился ли UI поток приложения
+    private bool IsNotificationPanelShow; // Флаг: Открыта ли панель уведомлений
+    private int? compareList; // Нет новых уведомлений - пока
+    private Config config = new(); // Класс с конфигом приложения
+    private JsonContainers.Notifications notify = new(); // Класс с уведомлениями
+    private Profile[] profile = new Profile[1]; // Класс с профилями параметров разгона пользователя
+    private readonly Microsoft.UI.Windowing.AppWindow m_AppWindow; // Получить AppWindow для тайтлбара
+    private bool fixedTitleBar = false; // Флаг фиксированного тайтлбара
+    private Themer themer = new(); // Класс с темами приложения
 
-    private const int WM_KEYDOWN = 0x0100;// ID события нажатия клавиши
+    public static string SelectedProfile = "Unknown"; // Общая информация для выбранного профиля. Используется в RTSS на странице информации
 
-    private static readonly LowLevelKeyboardProc _proc = HookCallback;// Коллбэк метод (вызывается при срабатывании хука)
-
-    private static IntPtr _hookID = IntPtr.Zero;// ID хука, используется, например, для удаления
-    private System.Windows.Threading.DispatcherTimer? dispatcherTimer;
-    private bool loaded = true;
-    private bool IsNotificationPanelShow;
-    private int? compareList;
-    private Config config = new();
-    private JsonContainers.Notifications notify = new();
-    private Profile[] profile = new Profile[1];
-    private readonly Microsoft.UI.Windowing.AppWindow m_AppWindow;
-    private bool fixedTitleBar = false;
-    private Themer themer = new();
-
-    public static string SelectedProfile = "Unknown";
-
-    public ShellViewModel ViewModel
+    public ShellViewModel ViewModel // ViewModel, установка нужной модели для UI страницы
     {
         get;
     }
 
     public ShellPage(ShellViewModel viewModel)
     {
-        _hookID = SetHook(_proc);
-        m_AppWindow = App.MainWindow.AppWindow;
-        ViewModel = viewModel;
-        InitializeComponent();
-        ViewModel.NavigationService.Frame = NavigationFrame;
-        ViewModel.NavigationViewService.Initialize(NavigationViewControl);
+        _proc = HookCallback; // Коллбэк метод (вызывается при срабатывании хука)
+        _hookID = SetHook(_proc); // Хук, который должен срабатывать
+        m_AppWindow = App.MainWindow.AppWindow; // AppWindow, нужен для тайтлбара приложения
+        ViewModel = viewModel; // ViewModel, установка нужной модели для UI страницы
+        InitializeComponent(); // Запуск UI
+        ViewModel.NavigationService.Frame = NavigationFrame; // Выбранная пользователем страница
+        ViewModel.NavigationViewService.Initialize(NavigationViewControl); // Инициализировать выбор страниц
         // A custom title bar is required for full window theme and Mica support.
         // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(AppTitleBar);
-        App.MainWindow.Activated += MainWindow_Activated;
-        App.MainWindow.Closed += MainWindow_Closed;
-        //RTSSHandler.ChangeOSDText("<C0=FFA0A0><C1=A0FFA0><C0>Welcome to <Br><C1>Saku Overclock! <Br>For those who want maximum!");
+        App.MainWindow.Activated += MainWindow_Activated; // Приложение активировалось, выставить первую страницу
+        App.MainWindow.Closed += (s, a) =>
+        {
+            UnhookWindowsHookEx(_hookID); // Приложение закрылось - убить хуки
+        };
     }
-
 
     #region JSON and Initialization
-    private static IntPtr SetHook(LowLevelKeyboardProc proc) //Эту функцию можно не изменять
-    {
-
-        using var curProcess = Process.GetCurrentProcess();//Получаем текущий процесс
-
-        using var curModule = curProcess?.MainModule!;//Получаем главный модуль процесса
-
-        return SetWindowsHookEx(WH_KEYBOARD_LL, proc,//Вызываем WinAPI функцию
-
-            GetModuleHandle(curModule?.ModuleName!), 0);//Получаем хэндл модуля
-
-    }
-
-    private delegate IntPtr LowLevelKeyboardProc(//Callback делегат(для вызова callback метода)
-
-        int nCode, IntPtr wParam, IntPtr lParam);
-    private void MainWindow_Closed(object sender, WindowEventArgs args)
-    {
-        UnhookWindowsHookEx(_hookID); //Убить хук клавиш при закрытии приложения
-    }
-    private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)//Собственно сам callback метод
-    {
-        //Проверяем следует ли перехватывать хук(первая половина), и то, 
-        //что произошло именно событие нажатия на клавишу (вторая половина)
-        if (nCode >= 0 && wParam == WM_KEYDOWN)
-        {
-            var vkCode = Marshal.ReadInt32(lParam); //Получаем код клавиши из неуправляемой памяти
-            //Переключить между своими пресетами - Switch profile to next Custom
-            if ((Keys)vkCode == Keys.W && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
-            { 
-                //Создать уведомление
-                AddNote("Смена пресета", "Вы успешно переключили ваши пресеты на следующий по счёту!", InfoBarSeverity.Informational);
-                MainWindow.Applyer.ApplyWithoutADJLine(false); 
-            }
-            //Переключить между готовыми пресетами - Switch profile to next Premaded
-            if ((Keys)vkCode == Keys.P && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
-            {
-                var nextProfile = NextPremadeProfile_Switch();
-                ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextProfile);
-                AddNote("Смена пресета", "Вы успешно переключили готовые пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
-                MainWindow.Applyer.ApplyWithoutADJLine(false);
-            }
-        }
-        return CallNextHookEx(_hookID, nCode, wParam, lParam);//Передаем нажатие в следующее приложение
-    }
-    public static void AddNote(string Textt, string Msgt, InfoBarSeverity Typet)
-    {
-        var notify = new JsonContainers.Notifications();
-        if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))
-        {
-            try
-            {
-                notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))!;
-            }
-            catch { }
-        }
-        notify.Notifies ??= []; notify.Notifies.Add(new Notify { Title = Textt, Msg = Msgt, Type = Typet });
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify, Formatting.Indented));
-        }
-        catch { }
-    }
-    private static string NextPremadeProfile_Switch()
-    {
-        var nextProfile = "";
-        var config = new Config();
-        if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))
-        {
-            try
-            {
-                config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
-            }
-            catch { }
-        } 
-        if (config == null) { return ""; }
-        if (config.Preset != -1)
-        {
-            if (config.PremadeMinActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Min".GetLocalized(); config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
-            else if (config.PremadeEcoActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Eco".GetLocalized(); config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
-            else if (config.PremadeBalanceActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Balance".GetLocalized(); config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
-            else if (config.PremadeSpeedActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Speed".GetLocalized(); config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
-            else if (config.PremadeMaxActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Max".GetLocalized(); config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
-        }
-        else
-        {
-            if (config.PremadeMinActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Eco".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = true; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Эко
-            else if (config.PremadeEcoActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Balance".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = true; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Баланс
-            else if (config.PremadeBalanceActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Speed".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = true; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Скорость
-            else if (config.PremadeSpeedActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Max".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = true; config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Максимум
-            else if (config.PremadeMaxActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Min".GetLocalized(); config.PremadeMinActivated = true; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Минимум
-        } 
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
-        }
-        catch { }
-        return nextProfile;
-    }   
-    private static void NextCustomProfile_Switch()
-    {
-    
-    }
-    //Импорт необходимых функций из WinApi
-
-    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-
-    private static extern IntPtr SetWindowsHookEx(int idHook,
-
-        LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
-
-    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-
-    private static extern short GetAsyncKeyState(int vKey);
-
-
-    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-
-    [return: MarshalAs(UnmanagedType.Bool)]
-
-    private static extern bool UnhookWindowsHookEx(IntPtr hhk);
-
-
-    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-
-    private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode,
-
-        IntPtr wParam, IntPtr lParam);
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-
-    private static extern IntPtr GetModuleHandle(string lpModuleName);
-
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
@@ -214,118 +78,7 @@ public sealed partial class ShellPage : Page
         GetProfileInit();
 
     }
-    private void StartInfoUpdate()
-    {
-        dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-        dispatcherTimer.Tick += async (sender, e) => await GetNotify();
-        dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1000);
-        App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
-        App.MainWindow.Activated += Window_Activated;
-        dispatcherTimer.Start();
-    }
-    private void Window_Activated(object sender, WindowActivatedEventArgs args)
-    {
-        if (args.WindowActivationState == WindowActivationState.CodeActivated || args.WindowActivationState == WindowActivationState.PointerActivated)
-        {
-            // Окно активировано
-            dispatcherTimer?.Start();
-        }
-        else
-        {
-            // Окно не активировано
-            dispatcherTimer?.Stop();
-        }
-    }
-    private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
-    {
-        if (args.Visible) { dispatcherTimer?.Start(); } else { dispatcherTimer?.Stop(); }
-    }
-    private void StopInfoUpdate()
-    {
-        dispatcherTimer?.Stop();
-    }
-
-    protected override void OnNavigatedTo(NavigationEventArgs e)
-    {
-        base.OnNavigatedTo(e); StartInfoUpdate();
-    }
-    protected override void OnNavigatedFrom(NavigationEventArgs e)
-    {
-        base.OnNavigatedFrom(e); StopInfoUpdate();
-    }
-    public Task GetNotify()
-    {  
-        if (SelectedProfile != ((ComboBoxItem)ProfileSetComboBox.SelectedItem).Content.ToString() && !ProfileSetButton.IsEnabled)
-        {
-            SelectedProfile = ((ComboBoxItem)ProfileSetComboBox.SelectedItem).Content.ToString()!;
-        }
-        if (IsNotificationPanelShow)
-        {
-            return Task.CompletedTask;
-        }
-        NotifyLoad();
-        if (notify.Notifies == null) { return Task.CompletedTask; }
-        DispatcherQueue?.TryEnqueue(() =>
-        {
-            var contains = false;
-            if (compareList == notify?.Notifies.Count && NotificationContainer.Children.Count != 0) { return; } //нет новых уведомлений - пока
-            ClearAllNotification(null, null);
-            var index = 0;
-            foreach (var notify1 in notify?.Notifies!)
-            {
-                if (notify1.Title.Equals("Theme applied!")) //Если уведомление о изменении темы
-                {
-                    Theme_Loader();
-                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
-                    return; //Удалить и не показывать
-                }
-                MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.isClosable, notify1.Subcontent, notify1.CloseClickHandler);
-                if (notify1.Title.Contains("SaveSuccessTitle".GetLocalized()) || notify1.Title.Contains("DeleteSuccessTitle".GetLocalized()) || notify1.Title.Contains("Edit_TargetTitle".GetLocalized())) { contains = true; }
-                if (SettingsViewModel.VersionId != 5 && index > 8) //Если 9 уведомлений - очистить для оптимизации производительности
-                { 
-                    index = 0; //Сброс счётчика циклов
-                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
-                }
-                index++;
-            }
-            if (contains) { GetProfileInit(); } //Чтобы обновить всего раз, а не много раз, чтобы не сбить конфиг
-            compareList = notify?.Notifies.Count;
-        });
-        return Task.CompletedTask;
-    }
-    private void Theme_Loader()
-    {
-        ThemeLoad();
-        try
-        {
-            ConfigLoad();
-            ThemeOpacity.Opacity = themer!.Themes[config.ThemeType]!.ThemeOpacity;
-            ThemeMaskOpacity.Opacity = themer.Themes[config.ThemeType].ThemeMaskOpacity;
-            var themeMobil = App.GetService<SettingsViewModel>();
-            var themeLight = themer.Themes[config.ThemeType].ThemeLight ? ElementTheme.Light : ElementTheme.Dark;
-            themeMobil.SwitchThemeCommand.Execute(themeLight);
-            if (config.ThemeType > 2)
-            {
-                ThemeBackground.ImageSource = new BitmapImage(new Uri(themer.Themes[config.ThemeType].ThemeBackground));
-            }
-        }
-        catch 
-        {
-            NotifyLoad(); notify.Notifies ??= [];
-            try
-            {
-                notify.Notifies.Add(new Notify { Title = "ThemeError".GetLocalized() + "\"" + $"{themer!.Themes[config.ThemeType]!.ThemeName}" + "\"", Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error });
-            }
-            catch
-            {
-                notify.Notifies.Add(new Notify { Title = "ThemeError".GetLocalized() + "\"" + ">> " + config.ThemeType + "\"", Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error });
-
-            }
-            NotifySave(); config.ThemeType = 0;
-            ConfigSave(); return; 
-        }
-    }
-
+    #region App TitleBar Initialization
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
         // App.AppTitlebar = AppTitleBarText as UIElement;
@@ -342,7 +95,6 @@ public sealed partial class ShellPage : Page
         }
         catch { }
     }
-
     private void AppTitleBar_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         try
@@ -351,289 +103,8 @@ public sealed partial class ShellPage : Page
         }
         catch { }
     }
-    public void ConfigSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-    public void ConfigLoad()
-    {
-        try
-        {
-            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
-        }
-        catch
-        {
-            JsonRepair('c');
-        }
-    }
-    public void ProfileSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile, Formatting.Indented));
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-    public void ProfileLoad()
-    {
-        try
-        { 
-            profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
-            if (profile == null)
-            {
-                profile = new Profile[1]; ProfileSave();
-            }
-        }
-        catch
-        {
-            JsonRepair('p');
-        }
-    }
-    public void NotifySave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify, Formatting.Indented));
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-    public async void NotifyLoad()
-    {
-        var success = false;
-        var retryCount = 1;
-        while (!success && retryCount < 3)
-        {
-            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))
-            {
-                try
-                {
-                    notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))!;
-                    if (notify != null) { success = true; } else { JsonRepair('n'); }
-                }
-                catch { JsonRepair('n'); }
-            }
-            else { JsonRepair('n'); }
-            if (!success)
-            {
-                // Сделайте задержку перед следующей попыткой
-                await Task.Delay(30);
-                retryCount++;
-            }
-        }
-    }
-    public void ThemeSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer, Formatting.Indented));
-        }
-        catch { } // No need for repairing!
-    }
-    public void ThemeLoad()
-    {
-        try
-        {
-            themer = JsonConvert.DeserializeObject<Themer>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json"))!;
-            if (themer.Themes.Count > 8)
-            {
-                themer.Themes.RemoveRange(0, 8);
-            }
-            if (themer == null) { JsonRepair('t'); }
-        }
-        catch
-        {
-            JsonRepair('t');
-        }
-    } 
-    public void JsonRepair(char file)
-    {
-        if (file == 't')
-        {
-            try
-            {
-                themer = new Themer();
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-            }
-            if (themer != null)
-            {
-                try
-                {
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                }
-            }
-            else
-            {
-                try
-                {
-
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
-                }
-                catch
-                {
-                }
-            }
-        }
-        if (file == 'c')
-        {
-            try
-            {
-                config = new Config();
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory)); 
-            }
-            if (config != null)
-            {
-                try
-                {
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-            else
-            {
-                try
-                {
-
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
-                    App.MainWindow.Close();
-                }
-                catch
-                {
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-        }
-        if (file == 'p')
-        {
-            try
-            {
-                for (var j = 0; j < 3; j++)
-                {
-                    profile[j] = new Profile();
-                }
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                App.MainWindow.Close();
-            }
-            if (profile != null)
-            {
-                try
-                {
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-            else
-            { 
-                try
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-                }
-                catch
-                {
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                }
-            }
-        }
-        if (file == 'n')
-        {
-            try
-            {
-                notify = new JsonContainers.Notifications();
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-            }
-            if (notify != null)
-            {
-                try
-                {
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-            else
-            {
-                try
-                {
-
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
-                    App.MainWindow.Close();
-                }
-                catch
-                {
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-        }
-    }
+    
+    #region User Profiles
     public void GetProfileInit()
     {
         ConfigLoad();
@@ -711,6 +182,52 @@ public sealed partial class ShellPage : Page
                 return;
             }
         }
+    }
+    private string NextPremadeProfile_Switch()
+    {
+        var nextProfile = string.Empty;
+        ConfigLoad();
+        if (config == null) { return string.Empty; }
+        if (config.Preset != -1)
+        {
+            if (config.PremadeMinActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Min".GetLocalized(); config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
+            else if (config.PremadeEcoActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Eco".GetLocalized(); config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
+            else if (config.PremadeBalanceActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Balance".GetLocalized(); config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
+            else if (config.PremadeSpeedActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Speed".GetLocalized(); config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
+            else if (config.PremadeMaxActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Max".GetLocalized(); config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; }
+        }
+        else
+        {
+            if (config.PremadeMinActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Eco".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = true; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Эко
+            else if (config.PremadeEcoActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Balance".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = true; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Баланс
+            else if (config.PremadeBalanceActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Speed".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = true; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Скорость
+            else if (config.PremadeSpeedActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Max".GetLocalized(); config.PremadeMinActivated = false; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = true; config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Максимум
+            else if (config.PremadeMaxActivated) { config.Preset = -1; nextProfile = "Shell_Preset_Min".GetLocalized(); config.PremadeMinActivated = true; config.PremadeEcoActivated = false; config.PremadeBalanceActivated = false; config.PremadeSpeedActivated = false; config.PremadeMaxActivated = false; config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; } // Минимум
+        }
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
+        }
+        catch { }
+        return nextProfile;
+    }
+    private string NextCustomProfile_Switch()
+    {
+        var nextProfile = string.Empty;
+        ProfileLoad();
+        if (config.Preset == -1) // У нас был готовый пресет
+        {
+            if (profile.Length > 0 && profile[0] != null && profile[0].profilename != null)
+            {
+                
+            }
+        }
+        else // У нас уже был выставлен какой-то профиль
+        {
+
+        }
+        return nextProfile;
     }
     public void MandarinSparseUnit()
     {
@@ -792,7 +309,7 @@ public sealed partial class ShellPage : Page
             {
                 var navigationService = App.GetService<INavigationService>();
                 if (navigationService.Frame!.GetPageViewModel() is ПресетыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!, null, true); }
-                else if(navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true); }
+                else if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true); }
             });
             return;
         }
@@ -1053,6 +570,478 @@ public sealed partial class ShellPage : Page
         /*   if (profile[indexRequired].enablePstateEditor) { cpu.BtnPstateWrite_Click(); }*/
     }
     #endregion
+
+    #region Notifications 
+    private void Window_Activated(object sender, WindowActivatedEventArgs args)
+    {
+        if (args.WindowActivationState == WindowActivationState.CodeActivated || args.WindowActivationState == WindowActivationState.PointerActivated)
+        {
+            // Окно активировано
+            dispatcherTimer?.Start();
+        }
+        else
+        {
+            // Окно не активировано
+            dispatcherTimer?.Stop();
+        }
+    }
+    private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
+    {
+        if (args.Visible) { dispatcherTimer?.Start(); } else { dispatcherTimer?.Stop(); }
+    }
+    private void StartInfoUpdate()
+    {
+        dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+        dispatcherTimer.Tick += async (sender, e) => await GetNotify();
+        dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1000);
+        App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
+        App.MainWindow.Activated += Window_Activated;
+        dispatcherTimer.Start();
+    }
+    private void StopInfoUpdate()
+    {
+        dispatcherTimer?.Stop();
+    }
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e); StartInfoUpdate();
+    }
+    protected override void OnNavigatedFrom(NavigationEventArgs e)
+    {
+        base.OnNavigatedFrom(e); StopInfoUpdate();
+    }
+    public Task GetNotify()
+    {
+        if (SelectedProfile != ((ComboBoxItem)ProfileSetComboBox.SelectedItem).Content.ToString() && !ProfileSetButton.IsEnabled)
+        {
+            SelectedProfile = ((ComboBoxItem)ProfileSetComboBox.SelectedItem).Content.ToString()!;
+        }
+        if (IsNotificationPanelShow)
+        {
+            return Task.CompletedTask;
+        }
+        NotifyLoad();
+        if (notify.Notifies == null) { return Task.CompletedTask; }
+        DispatcherQueue?.TryEnqueue(() =>
+        {
+            var contains = false;
+            if (compareList == notify?.Notifies.Count && NotificationContainer.Children.Count != 0) { return; } //нет новых уведомлений - пока
+            ClearAllNotification(null, null);
+            var index = 0;
+            foreach (var notify1 in notify?.Notifies!)
+            {
+                if (notify1.Title.Equals("Theme applied!")) //Если уведомление о изменении темы
+                {
+                    Theme_Loader();
+                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                    return; //Удалить и не показывать
+                }
+                MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.isClosable, notify1.Subcontent, notify1.CloseClickHandler);
+                if (notify1.Title.Contains("SaveSuccessTitle".GetLocalized()) || notify1.Title.Contains("DeleteSuccessTitle".GetLocalized()) || notify1.Title.Contains("Edit_TargetTitle".GetLocalized())) { contains = true; }
+                if (SettingsViewModel.VersionId != 5 && index > 8) //Если 9 уведомлений - очистить для оптимизации производительности
+                {
+                    index = 0; //Сброс счётчика циклов
+                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                }
+                index++;
+            }
+            if (contains) { GetProfileInit(); } //Чтобы обновить всего раз, а не много раз, чтобы не сбить конфиг
+            compareList = notify?.Notifies.Count;
+        });
+        return Task.CompletedTask;
+    }
+    #endregion
+
+    #endregion
+    private void Theme_Loader()
+    {
+        ThemeLoad();
+        try
+        {
+            ConfigLoad();
+            ThemeOpacity.Opacity = themer!.Themes[config.ThemeType]!.ThemeOpacity;
+            ThemeMaskOpacity.Opacity = themer.Themes[config.ThemeType].ThemeMaskOpacity;
+            var themeMobil = App.GetService<SettingsViewModel>();
+            var themeLight = themer.Themes[config.ThemeType].ThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+            themeMobil.SwitchThemeCommand.Execute(themeLight);
+            if (config.ThemeType > 2)
+            {
+                ThemeBackground.ImageSource = new BitmapImage(new Uri(themer.Themes[config.ThemeType].ThemeBackground));
+            }
+        }
+        catch 
+        {
+            NotifyLoad(); notify.Notifies ??= [];
+            try
+            {
+                notify.Notifies.Add(new Notify { Title = "ThemeError".GetLocalized() + "\"" + $"{themer!.Themes[config.ThemeType]!.ThemeName}" + "\"", Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error });
+            }
+            catch
+            {
+                notify.Notifies.Add(new Notify { Title = "ThemeError".GetLocalized() + "\"" + ">> " + config.ThemeType + "\"", Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error });
+
+            }
+            NotifySave(); config.ThemeType = 0;
+            ConfigSave(); return; 
+        }
+    }
+    private void ConfigSave()
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    private void ConfigLoad()
+    {
+        try
+        {
+            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
+        }
+        catch
+        {
+            JsonRepair('c');
+        }
+    }
+    private void ProfileSave()
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile, Formatting.Indented));
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    private void ProfileLoad()
+    {
+        try
+        { 
+            profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
+            if (profile == null)
+            {
+                profile = new Profile[1]; ProfileSave();
+            }
+        }
+        catch
+        {
+            JsonRepair('p');
+        }
+    }
+    private void NotifySave()
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify, Formatting.Indented));
+        }
+        catch
+        {
+            // ignored
+        }
+    }
+    private async void NotifyLoad()
+    {
+        var success = false;
+        var retryCount = 1;
+        while (!success && retryCount < 3)
+        {
+            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))
+            {
+                try
+                {
+                    notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))!;
+                    if (notify != null) { success = true; } else { JsonRepair('n'); }
+                }
+                catch { JsonRepair('n'); }
+            }
+            else { JsonRepair('n'); }
+            if (!success)
+            {
+                // Сделайте задержку перед следующей попыткой
+                await Task.Delay(30);
+                retryCount++;
+            }
+        }
+    }
+    private void ThemeSave()
+    {
+        try
+        {
+            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer, Formatting.Indented));
+        }
+        catch { } // No need for repairing!
+    }
+    private void ThemeLoad()
+    {
+        try
+        {
+            themer = JsonConvert.DeserializeObject<Themer>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json"))!;
+            if (themer.Themes.Count > 8)
+            {
+                themer.Themes.RemoveRange(0, 8);
+            }
+            if (themer == null) { JsonRepair('t'); }
+        }
+        catch
+        {
+            JsonRepair('t');
+        }
+    } 
+    private void JsonRepair(char file)
+    {
+        if (file == 't')
+        {
+            try
+            {
+                themer = new Themer();
+            }
+            catch
+            {
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+            }
+            if (themer != null)
+            {
+                try
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
+                }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                }
+            }
+            else
+            {
+                try
+                {
+
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
+                }
+                catch
+                {
+                }
+            }
+        }
+        if (file == 'c')
+        {
+            try
+            {
+                config = new Config();
+            }
+            catch
+            {
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory)); 
+            }
+            if (config != null)
+            {
+                try
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+                }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+            else
+            {
+                try
+                {
+
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+                    App.MainWindow.Close();
+                }
+                catch
+                {
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+        }
+        if (file == 'p')
+        {
+            try
+            {
+                for (var j = 0; j < 3; j++)
+                {
+                    profile[j] = new Profile();
+                }
+            }
+            catch
+            {
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                App.MainWindow.Close();
+            }
+            if (profile != null)
+            {
+                try
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
+                }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+            else
+            { 
+                try
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
+                }
+                catch
+                {
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                }
+            }
+        }
+        if (file == 'n')
+        {
+            try
+            {
+                notify = new JsonContainers.Notifications();
+            }
+            catch
+            {
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+            }
+            if (notify != null)
+            {
+                try
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
+                }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+            else
+            {
+                try
+                {
+
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
+                    App.MainWindow.Close();
+                }
+                catch
+                {
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+            }
+        }
+    }
+    #endregion
+    #region Keyboard Hooks
+    private static IntPtr SetHook(LowLevelKeyboardProc proc) //Эту функцию можно не изменять
+    {
+
+        using var curProcess = Process.GetCurrentProcess();//Получаем текущий процесс
+
+        using var curModule = curProcess?.MainModule!;//Получаем главный модуль процесса
+
+        return SetWindowsHookEx(WH_KEYBOARD_LL, proc,//Вызываем WinAPI функцию
+
+            GetModuleHandle(curModule?.ModuleName!), 0);//Получаем хэндл модуля
+
+    }
+
+    private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam); // Callback делегат(для вызова callback метода)
+    private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)//Собственно сам callback метод
+    {
+        //Проверяем следует ли перехватывать хук(первая половина), и то, 
+        //что произошло именно событие нажатия на клавишу (вторая половина)
+        if (nCode >= 0 && wParam == WM_KEYDOWN)
+        {
+            var vkCode = Marshal.ReadInt32(lParam); //Получаем код клавиши из неуправляемой памяти
+            //Переключить между своими пресетами - Switch profile to next Custom
+            if ((Keys)vkCode == Keys.W && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
+            {
+                //Создать уведомление
+                var nextProfile = NextCustomProfile_Switch();
+                MandarinAddNotification("Смена пресета", "Вы успешно переключили ваши пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
+                MainWindow.Applyer.ApplyWithoutADJLine(false);
+            }
+            //Переключить между готовыми пресетами - Switch profile to next Premaded
+            if ((Keys)vkCode == Keys.P && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
+            {
+                var nextProfile = NextPremadeProfile_Switch();
+                ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextProfile);
+                MandarinAddNotification("Смена пресета", "Вы успешно переключили готовые пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
+                MainWindow.Applyer.ApplyWithoutADJLine(false);
+            }
+        }
+        return CallNextHookEx(_hookID, nCode, wParam, lParam);//Передаем нажатие в следующее приложение
+    }
+
+    #region Hook DLL Imports
+    //Импорт необходимых функций из WinApi
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+    private static extern IntPtr SetWindowsHookEx(int idHook,
+
+        LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+    private static extern short GetAsyncKeyState(int vKey);
+
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+    [return: MarshalAs(UnmanagedType.Bool)]
+
+    private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+    private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode,
+
+        IntPtr wParam, IntPtr lParam);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+
+    private static extern IntPtr GetModuleHandle(string lpModuleName);
+    #endregion
+    #endregion
     #region Based on Collapse Launcher TitleBar 
     private void ToggleTitleIcon(bool hide) //Based on Collapse Launcher Titlebar, check out -> https://github.com/CollapseLauncher/Collapse
     {
@@ -1172,7 +1161,7 @@ public sealed partial class ShellPage : Page
         var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(m_AppWindow.Id);
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
     }
-    private Windows.Graphics.RectInt32 GetRect(Rect bounds, double scale)
+    private static Windows.Graphics.RectInt32 GetRect(Rect bounds, double scale)
     {
         return new Windows.Graphics.RectInt32(
             _X: (int)Math.Round(bounds.X * scale),
@@ -1410,7 +1399,5 @@ SOFTWARE.
         Container.Children.Add(Notification);
         NotificationContainer.Children.Add(Container);
     }
-    #endregion
-
-
+    #endregion 
 }
