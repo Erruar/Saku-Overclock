@@ -2390,4 +2390,18 @@ Maximum: </value>
   <data name="Settings_ni_Values_MinValue" xml:space="preserve">
     <value>Minimum: </value>
   </data>
+  <data name="InfoANiIcons.ToolTipService.ToolTip" xml:space="preserve">
+    <value>TrayMon
+It's modern monitoring system tracks 
+your laptop's metrics by using data from 
+the information page and displays them 
+in the Windows tray menu. This way, you 
+can easily monitor the key metrics you 
+need, never miss important details, and 
+always stay informed about your 
+laptop's current performance.
+
+The application's CPU consumption 
+increases slightly</value>
+  </data>
 </root>

@@ -21,12 +21,12 @@ public sealed partial class ИнформацияPage : Page
     private JsonContainers.RTSSsettings rtssset = new();
     private JsonContainers.NiIconsSettings niicons = new();
     private readonly Dictionary<string, System.Windows.Forms.NotifyIcon> trayIcons = [];
-    private class MinMax 
+    private class MinMax
     {
         public float Min;
         public float Max;
     }
-    private readonly List<MinMax> niicons_Min_MaxValues = [ new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()];
+    private readonly List<MinMax> niicons_Min_MaxValues = [new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()];
     public double refreshtime;
     private bool loaded = false;
     private string? rtss_line;
@@ -93,6 +93,7 @@ public sealed partial class ИнформацияPage : Page
             {
                 ConfigLoad();
                 infoRTSSButton.IsChecked = config.RTSSMetricsEnabled;
+                infoNiIconsButton.IsChecked = config.NiIconsEnabled;
                 if (config.NiIconsEnabled)
                 {
                     CreateNotifyIcons();
@@ -210,7 +211,7 @@ public sealed partial class ИнформацияPage : Page
         }
     }
 
-    private System.Drawing.Icon? CreateIconFromElement(JsonContainers.NiIconsElements element)
+    private static System.Drawing.Icon? CreateIconFromElement(JsonContainers.NiIconsElements element)
     {
         // Создаём Grid виртуально и растрируем в Bitmap
         // Пример создания иконки будет зависеть от элемента:
@@ -250,15 +251,14 @@ public sealed partial class ИнформацияPage : Page
                 System.Windows.Forms.TextRenderer.DrawText(g, "Text", font, new System.Drawing.Point(-6, 5), InvertColor(element.Color)); // Пример текста, нужно заменить на реальный
 
             }
-            catch {  } // Игнорим
+            catch { } // Игнорим
         }
         try
         {
             return System.Drawing.Icon.FromHandle(bitmap.GetHicon());
         }
         catch
-        {
-            NiLoad();
+        { 
             return null;
         }
     }
@@ -311,7 +311,7 @@ public sealed partial class ИнформацияPage : Page
                     if (element.Name == IconName)
                     {
                         // Изменяем текст на иконке (слой 2)
-                        notifyIcon.Icon = UpdateIconText(notifyIcon.Icon, NewText, element.Color, element.FontSize, element.IconShape, element.BgOpacity);
+                        notifyIcon.Icon = UpdateIconText(NewText, element.Color, element.FontSize, element.IconShape, element.BgOpacity, notifyIcon.Icon);
 
                         // Обновляем TooltipText, если он задан
                         if (TooltipText != null && notifyIcon.Text != null)
@@ -319,23 +319,32 @@ public sealed partial class ИнформацияPage : Page
                             notifyIcon.Text = element.ContextMenuType == 2 ? TooltipText + "\n" + AdvancedTooltip : TooltipText;
                         }
                     }
-                } 
+                }
             }
         }
-        catch 
+        catch
         {
             CreateNotifyIcons();
         }
     }
 
-    private static System.Drawing.Icon UpdateIconText(System.Drawing.Icon? existingIcon, string? newText, string NewColor, int FontSize, int IconShape, double Opacity)
+    private static System.Drawing.Icon UpdateIconText(string ? newText, string NewColor, int FontSize, int IconShape, double Opacity, System.Drawing.Icon? oldIcon = null)
     {
+        // Уничтожаем старую иконку, если она существует
+        if (oldIcon != null)
+        {
+            DestroyIcon(oldIcon.Handle); // Освобождение старой иконки
+            oldIcon.Dispose(); // Освобождаем ресурсы иконки
+        }
         // Создаём новую иконку на основе существующей с новым текстом
         var bitmap = new System.Drawing.Bitmap(32, 32);
         var g = Graphics.FromImage(bitmap);
+        g.SmoothingMode = SmoothingMode.AntiAlias;
+
+        // Цвет фона и кисть
         var bgColor = System.Drawing.ColorTranslator.FromHtml("#" + NewColor);
-        System.Drawing.Brush bgBrush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb((int)(Opacity * 255), bgColor));
-        // Очищаем старый текст и рисуем новый
+        var bgBrush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb((int)(Opacity * 255), bgColor));
+        // Рисуем фон иконки в зависимости от формы
         switch (IconShape)
         {
             case 0: // Куб
@@ -343,19 +352,70 @@ public sealed partial class ИнформацияPage : Page
                 break;
             case 1: // Скруглённый куб
                 var path = CreateRoundedRectanglePath(new Rectangle(0, 0, 32, 32), 7);
-                g.FillPath(bgBrush, path!);
+                if (path != null)
+                {
+                    g.FillPath(bgBrush, path);
+                }
+                else
+                {
+                    g.FillRectangle(bgBrush, 0, 0, 32, 32);
+                }
                 break;
             case 2: // Круг
                 g.FillEllipse(bgBrush, 0, 0, 32, 32);
                 break;
-            // Добавьте остальные фигуры и обработку ico
+            // Добавьте остальные фигуры и обработку ico при необходимости
             default:
                 g.FillRectangle(bgBrush, 0, 0, 32, 32);
                 break;
-        } // Или очистить только текстовый слой, если разделено
-        var font = new System.Drawing.Font(new System.Drawing.FontFamily("Arial"), FontSize * 2, System.Drawing.FontStyle.Regular, GraphicsUnit.Pixel);
-        System.Windows.Forms.TextRenderer.DrawText(g, newText, font, new Point(-5, 6), InvertColor(NewColor));
-        return System.Drawing.Icon.FromHandle(bitmap.GetHicon());
+        }
+        // Определение позиции текста
+        var textPosition = GetTextPosition(newText, FontSize, out var NewFontSize);
+        // Установка шрифта
+        var font = new System.Drawing.Font(new System.Drawing.FontFamily("Arial"), NewFontSize * 2, System.Drawing.FontStyle.Regular, GraphicsUnit.Pixel);
+
+        // Рисуем текст
+        System.Windows.Forms.TextRenderer.DrawText(g, newText, font, textPosition, InvertColor(NewColor));
+        // Создание иконки из Bitmap
+        // Создание иконки из Bitmap и освобождение ресурсов
+        return System.Drawing.Icon.FromHandle(bitmap.GetHicon()); 
+    }
+    // Метод для освобождения ресурсов, используемый после GetHicon()
+    [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
+    private static extern bool DestroyIcon(IntPtr hIcon);
+    // Метод для вычисления позиции текста в зависимости от условий
+    private static Point GetTextPosition(string? newText, int fontSize, out int NewFontSize)
+    {
+        // По умолчанию позиция текста для трех символов
+        var position = new Point(-5, 6);
+
+        // Определение масштаба шрифта
+        var scale = fontSize / 9.0f;
+
+        if (newText != null)
+        {
+            // Если текст состоит из одного символа
+            if (newText.Contains(",") && newText.Split(',')[0].Length == 1 && newText.Split(',')[1].Length >= 2)
+            {
+                position = new Point(-5, 6);
+            }
+            if (newText.Contains(",") && newText.Split(',')[0].Length == 2 || newText.Contains(",") && newText.Split(',')[0].Length == 1 && newText.Split(',')[1].Length <= 1)
+            {
+                position = new Point(2, 6);
+            }
+            // Если текст состоит из четырёх символов
+            else if (newText.Contains(",") && newText.Split(',')[0].Length == 4)
+            {
+                position = new Point(-6, 8);
+                fontSize -= 2; // уменьшение размера шрифта на 2
+            }
+        }
+
+        // Корректируем позицию текста на основе масштаба
+        position.X = (int)Math.Floor(position.X * scale);
+        position.Y = (int)Math.Floor(position.Y * scale);
+        NewFontSize = fontSize;
+        return position;
     }
     private static System.Drawing.Color InvertColor(string Color)
     {
@@ -742,7 +802,7 @@ public sealed partial class ИнформацияPage : Page
         }
         else
         {
-            if (infoRTSSButton.IsChecked == false)
+            if (infoRTSSButton.IsChecked == false && config.NiIconsEnabled == false)
             {
                 dispatcherTimer?.Stop();
                 IsAppInTray = true;
@@ -1342,7 +1402,7 @@ public sealed partial class ИнформацияPage : Page
                 .Replace("$average_cpu_clock$", Math.Round(avgCoreCLK / numberOfCores, 3).ToString())
                 .Replace("$average_cpu_voltage$", Math.Round(avgCoreVolt / numberOfCores, 3).ToString());
 
-           
+
             if (niicons_Min_MaxValues[0].Min == 0.0f) { niicons_Min_MaxValues[0].Min = RyzenADJWrapper.get_stapm_value(ryzenAccess); }
             if (niicons_Min_MaxValues[1].Min == 0.0f) { niicons_Min_MaxValues[1].Min = RyzenADJWrapper.get_fast_value(ryzenAccess); }
             if (niicons_Min_MaxValues[2].Min == 0.0f) { niicons_Min_MaxValues[2].Min = RyzenADJWrapper.get_slow_value(ryzenAccess); }
@@ -1676,6 +1736,25 @@ public sealed partial class ИнформацияPage : Page
             await Task.Delay(3000);
             Info_RTSSTeacherTip.IsOpen = false;
         }
+        if (!loaded) { return; }
+        ConfigLoad();
+        config.RTSSMetricsEnabled = infoRTSSButton.IsChecked == true;
+        ConfigSave();
+    }
+    private void infoNiIconsButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!loaded) { return; }
+        if (infoNiIconsButton.IsChecked == true)
+        {
+            CreateNotifyIcons();
+        }
+        else
+        {
+            DisposeAllNotifyIcons();
+        }
+        ConfigLoad();
+        config.NiIconsEnabled = infoNiIconsButton.IsChecked == true;
+        ConfigSave();
     }
     private void CPUFlyout_Opening(object sender, object e)
     {
@@ -1929,5 +2008,5 @@ public sealed partial class ИнформацияPage : Page
             }
         }
     }
-    #endregion
+    #endregion 
 }
