@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using Octokit;
+using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
 
@@ -45,6 +46,8 @@ public class UpdateChecker
 
         if (latestRelease.Version > currentVersion)
         {
+            var navigationService = App.GetService<INavigationService>();
+            navigationService.NavigateTo(typeof(ОбновлениеViewModel).FullName!, null, true);
             var result = MessageBox.Show(
                 $"Доступна новая версия {latestRelease.Release.TagName}. Хотите обновиться?",
                 "Доступно обновление!",

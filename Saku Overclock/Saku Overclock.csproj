@@ -69,6 +69,7 @@
     <None Remove="Views\AdvancedКулерPage.xaml" />
     <None Remove="Views\PowerWindow.xaml" />
     <None Remove="Views\КулерPage.xaml" />
+    <None Remove="Views\ОбновлениеPage.xaml" />
     <None Remove="WindowIcon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +152,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\min.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\new-release-text.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\new-release.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\noteco.ico">
@@ -933,5 +940,13 @@
   
   <ItemGroup>
     <Resource Remove="Styles\CopyButton.xaml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <CustomAdditionalCompileInputs Remove="Views\ОбновлениеPage.xaml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Remove="Views\ОбновлениеPage.xaml" />
   </ItemGroup>
 </Project>

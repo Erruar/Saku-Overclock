@@ -69,7 +69,7 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe950;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem x:Uid="Shell_Кулер" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.КулерViewModel">
+                    <NavigationViewItem x:Uid="Shell_Кулер" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ОбновлениеViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ca;"/>
                         </NavigationViewItem.Icon>

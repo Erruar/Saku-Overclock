@@ -21,6 +21,7 @@ public class PageService : IPageService
         Configure<КулерViewModel, КулерPage>();
         Configure<AdvancedКулерViewModel, AdvancedКулерPage>();
         Configure<SettingsViewModel, SettingsPage>();
+        Configure<ОбновлениеViewModel, ОбновлениеPage>();
     }
 
     public Type GetPageType(string key)

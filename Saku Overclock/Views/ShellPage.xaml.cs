@@ -16,8 +16,7 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation;
-using Windows.System;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Windows.System; 
 using Button = Microsoft.UI.Xaml.Controls.Button;
 
 namespace Saku_Overclock.Views;
@@ -361,6 +360,7 @@ public sealed partial class ShellPage : Page
             } // Минимум
         }
         ConfigSave();
+        SelectedProfile = nextProfile;
         return nextProfile;
     }
     private string NextCustomProfile_Switch()
@@ -429,6 +429,7 @@ public sealed partial class ShellPage : Page
             else { MandarinAddNotification("TraceIt_Error".GetLocalized(), nextProfileIndex.ToString(), InfoBarSeverity.Error); }
         }
         ConfigSave();
+        SelectedProfile = nextProfile;
         return nextProfile;
     }
     public void MandarinSparseUnit()
@@ -834,6 +835,18 @@ public sealed partial class ShellPage : Page
                 if (notify1.Title.Equals("Theme applied!")) //Если уведомление о изменении темы
                 {
                     Theme_Loader();
+                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                    return; //Удалить и не показывать
+                }
+                if (notify1.Title.Equals("UpdateNAVBAR"))
+                {
+                    NavigationViewControl.Margin = NavigationViewControl.Margin == new Thickness(-40, 0, 0, 0) ? new Thickness(0, 0, 0, 0) : new Thickness(-40, 0, 0, 0);
+                    NavigationViewControl.IsBackButtonVisible = NavigationViewControl.IsBackButtonVisible == NavigationViewBackButtonVisible.Visible ? NavigationViewBackButtonVisible.Collapsed : NavigationViewBackButtonVisible.Visible;
+                    NavigationViewControl.IsSettingsVisible = !NavigationViewControl.IsSettingsVisible;
+                    foreach (var element in NavigationViewControl.MenuItems)
+                    {
+                        ((NavigationViewItem)element).Visibility = ((NavigationViewItem)element).Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+                    }
                     ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
                     return; //Удалить и не показывать
                 }
