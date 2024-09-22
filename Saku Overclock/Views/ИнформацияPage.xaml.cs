@@ -248,7 +248,7 @@ public sealed partial class ИнформацияPage : Page
             try
             {
                 var font = new System.Drawing.Font(new System.Drawing.FontFamily("Arial"), element.FontSize * 2, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-                System.Windows.Forms.TextRenderer.DrawText(g, "Text", font, new System.Drawing.Point(-6, 5), InvertColor(element.Color)); // Пример текста, нужно заменить на реальный
+                System.Windows.Forms.TextRenderer.DrawText(g, "Text", font, new System.Drawing.Point(-6, 5), InvertColor(element.Color)); 
 
             }
             catch { } // Игнорим
@@ -1031,10 +1031,10 @@ public sealed partial class ИнформацияPage : Page
                                 if (SelectedGroup == 3)
                                 {
                                     currText.Text = f == 0 ?
-                                        $"{Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3)} A/{Math.Round(RyzenADJWrapper.get_vrmmax_current(ryzenAccess), 3)}A"
-                                        : (f == 1 ? $"{Math.Round(RyzenADJWrapper.get_vrm_current_value(ryzenAccess), 3)} A/{Math.Round(RyzenADJWrapper.get_vrm_current(ryzenAccess), 3)}A"
-                                        : (f == 2 ? $"{Math.Round(RyzenADJWrapper.get_vrmsocmax_current_value(ryzenAccess), 3)} A/{Math.Round(RyzenADJWrapper.get_vrmsocmax_current(ryzenAccess), 3)}A"
-                                        : (f == 3 ? $"{Math.Round(RyzenADJWrapper.get_vrmsoc_current_value(ryzenAccess), 3)} A/{Math.Round(RyzenADJWrapper.get_vrmsoc_current(ryzenAccess), 3)}A" : $"{0}A")));
+                                        $"{Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.get_vrmmax_current(ryzenAccess), 3)}A"
+                                        : (f == 1 ? $"{Math.Round(RyzenADJWrapper.get_vrm_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.get_vrm_current(ryzenAccess), 3)}A"
+                                        : (f == 2 ? $"{Math.Round(RyzenADJWrapper.get_vrmsocmax_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.get_vrmsocmax_current(ryzenAccess), 3)}A"
+                                        : (f == 3 ? $"{Math.Round(RyzenADJWrapper.get_vrmsoc_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.get_vrmsoc_current(ryzenAccess), 3)}A" : $"{0}A")));
                                 }
                                 if (SelectedGroup == 4)
                                 {

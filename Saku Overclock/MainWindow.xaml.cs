@@ -28,7 +28,7 @@ public sealed partial class MainWindow : WindowEx
         DWMWCP_ROUND = 2,
         DWMWCP_ROUNDSMALL = 3
     }
-    public NotifyIcon ni = new(); 
+    private static NotifyIcon ni = new(); 
     [LibraryImport("dwmapi.dll", SetLastError = true)]
     private static partial long DwmSetWindowAttribute(IntPtr hwnd,
                                                      DWMWINDOWATTRIBUTE attribute,
@@ -75,7 +75,7 @@ public sealed partial class MainWindow : WindowEx
             ni.ContextMenuStrip.Opacity = 0.89;
             ni.ContextMenuStrip.ForeColor = System.Drawing.Color.Purple;
             ni.ContextMenuStrip.BackColor = System.Drawing.Color.White;
-            ni.Text = "Saku Overclock";
+            ni.Text = "Saku Overclock©";
         }
         catch
         {
@@ -97,6 +97,11 @@ public sealed partial class MainWindow : WindowEx
     }
     #endregion
     #region Tray utils
+    public static void Remove_ContextMenu_Tray()
+    { 
+        ni.ContextMenuStrip?.Items.Clear();
+        ni.Text = "Saku Overclock©\nContext menu is disabled";
+    }
     private void Dispose_Tray(object sender, WindowEventArgs args)
     { 
         ni.Dispose();  

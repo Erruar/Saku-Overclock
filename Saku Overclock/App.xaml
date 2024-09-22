@@ -3,8 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ui="using:Windows.UI"
-    xmlns:local="using:Saku_Overclock.Styles"
-   >
+    xmlns:local="using:Saku_Overclock.Styles">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries> 
@@ -616,7 +615,7 @@
                 <!-- Toggle button style-->
                 <ResourceDictionary Source="/Styles/ToggleButtonCollapseLauncher.xaml" />
                 <!-- Button style-->
-                <ResourceDictionary Source="/Styles/ButtonCollapseLauncher.xaml" />
+                <ResourceDictionary Source="/Styles/ButtonCollapseLauncher.xaml" /> 
             </ResourceDictionary.MergedDictionaries> 
         </ResourceDictionary>
     </Application.Resources>

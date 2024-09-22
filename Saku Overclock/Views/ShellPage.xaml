@@ -69,7 +69,7 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe950;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem x:Uid="Shell_Кулер" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ОбновлениеViewModel">
+                    <NavigationViewItem x:Uid="Shell_Кулер" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.КулерViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ca;"/>
                         </NavigationViewItem.Icon>
@@ -306,20 +306,49 @@
                     <ScrollViewer x:Name="NotificationPanelScrollViewer"
                        CanContentRenderOutsideBounds="True"
                        HorizontalScrollBarVisibility="Disabled">
-                        <Grid MinWidth="608"
-                   MinHeight="200">
+                        <Grid MinWidth="608" MinHeight="200">
                             <Pivot HorizontalContentAlignment="Center" SelectedIndex="0" x:Name="NotificationsPivot" SelectionChanged="Notif_SelectionChanged" Width="600">
                                 <PivotItem Width="600">
                                     <PivotItem.Header>
-                                        <TextBlock Text="Notifications" FontWeight="Bold"/>
+                                        <TextBlock x:Uid="Shell_Notifications" Text="Notifications" FontWeight="Bold"/>
                                     </PivotItem.Header>
                                 </PivotItem>
                                 <PivotItem Width="570">
-                                    <StackPanel x:Name="NotifChangelogTexts">
-                                        <TextBlock>Unable to fetch changelog</TextBlock>
-                                    </StackPanel>
+                                    <StackPanel x:Name="NotifChangelogTexts"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Orientation="Vertical">
+                                        <StackPanel.OpacityTransition>
+                                            <ScalarTransition />
+                                        </StackPanel.OpacityTransition>
+                                        <Grid Width="200"
+                                         Margin="0,0,0,16"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Opacity="0.7" >
+                                            <FontIcon FontSize="40" Glyph="&#xEA6A;" />
+                                        </Grid>
+                                        <Grid Padding="24,8"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        CornerRadius="16">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="2"
+                                                 VerticalAlignment="Center"
+                                                 FontSize="20"
+                                                 FontWeight="SemiBold"
+                                                 Opacity="0.50"
+                                                 TextWrapping="Wrap"
+                                                 x:Uid="Shell_No_Changelog" 
+                                                 Text="Unable to fetch changelog"
+                                                 TextAlignment="Center" />
+                                        </Grid>
+                                    </StackPanel>  
                                     <PivotItem.Header>
-                                        <TextBlock Text="Changelog" FontWeight="Bold"/>
+                                        <TextBlock x:Uid="Shell_Changelog" Text="Changelog" FontWeight="Bold"/>
                                     </PivotItem.Header>
                                 </PivotItem>
                             </Pivot>
@@ -330,12 +359,13 @@
                                 <StackPanel.OpacityTransition>
                                     <ScalarTransition />
                                 </StackPanel.OpacityTransition>
-                                <Image Width="200"
+                                <Grid Width="200"
                             Margin="0,0,0,16"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Opacity="1"
-                            Source="ms-appx:///Assets/Images/GameMascot/PaimonSleep-MonoTransparent.png" />
+                            Opacity="0.7" >
+                                    <FontIcon FontSize="40" Glyph="&#xE7ED;" />
+                                </Grid>
                                 <Grid Padding="24,8"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
@@ -349,6 +379,7 @@
                                     FontSize="20"
                                     FontWeight="SemiBold"
                                     Opacity="0.50"
+                                    x:Uid="Shell_No_Notifications"
                                     Text="No notifications "
                                     TextAlignment="Center" />
                                 </Grid>
@@ -385,6 +416,7 @@
                          Orientation="Horizontal">
                             <TextBlock Margin="0,-1,8,1"
                             FontWeight="Medium"
+                            x:Uid="Shell_Clear_Notifications"
                             Text="Clear All" />
                             <FontIcon  
                            FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}"

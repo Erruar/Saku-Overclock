@@ -10,7 +10,8 @@
     <Grid x:Name="dpWindow" Opacity="0.7">
         <Border Background="Transparent" Padding="20"> 
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Image Source="/Assets/StoreLogo.png" x:Name="ProfileImage" Width="100" Height="100" Margin="10"/> 
+                <Image Source="/Assets/StoreLogo.png" x:Name="ProfileImage" Width="100" Height="100" Margin="10"/>
+                <Grid x:Name="SourceGrid" Width="100" Height="100" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Grid>
                 <TextBlock x:Name="ProfileText" FontWeight="ExtraBlack" HorizontalAlignment="Center" FontSize="16" Text="{x:Bind ProfileText.Text}" />
             </StackPanel>
         </Border>

@@ -9,9 +9,7 @@
         <ThemeShadow x:Name="SharedShadow" />  
     </Page.Resources>
     <Grid x:Name="ContentArea" Margin="-48,-65,-50,0">
-        <Border
-               MinHeight="325"
-               CornerRadius="8" Margin="0,-115,0,0">
+        <Border MinHeight="325" CornerRadius="8" Margin="0,-115,0,0">
             <Border.Background>
                 <ImageBrush
                            ImageSource="/Assets/home.png"
@@ -60,7 +58,7 @@
                         <PivotItem.Header>
                             <TextBlock Margin="0,0,0,-8"
                        FontSize="16"
-                       FontWeight="Bold" Text="Changelog"/>
+                       FontWeight="Bold" x:Uid="Shell_Changelog" Text="Changelog"/>
                         </PivotItem.Header>
                         <ScrollViewer Margin="-10,0,-10,0">
                             <StackPanel Width="274" Orientation="Vertical" x:Name="MainChangelogStackPanel" HorizontalAlignment="Stretch" IsHitTestVisible="True">
@@ -75,7 +73,7 @@
                         <PivotItem.Header>
                             <TextBlock Margin="0,0,0,-8"
                        FontSize="16"
-                       FontWeight="Bold" Text="News"/>
+                       FontWeight="Bold" x:Uid="Main_Guide" Text="Guide"/>
                         </PivotItem.Header>
 
                     </PivotItem>
@@ -83,7 +81,7 @@
                         <PivotItem.Header>
                             <TextBlock Margin="0,0,0,-8"
                        FontSize="16"
-                       FontWeight="Bold" Text="Actions"/>
+                       FontWeight="Bold" x:Uid="Main_Actions" Text="Actions"/>
                         </PivotItem.Header>
 
                     </PivotItem>

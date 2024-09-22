@@ -493,7 +493,7 @@
     <value>Выйти</value>
   </data>
   <data name="Tray_Saku_Overclock" xml:space="preserve">
-    <value>Saku Overclock</value>
+    <value>Saku Overclock©</value>
   </data>
   <data name="Tray_Show" xml:space="preserve">
     <value>Развернуть</value>
@@ -2478,5 +2478,78 @@ Overclock будут проигнорированы,
 
 Незначительно увеличит потребление
 приложением вашего процессора</value>
+  </data>
+  <data name="Param_Profile_Edit_Name.Content" xml:space="preserve">
+    <value>Изменить пресет</value>
+  </data>
+  <data name="Param_Profile_New_Name.Content" xml:space="preserve">
+    <value>Добавить пресет</value>
+  </data>
+  <data name="Param_Profile_New_Name_Add.PlaceholderText" xml:space="preserve">
+    <value>Новое имя...</value>
+  </data>
+  <data name="Shell_Changelog.Text" xml:space="preserve">
+    <value>Изменения</value>
+  </data>
+  <data name="Shell_Clear_Notifications.Text" xml:space="preserve">
+    <value>Очистить все</value>
+  </data>
+  <data name="Shell_Notifications.Text" xml:space="preserve">
+    <value>Уведомления</value>
+  </data>
+  <data name="Shell_No_Changelog.Text" xml:space="preserve">
+    <value>Невозможно получить список изменений</value>
+  </data>
+  <data name="Shell_No_Notifications.Text" xml:space="preserve">
+    <value>Нет новых уведомлений</value>
+  </data>
+  <data name="Update_curr_ver.Text" xml:space="preserve">
+    <value>Текущая версия: </value>
+  </data>
+  <data name="Update_New_AfterDownloading_SubTitle.Text" xml:space="preserve">
+    <value>Все настройки сохранятся</value>
+  </data>
+  <data name="Update_New_AfterDownloading_Title.Text" xml:space="preserve">
+    <value>После скачивания приложение закроется и откроется установщик</value>
+  </data>
+  <data name="Update_New_Available.Text" xml:space="preserve">
+    <value>Уже доступно!</value>
+  </data>
+  <data name="Update_New_Changelog.Text" xml:space="preserve">
+    <value>Что нового?</value>
+  </data>
+  <data name="Update_New_Downloading_LeftTime.Text" xml:space="preserve">
+    <value>Прошло времени: </value>
+  </data>
+  <data name="Update_New_Downloading_ReqTime.Text" xml:space="preserve">
+    <value>Осталось времени: </value>
+  </data>
+  <data name="Update_New_SubTitle.Text" xml:space="preserve">
+    <value>Если вы не хотите этого - отключите интернет и перезайдите в Saku Overclock©. Отлючите авто-обновления и снова включите интернет.</value>
+  </data>
+  <data name="Update_New_time.Text" xml:space="preserve">
+    <value>Дата выхода обновления: </value>
+  </data>
+  <data name="Update_New_Title.Text" xml:space="preserve">
+    <value>Каждое обновление делает приложение лучше. Вы должны обновиться!</value>
+  </data>
+  <data name="Update_New_Update.Text" xml:space="preserve">
+    <value>НОВОЕ
+ОБНОВЛЕНИЕ</value>
+  </data>
+  <data name="Update_New_UpdateButton.Text" xml:space="preserve">
+    <value>Обновить!</value>
+  </data>
+  <data name="Update_New_UpdateDownloading.Text" xml:space="preserve">
+    <value>Скачивание обновления...</value>
+  </data>
+  <data name="Update_New_ver.Text" xml:space="preserve">
+    <value>Новая версия: </value>
+  </data>
+  <data name="Main_Actions.Text" xml:space="preserve">
+    <value>Ещё</value>
+  </data>
+  <data name="Main_Guide.Text" xml:space="preserve">
+    <value>Советы</value>
   </data>
 </root>

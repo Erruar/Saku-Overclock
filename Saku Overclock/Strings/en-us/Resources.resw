@@ -489,7 +489,7 @@ performance</value>
     <value>Quit</value>
   </data>
   <data name="Tray_Saku_Overclock" xml:space="preserve">
-    <value>Saku Overclock</value>
+    <value>Saku Overclock©</value>
   </data>
   <data name="Tray_Show" xml:space="preserve">
     <value>Show</value>
@@ -2403,5 +2403,78 @@ laptop's current performance.
 
 The application's CPU consumption 
 increases slightly</value>
+  </data>
+  <data name="Param_Profile_Edit_Name.Content" xml:space="preserve">
+    <value>Change profile</value>
+  </data>
+  <data name="Param_Profile_New_Name.Content" xml:space="preserve">
+    <value>Add new profile</value>
+  </data>
+  <data name="Param_Profile_New_Name_Add.PlaceholderText" xml:space="preserve">
+    <value>New name...</value>
+  </data>
+  <data name="Shell_Changelog.Text" xml:space="preserve">
+    <value>Changelog</value>
+  </data>
+  <data name="Shell_Clear_Notifications.Text" xml:space="preserve">
+    <value>Clear All</value>
+  </data>
+  <data name="Shell_Notifications.Text" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="Shell_No_Changelog.Text" xml:space="preserve">
+    <value>Unable to get changelog</value>
+  </data>
+  <data name="Shell_No_Notifications.Text" xml:space="preserve">
+    <value>No notifications</value>
+  </data>
+  <data name="Update_curr_ver.Text" xml:space="preserve">
+    <value>Current version: </value>
+  </data>
+  <data name="Update_New_AfterDownloading_SubTitle.Text" xml:space="preserve">
+    <value>All settings are saved</value>
+  </data>
+  <data name="Update_New_AfterDownloading_Title.Text" xml:space="preserve">
+    <value>After downloading, the application will close and the installer will open</value>
+  </data>
+  <data name="Update_New_Available.Text" xml:space="preserve">
+    <value>Already available!</value>
+  </data>
+  <data name="Update_New_Changelog.Text" xml:space="preserve">
+    <value>Whats new?</value>
+  </data>
+  <data name="Update_New_Downloading_LeftTime.Text" xml:space="preserve">
+    <value>Time elapsed: </value>
+  </data>
+  <data name="Update_New_Downloading_ReqTime.Text" xml:space="preserve">
+    <value>Time left: </value>
+  </data>
+  <data name="Update_New_SubTitle.Text" xml:space="preserve">
+    <value>If you don't want to update the app - disable the internet and reopen Saku Overclock©. Then disable auto-updates and enable internet back.</value>
+  </data>
+  <data name="Update_New_time.Text" xml:space="preserve">
+    <value>Update release date: </value>
+  </data>
+  <data name="Update_New_Title.Text" xml:space="preserve">
+    <value>Every update of the app makes it better. You should update it!</value>
+  </data>
+  <data name="Update_New_Update.Text" xml:space="preserve">
+    <value>NEW
+UPDATE</value>
+  </data>
+  <data name="Update_New_UpdateButton.Text" xml:space="preserve">
+    <value>Update!</value>
+  </data>
+  <data name="Update_New_UpdateDownloading.Text" xml:space="preserve">
+    <value>Downloading update...</value>
+  </data>
+  <data name="Update_New_ver.Text" xml:space="preserve">
+    <value>New version: </value>
+  </data>
+  <data name="Main_Actions.Text" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="Main_Guide.Text" xml:space="preserve">
+    <value>Guide</value>
   </data>
 </root>

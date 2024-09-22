@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Saku_Overclock.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local1="using:Saku_Overclock.ViewModels"
     mc:Ignorable="d">
 
     <Grid Margin="-48,-60,-40,0" x:Name="ContentArea">
@@ -15,11 +15,24 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Margin="0,-10,0,0" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left">
-                <TextBlock FontSize="31" FontWeight="Light" Text="НОВОЕ&#x0a;ОБНОВЛЕНИЕ"></TextBlock>
-                <TextBlock FontSize="21" FontWeight="Black" Text="Уже доступно!"></TextBlock>
-                <TextBlock Margin="{StaticResource XSmallTopMargin}" Text="Текущая версия: "></TextBlock>
-                <TextBlock FontSize="20" Text="Новая версия: "></TextBlock>
-                <TextBlock Margin="{StaticResource XSmallTopMargin}" Text="Дата выхода обновления: "></TextBlock>
+                <TextBlock FontSize="31" FontWeight="Light" x:Uid="Update_New_Update" Text="НОВОЕ&#x0a;ОБНОВЛЕНИЕ"></TextBlock>
+                <TextBlock FontSize="21" FontWeight="Black" x:Uid="Update_New_Available" Text="Уже доступно!"></TextBlock>
+                <StackPanel Margin="{StaticResource XSmallTopMargin}" Orientation="Horizontal">
+                    <TextBlock x:Uid="Update_curr_ver" Text="Текущая версия: "></TextBlock>
+                    <TextBlock Padding="5,0,0,0" FontWeight="SemiBold" Text="{Binding Path=VersionDescription, Mode=OneWay}">
+                        <TextBlock.DataContext>
+                            <local1:ГлавнаяViewModel/>
+                        </TextBlock.DataContext>
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel Margin="{StaticResource XSmallTopMargin}" Orientation="Horizontal">
+                    <TextBlock x:Uid="Update_New_ver" FontSize="20" Text="Новая версия: "></TextBlock>
+                    <TextBlock x:Name="Update_New_ver" FontSize="20" Foreground="{StaticResource AccentColor}" Padding="5,0,0,0" FontWeight="Bold" Text="1.0.17.0"/>
+                </StackPanel>
+                <StackPanel Margin="{StaticResource XSmallTopMargin}" Orientation="Vertical">
+                    <TextBlock x:Uid="Update_New_time" Text="Дата выхода обновления: "></TextBlock>
+                    <TextBlock x:Name="Update_New_time" TextWrapping="Wrap" FontWeight="SemiLight" Text="03.09.2024 @ 10:16"/>
+                </StackPanel>
             </StackPanel>
             <Grid Grid.Column="1" Padding="30,0,0,0" HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
@@ -27,7 +40,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="80"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Text="Что нового?" FontWeight="SemiBold" FontSize="20"></TextBlock>
+                <TextBlock Grid.Row="0" x:Uid="Update_New_Changelog" Text="Что нового?" FontWeight="SemiBold" FontSize="20"></TextBlock>
                 <ScrollViewer Grid.Row="1" Margin="0,10,-10,0" HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Vertical">
                         <Grid HorizontalAlignment="Stretch">
@@ -48,38 +61,44 @@ CornerRadius="8" HorizontalAlignment="Stretch" Height="300" VerticalAlignment="T
                 </ScrollViewer>
             </Grid>
         </Grid>
-        <Grid Visibility="Visible" Margin="0,0,0,15" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+        <Grid x:Name="Update_Button_Grid" Visibility="Visible" Margin="0,0,0,15" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" HorizontalAlignment="Left" Orientation="Vertical">
-                <TextBlock FontWeight="Bold" Margin="0,0,0,-10" TextWrapping="Wrap" Text="Every update of the app makes it better. You should update it!"/>
-                <TextBlock Padding="0,9,0,0" FontWeight="Light" Margin="0,0,0,-10" TextWrapping="Wrap" Text="If you don't want to update the app - disable the internet and reopen Saku Overclock©. Then disable auto-updates and enable internet back."/>
+                <TextBlock FontWeight="Bold" x:Uid="Update_New_Title" Margin="0,0,0,-10" TextWrapping="Wrap" Text="Every update of the app makes it better. You should update it!"/>
+                <TextBlock Padding="0,9,0,0" x:Uid="Update_New_SubTitle" FontWeight="Light" Margin="0,0,0,-10" TextWrapping="Wrap" Text="If you don't want to update the app - disable the internet and reopen Saku Overclock©. Then disable auto-updates and enable internet back."/>
             </StackPanel>
-            <Button Grid.Column="1" HorizontalAlignment="Right" Width="200" CornerRadius="25,25,25,25" Height="50" Style="{StaticResource AccentButtonStyle}" >
+            <Button Click="Update_Click" Grid.Column="1" HorizontalAlignment="Right" Width="200" CornerRadius="25,25,25,25" Height="50" Style="{StaticResource AccentButtonStyle}" >
                 <Grid HorizontalAlignment="Stretch" Width="190">
                     <FontIcon HorizontalAlignment="Left" FontWeight="Bold" Glyph="&#xE896;" />
-                    <TextBlock HorizontalAlignment="Center" FontSize="17" FontWeight="Bold" Text="Update!"></TextBlock>
+                    <TextBlock x:Uid="Update_New_UpdateButton" HorizontalAlignment="Center" FontSize="17" FontWeight="Bold" Text="Update!"></TextBlock>
                 </Grid>
             </Button>
         </Grid>
-        <StackPanel Visibility="Collapsed" Margin="0,0,0,15" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+        <StackPanel x:Name="Update_Downloading_Stackpanel" Visibility="Collapsed" Margin="0,0,0,15" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
             <Grid HorizontalAlignment="Stretch">
                 <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Left" Orientation="Vertical">
-                    <TextBlock  Text="Скачивание обновления..."  FontWeight="SemiBold"></TextBlock>
-                    <TextBlock Text="17%" FontWeight="Bold"></TextBlock>
+                    <TextBlock x:Uid="Update_New_UpdateDownloading" Text="Скачивание обновления..."  FontWeight="SemiBold"></TextBlock>
+                    <TextBlock x:Name="Update_New_UpdateDownloading" Text="17%" FontWeight="Bold"></TextBlock>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Orientation="Vertical">
-                    <TextBlock  Text="После скачивания приложение закроется и откроется установщик"  FontWeight="SemiBold"></TextBlock>
-                    <TextBlock HorizontalAlignment="Center" Text="Все настройки сохранятся" FontWeight="Bold"></TextBlock>
+                    <TextBlock x:Uid="Update_New_AfterDownloading_Title" Text="После скачивания приложение закроется и откроется установщик"  FontWeight="SemiBold"></TextBlock>
+                    <TextBlock x:Uid="Update_New_AfterDownloading_SubTitle" HorizontalAlignment="Center" Text="Все настройки сохранятся" FontWeight="Bold"></TextBlock>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Orientation="Vertical">
-                    <TextBlock  Text="Осталось времени: "  FontWeight="SemiBold"></TextBlock>
-                    <TextBlock Text="Прошло времени: " FontWeight="Bold"></TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Uid="Update_New_Downloading_ReqTime" Text="Осталось времени: "  FontWeight="SemiBold"></TextBlock>
+                        <TextBlock Padding="5,0,0,0" FontWeight="SemiBold" x:Name="Update_New_Downloading_ReqTime" Text="0:00"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Uid="Update_New_Downloading_LeftTime" Text="Прошло времени: " FontWeight="Bold"></TextBlock>
+                        <TextBlock Padding="5,0,0,0" FontWeight="Bold" x:Name="Update_New_Downloading_LeftTime" Text="0:01"/>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
-            <ProgressBar Margin="0,4,0,0" Value="17"></ProgressBar>
+            <ProgressBar x:Name="Update_PercentBar" Margin="0,4,0,0" Value="17"></ProgressBar>
         </StackPanel>
         
     </Grid>

@@ -3,12 +3,10 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Interop;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
@@ -16,7 +14,7 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation;
-using Windows.System; 
+using Windows.System;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 
 namespace Saku_Overclock.Views;
@@ -48,7 +46,7 @@ public sealed partial class ShellPage : Page
 
     public ShellPage(ShellViewModel viewModel)
     {
-        _proc = HookCallback; // Коллбэк метод (вызывается при срабатывании хука)
+        _proc = HookCallbackAsync; // Коллбэк метод (вызывается при срабатывании хука)
         _hookID = SetHook(_proc); // Хук, который должен срабатывать
         m_AppWindow = App.MainWindow.AppWindow; // AppWindow, нужен для тайтлбара приложения
         ViewModel = viewModel; // ViewModel, установка нужной модели для UI страницы
@@ -73,7 +71,7 @@ public sealed partial class ShellPage : Page
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
         loaded = true;
-        MandarinAddNotification("Overclock Started!\n" + DateTime.Today, "Now you can set up your Saku Overclock", InfoBarSeverity.Success); //DEBUG. TEST MESSAGE. WILL NOT BE DISPLAYED!!!
+        //MandarinAddNotification("Overclock Started!\n" + DateTime.Today, "Now you can set up your Saku Overclock", InfoBarSeverity.Success); //DEBUG. TEST MESSAGE. WILL NOT BE DISPLAYED!!!
         StartInfoUpdate();
         GetProfileInit();
 
@@ -103,7 +101,7 @@ public sealed partial class ShellPage : Page
         }
         catch { }
     }
-    
+
     #region User Profiles
     public void GetProfileInit()
     {
@@ -190,11 +188,11 @@ public sealed partial class ShellPage : Page
         if (config == null) { return string.Empty; }
         if (config.Preset != -1) // У нас был готовый пресет
         {
-            if (config.PremadeMinActivated) 
-            { 
-                config.Preset = -1; 
-                nextProfile = "Shell_Preset_Min".GetLocalized(); 
-                config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 "; 
+            if (config.PremadeMinActivated)
+            {
+                config.Preset = -1;
+                nextProfile = "Shell_Preset_Min".GetLocalized();
+                config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
                     if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMin")
@@ -202,12 +200,12 @@ public sealed partial class ShellPage : Page
                         ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
                         ProfileSetButton.IsEnabled = false;
                     }
-                } 
+                }
             }
-            else if (config.PremadeEcoActivated) 
-            { 
-                config.Preset = -1; 
-                nextProfile = "Shell_Preset_Eco".GetLocalized(); 
+            else if (config.PremadeEcoActivated)
+            {
+                config.Preset = -1;
+                nextProfile = "Shell_Preset_Eco".GetLocalized();
                 config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -218,10 +216,10 @@ public sealed partial class ShellPage : Page
                     }
                 }
             }
-            else if (config.PremadeBalanceActivated) 
-            { 
-                config.Preset = -1; 
-                nextProfile = "Shell_Preset_Balance".GetLocalized(); 
+            else if (config.PremadeBalanceActivated)
+            {
+                config.Preset = -1;
+                nextProfile = "Shell_Preset_Balance".GetLocalized();
                 config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -232,10 +230,10 @@ public sealed partial class ShellPage : Page
                     }
                 }
             }
-            else if (config.PremadeSpeedActivated) 
-            { 
-                config.Preset = -1; 
-                nextProfile = "Shell_Preset_Speed".GetLocalized(); 
+            else if (config.PremadeSpeedActivated)
+            {
+                config.Preset = -1;
+                nextProfile = "Shell_Preset_Speed".GetLocalized();
                 config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -246,10 +244,10 @@ public sealed partial class ShellPage : Page
                     }
                 }
             }
-            else if (config.PremadeMaxActivated) 
-            { 
-                config.Preset = -1; 
-                nextProfile = "Shell_Preset_Max".GetLocalized(); 
+            else if (config.PremadeMaxActivated)
+            {
+                config.Preset = -1;
+                nextProfile = "Shell_Preset_Max".GetLocalized();
                 config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -263,12 +261,12 @@ public sealed partial class ShellPage : Page
         }
         else // У нас уже был выставлен какой-то профиль
         {
-            if (config.PremadeMinActivated) 
-            { 
-                config.Preset = -1; 
-                nextProfile = "Shell_Preset_Eco".GetLocalized(); 
-                config.PremadeMinActivated = false; 
-                config.PremadeEcoActivated = true; 
+            if (config.PremadeMinActivated)
+            {
+                config.Preset = -1;
+                nextProfile = "Shell_Preset_Eco".GetLocalized();
+                config.PremadeMinActivated = false;
+                config.PremadeEcoActivated = true;
                 config.PremadeBalanceActivated = false;
                 config.PremadeSpeedActivated = false;
                 config.PremadeMaxActivated = false;
@@ -282,15 +280,15 @@ public sealed partial class ShellPage : Page
                     }
                 }
             } // Эко
-            else if (config.PremadeEcoActivated) 
-            { 
-                config.Preset = -1; 
-                nextProfile = "Shell_Preset_Balance".GetLocalized(); 
-                config.PremadeMinActivated = false; 
-                config.PremadeEcoActivated = false; 
-                config.PremadeBalanceActivated = true; 
-                config.PremadeSpeedActivated = false; 
-                config.PremadeMaxActivated = false; 
+            else if (config.PremadeEcoActivated)
+            {
+                config.Preset = -1;
+                nextProfile = "Shell_Preset_Balance".GetLocalized();
+                config.PremadeMinActivated = false;
+                config.PremadeEcoActivated = false;
+                config.PremadeBalanceActivated = true;
+                config.PremadeSpeedActivated = false;
+                config.PremadeMaxActivated = false;
                 config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -301,10 +299,10 @@ public sealed partial class ShellPage : Page
                     }
                 }
             } // Баланс
-            else if (config.PremadeBalanceActivated) 
-            { 
-                config.Preset = -1; 
-                nextProfile = "Shell_Preset_Speed".GetLocalized(); 
+            else if (config.PremadeBalanceActivated)
+            {
+                config.Preset = -1;
+                nextProfile = "Shell_Preset_Speed".GetLocalized();
                 config.PremadeMinActivated = false;
                 config.PremadeEcoActivated = false;
                 config.PremadeBalanceActivated = false;
@@ -320,15 +318,15 @@ public sealed partial class ShellPage : Page
                     }
                 }
             } // Скорость
-            else if (config.PremadeSpeedActivated) 
-            { 
+            else if (config.PremadeSpeedActivated)
+            {
                 config.Preset = -1;
-                nextProfile = "Shell_Preset_Max".GetLocalized(); 
+                nextProfile = "Shell_Preset_Max".GetLocalized();
                 config.PremadeMinActivated = false;
                 config.PremadeEcoActivated = false;
                 config.PremadeBalanceActivated = false;
-                config.PremadeSpeedActivated = false; 
-                config.PremadeMaxActivated = true; 
+                config.PremadeSpeedActivated = false;
+                config.PremadeMaxActivated = true;
                 config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -339,7 +337,7 @@ public sealed partial class ShellPage : Page
                     }
                 }
             } // Максимум
-            else if (config.PremadeMaxActivated) 
+            else if (config.PremadeMaxActivated)
             {
                 config.Preset = -1;
                 nextProfile = "Shell_Preset_Min".GetLocalized();
@@ -347,7 +345,7 @@ public sealed partial class ShellPage : Page
                 config.PremadeEcoActivated = false;
                 config.PremadeBalanceActivated = false;
                 config.PremadeSpeedActivated = false;
-                config.PremadeMaxActivated = false; 
+                config.PremadeMaxActivated = false;
                 config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -385,7 +383,7 @@ public sealed partial class ShellPage : Page
                                 ProfileSetComboBox.SelectedItem = element as ComboBoxItem;
                                 ProfileSetButton.IsEnabled = false;
                                 nextProfile = selectedName;
-                            } 
+                            }
                         }
                         else { MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {(element as ComboBoxItem)!.Content}", InfoBarSeverity.Error); }
                     }
@@ -393,7 +391,7 @@ public sealed partial class ShellPage : Page
                 }
                 catch
                 {
-                    MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {profile[0].profilename}", InfoBarSeverity.Error); 
+                    MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {profile[0].profilename}", InfoBarSeverity.Error);
                 }
             }
         }
@@ -415,7 +413,7 @@ public sealed partial class ShellPage : Page
                                 ProfileSetComboBox.SelectedItem = element as ComboBoxItem;
                                 ProfileSetButton.IsEnabled = false;
                                 nextProfile = selectedName;
-                            } 
+                            }
                         }
                         else { MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {(element as ComboBoxItem)!.Content}", InfoBarSeverity.Error); }
                     }
@@ -843,6 +841,7 @@ public sealed partial class ShellPage : Page
                     NavigationViewControl.Margin = NavigationViewControl.Margin == new Thickness(-40, 0, 0, 0) ? new Thickness(0, 0, 0, 0) : new Thickness(-40, 0, 0, 0);
                     NavigationViewControl.IsBackButtonVisible = NavigationViewControl.IsBackButtonVisible == NavigationViewBackButtonVisible.Visible ? NavigationViewBackButtonVisible.Collapsed : NavigationViewBackButtonVisible.Visible;
                     NavigationViewControl.IsSettingsVisible = !NavigationViewControl.IsSettingsVisible;
+                    NavigationViewControl.IsPaneOpen = false;
                     foreach (var element in NavigationViewControl.MenuItems)
                     {
                         ((NavigationViewItem)element).Visibility = ((NavigationViewItem)element).Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
@@ -880,10 +879,10 @@ public sealed partial class ShellPage : Page
             themeMobil.SwitchThemeCommand.Execute(themeLight);
             if (config.ThemeType > 2)
             {
-                ThemeBackground.ImageSource = new BitmapImage(new Uri(themer.Themes[config.ThemeType].ThemeBackground));
+                ThemeBackground.ImageSource = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri(themer.Themes[config.ThemeType].ThemeBackground));
             }
         }
-        catch 
+        catch
         {
             NotifyLoad(); notify.Notifies ??= [];
             try
@@ -896,7 +895,7 @@ public sealed partial class ShellPage : Page
 
             }
             NotifySave(); config.ThemeType = 0;
-            ConfigSave(); return; 
+            ConfigSave(); return;
         }
     }
     private void ConfigSave()
@@ -937,7 +936,7 @@ public sealed partial class ShellPage : Page
     private void ProfileLoad()
     {
         try
-        { 
+        {
             profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
             if (profile == null)
             {
@@ -1009,7 +1008,7 @@ public sealed partial class ShellPage : Page
         {
             JsonRepair('t');
         }
-    } 
+    }
     private void JsonRepair(char file)
     {
         if (file == 't')
@@ -1059,7 +1058,7 @@ public sealed partial class ShellPage : Page
             }
             catch
             {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory)); 
+                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
             }
             if (config != null)
             {
@@ -1125,7 +1124,7 @@ public sealed partial class ShellPage : Page
                 }
             }
             else
-            { 
+            {
                 try
                 {
                     File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
@@ -1198,14 +1197,13 @@ public sealed partial class ShellPage : Page
     }
 
     private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam); // Callback делегат(для вызова callback метода)
-    private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)//Собственно сам callback метод
+    private nint HookCallbackAsync(int nCode, IntPtr wParam, IntPtr lParam) // Собственно сам callback метод
     {
-        //Проверяем следует ли перехватывать хук(первая половина), и то, 
-        //что произошло именно событие нажатия на клавишу (вторая половина)
+        // Проверяем следует ли перехватывать хук (первая половина), и то, что произошло именно событие нажатия на клавишу (вторая половина)
         if (nCode >= 0 && wParam == WM_KEYDOWN)
         {
-            var virtualkeyCode = Marshal.ReadInt32(lParam); //Получаем код клавиши из неуправляемой памяти
-            //Переключить между своими пресетами - Switch profile to next Custom
+            var virtualkeyCode = Marshal.ReadInt32(lParam); // Получаем код клавиши из неуправляемой памяти
+            // Переключить между своими пресетами - Switch profile to next Custom
             if ((Keys)virtualkeyCode == Keys.W && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
             {
                 //Создать уведомление
@@ -1214,7 +1212,7 @@ public sealed partial class ShellPage : Page
                 MandarinAddNotification("Смена пресета", "Вы успешно переключили ваши пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
                 MainWindow.Applyer.ApplyWithoutADJLine(false);
             }
-            //Переключить между готовыми пресетами - Switch profile to next Premaded
+            // Переключить между готовыми пресетами - Switch profile to next Premaded
             if ((Keys)virtualkeyCode == Keys.P && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
             {
                 var nextProfile = NextPremadeProfile_Switch();
@@ -1222,9 +1220,66 @@ public sealed partial class ShellPage : Page
                 MandarinAddNotification("Смена пресета", "Вы успешно переключили готовые пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
                 MainWindow.Applyer.ApplyWithoutADJLine(false);
             }
+            // Переключить состояние RTSS
+            if ((Keys)virtualkeyCode == Keys.R && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
+            {
+                ConfigLoad();
+                if (config.RTSSMetricsEnabled)
+                {
+                    var iconGrid = new Grid()
+                    {
+                        Width = 100,
+                        Height = 100,
+                        Children =
+                        {
+                            new FontIcon
+                            {
+                                Glyph = "\uE7AC",
+                                Opacity = 0.543d,
+                                FontSize = 40
+                            },
+                            new FontIcon
+                            {
+                                Glyph = "\uE711",
+                                Margin = new Thickness(4,0,0,0),
+                                VerticalAlignment = VerticalAlignment.Center,
+                                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center,
+                                FontSize = 40
+                            }
+                        }
+                    }; 
+                    ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Disabled", null, iconGrid);
+                    var navigationService = App.GetService<INavigationService>();
+                    navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+                    config.RTSSMetricsEnabled = false;
+                    ConfigSave();
+                }
+                else
+                {
+                    var iconGrid = new Grid()
+                    {
+                        Width = 100,
+                        Height = 100,
+                        Children =
+                        {
+                            new FontIcon
+                            {
+                                Glyph = "\uE7AC",
+                                FontSize = 40
+                            }
+                        }
+                    }; 
+                    ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Enabled", null, iconGrid);
+                    config.RTSSMetricsEnabled = true;
+                    ConfigSave();
+                    var navigationService = App.GetService<INavigationService>();
+                    navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!, null, true);
+                }
+                MandarinAddNotification("Смена состояния оверлея", "Вы успешно переключили отображение оверлея RTSS в игре!", InfoBarSeverity.Informational);
+            }
         }
-        return CallNextHookEx(_hookID, nCode, wParam, lParam);//Передаем нажатие в следующее приложение
-    }
+        return CallNextHookEx(_hookID, nCode, wParam, lParam); // Передаем нажатие в следующее приложение
+    } 
 
     #region Hook DLL Imports
     //Импорт необходимых функций из WinApi
@@ -1410,7 +1465,7 @@ public sealed partial class ShellPage : Page
         }
     }
     private void ToggleNotificationPanelBtn_Click(object sender, RoutedEventArgs e)
-    { 
+    {
         IsNotificationPanelShow = ToggleNotificationPanelBtn.IsChecked ?? false;
         ShowHideNotificationPanel(true);
     }
@@ -1490,13 +1545,16 @@ public sealed partial class ShellPage : Page
         else
         {
             NotificationContainer.Visibility = Visibility.Collapsed;
-            NoNotificationIndicator.Visibility = Visibility.Collapsed; 
-            NotifChangelogTexts.Children.Clear();
+            NoNotificationIndicator.Visibility = Visibility.Collapsed;
             if (UpdateChecker.GitHubInfoString == string.Empty)
             {
                 await UpdateChecker.GenerateReleaseInfoString();
             }
-            await ГлавнаяPage.GenerateFormattedReleaseNotes(NotifChangelogTexts);
+            if (UpdateChecker.GitHubInfoString != "**Failed to fetch info**")
+            {
+                NotifChangelogTexts.Children.Clear();
+                await ГлавнаяPage.GenerateFormattedReleaseNotes(NotifChangelogTexts);
+            }
         }
     }
     #endregion
@@ -1552,7 +1610,7 @@ SOFTWARE.
             NotificationLostFocusBackground.Opacity = 0.3;
         }
         else
-        { 
+        {
             if (NotificationContainer.Children.Count > 7)
             {
                 ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все, затем добавить один

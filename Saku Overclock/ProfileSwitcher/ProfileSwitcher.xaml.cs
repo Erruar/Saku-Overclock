@@ -97,37 +97,76 @@ public sealed partial class ProfileSwitcher : Window
     private const uint LWA_ALPHA = 0x02;
 
 
-    public static void ShowOverlay(string profileName, BitmapImage? profileImage = null)
+    public static async void ShowOverlay(string profileName, BitmapImage? profileImage = null, FrameworkElement? newGrid = null)
     {
         if (_instance == null)
         {
             _instance = new ProfileSwitcher();
             _instance.InitializeComponent();
-            _instance.Show();
         }
 
+        // Подготовить контент до показа окна
         _instance.ProfileText.Text = profileName;
         if (profileImage != null)
         {
             _instance.ProfileImage.Source = profileImage;
         }
+
+        if (newGrid != null)
+        {
+            _instance.ProfileImage.Visibility = Visibility.Collapsed;
+            _instance.SourceGrid.Visibility = Visibility.Visible;
+            _instance.SourceGrid.Children.Clear();
+            _instance.SourceGrid.Children.Add(newGrid);
+        }
+        else
+        {
+            _instance.ProfileImage.Visibility = Visibility.Visible;
+            _instance.SourceGrid.Visibility = Visibility.Collapsed;
+        }
+
+        // Убедиться, что контент загружен (например, если используются ресурсы, которые требуют времени)
+        await Task.Delay(50); // Небольшая задержка для полной прогрузки контента
+
+        // Теперь показываем окно с контентом
+        _instance.Show();
         _instance.SetWindowOpacity(155);
         _instance._windowVisual.Opacity = 1;
         _instance._timer?.Stop();
-        _instance._timer!.Interval = 1500;
-        _instance._timer.Tick += (s, e) =>
+
+
+        // Первый таймер на 1,5 секунды
+        var displayTimer = new System.Windows.Forms.Timer
         {
-            _instance._timer.Stop();
+            Interval = 2500
+        };
+
+        displayTimer.Tick += (s, e) =>
+        {
+            displayTimer.Stop();
+
+            // Анимация плавного уменьшения прозрачности
             _instance.DispatcherQueue.TryEnqueue(() =>
-            { 
+            {
                 var compositor = _instance._windowVisual.Compositor;
                 var fadeOutAnimation = compositor.CreateScalarKeyFrameAnimation();
-                fadeOutAnimation.InsertKeyFrame(1f, 0f);
-                fadeOutAnimation.Duration = TimeSpan.FromSeconds(0.5);
-                _instance._windowVisual.StartAnimation(nameof(_windowVisual.Opacity), fadeOutAnimation);
-                _instance.SetWindowOpacity(0);
+                fadeOutAnimation.InsertKeyFrame(1f, 0f); // Уменьшить прозрачность до 0
+                fadeOutAnimation.Duration = TimeSpan.FromSeconds(1); // За 1 секунду
+                _instance._windowVisual.StartAnimation(nameof(_instance._windowVisual.Opacity), fadeOutAnimation);
+                // Таймер для ожидания завершения анимации перед скрытием фона
+                var hideTimer = new System.Windows.Forms.Timer
+                {
+                    Interval = 1000 // 1 секунда, совпадает с длительностью анимации
+                };
+                hideTimer.Tick += (sender, args) =>
+                {
+                    hideTimer.Stop();
+                    _instance.SetWindowOpacity(0); // Скрыть фон
+                };
+                hideTimer.Start();
             });
         };
-        _instance._timer.Start();
+
+        displayTimer.Start();
     }
 }

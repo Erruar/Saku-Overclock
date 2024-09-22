@@ -3771,7 +3771,7 @@ public sealed partial class ПараметрыPage : Page
     }
     private void TurboBoost()
     {
-        Turboo_Boost(); //Турбобуст... 
+        SetCorePerformanceBoost(Turbo_boost.IsOn);  //Турбобуст... 
         if (Turbo_boost.IsOn) //Сохранение
         {
             turboboost = true;
@@ -3784,68 +3784,27 @@ public sealed partial class ПараметрыPage : Page
             profile[indexprofile].turboBoost = false;
             ProfileSave();
         }
-    }
-    public void Turboo_Boost()
+    } 
+    public void SetCorePerformanceBoost(bool enable)
     {
-        if (Turbo_boost.IsOn) { SetActive(); Enable(); } else { SetActive(); Disable(); }
-        void Enable()
+        uint eax = 0x0;
+        uint edx = 0x0; 
+        // Чтение текущего состояния регистра MSR 0xC0010015
+        cpu?.ReadMsr(0xC0010015, ref eax, ref edx);
+        // Маска для 25-го бита (CpbDis)
+        var mask = 1U << 25;
+        if (enable)
         {
-            var p = new Process(); //AC
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.FileName = "powercfg.exe";
-            p.StartInfo.Arguments =
-                "/SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 002";
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.Start();
-            var p1 = new Process(); //DC
-            p1.StartInfo.UseShellExecute = false;
-            p1.StartInfo.FileName = "powercfg.exe";
-            p1.StartInfo.Arguments =
-                "/SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 002";
-            p1.StartInfo.CreateNoWindow = true;
-            p1.StartInfo.RedirectStandardError = true;
-            p1.StartInfo.RedirectStandardInput = true;
-            p1.StartInfo.RedirectStandardOutput = true;
-            p1.Start();
+            // Устанавливаем 25-й бит в 0 (включаем Core Performance Boost)
+            eax &= ~mask;
         }
-        void Disable()
+        else
         {
-            var p = new Process(); //AC
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.FileName = "powercfg.exe";
-            p.StartInfo.Arguments =
-                "/SETACVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 000";
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.Start();
-            var p1 = new Process(); //DC
-            p1.StartInfo.UseShellExecute = false;
-            p1.StartInfo.FileName = "powercfg.exe";
-            p1.StartInfo.Arguments =
-                "/SETDCVALUEINDEX 381b4222-f694-41f0-9685-ff5bb260df2e 54533251-82be-4824-96c1-47b60b740d00 be337238-0d82-4146-a960-4f3749d470c7 000";
-            p1.StartInfo.CreateNoWindow = true;
-            p1.StartInfo.RedirectStandardError = true;
-            p1.StartInfo.RedirectStandardInput = true;
-            p1.StartInfo.RedirectStandardOutput = true;
-            p1.Start();
+            // Устанавливаем 25-й бит в 1 (выключаем Core Performance Boost)
+            eax |= mask;
         }
-        void SetActive()
-        {
-            var p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.FileName = "powercfg.exe";
-            p.StartInfo.Arguments = "/s 381b4222-f694-41f0-9685-ff5bb260df2e";
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.Start();
-        }
+        // Записываем обновленное значение обратно в MSR
+        cpu?.WriteMsr(0xC0010015, eax, edx);
     }
     private void Autoapply()
     {
