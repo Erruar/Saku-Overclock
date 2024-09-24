@@ -90,7 +90,7 @@ SOFTWARE.
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBox">
-                    <Grid x:Name="LayoutRoot">
+                    <Grid x:Name="LayoutRoot" CornerRadius="4">
                         <Grid.Resources>
                             <Storyboard x:Key="OverlayOpeningAnimation">
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity">

@@ -37,7 +37,7 @@
                     <Grid Height="70" Width="160" VerticalAlignment="Bottom" HorizontalAlignment="Right" CornerRadius="15" Margin="-140,0,0,-10" >
                         <Border Margin="-4,0,-13,-5" Height="33" Width="122" Shadow="{StaticResource SharedShadow}" Translation="0,0,20"></Border>
                         <StackPanel x:Name="AutoReapplyNumberboxPanel" Height="{Binding ElementName=nudAutoReapply, Path=ActualHeight}">
-                            <NumberBox Width="120" Height="32" Name="nudAutoReapply" CornerRadius="15"  SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  ValueChanged="NudAutoReapply_ValueChanged" Minimum="1" Value="3" Maximum="60" Margin="9,2,0,0"></NumberBox>
+                            <NumberBox GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Width="120" Height="32" Name="nudAutoReapply" CornerRadius="15"  SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  ValueChanged="NudAutoReapply_ValueChanged" Minimum="1" Value="3" Maximum="60" Margin="9,2,0,0"></NumberBox>
                         </StackPanel>
                     </Grid> 
                 </StackPanel>
@@ -75,17 +75,16 @@
 
                 <TextBlock x:Uid="Settings_ni_Icon" Style="{ThemeResource SubtitleTextBlockStyle}" />
                 <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                    <ToggleSwitch x:Uid="Settings_ni_Traymon" Name="Settings_ni_Icons" Toggled="Settings_ni_Icons_Toggled">Включить мониторинг в трее?</ToggleSwitch>
-                    <TextBlock Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_Elements" />
+                    <ToggleSwitch x:Uid="Settings_ni_Traymon" x:Name="Settings_ni_Icons" Toggled="Settings_ni_Icons_Toggled">Включить мониторинг в трее?</ToggleSwitch>
+                    <TextBlock x:Name="Settings_ni_Icons_Element" Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_Elements" />
                     <Grid x:Name="Settings_NiIconComboboxElements">
-                        <Border Visibility="Collapsed" Margin="-1,0,0,0" CornerRadius="15" HorizontalAlignment="Left" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="154" Height="33"></Border>
-                        <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconComboboxElements" SelectionChanged="NiIconComboboxElements_SelectionChanged"  CornerRadius="15">
-                        </ComboBox>
+                        <Border Visibility="Visible" Margin="-1,0,0,0" CornerRadius="15" HorizontalAlignment="Left" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="154" Height="33"></Border>
+                        <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="151" x:Name="NiIconComboboxElements" SelectionChanged="NiIconComboboxElements_SelectionChanged"  CornerRadius="15"/>
                     </Grid>
                     <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" x:Name="Settings_ni_Add_Element" Click="Settings_ni_Add_Element_Click" Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
                         <TextBlock FontWeight="SemiBold"  x:Uid="Settings_ni_Add_Element"  Text="Add element"/>
                     </Button>
-                    <ToggleSwitch Visibility="Collapsed" Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_EnabledElement" Name="Settings_ni_EnabledElement" Toggled="Settings_ni_EnabledElement_Toggled">Отображать в трее</ToggleSwitch>
+                    <ToggleSwitch Visibility="Collapsed" Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_EnabledElement" x:Name="Settings_ni_EnabledElement" Toggled="Settings_ni_EnabledElement_Toggled">Отображать в трее</ToggleSwitch>
                     <TextBlock Visibility="Collapsed" x:Name="Settings_ni_ContextMenu" Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_ContextMenu" />
                     <StackPanel Visibility="Collapsed" x:Name="NiIcon_Stackpanel" Margin="{StaticResource XSmallTopMargin}">
                         <Grid>
@@ -142,8 +141,8 @@
 
                 <TextBlock x:Uid="Settings_RTSS_Updater" Style="{ThemeResource SubtitleTextBlockStyle}" />
                 <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                    <ToggleSwitch x:Uid="Settings_RTSS_Enable" Name="Settings_RTSS_Enable" Toggled="Settings_RTSS_Enable_Toggled">Мониторинг в играх с RTSS</ToggleSwitch>
-                    <TextBlock Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_RTSS_Elements" />
+                    <ToggleSwitch x:Uid="Settings_RTSS_Enable" x:Name="Settings_RTSS_Enable" Toggled="Settings_RTSS_Enable_Toggled">Мониторинг в играх с RTSS</ToggleSwitch>
+                    <TextBlock x:Name="Settings_RTSS_Enable_Name" Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_RTSS_Elements" />
                     <StackPanel Margin="{StaticResource XSmallTopMargin}">
                             <GridView x:Name="RTTS_GridView" HorizontalAlignment="Left" MaxWidth="290" SelectionMode="None">
                                 <GridView.Header>
@@ -540,10 +539,71 @@
                                 </GridView.ItemsPanel> 
                         </GridView> 
                     </StackPanel>
-                    <ToggleSwitch Toggled="RTSS_AdvancedCodeEditor_ToggleSwitch_Toggled" x:Uid="Settings_RTSS_AdvancedCode_Enable" Name="RTSS_AdvancedCodeEditor_ToggleSwitch">Расширенный редактор кода отображения наложения RTSS</ToggleSwitch>
-                    <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto" Visibility="{Binding ElementName=RTSS_AdvancedCodeEditor_EditBox, Path=Visibility}"  Width="430" HorizontalAlignment="Left">
+                    <ToggleSwitch Toggled="RTSS_AdvancedCodeEditor_ToggleSwitch_Toggled" x:Uid="Settings_RTSS_AdvancedCode_Enable" x:Name="RTSS_AdvancedCodeEditor_ToggleSwitch">Расширенный редактор кода отображения наложения RTSS</ToggleSwitch>
+                    <ScrollViewer x:Name="RTSS_AdvancedCodeEditor_EditBox_Scroll" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto" Visibility="{Binding ElementName=RTSS_AdvancedCodeEditor_EditBox, Path=Visibility}"  Width="430" HorizontalAlignment="Left">
                         <RichEditBox Visibility="Collapsed" TextChanged="RTSS_AdvancedCodeEditor_EditBox_TextChanged" x:Name="RTSS_AdvancedCodeEditor_EditBox" MinWidth="500" HorizontalAlignment="Stretch"></RichEditBox>
                     </ScrollViewer>
+                </StackPanel>
+                <TextBlock x:Uid="Settings_Keybinds" Style="{ThemeResource SubtitleTextBlockStyle}" Text="Сочетания клавиш" />
+                <ToggleSwitch x:Uid="Settings_Keybinds_Enable"  Margin="{StaticResource XSmallTopMargin}" x:Name="Settings_Keybinds_Enable" Toggled="Settings_Keybinds_Enable_Toggled">Использовать комбинации клавиш</ToggleSwitch>
+                <StackPanel Padding="0,0,0,10">
+                    <TextBlock x:Name="Settings_Keybinds_Enable_Name" Text="Комбинации клавиш" x:Uid="Settings_Keybinds_Elements" />
+                    <StackPanel Width="355" HorizontalAlignment="Left" Margin="{StaticResource XSmallTopMargin}" Orientation="Vertical">
+                        <Border Height="70" CornerRadius="4" Background="{StaticResource ControlFillColorDefaultBrush}">
+                            <Grid>
+                                <Button Margin="0,0,20,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Right">
+                                    <StackPanel Margin="-5,-4,-5,-5" HorizontalAlignment="Stretch" Orientation="Horizontal">
+                                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="50" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
+                                            <TextBlock Text="Ctrl" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        </Border>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
+                                            <TextBlock Text="Alt" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        </Border>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
+                                            <TextBlock Text="W" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Button>
+                                <TextBlock Width="170" TextWrapping="WrapWholeWords" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="20,0,0,0" x:Uid="Settings_Keybinds_Elements_Custom" Text="Switch between custom user profiles"/>
+                            </Grid>
+                        </Border>
+                        <Border Margin="0,7,0,0" Height="70" CornerRadius="4" Background="{StaticResource ControlFillColorDefaultBrush}">
+                            <Grid>
+                                <Button Margin="0,0,20,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Right">
+                                    <StackPanel Margin="-5,-4,-5,-5" HorizontalAlignment="Stretch" Orientation="Horizontal">
+                                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="50" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
+                                            <TextBlock Text="Ctrl" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        </Border>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
+                                            <TextBlock Text="Alt" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        </Border>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
+                                            <TextBlock Text="P" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Button>
+                                <TextBlock Width="170" TextWrapping="WrapWholeWords" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="20,0,0,0" x:Uid="Settings_Keybinds_Elements_Premaded" Text="Switch between premaded profiles"/>
+                            </Grid>
+                        </Border>
+                        <Border Margin="0,7,0,0" Height="70" CornerRadius="4" Background="{StaticResource ControlFillColorDefaultBrush}">
+                            <Grid>
+                                <Button Margin="0,0,20,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Right">
+                                    <StackPanel Margin="-5,-4,-5,-5" HorizontalAlignment="Stretch" Orientation="Horizontal">
+                                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="50" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
+                                            <TextBlock Text="Ctrl" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        </Border>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
+                                            <TextBlock Text="Alt" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        </Border>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
+                                            <TextBlock Text="R" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Button>
+                                <TextBlock Width="170" TextWrapping="WrapWholeWords" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="20,0,0,0" x:Uid="Settings_Keybinds_Elements_RTSS" Text="Switch RTSS Overlay state with overlay alert"/>
+                            </Grid>
+                        </Border>  
+                    </StackPanel> 
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

@@ -119,9 +119,9 @@
                             <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c2"  Text="Лимит CPU (W)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c2" Checked="C2_Checked" Unchecked="C2_Checked"></CheckBox>
-                                <Slider x:Name="c2v" ValueChanged="C2_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="60" Value="20">
+                                <Slider x:Name="c2v" ValueChanged="C2_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="40" Value="20">
                                 </Slider>
-                                <NumberBox CornerRadius="6" Height="33" Width="120" Minimum="1" x:Name="c2t" HorizontalAlignment="Left" Margin="245,18,0,0" SpinButtonPlacementMode="{Binding ElementName=c2t, Path=IsFocusEngaged, Converter={StaticResource FocusToPlacement},Mode=OneWay}" SmallChange="1" LargeChange="10" Value="{Binding ElementName=c2v, Path=Value, Mode=TwoWay}"/>
+                                <NumberBox CornerRadius="6" Height="33" Width="120" Minimum="1" x:Name="c2t" HorizontalAlignment="Left" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged"  SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Value="{Binding ElementName=c2v, Path=Value, Mode=TwoWay}"/>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c2_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -134,9 +134,9 @@
                             <Grid Grid.Row="3" x:Name="Laptops_Real_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c3" Text="Реальный CPU (W)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c3" Checked="C3_Checked" Unchecked="C3_Checked"></CheckBox>
-                                <Slider x:Name="c3v" ValueChanged="C3_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="75" Value="25">
+                                <Slider x:Name="c3v" ValueChanged="C3_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="25">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c3t" Margin="245,18,0,0" Value="{Binding ElementName=c3v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c3t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c3v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c3_Help" HorizontalAlignment="Left"  Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -149,9 +149,9 @@
                             <Grid Grid.Row="4" x:Name="Laptops_Avg_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c4" Text="Средний CPU (W)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c4" Checked="C4_Checked" Unchecked="C4_Checked"></CheckBox>
-                                <Slider x:Name="c4v" ValueChanged="C4_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="75" Value="25">
+                                <Slider x:Name="c4v" ValueChanged="C4_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="25">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c4t" Margin="245,18,0,0" Value="{Binding ElementName=c4v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c4t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c4v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c4_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -164,9 +164,9 @@
                             <Grid Grid.Row="5" x:Name="Laptops_Fast_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c5" Text="Тик быстрого разгона (S)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c5" Checked="C5_Checked" Unchecked="C5_Checked"></CheckBox>
-                                <Slider x:Name="c5v" ValueChanged="C5_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="1000" Value="64">
+                                <Slider x:Name="c5v" ValueChanged="C5_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="128" Value="64">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c5t" Margin="245,18,0,0" Value="{Binding ElementName=c5v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c5t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c5v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c5_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -179,9 +179,9 @@
                             <Grid Grid.Row="6" x:Name="Laptops_slow_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c6" Text="Тик медленного разгона (S)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c6" Checked="C6_Checked" Unchecked="C6_Checked"></CheckBox>
-                                <Slider x:Name="c6v" ValueChanged="C6_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="1000" Value="128">
+                                <Slider x:Name="c6v" ValueChanged="C6_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="128" Value="128">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c6t" Margin="245,18,0,0" Value="{Binding ElementName=c6v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c6t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c6v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c6_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -196,7 +196,7 @@
                                 <CheckBox  Margin="0,20,0,0" x:Name="c1" Checked="C1_Checked" Unchecked="C1_Checked"></CheckBox>
                                 <Slider x:Name="c1v" ValueChanged="C1_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" Value="80" HorizontalAlignment="Left" Minimum="50" Maximum="100">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c1t" Margin="245,18,0,0" Value="{Binding ElementName=c1v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c1t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c1v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -212,7 +212,7 @@
                                 <CheckBox  Margin="0,20,0,0" x:Name="c7" Checked="C7_Checked" Unchecked="C7_Checked"></CheckBox>
                                 <Slider x:Name="c7v" ValueChanged="C7_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" Value="80" HorizontalAlignment="Left" Minimum="50" Maximum="100">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c7t" Margin="245,18,0,0" Value="{Binding ElementName=c7v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c7t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c7v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -262,7 +262,7 @@
                                 <CheckBox x:Name="V2" Checked="V2_Checked" Unchecked="V2_Checked" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V2V" ValueChanged="V2v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="180" Value="55">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v2t" Margin="245,18,0,0" Value="{Binding ElementName=V2V, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v2t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V2V, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v2_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -277,7 +277,7 @@
                                 <CheckBox Checked="V3_Checked" Unchecked="V3_Checked" x:Name="V3" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V3V" ValueChanged="V3v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="180">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v3t" Margin="245,18,0,0" Value="{Binding ElementName=V3V, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="5" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v3t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V3V, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v3_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -292,7 +292,7 @@
                                 <CheckBox Checked="V4_Checked" Unchecked="V4_Checked" x:Name="V4" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V4V" ValueChanged="V4v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="180">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v4t" Margin="245,18,0,0" Value="{Binding ElementName=V4V, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="5" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v4t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V4V, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v4_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -307,7 +307,7 @@
                                 <CheckBox Checked="V5_Checked" Unchecked="V5_Checked" x:Name="V5" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V5V" ValueChanged="V5v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="180">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v5t" Margin="245,18,0,0" Value="{Binding ElementName=V5V, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v5t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V5V, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v5_Help" HorizontalAlignment="Left"  Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -322,7 +322,7 @@
                                 <CheckBox Checked="V6_Checked" Unchecked="V6_Checked" x:Name="V6" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="V6V" ValueChanged="V6v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="5" Maximum="180">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v6t" Margin="245,18,0,0" Value="{Binding ElementName=V6V, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v6t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V6V, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v6_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -335,9 +335,9 @@
                             <Grid Grid.Row="6" x:Name="VRM_Laptops_Prochot_Time" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock  x:Uid="Param_VRM_v7" Text="Отключить троттлинг на время (S)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="V7_Checked" Unchecked="V7_Checked" x:Name="V7" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:Name="V7V" ValueChanged="V7v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="900" Value="2">
+                                <Slider x:Name="V7V" ValueChanged="V7v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="128" Value="2">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v7t" Margin="245,18,0,0" Value="{Binding ElementName=V7V, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="0" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v7t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V7V, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v7_Help" HorizontalAlignment="Left"  Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -352,7 +352,7 @@
                                 <CheckBox x:Name="V1" Margin="0,20,0,0" Checked="V1_Checked" Unchecked="V1_Checked"></CheckBox>
                                 <Slider x:Name="V1V" ValueChanged="V1v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="180" Value="64">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v1t" Margin="245,18,0,0" Value="{Binding ElementName=V1V, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v1t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V1V, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v1_Help" HorizontalAlignment="Left"  Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -409,7 +409,7 @@
                                 <CheckBox Checked="G2_Checked" Unchecked="G2_Checked" x:Name="g2" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g2v" ValueChanged="G2v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="3100" Value="1200">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g2t" Margin="245,18,0,0" Value="{Binding ElementName=g2v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="400" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g2t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g2v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g2_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -424,7 +424,7 @@
                                 <CheckBox Checked="G3_Checked" Unchecked="G3_Checked" x:Name="g3" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g3v" ValueChanged="G3v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="3100" Value="800">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g3t" Margin="245,18,0,0" Value="{Binding ElementName=g3v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="400" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g3t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g3v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g3_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -439,7 +439,7 @@
                                 <CheckBox Checked="G4_Checked" Unchecked="G4_Checked" x:Name="g4" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g4v" ValueChanged="G4v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="3100" Value="1200">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g4t" Margin="245,18,0,0" Value="{Binding ElementName=g4v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="400" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g4t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g4v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g4_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -454,7 +454,7 @@
                                 <CheckBox Checked="G5_Checked" Unchecked="G5_Checked" x:Name="g5" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g5v" ValueChanged="G5v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="3100" Value="400">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g5t" Margin="245,18,0,0" Value="{Binding ElementName=g5v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="400" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g5t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g5v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g5_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -469,7 +469,7 @@
                                 <CheckBox Checked="G6_Checked" Unchecked="G6_Checked" x:Name="g6" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g6v" ValueChanged="G6v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="3100" Value="1200">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g6t" Margin="245,18,0,0" Value="{Binding ElementName=g6v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="400" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g6t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g6v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g6_Help" HorizontalAlignment="Left"  Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -484,7 +484,7 @@
                                 <CheckBox Checked="G7_Checked" Unchecked="G7_Checked" x:Name="g7" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g7v" ValueChanged="G7v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="3100" Value="400">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g7t" Margin="245,18,0,0" Value="{Binding ElementName=g7v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="400" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g7t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g7v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g7_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -499,7 +499,7 @@
                                 <CheckBox Checked="G8_Checked" Unchecked="G8_Checked" x:Name="g8" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g8v" ValueChanged="G8v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="3100" Value="1200">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g8t" Margin="245,18,0,0" Value="{Binding ElementName=g8v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="400" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g8t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g8v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g8_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -514,7 +514,7 @@
                                 <CheckBox Checked="G9_Checked" Unchecked="G9_Checked" x:Name="g9" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g9v" ValueChanged="G9v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="3100" Value="400">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g9t" Margin="245,18,0,0" Value="{Binding ElementName=g9v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="0" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g9t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g9v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g9_Help" HorizontalAlignment="Left"  Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -527,9 +527,9 @@
                             <Grid Grid.Row="9" Grid.Column="0" Width="2000">
                                 <TextBlock x:Uid="Param_GPU_g10" Text="Максимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="G10_Checked" Unchecked="G10_Checked" x:Name="g10" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:Name="g10v" ValueChanged="G10v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="3100" Value="1200">
+                                <Slider x:Name="g10v" ValueChanged="G10v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="3100" Value="1200">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g10t" Margin="245,18,0,0" Value="{Binding ElementName=g10v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g10t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g10v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g10_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -545,7 +545,7 @@
                                 <CheckBox Checked="G11_Checked" Unchecked="G11_Checked"  x:Name="g11" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g11v" ValueChanged="G11v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="5000" Value="400">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g11t" Margin="245,18,0,0" Value="{Binding ElementName=g11v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="0" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g11t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g11v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g11_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -560,7 +560,7 @@
                                 <CheckBox Checked="G12_Checked" Unchecked="G12_Checked" x:Name="g12" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g12v" ValueChanged="G12v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="410" Maximum="5000" Value="3800">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g12t" Margin="245,18,0,0" Value="{Binding ElementName=g12v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="410" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g12t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g12v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g12_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -620,7 +620,7 @@
                                 <CheckBox Checked="G1_Checked" Unchecked="G1_Checked" x:Name="g1" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="g1v" ValueChanged="G1v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="800" Maximum="3100" Value="800">
                                 </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g1t" Margin="245,18,0,0" Value="{Binding ElementName=g1v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="400" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g1t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g1v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g1_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -678,7 +678,7 @@
                                 <CheckBox Checked="A2_Checked" Unchecked="A2_Checked" x:Name="a2" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a2v" ValueChanged="A2v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="12" Maximum="180" Value="70">
                                 </Slider>
-                                <NumberBox Height="33" Minimum="12" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a2t" Margin="245,18,0,0" Value="{Binding ElementName=a2v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Height="33" Minimum="12" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a2t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a2v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a2_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -693,7 +693,7 @@
                                 <CheckBox Checked="A3_Checked" Unchecked="A3_Checked" x:Name="a3" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a3v" ValueChanged="A3v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="12" Maximum="180" Value="70">
                                 </Slider>
-                                <NumberBox Minimum="12" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a3t" Margin="245,18,0,0" Value="{Binding ElementName=a3v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="12" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a3t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a3v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a3_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -708,7 +708,7 @@
                                 <CheckBox Checked="A4_Checked" Unchecked="A4_Checked" x:Name="a4" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a4v" ValueChanged="A4v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="12" Maximum="180" Value="70">
                                 </Slider>
-                                <NumberBox Minimum="12" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a4t" Margin="245,18,0,0" Value="{Binding ElementName=a4v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="12" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a4t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a4v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a4_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -723,7 +723,7 @@
                                 <CheckBox Checked="A5_Checked" Unchecked="A5_Checked" x:Name="a5" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a5v" ValueChanged="A5v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="12" Maximum="180" Value="70">
                                 </Slider>
-                                <NumberBox Minimum="12" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a5t" Margin="245,18,0,0" Value="{Binding ElementName=a5v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="12" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a5t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a5v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a5_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -738,7 +738,7 @@
                                 <CheckBox Checked="A6_Checked" Unchecked="A6_Checked" x:Name="a6" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a6v" ValueChanged="A6v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100" Value="90">
                                 </Slider>
-                                <NumberBox Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a6t" Margin="245,18,0,0" Value="{Binding ElementName=a6v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a6t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a6v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a6_Help" HorizontalAlignment="Left"  Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -753,7 +753,7 @@
                                 <CheckBox Checked="A7_Checked" Unchecked="A7_Checked" x:Name="a7" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a7v" ValueChanged="A7v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="50" Maximum="100" Value="90">
                                 </Slider>
-                                <NumberBox Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a7t" Margin="245,18,0,0" Value="{Binding ElementName=a7v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a7t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a7v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a7_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -768,7 +768,7 @@
                                 <CheckBox Checked="A8_Checked" Unchecked="A8_Checked" x:Name="a8" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a8v" ValueChanged="A8v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="25" Value="7">
                                 </Slider>
-                                <NumberBox Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a8t" Margin="245,18,0,0" Value="{Binding ElementName=a8v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a8t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a8v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a8_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -783,7 +783,7 @@
                                 <CheckBox Checked="A9_Checked" Unchecked="A9_Checked" x:Name="a9" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a9v" ValueChanged="A9v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="45">
                                 </Slider>
-                                <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a9t" Margin="245,18,0,0" Value="{Binding ElementName=a9v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a9t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a9v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a9_Help" HorizontalAlignment="Left"  Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -798,7 +798,7 @@
                                 <CheckBox Checked="A10_Checked" Unchecked="A10_Checked" x:Name="a10" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a10v" ValueChanged="A10v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="5500" Value="2500">
                                 </Slider>
-                                <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a10t" Margin="245,18,0,0" Value="{Binding ElementName=a10v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a10t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a10v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a10_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -812,7 +812,7 @@
                                 <TextBlock x:Uid="Param_ADV_a11" Text="Зафиксировать частоту CPU (MHz)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="A11_Checked" Unchecked="A11_Checked" x:Name="a11" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a11v" ValueChanged="A11v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="400" Maximum="5500" Value="2500"/>
-                                <NumberBox Minimum="400" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a11t" Margin="245,18,0,0" Value="{Binding ElementName=a11v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="400" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a11t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a11v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a11_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -826,7 +826,7 @@
                                 <TextBlock x:Uid="Param_ADV_a12" Text="Зафиксировать напряжение CPU (mV)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="A12_Checked" Unchecked="A12_Checked" x:Name="a12" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a12v" ValueChanged="A12v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="750" Maximum="1500" Value="1200"/>
-                                <NumberBox Height="33" Minimum="750" Maximum="1500" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a12t" Margin="245,18,0,0" Value="{Binding ElementName=a12v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Height="33" Minimum="750" Maximum="1500" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a12t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a12v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a12_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -875,7 +875,7 @@
                                 <TextBlock x:Uid="Param_ADV_a1"  Text="Лимит по току iGPU (A)" FontSize="15"></TextBlock>
                                 <CheckBox Checked="A1_Checked" Unchecked="A1_Checked" x:Name="a1" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a1v" ValueChanged="A1v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="180" Value="50"/>
-                                <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a1t" Margin="245,18,0,0" Value="{Binding ElementName=a1v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a1t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a1v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a1_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -890,7 +890,7 @@
                                 <CheckBox Checked="A15_Checked" Unchecked="A15_Checked" x:Name="a15" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="a15v" ValueChanged="A15v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="10" Value="1">
                                 </Slider>
-                                <NumberBox Minimum="1" Maximum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a15t" Margin="245,18,0,0" Value="{Binding ElementName=a15v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Minimum="1" Maximum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a15t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a15v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a15_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe7ba;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1393,7 +1393,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <TextBlock x:Uid="Param_CO_O1" Text="All Core Curve optimizer (CO)" FontSize="15"></TextBlock>
                                 <CheckBox x:Name="O1" Checked="O1_Checked" Unchecked="O1_Checked" Margin="0,20,0,0"></CheckBox>
                                 <Slider x:Name="O1v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="O1v_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=O1v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=O1v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_O1_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1407,10 +1407,8 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                             <Grid Grid.Row="1" x:Name="CO_Grid0_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CO_O2" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
                                 <CheckBox x:Name="O2" Checked="O2_Checked" Unchecked="O2_Checked" Margin="0,20,0,0"></CheckBox>
-                                <Slider x:Name="O2v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="O2v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-                                   
-                                </Slider>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=O2v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <Slider x:Name="O2v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="O2v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=O2v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_O2_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1470,7 +1468,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <TextBlock x:Uid="Param_CO_CCD1_1" Text="Core 0 Curve optimizer (CO)" FontSize="15"></TextBlock>
                                 <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_1" Checked="CCD1_1_Checked" Unchecked="CCD1_1_Checked"  Margin="0,20,0,0"></CheckBox>
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_1v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_1v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD1_1v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_1v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1486,7 +1484,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_2v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_2v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD1_2v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_2v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1502,7 +1500,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_3v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_3v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD1_3v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_3v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1518,7 +1516,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_4v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_4v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD1_4v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_4v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1534,7 +1532,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_5v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_5v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD1_5v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_5v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1550,7 +1548,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_6v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_6v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD1_6v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_6v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1566,7 +1564,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_7v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_7v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD1_7v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_7v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1582,7 +1580,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_8v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_8v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD1_8v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_8v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1622,7 +1620,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <TextBlock x:Uid="Param_CO_CCD2_1" Text="All Core Curve optimizer (CO)" FontSize="15"></TextBlock>
                                 <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_1" Checked="CCD2_1_Checked" Unchecked="CCD2_1_Checked" Margin="0,20,0,0"></CheckBox>
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_1v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_1v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD2_1v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_1v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1639,7 +1637,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_2v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_2v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD2_2v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_2v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1655,7 +1653,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_3v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_3v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD2_3v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_3v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1671,7 +1669,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_4v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_4v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD2_4v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_4v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1687,7 +1685,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_5v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_5v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD2_5v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_5v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1703,7 +1701,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_6v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_6v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD2_6v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_6v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1719,7 +1717,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_7v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_7v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD2_7v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_7v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -1735,7 +1733,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_8v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_8v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
 
                                 </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Value="{Binding ElementName=CCD2_8v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_8v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
                                     <FontIcon.RenderTransform>
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />

@@ -121,7 +121,11 @@ public sealed partial class SettingsPage : Page
     private void RTSS_LoadAndApply()
     {
         // Загрузка данных из JSON файла
-        RtssLoad(); 
+        RtssLoad();
+        Settings_RTSS_Enable_Name.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
+        RTTS_GridView.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
+        RTSS_AdvancedCodeEditor_ToggleSwitch.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
+        RTSS_AdvancedCodeEditor_EditBox_Scroll.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
         LoadAndFormatAdvancedCodeEditor(rtssset.AdvancedCodeEditor);
         RTSS_AdvancedCodeEditor_ToggleSwitch.IsOn = rtssset.IsAdvancedCodeEditorEnabled;
 
@@ -1354,6 +1358,20 @@ public sealed partial class SettingsPage : Page
         notify.Notifies.Add(new Notify { Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success });
         NotifySave();
     }
+    private void C2t_FocusEngaged(object sender, object args)
+    {
+        if (sender is NumberBox numberBox)
+        {
+            numberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden;
+        }
+    }
+    private void C2t_FocusDisengaged(object sender, object args)
+    {
+        if (sender is NumberBox numberBox)
+        {
+            numberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline;
+        }
+    }
     #endregion
 
     #region Ni Icons (tray icons) Related Section
@@ -1397,6 +1415,32 @@ public sealed partial class SettingsPage : Page
                 NiIconShapeCombobox.SelectedIndex = niicons.Elements[config.NiIconsType].IconShape;
                 Settings_ni_Fontsize.Value = niicons.Elements[config.NiIconsType].FontSize;
                 Settings_ni_Opacity.Value = niicons.Elements[config.NiIconsType].BgOpacity;
+            }
+            if (Settings_ni_Icons.IsOn)
+            {
+                Settings_ni_Icons_Element.Visibility = Visibility.Visible;
+                Settings_NiIconComboboxElements.Visibility = Visibility.Visible;
+                Settings_ni_Add_Element.Visibility = Visibility.Visible;
+                Settings_ni_EnabledElement.Visibility = Visibility.Visible;
+                if (NiIconComboboxElements.SelectedIndex >= 0 && Settings_ni_EnabledElement.IsOn)
+                {
+                    NiIcon_Stackpanel.Visibility = Visibility.Visible;
+                    Settings_ni_ContextMenu.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
+                    Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
+                }
+            }
+            else
+            {
+                Settings_ni_Icons_Element.Visibility = Visibility.Collapsed;
+                NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
+                Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
+                Settings_NiIconComboboxElements.Visibility = Visibility.Collapsed;
+                Settings_ni_Add_Element.Visibility = Visibility.Collapsed;
+                Settings_ni_EnabledElement.Visibility = Visibility.Collapsed;
             }
         }
         catch
@@ -1445,6 +1489,32 @@ public sealed partial class SettingsPage : Page
     {
         if (!isLoaded) { return; } 
         ConfigLoad(); config.NiIconsEnabled = Settings_ni_Icons.IsOn; ConfigSave();
+        if (Settings_ni_Icons.IsOn)
+        {
+            Settings_ni_Icons_Element.Visibility = Visibility.Visible;
+            Settings_NiIconComboboxElements.Visibility = Visibility.Visible;
+            Settings_ni_Add_Element.Visibility = Visibility.Visible;
+            Settings_ni_EnabledElement.Visibility = Visibility.Visible;
+            if (NiIconComboboxElements.SelectedIndex >= 0 && Settings_ni_EnabledElement.IsOn)
+            {
+                NiIcon_Stackpanel.Visibility = Visibility.Visible;
+                Settings_ni_ContextMenu.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
+                Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
+            }
+        }
+        else
+        {
+            Settings_ni_Icons_Element.Visibility = Visibility.Collapsed;
+            NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
+            Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
+            Settings_NiIconComboboxElements.Visibility = Visibility.Collapsed;
+            Settings_ni_Add_Element.Visibility = Visibility.Collapsed;
+            Settings_ni_EnabledElement.Visibility = Visibility.Collapsed;
+        } 
     }
     private void Settings_ni_EnabledElement_Toggled(object sender, RoutedEventArgs e)
     {
@@ -2108,6 +2178,10 @@ public sealed partial class SettingsPage : Page
     {
         if (!isLoaded) { return; }
         ConfigLoad(); config.RTSSMetricsEnabled = Settings_RTSS_Enable.IsOn; ConfigSave();
+        Settings_RTSS_Enable_Name.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
+        RTTS_GridView.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
+        RTSS_AdvancedCodeEditor_ToggleSwitch.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
+        RTSS_AdvancedCodeEditor_EditBox_Scroll.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
     }
     private void RTSS_AdvancedCodeEditor_ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
     {
@@ -2123,5 +2197,10 @@ public sealed partial class SettingsPage : Page
         rtssset.AdvancedCodeEditor = newString.Replace("\r", "\n");
         RtssSave();
     }
-    #endregion 
+    #endregion
+
+    private void Settings_Keybinds_Enable_Toggled(object sender, RoutedEventArgs e)
+    {
+
+    }
 }

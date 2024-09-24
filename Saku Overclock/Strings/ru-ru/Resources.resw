@@ -2552,4 +2552,28 @@ Overclock будут проигнорированы,
   <data name="Main_Guide.Text" xml:space="preserve">
     <value>Советы</value>
   </data>
+  <data name="Settings_Keybinds.Text" xml:space="preserve">
+    <value>Сочетания клавиш</value>
+  </data>
+  <data name="Settings_Keybinds_Elements.Text" xml:space="preserve">
+    <value>Комбинации клавиш</value>
+  </data>
+  <data name="Settings_Keybinds_Elements_Custom.Text" xml:space="preserve">
+    <value>Переключиться между своими пресетами</value>
+  </data>
+  <data name="Settings_Keybinds_Elements_Premaded.Text" xml:space="preserve">
+    <value>Переключиться между готовыми пресетами</value>
+  </data>
+  <data name="Settings_Keybinds_Elements_RTSS.Text" xml:space="preserve">
+    <value>Переключить состояние оверлея RTSS</value>
+  </data>
+  <data name="Settings_Keybinds_Enable.Header" xml:space="preserve">
+    <value>Использовать комбинации клавиш</value>
+  </data>
+  <data name="Settings_Keybinds_Enable.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="Settings_Keybinds_Enable.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
 </root>

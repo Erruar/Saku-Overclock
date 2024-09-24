@@ -594,6 +594,56 @@ public sealed partial class ПараметрыPage : Page
             ProfileLoad();
             try
             {
+                if (profile[index].cpu1value > c1v.Maximum) { c1v.Maximum = FromValueToUpperFive(profile[index].cpu1value); }
+                if (profile[index].cpu2value > c2v.Maximum) { c2v.Maximum = FromValueToUpperFive(profile[index].cpu2value); }
+                if (profile[index].cpu3value > c3v.Maximum) { c3v.Maximum = FromValueToUpperFive(profile[index].cpu3value); }
+                if (profile[index].cpu4value > c4v.Maximum) { c4v.Maximum = FromValueToUpperFive(profile[index].cpu4value); }
+                if (profile[index].cpu5value > c5v.Maximum) { c5v.Maximum = FromValueToUpperFive(profile[index].cpu5value); }
+                if (profile[index].cpu6value > c6v.Maximum) { c6v.Maximum = FromValueToUpperFive(profile[index].cpu6value); }
+                if (profile[index].cpu7value > c7v.Maximum) { c7v.Maximum = FromValueToUpperFive(profile[index].cpu7value); }
+
+                if (profile[index].vrm1value > V1V.Maximum) { V1V.Maximum = FromValueToUpperFive(profile[index].vrm1value); }
+                if (profile[index].vrm2value > V2V.Maximum) { V2V.Maximum = FromValueToUpperFive(profile[index].vrm2value); }
+                if (profile[index].vrm3value > V3V.Maximum) { V3V.Maximum = FromValueToUpperFive(profile[index].vrm3value); }
+                if (profile[index].vrm4value > V4V.Maximum) { V4V.Maximum = FromValueToUpperFive(profile[index].vrm4value); }
+                if (profile[index].vrm5value > V5V.Maximum) { V5V.Maximum = FromValueToUpperFive(profile[index].vrm5value); }
+                if (profile[index].vrm6value > V6V.Maximum) { V6V.Maximum = FromValueToUpperFive(profile[index].vrm6value); }
+                if (profile[index].vrm7value > V7V.Maximum) { V7V.Maximum = FromValueToUpperFive(profile[index].vrm7value); }
+
+                if (profile[index].gpu1value > g1v.Maximum) { g1v.Maximum = FromValueToUpperFive(profile[index].gpu1value); }
+                if (profile[index].gpu2value > g2v.Maximum) { g2v.Maximum = FromValueToUpperFive(profile[index].gpu2value); }
+                if (profile[index].gpu3value > g3v.Maximum) { g3v.Maximum = FromValueToUpperFive(profile[index].gpu3value); }
+                if (profile[index].gpu4value > g4v.Maximum) { g4v.Maximum = FromValueToUpperFive(profile[index].gpu4value); }
+                if (profile[index].gpu5value > g5v.Maximum) { g5v.Maximum = FromValueToUpperFive(profile[index].gpu5value); }
+                if (profile[index].gpu6value > g6v.Maximum) { g6v.Maximum = FromValueToUpperFive(profile[index].gpu6value); }
+                if (profile[index].gpu7value > g7v.Maximum) { g7v.Maximum = FromValueToUpperFive(profile[index].gpu7value); }
+                if (profile[index].gpu8value > g8v.Maximum) { g8v.Maximum = FromValueToUpperFive(profile[index].gpu8value); }
+                if (profile[index].gpu9value > g9v.Maximum) { g9v.Maximum = FromValueToUpperFive(profile[index].gpu9value); }
+                if (profile[index].gpu10value > g10v.Maximum) { g10v.Maximum = FromValueToUpperFive(profile[index].gpu10value); }
+                if (profile[index].gpu11value > g11v.Maximum) { g11v.Maximum = FromValueToUpperFive(profile[index].gpu11value); }
+                if (profile[index].gpu12value > g12v.Maximum) { g12v.Maximum = FromValueToUpperFive(profile[index].gpu12value); }
+
+                if (profile[index].advncd1value > a1v.Maximum) { a1v.Maximum = FromValueToUpperFive(profile[index].advncd1value); }
+                if (profile[index].advncd2value > a2v.Maximum) { a2v.Maximum = FromValueToUpperFive(profile[index].advncd2value); }
+                if (profile[index].advncd3value > a3v.Maximum) { a3v.Maximum = FromValueToUpperFive(profile[index].advncd3value); }
+                if (profile[index].advncd4value > a4v.Maximum) { a4v.Maximum = FromValueToUpperFive(profile[index].advncd4value); }
+                if (profile[index].advncd5value > a5v.Maximum) { a5v.Maximum = FromValueToUpperFive(profile[index].advncd5value); }
+                if (profile[index].advncd6value > a6v.Maximum) { a6v.Maximum = FromValueToUpperFive(profile[index].advncd6value); }
+                if (profile[index].advncd7value > a7v.Maximum) { a7v.Maximum = FromValueToUpperFive(profile[index].advncd7value); }
+                if (profile[index].advncd8value > a8v.Maximum) { a8v.Maximum = FromValueToUpperFive(profile[index].advncd8value); }
+                if (profile[index].advncd9value > a9v.Maximum) { a9v.Maximum = FromValueToUpperFive(profile[index].advncd9value); }
+                if (profile[index].advncd10value > a10v.Maximum) { a10v.Maximum = FromValueToUpperFive(profile[index].advncd10value); }
+                if (profile[index].advncd11value > a11v.Maximum) { a11v.Maximum = FromValueToUpperFive(profile[index].advncd11value); }
+                if (profile[index].advncd12value > a12v.Maximum) { a12v.Maximum = FromValueToUpperFive(profile[index].advncd12value); }
+                if (profile[index].advncd15value > a15v.Maximum) { a15v.Maximum = FromValueToUpperFive(profile[index].advncd15value); }
+
+            }
+            catch (Exception ex)
+            {
+                TraceIt_TraceError(ex.ToString());
+            }
+            try
+            {
                 c1.IsChecked = profile[index].cpu1; c1v.Value = profile[index].cpu1value; c2.IsChecked = profile[index].cpu2; c2v.Value = profile[index].cpu2value; c3.IsChecked = profile[index].cpu3; c3v.Value = profile[index].cpu3value; c4.IsChecked = profile[index].cpu4; c4v.Value = profile[index].cpu4value; c5.IsChecked = profile[index].cpu5; c5v.Value = profile[index].cpu5value; c6.IsChecked = profile[index].cpu6; c6v.Value = profile[index].cpu6value; c7.IsChecked = profile[index].cpu7; c7v.Value = profile[index].cpu7value;
                 V1.IsChecked = profile[index].vrm1; V1V.Value = profile[index].vrm1value; V2.IsChecked = profile[index].vrm2; V2V.Value = profile[index].vrm2value; V3.IsChecked = profile[index].vrm3; V3V.Value = profile[index].vrm3value; V4.IsChecked = profile[index].vrm4; V4V.Value = profile[index].vrm4value; V5.IsChecked = profile[index].vrm5; V5V.Value = profile[index].vrm5value; V6.IsChecked = profile[index].vrm6; V6V.Value = profile[index].vrm6value; V7.IsChecked = profile[index].vrm7; V7V.Value = profile[index].vrm7value;
                 g1.IsChecked = profile[index].gpu1; g1v.Value = profile[index].gpu1value; g2.IsChecked = profile[index].gpu2; g2v.Value = profile[index].gpu2value; g3.IsChecked = profile[index].gpu3; g3v.Value = profile[index].gpu3value; g4.IsChecked = profile[index].gpu4; g4v.Value = profile[index].gpu4value; g5.IsChecked = profile[index].gpu5; g5v.Value = profile[index].gpu5value; g6.IsChecked = profile[index].gpu6; g6v.Value = profile[index].gpu6value; g7.IsChecked = profile[index].gpu7; g7v.Value = profile[index].gpu7value; g8v.Value = profile[index].gpu8value; g8.IsChecked = profile[index].gpu8; g9v.Value = profile[index].gpu9value; g9.IsChecked = profile[index].gpu9; g10v.Value = profile[index].gpu10value; g10.IsChecked = profile[index].gpu10; g11.IsChecked = profile[index].gpu11; g11v.Value = profile[index].gpu11value; g12.IsChecked = profile[index].gpu12; g12v.Value = profile[index].gpu12value; g15.IsChecked = profile[index].gpu15; g15m.SelectedIndex = profile[index].gpu15value; g16.IsChecked = profile[index].gpu16; g16m.SelectedIndex = profile[index].gpu16value;
@@ -665,6 +715,7 @@ public sealed partial class ПараметрыPage : Page
         documentRange.CharacterFormat.ForegroundColor = color;
         richEditBox.Document.ApplyDisplayUpdates();
     }
+    private static int FromValueToUpperFive(double value) => (int)Math.Ceiling(value / 5) * 5;
     private uint GetCoreMask(int coreIndex)
     {
         var ccxInCcd = cpu?.info.family == Cpu.Family.FAMILY_19H ? 1U : 2U;
@@ -3311,6 +3362,51 @@ public sealed partial class ПараметрыPage : Page
         if (isButton) { Bit_42_FEATURE_AA_MODE.IsOn = Bit_42_FEATURE_AA_MODE.IsOn != true; }
         try { ProfileLoad(); profile[ProfileCOM.SelectedIndex - 1].smuFeatureAplusA = Bit_42_FEATURE_AA_MODE.IsOn; ProfileSave(); } catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
     }
+    //NumberBoxes
+    private void C2t_FocusEngaged(object sender, object args)
+    {
+        if (sender is NumberBox numberBox)
+        {  
+            numberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden;
+        }
+    }
+    private void C2t_FocusDisengaged(object sender, object args)
+    {
+        if (sender is NumberBox numberBox)
+        { 
+            numberBox.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline; 
+        }
+    }
+    private void C2t_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        if (sender is NumberBox numberBox)
+        {
+            object slider;
+            if (numberBox.Name.Contains('v'))
+            {
+                slider = FindName(numberBox.Name.Replace('t', 'V').Replace('v', 'V'));
+            }
+            else
+            {
+                try
+                {
+                    slider = FindName(numberBox.Name.Replace('t', 'v'));
+                }
+                catch (Exception ex)
+                {
+                    TraceIt_TraceError(ex.ToString());
+                    return;
+                }
+            }
+            if (slider is Slider slider1)
+            {
+                if (slider1.Maximum < numberBox.Value)
+                {
+                    slider1.Maximum = FromValueToUpperFive(numberBox.Value);
+                }
+            }
+        }
+    }
     #endregion
     #region PState Section related voids
     public async void BtnPstateWrite_Click()
@@ -4123,5 +4219,5 @@ public sealed partial class ПараметрыPage : Page
     private void VID_0_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID0();
     private void VID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID1();
     private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID2();
-    #endregion
+    #endregion 
 }

@@ -35,7 +35,18 @@ public sealed partial class ГлавнаяPage : Page
     }
     #endregion
     #region Event Handlers
-
+    private void HyperLink_Click(object sender, RoutedEventArgs e)
+    {
+        var link = "https://github.com/Erruar/Saku-Overclock/wiki/FAQ";
+        if (sender is Button button)
+        {
+            if (button.Tag is string str1)
+            {
+                link = str1;
+            }
+        } 
+        Process.Start(new ProcessStartInfo(link) { UseShellExecute = true });
+    }
     private void Discrd_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo("https://discord.com/invite/yVsKxqAaa7") { UseShellExecute = true });
@@ -252,4 +263,5 @@ public sealed partial class ГлавнаяPage : Page
     [GeneratedRegex("\\*\\*(.*?)\\*\\*")]
     private static partial Regex UnmanagementWords();
     #endregion
+
 }

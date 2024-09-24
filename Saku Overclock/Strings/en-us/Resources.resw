@@ -2477,4 +2477,28 @@ UPDATE</value>
   <data name="Main_Guide.Text" xml:space="preserve">
     <value>Guide</value>
   </data>
+  <data name="Settings_Keybinds.Text" xml:space="preserve">
+    <value>Hotkeys options</value>
+  </data>
+  <data name="Settings_Keybinds_Elements.Text" xml:space="preserve">
+    <value>Hotkeys</value>
+  </data>
+  <data name="Settings_Keybinds_Elements_Custom.Text" xml:space="preserve">
+    <value>Switch between custom user profiles</value>
+  </data>
+  <data name="Settings_Keybinds_Elements_Premaded.Text" xml:space="preserve">
+    <value>Switch between premaded profiles</value>
+  </data>
+  <data name="Settings_Keybinds_Elements_RTSS.Text" xml:space="preserve">
+    <value>Switch RTSS Overlay state with overlay alert</value>
+  </data>
+  <data name="Settings_Keybinds_Enable.Header" xml:space="preserve">
+    <value>Use Hotkeys</value>
+  </data>
+  <data name="Settings_Keybinds_Enable.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="Settings_Keybinds_Enable.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
 </root>
