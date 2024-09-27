@@ -58,7 +58,7 @@ public sealed partial class MainWindow : WindowEx
                         this.Show();
                         WindowState = WindowState.Normal;
                     }
-            !;
+            !; 
             ni.ContextMenuStrip = new ContextMenuStrip() { Size = new System.Drawing.Size(300,300) }; //Трей меню
             var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE; //Закруглить трей меню на Windows 11
             var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND; //Закруглить трей меню на Windows 11
@@ -96,7 +96,8 @@ public sealed partial class MainWindow : WindowEx
         dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
     #endregion
-    #region Tray utils
+    #region Tray utils 
+
     public static void Remove_ContextMenu_Tray()
     { 
         ni.ContextMenuStrip?.Items.Clear();

@@ -2576,4 +2576,85 @@ Overclock будут проигнорированы,
   <data name="Settings_Keybinds_Enable.OnContent" xml:space="preserve">
     <value>Вкл.</value>
   </data>
+  <data name="Main_Guide_Advanced_Title.Text" xml:space="preserve">
+    <value>Дополнительно:</value>
+  </data>
+  <data name="Main_Guide_Apply04.Text" xml:space="preserve">
+    <value>Фикс 0.4 ГГц на отдельные ядра</value>
+  </data>
+  <data name="Main_Guide_CommonIssues_Title.Text" xml:space="preserve">
+    <value>Ошибки и исправления:</value>
+  </data>
+  <data name="Main_Guide_Contrib_Title.Text" xml:space="preserve">
+    <value>Помощь и улучшение:</value>
+  </data>
+  <data name="Main_Guide_CPUFamily.Text" xml:space="preserve">
+    <value>Таблица поддерживаемых процессоров</value>
+  </data>
+  <data name="Main_Guide_DMCA.Text" xml:space="preserve">
+    <value>DMCA/Copyright лицензии</value>
+  </data>
+  <data name="Main_Guide_Energy.Text" xml:space="preserve">
+    <value>Разбор режима энергоэффективности</value>
+  </data>
+  <data name="Main_Guide_Errors_Title.Text" xml:space="preserve">
+    <value>Ошибки:</value>
+  </data>
+  <data name="Main_Guide_Fan.Text" xml:space="preserve">
+    <value>Управление кулерами</value>
+  </data>
+  <data name="Main_Guide_FAQ.Text" xml:space="preserve">
+    <value>Как разобраться с полученной ошибкой</value>
+  </data>
+  <data name="Main_Guide_HelpDev.Text" xml:space="preserve">
+    <value>Помочь с разработкой</value>
+  </data>
+  <data name="Main_Guide_HowBoost.Text" xml:space="preserve">
+    <value>Исправление задержки турбо буста</value>
+  </data>
+  <data name="Main_Guide_HowTo04.Text" xml:space="preserve">
+    <value>Как применить фикс 0.4 ГГц</value>
+  </data>
+  <data name="Main_Guide_HowWork04.Text" xml:space="preserve">
+    <value>Как работает фикс 0.4 ГГц</value>
+  </data>
+  <data name="Main_Guide_MaxPerf.Text" xml:space="preserve">
+    <value>Разбор режима максимальной произв-ти</value>
+  </data>
+  <data name="Main_Guide_NewFunctions.Text" xml:space="preserve">
+    <value>Добавление функций процессоров</value>
+  </data>
+  <data name="Main_Guide_OCTips.Text" xml:space="preserve">
+    <value>Изменение напряжения процессора</value>
+  </data>
+  <data name="Main_Guide_Perf_Title.Text" xml:space="preserve">
+    <value>Режим производительности:</value>
+  </data>
+  <data name="Main_Guide_ProcContr.Text" xml:space="preserve">
+    <value>Процессоры моих тестировщиков</value>
+  </data>
+  <data name="Main_Guide_ProcSpec.Text" xml:space="preserve">
+    <value>Проблемы процессоров</value>
+  </data>
+  <data name="Main_Guide_ResetRest.Text" xml:space="preserve">
+    <value>Сброс настроек без перезагрузки</value>
+  </data>
+  <data name="Main_Guide_Support.Text" xml:space="preserve">
+    <value>Поддержать автора проекта</value>
+  </data>
+  <data name="Main_Guide_Supported_Title.Text" xml:space="preserve">
+    <value>Поддерживаемые процессоры:</value>
+  </data>
+  <data name="Main_Guide_TempErr.Text" xml:space="preserve">
+    <value>Лимиты мощности не работают</value>
+  </data>
+  <data name="Main_Guide_Title.Text" xml:space="preserve">
+    <value>Фиксы и объяснения:</value>
+  </data>
+  <data name="Main_Guide_WhyLose.Text" xml:space="preserve">
+    <value>Значения слетают от перезагрузки</value>
+  </data>
+  <data name="SMURichEdit.PlaceholderText" xml:space="preserve">
+    <value>Здесь могут быть ваши заметки...</value>
+  </data>
 </root>

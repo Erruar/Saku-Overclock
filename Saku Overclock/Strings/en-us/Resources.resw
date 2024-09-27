@@ -2501,4 +2501,85 @@ UPDATE</value>
   <data name="Settings_Keybinds_Enable.OnContent" xml:space="preserve">
     <value>On.</value>
   </data>
+  <data name="Main_Guide_Advanced_Title.Text" xml:space="preserve">
+    <value>Advanced Features:</value>
+  </data>
+  <data name="Main_Guide_Apply04.Text" xml:space="preserve">
+    <value>Applying fix 0.4 to certain cores</value>
+  </data>
+  <data name="Main_Guide_CommonIssues_Title.Text" xml:space="preserve">
+    <value>Common Issues &amp;amp; Solutions:</value>
+  </data>
+  <data name="Main_Guide_Contrib_Title.Text" xml:space="preserve">
+    <value>Contributing &amp; Development:</value>
+  </data>
+  <data name="Main_Guide_CPUFamily.Text" xml:space="preserve">
+    <value>CPU family support and functions table</value>
+  </data>
+  <data name="Main_Guide_DMCA.Text" xml:space="preserve">
+    <value>DMCA/Copyright policy</value>
+  </data>
+  <data name="Main_Guide_Energy.Text" xml:space="preserve">
+    <value>Energy efficiency mode explanation</value>
+  </data>
+  <data name="Main_Guide_Errors_Title.Text" xml:space="preserve">
+    <value>Error Handling:</value>
+  </data>
+  <data name="Main_Guide_Fan.Text" xml:space="preserve">
+    <value>Adding fan control functionality</value>
+  </data>
+  <data name="Main_Guide_FAQ.Text" xml:space="preserve">
+    <value>FAQs related to error messages</value>
+  </data>
+  <data name="Main_Guide_HelpDev.Text" xml:space="preserve">
+    <value>Help with development</value>
+  </data>
+  <data name="Main_Guide_HowBoost.Text" xml:space="preserve">
+    <value>How to fix boost delay issues</value>
+  </data>
+  <data name="Main_Guide_HowTo04.Text" xml:space="preserve">
+    <value>How to apply the 0.4 GHz fix</value>
+  </data>
+  <data name="Main_Guide_HowWork04.Text" xml:space="preserve">
+    <value>How actually works 0.4 GHz fix</value>
+  </data>
+  <data name="Main_Guide_MaxPerf.Text" xml:space="preserve">
+    <value>Max performance mode explanation</value>
+  </data>
+  <data name="Main_Guide_NewFunctions.Text" xml:space="preserve">
+    <value>Adding new functions for CPUs</value>
+  </data>
+  <data name="Main_Guide_OCTips.Text" xml:space="preserve">
+    <value>Overclocking/Undervolting tips</value>
+  </data>
+  <data name="Main_Guide_Perf_Title.Text" xml:space="preserve">
+    <value>Performance mode:</value>
+  </data>
+  <data name="Main_Guide_ProcContr.Text" xml:space="preserve">
+    <value>Processors of contributors</value>
+  </data>
+  <data name="Main_Guide_ProcSpec.Text" xml:space="preserve">
+    <value>Processor-specific details</value>
+  </data>
+  <data name="Main_Guide_ResetRest.Text" xml:space="preserve">
+    <value>Resetting values without restarting</value>
+  </data>
+  <data name="Main_Guide_Support.Text" xml:space="preserve">
+    <value>Support the project author</value>
+  </data>
+  <data name="Main_Guide_Supported_Title.Text" xml:space="preserve">
+    <value>Supported CPU Models:</value>
+  </data>
+  <data name="Main_Guide_TempErr.Text" xml:space="preserve">
+    <value>Temperature or power limit does not work</value>
+  </data>
+  <data name="Main_Guide_Title.Text" xml:space="preserve">
+    <value>Fixes &amp; Explanations:</value>
+  </data>
+  <data name="Main_Guide_WhyLose.Text" xml:space="preserve">
+    <value>Why I losing my values even without restart</value>
+  </data>
+  <data name="SMURichEdit.PlaceholderText" xml:space="preserve">
+    <value>There's place for your beatuful notes...</value>
+  </data>
 </root>

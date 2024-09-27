@@ -1755,8 +1755,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                         </Expander.Header>
                         <Grid >
                             <ScrollViewer Margin="200,60,0,0"  HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="217">
-                                <RichEditBox IsColorFontEnabled="True" HorizontalAlignment="Stretch" x:Name="SMUNotes" TextChanged="SMUNotes_TextChanged" VerticalAlignment="Stretch" PlaceholderText="Здесь могут быть ваши заметки...">
-                                </RichEditBox>
+                                <RichEditBox IsColorFontEnabled="True" HorizontalAlignment="Stretch" x:Name="SMUNotes" x:Uid="SMURichEdit" TextChanged="SMUNotes_TextChanged" VerticalAlignment="Stretch"/>
                             </ScrollViewer>
                             <Grid x:Name="SMU_MainSection" HorizontalAlignment="Stretch">
                                 <Grid.RowDefinitions>
@@ -1772,7 +1771,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                     <RowDefinition/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
-                                <Grid Grid.Row="0" HorizontalAlignment="Stretch" >
+                                <Grid Grid.Row="0" HorizontalAlignment="Stretch">
                                     <Button Height="50" HorizontalContentAlignment="Stretch" Click="SMUEnabl_Click" HorizontalAlignment="Stretch">
                                         <Grid Height="50">
                                             <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe930;"/>

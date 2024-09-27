@@ -77,43 +77,43 @@
                         </PivotItem.Header>
                         <ScrollViewer Margin="-10,0,-10,0">
                             <StackPanel Width="274" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                <TextBlock FontWeight="Bold">Fixes &amp; Explanations:</TextBlock>
+                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Title">Fixes &amp; Explanations:</TextBlock>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Overclocking/Undervolting tips</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_OCTips">Overclocking/Undervolting tips</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#undervolting-support"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">How to apply the 0.4 GHz fix</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowTo04">How to apply the 0.4 GHz fix</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#explanation-how-to-apply-04-ghz-ryzen-mobile-fix"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">How actually works 0.4 GHz fix</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowWork04">How actually works 0.4 GHz fix</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#how-did-it-actually-works"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Applying fix 0.4 to certain cores</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Apply04">Applying fix 0.4 to certain cores</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#can-i-apply-this-fix-to-one-core-or-several-but-not-all-cores"/>
                                 </Grid>
-                                <TextBlock FontWeight="Bold">Performance mode:</TextBlock>
+                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Perf_Title">Performance mode:</TextBlock>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Max performance mode explanation</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_MaxPerf">Max performance mode explanation</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#can-i-use-max-performance-option-while-on-ac-cable-power-supply"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Energy efficiency mode explanation</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Energy">Energy efficiency mode explanation</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#does-energy-efficiency-option-improve-battery-runtime"/>
                                 </Grid>
-                                <TextBlock FontWeight="Bold">Common Issues &amp; Solutions:</TextBlock>
+                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_CommonIssues_Title">Common Issues &amp; Solutions:</TextBlock>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">How to fix boost delay issues</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowBoost">How to fix boost delay issues</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#how-to-fix-the-boost-delay-issue"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Why I losing my values even without restart</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_WhyLose">Why I losing my values even without restart</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#why-do-i-lose-my-values-even-without-restart"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Temperature or power limit does not work</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_TempErr">Temperature or power limit does not work</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#temperature-or-power-limit-does-not-work"/>
                                 </Grid> 
                             </StackPanel> 
@@ -127,48 +127,48 @@
                         </PivotItem.Header>
                         <ScrollViewer Margin="-10,0,-10,0">
                             <StackPanel Width="274" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                <TextBlock FontWeight="Bold">Contributing &amp; Development:</TextBlock>
+                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Contrib_Title">Contributing &amp; Development:</TextBlock>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Support the project author</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Support">Support the project author</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://www.donationalerts.com/r/RubyTrack"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Help with development</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HelpDev">Help with development</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock?tab=readme-ov-file#contributing"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Adding new functions for CPUs</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_NewFunctions">Adding new functions for CPUs</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#adding-functions"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">DMCA/Copyright policy</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_DMCA">DMCA/Copyright policy</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#dmca---what-is-that-can-i-copy-this-program"/>
                                 </Grid>
-                                <TextBlock FontWeight="Bold">Advanced Features:</TextBlock>
+                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Advanced_Title">Advanced Features:</TextBlock>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Adding fan control functionality</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Fan">Adding fan control functionality</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#would-it-be-possible-to-add-fan-control-functionality"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Resetting values without restarting</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ResetRest">Resetting values without restarting</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#would-it-be-possible-to-reset-values-without-restart"/>
                                 </Grid>
-                                <TextBlock FontWeight="Bold">Supported CPU Models:</TextBlock>
+                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Supported_Title">Supported CPU Models:</TextBlock>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">CPU family support and functions table</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_CPUFamily">CPU family support and functions table</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#overclocking-page"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Processor-specific details</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ProcSpec">Processor-specific details</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#details-for-"/>
                                 </Grid>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">Processors of contributors</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ProcContr">Processors of contributors</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#processors-of-contributors"/>
                                 </Grid>
-                                <TextBlock FontWeight="Bold">Error Handling:</TextBlock>
+                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Errors_Title">Error Handling:</TextBlock>
                                 <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left">FAQs related to error messages</TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_FAQ">FAQs related to error messages</TextBlock>
                                     <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#error-handling"/>
                                 </Grid>
                             </StackPanel>
