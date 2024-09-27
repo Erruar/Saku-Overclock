@@ -545,7 +545,7 @@
                     </ScrollViewer>
                 </StackPanel>
                 <TextBlock x:Uid="Settings_Keybinds" Style="{ThemeResource SubtitleTextBlockStyle}" Text="Сочетания клавиш" />
-                <ToggleSwitch x:Uid="Settings_Keybinds_Enable"  Margin="{StaticResource XSmallTopMargin}" x:Name="Settings_Keybinds_Enable" Toggled="Settings_Keybinds_Enable_Toggled">Использовать комбинации клавиш</ToggleSwitch>
+                <ToggleSwitch x:Uid="Settings_Keybinds_Enable" IsEnabled="False" IsOn="True"  Margin="{StaticResource XSmallTopMargin}" x:Name="Settings_Keybinds_Enable" Toggled="Settings_Keybinds_Enable_Toggled">Использовать комбинации клавиш</ToggleSwitch>
                 <StackPanel Padding="0,0,0,10">
                     <TextBlock x:Name="Settings_Keybinds_Enable_Name" Text="Комбинации клавиш" x:Uid="Settings_Keybinds_Elements" />
                     <StackPanel Width="355" HorizontalAlignment="Left" Margin="{StaticResource XSmallTopMargin}" Orientation="Vertical">
