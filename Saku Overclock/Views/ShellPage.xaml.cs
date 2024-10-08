@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -15,6 +16,7 @@ using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation;
 using Windows.System;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 
 namespace Saku_Overclock.Views;
@@ -46,8 +48,24 @@ public sealed partial class ShellPage : Page
 
     public ShellPage(ShellViewModel viewModel)
     {
-        _proc = HookCallbackAsync; // Коллбэк метод (вызывается при срабатывании хука)
-        _hookID = SetHook(_proc); // Хук, который должен срабатывать
+        try
+        {
+            ConfigLoad();
+        }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
+        } 
+        if (config.HotkeysEnabled)
+        {
+            _proc = HookCallbackAsync; // Коллбэк метод (вызывается при срабатывании хука)
+            _hookID = SetHook(_proc); // Хук, который должен срабатывать
+        } 
+        else
+        {
+            _proc = (s,a,c) => { return 0; };
+            _hookID = 0;
+        }
         m_AppWindow = App.MainWindow.AppWindow; // AppWindow, нужен для тайтлбара приложения
         ViewModel = viewModel; // ViewModel, установка нужной модели для UI страницы
         InitializeComponent(); // Запуск UI

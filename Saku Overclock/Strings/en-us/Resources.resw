@@ -2582,4 +2582,10 @@ UPDATE</value>
   <data name="SMURichEdit.PlaceholderText" xml:space="preserve">
     <value>There's place for your beatuful notes...</value>
   </data>
+  <data name="Settings_Keybinds_Tooltip.Subtitle" xml:space="preserve">
+    <value>Restart app to change this option</value>
+  </data>
+  <data name="Settings_Keybinds_Tooltip.Title" xml:space="preserve">
+    <value>Restart needed</value>
+  </data>
 </root>

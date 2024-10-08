@@ -2657,4 +2657,10 @@ Overclock будут проигнорированы,
   <data name="SMURichEdit.PlaceholderText" xml:space="preserve">
     <value>Здесь могут быть ваши заметки...</value>
   </data>
+  <data name="Settings_Keybinds_Tooltip.Subtitle" xml:space="preserve">
+    <value>Перезапустите приложение чтобы применить изменения</value>
+  </data>
+  <data name="Settings_Keybinds_Tooltip.Title" xml:space="preserve">
+    <value>Требуется перезапуск</value>
+  </data>
 </root>

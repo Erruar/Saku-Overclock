@@ -51,7 +51,8 @@ public sealed partial class SettingsPage : Page
         ReapplySafe.IsOn = config.ReapplySafeOverclock;
         ThemeLight.Visibility = config.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
         ThemeCustomBg.IsEnabled = config.ThemeType > 7;
-        Settings_RTSS_Enable.IsOn = config.RTSSMetricsEnabled; 
+        Settings_RTSS_Enable.IsOn = config.RTSSMetricsEnabled;
+        Settings_Keybinds_Enable.IsOn = config.HotkeysEnabled;
         RTSS_LoadAndApply();
         UpdateTheme_ComboBox();
         NiIcon_LoadValues();
@@ -694,6 +695,14 @@ public sealed partial class SettingsPage : Page
     private void Discord_Click(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo("https://discord.com/invite/yVsKxqAaa7") { UseShellExecute = true });
+    }
+    private void Settings_Keybinds_Enable_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (!isLoaded) { return; }
+        Settings_Keybinds_Tooltip.IsOpen = true;
+        ConfigLoad();
+        config.HotkeysEnabled = Settings_Keybinds_Enable.IsOn;
+        ConfigSave();
     }
     private void AutostartCom_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -2198,9 +2207,4 @@ public sealed partial class SettingsPage : Page
         RtssSave();
     }
     #endregion
-
-    private void Settings_Keybinds_Enable_Toggled(object sender, RoutedEventArgs e)
-    {
-
-    }
 }
