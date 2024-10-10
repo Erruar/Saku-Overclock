@@ -2588,4 +2588,13 @@ UPDATE</value>
   <data name="Settings_Keybinds_Tooltip.Title" xml:space="preserve">
     <value>Restart needed</value>
   </data>
+  <data name="Param_SMU_Args" xml:space="preserve">
+    <value> with arguments: </value>
+  </data>
+  <data name="Param_SMU_Args_From" xml:space="preserve">
+    <value> from </value>
+  </data>
+  <data name="Param_SMU_Command" xml:space="preserve">
+    <value>Command </value>
+  </data>
 </root>

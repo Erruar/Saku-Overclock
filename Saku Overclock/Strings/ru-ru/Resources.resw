@@ -2663,4 +2663,19 @@ Overclock будут проигнорированы,
   <data name="Settings_Keybinds_Tooltip.Title" xml:space="preserve">
     <value>Требуется перезапуск</value>
   </data>
+  <data name="Param_SMU_Args" xml:space="preserve">
+    <value> с аргументами: </value>
+  </data>
+  <data name="Param_SMU_Args_From" xml:space="preserve">
+    <value> из </value>
+  </data>
+  <data name="Param_SMU_Command" xml:space="preserve">
+    <value>Команда </value>
+  </data>
+  <data name="Param_SMU_Command_Error" xml:space="preserve">
+    <value>не может быть применена из-за внутренней ошибки IO драйвера</value>
+  </data>
+  <data name="Param_SMU_Command_Status" xml:space="preserve">
+    <value>применена со статусом</value>
+  </data>
 </root>

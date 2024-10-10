@@ -1101,7 +1101,7 @@ public sealed partial class ПараметрыPage : Page
         QuickDialog(1, int.Parse(button!.Name.Replace("Edit_", "")));
     }
     //SMU КОМАНДЫ
-    private async void ApplySettings(int mode, int CommandIndex)
+    private void ApplySettings(int mode, int CommandIndex)
     {
         try
         {
@@ -1144,25 +1144,28 @@ public sealed partial class ПараметрыPage : Page
                 args[i] = temp;
             }
             var status = cpu?.smu.SendSmuCommand(testMailbox, command, ref args);
-            if (status == SMU.Status.OK)
+            var errorStatus = string.Empty;
+            if (status != SMU.Status.OK) 
             {
-                await Send_Message("SMUOKText".GetLocalized(), "SMUOKDesc".GetLocalized(), Symbol.Accept);
-            }
-            else
-            {
+                ApplyInfo += "\n" + "SMUErrorText".GetLocalized() + ": " + (textBoxCMD.Text.Contains("0x") ? textBoxCMD.Text : "0x" + textBoxCMD.Text)
+                    + "Param_SMU_Args_From".GetLocalized() + comboBoxMailboxSelect.SelectedValue
+                    + "Param_SMU_Args".GetLocalized() + (textBoxARG0.Text.Contains("0x") ? textBoxARG0.Text : "0x" + textBoxARG0.Text);
                 if (status == SMU.Status.CMD_REJECTED_PREREQ)
                 {
-                    await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorRejected".GetLocalized(), Symbol.Dislike);
+                    ApplyInfo += "\n" + "SMUErrorRejected".GetLocalized();
+                    //await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorRejected".GetLocalized(), Symbol.Dislike);
                 }
                 else
                 {
-                    await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorNoCMD".GetLocalized(), Symbol.Filter);
-                }
-            }
+                    ApplyInfo += "\n" + "SMUErrorNoCMD".GetLocalized();
+                    //await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorNoCMD".GetLocalized(), Symbol.Filter);
+                } 
+            } 
         }
         catch
         {
-            await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorDesc".GetLocalized(), Symbol.Dislike);
+            ApplyInfo += "\n" + "SMUErrorDesc".GetLocalized();
+            //await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorDesc".GetLocalized(), Symbol.Dislike);
         }
     }
     private static void TryConvertToUint(string text, out uint address)
@@ -3081,6 +3084,15 @@ public sealed partial class ПараметрыPage : Page
         SendSMUCommand.Codename = cpu!.info.codeName;
         MainWindow.Applyer.Apply(config.RyzenADJline, true, config.ReapplyOverclock, config.ReapplyOverclockTimer);
         if (EnablePstates.IsOn) { BtnPstateWrite_Click(); }
+        if (textBoxARG0 != null &&
+           textBoxARGAddress != null &&
+           textBoxCMD != null &&
+           textBoxCMDAddress != null &&
+           textBoxRSPAddress != null &&
+           EnableSMU.IsOn)
+        {
+            ApplySettings(0, 0);
+        }
         await Task.Delay(1000);
         var timer = 1000;
         if (ApplyInfo != null)
@@ -3098,14 +3110,32 @@ public sealed partial class ПараметрыPage : Page
 #pragma warning restore CS0162 // Обнаружен недостижимый код
         }
         Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-        Apply_tooltip.IsOpen = true; var infoSet = InfoBarSeverity.Success;
-        if (ApplyInfo != string.Empty && ApplyInfo != null) { Apply_tooltip.Title = "Apply_Warn".GetLocalized(); Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + ApplyInfo; Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked }; await Task.Delay(timer); Apply_tooltip.IsOpen = false; infoSet = InfoBarSeverity.Warning; }
-        else { await Task.Delay(3000); Apply_tooltip.IsOpen = false; }
+        Apply_tooltip.IsOpen = true; 
+        var infoSet = InfoBarSeverity.Success;
+        if (ApplyInfo != string.Empty && 
+            ApplyInfo != null) 
+        { 
+            Apply_tooltip.Title = "Apply_Warn".GetLocalized(); 
+            Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + ApplyInfo; 
+            Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked }; 
+            await Task.Delay(timer); 
+            Apply_tooltip.IsOpen = false; 
+            infoSet = InfoBarSeverity.Warning; 
+        }
+        else 
+        { 
+            await Task.Delay(3000); 
+            Apply_tooltip.IsOpen = false; 
+        }
         NotifyLoad();
         notify.Notifies ??= [];
-        notify.Notifies.Add(new Notify { Title = Apply_tooltip.Title, Msg = Apply_tooltip.Subtitle, Type = infoSet });
-        NotifySave();
-        if (textBoxARG0 != null && textBoxARGAddress != null && textBoxCMD != null && textBoxCMDAddress != null && textBoxRSPAddress != null && EnableSMU.IsOn) { ApplySettings(0, 0); }
+        notify.Notifies.Add(new Notify 
+        { 
+            Title = Apply_tooltip.Title, 
+            Msg = Apply_tooltip.Subtitle, 
+            Type = infoSet 
+        });
+        NotifySave(); 
         cpusend ??= new SendSMUCommand();
         cpusend.Play_Invernate_QuickSMU(0);
     }

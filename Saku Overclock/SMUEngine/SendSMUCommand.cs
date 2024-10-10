@@ -709,7 +709,7 @@ internal class SendSMUCommand
             testMailbox.SMU_ADDR_ARG = addrArg;
             if (!saveinfo && CommandName == "stopcpu-freqto-ramstate") { return; } //Чтобы уж точно не осталось в RyzenADJline, так как может крашнуть систему
             var status = cpu?.smu.SendSmuCommand(testMailbox, Command, ref args);
-            if (status != SMU.Status.OK) { ПараметрыPage.ApplyInfo += $"\nCommand '{CommandName}' applied with status {status}"; } //Если при применении что-то пошло не так - сказать об ошибке
+            if (status != SMU.Status.OK) { ПараметрыPage.ApplyInfo += "\n" + "Param_SMU_Command".GetLocalized() + CommandName + "Param_SMU_Command".GetLocalized() + status ; } //Если при применении что-то пошло не так - сказать об ошибке
         }
         catch
         {
