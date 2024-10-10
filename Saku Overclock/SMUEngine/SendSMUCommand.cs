@@ -709,12 +709,83 @@ internal class SendSMUCommand
             testMailbox.SMU_ADDR_ARG = addrArg;
             if (!saveinfo && CommandName == "stopcpu-freqto-ramstate") { return; } //Чтобы уж точно не осталось в RyzenADJline, так как может крашнуть систему
             var status = cpu?.smu.SendSmuCommand(testMailbox, Command, ref args);
-            if (status != SMU.Status.OK) { ПараметрыPage.ApplyInfo += "\n" + "Param_SMU_Command".GetLocalized() + CommandName + "Param_SMU_Command".GetLocalized() + status ; } //Если при применении что-то пошло не так - сказать об ошибке
+            if (status != SMU.Status.OK) { ПараметрыPage.ApplyInfo += "\n" + "Param_SMU_Command".GetLocalized() + CommandName + "Param_SMU_Command_Status".GetLocalized() + status ; } //Если при применении что-то пошло не так - сказать об ошибке
         }
         catch
         {
-            ПараметрыPage.ApplyInfo += $"\nCommand '{CommandName}' can't be applied";
+            ПараметрыPage.ApplyInfo += "\n" + "Param_SMU_Command".GetLocalized() + CommandName + "Param_SMU_Command_Error".GetLocalized();
         }
+    }
+    private string CommandNameParser(string CommandName)
+    { 
+        var a = CommandName switch 
+        {
+            "enable-feature" => "".GetLocalized(),
+            "disable-feature" => "".GetLocalized(),
+            "stapm-limit" => "".GetLocalized(),
+            "vrm-current" => "".GetLocalized(),
+            "vrmmax-current" => "".GetLocalized(),
+            "tctl-temp" => "".GetLocalized(),
+            "pbo-scalar" => "".GetLocalized(),
+            "oc-clk" => "".GetLocalized(),
+            "per-core-oc-clk" => "".GetLocalized(),
+            "oc-volt" => "".GetLocalized(),
+            "set-coall" => "".GetLocalized(),
+            "set-cogfx" => "".GetLocalized(),
+            "set-coper" => "".GetLocalized(),
+            "enable-oc" => "".GetLocalized(),
+            "disable-oc" => "".GetLocalized(),
+            "stapm-time" => "".GetLocalized(),
+            "fast-limit" => "".GetLocalized(),
+            "slow-limit" => "".GetLocalized(),
+            "slow-time" => "".GetLocalized(),
+            "cHTC-temp" => "".GetLocalized(),
+            "apu-skin-temp" => "".GetLocalized(),
+            "vrmsoc-current" => "".GetLocalized(),
+            "vrmsocmax-current" => "".GetLocalized(),
+            "vrmcvip-current" => "".GetLocalized(),
+            "vrmgfx-current" => "".GetLocalized(),
+            "vrmgfxmax-current" => "".GetLocalized(),
+            "prochot-deassertion-ramp" => "".GetLocalized(),
+            "psi3cpu_current" => "".GetLocalized(),
+            "psi3gfx_current" => "".GetLocalized(),
+            "gfx-clk" => "".GetLocalized(),
+            "power-saving" => "".GetLocalized(),
+            "max-performance" => "".GetLocalized(),
+            "apu-slow-limit" => "".GetLocalized(),
+            "dgpu-skin-temp" => "".GetLocalized(),
+            "psi0-current" => "".GetLocalized(),
+            "psi0soc-current" => "".GetLocalized(),
+            "skin-temp-limit" => "".GetLocalized(),
+            "max-cpuclk" => "".GetLocalized(),
+            "min-cpuclk" => "".GetLocalized(),
+            "max-gfxclk" => "".GetLocalized(),
+            "min-gfxclk" => "".GetLocalized(),
+            "max-socclk-frequency" => "".GetLocalized(),
+            "min-socclk-frequency" => "".GetLocalized(),
+            "max-fclk-frequency" => "".GetLocalized(),
+            "min-fclk-frequency" => "".GetLocalized(),
+            "max-vcn" => "".GetLocalized(),
+            "min-vcn" => "".GetLocalized(),
+            "max-lclk" => "".GetLocalized(),
+            "min-lclk" => "".GetLocalized(),
+            "oc-volt-variable" => "".GetLocalized(),
+            "update-skintemp-error" => "".GetLocalized(),
+            "setgpu-arerture-low" => "".GetLocalized(),
+            "setgpu-arerture-high" => "".GetLocalized(),
+            "start-gpu-link" => "".GetLocalized(),
+            "stop-gpu-link" => "".GetLocalized(),
+            "setcpu-freqto-ramstate" => "".GetLocalized(),
+            "stopcpu-freqto-ramstate" => "".GetLocalized(), 
+            "set-ulv-vid" => "".GetLocalized(),
+            "set-vddoff-vid" => "".GetLocalized(),
+            "set-vmin-freq" => "".GetLocalized(),
+            "set-gpuclockoverdrive-byvid" => "".GetLocalized(),
+            "set-powergate-xgbe" => "".GetLocalized(),
+            "enable-cc6filter" => "".GetLocalized(),
+            _ => "1"
+        };
+        return a;
     }
     public static void TraceIt_TraceError(string error) //Система TraceIt! позволит логгировать все ошибки
     {

@@ -2597,4 +2597,10 @@ UPDATE</value>
   <data name="Param_SMU_Command" xml:space="preserve">
     <value>Command </value>
   </data>
+  <data name="Param_SMU_Command_Error" xml:space="preserve">
+    <value> can't be applied, IO driver not loaded or command locked by BIOS</value>
+  </data>
+  <data name="Param_SMU_Command_Status" xml:space="preserve">
+    <value> applied with status </value>
+  </data>
 </root>
