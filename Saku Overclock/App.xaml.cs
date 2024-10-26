@@ -27,26 +27,53 @@ public partial class App : Application
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
     // https://docs.microsoft.com/dotnet/core/extensions/configuration
     // https://docs.microsoft.com/dotnet/core/extensions/logging
-    public IHost Host
+    public IHost? Host
     {
         get;
     } 
     public static T GetService<T>()
         where T : class
     {
-        if ((Current as App)!.Host.Services.GetService(typeof(T)) is not T service)
+        if ((Current as App)!.Host!.Services.GetService(typeof(T)) is not T service)
         {
             throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
         }
 
         return service;
-    } 
+    }
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool ShowWindowAsync(System.IntPtr hWnd, int cmdShow); // Показать текущее окно, вместо открытия второго экземпляра программы
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool ShowWindow(System.IntPtr hWnd, int cmdShow); // Показать текущее окно, вместо открытия второго экземпляра программы
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
+
     public static WindowEx MainWindow { get; } = new MainWindow(); 
     public static UIElement? AppTitlebar { get; set; }
     private Config config = new();
     public App()
     {
         InitializeComponent();
+        var currentProcess = System.Diagnostics.Process.GetCurrentProcess();
+
+        // search for another process with the same name
+        var anotherProcess = System.Diagnostics.Process.GetProcesses().FirstOrDefault(p => p.ProcessName == currentProcess.ProcessName && p.Id != currentProcess.Id);
+
+        if (anotherProcess != null)
+        {
+            var hWnd = FindWindow(null, "Saku Overclock");
+            ActivationInvokeHandler.SetForegroundWindowState(anotherProcess.MainWindowHandle);
+            ShowWindowAsync(hWnd, 5);
+            ShowWindow(hWnd, 5);
+            App.Current.Exit();
+            return; // Выйти
+        }
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
         UseContentRoot(AppContext.BaseDirectory).
@@ -107,7 +134,7 @@ public partial class App : Application
     {
         base.OnLaunched(args);
         GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
-        bool isFirstInstance; // Проверяем, запущен ли уже экземпляр программы
+       /* bool isFirstInstance; // Проверяем, запущен ли уже экземпляр программы
         var mutex = new Mutex(true, "MyProgramMutex", out isFirstInstance); 
         if (!isFirstInstance)
         { 
@@ -116,7 +143,7 @@ public partial class App : Application
             App.MainWindow.Close();
             mutex.ReleaseMutex();
             return; 
-        }  
+        }  */
         await GetService<IActivationService>().ActivateAsync(args);
     }
     #endregion

@@ -531,7 +531,7 @@ public sealed partial class SettingsPage : Page
         {
             return;
         }
-        RTSS_AdvancedCodeEditor_EditBox.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, advancedCode.Replace("<Br>", "\n"));
+        RTSS_AdvancedCodeEditor_EditBox.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, advancedCode.Replace("<Br>", "\n").TrimEnd());
     }
 
 
@@ -2203,7 +2203,7 @@ public sealed partial class SettingsPage : Page
     {
         string? newString;
         RTSS_AdvancedCodeEditor_EditBox.Document.GetText(Microsoft.UI.Text.TextGetOptions.None, out newString);
-        rtssset.AdvancedCodeEditor = newString.Replace("\r", "\n");
+        rtssset.AdvancedCodeEditor = newString.Replace("\r", "\n").TrimEnd();
         RtssSave();
     }
     #endregion

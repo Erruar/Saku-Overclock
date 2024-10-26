@@ -7,7 +7,5 @@ public class Notify
     public string Title { get; set; } = "";
     public string Msg { get; set; } = "";
     public InfoBarSeverity Type { get; set; } = InfoBarSeverity.Informational; 
-    public bool isClosable { get; set; } = true;
-    public Grid? Subcontent { get; set; } = null;
-    public TypedEventHandler<InfoBar, object>? CloseClickHandler { get; set; } = null;
+    public bool isClosable { get; set; } = true; 
 }

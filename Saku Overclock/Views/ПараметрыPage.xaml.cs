@@ -688,7 +688,7 @@ public sealed partial class ПараметрыPage : Page
         SmuSettingsLoad();
         if (smusettings.Note != string.Empty)
         {
-            SMUNotes.Document.SetText(TextSetOptions.FormatRtf, smusettings.Note);
+            SMUNotes.Document.SetText(TextSetOptions.FormatRtf, smusettings.Note.TrimEnd());
             ChangeRichEditBoxTextColor(SMUNotes, GetColorFromBrush(TextColor.Foreground));
         }
         try
@@ -1153,19 +1153,16 @@ public sealed partial class ПараметрыPage : Page
                 if (status == SMU.Status.CMD_REJECTED_PREREQ)
                 {
                     ApplyInfo += "\n" + "SMUErrorRejected".GetLocalized();
-                    //await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorRejected".GetLocalized(), Symbol.Dislike);
                 }
                 else
                 {
                     ApplyInfo += "\n" + "SMUErrorNoCMD".GetLocalized();
-                    //await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorNoCMD".GetLocalized(), Symbol.Filter);
                 } 
             } 
         }
         catch
         {
             ApplyInfo += "\n" + "SMUErrorDesc".GetLocalized();
-            //await Send_Message("SMUErrorText".GetLocalized(), "SMUErrorDesc".GetLocalized(), Symbol.Dislike);
         }
     }
     private static void TryConvertToUint(string text, out uint address)
@@ -1687,7 +1684,7 @@ public sealed partial class ПараметрыPage : Page
         var documentRange = SMUNotes.Document.GetRange(0, TextConstants.MaxUnitCount);
         string content;
         documentRange.GetText(TextGetOptions.FormatRtf, out content);
-        smusettings.Note = content;
+        smusettings.Note = content.TrimEnd();
         SmuSettingsSave();
     }
     private void ToHex_Click(object sender, RoutedEventArgs e)
@@ -3129,10 +3126,10 @@ public sealed partial class ПараметрыPage : Page
         }
         NotifyLoad();
         notify.Notifies ??= [];
-        notify.Notifies.Add(new Notify 
-        { 
-            Title = Apply_tooltip.Title, 
-            Msg = Apply_tooltip.Subtitle, 
+        notify.Notifies.Add(new Notify
+        {
+            Title = Apply_tooltip.Title,
+            Msg = Apply_tooltip.Subtitle + (ApplyInfo != string.Empty && ApplyInfo != null ? "DELETEUNAVAILABLE" : ""),
             Type = infoSet 
         });
         NotifySave(); 

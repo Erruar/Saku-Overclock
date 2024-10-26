@@ -211,13 +211,13 @@
   <data name="Cooler_Service.Text" xml:space="preserve">
     <value>Состояние сервиса контроля скорости:</value>
   </data>
-  <data name="Cooler_Service_Disabled.Text" xml:space="preserve">
+  <data name="Cooler_Service_Disabled.Content" xml:space="preserve">
     <value>Выключен</value>
   </data>
-  <data name="Cooler_Service_Enabled.Text" xml:space="preserve">
+  <data name="Cooler_Service_Enabled.Content" xml:space="preserve">
     <value>Включен</value>
   </data>
-  <data name="Cooler_Service_Read.Text" xml:space="preserve">
+  <data name="Cooler_Service_Read.Content" xml:space="preserve">
     <value>Включен только для чтения</value>
   </data>
   <data name="Cooler_Temp.Text" xml:space="preserve">
@@ -1213,10 +1213,10 @@ AOD, Power, Temp, Load таблиц устройства.
     <value>Команда не установлена или IO чип её отклонил или IO драйвер не загружен. Перезапустите ноутбук и отключите Secure Boot в BIOS или измените команду!</value>
   </data>
   <data name="SMUErrorNoCMD" xml:space="preserve">
-    <value>Такой команды не существует для вашего SMU. Это не значит, что эта команда не существует вообще, возможно, чтобы получить доступ к ней нужно активировать какую-то функцию SMU или один из протоколов вашего BIOS не даёт вам с ней взаимодействовать</value>
+    <value>SMU отклонил команду из-за того, что она не существует в вашем SMU, возможно не выполнено какое-то условие или она заблокирована в BIOS</value>
   </data>
   <data name="SMUErrorRejected" xml:space="preserve">
-    <value>SMU отклонил команду из-за того, что она заблокирована SMU или BIOS. Обычно при таком статусе эту команду уже не разблокировать никак</value>
+    <value>SMU отклонил команду из-за того, что она заблокирована SMU, потому что не выполнено какое-то условие. Возможно нужно выполнить другую SMU команду сначала</value>
   </data>
   <data name="SMUErrorText" xml:space="preserve">
     <value>Невозможно применить команду SMU</value>
@@ -1367,7 +1367,7 @@ AOD, Power, Temp, Load таблиц устройства.
     <value>Значения применены с ошибками!</value>
   </data>
   <data name="Apply_Warn_Desc" xml:space="preserve">
-    <value>Вы применили параметры, но без:</value>
+    <value>Вы применили параметры, но:</value>
   </data>
   <data name="Param_CPU_c7.Text" xml:space="preserve">
     <value>Максимальная температура cHTC (C)</value>
@@ -2677,5 +2677,53 @@ Overclock будут проигнорированы,
   </data>
   <data name="Param_SMU_Command_Status" xml:space="preserve">
     <value>применена со статусом</value>
+  </data>
+  <data name="Param_SMU_Command_Unavailable" xml:space="preserve">
+    <value>не доступна на вашей платформе</value>
+  </data>
+  <data name="SMUErrorBusyDesc" xml:space="preserve">
+    <value>Процессор занят. Повторите попытку позже</value>
+  </data>
+  <data name="SMUErrorFailedDesc" xml:space="preserve">
+    <value>Процессор не смог выполнить команду. Повторите попытку</value>
+  </data>
+  <data name="SMUErrorPlatformDesc" xml:space="preserve">
+    <value>Команда заблокирована на платформе. Выполнение невозможно</value>
+  </data>
+  <data name="SMUErrorPrereqDesc" xml:space="preserve">
+    <value>Команда заблокирована условием. Выполните условие и повторите попытку</value>
+  </data>
+  <data name="SMUErrorStatusDesc" xml:space="preserve">
+    <value>Выполнение прервано. Повторите попытку</value>
+  </data>
+  <data name="SMUErrorUnknownDesc" xml:space="preserve">
+    <value>Неизвестная команда. Проверьте совместимость</value>
+  </data>
+  <data name="Shell_Notify_AboutErrors" xml:space="preserve">
+    <value>Узнать об ошибках</value>
+  </data>
+  <data name="Shell_Notify_DisableErrors" xml:space="preserve">
+    <value>Отключить проблемные настройки</value>
+  </data>
+  <data name="Shell_Notify_ErrorLog" xml:space="preserve">
+    <value>Лог изменённых настроек</value>
+  </data>
+  <data name="Shell_Notify_ErrorsDisabled" xml:space="preserve">
+    <value>Проблемные настройки отключены</value>
+  </data>
+  <data name="Shell_Notify_ErrorsDisabledDesc" xml:space="preserve">
+    <value>Мы успешно отключили проблемные настройки среди ваших параметров разгона</value>
+  </data>
+  <data name="Shell_Notify_ErrorsShowLog" xml:space="preserve">
+    <value>Показать логи</value>
+  </data>
+  <data name="Shell_Notify_ErrorsShowLogExplorer" xml:space="preserve">
+    <value>Показать в проводнике</value>
+  </data>
+  <data name="Shell_Notify_TaskCompleting" xml:space="preserve">
+    <value>Действие выполняется</value>
+  </data>
+  <data name="Shell_Notify_TaskWait" xml:space="preserve">
+    <value>Пожалуйста подождите пока мы применим все изменения в силу</value>
   </data>
 </root>

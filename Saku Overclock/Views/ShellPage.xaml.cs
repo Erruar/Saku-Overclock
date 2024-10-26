@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Interop;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -16,7 +15,6 @@ using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation;
 using Windows.System;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 
 namespace Saku_Overclock.Views;
@@ -55,15 +53,15 @@ public sealed partial class ShellPage : Page
         catch (Exception ex)
         {
             MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
-        } 
+        }
         if (config.HotkeysEnabled)
         {
             _proc = HookCallbackAsync; // Коллбэк метод (вызывается при срабатывании хука)
             _hookID = SetHook(_proc); // Хук, который должен срабатывать
-        } 
+        }
         else
         {
-            _proc = (s,a,c) => { return 0; };
+            _proc = (s, a, c) => { return 0; };
             _hookID = 0;
         }
         m_AppWindow = App.MainWindow.AppWindow; // AppWindow, нужен для тайтлбара приложения
@@ -115,7 +113,7 @@ public sealed partial class ShellPage : Page
     {
         try
         {
-            SetRegionsForCustomTitleBar();  //Установить регион взаимодействия
+            App.MainWindow.DispatcherQueue.TryEnqueue(SetRegionsForCustomTitleBar);//Установить регион взаимодействия
         }
         catch { }
     }
@@ -848,6 +846,7 @@ public sealed partial class ShellPage : Page
             var index = 0;
             foreach (var notify1 in notify?.Notifies!)
             {
+                Grid? Subcontent = null;
                 if (notify1.Title.Equals("Theme applied!")) //Если уведомление о изменении темы
                 {
                     Theme_Loader();
@@ -867,7 +866,287 @@ public sealed partial class ShellPage : Page
                     ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
                     return; //Удалить и не показывать
                 }
-                MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.isClosable, notify1.Subcontent, notify1.CloseClickHandler);
+                if (notify1.Msg.Contains("DELETEUNAVAILABLE"))
+                {
+                    var but1 = new Button
+                    {
+                        CornerRadius = new CornerRadius(15),
+                        Content = new Grid
+                        {
+                            Children =
+                        {
+                                new FontIcon
+                                {
+                                    Glyph = "\uE71E",
+                                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left
+                                },
+                                new TextBlock
+                                {
+                                    Margin = new Thickness(30,0,0,0),
+                                    Text = "Shell_Notify_AboutErrors".GetLocalized(),
+                                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center
+                                }
+                         }
+                        }
+                    };
+                    var but2 = new Button
+                    {
+                        Tag = notify1.Msg.Replace("DELETEUNAVAILABLE", ""),
+                        CornerRadius = new CornerRadius(15),
+                        Margin = new Thickness(10, 0, 0, 0),
+                        Content = new Grid
+                        {
+                            Children =
+                            {
+                                new FontIcon
+                                {
+                                    Glyph = "\uE71C",
+                                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left
+                                },
+                                new TextBlock
+                                {
+                                    Margin = new Thickness(30,0,0,0),
+                                    Text = "Shell_Notify_DisableErrors".GetLocalized(),
+                                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center
+                                }
+                        }
+                        }
+                    };
+                    but1.Click += (s, a) =>
+                    {
+                        Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/wiki/FAQ#error-handling") { UseShellExecute = true });
+                    };
+                    but2.Click += async (s, a) =>
+                    {
+                        but2.IsEnabled = false;
+                        var navigationService = App.GetService<INavigationService>();
+                        if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); }
+                        MandarinAddNotification("Shell_Notify_TaskCompleting".GetLocalized(),
+                            "Shell_Notify_TaskWait".GetLocalized(),
+                            InfoBarSeverity.Informational,
+                            true,
+                            new Grid
+                            {
+                                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+                                VerticalAlignment = VerticalAlignment.Top,
+                                Children =
+                                {
+                                    new ProgressRing
+                                    {
+                                        IsActive = true
+                                    }
+                                }
+                            });
+                        var string1 = but2.Tag.ToString(); // some content
+                        var stringFrom = string1?.Split('\"');
+                        if (stringFrom != null)
+                        {
+                            ProfileLoad();
+                            var commandActions = new Dictionary<string, Action>
+                            {
+                                { "Param_SMU_Func_Text/Text".GetLocalized(), () => profile[config.Preset].smuFunctionsEnabl = false },
+                                { "Param_CPU_c2/Text".GetLocalized(), () => profile[config.Preset].cpu2 = false },
+                                { "Param_VRM_v2/Text".GetLocalized(), () => profile[config.Preset].vrm2 = false },
+                                { "Param_VRM_v1/Text".GetLocalized(), () => profile[config.Preset].vrm1 = false },
+                                { "Param_CPU_c1/Text".GetLocalized(), () => profile[config.Preset].cpu1 = false },
+                                { "Param_ADV_a15/Text".GetLocalized(), () => profile[config.Preset].advncd15 = false },
+                                { "Param_ADV_a11/Text".GetLocalized(), () => profile[config.Preset].advncd11 = false },
+                                { "Param_ADV_a12/Text".GetLocalized(), () => profile[config.Preset].advncd12 = false },
+                                { "Param_CO_O1/Text".GetLocalized(), () => profile[config.Preset].coall = false },
+                                { "Param_CO_O2/Text".GetLocalized(), () => profile[config.Preset].cogfx = false },
+                                { "Param_CCD1_CO_Section/Text".GetLocalized(), () => profile[config.Preset].coprefmode = 0 },
+                                { "Param_ADV_a14_E/Content".GetLocalized(), () => profile[config.Preset].advncd14 = false },
+                                { "Param_CPU_c5/Text".GetLocalized(), () => profile[config.Preset].cpu5 = false },
+                                { "Param_CPU_c3/Text".GetLocalized(), () => profile[config.Preset].cpu3 = false },
+                                { "Param_CPU_c4/Text".GetLocalized(), () => profile[config.Preset].cpu4 = false },
+                                { "Param_CPU_c6/Text".GetLocalized(), () => profile[config.Preset].cpu6 = false },
+                                { "Param_CPU_c7/Text".GetLocalized(), () => profile[config.Preset].cpu7 = false },
+                                { "Param_ADV_a6/Text".GetLocalized(), () => profile[config.Preset].advncd6 = false },
+                                { "Param_VRM_v4/Text".GetLocalized(), () => profile[config.Preset].vrm4 = false },
+                                { "Param_VRM_v3/Text".GetLocalized(), () => profile[config.Preset].vrm3 = false },
+                                { "Param_ADV_a2/Text".GetLocalized(), () => profile[config.Preset].advncd2 = false },
+                                { "Param_ADV_a1/Text".GetLocalized(), () => profile[config.Preset].advncd1 = false },
+                                { "Param_ADV_a3/Text".GetLocalized(), () => profile[config.Preset].advncd3 = false },
+                                { "Param_VRM_v7/Text".GetLocalized(), () => profile[config.Preset].vrm7 = false },
+                                { "Param_ADV_a4/Text".GetLocalized(), () => profile[config.Preset].advncd4 = false },
+                                { "Param_ADV_a5/Text".GetLocalized(), () => profile[config.Preset].advncd5 = false },
+                                { "Param_ADV_a10/Text".GetLocalized(), () => profile[config.Preset].advncd10 = false },
+                                { "Param_ADV_a13_E/Content".GetLocalized(), () => profile[config.Preset].advncd13 = false },
+                                { "Param_ADV_a13_U/Content".GetLocalized(), () => profile[config.Preset].advncd13 = false },
+                                { "Param_ADV_a8/Text".GetLocalized(), () => profile[config.Preset].advncd8 = false },
+                                { "Param_ADV_a7/Text".GetLocalized(), () => profile[config.Preset].advncd7 = false },
+                                { "Param_VRM_v5/Text".GetLocalized(), () => profile[config.Preset].vrm5 = false },
+                                { "Param_VRM_v6/Text".GetLocalized(), () => profile[config.Preset].vrm6 = false },
+                                { "Param_ADV_a9/Text".GetLocalized(), () => profile[config.Preset].advncd9 = false },
+                                { "Param_GPU_g12/Text".GetLocalized(), () => profile[config.Preset].gpu12 = false },
+                                { "Param_GPU_g11/Text".GetLocalized(), () => profile[config.Preset].gpu11 = false },
+                                { "Param_GPU_g10/Text".GetLocalized(), () => profile[config.Preset].gpu10 = false },
+                                { "Param_GPU_g9/Text".GetLocalized(), () => profile[config.Preset].gpu9 = false },
+                                { "Param_GPU_g2/Text".GetLocalized(), () => profile[config.Preset].gpu2 = false },
+                                { "Param_GPU_g1/Text".GetLocalized(), () => profile[config.Preset].gpu1 = false },
+                                { "Param_GPU_g4/Text".GetLocalized(), () => profile[config.Preset].gpu4 = false },
+                                { "Param_GPU_g3/Text".GetLocalized(), () => profile[config.Preset].gpu3 = false },
+                                { "Param_GPU_g6/Text".GetLocalized(), () => profile[config.Preset].gpu6 = false },
+                                { "Param_GPU_g5/Text".GetLocalized(), () => profile[config.Preset].gpu5 = false },
+                                { "Param_GPU_g8/Text".GetLocalized(), () => profile[config.Preset].gpu8 = false },
+                                { "Param_GPU_g7/Text".GetLocalized(), () => profile[config.Preset].gpu7 = false },
+                                { "Param_VRM_v8/Text".GetLocalized(), () => profile[config.Preset].vrm8 = false },
+                                { "Param_GPU_g13/Text".GetLocalized(), () => profile[config.Preset].vrm9 = false },
+                                { "Param_GPU_g14/Text".GetLocalized(), () => profile[config.Preset].vrm9 = false },
+                                { "Param_GPU_g15/Text".GetLocalized(), () => profile[config.Preset].gpu15 = false },
+                                { "Param_GPU_g16/Text".GetLocalized(), () => profile[config.Preset].gpu16 = false },
+                            };
+                            var loggingList = string.Empty;
+                            var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\FixedFailingCommandsLog.txt";
+                            var sw = new StreamWriter(logFilePath, true);
+                            if (!File.Exists(logFilePath)) { sw.WriteLine("//------Fixed Failing Commands Log------\\\\"); }
+                            foreach (var currPos in stringFrom)
+                            {
+                                if (commandActions.TryGetValue(currPos, out var value))
+                                {
+                                    value.Invoke(); // Выполнение действия
+                                    sw.WriteLine("\n" + currPos);
+                                    loggingList += (loggingList == string.Empty ? "" : "\n") + currPos;
+                                }
+                            }
+                            ProfileSave();
+                            ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                            await Task.Delay(2000);
+                            but2.IsEnabled = true;
+                            sw.WriteLine("//------OK------\\\\");
+                            sw.Close();
+                            if (navigationService.Frame!.GetPageViewModel() is not ПараметрыViewModel) { navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true); }
+                            var butLogs = new Button
+                            {
+                                CornerRadius = new CornerRadius(15),
+                                Content = new Grid
+                                {
+                                    Children =
+                                    {
+                                        new FontIcon
+                                        {
+                                            Glyph = "\uE82D",
+                                            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left
+                                        },
+                                        new TextBlock
+                                        {
+                                            Margin = new Thickness(30,0,0,0),
+                                            Text = "Shell_Notify_ErrorsShowLog".GetLocalized(),
+                                            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center
+                                        }
+                                    }
+                                }
+                            };
+                            var butSavedLogs = new Button
+                            {
+                                Margin = new Thickness(0,20,0,0),
+                                CornerRadius = new CornerRadius(15),
+                                Content = new Grid
+                                {
+                                    Children =
+                                    {
+                                        new FontIcon
+                                        {
+                                            Glyph = "\uE838",
+                                            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left
+                                        },
+                                        new TextBlock
+                                        {
+                                            Margin = new Thickness(30,0,0,0),
+                                            Text = "Shell_Notify_ErrorsShowLogExplorer".GetLocalized(),
+                                            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center
+                                        }
+                                    }
+                                }
+                            };
+                            butSavedLogs.Click += (s, a) =>
+                            {
+                                if (System.IO.File.Exists(logFilePath))
+                                {
+                                    var filePath = System.IO.Path.GetFullPath(logFilePath);
+                                    System.Diagnostics.Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
+                                }
+                            };
+                            butLogs.Click += (s, a) =>
+                            {
+                                App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+                                {
+                                    var flyout1 = new Flyout
+                                    {
+                                        Content = new StackPanel
+                                        {
+                                            Orientation = Microsoft.UI.Xaml.Controls.Orientation.Vertical,
+                                            Children =
+                                            {
+                                                new ScrollViewer
+                                                {
+                                                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch,
+                                                    VerticalAlignment = VerticalAlignment.Stretch,
+                                                    Content = new StackPanel
+                                                    {
+                                                        Orientation = Microsoft.UI.Xaml.Controls.Orientation.Vertical,
+                                                        Children =
+                                                        {
+                                                            new TextBlock
+                                                            {
+                                                                Text = "Shell_Notify_ErrorLog".GetLocalized(),
+                                                                FontWeight = new Windows.UI.Text.FontWeight(600),
+                                                                FontSize = 21
+                                                            },
+                                                            new TextBlock
+                                                            {
+                                                                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch,
+                                                                Text = loggingList
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                butSavedLogs
+                                            }
+                                        }
+                                    };
+                                    flyout1.ShowAt(butLogs);
+                                });
+                            }; 
+                            MandarinAddNotification("Shell_Notify_ErrorsDisabled".GetLocalized(),
+                                "Shell_Notify_ErrorsDisabledDesc".GetLocalized(),
+                                InfoBarSeverity.Success,
+                                true,
+                                new Grid
+                                {
+                                    Children = {
+                                        new StackPanel
+                                        {
+                                            Orientation = Microsoft.UI.Xaml.Controls.Orientation.Horizontal,
+                                            Children =
+                                            {
+                                                butLogs//,
+                                                //but2
+                                            }
+                                        }
+                                    }
+                                });
+                            return; //Удалить и не показывать
+                        }
+
+                    };
+                    Subcontent = new Grid
+                    {
+                        Children = {
+                        new StackPanel
+                        {
+                            Orientation = Microsoft.UI.Xaml.Controls.Orientation.Horizontal,
+                            Children =
+                            {
+                                but1,
+                                but2
+                            }
+                        }
+                        }
+                    };
+                    notify1.Msg = notify1.Msg.Replace("DELETEUNAVAILABLE", "");
+                }
+                MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.isClosable, Subcontent);
                 if (notify1.Title.Contains("SaveSuccessTitle".GetLocalized()) || notify1.Title.Contains("DeleteSuccessTitle".GetLocalized()) || notify1.Title.Contains("Edit_TargetTitle".GetLocalized())) { contains = true; }
                 if (SettingsViewModel.VersionId != 5 && index > 8) //Если 9 уведомлений - очистить для оптимизации производительности
                 {
@@ -1265,7 +1544,7 @@ public sealed partial class ShellPage : Page
                                 FontSize = 40
                             }
                         }
-                    }; 
+                    };
                     ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Disabled", null, iconGrid);
                     var navigationService = App.GetService<INavigationService>();
                     navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
@@ -1286,7 +1565,7 @@ public sealed partial class ShellPage : Page
                                 FontSize = 40
                             }
                         }
-                    }; 
+                    };
                     ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Enabled", null, iconGrid);
                     config.RTSSMetricsEnabled = true;
                     ConfigSave();
@@ -1297,7 +1576,7 @@ public sealed partial class ShellPage : Page
             }
         }
         return CallNextHookEx(_hookID, nCode, wParam, lParam); // Передаем нажатие в следующее приложение
-    } 
+    }
 
     #region Hook DLL Imports
     //Импорт необходимых функций из WinApi

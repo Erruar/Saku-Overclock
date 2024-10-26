@@ -211,13 +211,13 @@
   <data name="Cooler_Service.Text" xml:space="preserve">
     <value>Fan control service status:</value>
   </data>
-  <data name="Cooler_Service_Disabled.Text" xml:space="preserve">
+  <data name="Cooler_Service_Disabled.Content" xml:space="preserve">
     <value>Disabled</value>
   </data>
-  <data name="Cooler_Service_Enabled.Text" xml:space="preserve">
+  <data name="Cooler_Service_Enabled.Content" xml:space="preserve">
     <value>Enabled</value>
   </data>
-  <data name="Cooler_Service_Read.Text" xml:space="preserve">
+  <data name="Cooler_Service_Read.Content" xml:space="preserve">
     <value>Read only</value>
   </data>
   <data name="Cooler_Temp.Text" xml:space="preserve">
@@ -1171,10 +1171,10 @@ Please note that it may take up to 2 minutes to launch!</value>
     <value>IO Chip can't keep parameters on or IO driver isn't loaded properly. Reboot and disable Secure Boot in BIOS or set another command</value>
   </data>
   <data name="SMUErrorNoCMD" xml:space="preserve">
-    <value>This command isn't exist. It doesn't means that there is no command, but it means that this command is locked by SMU feature or BIOS protocols are locking this command</value>
+    <value>SMU rejected the command because it does not exist in your SMU, maybe some condition is not met or it is blocked in the BIOS</value>
   </data>
   <data name="SMUErrorRejected" xml:space="preserve">
-    <value>This command is locked on your SMU by SMU or BIOS limitations. Usually no way to unlock those commands</value>
+    <value>SMU rejected the command because it locked by another SMU command or some condition. Maybe you need to apply different SMU command first</value>
   </data>
   <data name="SMUErrorText" xml:space="preserve">
     <value>Can't set SMU command!</value>
@@ -1333,7 +1333,7 @@ Changing P0 state have MORE chances to crash your system</value>
     <value>Applied with warnings!</value>
   </data>
   <data name="Apply_Warn_Desc" xml:space="preserve">
-    <value>You have applied your settings without those:</value>
+    <value>You have applied your settings but:</value>
   </data>
   <data name="Param_CPU_c7.Text" xml:space="preserve">
     <value>Maximum cHTC temp (C)</value>
@@ -1437,10 +1437,10 @@ IT IS NOT RECOMMENDED TO TOUCH IT</value>
     <value>Max CPU frequency (MHz)</value>
   </data>
   <data name="Param_GPU_g13.Text" xml:space="preserve">
-    <value>Min iGPU VRAM Usage (MB)</value>
+    <value>iGPU VRAM Low-DWORD address</value>
   </data>
   <data name="Param_GPU_g14.Text" xml:space="preserve">
-    <value>Max iGPU VRAM Usage (MB)</value>
+    <value>iGPU VRAM Hi-DWORD address</value>
   </data>
   <data name="Param_GPU_g15.Text" xml:space="preserve">
     <value>Fix dGPU freq (State)</value>
@@ -2602,5 +2602,53 @@ UPDATE</value>
   </data>
   <data name="Param_SMU_Command_Status" xml:space="preserve">
     <value> applied with status </value>
+  </data>
+  <data name="Param_SMU_Command_Unavailable" xml:space="preserve">
+    <value>unavailable on your platform</value>
+  </data>
+  <data name="SMUErrorBusyDesc" xml:space="preserve">
+    <value>Processor is busy. Try again later</value>
+  </data>
+  <data name="SMUErrorFailedDesc" xml:space="preserve">
+    <value>Processor was unable to execute the command. Try again</value>
+  </data>
+  <data name="SMUErrorPlatformDesc" xml:space="preserve">
+    <value>Command is blocked on this platform. Execution is not possible</value>
+  </data>
+  <data name="SMUErrorPrereqDesc" xml:space="preserve">
+    <value>Command is blocked by a condition. Execute the condition and try again</value>
+  </data>
+  <data name="SMUErrorStatusDesc" xml:space="preserve">
+    <value>Execution aborted. Try again</value>
+  </data>
+  <data name="SMUErrorUnknownDesc" xml:space="preserve">
+    <value>Unknown command. Check compatibility</value>
+  </data>
+  <data name="Shell_Notify_AboutErrors" xml:space="preserve">
+    <value>About errors</value>
+  </data>
+  <data name="Shell_Notify_DisableErrors" xml:space="preserve">
+    <value>Disable faulty parameters</value>
+  </data>
+  <data name="Shell_Notify_ErrorLog" xml:space="preserve">
+    <value>Log of changed settings</value>
+  </data>
+  <data name="Shell_Notify_ErrorsDisabled" xml:space="preserve">
+    <value>Faulty settings are disabled</value>
+  </data>
+  <data name="Shell_Notify_ErrorsDisabledDesc" xml:space="preserve">
+    <value>We have successfully disabled problematic settings among your overclocking parameters</value>
+  </data>
+  <data name="Shell_Notify_ErrorsShowLog" xml:space="preserve">
+    <value>Show logs</value>
+  </data>
+  <data name="Shell_Notify_ErrorsShowLogExplorer" xml:space="preserve">
+    <value>Open in explorer</value>
+  </data>
+  <data name="Shell_Notify_TaskCompleting" xml:space="preserve">
+    <value>Task is executing</value>
+  </data>
+  <data name="Shell_Notify_TaskWait" xml:space="preserve">
+    <value>Please wait until we apply all the changes in effect</value>
   </data>
 </root>

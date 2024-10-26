@@ -12,43 +12,43 @@
 		<Grid>
 			<!-- Начало -->
 			<TextBlock x:Uid="Cooler_Name" Text="Скорости кулера" FontSize="30" Margin="0,-65,0,0"></TextBlock>
-            <ScrollViewer VerticalAlignment="Top" Padding="0,0,0,-20" Margin="0,0,-22,64">
+            <StackPanel Orientation="Horizontal" Margin="0,-56,0,0" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <TextBlock x:Uid="Cooler_Config" Text="Сохранённые конфиги:" FontSize="20"></TextBlock>
+                <Grid Margin="10,0,0,0">
+                    <ComboBox CornerRadius="4" Style="{ThemeResource AcrylicComboBoxStyle}" x:Name="Selfan" Height="30" Width="200" SelectionChanged="Selfan_SelectionChanged"/>
+                    <Border CornerRadius="4" HorizontalAlignment="Left" VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="202" Height="32" />
+                </Grid>
+            </StackPanel>
+            <ScrollViewer VerticalAlignment="Top" Padding="0,0,0,-20" Margin="0,-17,-22,64">
                 <Grid Margin="0,0,0,0">
-                    <TextBlock x:Uid="Cooler_Config" Text="Сохранённые конфиги:" FontSize="20" Margin="0,0,0,0"></TextBlock>
-                    <Border HorizontalAlignment="Left" VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="202" Height="32" Margin="229,0,0,0" CornerRadius="15"/>
-                    <ComboBox CornerRadius="15" Style="{ThemeResource AcrylicComboBoxStyle}" x:Name="Selfan" Height="30" Width="200" Margin="230,0,0,0" SelectionChanged="Selfan_SelectionChanged"/>
-                    <Grid> 
-                        <TextBlock x:Uid="Cooler_Service" Margin="0,40,0,0" Text="Сервис контроля скорости:" FontSize="16"/>
-                        <RadioButton x:Name="Disabl" Checked="Disabl_Checked"  VerticalAlignment="Top" Margin="0,70,0,0"/>
-                        <RadioButton x:Name="Readon" Checked="Readon_Checked"  VerticalAlignment="Top" Margin="0,100,0,0"/>
-                        <RadioButton x:Name="Enabl" Checked="Enabl_Checked" VerticalAlignment="Top" Margin="0,130,0,0"/>
-                        <TextBlock FontSize="13" x:Uid="Cooler_Service_Disabled" Text="Выключен" VerticalAlignment="Top" Margin="30,76,0,0"/>
-                        <TextBlock FontSize="13" x:Uid="Cooler_Service_Read" Text="Только для чтения" VerticalAlignment="Top" Margin="30,106,0,0"/>
-                        <TextBlock FontSize="13" x:Uid="Cooler_Service_Enabled" Text="Включен" VerticalAlignment="Top" Margin="30,136,0,0"/>
-                    </Grid>
-                    <Grid>
-                        <TextBlock FontSize="15" VerticalAlignment="Top" Margin="0,170,0,0" x:Uid="Cooler_Temp" Text="Текущая температура: 59 C"/>
-                        <TextBlock FontSize="15" FontFamily="Consolas" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="195,172,0,0" x:Name="Temp" Text="Undefined"/>
-
-                    </Grid>
-
-                    <Grid Margin="0,195,0,0">
-                        <Grid>
-                            <TextBlock VerticalAlignment="Top" x:Name="Fan1Val" Text="Auto" Margin="140,30,0,0"/>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock x:Uid="Cooler_Service" Margin="0,0,0,0" Text="Сервис контроля скорости:" FontSize="19"/>
+                        <RadioButton x:Name="Disabl" Checked="Disabl_Checked" x:Uid="Cooler_Service_Disabled" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                        <RadioButton x:Name="Readon" Checked="Readon_Checked" x:Uid="Cooler_Service_Read" VerticalAlignment="Top" Margin="0,3,0,0"/>
+                        <RadioButton x:Name="Enabl" Checked="Enabl_Checked" x:Uid="Cooler_Service_Enabled" VerticalAlignment="Top" Margin="0,3,0,0"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontSize="15" VerticalAlignment="Top" Margin="0,5,0,0" x:Uid="Cooler_Temp" Text="Текущая температура: 59 C"/>
+                            <TextBlock FontSize="15" FontFamily="Consolas" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,7,0,0" x:Name="Temp" Text="Undefined"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical"  Margin="0,10,0,0">
                             <TextBlock Text="Fan #1" VerticalAlignment="Top"/>
-                            <Slider x:Uid="Cooler_Fan" x:Name="Fan1" VerticalAlignment="Top" ValueChanged="Fan1_ValueChanged" HorizontalAlignment="Left" Width="200" Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
-                            <TextBlock x:Uid="Cooler_Current_Fan" VerticalAlignment="Top" x:Name="Fan1Cur" Text="Текущая скорость: 25 %" Margin="0,90,0,0"/>
-                            <ProgressBar x:Name="Fan1Pr" Value="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Margin="0,120,0,0"></ProgressBar>
-                        </Grid>
-                        <Grid Margin="0,170,0,0">
-                            <TextBlock VerticalAlignment="Top" x:Name="Fan2Val" Text="Auto" Margin="140,30,0,0"/>
+                            <StackPanel Orientation="Vertical" Width="200" HorizontalAlignment="Left">
+                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Right" x:Name="Fan1Val" Margin="0,6,1,-50" Text="Auto"/>
+                                <Slider x:Uid="Cooler_Fan" x:Name="Fan1" VerticalAlignment="Top" ValueChanged="Fan1_ValueChanged" HorizontalAlignment="Left" Width="200" Margin="0,5,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
+                            </StackPanel>
+                            <TextBlock x:Uid="Cooler_Current_Fan" VerticalAlignment="Top" x:Name="Fan1Cur" Text="Текущая скорость: 25 %" Margin="0,1,0,0"/>
+                            <ProgressBar x:Name="Fan1Pr" Value="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Margin="0,10,0,0"></ProgressBar>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Margin="0,15,0,0">
                             <TextBlock Text="Fan #2" VerticalAlignment="Top"/>
-                            <Slider  x:Uid="Cooler_Fan" x:Name="Fan2" ValueChanged="Fan2_ValueChanged" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,30,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
-                            <TextBlock x:Uid="Cooler_Current_Fan" x:Name="Fan2Cur" Text="Текущая скорость: 25 %" VerticalAlignment="Top" Margin="0,90,0,0"/>
-                            <ProgressBar x:Name="Fan2Pr" Value="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Margin="0,120,0,0"></ProgressBar>
-                        </Grid>
-                    </Grid>
-
+                            <StackPanel Orientation="Vertical" Width="200" HorizontalAlignment="Left">
+                                <TextBlock VerticalAlignment="Top" x:Name="Fan2Val" Text="Auto" HorizontalAlignment="Right" Margin="0,6,1,-50"/>
+                                <Slider  x:Uid="Cooler_Fan" x:Name="Fan2" ValueChanged="Fan2_ValueChanged" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,5,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
+                            </StackPanel>
+                            <TextBlock x:Uid="Cooler_Current_Fan" x:Name="Fan2Cur" Text="Текущая скорость: 25 %" VerticalAlignment="Top" Margin="0,1,0,0"/>
+                            <ProgressBar x:Name="Fan2Pr" Value="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Margin="0,10,0,0"></ProgressBar>
+                        </StackPanel>
+                    </StackPanel>
                 </Grid>
             </ScrollViewer>
             <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,30" Checked="Fanauto_Checked" Unchecked="Fanauto_Checked" x:Name="Fanauto" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-11,15" x:Uid="Cooler_Autoupdate">

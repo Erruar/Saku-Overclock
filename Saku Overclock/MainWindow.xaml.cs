@@ -3,12 +3,13 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.UI.Xaml;
 using Newtonsoft.Json;
+using Saku_Overclock.Activation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
-using Windows.UI.ViewManagement; 
+using Windows.UI.ViewManagement;
 
 namespace Saku_Overclock;
 
@@ -16,7 +17,7 @@ public sealed partial class MainWindow : WindowEx
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
     private readonly UISettings settings;
-    private Config config = new();  
+    private Config config = new();
     public enum DWMWINDOWATTRIBUTE
     {
         DWMWA_WINDOW_CORNER_PREFERENCE = 33
@@ -28,7 +29,7 @@ public sealed partial class MainWindow : WindowEx
         DWMWCP_ROUND = 2,
         DWMWCP_ROUNDSMALL = 3
     }
-    private static NotifyIcon ni = new(); 
+    private static NotifyIcon ni = new();
     [LibraryImport("dwmapi.dll", SetLastError = true)]
     private static partial long DwmSetWindowAttribute(IntPtr hwnd,
                                                      DWMWINDOWATTRIBUTE attribute,
@@ -58,8 +59,8 @@ public sealed partial class MainWindow : WindowEx
                         this.Show();
                         WindowState = WindowState.Normal;
                     }
-            !; 
-            ni.ContextMenuStrip = new ContextMenuStrip() { Size = new System.Drawing.Size(300,300) }; //Трей меню
+            !;
+            ni.ContextMenuStrip = new ContextMenuStrip() { Size = new System.Drawing.Size(300, 300) }; //Трей меню
             var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE; //Закруглить трей меню на Windows 11
             var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND; //Закруглить трей меню на Windows 11
             DwmSetWindowAttribute(ni.ContextMenuStrip.Handle, attribute, ref preference, sizeof(uint)); //Закруглить трей меню на Windows 11 
@@ -76,6 +77,10 @@ public sealed partial class MainWindow : WindowEx
             ni.ContextMenuStrip.ForeColor = System.Drawing.Color.Purple;
             ni.ContextMenuStrip.BackColor = System.Drawing.Color.White;
             ni.Text = "Saku Overclock©";
+
+            var processId = Environment.ProcessId;
+            // Разрешаем второй инстанции установить фокус
+            ActivationInvokeHandler.AllowSetForegroundWindow(processId);
         }
         catch
         {
@@ -85,7 +90,7 @@ public sealed partial class MainWindow : WindowEx
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event   
         Tray_Start();
-        Closed += Dispose_Tray;
+        Closed += Dispose_Tray; 
     }
     #region Colours 
     // this handles updating the caption button colors correctly when indows system theme is changed
@@ -97,15 +102,14 @@ public sealed partial class MainWindow : WindowEx
     }
     #endregion
     #region Tray utils 
-
     public static void Remove_ContextMenu_Tray()
-    { 
+    {
         ni.ContextMenuStrip?.Items.Clear();
         ni.Text = "Saku Overclock©\nContext menu is disabled";
     }
     private void Dispose_Tray(object sender, WindowEventArgs args)
-    { 
-        ni.Dispose();  
+    {
+        ni.Dispose();
         var workers = Process.GetProcessesByName("Saku Overclock");
         foreach (var worker in workers)
         {
@@ -119,16 +123,16 @@ public sealed partial class MainWindow : WindowEx
         ConfigLoad();
         try
         {
-            if (config.ReapplyLatestSettingsOnAppLaunch == true) 
-            { 
+            if (config.ReapplyLatestSettingsOnAppLaunch == true)
+            {
                 var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
                 /*cpu.Play_Invernate_QuickSMU(1);*/
                 var profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
 
-                if (profile != null && profile[config.Preset] != null && profile[config.Preset].autoPstate == true && profile[config.Preset].enablePstateEditor == true) 
-                { 
-                    ПараметрыPage.WritePstates(); 
-                } 
+                if (profile != null && profile[config.Preset] != null && profile[config.Preset].autoPstate == true && profile[config.Preset].enablePstateEditor == true)
+                {
+                    ПараметрыPage.WritePstates();
+                }
             }
             if (config.AutostartType == 1 || config.AutostartType == 3) { await Task.Delay(700); this.Hide(); }
             // Генерация строки с информацией о релизах
@@ -193,15 +197,15 @@ public sealed partial class MainWindow : WindowEx
             catch
             {
                 config = new Config();
-            } 
+            }
             Apply(config.RyzenADJline, saveinfo, config.ReapplyOverclock, config.ReapplyOverclockTimer);
         }
 
         public static async void Apply(string RyzenADJline, bool saveinfo, bool ReapplyOverclock, double ReapplyOverclockTimer)
         {
-            try { sendSMUCommand = App.GetService<SendSMUCommand>(); } catch { return; } 
+            try { sendSMUCommand = App.GetService<SendSMUCommand>(); } catch { return; }
             if (ReapplyOverclock == true)
-            { 
+            {
                 try
                 {
                     timer.Interval = TimeSpan.FromMilliseconds(ReapplyOverclockTimer * 1000);
@@ -240,7 +244,7 @@ public sealed partial class MainWindow : WindowEx
             try
             {
                 await Task.Run(() =>
-                { 
+                {
                     sendSMUCommand?.Translate(ADJLine, saveinfo);
                 });
             }
@@ -248,7 +252,7 @@ public sealed partial class MainWindow : WindowEx
             {
 
             }
-        } 
+        }
     }
     #endregion
     #region JSON Containers voids
@@ -288,7 +292,7 @@ public sealed partial class MainWindow : WindowEx
                     Close();
                 }
             }
-        } 
+        }
     }
 
     public void ConfigSave()
@@ -311,6 +315,6 @@ public sealed partial class MainWindow : WindowEx
         {
             JsonRepair('c');
         }
-    } 
+    }
     #endregion
 }

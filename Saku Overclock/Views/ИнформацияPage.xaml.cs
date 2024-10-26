@@ -1366,7 +1366,9 @@ public sealed partial class ИнформацияPage : Page
                 }
             }
 
-            rtss_line = rtssset.AdvancedCodeEditor.Split("$cpu_clock_cycle$")[0].Replace("$SelectedProfile$", ShellPage.SelectedProfile.Replace('а', 'a').Replace('м', 'm').Replace('и', 'i').Replace('н', 'n').Replace('М', 'M').Replace('у', 'u').Replace('Э', 'E').Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c').Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' '))
+            if (rtssset.AdvancedCodeEditor.Contains("$cpu_clock_cycle$") && rtssset.AdvancedCodeEditor.Contains("$cpu_clock_cycle_end$"))
+            {
+                rtss_line = rtssset.AdvancedCodeEditor.Split("$cpu_clock_cycle$")[0].Replace("$SelectedProfile$", ShellPage.SelectedProfile.Replace('а', 'a').Replace('м', 'm').Replace('и', 'i').Replace('н', 'n').Replace('М', 'M').Replace('у', 'u').Replace('Э', 'E').Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c').Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' '))
                 .Replace("$stapm_value$", Math.Round(RyzenADJWrapper.get_stapm_value(ryzenAccess), 3).ToString())
                 .Replace("$stapm_limit$", Math.Round(RyzenADJWrapper.get_stapm_limit(ryzenAccess), 3).ToString())
                 .Replace("$fast_value$", Math.Round(RyzenADJWrapper.get_fast_value(ryzenAccess), 3).ToString())
@@ -1401,6 +1403,28 @@ public sealed partial class ИнформацияPage : Page
                 .Replace("$gfx_temp$", Math.Round(RyzenADJWrapper.get_gfx_temp(ryzenAccess), 3).ToString())
                 .Replace("$average_cpu_clock$", Math.Round(avgCoreCLK / numberOfCores, 3).ToString())
                 .Replace("$average_cpu_voltage$", Math.Round(avgCoreVolt / numberOfCores, 3).ToString());
+            } 
+            else
+            {
+                rtss_line = rtssset.AdvancedCodeEditor.Replace("$SelectedProfile$", ShellPage.SelectedProfile.Replace('а', 'a').Replace('м', 'm').Replace('и', 'i').Replace('н', 'n').Replace('М', 'M').Replace('у', 'u').Replace('Э', 'E').Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c').Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' '))
+                .Replace("$stapm_value$", Math.Round(RyzenADJWrapper.get_stapm_value(ryzenAccess), 3).ToString())
+                .Replace("$stapm_limit$", Math.Round(RyzenADJWrapper.get_stapm_limit(ryzenAccess), 3).ToString())
+                .Replace("$fast_value$", Math.Round(RyzenADJWrapper.get_fast_value(ryzenAccess), 3).ToString())
+                .Replace("$fast_limit$", Math.Round(RyzenADJWrapper.get_fast_limit(ryzenAccess), 3).ToString())
+                .Replace("$slow_value$", Math.Round(RyzenADJWrapper.get_slow_value(ryzenAccess), 3).ToString())
+                .Replace("$slow_limit$", Math.Round(RyzenADJWrapper.get_slow_limit(ryzenAccess), 3).ToString())
+                .Replace("$vrmedc_value$", Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3).ToString())
+                .Replace("$vrmedc_max$", Math.Round(RyzenADJWrapper.get_vrmmax_current(ryzenAccess), 3).ToString())
+                .Replace("$cpu_temp_value$", Math.Round(RyzenADJWrapper.get_tctl_temp_value(ryzenAccess), 3).ToString())
+                .Replace("$cpu_temp_max$", Math.Round(RyzenADJWrapper.get_tctl_temp(ryzenAccess), 3).ToString())
+                .Replace("$cpu_usage$", Math.Round(RyzenADJWrapper.get_cclk_busy_value(ryzenAccess), 3).ToString())
+                .Replace("$gfx_clock$", Math.Round(RyzenADJWrapper.get_gfx_clk(ryzenAccess), 3).ToString())
+                .Replace("$gfx_volt$", Math.Round(RyzenADJWrapper.get_gfx_volt(ryzenAccess), 3).ToString())
+                .Replace("$gfx_temp$", Math.Round(RyzenADJWrapper.get_gfx_temp(ryzenAccess), 3).ToString())
+                .Replace("$average_cpu_clock$", Math.Round(avgCoreCLK / numberOfCores, 3).ToString())
+                .Replace("$average_cpu_voltage$", Math.Round(avgCoreVolt / numberOfCores, 3).ToString());
+            }
+            
 
 
             if (niicons_Min_MaxValues[0].Min == 0.0f) { niicons_Min_MaxValues[0].Min = RyzenADJWrapper.get_stapm_value(ryzenAccess); }
