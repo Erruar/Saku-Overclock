@@ -11,7 +11,7 @@ public static class RyzenADJWrapper
     private const string DllName = "libryzenadj.dll";
     private static bool IsDllRunning = false;
     private static bool IsTableRunning = false;
-    private static IntPtr endPtR = -1;
+    private static IntPtr runningLibRyzenAdjIntPtr = -1;
     public enum RyzenFamily
     {
         WAIT_FOR_LOAD = -2,
@@ -34,12 +34,12 @@ public static class RyzenADJWrapper
     {
         if (!IsDllRunning)
         {
-            var endPtr = init_ryzenadj();
+            var currentIntPtr = init_ryzenadj();
             IsDllRunning = true;
-            endPtR = endPtr;
-            return endPtr;
+            runningLibRyzenAdjIntPtr = currentIntPtr;
+            return currentIntPtr;
         }
-        return endPtR;
+        return runningLibRyzenAdjIntPtr;
     }
     public static IntPtr Init_Table(IntPtr ryzenAccess)
     {

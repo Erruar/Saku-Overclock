@@ -2726,4 +2726,18 @@ Overclock будут проигнорированы,
   <data name="Shell_Notify_TaskWait" xml:space="preserve">
     <value>Пожалуйста подождите пока мы применим все изменения в силу</value>
   </data>
+  <data name="Cooler_AsusMode.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Asus режим
+Переключение в режим управления 
+кулерами Asus. Только для ноутбуков 
+Asus. Может не поддерживаться на 
+вашем устройстве</value>
+  </data>
+  <data name="Cooler_NbfcMode.ToolTipService.ToolTip" xml:space="preserve">
+    <value>NBFC режим
+Переключение в режим NBFC. 
+Управление кулерами большинства 
+ноутбуков с возможностью настройки 
+кривой скорости</value>
+  </data>
 </root>

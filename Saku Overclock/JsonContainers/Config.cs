@@ -27,7 +27,7 @@ internal class Config
     public bool PremadeMaxActivated = true; // Готовые пресеты
     // Страница управления кулером
     public string NBFCConfigXMLName; // Имя выбранного файла конфига nbfc
-    public bool NBFCAutoUpdateInformation = true; // Автоматически обновлять информаци о скоростях кулеров
+    public bool NBFCAutoUpdateInformation = true; // Автоматически обновлять информацию о скоростях кулеров
     public bool NBFCServiceStatusDisabled = true; // Флаги использования nbfc на странице управления кулером
     public bool NBFCServiceStatusReadOnly = false; // Флаги использования nbfc на странице управления кулером
     public bool NBFCServiceStatusEnabled = false; // Флаги использования nbfc на странице управления кулером
@@ -37,5 +37,7 @@ internal class Config
     public bool FlagRyzenADJConsoleTemperatureCheckRunning = false; // Флаг для страницы управления кулером,  сейчас происходит действие с консолью при помощи RyzenADJ получаем температуру
     public string NBFCAnswerSpeedFan1; // Ответ nbfc консоли для вывода информации от первого кулера
     public string NBFCAnswerSpeedFan2; // Ответ nbfc консоли для вывода информации от второго кулера
+    public bool CoolerLastSavedAsusMode = false; // Если был выбран режим управления кулерами на ноутбуках Asus - сохранить его и открывать всегда по умолчанию
+    public bool AsusModeAutoUpdateInformation = true; // Автоматически обновлять информацию о скоростях кулеров
 }
 #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.

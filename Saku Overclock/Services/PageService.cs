@@ -20,6 +20,7 @@ public class PageService : IPageService
         Configure<ИнформацияViewModel, ИнформацияPage>();
         Configure<КулерViewModel, КулерPage>();
         Configure<AdvancedКулерViewModel, AdvancedКулерPage>();
+        Configure<AsusКулерViewModel, AsusКулерPage>();
         Configure<SettingsViewModel, SettingsPage>();
         Configure<ОбновлениеViewModel, ОбновлениеPage>();
     }

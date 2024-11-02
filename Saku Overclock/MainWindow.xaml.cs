@@ -77,10 +77,8 @@ public sealed partial class MainWindow : WindowEx
             ni.ContextMenuStrip.ForeColor = System.Drawing.Color.Purple;
             ni.ContextMenuStrip.BackColor = System.Drawing.Color.White;
             ni.Text = "Saku Overclock©";
-
-            var processId = Environment.ProcessId;
             // Разрешаем второй инстанции установить фокус
-            ActivationInvokeHandler.AllowSetForegroundWindow(processId);
+            ActivationInvokeHandler.AllowSetForegroundWindow(Environment.ProcessId);
         }
         catch
         {

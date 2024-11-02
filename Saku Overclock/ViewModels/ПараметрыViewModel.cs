@@ -1,7 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Saku_Overclock.ViewModels;
 

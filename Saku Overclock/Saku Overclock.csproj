@@ -41,6 +41,10 @@
 	<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\AsusCoolerIcons\BalanceSpeed.png" />
+    <Content Remove="Assets\AsusCoolerIcons\CoolerIcon.png" />
+    <Content Remove="Assets\AsusCoolerIcons\QuietSpeed.png" />
+    <Content Remove="Assets\AsusCoolerIcons\TurboSpeed.png" />
     <Content Remove="Assets\discord.png" />
     <Content Remove="Assets\InfoBadge\Saku-Overclock-Github-Issues.png" />
     <Content Remove="Assets\InfoBadge\Saku-Overclock-Github-Readme.png" />
@@ -53,6 +57,10 @@
     <Content Remove="Assets\xml.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Assets\AsusCoolerIcons\BalanceSpeed.png" />
+    <None Remove="Assets\AsusCoolerIcons\CoolerIcon.png" />
+    <None Remove="Assets\AsusCoolerIcons\QuietSpeed.png" />
+    <None Remove="Assets\AsusCoolerIcons\TurboSpeed.png" />
     <None Remove="exit.png" />
     <None Remove="info.bat" />
     <None Remove="info.png" />
@@ -67,12 +75,25 @@
     <None Remove="Styles\CopyButton.xaml" />
     <None Remove="Styles\ToggleButtonCollapseLauncher.xaml" />
     <None Remove="Views\AdvancedКулерPage.xaml" />
+    <None Remove="Views\AsusКулерPage.xaml" />
     <None Remove="Views\PowerWindow.xaml" />
     <None Remove="Views\КулерPage.xaml" />
     <None Remove="Views\ОбновлениеPage.xaml" />
     <None Remove="WindowIcon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Assets\AsusCoolerIcons\BalanceSpeed.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\AsusCoolerIcons\CoolerIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\AsusCoolerIcons\QuietSpeed.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\AsusCoolerIcons\TurboSpeed.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="exit.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -226,6 +247,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Assets\xml.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="AWinIo64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="inpoutx64.dll">
@@ -861,6 +885,9 @@
     <None Update="nbfc\Xceed.Wpf.Toolkit.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\AsusКулерPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="ProfileSwitcher\ProfileSwitcher.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

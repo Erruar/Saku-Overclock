@@ -556,6 +556,50 @@ internal class GetSystemInfo
             throw new InvalidOperationException("Unable to get power status.");
         }
     }
+    public static string? GetOSVersion()
+    {
+        try
+        {
+            var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+            var sCPUSerialNumber = "";
+            foreach (var naming in searcher.Get().Cast<ManagementObject>())
+            {
+                sCPUSerialNumber = naming["Name"].ToString()?.Trim();
+            }
+            var endString = sCPUSerialNumber?.Split("Windows");
+            if (endString != null && endString.Length > 1)
+            {
+                return string.Concat("Windows ", endString[1].AsSpan(0, Math.Min(3, endString[1].Length)));
+            }
+            else 
+            { 
+                return "Windows 10"; 
+            }
+        }
+        catch 
+        {
+            return "Windows 10";
+        }
+    }
+    public static string GetBIOSVersion()
+    {
+        try
+        {
+            var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BIOS");
+            var biosVersion = string.Empty;
+            foreach (var bios in searcher.Get())
+            {
+                biosVersion = bios["SMBIOSBIOSVersion"]?.ToString()?.Trim();
+                break; // Выход из цикла после первого найденного объекта
+            }
+            return string.IsNullOrEmpty(biosVersion) ? "BIOS: Unknown" : $"BIOS: {biosVersion}";
+        }
+        catch
+        {
+            return "BIOS: Unknown";
+        }
+    }
+
     public static string? GetBatteryName()
     {
         var wmi = new ManagementClass("Win32_Battery");

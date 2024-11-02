@@ -40,37 +40,26 @@ public partial class App : Application
         }
 
         return service;
-    }
-
-    [System.Runtime.InteropServices.DllImport("user32.dll")]
-    private static extern bool ShowWindowAsync(System.IntPtr hWnd, int cmdShow); // Показать текущее окно, вместо открытия второго экземпляра программы
-
-    [System.Runtime.InteropServices.DllImport("user32.dll")]
-    static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
-
-    [System.Runtime.InteropServices.DllImport("user32.dll")]
-    private static extern bool ShowWindow(System.IntPtr hWnd, int cmdShow); // Показать текущее окно, вместо открытия второго экземпляра программы
-
-    [System.Runtime.InteropServices.DllImport("user32.dll")]
-    static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
-
+    }  
     public static WindowEx MainWindow { get; } = new MainWindow(); 
     public static UIElement? AppTitlebar { get; set; }
     private Config config = new();
+    private const int DWMWA_WINDOW_STATE_NORMAL = 5; // Команда для отображения окна, даже если оно скрыто в трей или не видно пользователю
     public App()
     {
         InitializeComponent();
+
+        // Текущее окно
         var currentProcess = System.Diagnostics.Process.GetCurrentProcess();
-
-        // search for another process with the same name
+        // Поиск открытого ещё одного окна приложения
         var anotherProcess = System.Diagnostics.Process.GetProcesses().FirstOrDefault(p => p.ProcessName == currentProcess.ProcessName && p.Id != currentProcess.Id);
-
-        if (anotherProcess != null)
+        if (anotherProcess != null) // Если открыто ещё одно окно приложения
         {
-            var hWnd = FindWindow(null, "Saku Overclock");
-            ActivationInvokeHandler.SetForegroundWindowState(anotherProcess.MainWindowHandle);
-            ShowWindowAsync(hWnd, 5);
-            ShowWindow(hWnd, 5);
+            var hWnd = ActivationInvokeHandler.FindMainWindowHWND(null, "Saku Overclock");
+            ActivationInvokeHandler.BringToFrontWindow(anotherProcess.MainWindowHandle);
+            ActivationInvokeHandler.ChangeAllWindowState(hWnd, DWMWA_WINDOW_STATE_NORMAL);
+            ActivationInvokeHandler.ChangeWindowState(hWnd, DWMWA_WINDOW_STATE_NORMAL);
+            ActivationInvokeHandler.SwitchToMainWindow(hWnd, true);
             App.Current.Exit();
             return; // Выйти
         }
@@ -100,6 +89,8 @@ public partial class App : Application
             services.AddTransient<КулерPage>();
             services.AddTransient<AdvancedКулерViewModel>();
             services.AddTransient<AdvancedКулерPage>();
+            services.AddTransient<AsusКулерViewModel>();
+            services.AddTransient<AsusКулерPage>();
             services.AddTransient<ИнформацияViewModel>();
             services.AddTransient<ИнформацияPage>();
             services.AddTransient<ПараметрыViewModel>();

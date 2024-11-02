@@ -7,12 +7,13 @@ using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
-using Windows.Foundation.Metadata; 
+using Windows.Foundation.Metadata;
 namespace Saku_Overclock.Views;
 public sealed partial class КулерPage : Page
 {
     private Config config = new();
     private bool isPageLoaded = false;
+    private IntPtr ry = IntPtr.Zero;
     public КулерViewModel ViewModel
     {
         get;
@@ -32,31 +33,33 @@ public sealed partial class КулерPage : Page
         fanUpdateTimer = new System.Windows.Threading.DispatcherTimer();
         fanUpdateTimer.Tick += async (sender, e) => await CheckFan();
         fanUpdateTimer.Interval = TimeSpan.FromMilliseconds(6000);
-    }  
+        Unloaded += Page_Unloaded;
+    }
+
     #region Page Navigation and Window State
     private void Window_Activated(object sender, WindowActivatedEventArgs args)
     {
         if (args.WindowActivationState == WindowActivationState.CodeActivated || args.WindowActivationState == WindowActivationState.PointerActivated)
-        { 
+        {
             tempUpdateTimer?.Start();
             if (Fanauto.IsChecked == true) { fanUpdateTimer?.Start(); }
         }
         else
-        { 
+        {
             tempUpdateTimer?.Stop();
             fanUpdateTimer?.Stop();
         }
 
-    } 
+    }
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
     {
         if (args.Visible)
-        { 
+        {
             tempUpdateTimer?.Start();
             if (Fanauto.IsChecked == true) { fanUpdateTimer?.Start(); }
         }
         else
-        { 
+        {
             tempUpdateTimer?.Stop();
             fanUpdateTimer?.Stop();
         }
@@ -65,16 +68,21 @@ public sealed partial class КулерPage : Page
     {
         base.OnNavigatedTo(e);
         StartTempUpdate();
-    } 
+    }
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
         base.OnNavigatedFrom(e);
-        StopTempUpdate();
+        StopTempUpdate(false);
     }
     private void AdvancedCooler_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(AdvancedКулерViewModel).FullName!);
+    }
+    private void AsusCoolerMode_Click(object sender, RoutedEventArgs e)
+    {
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(AsusКулерViewModel).FullName!);
     }
     #endregion
     #region JSON and Initialization
@@ -103,25 +111,25 @@ public sealed partial class КулерPage : Page
     }
     public async void FanInit()
     {
-        ConfigLoad(); 
+        ConfigLoad();
         var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs"; // Получить папку, в которой хранятся файлы XML с конфигами
-        var xmlFiles = Directory.GetFiles(folderPath, "*.xml");  
-        Selfan.Items.Clear();  
+        var xmlFiles = Directory.GetFiles(folderPath, "*.xml");
+        Selfan.Items.Clear();
         foreach (var xmlFile in xmlFiles)
-        { 
-            var fileName = Path.GetFileNameWithoutExtension(xmlFile); 
+        {
+            var fileName = Path.GetFileNameWithoutExtension(xmlFile);
             if (fileName.Contains(".xml"))
             {
                 fileName = fileName.Replace(".xml", "");
-            } 
+            }
             var item = new ComboBoxItem
             {
                 Content = fileName,
-                Tag = xmlFile  
-            }; 
-            Selfan.Items.Add(item); 
+                Tag = xmlFile
+            };
+            Selfan.Items.Add(item);
             if (config.NBFCConfigXMLName == fileName)
-            { 
+            {
                 Selfan.SelectedItem = item;
             }
         }
@@ -157,7 +165,11 @@ public sealed partial class КулерPage : Page
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
         isPageLoaded = true;
+        ry = SMUEngine.RyzenADJWrapper.Init_ryzenadj();
+        SMUEngine.RyzenADJWrapper.Init_Table(ry);
     }
+    private void Page_Unloaded(object sender, RoutedEventArgs e) => StopTempUpdate(true);
+
     #endregion
     #region Event Handlers
     private void Disabl_Checked(object sender, RoutedEventArgs e)
@@ -165,7 +177,7 @@ public sealed partial class КулерPage : Page
         config.NBFCServiceStatusDisabled = true; config.NBFCServiceStatusReadOnly = false; config.NBFCServiceStatusEnabled = false; config.NBFCFlagConsoleCheckSpeedRunning = false;
         ConfigSave();
         NbfcEnable();
-    } 
+    }
     private void Readon_Checked(object sender, RoutedEventArgs e)
     {
         config.NBFCServiceStatusReadOnly = true; config.NBFCServiceStatusEnabled = false; config.NBFCServiceStatusDisabled = false;
@@ -173,13 +185,13 @@ public sealed partial class КулерPage : Page
         NbfcEnable();
         Fan1Val.Text = "Auto";
         Update();
-    } 
+    }
     private void Enabl_Checked(object sender, RoutedEventArgs e)
     {
         config.NBFCServiceStatusEnabled = true; config.NBFCServiceStatusDisabled = false; config.NBFCServiceStatusReadOnly = false;
         ConfigSave();
         NbfcEnable();
-    } 
+    }
     private async void Fan1_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
         if (Enabl.IsChecked == true)
@@ -209,7 +221,7 @@ public sealed partial class КулерPage : Page
             Fan1Val.Text = "Auto";
             Update();
         }
-    } 
+    }
     private async void Fan2_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
         if (Enabl.IsChecked == true)
@@ -315,9 +327,9 @@ public sealed partial class КулерPage : Page
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
-        p.StartInfo.RedirectStandardOutput = true; 
-        p.Start(); 
-    } 
+        p.StartInfo.RedirectStandardOutput = true;
+        p.Start();
+    }
     public void NbfcFan1()
     {
         var p = new Process();
@@ -332,7 +344,7 @@ public sealed partial class КулерPage : Page
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
-        p.StartInfo.RedirectStandardOutput = true; 
+        p.StartInfo.RedirectStandardOutput = true;
         p.Start();
     }
     public void NbfcFan2()
@@ -349,12 +361,12 @@ public sealed partial class КулерPage : Page
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
-        p.StartInfo.RedirectStandardOutput = true; 
+        p.StartInfo.RedirectStandardOutput = true;
         p.Start();
     }
     public void NbfcFanState()
     {
-        const string quote = "\""; 
+        const string quote = "\"";
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.FileName = @"nbfc/nbfc.exe";
@@ -363,9 +375,9 @@ public sealed partial class КулерPage : Page
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
-        p.StartInfo.RedirectStandardOutput = true; 
+        p.StartInfo.RedirectStandardOutput = true;
         p.Start();
-    } 
+    }
     public void GetInfo0(bool start)
     {
         config.NBFCFlagConsoleCheckSpeedRunning = true;
@@ -389,7 +401,7 @@ public sealed partial class КулерPage : Page
                 p.StartInfo.RedirectStandardInput = true;
                 p.StartInfo.RedirectStandardOutput = true;
                 try { p.Start(); } catch (Exception ex) { await App.MainWindow.ShowMessageDialogAsync("Error " + ex.Message + " of КулерPage.xaml.cs in com.sakuoverclock.org", "Critical error!"); }
-                
+
                 var outputWriter = p.StandardOutput;
                 var line = await outputWriter.ReadLineAsync();
                 while (line != null)
@@ -402,8 +414,8 @@ public sealed partial class КулерPage : Page
                     }
 
                     line = await outputWriter.ReadLineAsync();
-                } 
-                p.WaitForExit(); 
+                }
+                p.WaitForExit();
                 var p1 = new Process(); //fan 2
                 p1.StartInfo.UseShellExecute = false;
                 p1.StartInfo.FileName = @"nbfc/nbfc.exe";
@@ -425,11 +437,11 @@ public sealed partial class КулерPage : Page
                     }
 
                     line1 = await outputWriter1.ReadLineAsync();
-                } 
+                }
                 p1.WaitForExit();
                 Update();
             }
-        } 
+        }
     }
     private void Update()
     {
@@ -500,40 +512,26 @@ public sealed partial class КулерPage : Page
     private void StartTempUpdate()
     {
         tempUpdateTimer = new System.Windows.Threading.DispatcherTimer();
-        tempUpdateTimer.Tick += async (sender, e) => await UpdateTemperatureAsync();
+        tempUpdateTimer.Tick += (sender, e) => UpdateTemperatureAsync();
         tempUpdateTimer.Interval = TimeSpan.FromMilliseconds(500);
         App.MainWindow.Activated += Window_Activated; //Проверка фокуса на программе для экономии ресурсов
         App.MainWindow.VisibilityChanged += Window_VisibilityChanged; //Проверка программу на трей меню для экономии ресурсов
         tempUpdateTimer.Start();
     }
-    private async Task UpdateTemperatureAsync()
+    private Task UpdateTemperatureAsync()
     {
-        if (config.FlagRyzenADJConsoleTemperatureCheckRunning)
-        {
-            var p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.FileName = @"ryzenadj.exe";
-            p.StartInfo.Arguments = "-i";
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            try { p.Start(); } catch { }
-            var outputWriter = p.StandardOutput;
-            var line = await outputWriter.ReadLineAsync();
-            while (line != null)
-            {
-                if (!string.IsNullOrWhiteSpace(line) && line.Contains("THM VALUE CORE"))
-                {
-                    Temp.Text = line.Replace("THM VALUE CORE", "").Replace(" ", "").Replace("|", "") + "℃";
-                }
-                line = await outputWriter.ReadLineAsync();
-            }
-            p.WaitForExit(); 
-        }
+        ry = SMUEngine.RyzenADJWrapper.Init_ryzenadj();
+        SMUEngine.RyzenADJWrapper.Init_Table(ry);
+        _ = SMUEngine.RyzenADJWrapper.refresh_table(ry);
+        Temp.Text = Math.Round(SMUEngine.RyzenADJWrapper.get_tctl_temp_value(ry), 3) + "℃";
+        return Task.CompletedTask;
     }
-    private void StopTempUpdate()
+    private void StopTempUpdate(bool exit)
     {
+        if (exit)
+        {
+            SMUEngine.RyzenADJWrapper.Cleanup_ryzenadj(ry);
+        }
         tempUpdateTimer?.Stop();
     }
     #endregion

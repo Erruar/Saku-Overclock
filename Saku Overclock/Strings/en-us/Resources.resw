@@ -2651,4 +2651,18 @@ UPDATE</value>
   <data name="Shell_Notify_TaskWait" xml:space="preserve">
     <value>Please wait until we apply all the changes in effect</value>
   </data>
+  <data name="Cooler_AsusMode.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Asus mode
+Switch to Asus fan control mode. 
+Only for Asus laptops. May not work 
+on your Asus device</value>
+  </data>
+  <data name="Cooler_NbfcMode.ToolTipService.ToolTip" xml:space="preserve">
+    <value>NBFC mode
+Switch to NBFC mode. Fan control for 
+most laptops with custom fan curve 
+settings. Need to use config file for
+your laptop or select one of premaded
+or create a new one</value>
+  </data>
 </root>

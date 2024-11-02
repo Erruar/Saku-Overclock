@@ -10,7 +10,7 @@
     </Page.Resources>
     <Grid x:Name="ContentArea" Margin="-48,0,-28,0">
 		<Grid>
-			<!-- Начало -->
+			<!-- Верхняя часть (статичная) -->
 			<TextBlock x:Uid="Cooler_Name" Text="Скорости кулера" FontSize="30" Margin="0,-65,0,0"></TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0,-56,0,0" HorizontalAlignment="Right" VerticalAlignment="Top">
                 <TextBlock x:Uid="Cooler_Config" Text="Сохранённые конфиги:" FontSize="20"></TextBlock>
@@ -19,6 +19,7 @@
                     <Border CornerRadius="4" HorizontalAlignment="Left" VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Width="202" Height="32" />
                 </Grid>
             </StackPanel>
+            <!-- Середина страницы (прокрутка) -->
             <ScrollViewer VerticalAlignment="Top" Padding="0,0,0,-20" Margin="0,-17,-22,64">
                 <Grid Margin="0,0,0,0">
                     <StackPanel Orientation="Vertical">
@@ -30,6 +31,7 @@
                             <TextBlock FontSize="15" VerticalAlignment="Top" Margin="0,5,0,0" x:Uid="Cooler_Temp" Text="Текущая температура: 59 C"/>
                             <TextBlock FontSize="15" FontFamily="Consolas" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,7,0,0" x:Name="Temp" Text="Undefined"/>
                         </StackPanel>
+                        <!-- Кулер 1 -->
                         <StackPanel Orientation="Vertical"  Margin="0,10,0,0">
                             <TextBlock Text="Fan #1" VerticalAlignment="Top"/>
                             <StackPanel Orientation="Vertical" Width="200" HorizontalAlignment="Left">
@@ -39,6 +41,7 @@
                             <TextBlock x:Uid="Cooler_Current_Fan" VerticalAlignment="Top" x:Name="Fan1Cur" Text="Текущая скорость: 25 %" Margin="0,1,0,0"/>
                             <ProgressBar x:Name="Fan1Pr" Value="25" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Margin="0,10,0,0"></ProgressBar>
                         </StackPanel>
+                        <!-- Кулер 2 -->
                         <StackPanel Orientation="Vertical" Margin="0,15,0,0">
                             <TextBlock Text="Fan #2" VerticalAlignment="Top"/>
                             <StackPanel Orientation="Vertical" Width="200" HorizontalAlignment="Left">
@@ -80,6 +83,12 @@
                 <Grid>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"  Margin="-5,0,-5,0"   Glyph="&#xe90f;">
                     </FontIcon>
+                </Grid>
+            </Button>
+            <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" VerticalAlignment="Bottom" Click="AsusCoolerMode_Click" x:Uid="Cooler_AsusMode"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,189,15"  ToolTipService.ToolTip="Asus laptops mod">
+                <Grid>
+                    <TextBlock  HorizontalAlignment="Left"  Margin="-5,-5,-5,0" Text="A" FontWeight="SemiBold" FontSize="25">
+                    </TextBlock>
                 </Grid>
             </Button>
         </Grid>
