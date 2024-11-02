@@ -13,7 +13,8 @@
     <Grid Margin="-48,0,-28,0">
         <Grid>
             <!-- Верхняя часть (статичная) -->
-            <TextBlock x:Uid="Cooler_Name" Text="Скорости кулера" FontSize="30" Margin="0,-65,0,0"></TextBlock>
+            <TextBlock Text="Управление кулерами ASUS" FontSize="30" Margin="0,-65,0,0"></TextBlock>
+            <InfoBar Title="Не поддерживается на вашем устройстве" IsOpen="False" x:Name="UnavailableLabel" Margin="0,-75,-11,0" HorizontalAlignment="Right"></InfoBar>
             <StackPanel Orientation="Horizontal" Margin="0,-56,0,0" HorizontalAlignment="Right" VerticalAlignment="Top">
             </StackPanel>
             <!-- Середина страницы (прокрутка) AsusCoolerIcons-->
@@ -85,25 +86,25 @@
                                 </Expander.Header>
                                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,-10,0,0">
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-                                        <ToggleButton Width="69" HorizontalAlignment="Stretch">
+                                        <ToggleButton Width="69" HorizontalAlignment="Stretch" x:Name="AsusFans_QuietToggle" Checked="AsusFans_ManualToggle_Checked" Unchecked="AsusFans_ManualToggle_Checked">
                                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                                 <BitmapIcon UriSource="/Assets/AsusCoolerIcons/QuietSpeed.png" ShowAsMonochrome="True" Width="40" Height="40" HorizontalAlignment="Center" Margin="0,0,0,0"/>
                                                 <TextBlock HorizontalAlignment="Center" Text="Тихий"/>
                                             </StackPanel>
                                         </ToggleButton>
-                                        <ToggleButton Width="69" HorizontalAlignment="Stretch" Margin="2,0,0,0">
+                                        <ToggleButton Width="69" HorizontalAlignment="Stretch" Margin="2,0,0,0" x:Name="AsusFans_BalanceToggle" Checked="AsusFans_ManualToggle_Checked" Unchecked="AsusFans_ManualToggle_Checked">
                                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                                 <BitmapIcon UriSource="/Assets/AsusCoolerIcons/BalanceSpeed.png" ShowAsMonochrome="True" Width="40" Height="40" HorizontalAlignment="Center" Margin="0,0,0,0"/>
                                                 <TextBlock HorizontalAlignment="Center" Text="Баланс"/>
                                             </StackPanel>
                                         </ToggleButton>
-                                        <ToggleButton Width="69" HorizontalAlignment="Stretch" Margin="2,0,0,0">
+                                        <ToggleButton Width="69" HorizontalAlignment="Stretch" Margin="2,0,0,0" x:Name="AsusFans_TurboToggle" Checked="AsusFans_ManualToggle_Checked" Unchecked="AsusFans_ManualToggle_Checked">
                                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                                 <BitmapIcon UriSource="/Assets/AsusCoolerIcons/TurboSpeed.png" ShowAsMonochrome="True" Width="40" Height="40" HorizontalAlignment="Center" Margin="0,0,0,0"/>
                                                 <TextBlock HorizontalAlignment="Center" Text="Турбо"/>
                                             </StackPanel>
                                         </ToggleButton>
-                                        <ToggleButton Height="72" Width="69" HorizontalAlignment="Stretch" Margin="2,0,0,0" x:Name="AsusFans_ManualToggle" IsChecked="True">
+                                        <ToggleButton Height="72" Width="69" HorizontalAlignment="Stretch" Margin="2,0,0,0" x:Name="AsusFans_ManualToggle" Checked="AsusFans_ManualToggle_Checked" Unchecked="AsusFans_ManualToggle_Checked">
                                             <StackPanel Orientation="Vertical"  Margin="0,14,0,0" HorizontalAlignment="Center">
                                                 <FontIcon Glyph="&#xE9E9;" HorizontalAlignment="Center" FontSize="25" Margin="0,0,2,0"/>
                                                 <TextBlock HorizontalAlignment="Center" Text="Ручной"/>
@@ -116,8 +117,8 @@
                                         <StackPanel Orientation="Vertical"  Margin="0,10,0,0" Visibility="{Binding FallbackValue=Collapsed, ElementName=AsusFans_ManualToggle, Path=IsChecked}">
                                             <TextBlock Text="Manual" VerticalAlignment="Top"/>
                                             <StackPanel Orientation="Vertical" Width="280" HorizontalAlignment="Left">
-                                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Right" x:Name="Fan1Val" Margin="0,-19,1,-30" Text="Auto"/>
-                                                <Slider x:Uid="Cooler_Fan" x:Name="Fan1" VerticalAlignment="Top" ValueChanged="Fan1_ValueChanged"  HorizontalAlignment="Left" Width="280" Margin="0,5,0,0" Minimum="0" Maximum="110" Value="110"></Slider>
+                                                <TextBlock VerticalAlignment="Top" HorizontalAlignment="Right" x:Name="Fan1Val" Margin="0,-19,1,-30" Text="{Binding ElementName=Fan1, Path=Value, FallbackValue=Auto}"/>
+                                                <Slider x:Uid="Cooler_Fan" x:Name="Fan1" VerticalAlignment="Top" ValueChanged="Fan1_ValueChanged"  HorizontalAlignment="Left" Width="280" Margin="0,5,0,0" Minimum="0" Maximum="100" Value="70"></Slider>
                                             </StackPanel>
                                         </StackPanel>
                                     </StackPanel>
@@ -127,18 +128,7 @@
                     </Grid>
                 </Grid>
             </ScrollViewer>
-            <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,30" Checked="Fanauto_Checked"  Unchecked="Fanauto_Checked" x:Name="Fanauto" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-11,15" x:Uid="Cooler_Autoupdate">
-                <ContentControl>
-                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe9d2;"/>
-                </ContentControl>
-            </ToggleButton>
-            <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" VerticalAlignment="Bottom" x:Name="Update" Click="Update_Click"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,39,15" x:Uid="Cooler_Refresh" ToolTipService.ToolTip="Обновить">
-                <Grid>
-                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Margin="-5,0,-5,0"   Glyph="&#xe9f3;">
-                    </FontIcon>
-                </Grid>
-            </Button>
-            <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" VerticalAlignment="Bottom" x:Name="NbfcCoolerMode" Click="NbfcCoolerMode_Click"  x:Uid="Cooler_NbfcMode"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,89,15"  ToolTipService.ToolTip="Asus laptops mod">
+            <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" VerticalAlignment="Bottom" x:Name="NbfcCoolerMode" Click="NbfcCoolerMode_Click"  x:Uid="Cooler_NbfcMode"  HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-11,15"  ToolTipService.ToolTip="Asus laptops mod">
                 <Grid>
                     <TextBlock  HorizontalAlignment="Left"  Margin="-5,-5,-5,0" Text="N" FontWeight="SemiBold" FontSize="25">
                     </TextBlock>

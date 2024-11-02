@@ -39,5 +39,7 @@ internal class Config
     public string NBFCAnswerSpeedFan2; // Ответ nbfc консоли для вывода информации от второго кулера
     public bool CoolerLastSavedAsusMode = false; // Если был выбран режим управления кулерами на ноутбуках Asus - сохранить его и открывать всегда по умолчанию
     public bool AsusModeAutoUpdateInformation = true; // Автоматически обновлять информацию о скоростях кулеров
+    public int AsusModeSelectedMode = 0; // Режим управления скоростью кулера: 0 - ручной, 1 - турбо, 2 - баланс, 3 - тихий
+    public double AsusModeFan1UserFanSpeedRPM = 110.0; // Выставленная пользователем скорость вращения первым кулером, больше 100 - авто 
 }
 #pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
