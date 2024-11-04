@@ -19,6 +19,7 @@ public sealed partial class КулерPage : Page
 {
     private Config config = new();
     private bool isPageLoaded = false;
+    private bool isNBFCNotLoaded = false;
     private IntPtr ry = IntPtr.Zero;
     public КулерViewModel ViewModel
     {
@@ -144,6 +145,8 @@ public sealed partial class КулерPage : Page
         }
         catch
         {
+            isNBFCNotLoaded = true;
+            if (!isPageLoaded) { return; }
             await ShowNbfcDialogAsync();
         }
         if (config.NBFCServiceStatusEnabled == true) { ConfigLoad(); Fan1.Value = config.NBFCFan1UserFanSpeedRPM; Fan2.Value = config.NBFCFan2UserFanSpeedRPM; Enabl.IsChecked = true; Readon.IsChecked = false; Disabl.IsChecked = false; Fan1Val.Text = Fan1.Value.ToString() + " %"; Fan2Val.Text = Fan2.Value.ToString() + " %"; if (Fan1.Value > 100) { Fan1Val.Text = "Auto"; }; if (Fan2.Value > 100) { Fan2Val.Text = "Auto"; }; };
@@ -313,7 +316,10 @@ public sealed partial class КулерPage : Page
         isPageLoaded = true;
         ry = SMUEngine.RyzenADJWrapper.Init_ryzenadj();
         SMUEngine.RyzenADJWrapper.Init_Table(ry);
-        await ShowNbfcDialogAsync();
+        if (isNBFCNotLoaded)
+        {
+            await ShowNbfcDialogAsync();
+        }
     }
     private void Page_Unloaded(object sender, RoutedEventArgs e) => StopTempUpdate(true);
 
