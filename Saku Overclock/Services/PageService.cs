@@ -3,6 +3,7 @@
 using Microsoft.UI.Xaml.Controls;
 
 using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 
@@ -37,6 +38,24 @@ public class PageService : IPageService
         }
 
         return pageType;
+    }
+
+    public static void ReloadPage(string From /*Класс ViewModel для перезагрузки*/)
+    {
+        if (From.Contains("Shell")) { return; }
+        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+        {
+            var navigationService = App.GetService<INavigationService>();
+            if (!From.Contains("Главная"))
+            {
+                navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+            }
+            else
+            {
+                navigationService.NavigateTo(typeof(SettingsViewModel).FullName!, null, true);
+            }
+            navigationService.NavigateTo(From, null, true); 
+        });
     }
 
     private void Configure<VM, V>()

@@ -569,7 +569,7 @@ internal class GetSystemInfo
             var endString = sCPUSerialNumber?.Split("Windows");
             if (endString != null && endString.Length > 1)
             {
-                return string.Concat("Windows ", endString[1].AsSpan(0, Math.Min(3, endString[1].Length)));
+                return string.Concat("Windows ", endString[1].AsSpan(0, Math.Min(3, endString[1].Length))).TrimStart();
             }
             else 
             { 

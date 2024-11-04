@@ -2,12 +2,18 @@
 using System.Globalization;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
+using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
+using Windows.Storage;
+using Saku_Overclock.Services;
+using Application = Microsoft.UI.Xaml.Application;
+using Page = Microsoft.UI.Xaml.Controls.Page;
 namespace Saku_Overclock.Views;
 public sealed partial class КулерPage : Page
 {
@@ -112,26 +118,33 @@ public sealed partial class КулерPage : Page
     public async void FanInit()
     {
         ConfigLoad();
-        var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs"; // Получить папку, в которой хранятся файлы XML с конфигами
-        var xmlFiles = Directory.GetFiles(folderPath, "*.xml");
-        Selfan.Items.Clear();
-        foreach (var xmlFile in xmlFiles)
+        try
         {
-            var fileName = Path.GetFileNameWithoutExtension(xmlFile);
-            if (fileName.Contains(".xml"))
+            var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs"; // Получить папку, в которой хранятся файлы XML с конфигами
+            var xmlFiles = Directory.GetFiles(folderPath, "*.xml");
+            Selfan.Items.Clear();
+            foreach (var xmlFile in xmlFiles)
             {
-                fileName = fileName.Replace(".xml", "");
+                var fileName = Path.GetFileNameWithoutExtension(xmlFile);
+                if (fileName.Contains(".xml"))
+                {
+                    fileName = fileName.Replace(".xml", "");
+                }
+                var item = new ComboBoxItem
+                {
+                    Content = fileName,
+                    Tag = xmlFile
+                };
+                Selfan.Items.Add(item);
+                if (config.NBFCConfigXMLName == fileName)
+                {
+                    Selfan.SelectedItem = item;
+                }
             }
-            var item = new ComboBoxItem
-            {
-                Content = fileName,
-                Tag = xmlFile
-            };
-            Selfan.Items.Add(item);
-            if (config.NBFCConfigXMLName == fileName)
-            {
-                Selfan.SelectedItem = item;
-            }
+        }
+        catch
+        {
+            await ShowNbfcDialogAsync();
         }
         if (config.NBFCServiceStatusEnabled == true) { ConfigLoad(); Fan1.Value = config.NBFCFan1UserFanSpeedRPM; Fan2.Value = config.NBFCFan2UserFanSpeedRPM; Enabl.IsChecked = true; Readon.IsChecked = false; Disabl.IsChecked = false; Fan1Val.Text = Fan1.Value.ToString() + " %"; Fan2Val.Text = Fan2.Value.ToString() + " %"; if (Fan1.Value > 100) { Fan1Val.Text = "Auto"; }; if (Fan2.Value > 100) { Fan2Val.Text = "Auto"; }; };
         if (config.NBFCServiceStatusReadOnly == true) { Enabl.IsChecked = false; Readon.IsChecked = true; Disabl.IsChecked = false; };
@@ -162,11 +175,145 @@ public sealed partial class КулерPage : Page
             Update();
         }
     }
-    private void Page_Loaded(object sender, RoutedEventArgs e)
+    // Метод для отображения диалога и загрузки NBFC
+    public async Task ShowNbfcDialogAsync()
+    {
+        // Создаем элементы интерфейса, которые понадобятся в диалоге
+        var downloadButton = new Button
+        {
+            Margin = new Thickness(0,12,0,0),
+            CornerRadius = new CornerRadius(15),
+            Style = (Style)Application.Current.Resources["AccentButtonStyle"],
+            Content = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Children =
+                {
+                    new FontIcon { Glyph = "\uE74B" }, // Иконка загрузки
+                    new TextBlock { Margin = new Thickness(10,0,0,0), Text = "Загрузить NBFC", FontWeight = new Windows.UI.Text.FontWeight(700) }
+                }
+            },
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+
+        var progressBar = new ProgressBar
+        {
+            IsIndeterminate = false,
+            Opacity = 0.0,
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+
+        var stackPanel = new StackPanel
+        {
+            Orientation = Orientation.Vertical,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text = "На вашем ноутбуке не скачана программа Notebook Fan Control, которая является обязательной для функционирования этой страницы приложения",
+                    Width = 300,
+                    TextWrapping = TextWrapping.Wrap,
+                    TextAlignment = TextAlignment.Left
+                },
+                downloadButton,
+                progressBar
+            }
+        };
+
+        var themerDialog = new ContentDialog
+        {
+            Title = "Внимание",
+            Content = stackPanel,
+            CloseButtonText = "Отмена",
+            PrimaryButtonText = "Далее",
+            DefaultButton = ContentDialogButton.Close,
+            IsPrimaryButtonEnabled = false // Первоначально кнопка "Далее" неактивна
+        };
+
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+        {
+            themerDialog.XamlRoot = XamlRoot;
+        }
+
+        // Обработчик события нажатия на кнопку загрузки
+        downloadButton.Click += async (sender, args) =>
+        {
+            downloadButton.IsEnabled = false;
+            progressBar.Opacity = 1.0;
+
+            var client = new GitHubClient(new ProductHeaderValue("SakuOverclock"));
+            var releases = await client.Repository.Release.GetAll("hirschmann", "nbfc");
+            var latestRelease = releases[0];
+
+            var downloadUrl = latestRelease.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe"))?.BrowserDownloadUrl;
+            if (downloadUrl != null)
+            {
+                using var httpClient = new HttpClient();
+                using var response = await httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
+
+                var totalBytes = response.Content.Headers.ContentLength ?? 1;
+                var downloadPath = Path.Combine(Path.GetTempPath(), "NBFC"); // Тут ошибка
+
+                using (var fileStream = new FileStream(downloadPath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None))
+                using (var downloadStream = await response.Content.ReadAsStreamAsync())
+                {
+                    var buffer = new byte[8192];
+                    int bytesRead;
+                    long totalRead = 0;
+
+                    while ((bytesRead = await downloadStream.ReadAsync(buffer)) > 0)
+                    {
+                        await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+                        totalRead += bytesRead;
+                        progressBar.Value = (double)totalRead / totalBytes * 100;
+                    }
+                }
+                await Task.Delay(1000); // Задержка в 1 секунду
+                // Убедиться, что файл полностью закрыт перед запуском
+                if (File.Exists(downloadPath))
+                {
+                label_8:
+                    try
+                    {
+                        // Запуск загруженного установочного файла с правами администратора
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = downloadPath,
+                            Verb = "runas" // Запуск от имени администратора
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Windows.Forms.MessageBox.Show($"Произошла ошибка при загрузке NBFC: {ex.Message}", "Ошибка", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                        await Task.Delay(2000);
+                        goto label_8; // Повторить задачу открытия автообновления приложения, в случае если возникла ошибка доступа
+                    }
+                }
+                downloadButton.Opacity = 0.0;
+                progressBar.Opacity = 0.0;
+                // Изменение текста диалога и активация кнопки "Далее"
+                themerDialog.Content = new TextBlock
+                {
+                    Text = "После успешной установки NBFC нажмите Далее",
+                    TextAlignment = TextAlignment.Center
+                };
+                themerDialog.IsPrimaryButtonEnabled = true;
+            }
+        }; 
+        var result = await themerDialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            PageService.ReloadPage(typeof(КулерViewModel).FullName!); // Вызов метода перезагрузки страницы
+        }
+    } 
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
         isPageLoaded = true;
         ry = SMUEngine.RyzenADJWrapper.Init_ryzenadj();
         SMUEngine.RyzenADJWrapper.Init_Table(ry);
+        await ShowNbfcDialogAsync();
     }
     private void Page_Unloaded(object sender, RoutedEventArgs e) => StopTempUpdate(true);
 
