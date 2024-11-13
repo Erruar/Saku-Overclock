@@ -932,7 +932,10 @@ public sealed partial class ИнформацияPage : Page
                 InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoAPSTBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
 
-
+                if (ryzenAccess == 0x0)
+                {
+                    return;
+                }
                 _ = RyzenADJWrapper.refresh_table(ryzenAccess);
                 var batteryRate = GetSystemInfo.GetBatteryRate() / 1000;
                 tbBATChargeRate.Text = $"{batteryRate}W";

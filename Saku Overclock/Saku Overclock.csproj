@@ -43,6 +43,7 @@
   <ItemGroup>
     <Content Remove="Assets\AsusCoolerIcons\BalanceSpeed.png" />
     <Content Remove="Assets\AsusCoolerIcons\CoolerIcon.png" />
+    <Content Remove="Assets\AsusCoolerIcons\CoolerIconGpu.png" />
     <Content Remove="Assets\AsusCoolerIcons\QuietSpeed.png" />
     <Content Remove="Assets\AsusCoolerIcons\TurboSpeed.png" />
     <Content Remove="Assets\discord.png" />
@@ -86,6 +87,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Assets\AsusCoolerIcons\CoolerIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\AsusCoolerIcons\CoolerIconGpu.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Assets\AsusCoolerIcons\QuietSpeed.png">

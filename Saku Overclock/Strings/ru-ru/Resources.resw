@@ -2740,4 +2740,118 @@ Asus. Может не поддерживаться на
 ноутбуков с возможностью настройки 
 кривой скорости</value>
   </data>
+  <data name="Cooler_AsusModeCharacter.Text" xml:space="preserve">
+    <value>Характеристики</value>
+  </data>
+  <data name="Cooler_AsusModeChooseCoolerSpeedsDesc.Text" xml:space="preserve">
+    <value>Выбор режима скорости</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerBalance.Text" xml:space="preserve">
+    <value>Баланс</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerManual.Text" xml:space="preserve">
+    <value>Ручной</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerQuiet.Text" xml:space="preserve">
+    <value>Тихий</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds.Text" xml:space="preserve">
+    <value>Скорости кулера</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerTurbo.Text" xml:space="preserve">
+    <value>Турбо</value>
+  </data>
+  <data name="Cooler_AsusModeCPUFreq.Text" xml:space="preserve">
+    <value>Частота CPU:</value>
+  </data>
+  <data name="Cooler_AsusModeCPUSpecs.Text" xml:space="preserve">
+    <value>Показатели процессора</value>
+  </data>
+  <data name="Cooler_AsusModeCPUSpecsDesc.Text" xml:space="preserve">
+    <value>Текущие параметры процессора</value>
+  </data>
+  <data name="Cooler_AsusModeCPUTemp.Text" xml:space="preserve">
+    <value>Текущая температура:</value>
+  </data>
+  <data name="Cooler_AsusModeCPUVolt.Text" xml:space="preserve">
+    <value>Напряжение ядра CPU:</value>
+  </data>
+  <data name="Cooler_AsusModeSystem.Text" xml:space="preserve">
+    <value>Системы</value>
+  </data>
+  <data name="Cooler_AsusModeText.Text" xml:space="preserve">
+    <value>Управление кулерами ASUS</value>
+  </data>
+  <data name="Cooler_AsusModeUnsupported.Title" xml:space="preserve">
+    <value>Не поддерживается на вашем устройстве</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds_Balance.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Сбалансированный режим
+Включает сбалансированный,
+фиксированный режим работы 
+всех кулеров вашего ноутбука. 
+Учтите, что при это фиксированная
+скорость! Чтобы обратно включить
+режим "Авто" отключите все
+переключатели или в ручном 
+режиме установите значение 0</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds_Manual.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Ручной режим
+Ваш собственный фиксированный 
+режим работы всех кулеров вашего 
+ноутбука. Учтите, что при это 
+фиксированная скорость! Чтобы 
+обратно включить режим "Авто" 
+отключите все переключатели или 
+в ручном режиме установите 
+значение 0.
+УЧТИТЕ, ЧТО Я НЕ ОТВЕЧАЮ ЗА 
+ПОСЛЕДСТВИЯ! ЭТА ФУНКЦИЯ
+ПРЕДОСТАВЛЯЕТСЯ "КАК ЕСТЬ"!</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds_Quiet.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Тихий режим
+Включает тихий, но эффективный, 
+фиксированный режим работы 
+всех кулеров вашего ноутбука. 
+Учтите, что при это фиксированная
+скорость! Чтобы обратно включить
+режим "Авто" отключите все
+переключатели или в ручном 
+режиме установите значение 0</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds_Turbo.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Турбо режим
+Включает максимум ваших
+кулеров, турбо скорость при
+фиксированном режиме работы 
+всех кулеров вашего ноутбука. 
+Учтите, что при это фиксированная
+скорость! Чтобы обратно включить
+режим "Авто" отключите все
+переключатели или в ручном 
+режиме установите значение 0</value>
+  </data>
+  <data name="Cooler_DownloadNBFC_AfterDesc" xml:space="preserve">
+    <value>После успешной установки NBFC нажмите "Далее"</value>
+  </data>
+  <data name="Cooler_DownloadNBFC_Desc" xml:space="preserve">
+    <value>На вашем ноутбуке не скачана программа Notebook Fan Control, которая является обязательной для функционирования этой страницы приложения</value>
+  </data>
+  <data name="Cooler_DownloadNBFC_ErrorDesc" xml:space="preserve">
+    <value>Произошла ошибка при загрузке NBFC</value>
+  </data>
+  <data name="Cooler_DownloadNBFC_Title" xml:space="preserve">
+    <value>Загрузить NBFC</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Далее</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Внимание</value>
+  </data>
 </root>
