@@ -148,7 +148,7 @@ public sealed partial class КулерPage : Page
         {
             isNBFCNotLoaded = true;
             if (!isPageLoaded) { return; }
-            await ShowNbfcDialogAsync();
+            await ShowNbfcDialogAsync(); //Test commit
         }
         if (config.NBFCServiceStatusEnabled == true) { ConfigLoad(); Fan1.Value = config.NBFCFan1UserFanSpeedRPM; Fan2.Value = config.NBFCFan2UserFanSpeedRPM; Enabl.IsChecked = true; Readon.IsChecked = false; Disabl.IsChecked = false; Fan1Val.Text = Fan1.Value.ToString() + " %"; Fan2Val.Text = Fan2.Value.ToString() + " %"; if (Fan1.Value > 100) { Fan1Val.Text = "Auto"; }; if (Fan2.Value > 100) { Fan2Val.Text = "Auto"; }; };
         if (config.NBFCServiceStatusReadOnly == true) { Enabl.IsChecked = false; Readon.IsChecked = true; Disabl.IsChecked = false; };
