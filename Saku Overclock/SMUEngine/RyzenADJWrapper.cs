@@ -43,12 +43,19 @@ public static class RyzenADJWrapper
     }
     public static IntPtr Init_Table(IntPtr ryzenAccess)
     {
-        if (IsDllRunning && !IsTableRunning)
+        try
         {
-            IsTableRunning = true;
-            return init_table(ryzenAccess);
+            if (IsDllRunning && !IsTableRunning && ryzenAccess != 0x00000000)
+            {
+                IsTableRunning = true;
+                return init_table(ryzenAccess);
+            }
+            else
+            {
+                return 0;
+            }
         }
-        else
+        catch
         {
             return 0;
         }

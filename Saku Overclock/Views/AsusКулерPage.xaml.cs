@@ -40,6 +40,12 @@ public sealed partial class AsusКулерPage : Page
         Fan1.Value = config.AsusModeFan1UserFanSpeedRPM;
         switch (config.AsusModeSelectedMode)
         {
+            case -1:
+                AsusFans_ManualToggle.IsChecked = false;
+                AsusFans_TurboToggle.IsChecked = false;
+                AsusFans_BalanceToggle.IsChecked = false;
+                AsusFans_QuietToggle.IsChecked = false;
+                break;
             case 0:
                 AsusFans_ManualToggle.IsChecked = true;
                 AsusFans_TurboToggle.IsChecked = false;
@@ -80,7 +86,24 @@ public sealed partial class AsusКулерPage : Page
     }
     private async Task UpdateTemperatureAsync()
     {
+        var tempLine = string.Empty;
+        await Task.Run(() =>
+        {
+            var fanSpeeds = GetFanSpeeds();
+            if (fanSpeeds.Count > 0)
+            {
+                tempLine = fanSpeeds[0].ToString();
+            }
+            else
+            {
+                tempLine = "-.-";
+            }
+        });
         ry = RyzenADJWrapper.Init_ryzenadj();
+        if (ry == 0x0)
+        {
+            return;
+        }
         RyzenADJWrapper.Init_Table(ry);
         _ = RyzenADJWrapper.refresh_table(ry);
         var avgCoreCLK = 0d;
@@ -111,20 +134,6 @@ public sealed partial class AsusКулерPage : Page
         }
         if (countCLK == 0) { countCLK = 1; }
         if (countVolt == 0) { countVolt = 1; }
-        var tempLine = string.Empty;
-
-        await Task.Run(() =>
-        {
-            var fanSpeeds = GetFanSpeeds();
-            if (fanSpeeds.Count > 0)
-            {
-                tempLine = fanSpeeds[0].ToString();
-            }
-            else
-            {
-                tempLine = "-.-";
-            }
-        });
         UpdateValues(Math.Round(RyzenADJWrapper.get_tctl_temp_value(ry), 3) + "℃", Math.Round(avgCoreCLK / countCLK, 3) + "GHz", Math.Round(avgCoreVolt / countVolt, 3) + "V", tempLine);
     }
     private void UpdateValues(string Temp, string Freq, string Volt, string RPM) // Обновление информации вне асинхронного метода
@@ -141,7 +150,9 @@ public sealed partial class AsusКулерPage : Page
     }
     private void UpdateSystemInformation()
     {
-        LaptopName.Text = "Asus " + GetSystemInfo.Product?.Replace("ASUS", "").Replace("Asus", "").Replace("asus", "").Replace('_', ' ').Replace("  ", " ");
+        var prod = GetSystemInfo.Product;
+        LaptopName.Text = (prod?.Contains("Asus") == true || prod?.Contains("ASUS") == true || prod?.Contains("asus") == true)  ? "Asus " + prod?.Replace("ASUS", "").Replace("Asus", "").Replace("asus", "").Replace('_', ' ').Replace("  ", " ") 
+            : prod?.Replace('_', ' ').Replace("  ", " ");
         OSName.Text = GetSystemInfo.GetOSVersion() + " " + GetSystemInfo.GetWindowsEdition();
         BIOSVersion.Text = GetSystemInfo.GetBIOSVersion();
         fanCount = HealthyTable_FanCounts();
@@ -246,6 +257,9 @@ public sealed partial class AsusКулерPage : Page
         if (AsusFans_BalanceToggle.IsChecked == false && AsusFans_ManualToggle.IsChecked == false &&
             AsusFans_QuietToggle.IsChecked == false && AsusFans_TurboToggle.IsChecked == false)
         {
+            ConfigLoad();
+            config.AsusModeSelectedMode = -1; 
+            ConfigSave();
             SetFanSpeeds(0);
         }
     }

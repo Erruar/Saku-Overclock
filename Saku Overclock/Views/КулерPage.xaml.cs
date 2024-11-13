@@ -20,6 +20,7 @@ public sealed partial class КулерPage : Page
     private Config config = new();
     private bool isPageLoaded = false;
     private bool isNBFCNotLoaded = false;
+    private bool doNotUseRyzenAdj = false;
     private IntPtr ry = IntPtr.Zero;
     public КулерViewModel ViewModel
     {
@@ -193,7 +194,7 @@ public sealed partial class КулерPage : Page
                 Children =
                 {
                     new FontIcon { Glyph = "\uE74B" }, // Иконка загрузки
-                    new TextBlock { Margin = new Thickness(10,0,0,0), Text = "Загрузить NBFC", FontWeight = new Windows.UI.Text.FontWeight(700) }
+                    new TextBlock { Margin = new Thickness(10,0,0,0), Text = "Cooler_DownloadNBFC_Title".GetLocalized(), FontWeight = new Windows.UI.Text.FontWeight(700) }
                 }
             },
             HorizontalAlignment = HorizontalAlignment.Center
@@ -214,7 +215,7 @@ public sealed partial class КулерPage : Page
             {
                 new TextBlock
                 {
-                    Text = "На вашем ноутбуке не скачана программа Notebook Fan Control, которая является обязательной для функционирования этой страницы приложения",
+                    Text = "Cooler_DownloadNBFC_Desc".GetLocalized(),
                     Width = 300,
                     TextWrapping = TextWrapping.Wrap,
                     TextAlignment = TextAlignment.Left
@@ -226,10 +227,10 @@ public sealed partial class КулерPage : Page
 
         var themerDialog = new ContentDialog
         {
-            Title = "Внимание",
+            Title = "Warning".GetLocalized(),
             Content = stackPanel,
-            CloseButtonText = "Отмена",
-            PrimaryButtonText = "Далее",
+            CloseButtonText = "Cancel".GetLocalized(),
+            PrimaryButtonText = "Next".GetLocalized(),
             DefaultButton = ContentDialogButton.Close,
             IsPrimaryButtonEnabled = false // Первоначально кнопка "Далее" неактивна
         };
@@ -257,7 +258,7 @@ public sealed partial class КулерPage : Page
                 response.EnsureSuccessStatusCode();
 
                 var totalBytes = response.Content.Headers.ContentLength ?? 1;
-                var downloadPath = Path.Combine(Path.GetTempPath(), "NBFC"); // Тут ошибка
+                var downloadPath = Path.Combine(Path.GetTempPath(), "NBFC"); 
 
                 using (var fileStream = new FileStream(downloadPath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None))
                 using (var downloadStream = await response.Content.ReadAsStreamAsync())
@@ -289,7 +290,7 @@ public sealed partial class КулерPage : Page
                     }
                     catch (Exception ex)
                     {
-                        System.Windows.Forms.MessageBox.Show($"Произошла ошибка при загрузке NBFC: {ex.Message}", "Ошибка", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                        System.Windows.Forms.MessageBox.Show("Cooler_DownloadNBFC_ErrorDesc".GetLocalized() + $": {ex.Message}", "Error".GetLocalized(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                         await Task.Delay(2000);
                         goto label_8; // Повторить задачу открытия автообновления приложения, в случае если возникла ошибка доступа
                     }
@@ -299,7 +300,7 @@ public sealed partial class КулерPage : Page
                 // Изменение текста диалога и активация кнопки "Далее"
                 themerDialog.Content = new TextBlock
                 {
-                    Text = "После успешной установки NBFC нажмите Далее",
+                    Text = "Cooler_DownloadNBFC_AfterDesc".GetLocalized(),
                     TextAlignment = TextAlignment.Center
                 };
                 themerDialog.IsPrimaryButtonEnabled = true;
@@ -674,7 +675,12 @@ public sealed partial class КулерPage : Page
     private Task UpdateTemperatureAsync()
     {
         ry = SMUEngine.RyzenADJWrapper.Init_ryzenadj();
-        SMUEngine.RyzenADJWrapper.Init_Table(ry);
+        if (ry == 0x0 || doNotUseRyzenAdj)
+        {
+            doNotUseRyzenAdj = true;
+            return Task.CompletedTask;
+        } 
+        _ = SMUEngine.RyzenADJWrapper.Init_Table(ry);
         _ = SMUEngine.RyzenADJWrapper.refresh_table(ry);
         Temp.Text = Math.Round(SMUEngine.RyzenADJWrapper.get_tctl_temp_value(ry), 3) + "℃";
         return Task.CompletedTask;

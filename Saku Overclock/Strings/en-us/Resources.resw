@@ -2665,4 +2665,117 @@ settings. Need to use config file for
 your laptop or select one of premaded
 or create a new one</value>
   </data>
+  <data name="Cooler_AsusModeCharacter.Text" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Cooler_AsusModeChooseCoolerSpeedsDesc.Text" xml:space="preserve">
+    <value>Speed mode selection</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerBalance.Text" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerManual.Text" xml:space="preserve">
+    <value>Manual</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerQuiet.Text" xml:space="preserve">
+    <value>Quiet</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds.Text" xml:space="preserve">
+    <value>Cooler speeds</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerTurbo.Text" xml:space="preserve">
+    <value>Turbo</value>
+  </data>
+  <data name="Cooler_AsusModeCPUFreq.Text" xml:space="preserve">
+    <value>CPU frequency:</value>
+  </data>
+  <data name="Cooler_AsusModeCPUSpecs.Text" xml:space="preserve">
+    <value>Processor performance</value>
+  </data>
+  <data name="Cooler_AsusModeCPUSpecsDesc.Text" xml:space="preserve">
+    <value>Current CPU sensors</value>
+  </data>
+  <data name="Cooler_AsusModeCPUTemp.Text" xml:space="preserve">
+    <value>CPU temperarure:</value>
+  </data>
+  <data name="Cooler_AsusModeCPUVolt.Text" xml:space="preserve">
+    <value>CPU voltage:</value>
+  </data>
+  <data name="Cooler_AsusModeSystem.Text" xml:space="preserve">
+    <value>Specifications</value>
+  </data>
+  <data name="Cooler_AsusModeText.Text" xml:space="preserve">
+    <value>ASUS Cooler Management</value>
+  </data>
+  <data name="Cooler_AsusModeUnsupported.Title" xml:space="preserve">
+    <value>Not supported on your device</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds_Balance.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Balanced mode
+Enables balanced mode,
+fixed mode of operation 
+of all of your laptop's coolers. 
+Note that this is a fixed
+speed! To turn back on
+“Auto” mode, turn off all
+switches or in manual 
+set the value to 0</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds_Manual.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Manual mode
+Your own fixed mode of operation 
+of all the coolers of your laptop. 
+Keep in mind that with this fixed 
+speed! In order to switch back to 
+“Auto” mode turn off all switches 
+or in manual mode set to 0.
+PLEASE NOTE THAT I AM NOT 
+RESPONSIBLE FOR CONSEQUENCES! 
+THIS FUNCTION IS PROVIDED 
+“AS IS”!</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds_Quiet.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Quiet Mode
+Enables quiet but efficient, 
+fixed mode of operation 
+of all of your laptop's coolers. 
+Note that this is a fixed
+speed! To turn back on
+“Auto” mode, turn off all
+switches or in manual 
+set the value to 0</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds_Turbo.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Turbo mode
+Turns on the maximum of your
+coolers, turbo speed at
+a fixed mode of operation 
+of all of your laptop's coolers. 
+Note that this is a fixed
+speed! To turn back on
+“Auto” mode, turn off all
+switches or in manual 
+set the value to 0</value>
+  </data>
+  <data name="Cooler_DownloadNBFC_AfterDesc" xml:space="preserve">
+    <value>After the NBFC has been successfully installed, click "Next"</value>
+  </data>
+  <data name="Cooler_DownloadNBFC_Desc" xml:space="preserve">
+    <value>Your laptop does not have the Notebook Fan Control program downloaded on it, which is mandatory for the operation of this application page</value>
+  </data>
+  <data name="Cooler_DownloadNBFC_ErrorDesc" xml:space="preserve">
+    <value>An error occurred while loading the NBFC</value>
+  </data>
+  <data name="Cooler_DownloadNBFC_Title" xml:space="preserve">
+    <value>Download NBFC</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
 </root>
