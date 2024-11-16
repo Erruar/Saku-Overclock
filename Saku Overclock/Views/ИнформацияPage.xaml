@@ -11,13 +11,14 @@
 
     <Grid x:Name="ContentArea">
         <TextBlock x:Uid="Info_Name" Text="Информация" FontSize="30" Margin="-48,-65,0,0"></TextBlock>
+        <InfoBar x:Uid="Info_RyzenADJNotLoaded" Title="Не поддерживается на вашем устройстве" IsOpen="False" x:Name="Info_RyzenADJLoadError_InfoBar" Margin="0,-75,-27,0" HorizontalAlignment="Right"></InfoBar>
         <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="InfoRTSSButton_Click" x:Name="infoRTSSButton" x:Uid="InfoARTSSTooltip" ToolTipService.ToolTip="Enable RTSS updater" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Top"  Margin="0,-57,20,0" HorizontalAlignment="Right">
             <StackPanel Orientation="Horizontal">
                 <FontIcon Glyph="&#xE7AC;"/>
                 <TextBlock Padding="7,0,0,0" x:Uid="InfoARTSSShowText" FontWeight="Bold" Text="Show RTSS metrics"/>
             </StackPanel>
         </ToggleButton>
-        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="infoNiIconsButton_Click"  x:Name="infoNiIconsButton" x:Uid="InfoANiIcons" ToolTipService.ToolTip="Enable RTSS updater" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Top"  Margin="0,-57,-29,0" HorizontalAlignment="Right">
+        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="InfoNiIconsButton_Click"  x:Name="infoNiIconsButton" x:Uid="InfoANiIcons" ToolTipService.ToolTip="Enable RTSS updater" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Top"  Margin="0,-57,-29,0" HorizontalAlignment="Right">
             <FontIcon Glyph="&#xF6B8;"/>
         </ToggleButton>
         <TeachingTip x:Name="Info_RTSSTeacherTip" Target="{x:Bind infoRTSSButton}" Title="You have enabled RTSS metrics!" Subtitle="Now you can easily minimize Saku Overclock to tray menu and all information will be updated automatically. Saku Overclock will switch to the mode of reduced consumption of laptop resources">
@@ -36,17 +37,7 @@
             </Grid.ColumnDefinitions>
             <ScrollViewer Padding="-20,0,0,0" Grid.Column="0"
      HorizontalContentAlignment="Stretch" Width="170" Margin="0,0,0,0">
-                <Grid Width="220" Margin="0,0,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="64"/>
-                        <RowDefinition Height="64"/>
-                        <RowDefinition Height="64"/>
-                        <RowDefinition Height="64"/>
-                        <RowDefinition Height="64"/>
-                        <RowDefinition Height="64"/>
-                        <RowDefinition Height="64"/>
-                        <RowDefinition Height="64"/>
-                    </Grid.RowDefinitions>
+                <StackPanel Orientation="Vertical" Width="220" Margin="0,0,0,0">
                     <Button PointerEntered="CPUBannerButton_PointerEntered" PointerExited="CPUBannerButton_PointerEntered" Translation="0,0,20" Grid.Row="0" Width="170" x:Name="CPUBannerButton" Margin="0,0,0,0" Click="CPUBannerButton_Click" CornerRadius="3">
                         <Grid>
                             <Grid Width="60" Margin="-99,2,0,0" CornerRadius="3,0,3,3">
@@ -473,7 +464,7 @@ StrokeThickness="1.5" >
                             </Button>
                         </Grid>
                     </Button>
-                </Grid>
+                </StackPanel>
             </ScrollViewer>
             <ScrollViewer Padding="0,0,20,0" Margin="-10,0,-50,0" IsTabStop="False"
      UseSystemFocusVisuals="False" Grid.Column="1"

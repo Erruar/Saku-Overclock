@@ -100,12 +100,8 @@ public sealed partial class AsusКулерPage : Page
             }
         });
         ry = RyzenADJWrapper.Init_ryzenadj();
-        if (ry == 0x0)
-        {
-            return;
-        }
         RyzenADJWrapper.Init_Table(ry);
-        _ = RyzenADJWrapper.refresh_table(ry);
+        _ = RyzenADJWrapper.Refresh_table(ry);
         var avgCoreCLK = 0d;
         var avgCoreVolt = 0d;
         var countCLK = 0;
@@ -118,8 +114,8 @@ public sealed partial class AsusКулерPage : Page
         {
             if (f < 8)
             {
-                var clk = Math.Round(RyzenADJWrapper.get_core_clk(ry, f), 3);
-                var volt = Math.Round(RyzenADJWrapper.get_core_volt(ry, f), 3);
+                var clk = Math.Round(RyzenADJWrapper.Get_core_clk(ry, f), 3);
+                var volt = Math.Round(RyzenADJWrapper.Get_core_volt(ry, f), 3);
                 if (clk != 0)
                 {
                     avgCoreCLK += clk;
@@ -134,7 +130,7 @@ public sealed partial class AsusКулерPage : Page
         }
         if (countCLK == 0) { countCLK = 1; }
         if (countVolt == 0) { countVolt = 1; }
-        UpdateValues(Math.Round(RyzenADJWrapper.get_tctl_temp_value(ry), 3) + "℃", Math.Round(avgCoreCLK / countCLK, 3) + "GHz", Math.Round(avgCoreVolt / countVolt, 3) + "V", tempLine);
+        UpdateValues(Math.Round(RyzenADJWrapper.Get_tctl_temp_value(ry), 3) + "℃", Math.Round(avgCoreCLK / countCLK, 3) + "GHz", Math.Round(avgCoreVolt / countVolt, 3) + "V", tempLine);
     }
     private void UpdateValues(string Temp, string Freq, string Volt, string RPM) // Обновление информации вне асинхронного метода
     {

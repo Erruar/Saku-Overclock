@@ -681,8 +681,8 @@ public sealed partial class КулерPage : Page
             return Task.CompletedTask;
         } 
         _ = SMUEngine.RyzenADJWrapper.Init_Table(ry);
-        _ = SMUEngine.RyzenADJWrapper.refresh_table(ry);
-        Temp.Text = Math.Round(SMUEngine.RyzenADJWrapper.get_tctl_temp_value(ry), 3) + "℃";
+        _ = SMUEngine.RyzenADJWrapper.Refresh_table(ry);
+        Temp.Text = Math.Round(SMUEngine.RyzenADJWrapper.Get_tctl_temp_value(ry), 3) + "℃";
         return Task.CompletedTask;
     }
     private void StopTempUpdate(bool exit)

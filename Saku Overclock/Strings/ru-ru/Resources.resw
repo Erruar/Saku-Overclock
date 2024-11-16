@@ -2854,4 +2854,7 @@ Asus. Может не поддерживаться на
   <data name="Warning" xml:space="preserve">
     <value>Внимание</value>
   </data>
+  <data name="Info_RyzenADJNotLoaded.Title" xml:space="preserve">
+    <value>Невозможно получить информацию от RyzenADJ</value>
+  </data>
 </root>

@@ -17,42 +17,42 @@ using ZenStates.Core;
 namespace Saku_Overclock.Views;
 public sealed partial class ИнформацияPage : Page
 {
-    private Config config = new();
-    private JsonContainers.RTSSsettings rtssset = new();
-    private JsonContainers.NiIconsSettings niicons = new();
-    private readonly Dictionary<string, System.Windows.Forms.NotifyIcon> trayIcons = [];
-    private class MinMax
+    private Config config = new(); // Основной конфиг приложения
+    private JsonContainers.RTSSsettings rtssset = new(); // Конфиг с настройками модуля RTSS
+    private JsonContainers.NiIconsSettings niicons = new(); // Конфиг с настройками Ni-Icons
+    private readonly Dictionary<string, System.Windows.Forms.NotifyIcon> trayIcons = []; // Хранилище включенных в данный момент иконок Ni-Icons
+    private class MinMax // Класс для хранения минимальных и максимальных значений Ni-Icons
     {
         public float Min;
         public float Max;
     }
-    private readonly List<MinMax> niicons_Min_MaxValues = [new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()];
-    public double refreshtime;
-    private bool loaded = false;
-    private string? rtss_line;
-    private readonly List<InfoPageCPUPoints> CPUPointer = [];
-    private readonly List<InfoPageCPUPoints> GPUPointer = [];
-    private readonly List<InfoPageCPUPoints> RAMPointer = [];
-    private readonly List<InfoPageCPUPoints> VRMPointer = [];
-    private readonly List<InfoPageCPUPoints> BATPointer = [];
-    private readonly List<InfoPageCPUPoints> PSTPointer = [];
-    private readonly List<double> PSTatesList = [0, 0, 0];
-    private double MaxGFXClock = 0.1;
-    private decimal MaxBatRate = 0.1m;
-    private Microsoft.UI.Xaml.Media.Brush? TransparentBrush;
-    private Microsoft.UI.Xaml.Media.Brush? SelectedBrush;
-    private Microsoft.UI.Xaml.Media.Brush? SelectedBorderBrush;
-    private int SelectedGroup = 0;
-    private bool IsAppInTray = false;
-    private IntPtr ryzenAccess;
-    private string CPUName = "Unknown";
-    private string GPUName = "Unknown";
-    private string RAMName = "Unknown";
-    private string? BATName = "Unknown";
-    private int numberOfCores = 0;
-    private int numberOfLogicalProcessors = 0;
-    private System.Windows.Threading.DispatcherTimer? dispatcherTimer;
-    private readonly Cpu? cpu;
+    private readonly List<MinMax> niicons_Min_MaxValues = [new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()]; // Лист для хранения минимальных и максимальных значений Ni-Icons
+    public double refreshtime; // Время обновления
+    private bool loaded = false; // Страница загружена
+    private string? rtss_line; // Строка для вывода в модуль RTSS
+    private readonly List<InfoPageCPUPoints> CPUPointer = []; // Лист графика использования процессора
+    private readonly List<InfoPageCPUPoints> GPUPointer = []; // Лист графика частоты графического процессора
+    private readonly List<InfoPageCPUPoints> RAMPointer = []; // Лист графика занятой ОЗУ
+    private readonly List<InfoPageCPUPoints> VRMPointer = []; // Лист графика тока VRM
+    private readonly List<InfoPageCPUPoints> BATPointer = []; // Лист графика зарядки батареи
+    private readonly List<InfoPageCPUPoints> PSTPointer = []; // Лист графика изменения P-State
+    private readonly List<double> PSTatesList = [0, 0, 0]; // Лист с информацией о P-State
+    private double MaxGFXClock = 0.1; // Максимальная частота графического процессора, используется для графика частоты графического процессора
+    private decimal MaxBatRate = 0.1m; // Максимальная мощность зарядки, используется для графика зарядки батареи
+    private Microsoft.UI.Xaml.Media.Brush? TransparentBrush; // Прозрачная кисть, используется для кнопок выбора баннера
+    private Microsoft.UI.Xaml.Media.Brush? SelectedBrush; // Кисть цвета выделенной кнопки, используется для кнопок выбора баннера
+    private Microsoft.UI.Xaml.Media.Brush? SelectedBorderBrush; // Кисть цвета границы выделенной кнопки, используется для кнопок выбора баннера
+    private int SelectedGroup = 0; // Текущий выбранный баннер, используется для кнопок выбора баннера
+    private bool IsAppInTray = false; // Флаг приложения в трее, чтобы не обновлять значения и не тратить ресурсы ноутбука
+    private IntPtr ryzenAccess; // Указатель на библиотеку RyzenADJ
+    private string CPUName = "Unknown"; // Название процессора в системе
+    private string GPUName = "Unknown"; // Название графического процессора в системе
+    private string RAMName = "Unknown"; // Название ОЗУ в системе
+    private string? BATName = "Unknown"; // Название батареи в системе
+    private int numberOfCores = 0; // Количество ядер
+    private int numberOfLogicalProcessors = 0; // Количество потоков
+    private System.Windows.Threading.DispatcherTimer? dispatcherTimer; // Таймер для автообновления информации
+    private readonly Cpu? cpu; // Инициализация ZenStates Core
     public ИнформацияViewModel ViewModel
     {
         get;
@@ -63,51 +63,19 @@ public sealed partial class ИнформацияPage : Page
         InitializeComponent();
         try
         {
-            cpu ??= CpuSingleton.GetInstance();
+            cpu ??= CpuSingleton.GetInstance(); // Загрузить ZenStates Core
         }
         catch
         {
-            App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+            App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory)); // Вывести ошибку
         }
         RtssLoad();
-        Loaded += (s, a) =>
-        {
-            loaded = true;
-            SelectedBrush = CPUBannerButton.Background;
-            SelectedBorderBrush = CPUBannerButton.BorderBrush;
-            TransparentBrush = GPUBannerButton.Background;
-            GetCPUInfo();
-            GetRAMInfo();
-            ReadPstate();
-            GetBATInfo();
-            if (CPUBannerButton.Shadow != new ThemeShadow())
-            {
-                CPUBannerButton.Shadow ??= new ThemeShadow();
-                GPUBannerButton.Shadow = null;
-                RAMBannerButton.Shadow = null;
-                BATBannerButton.Shadow = null;
-                PSTBannerButton.Shadow = null;
-                VRMBannerButton.Shadow = null;
-            }
-            try
-            {
-                ConfigLoad();
-                infoRTSSButton.IsChecked = config.RTSSMetricsEnabled;
-                infoNiIconsButton.IsChecked = config.NiIconsEnabled;
-                if (config.NiIconsEnabled)
-                {
-                    CreateNotifyIcons();
-                }
-            }
-            catch
-            {
-
-            }
-        };
+        Loaded += ИнформацияPage_Loaded;
         Unloaded += ИнформацияPage_Unloaded;
     }
 
     #region JSON and Initialization
+    #region JSON only voids
     //JSON форматирование
     public void ConfigSave()
     {
@@ -165,7 +133,8 @@ public sealed partial class ИнформацияPage : Page
         }
         catch { niicons = new JsonContainers.NiIconsSettings(); NiSave(); }
     }
-
+    #endregion
+    #region Ni-Icons
     public void DisposeAllNotifyIcons()
     {
         // Перебираем все иконки и вызываем Dispose для каждой из них
@@ -210,7 +179,6 @@ public sealed partial class ИнформацияPage : Page
             trayIcons[element.Name] = notifyIcon;
         }
     }
-
     private static System.Drawing.Icon? CreateIconFromElement(JsonContainers.NiIconsElements element)
     {
         // Создаём Grid виртуально и растрируем в Bitmap
@@ -248,7 +216,7 @@ public sealed partial class ИнформацияPage : Page
             try
             {
                 var font = new System.Drawing.Font(new System.Drawing.FontFamily("Arial"), element.FontSize * 2, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-                System.Windows.Forms.TextRenderer.DrawText(g, "Text", font, new System.Drawing.Point(-6, 5), InvertColor(element.Color)); 
+                System.Windows.Forms.TextRenderer.DrawText(g, "Text", font, new System.Drawing.Point(-6, 5), InvertColor(element.Color));
 
             }
             catch { } // Игнорим
@@ -258,7 +226,7 @@ public sealed partial class ИнформацияPage : Page
             return System.Drawing.Icon.FromHandle(bitmap.GetHicon());
         }
         catch
-        { 
+        {
             return null;
         }
     }
@@ -327,8 +295,7 @@ public sealed partial class ИнформацияPage : Page
             CreateNotifyIcons();
         }
     }
-
-    private static System.Drawing.Icon UpdateIconText(string ? newText, string NewColor, int FontSize, int IconShape, double Opacity, System.Drawing.Icon? oldIcon = null)
+    private static System.Drawing.Icon UpdateIconText(string? newText, string NewColor, int FontSize, int IconShape, double Opacity, System.Drawing.Icon? oldIcon = null)
     {
         // Уничтожаем старую иконку, если она существует
         if (oldIcon != null)
@@ -378,7 +345,7 @@ public sealed partial class ИнформацияPage : Page
         System.Windows.Forms.TextRenderer.DrawText(g, newText, font, textPosition, InvertColor(NewColor));
         // Создание иконки из Bitmap
         // Создание иконки из Bitmap и освобождение ресурсов
-        return System.Drawing.Icon.FromHandle(bitmap.GetHicon()); 
+        return System.Drawing.Icon.FromHandle(bitmap.GetHicon());
     }
     // Метод для освобождения ресурсов, используемый после GetHicon()
     [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
@@ -436,7 +403,8 @@ public sealed partial class ИнформацияPage : Page
         b = 255 - b;
         return System.Drawing.Color.FromArgb(r, g, b);
     }
-
+    #endregion
+    #region Get-Info voids
     public static int GetCPUCores()
     {
         var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
@@ -556,125 +524,6 @@ public sealed partial class ИнформацияPage : Page
             Console.WriteLine("An error occurred while querying for WMI data: " + ex.Message);
         }
     }
-    private void InfoCPUSectionGridBuilder()
-    {
-        InfoMainCPUFreqGrid.RowDefinitions.Clear();
-        InfoMainCPUFreqGrid.ColumnDefinitions.Clear();
-        /*numberOfCores = 8;
-        numberOfLogicalProcessors = 16;*/
-        var backupNumberLogical = numberOfLogicalProcessors;
-        if (numberOfCores > 2)
-        {
-            numberOfLogicalProcessors = numberOfCores;
-        }
-        for (var i = 0; i < numberOfLogicalProcessors / 2; i++)
-        {
-            InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
-            InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
-        }
-        if (numberOfLogicalProcessors % 2 != 0 || numberOfLogicalProcessors == 2)
-        {
-            InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
-            InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
-        }
-        numberOfLogicalProcessors = backupNumberLogical;
-        var coreCounter = (SelectedGroup == 0 || SelectedGroup == 5) ? /*Это секция процессор или PStates*/
-            (numberOfCores > 2 ? numberOfCores : /*Это секция процессор или PStates - да! Количество ядер больше 2? - да! тогда coreCounter - количество ядер numberOfCores*/
-            (infoCPUSectionComboBox.SelectedIndex == 0 ? numberOfLogicalProcessors /*Нет! У процессора менее или ровно 2 ядра, Выбрано отображение частоты? - да! - тогда numberOfLogicalProcessors*/
-            : numberOfCores)) /*Выбрана не частота, хотя при этом у нас меньше или ровно 2 ядра и это секция 0 или 5, тогда - numberOfCores*/
-            : SelectedGroup == 1 ? /*Это НЕ секция процессор или PStates. Это секция GFX?*/
-            new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController").Get().Cast<ManagementObject>().Count() /*Да! - Это секция GFX - тогда найти количество видеокарт*/
-            : (SelectedGroup == 2 ? /*Нет! Выбрана не секция 0, 1, 5, возможно что-то другое? Выбрана секция 2?*/
-            tbRAMModel.Text.Split('/').Length /*Да! Выбрана секция RAM, найти количество установленных плат ОЗУ*/
-            : (SelectedGroup == 3 ? 4 /*Это не секции 0, 1, 2, 5! Это секция 3? - да! Тогда - 4*/
-            : 1)); /*Это не секции 0, 1, 2, 3, 5! Тогда - 1*/
-        for (var j = 0; j < InfoMainCPUFreqGrid.RowDefinitions.Count; j++)
-        {
-            for (var f = 0; f < InfoMainCPUFreqGrid.ColumnDefinitions.Count; f++)
-            {
-                if (coreCounter <= 0)
-                {
-                    return;
-                }
-                var currCore = (SelectedGroup == 0 || SelectedGroup == 5) ?
-                    (numberOfCores > 2 ?
-                    numberOfCores - coreCounter
-                    : infoCPUSectionComboBox.SelectedIndex == 0 ?
-                    numberOfLogicalProcessors - coreCounter
-                    : numberOfCores - coreCounter)
-                    : SelectedGroup == 1 ?
-                    new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController").Get().Cast<ManagementObject>().Count() - coreCounter
-                    : (SelectedGroup == 2 ?
-                    tbRAMModel.Text.Split('/').Length - coreCounter
-                    : (SelectedGroup == 3 ?
-                    4 - coreCounter
-                    : 0));
-                var elementButton = new Grid()
-                {
-                    VerticalAlignment = VerticalAlignment.Stretch,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Margin = new Thickness(3, 3, 3, 3),
-                    Children =
-                        {
-
-                            new Button()
-                            {
-                                Shadow = new ThemeShadow(),
-                                Translation = new System.Numerics.Vector3(0,0,20),
-                                HorizontalAlignment = HorizontalAlignment.Stretch,
-                                HorizontalContentAlignment = HorizontalAlignment.Stretch,
-                                VerticalAlignment = VerticalAlignment.Stretch,
-                                Content = new Grid()
-                                {
-                                    VerticalAlignment = VerticalAlignment.Stretch,
-                                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                                    Children =
-                                    {
-                                        new TextBlock
-                                        {
-                                            VerticalAlignment = VerticalAlignment.Center,
-                                            HorizontalAlignment = HorizontalAlignment.Left,
-                                            Text = currCore.ToString(),
-                                            FontWeight = new Windows.UI.Text.FontWeight(200)
-                                        },
-                                        new TextBlock
-                                        {
-                                            Text = "0.00 Ghz",
-                                            Name = $"FreqButtonText_{currCore}",
-                                            VerticalAlignment = VerticalAlignment.Center,
-                                            HorizontalAlignment = HorizontalAlignment.Center,
-                                            FontWeight = new Windows.UI.Text.FontWeight(800)
-                                        },
-                                        new TextBlock
-                                        {
-                                            VerticalAlignment = VerticalAlignment.Center,
-                                            HorizontalAlignment = HorizontalAlignment.Right,
-                                            Text = (SelectedGroup == 0 || SelectedGroup == 5) ?
-                                            (currCore < numberOfCores ? "InfoCPUCore".GetLocalized()
-                                            : "InfoCPUThread".GetLocalized())
-                                            : (SelectedGroup == 1 ? "InfoGPUName".GetLocalized()
-                                            : (SelectedGroup == 2 ? tbSlots.Text.Split('*')[1].Replace("Bit","")
-                                            : (SelectedGroup == 3 ?
-                                              (currCore == 0 ? "VRM EDC"
-                                            : ( currCore == 1 ? "VRM TDC"
-                                            : (currCore == 2 ? "SoC EDC"
-                                            : "SoC TDC")))
-                                            : "InfoBatteryName".GetLocalized()))),
-                                            FontWeight = new Windows.UI.Text.FontWeight(200)
-                                        }
-                                    }
-                                }
-
-                            }
-                        }
-                };
-
-                Grid.SetRow(elementButton, j); Grid.SetColumn(elementButton, f);
-                InfoMainCPUFreqGrid.Children.Add(elementButton);
-                coreCounter--;
-            }
-        }
-    }
     private void GetBATInfo()
     {
         try
@@ -755,6 +604,8 @@ public sealed partial class ИнформацияPage : Page
             SendSMUCommand.TraceIt_TraceError(ex.ToString());
         }
     }
+    #endregion
+    #region P-State voids
     public static void CalculatePstateDetails(uint eax, ref uint IddDiv, ref uint IddVal, ref uint CpuVid, ref uint CpuDfsId, ref uint CpuFid)
     {
         IddDiv = eax >> 30;
@@ -793,6 +644,8 @@ public sealed partial class ИнформацияPage : Page
         }
         catch (Exception ex) { SendSMUCommand.TraceIt_TraceError(ex.ToString()); }
     }
+    #endregion
+    #region Page-related voids
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
     {
         if (args.Visible)
@@ -817,6 +670,63 @@ public sealed partial class ИнформацияPage : Page
     {
         base.OnNavigatedFrom(e); StopInfoUpdate();
     }
+    private void ИнформацияPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        loaded = true;
+        SelectedBrush = CPUBannerButton.Background;
+        SelectedBorderBrush = CPUBannerButton.BorderBrush;
+        TransparentBrush = GPUBannerButton.Background;
+        GetCPUInfo();
+        GetRAMInfo();
+        ReadPstate();
+        GetBATInfo();
+        if (CPUBannerButton.Shadow != new ThemeShadow())
+        {
+            CPUBannerButton.Shadow ??= new ThemeShadow();
+            GPUBannerButton.Shadow = null;
+            RAMBannerButton.Shadow = null;
+            BATBannerButton.Shadow = null;
+            PSTBannerButton.Shadow = null;
+            VRMBannerButton.Shadow = null;
+        }
+        try
+        {
+            ConfigLoad();
+            infoRTSSButton.IsChecked = config.RTSSMetricsEnabled;
+            infoNiIconsButton.IsChecked = config.NiIconsEnabled;
+            if (config.NiIconsEnabled)
+            {
+                CreateNotifyIcons();
+            }
+        }
+        catch
+        {
+
+        }
+    }
+    private void ИнформацияPage_Unloaded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            DisposeAllNotifyIcons();
+        }
+        catch (Exception ex)
+        {
+            SendSMUCommand.TraceIt_TraceError(ex.ToString());
+        }
+        try
+        {
+            infoRTSSButton.IsChecked = false;
+            dispatcherTimer?.Stop();
+            RTSSHandler.ResetOSDText();
+        }
+        catch (Exception ex)
+        {
+            SendSMUCommand.TraceIt_TraceError(ex.ToString());
+        }
+    }
+    #endregion
+    #region Info Update voids
     private void UpdateInfoAsync()
     {
         try
@@ -919,6 +829,7 @@ public sealed partial class ИнформацияPage : Page
                     infoCPUSectionName.Text = "InfoCPUSectionName".GetLocalized();
                     tbProcessor.Text = CPUName;
                 }
+
                 InfoACPUBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoACPUBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoAGPUBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
@@ -932,11 +843,15 @@ public sealed partial class ИнформацияPage : Page
                 InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoAPSTBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
 
-                if (ryzenAccess == 0x0)
+                if (ryzenAccess == 0x0 && !Info_RyzenADJLoadError_InfoBar.IsOpen)
                 {
-                    return;
+                    Info_RyzenADJLoadError_InfoBar.IsOpen = true;
+                    infoRTSSButton.Visibility = Visibility.Collapsed;
+                    infoNiIconsButton.Visibility = Visibility.Collapsed;
                 }
-                _ = RyzenADJWrapper.refresh_table(ryzenAccess);
+
+                _ = RyzenADJWrapper.Refresh_table(ryzenAccess);
+
                 var batteryRate = GetSystemInfo.GetBatteryRate() / 1000;
                 tbBATChargeRate.Text = $"{batteryRate}W";
                 tbBAT.Text = GetSystemInfo.GetBatteryPercent() + "%";
@@ -948,29 +863,29 @@ public sealed partial class ИнформацияPage : Page
                 var currBatRate = batteryRate >= 0 ? batteryRate : -1 * batteryRate;
                 var beforeMaxBatRate = MaxBatRate;
                 if (MaxBatRate < currBatRate) { MaxBatRate = currBatRate; }
-                tbStapmL.Text = Math.Round(RyzenADJWrapper.get_stapm_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.get_stapm_limit(ryzenAccess), 3) + "W";
+                tbStapmL.Text = Math.Round(RyzenADJWrapper.Get_stapm_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.Get_stapm_limit(ryzenAccess), 3) + "W";
 
-                tbActualL.Text = Math.Round(RyzenADJWrapper.get_fast_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.get_fast_limit(ryzenAccess), 3) + "W";
+                tbActualL.Text = Math.Round(RyzenADJWrapper.Get_fast_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.Get_fast_limit(ryzenAccess), 3) + "W";
                 tbAclualPowerL.Text = tbActualL.Text;
 
-                tbAVGL.Text = Math.Round(RyzenADJWrapper.get_slow_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.get_slow_limit(ryzenAccess), 3) + "W";
+                tbAVGL.Text = Math.Round(RyzenADJWrapper.Get_slow_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.Get_slow_limit(ryzenAccess), 3) + "W";
 
-                tbFast.Text = Math.Round(RyzenADJWrapper.get_stapm_time(ryzenAccess), 3) + "S";
-                tbSlow.Text = Math.Round(RyzenADJWrapper.get_slow_time(ryzenAccess), 3) + "S";
+                tbFast.Text = Math.Round(RyzenADJWrapper.Get_stapm_time(ryzenAccess), 3) + "S";
+                tbSlow.Text = Math.Round(RyzenADJWrapper.Get_slow_time(ryzenAccess), 3) + "S";
 
-                tbAPUL.Text = Math.Round(RyzenADJWrapper.get_apu_slow_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.get_apu_slow_limit(ryzenAccess), 3) + "W";
+                tbAPUL.Text = Math.Round(RyzenADJWrapper.Get_apu_slow_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.Get_apu_slow_limit(ryzenAccess), 3) + "W";
 
-                tbVRMTDCL.Text = Math.Round(RyzenADJWrapper.get_vrm_current_value(ryzenAccess), 3) + "A/" + Math.Round(RyzenADJWrapper.get_vrm_current(ryzenAccess), 3) + "A";
-                tbSOCTDCL.Text = Math.Round(RyzenADJWrapper.get_vrmsoc_current_value(ryzenAccess), 3) + "A/" + Math.Round(RyzenADJWrapper.get_vrmsoc_current(ryzenAccess), 3) + "A";
-                tbVRMEDCL.Text = Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3) + "A/" + Math.Round(RyzenADJWrapper.get_vrmmax_current(ryzenAccess), 3) + "A";
+                tbVRMTDCL.Text = Math.Round(RyzenADJWrapper.Get_vrm_current_value(ryzenAccess), 3) + "A/" + Math.Round(RyzenADJWrapper.Get_vrm_current(ryzenAccess), 3) + "A";
+                tbSOCTDCL.Text = Math.Round(RyzenADJWrapper.Get_vrmsoc_current_value(ryzenAccess), 3) + "A/" + Math.Round(RyzenADJWrapper.Get_vrmsoc_current(ryzenAccess), 3) + "A";
+                tbVRMEDCL.Text = Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess), 3) + "A/" + Math.Round(RyzenADJWrapper.Get_vrmmax_current(ryzenAccess), 3) + "A";
                 tbVRMEDCVRML.Text = tbVRMEDCL.Text;
-                infoVRMUsageBanner.Text = Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3) + "A\n" + Math.Round(RyzenADJWrapper.get_fast_value(ryzenAccess), 3) + "W"; infoIVRMUsageBigBanner.Text = infoVRMUsageBanner.Text;
-                infoAVRMUsageBannerPolygonText.Text = Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3) + "A"; infoAVRMUsageBigBannerPolygonText.Text = infoAVRMUsageBannerPolygonText.Text;
-                tbSOCEDCL.Text = Math.Round(RyzenADJWrapper.get_vrmsocmax_current_value(ryzenAccess), 3) + "A/" + Math.Round(RyzenADJWrapper.get_vrmsocmax_current(ryzenAccess), 3) + "A";
-                tbSOCVOLT.Text = Math.Round(RyzenADJWrapper.get_soc_volt(ryzenAccess), 3) + "V";
-                tbSOCPOWER.Text = Math.Round(RyzenADJWrapper.get_soc_power(ryzenAccess), 3) + "W";
-                tbMEMCLOCK.Text = Math.Round(RyzenADJWrapper.get_mem_clk(ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
-                tbFabricClock.Text = Math.Round(RyzenADJWrapper.get_fclk(ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
+                infoVRMUsageBanner.Text = Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess), 3) + "A\n" + Math.Round(RyzenADJWrapper.Get_fast_value(ryzenAccess), 3) + "W"; infoIVRMUsageBigBanner.Text = infoVRMUsageBanner.Text;
+                infoAVRMUsageBannerPolygonText.Text = Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess), 3) + "A"; infoAVRMUsageBigBannerPolygonText.Text = infoAVRMUsageBannerPolygonText.Text;
+                tbSOCEDCL.Text = Math.Round(RyzenADJWrapper.Get_vrmsocmax_current_value(ryzenAccess), 3) + "A/" + Math.Round(RyzenADJWrapper.Get_vrmsocmax_current(ryzenAccess), 3) + "A";
+                tbSOCVOLT.Text = Math.Round(RyzenADJWrapper.Get_soc_volt(ryzenAccess), 3) + "V";
+                tbSOCPOWER.Text = Math.Round(RyzenADJWrapper.Get_soc_power(ryzenAccess), 3) + "W";
+                tbMEMCLOCK.Text = Math.Round(RyzenADJWrapper.Get_mem_clk(ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
+                tbFabricClock.Text = Math.Round(RyzenADJWrapper.Get_fclk(ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
                 var core_Clk = 0f;
                 var endtrace = 0;
                 var core_Volt = 0f;
@@ -979,7 +894,7 @@ public sealed partial class ИнформацияPage : Page
                 var currentPstate = 4;
                 for (uint f = 0; f < 8; f++)
                 {
-                    var getCurrFreq = RyzenADJWrapper.get_core_clk(ryzenAccess, f);
+                    var getCurrFreq = RyzenADJWrapper.Get_core_clk(ryzenAccess, f);
                     if (!float.IsNaN(getCurrFreq) && getCurrFreq > maxFreq)
                     {
                         maxFreq = getCurrFreq;
@@ -987,9 +902,9 @@ public sealed partial class ИнформацияPage : Page
                     var currCore = infoCPUSectionComboBox.SelectedIndex switch
                     {
                         0 => getCurrFreq,
-                        1 => RyzenADJWrapper.get_core_volt(ryzenAccess, f),
-                        2 => RyzenADJWrapper.get_core_power(ryzenAccess, f),
-                        3 => RyzenADJWrapper.get_core_temp(ryzenAccess, f),
+                        1 => RyzenADJWrapper.Get_core_volt(ryzenAccess, f),
+                        2 => RyzenADJWrapper.Get_core_power(ryzenAccess, f),
+                        3 => RyzenADJWrapper.Get_core_temp(ryzenAccess, f),
                         _ => getCurrFreq
                     };
                     if (!float.IsNaN(currCore))
@@ -1034,10 +949,10 @@ public sealed partial class ИнформацияPage : Page
                                 if (SelectedGroup == 3)
                                 {
                                     currText.Text = f == 0 ?
-                                        $"{Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.get_vrmmax_current(ryzenAccess), 3)}A"
-                                        : (f == 1 ? $"{Math.Round(RyzenADJWrapper.get_vrm_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.get_vrm_current(ryzenAccess), 3)}A"
-                                        : (f == 2 ? $"{Math.Round(RyzenADJWrapper.get_vrmsocmax_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.get_vrmsocmax_current(ryzenAccess), 3)}A"
-                                        : (f == 3 ? $"{Math.Round(RyzenADJWrapper.get_vrmsoc_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.get_vrmsoc_current(ryzenAccess), 3)}A" : $"{0}A")));
+                                        $"{Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.Get_vrmmax_current(ryzenAccess), 3)}A"
+                                        : (f == 1 ? $"{Math.Round(RyzenADJWrapper.Get_vrm_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.Get_vrm_current(ryzenAccess), 3)}A"
+                                        : (f == 2 ? $"{Math.Round(RyzenADJWrapper.Get_vrmsocmax_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.Get_vrmsocmax_current(ryzenAccess), 3)}A"
+                                        : (f == 3 ? $"{Math.Round(RyzenADJWrapper.Get_vrmsoc_current_value(ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.Get_vrmsoc_current(ryzenAccess), 3)}A" : $"{0}A")));
                                 }
                                 if (SelectedGroup == 4)
                                 {
@@ -1051,7 +966,7 @@ public sealed partial class ИнформацияPage : Page
                             endtrace += 1;
                         }
                     }
-                    var currVolt = RyzenADJWrapper.get_core_volt(ryzenAccess, f);
+                    var currVolt = RyzenADJWrapper.Get_core_volt(ryzenAccess, f);
                     if (!float.IsNaN(currVolt))
                     {
                         core_Volt += currVolt;
@@ -1093,23 +1008,23 @@ public sealed partial class ИнформацияPage : Page
                     tbCPUVolt.Text = "?V";
                 }
                 tbPSTFREQ.Text = tbCPUFreq.Text;
-                var gfxCLK = Math.Round(RyzenADJWrapper.get_gfx_clk(ryzenAccess) / 1000, 3);
-                var gfxVolt = Math.Round(RyzenADJWrapper.get_gfx_volt(ryzenAccess), 3);
-                var gfxTemp = RyzenADJWrapper.get_gfx_temp(ryzenAccess);
+                var gfxCLK = Math.Round(RyzenADJWrapper.Get_gfx_clk(ryzenAccess) / 1000, 3);
+                var gfxVolt = Math.Round(RyzenADJWrapper.Get_gfx_volt(ryzenAccess), 3);
+                var gfxTemp = RyzenADJWrapper.Get_gfx_temp(ryzenAccess);
                 var beforeMaxGFX = MaxGFXClock;
                 if (MaxGFXClock < gfxCLK) { MaxGFXClock = gfxCLK; }
                 infoGPUUsageBanner.Text = gfxCLK + " " + "infoAGHZ".GetLocalized() + "  " + Math.Round(gfxTemp, 0) + "C\n" + gfxVolt + "V";
                 infoAGPUUsageBannerPolygonText.Text = gfxCLK + "infoAGHZ".GetLocalized(); tbGPUFreq.Text = infoAGPUUsageBannerPolygonText.Text;
                 infoAGPUUsageBigBannerPolygonText.Text = infoAGPUUsageBannerPolygonText.Text; infoIGPUUsageBigBanner.Text = infoGPUUsageBanner.Text;
                 tbGPUVolt.Text = gfxVolt + "V";
-                var maxTemp = Math.Round(RyzenADJWrapper.get_tctl_temp(ryzenAccess), 3);
-                tbCPUMaxL.Text = Math.Round(RyzenADJWrapper.get_tctl_temp_value(ryzenAccess), 3) + "C/" + maxTemp + "C";
+                var maxTemp = Math.Round(RyzenADJWrapper.Get_tctl_temp(ryzenAccess), 3);
+                tbCPUMaxL.Text = Math.Round(RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess), 3) + "C/" + maxTemp + "C";
                 tbCPUMaxTempL.Text = tbCPUMaxL.Text; tbCPUMaxTempVRML.Text = tbCPUMaxL.Text;
-                var apuTemp = Math.Round(RyzenADJWrapper.get_apu_skin_temp_value(ryzenAccess), 3);
-                var apuTempLimit = Math.Round(RyzenADJWrapper.get_apu_skin_temp_limit(ryzenAccess), 3);
+                var apuTemp = Math.Round(RyzenADJWrapper.Get_apu_skin_temp_value(ryzenAccess), 3);
+                var apuTempLimit = Math.Round(RyzenADJWrapper.Get_apu_skin_temp_limit(ryzenAccess), 3);
                 tbAPUMaxL.Text = (!double.IsNaN(apuTemp) && apuTemp > 0 ? apuTemp : Math.Round(gfxTemp, 3)) + "C/" + (!double.IsNaN(apuTempLimit) && apuTempLimit > 0 ? apuTempLimit : maxTemp) + "C";
-                tbDGPUMaxL.Text = Math.Round(RyzenADJWrapper.get_dgpu_skin_temp_value(ryzenAccess), 3) + "C/" + Math.Round(RyzenADJWrapper.get_dgpu_skin_temp_limit(ryzenAccess), 3) + "C";
-                var CoreCPUUsage = Math.Round(RyzenADJWrapper.get_cclk_busy_value(ryzenAccess), 3);
+                tbDGPUMaxL.Text = Math.Round(RyzenADJWrapper.Get_dgpu_skin_temp_value(ryzenAccess), 3) + "C/" + Math.Round(RyzenADJWrapper.Get_dgpu_skin_temp_limit(ryzenAccess), 3) + "C";
+                var CoreCPUUsage = Math.Round(RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess), 3);
                 tbCPUUsage.Text = CoreCPUUsage + "%"; infoACPUUsageBannerPolygonText.Text = Math.Round(CoreCPUUsage, 0) + "%";
                 infoICPUUsageBanner.Text = Math.Round(CoreCPUUsage, 0) + "%  " + tbCPUFreq.Text + "\n" + tbCPUVolt.Text;
                 infoACPUUsageBigBannerPolygonText.Text = tbCPUUsage.Text; infoICPUUsageBigBanner.Text = infoICPUUsageBanner.Text;
@@ -1194,13 +1109,13 @@ public sealed partial class ИнформацияPage : Page
 
                 //InfoAVRMBanner График
                 InfoAVRMBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
-                VRMPointer.Add(new InfoPageCPUPoints() { X = 60, Y = 48 - (int)(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess) / RyzenADJWrapper.get_vrmmax_current(ryzenAccess) * 48) });
+                VRMPointer.Add(new InfoPageCPUPoints() { X = 60, Y = 48 - (int)(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess) / RyzenADJWrapper.Get_vrmmax_current(ryzenAccess) * 48) });
                 if (VRMFlyout.IsOpen)
                 {
                     InfoAVRMBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
-                    InfoAVRMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 48 - (int)(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess) / RyzenADJWrapper.get_vrmmax_current(ryzenAccess) * 48)));
+                    InfoAVRMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 48 - (int)(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess) / RyzenADJWrapper.Get_vrmmax_current(ryzenAccess) * 48)));
                 }
-                InfoAVRMBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 48 - (int)(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess) / RyzenADJWrapper.get_vrmmax_current(ryzenAccess) * 48)));
+                InfoAVRMBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 48 - (int)(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess) / RyzenADJWrapper.Get_vrmmax_current(ryzenAccess) * 48)));
                 foreach (var element in VRMPointer.ToList())
                 {
                     if (element != null)
@@ -1354,8 +1269,8 @@ public sealed partial class ИнформацияPage : Page
             {
                 if (f < 8)
                 {
-                    var clk = Math.Round(RyzenADJWrapper.get_core_clk(ryzenAccess, f), 3);
-                    var volt = Math.Round(RyzenADJWrapper.get_core_volt(ryzenAccess, f), 3);
+                    var clk = Math.Round(RyzenADJWrapper.Get_core_clk(ryzenAccess, f), 3);
+                    var volt = Math.Round(RyzenADJWrapper.Get_core_volt(ryzenAccess, f), 3);
                     avgCoreCLK += clk;
                     avgCoreVolt += volt;
                     if (rtssset.AdvancedCodeEditor == "")
@@ -1372,109 +1287,109 @@ public sealed partial class ИнформацияPage : Page
             if (rtssset.AdvancedCodeEditor.Contains("$cpu_clock_cycle$") && rtssset.AdvancedCodeEditor.Contains("$cpu_clock_cycle_end$"))
             {
                 rtss_line = rtssset.AdvancedCodeEditor.Split("$cpu_clock_cycle$")[0].Replace("$SelectedProfile$", ShellPage.SelectedProfile.Replace('а', 'a').Replace('м', 'm').Replace('и', 'i').Replace('н', 'n').Replace('М', 'M').Replace('у', 'u').Replace('Э', 'E').Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c').Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' '))
-                .Replace("$stapm_value$", Math.Round(RyzenADJWrapper.get_stapm_value(ryzenAccess), 3).ToString())
-                .Replace("$stapm_limit$", Math.Round(RyzenADJWrapper.get_stapm_limit(ryzenAccess), 3).ToString())
-                .Replace("$fast_value$", Math.Round(RyzenADJWrapper.get_fast_value(ryzenAccess), 3).ToString())
-                .Replace("$fast_limit$", Math.Round(RyzenADJWrapper.get_fast_limit(ryzenAccess), 3).ToString())
-                .Replace("$slow_value$", Math.Round(RyzenADJWrapper.get_slow_value(ryzenAccess), 3).ToString())
-                .Replace("$slow_limit$", Math.Round(RyzenADJWrapper.get_slow_limit(ryzenAccess), 3).ToString())
-                .Replace("$vrmedc_value$", Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3).ToString())
-                .Replace("$vrmedc_max$", Math.Round(RyzenADJWrapper.get_vrmmax_current(ryzenAccess), 3).ToString())
-                .Replace("$cpu_temp_value$", Math.Round(RyzenADJWrapper.get_tctl_temp_value(ryzenAccess), 3).ToString())
-                .Replace("$cpu_temp_max$", Math.Round(RyzenADJWrapper.get_tctl_temp(ryzenAccess), 3).ToString())
-                .Replace("$cpu_usage$", Math.Round(RyzenADJWrapper.get_cclk_busy_value(ryzenAccess), 3).ToString())
-                .Replace("$gfx_clock$", Math.Round(RyzenADJWrapper.get_gfx_clk(ryzenAccess), 3).ToString())
-                .Replace("$gfx_volt$", Math.Round(RyzenADJWrapper.get_gfx_volt(ryzenAccess), 3).ToString())
-                .Replace("$gfx_temp$", Math.Round(RyzenADJWrapper.get_gfx_temp(ryzenAccess), 3).ToString())
+                .Replace("$stapm_value$", Math.Round(RyzenADJWrapper.Get_stapm_value(ryzenAccess), 3).ToString())
+                .Replace("$stapm_limit$", Math.Round(RyzenADJWrapper.Get_stapm_limit(ryzenAccess), 3).ToString())
+                .Replace("$fast_value$", Math.Round(RyzenADJWrapper.Get_fast_value(ryzenAccess), 3).ToString())
+                .Replace("$fast_limit$", Math.Round(RyzenADJWrapper.Get_fast_limit(ryzenAccess), 3).ToString())
+                .Replace("$slow_value$", Math.Round(RyzenADJWrapper.Get_slow_value(ryzenAccess), 3).ToString())
+                .Replace("$slow_limit$", Math.Round(RyzenADJWrapper.Get_slow_limit(ryzenAccess), 3).ToString())
+                .Replace("$vrmedc_value$", Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess), 3).ToString())
+                .Replace("$vrmedc_max$", Math.Round(RyzenADJWrapper.Get_vrmmax_current(ryzenAccess), 3).ToString())
+                .Replace("$cpu_temp_value$", Math.Round(RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess), 3).ToString())
+                .Replace("$cpu_temp_max$", Math.Round(RyzenADJWrapper.Get_tctl_temp(ryzenAccess), 3).ToString())
+                .Replace("$cpu_usage$", Math.Round(RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess), 3).ToString())
+                .Replace("$gfx_clock$", Math.Round(RyzenADJWrapper.Get_gfx_clk(ryzenAccess), 3).ToString())
+                .Replace("$gfx_volt$", Math.Round(RyzenADJWrapper.Get_gfx_volt(ryzenAccess), 3).ToString())
+                .Replace("$gfx_temp$", Math.Round(RyzenADJWrapper.Get_gfx_temp(ryzenAccess), 3).ToString())
                 .Replace("$average_cpu_clock$", Math.Round(avgCoreCLK / numberOfCores, 3).ToString())
                 .Replace("$average_cpu_voltage$", Math.Round(avgCoreVolt / numberOfCores, 3).ToString())
                       + endCLKString
                       + rtssset.AdvancedCodeEditor.Split("$cpu_clock_cycle_end$")[1].Replace("$SelectedProfile$", ShellPage.SelectedProfile.Replace('а', 'a').Replace('м', 'm').Replace('и', 'i').Replace('н', 'n').Replace('М', 'M').Replace('у', 'u').Replace('Э', 'E').Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c').Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' '))
-                .Replace("$stapm_value$", Math.Round(RyzenADJWrapper.get_stapm_value(ryzenAccess), 3).ToString())
-                .Replace("$stapm_limit$", Math.Round(RyzenADJWrapper.get_stapm_limit(ryzenAccess), 3).ToString())
-                .Replace("$fast_value$", Math.Round(RyzenADJWrapper.get_fast_value(ryzenAccess), 3).ToString())
-                .Replace("$fast_limit$", Math.Round(RyzenADJWrapper.get_fast_limit(ryzenAccess), 3).ToString())
-                .Replace("$slow_value$", Math.Round(RyzenADJWrapper.get_slow_value(ryzenAccess), 3).ToString())
-                .Replace("$slow_limit$", Math.Round(RyzenADJWrapper.get_slow_limit(ryzenAccess), 3).ToString())
-                .Replace("$vrmedc_value$", Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3).ToString())
-                .Replace("$vrmedc_max$", Math.Round(RyzenADJWrapper.get_vrmmax_current(ryzenAccess), 3).ToString())
-                .Replace("$cpu_temp_value$", Math.Round(RyzenADJWrapper.get_tctl_temp_value(ryzenAccess), 3).ToString())
-                .Replace("$cpu_temp_max$", Math.Round(RyzenADJWrapper.get_tctl_temp(ryzenAccess), 3).ToString())
-                .Replace("$cpu_usage$", Math.Round(RyzenADJWrapper.get_cclk_busy_value(ryzenAccess), 3).ToString())
-                .Replace("$gfx_clock$", Math.Round(RyzenADJWrapper.get_gfx_clk(ryzenAccess), 3).ToString())
-                .Replace("$gfx_volt$", Math.Round(RyzenADJWrapper.get_gfx_volt(ryzenAccess), 3).ToString())
-                .Replace("$gfx_temp$", Math.Round(RyzenADJWrapper.get_gfx_temp(ryzenAccess), 3).ToString())
-                .Replace("$average_cpu_clock$", Math.Round(avgCoreCLK / numberOfCores, 3).ToString())
-                .Replace("$average_cpu_voltage$", Math.Round(avgCoreVolt / numberOfCores, 3).ToString());
-            } 
-            else
-            {
-                rtss_line = rtssset.AdvancedCodeEditor.Replace("$SelectedProfile$", ShellPage.SelectedProfile.Replace('а', 'a').Replace('м', 'm').Replace('и', 'i').Replace('н', 'n').Replace('М', 'M').Replace('у', 'u').Replace('Э', 'E').Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c').Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' '))
-                .Replace("$stapm_value$", Math.Round(RyzenADJWrapper.get_stapm_value(ryzenAccess), 3).ToString())
-                .Replace("$stapm_limit$", Math.Round(RyzenADJWrapper.get_stapm_limit(ryzenAccess), 3).ToString())
-                .Replace("$fast_value$", Math.Round(RyzenADJWrapper.get_fast_value(ryzenAccess), 3).ToString())
-                .Replace("$fast_limit$", Math.Round(RyzenADJWrapper.get_fast_limit(ryzenAccess), 3).ToString())
-                .Replace("$slow_value$", Math.Round(RyzenADJWrapper.get_slow_value(ryzenAccess), 3).ToString())
-                .Replace("$slow_limit$", Math.Round(RyzenADJWrapper.get_slow_limit(ryzenAccess), 3).ToString())
-                .Replace("$vrmedc_value$", Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3).ToString())
-                .Replace("$vrmedc_max$", Math.Round(RyzenADJWrapper.get_vrmmax_current(ryzenAccess), 3).ToString())
-                .Replace("$cpu_temp_value$", Math.Round(RyzenADJWrapper.get_tctl_temp_value(ryzenAccess), 3).ToString())
-                .Replace("$cpu_temp_max$", Math.Round(RyzenADJWrapper.get_tctl_temp(ryzenAccess), 3).ToString())
-                .Replace("$cpu_usage$", Math.Round(RyzenADJWrapper.get_cclk_busy_value(ryzenAccess), 3).ToString())
-                .Replace("$gfx_clock$", Math.Round(RyzenADJWrapper.get_gfx_clk(ryzenAccess), 3).ToString())
-                .Replace("$gfx_volt$", Math.Round(RyzenADJWrapper.get_gfx_volt(ryzenAccess), 3).ToString())
-                .Replace("$gfx_temp$", Math.Round(RyzenADJWrapper.get_gfx_temp(ryzenAccess), 3).ToString())
+                .Replace("$stapm_value$", Math.Round(RyzenADJWrapper.Get_stapm_value(ryzenAccess), 3).ToString())
+                .Replace("$stapm_limit$", Math.Round(RyzenADJWrapper.Get_stapm_limit(ryzenAccess), 3).ToString())
+                .Replace("$fast_value$", Math.Round(RyzenADJWrapper.Get_fast_value(ryzenAccess), 3).ToString())
+                .Replace("$fast_limit$", Math.Round(RyzenADJWrapper.Get_fast_limit(ryzenAccess), 3).ToString())
+                .Replace("$slow_value$", Math.Round(RyzenADJWrapper.Get_slow_value(ryzenAccess), 3).ToString())
+                .Replace("$slow_limit$", Math.Round(RyzenADJWrapper.Get_slow_limit(ryzenAccess), 3).ToString())
+                .Replace("$vrmedc_value$", Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess), 3).ToString())
+                .Replace("$vrmedc_max$", Math.Round(RyzenADJWrapper.Get_vrmmax_current(ryzenAccess), 3).ToString())
+                .Replace("$cpu_temp_value$", Math.Round(RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess), 3).ToString())
+                .Replace("$cpu_temp_max$", Math.Round(RyzenADJWrapper.Get_tctl_temp(ryzenAccess), 3).ToString())
+                .Replace("$cpu_usage$", Math.Round(RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess), 3).ToString())
+                .Replace("$gfx_clock$", Math.Round(RyzenADJWrapper.Get_gfx_clk(ryzenAccess), 3).ToString())
+                .Replace("$gfx_volt$", Math.Round(RyzenADJWrapper.Get_gfx_volt(ryzenAccess), 3).ToString())
+                .Replace("$gfx_temp$", Math.Round(RyzenADJWrapper.Get_gfx_temp(ryzenAccess), 3).ToString())
                 .Replace("$average_cpu_clock$", Math.Round(avgCoreCLK / numberOfCores, 3).ToString())
                 .Replace("$average_cpu_voltage$", Math.Round(avgCoreVolt / numberOfCores, 3).ToString());
             }
-            
+            else
+            {
+                rtss_line = rtssset.AdvancedCodeEditor.Replace("$SelectedProfile$", ShellPage.SelectedProfile.Replace('а', 'a').Replace('м', 'm').Replace('и', 'i').Replace('н', 'n').Replace('М', 'M').Replace('у', 'u').Replace('Э', 'E').Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c').Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' '))
+                .Replace("$stapm_value$", Math.Round(RyzenADJWrapper.Get_stapm_value(ryzenAccess), 3).ToString())
+                .Replace("$stapm_limit$", Math.Round(RyzenADJWrapper.Get_stapm_limit(ryzenAccess), 3).ToString())
+                .Replace("$fast_value$", Math.Round(RyzenADJWrapper.Get_fast_value(ryzenAccess), 3).ToString())
+                .Replace("$fast_limit$", Math.Round(RyzenADJWrapper.Get_fast_limit(ryzenAccess), 3).ToString())
+                .Replace("$slow_value$", Math.Round(RyzenADJWrapper.Get_slow_value(ryzenAccess), 3).ToString())
+                .Replace("$slow_limit$", Math.Round(RyzenADJWrapper.Get_slow_limit(ryzenAccess), 3).ToString())
+                .Replace("$vrmedc_value$", Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess), 3).ToString())
+                .Replace("$vrmedc_max$", Math.Round(RyzenADJWrapper.Get_vrmmax_current(ryzenAccess), 3).ToString())
+                .Replace("$cpu_temp_value$", Math.Round(RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess), 3).ToString())
+                .Replace("$cpu_temp_max$", Math.Round(RyzenADJWrapper.Get_tctl_temp(ryzenAccess), 3).ToString())
+                .Replace("$cpu_usage$", Math.Round(RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess), 3).ToString())
+                .Replace("$gfx_clock$", Math.Round(RyzenADJWrapper.Get_gfx_clk(ryzenAccess), 3).ToString())
+                .Replace("$gfx_volt$", Math.Round(RyzenADJWrapper.Get_gfx_volt(ryzenAccess), 3).ToString())
+                .Replace("$gfx_temp$", Math.Round(RyzenADJWrapper.Get_gfx_temp(ryzenAccess), 3).ToString())
+                .Replace("$average_cpu_clock$", Math.Round(avgCoreCLK / numberOfCores, 3).ToString())
+                .Replace("$average_cpu_voltage$", Math.Round(avgCoreVolt / numberOfCores, 3).ToString());
+            }
 
 
-            if (niicons_Min_MaxValues[0].Min == 0.0f) { niicons_Min_MaxValues[0].Min = RyzenADJWrapper.get_stapm_value(ryzenAccess); }
-            if (niicons_Min_MaxValues[1].Min == 0.0f) { niicons_Min_MaxValues[1].Min = RyzenADJWrapper.get_fast_value(ryzenAccess); }
-            if (niicons_Min_MaxValues[2].Min == 0.0f) { niicons_Min_MaxValues[2].Min = RyzenADJWrapper.get_slow_value(ryzenAccess); }
-            if (niicons_Min_MaxValues[3].Min == 0.0f) { niicons_Min_MaxValues[3].Min = RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess); }
-            if (niicons_Min_MaxValues[4].Min == 0.0f) { niicons_Min_MaxValues[4].Min = RyzenADJWrapper.get_tctl_temp_value(ryzenAccess); }
-            if (niicons_Min_MaxValues[5].Min == 0.0f) { niicons_Min_MaxValues[5].Min = RyzenADJWrapper.get_cclk_busy_value(ryzenAccess); }
+
+            if (niicons_Min_MaxValues[0].Min == 0.0f) { niicons_Min_MaxValues[0].Min = RyzenADJWrapper.Get_stapm_value(ryzenAccess); }
+            if (niicons_Min_MaxValues[1].Min == 0.0f) { niicons_Min_MaxValues[1].Min = RyzenADJWrapper.Get_fast_value(ryzenAccess); }
+            if (niicons_Min_MaxValues[2].Min == 0.0f) { niicons_Min_MaxValues[2].Min = RyzenADJWrapper.Get_slow_value(ryzenAccess); }
+            if (niicons_Min_MaxValues[3].Min == 0.0f) { niicons_Min_MaxValues[3].Min = RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess); }
+            if (niicons_Min_MaxValues[4].Min == 0.0f) { niicons_Min_MaxValues[4].Min = RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess); }
+            if (niicons_Min_MaxValues[5].Min == 0.0f) { niicons_Min_MaxValues[5].Min = RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess); }
             if (niicons_Min_MaxValues[6].Min == 0.0f) { niicons_Min_MaxValues[6].Min = (float)(avgCoreCLK / numberOfCores); }
             if (niicons_Min_MaxValues[7].Min == 0.0f) { niicons_Min_MaxValues[7].Min = (float)(avgCoreVolt / numberOfCores); }
-            if (niicons_Min_MaxValues[8].Min == 0.0f) { niicons_Min_MaxValues[8].Min = RyzenADJWrapper.get_gfx_clk(ryzenAccess); }
-            if (niicons_Min_MaxValues[9].Min == 0.0f) { niicons_Min_MaxValues[9].Min = RyzenADJWrapper.get_gfx_temp(ryzenAccess); }
-            if (niicons_Min_MaxValues[10].Min == 0.0f) { niicons_Min_MaxValues[10].Min = RyzenADJWrapper.get_gfx_volt(ryzenAccess); }
-            niicons_Min_MaxValues[0].Max = RyzenADJWrapper.get_stapm_value(ryzenAccess) > niicons_Min_MaxValues[0].Max ? RyzenADJWrapper.get_stapm_value(ryzenAccess) : niicons_Min_MaxValues[0].Max;
-            niicons_Min_MaxValues[0].Min = RyzenADJWrapper.get_stapm_value(ryzenAccess) < niicons_Min_MaxValues[0].Min ? RyzenADJWrapper.get_stapm_value(ryzenAccess) : niicons_Min_MaxValues[0].Min;
-            niicons_Min_MaxValues[1].Max = RyzenADJWrapper.get_fast_value(ryzenAccess) > niicons_Min_MaxValues[1].Max ? RyzenADJWrapper.get_fast_value(ryzenAccess) : niicons_Min_MaxValues[1].Max;
-            niicons_Min_MaxValues[1].Min = RyzenADJWrapper.get_fast_value(ryzenAccess) < niicons_Min_MaxValues[1].Min ? RyzenADJWrapper.get_fast_value(ryzenAccess) : niicons_Min_MaxValues[1].Min;
-            niicons_Min_MaxValues[2].Max = RyzenADJWrapper.get_slow_value(ryzenAccess) > niicons_Min_MaxValues[2].Max ? RyzenADJWrapper.get_slow_value(ryzenAccess) : niicons_Min_MaxValues[2].Max;
-            niicons_Min_MaxValues[2].Min = RyzenADJWrapper.get_slow_value(ryzenAccess) < niicons_Min_MaxValues[2].Min ? RyzenADJWrapper.get_slow_value(ryzenAccess) : niicons_Min_MaxValues[2].Min;
-            niicons_Min_MaxValues[3].Max = RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess) > niicons_Min_MaxValues[3].Max ? RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess) : niicons_Min_MaxValues[3].Max;
-            niicons_Min_MaxValues[3].Min = RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess) < niicons_Min_MaxValues[3].Min ? RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess) : niicons_Min_MaxValues[3].Min;
-            niicons_Min_MaxValues[4].Max = RyzenADJWrapper.get_tctl_temp_value(ryzenAccess) > niicons_Min_MaxValues[4].Max ? RyzenADJWrapper.get_tctl_temp_value(ryzenAccess) : niicons_Min_MaxValues[4].Max;
-            niicons_Min_MaxValues[4].Min = RyzenADJWrapper.get_tctl_temp_value(ryzenAccess) < niicons_Min_MaxValues[4].Min ? RyzenADJWrapper.get_tctl_temp_value(ryzenAccess) : niicons_Min_MaxValues[4].Min;
-            niicons_Min_MaxValues[5].Max = RyzenADJWrapper.get_cclk_busy_value(ryzenAccess) > niicons_Min_MaxValues[5].Max ? RyzenADJWrapper.get_cclk_busy_value(ryzenAccess) : niicons_Min_MaxValues[5].Max;
-            niicons_Min_MaxValues[5].Min = RyzenADJWrapper.get_cclk_busy_value(ryzenAccess) < niicons_Min_MaxValues[5].Min ? RyzenADJWrapper.get_cclk_busy_value(ryzenAccess) : niicons_Min_MaxValues[5].Min;
+            if (niicons_Min_MaxValues[8].Min == 0.0f) { niicons_Min_MaxValues[8].Min = RyzenADJWrapper.Get_gfx_clk(ryzenAccess); }
+            if (niicons_Min_MaxValues[9].Min == 0.0f) { niicons_Min_MaxValues[9].Min = RyzenADJWrapper.Get_gfx_temp(ryzenAccess); }
+            if (niicons_Min_MaxValues[10].Min == 0.0f) { niicons_Min_MaxValues[10].Min = RyzenADJWrapper.Get_gfx_volt(ryzenAccess); }
+            niicons_Min_MaxValues[0].Max = RyzenADJWrapper.Get_stapm_value(ryzenAccess) > niicons_Min_MaxValues[0].Max ? RyzenADJWrapper.Get_stapm_value(ryzenAccess) : niicons_Min_MaxValues[0].Max;
+            niicons_Min_MaxValues[0].Min = RyzenADJWrapper.Get_stapm_value(ryzenAccess) < niicons_Min_MaxValues[0].Min ? RyzenADJWrapper.Get_stapm_value(ryzenAccess) : niicons_Min_MaxValues[0].Min;
+            niicons_Min_MaxValues[1].Max = RyzenADJWrapper.Get_fast_value(ryzenAccess) > niicons_Min_MaxValues[1].Max ? RyzenADJWrapper.Get_fast_value(ryzenAccess) : niicons_Min_MaxValues[1].Max;
+            niicons_Min_MaxValues[1].Min = RyzenADJWrapper.Get_fast_value(ryzenAccess) < niicons_Min_MaxValues[1].Min ? RyzenADJWrapper.Get_fast_value(ryzenAccess) : niicons_Min_MaxValues[1].Min;
+            niicons_Min_MaxValues[2].Max = RyzenADJWrapper.Get_slow_value(ryzenAccess) > niicons_Min_MaxValues[2].Max ? RyzenADJWrapper.Get_slow_value(ryzenAccess) : niicons_Min_MaxValues[2].Max;
+            niicons_Min_MaxValues[2].Min = RyzenADJWrapper.Get_slow_value(ryzenAccess) < niicons_Min_MaxValues[2].Min ? RyzenADJWrapper.Get_slow_value(ryzenAccess) : niicons_Min_MaxValues[2].Min;
+            niicons_Min_MaxValues[3].Max = RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess) > niicons_Min_MaxValues[3].Max ? RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess) : niicons_Min_MaxValues[3].Max;
+            niicons_Min_MaxValues[3].Min = RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess) < niicons_Min_MaxValues[3].Min ? RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess) : niicons_Min_MaxValues[3].Min;
+            niicons_Min_MaxValues[4].Max = RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess) > niicons_Min_MaxValues[4].Max ? RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess) : niicons_Min_MaxValues[4].Max;
+            niicons_Min_MaxValues[4].Min = RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess) < niicons_Min_MaxValues[4].Min ? RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess) : niicons_Min_MaxValues[4].Min;
+            niicons_Min_MaxValues[5].Max = RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess) > niicons_Min_MaxValues[5].Max ? RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess) : niicons_Min_MaxValues[5].Max;
+            niicons_Min_MaxValues[5].Min = RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess) < niicons_Min_MaxValues[5].Min ? RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess) : niicons_Min_MaxValues[5].Min;
             niicons_Min_MaxValues[6].Max = (float)((avgCoreCLK / numberOfCores) > niicons_Min_MaxValues[6].Max ? (avgCoreCLK / numberOfCores) : niicons_Min_MaxValues[6].Max);
             niicons_Min_MaxValues[6].Min = (float)((avgCoreCLK / numberOfCores) < niicons_Min_MaxValues[6].Min ? (avgCoreCLK / numberOfCores) : niicons_Min_MaxValues[6].Min);
             niicons_Min_MaxValues[7].Max = (float)((avgCoreVolt / numberOfCores) > niicons_Min_MaxValues[7].Max ? (avgCoreVolt / numberOfCores) : niicons_Min_MaxValues[7].Max);
             niicons_Min_MaxValues[7].Min = (float)((avgCoreVolt / numberOfCores) < niicons_Min_MaxValues[7].Min ? (avgCoreVolt / numberOfCores) : niicons_Min_MaxValues[7].Min);
-            niicons_Min_MaxValues[8].Max = RyzenADJWrapper.get_gfx_clk(ryzenAccess) > niicons_Min_MaxValues[8].Max ? RyzenADJWrapper.get_gfx_clk(ryzenAccess) : niicons_Min_MaxValues[8].Max;
-            niicons_Min_MaxValues[8].Min = RyzenADJWrapper.get_gfx_clk(ryzenAccess) < niicons_Min_MaxValues[8].Min ? RyzenADJWrapper.get_gfx_clk(ryzenAccess) : niicons_Min_MaxValues[8].Min;
-            niicons_Min_MaxValues[9].Max = RyzenADJWrapper.get_gfx_temp(ryzenAccess) > niicons_Min_MaxValues[9].Max ? RyzenADJWrapper.get_gfx_temp(ryzenAccess) : niicons_Min_MaxValues[9].Max;
-            niicons_Min_MaxValues[9].Min = RyzenADJWrapper.get_gfx_temp(ryzenAccess) < niicons_Min_MaxValues[9].Min ? RyzenADJWrapper.get_gfx_temp(ryzenAccess) : niicons_Min_MaxValues[9].Min;
-            niicons_Min_MaxValues[10].Max = RyzenADJWrapper.get_gfx_volt(ryzenAccess) > niicons_Min_MaxValues[10].Max ? RyzenADJWrapper.get_gfx_volt(ryzenAccess) : niicons_Min_MaxValues[10].Max;
-            niicons_Min_MaxValues[10].Min = RyzenADJWrapper.get_gfx_volt(ryzenAccess) < niicons_Min_MaxValues[10].Min ? RyzenADJWrapper.get_gfx_volt(ryzenAccess) : niicons_Min_MaxValues[10].Min;
+            niicons_Min_MaxValues[8].Max = RyzenADJWrapper.Get_gfx_clk(ryzenAccess) > niicons_Min_MaxValues[8].Max ? RyzenADJWrapper.Get_gfx_clk(ryzenAccess) : niicons_Min_MaxValues[8].Max;
+            niicons_Min_MaxValues[8].Min = RyzenADJWrapper.Get_gfx_clk(ryzenAccess) < niicons_Min_MaxValues[8].Min ? RyzenADJWrapper.Get_gfx_clk(ryzenAccess) : niicons_Min_MaxValues[8].Min;
+            niicons_Min_MaxValues[9].Max = RyzenADJWrapper.Get_gfx_temp(ryzenAccess) > niicons_Min_MaxValues[9].Max ? RyzenADJWrapper.Get_gfx_temp(ryzenAccess) : niicons_Min_MaxValues[9].Max;
+            niicons_Min_MaxValues[9].Min = RyzenADJWrapper.Get_gfx_temp(ryzenAccess) < niicons_Min_MaxValues[9].Min ? RyzenADJWrapper.Get_gfx_temp(ryzenAccess) : niicons_Min_MaxValues[9].Min;
+            niicons_Min_MaxValues[10].Max = RyzenADJWrapper.Get_gfx_volt(ryzenAccess) > niicons_Min_MaxValues[10].Max ? RyzenADJWrapper.Get_gfx_volt(ryzenAccess) : niicons_Min_MaxValues[10].Max;
+            niicons_Min_MaxValues[10].Min = RyzenADJWrapper.Get_gfx_volt(ryzenAccess) < niicons_Min_MaxValues[10].Min ? RyzenADJWrapper.Get_gfx_volt(ryzenAccess) : niicons_Min_MaxValues[10].Min;
 
-            Change_Ni_Icons_Text("Settings_ni_Values_STAPM", Math.Round(RyzenADJWrapper.get_stapm_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_STAPM".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.get_stapm_value(ryzenAccess) + "W", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[0].Min.ToString() + "W" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[0].Max.ToString() + "W");
-            Change_Ni_Icons_Text("Settings_ni_Values_Fast", Math.Round(RyzenADJWrapper.get_fast_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_Fast".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.get_fast_value(ryzenAccess) + "W", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[1].Min.ToString() + "W" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[1].Max.ToString() + "W");
-            Change_Ni_Icons_Text("Settings_ni_Values_Slow", Math.Round(RyzenADJWrapper.get_slow_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_Slow".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.get_slow_value(ryzenAccess) + "W", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[2].Min.ToString() + "W" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[2].Max.ToString() + "W");
-            Change_Ni_Icons_Text("Settings_ni_Values_VRMEDC", Math.Round(RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_VRMEDC".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.get_vrmmax_current_value(ryzenAccess) + "A", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[3].Min.ToString() + "A" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[3].Max.ToString() + "A");
-            Change_Ni_Icons_Text("Settings_ni_Values_CPUTEMP", Math.Round(RyzenADJWrapper.get_tctl_temp_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_CPUTEMP".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.get_tctl_temp_value(ryzenAccess) + "C", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[4].Min.ToString() + "C" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[4].Max.ToString() + "C");
-            Change_Ni_Icons_Text("Settings_ni_Values_CPUUsage", Math.Round(RyzenADJWrapper.get_cclk_busy_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_CPUUsage".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.get_cclk_busy_value(ryzenAccess) + "%", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[5].Min.ToString() + "%" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[5].Max.ToString() + "%");
+            Change_Ni_Icons_Text("Settings_ni_Values_STAPM", Math.Round(RyzenADJWrapper.Get_stapm_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_STAPM".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_stapm_value(ryzenAccess) + "W", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[0].Min.ToString() + "W" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[0].Max.ToString() + "W");
+            Change_Ni_Icons_Text("Settings_ni_Values_Fast", Math.Round(RyzenADJWrapper.Get_fast_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_Fast".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_fast_value(ryzenAccess) + "W", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[1].Min.ToString() + "W" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[1].Max.ToString() + "W");
+            Change_Ni_Icons_Text("Settings_ni_Values_Slow", Math.Round(RyzenADJWrapper.Get_slow_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_Slow".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_slow_value(ryzenAccess) + "W", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[2].Min.ToString() + "W" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[2].Max.ToString() + "W");
+            Change_Ni_Icons_Text("Settings_ni_Values_VRMEDC", Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_VRMEDC".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess) + "A", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[3].Min.ToString() + "A" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[3].Max.ToString() + "A");
+            Change_Ni_Icons_Text("Settings_ni_Values_CPUTEMP", Math.Round(RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_CPUTEMP".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess) + "C", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[4].Min.ToString() + "C" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[4].Max.ToString() + "C");
+            Change_Ni_Icons_Text("Settings_ni_Values_CPUUsage", Math.Round(RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_CPUUsage".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess) + "%", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[5].Min.ToString() + "%" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[5].Max.ToString() + "%");
             Change_Ni_Icons_Text("Settings_ni_Values_AVGCPUCLK", Math.Round(avgCoreCLK / numberOfCores, 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_AVGCPUCLK".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + avgCoreCLK / numberOfCores + "GHz", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[6].Min.ToString() + "GHz" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[6].Max.ToString() + "GHz");
             Change_Ni_Icons_Text("Settings_ni_Values_AVGCPUVOLT", Math.Round(avgCoreVolt / numberOfCores, 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_AVGCPUVOLT".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + avgCoreVolt / numberOfCores + "V", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[7].Min.ToString() + "V" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[7].Max.ToString() + "V");
-            Change_Ni_Icons_Text("Settings_ni_Values_GFXCLK", Math.Round(RyzenADJWrapper.get_gfx_clk(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXCLK".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.get_gfx_clk(ryzenAccess) + "MHz", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[8].Min.ToString() + "MHz" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[8].Max.ToString() + "MHz");
-            Change_Ni_Icons_Text("Settings_ni_Values_GFXTEMP", Math.Round(RyzenADJWrapper.get_gfx_temp(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXTEMP".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.get_gfx_temp(ryzenAccess) + "C", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[9].Min.ToString() + "C" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[9].Max.ToString() + "C");
-            Change_Ni_Icons_Text("Settings_ni_Values_GFXVOLT", Math.Round(RyzenADJWrapper.get_gfx_volt(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXVOLT".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.get_gfx_volt(ryzenAccess) + "V", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[10].Min.ToString() + "V" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[10].Max.ToString() + "V");
+            Change_Ni_Icons_Text("Settings_ni_Values_GFXCLK", Math.Round(RyzenADJWrapper.Get_gfx_clk(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXCLK".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_clk(ryzenAccess) + "MHz", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[8].Min.ToString() + "MHz" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[8].Max.ToString() + "MHz");
+            Change_Ni_Icons_Text("Settings_ni_Values_GFXTEMP", Math.Round(RyzenADJWrapper.Get_gfx_temp(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXTEMP".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_temp(ryzenAccess) + "C", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[9].Min.ToString() + "C" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[9].Max.ToString() + "C");
+            Change_Ni_Icons_Text("Settings_ni_Values_GFXVOLT", Math.Round(RyzenADJWrapper.Get_gfx_volt(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXVOLT".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_volt(ryzenAccess) + "V", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[10].Min.ToString() + "V" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[10].Max.ToString() + "V");
 
             if (infoRTSSButton.IsChecked == true)
             {
@@ -1530,29 +1445,132 @@ public sealed partial class ИнформацияPage : Page
     {
         dispatcherTimer?.Stop();
     }
-    private void ИнформацияPage_Unloaded(object sender, RoutedEventArgs e)
+    #endregion
+    #region Information builders
+    private void InfoCPUSectionGridBuilder()
     {
-        try
+        InfoMainCPUFreqGrid.RowDefinitions.Clear();
+        InfoMainCPUFreqGrid.ColumnDefinitions.Clear();
+        /*numberOfCores = 8;
+        numberOfLogicalProcessors = 16;*/
+        var backupNumberLogical = numberOfLogicalProcessors;
+        if (numberOfCores > 2)
         {
-            DisposeAllNotifyIcons();
+            numberOfLogicalProcessors = numberOfCores;
         }
-        catch (Exception ex)
+        for (var i = 0; i < numberOfLogicalProcessors / 2; i++)
         {
-            SendSMUCommand.TraceIt_TraceError(ex.ToString());
+            InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
+            InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
         }
-        try
+        if (numberOfLogicalProcessors % 2 != 0 || numberOfLogicalProcessors == 2)
         {
-            infoRTSSButton.IsChecked = false;
-            dispatcherTimer?.Stop();
-            RTSSHandler.ResetOSDText();
+            InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
+            InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
         }
-        catch (Exception ex)
+        numberOfLogicalProcessors = backupNumberLogical;
+        var coreCounter = (SelectedGroup == 0 || SelectedGroup == 5) ? /*Это секция процессор или PStates*/
+            (numberOfCores > 2 ? numberOfCores : /*Это секция процессор или PStates - да! Количество ядер больше 2? - да! тогда coreCounter - количество ядер numberOfCores*/
+            (infoCPUSectionComboBox.SelectedIndex == 0 ? numberOfLogicalProcessors /*Нет! У процессора менее или ровно 2 ядра, Выбрано отображение частоты? - да! - тогда numberOfLogicalProcessors*/
+            : numberOfCores)) /*Выбрана не частота, хотя при этом у нас меньше или ровно 2 ядра и это секция 0 или 5, тогда - numberOfCores*/
+            : SelectedGroup == 1 ? /*Это НЕ секция процессор или PStates. Это секция GFX?*/
+            new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController").Get().Cast<ManagementObject>().Count() /*Да! - Это секция GFX - тогда найти количество видеокарт*/
+            : (SelectedGroup == 2 ? /*Нет! Выбрана не секция 0, 1, 5, возможно что-то другое? Выбрана секция 2?*/
+            tbRAMModel.Text.Split('/').Length /*Да! Выбрана секция RAM, найти количество установленных плат ОЗУ*/
+            : (SelectedGroup == 3 ? 4 /*Это не секции 0, 1, 2, 5! Это секция 3? - да! Тогда - 4*/
+            : 1)); /*Это не секции 0, 1, 2, 3, 5! Тогда - 1*/
+        for (var j = 0; j < InfoMainCPUFreqGrid.RowDefinitions.Count; j++)
         {
-            SendSMUCommand.TraceIt_TraceError(ex.ToString());
+            for (var f = 0; f < InfoMainCPUFreqGrid.ColumnDefinitions.Count; f++)
+            {
+                if (coreCounter <= 0)
+                {
+                    return;
+                }
+                var currCore = (SelectedGroup == 0 || SelectedGroup == 5) ?
+                    (numberOfCores > 2 ?
+                    numberOfCores - coreCounter
+                    : infoCPUSectionComboBox.SelectedIndex == 0 ?
+                    numberOfLogicalProcessors - coreCounter
+                    : numberOfCores - coreCounter)
+                    : SelectedGroup == 1 ?
+                    new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController").Get().Cast<ManagementObject>().Count() - coreCounter
+                    : (SelectedGroup == 2 ?
+                    tbRAMModel.Text.Split('/').Length - coreCounter
+                    : (SelectedGroup == 3 ?
+                    4 - coreCounter
+                    : 0));
+                var elementButton = new Grid()
+                {
+                    VerticalAlignment = VerticalAlignment.Stretch,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Margin = new Thickness(3, 3, 3, 3),
+                    Children =
+                        {
+
+                            new Button()
+                            {
+                                Shadow = new ThemeShadow(),
+                                Translation = new System.Numerics.Vector3(0,0,20),
+                                HorizontalAlignment = HorizontalAlignment.Stretch,
+                                HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                                VerticalAlignment = VerticalAlignment.Stretch,
+                                Content = new Grid()
+                                {
+                                    VerticalAlignment = VerticalAlignment.Stretch,
+                                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                                    Children =
+                                    {
+                                        new TextBlock
+                                        {
+                                            VerticalAlignment = VerticalAlignment.Center,
+                                            HorizontalAlignment = HorizontalAlignment.Left,
+                                            Text = currCore.ToString(),
+                                            FontWeight = new Windows.UI.Text.FontWeight(200)
+                                        },
+                                        new TextBlock
+                                        {
+                                            Text = "0.00 Ghz",
+                                            Name = $"FreqButtonText_{currCore}",
+                                            VerticalAlignment = VerticalAlignment.Center,
+                                            HorizontalAlignment = HorizontalAlignment.Center,
+                                            FontWeight = new Windows.UI.Text.FontWeight(800)
+                                        },
+                                        new TextBlock
+                                        {
+                                            FontSize = 13,
+                                            Margin = new Thickness(3,-2,0,0),
+                                            VerticalAlignment = VerticalAlignment.Center,
+                                            HorizontalAlignment = HorizontalAlignment.Right,
+                                            Text = (SelectedGroup == 0 || SelectedGroup == 5) ?
+                                            (currCore < numberOfCores ? "InfoCPUCore".GetLocalized()
+                                            : "InfoCPUThread".GetLocalized())
+                                            : (SelectedGroup == 1 ? "InfoGPUName".GetLocalized()
+                                            : (SelectedGroup == 2 ? tbSlots.Text.Split('*')[1].Replace("Bit","")
+                                            : (SelectedGroup == 3 ?
+                                              (currCore == 0 ? "VRM EDC"
+                                            : ( currCore == 1 ? "VRM TDC"
+                                            : (currCore == 2 ? "SoC EDC"
+                                            : "SoC TDC")))
+                                            : "InfoBatteryName".GetLocalized()))),
+                                            FontWeight = new Windows.UI.Text.FontWeight(200)
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                };
+
+                Grid.SetRow(elementButton, j); Grid.SetColumn(elementButton, f);
+                InfoMainCPUFreqGrid.Children.Add(elementButton);
+                coreCounter--;
+            }
         }
     }
-    #endregion
 
+    #endregion
+    #endregion
     #region Event Handlers
     private void InfoCPUSectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -1561,7 +1579,6 @@ public sealed partial class ИнформацияPage : Page
         InfoMainCPUFreqGrid.Children.Clear();
         InfoCPUSectionGridBuilder();
     }
-
     private void CPUBannerButton_Click(object sender, RoutedEventArgs e)
     {
         if (SelectedGroup != 0)
@@ -1592,7 +1609,6 @@ public sealed partial class ИнформацияPage : Page
             InfoCPUSectionGridBuilder();
         }
     }
-
     private void GPUBannerButton_Click(object sender, RoutedEventArgs e)
     {
         if (SelectedGroup != 1)
@@ -1623,7 +1639,6 @@ public sealed partial class ИнформацияPage : Page
             InfoCPUSectionGridBuilder();
         }
     }
-
     private void RAMBannerButton_Click(object sender, RoutedEventArgs e)
     {
         if (SelectedGroup != 2)
@@ -1768,7 +1783,7 @@ public sealed partial class ИнформацияPage : Page
         config.RTSSMetricsEnabled = infoRTSSButton.IsChecked == true;
         ConfigSave();
     }
-    private void infoNiIconsButton_Click(object sender, RoutedEventArgs e)
+    private void InfoNiIconsButton_Click(object sender, RoutedEventArgs e)
     {
         if (!loaded) { return; }
         if (infoNiIconsButton.IsChecked == true)

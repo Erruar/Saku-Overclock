@@ -2778,4 +2778,7 @@ set the value to 0</value>
   <data name="Warning" xml:space="preserve">
     <value>Warning</value>
   </data>
+  <data name="Info_RyzenADJNotLoaded.Title" xml:space="preserve">
+    <value>Unable to get information from RyzenADJ</value>
+  </data>
 </root>

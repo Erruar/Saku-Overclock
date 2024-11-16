@@ -23,11 +23,11 @@
                     <Border Height="350" Width="350" Margin="0,-25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                         <Grid>
                             <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <TextBlock FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" x:Name="CPUFanRPM" Text="370"/>
-                                <TextBlock FontStyle="Italic" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,20,0,0" Text="RPM"/>
+                                <TextBlock FontWeight="Bold" Foreground="White" FontSize="20" HorizontalAlignment="Center" x:Name="CPUFanRPM" Text="370"/>
+                                <TextBlock FontStyle="Italic" Foreground="White" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,20,0,0" Text="RPM"/>
                             </Grid>
                             <Button VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="30" Width="100" Margin="5,0,0,40" IsEnabled="False"/>
-                            <TextBlock FontWeight="Bold" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="5,0,0,47" Text="CPU Fan"/>
+                            <TextBlock Foreground="White" FontWeight="Bold" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="5,0,0,47" Text="CPU Fan"/>
                         </Grid>
                         <Border.Background>
                             <ImageBrush
