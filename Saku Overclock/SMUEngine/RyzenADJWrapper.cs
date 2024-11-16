@@ -30,6 +30,7 @@ public static class RyzenADJWrapper
         FAM_STRIXPOINT,
         FAM_END
     }
+    #region DLL Init
     public static IntPtr Init_ryzenadj()
     {
         if (!IsDllRunning)
@@ -69,6 +70,7 @@ public static class RyzenADJWrapper
             IsTableRunning = false;
         }
     }
+    #endregion
     #region DLL Imports
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern IntPtr init_ryzenadj();
@@ -500,31 +502,15 @@ public static class RyzenADJWrapper
         if (ry == 0x0) { return 0; }
         return get_socket_power(ry);
     }
-    #endregion
-
-    // Новые функции
-
-    // Тест работы
-    public static void ТестРаботы()
-    {
-        var ryzenAccess = Init_ryzenadj();
-        if (ryzenAccess != IntPtr.Zero)
-        {
-            var family = get_cpu_family(ryzenAccess);
-            _ = init_table(ryzenAccess);
-            _ = refresh_table(ryzenAccess); 
-            Console.WriteLine($"CPU Family: {family}");
-            SendSMUCommand.TraceIt_TraceError(DllName + "\n" + family.ToString() + "\n" + get_stapm_value(ryzenAccess).ToString() + " / " + get_stapm_limit(ryzenAccess).ToString());
-        }
-    }
     public static string GetCPUCodename()
     {
         var ryzenAccess = Init_ryzenadj(); var endname = string.Empty;
         if (ryzenAccess != IntPtr.Zero)
         {
-            var family = get_cpu_family(ryzenAccess); 
-            endname = family.ToString(); 
+            var family = get_cpu_family(ryzenAccess);
+            endname = family.ToString();
         }
         return endname;
     }
+    #endregion
 }
