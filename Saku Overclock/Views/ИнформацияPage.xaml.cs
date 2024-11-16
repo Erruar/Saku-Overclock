@@ -1454,21 +1454,6 @@ public sealed partial class ИнформацияPage : Page
         /*numberOfCores = 8;
         numberOfLogicalProcessors = 16;*/
         var backupNumberLogical = numberOfLogicalProcessors;
-        if (numberOfCores > 2)
-        {
-            numberOfLogicalProcessors = numberOfCores;
-        }
-        for (var i = 0; i < numberOfLogicalProcessors / 2; i++)
-        {
-            InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
-            InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
-        }
-        if (numberOfLogicalProcessors % 2 != 0 || numberOfLogicalProcessors == 2)
-        {
-            InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
-            InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
-        }
-        numberOfLogicalProcessors = backupNumberLogical;
         var coreCounter = (SelectedGroup == 0 || SelectedGroup == 5) ? /*Это секция процессор или PStates*/
             (numberOfCores > 2 ? numberOfCores : /*Это секция процессор или PStates - да! Количество ядер больше 2? - да! тогда coreCounter - количество ядер numberOfCores*/
             (infoCPUSectionComboBox.SelectedIndex == 0 ? numberOfLogicalProcessors /*Нет! У процессора менее или ровно 2 ядра, Выбрано отображение частоты? - да! - тогда numberOfLogicalProcessors*/
@@ -1479,6 +1464,21 @@ public sealed partial class ИнформацияPage : Page
             tbRAMModel.Text.Split('/').Length /*Да! Выбрана секция RAM, найти количество установленных плат ОЗУ*/
             : (SelectedGroup == 3 ? 4 /*Это не секции 0, 1, 2, 5! Это секция 3? - да! Тогда - 4*/
             : 1)); /*Это не секции 0, 1, 2, 3, 5! Тогда - 1*/
+        if (numberOfCores > 2)
+        {
+            numberOfLogicalProcessors = coreCounter;
+        }
+        for (var i = 0; i < (numberOfLogicalProcessors / 2 > 4 ? 4 : (numberOfLogicalProcessors / 2)); i++)
+        {
+            InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
+            InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
+        }
+        if (numberOfLogicalProcessors % 2 != 0 || numberOfLogicalProcessors == 2)
+        {
+            InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
+            InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
+        }
+        numberOfLogicalProcessors = backupNumberLogical;
         for (var j = 0; j < InfoMainCPUFreqGrid.RowDefinitions.Count; j++)
         {
             for (var f = 0; f < InfoMainCPUFreqGrid.ColumnDefinitions.Count; f++)
