@@ -892,7 +892,7 @@ public sealed partial class ИнформацияPage : Page
                 var endtraced = 0;
                 var maxFreq = 0.0d;
                 var currentPstate = 4;
-                for (uint f = 0; f < 8; f++)
+                for (uint f = 0; f < 16; f++)
                 {
                     var getCurrFreq = RyzenADJWrapper.Get_core_clk(ryzenAccess, f);
                     if (!float.IsNaN(getCurrFreq) && getCurrFreq > maxFreq)
