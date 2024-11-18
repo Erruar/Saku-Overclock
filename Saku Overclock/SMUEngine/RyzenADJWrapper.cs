@@ -424,7 +424,7 @@ public static class RyzenADJWrapper
     }
     public static float Get_core_clk(IntPtr ry, uint value)
     {
-        if (ry == 0x0) { return 0; }
+        if (ry == 0x0) { return GetSystemInfo.GetCurrentClockSpeedMHz((int)value); }
         return get_core_clk(ry, value);
     }
     public static float Get_core_volt(IntPtr ry, uint value)

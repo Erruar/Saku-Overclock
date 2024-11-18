@@ -362,16 +362,16 @@ public sealed partial class ИнформацияPage : Page
         if (newText != null)
         {
             // Если текст состоит из одного символа
-            if (newText.Contains(",") && newText.Split(',')[0].Length == 1 && newText.Split(',')[1].Length >= 2)
+            if (newText.Contains(',') && newText.Split(',')[0].Length == 1 && newText.Split(',')[1].Length >= 2)
             {
                 position = new Point(-5, 6);
             }
-            if (newText.Contains(",") && newText.Split(',')[0].Length == 2 || newText.Contains(",") && newText.Split(',')[0].Length == 1 && newText.Split(',')[1].Length <= 1)
+            if (newText.Contains(',') && newText.Split(',')[0].Length == 2 || newText.Contains(',') && newText.Split(',')[0].Length == 1 && newText.Split(',')[1].Length <= 1)
             {
                 position = new Point(2, 6);
             }
             // Если текст состоит из четырёх символов
-            else if (newText.Contains(",") && newText.Split(',')[0].Length == 4)
+            else if (newText.Contains(',') && newText.Split(',')[0].Length == 4)
             {
                 position = new Point(-6, 8);
                 fontSize -= 2; // уменьшение размера шрифта на 2
@@ -394,7 +394,7 @@ public sealed partial class ИнформацияPage : Page
             // Убираем символ #, если он присутствует
             var valuestring = Color.TrimStart('#');
             // Парсим цветовые компоненты
-            r = System.Convert.ToInt32(valuestring!.Substring(0, 2), 16);
+            r = System.Convert.ToInt32(valuestring![..2], 16);
             g = System.Convert.ToInt32(valuestring!.Substring(2, 2), 16);
             b = System.Convert.ToInt32(valuestring!.Substring(4, 2), 16);
         }
@@ -841,14 +841,7 @@ public sealed partial class ИнформацияPage : Page
                 InfoABATBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoABATBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoAPSTBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-
-                if (ryzenAccess == 0x0 && !Info_RyzenADJLoadError_InfoBar.IsOpen)
-                {
-                    Info_RyzenADJLoadError_InfoBar.IsOpen = true;
-                    infoRTSSButton.Visibility = Visibility.Collapsed;
-                    infoNiIconsButton.Visibility = Visibility.Collapsed;
-                }
+                InfoAPSTBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49)); 
 
                 _ = RyzenADJWrapper.Refresh_table(ryzenAccess);
 
@@ -1390,6 +1383,14 @@ public sealed partial class ИнформацияPage : Page
             Change_Ni_Icons_Text("Settings_ni_Values_GFXCLK", Math.Round(RyzenADJWrapper.Get_gfx_clk(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXCLK".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_clk(ryzenAccess) + "MHz", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[8].Min.ToString() + "MHz" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[8].Max.ToString() + "MHz");
             Change_Ni_Icons_Text("Settings_ni_Values_GFXTEMP", Math.Round(RyzenADJWrapper.Get_gfx_temp(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXTEMP".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_temp(ryzenAccess) + "C", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[9].Min.ToString() + "C" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[9].Max.ToString() + "C");
             Change_Ni_Icons_Text("Settings_ni_Values_GFXVOLT", Math.Round(RyzenADJWrapper.Get_gfx_volt(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXVOLT".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_volt(ryzenAccess) + "V", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[10].Min.ToString() + "V" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[10].Max.ToString() + "V");
+
+            if (ryzenAccess == 0x0 && !Info_RyzenADJLoadError_InfoBar.IsOpen)
+            {
+                Info_RyzenADJLoadError_InfoBar.IsOpen = true;
+                infoRTSSButton.Visibility = Visibility.Collapsed;
+                infoNiIconsButton.Visibility = Visibility.Collapsed;
+
+            }
 
             if (infoRTSSButton.IsChecked == true)
             {

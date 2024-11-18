@@ -1,9 +1,9 @@
-﻿using Microsoft.Win32;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 using System.Windows;
+using Microsoft.Win32;
 /*This is a modified processor WMI info file. It from Universal x86 Tuning Utility. Its author is https://github.com/JamesCJ60
 This file has been refactored many times and optimized to work with Saku Overclock by Sakurazhima Serzhik. I do not recommend rereading this file, it is better to familiarize yourself with https://github.com/JamesCJ60/Universal-x86-Tuning-Utility
 there you can see the source files in detail*/
@@ -13,6 +13,23 @@ internal class GetSystemInfo
     private static readonly ManagementObjectSearcher baseboardSearcher = new("root\\CIMV2", "SELECT * FROM Win32_BaseBoard");
     private static readonly ManagementObjectSearcher motherboardSearcher = new("root\\CIMV2", "SELECT * FROM Win32_MotherboardDevice");
     private static readonly ManagementObjectSearcher ComputerSsystemInfo = new("root\\CIMV2", "SELECT * FROM Win32_ComputerSystemProduct");
+
+    #region Battery Information
+    public static string? GetBatteryName()
+    {
+        var wmi = new ManagementClass("Win32_Battery");
+        var allBatteries = wmi.GetInstances();
+        var batteryName = "Battery not found";
+        foreach (var battery in allBatteries)
+        {
+            if (battery["Name"] != null)
+            {
+                batteryName = battery["Name"].ToString();
+                break;
+            }
+        }
+        return batteryName;
+    }
     public enum BatteryStatus : ushort
     {
         Discharging = 1,
@@ -27,360 +44,33 @@ internal class GetSystemInfo
         Undefined,
         PartiallyCharged
     }
-
-    public static string? GetCPUName()
+    public static BatteryStatus GetBatteryStatus()
     {
-        try
+        var wmi = new ManagementClass("Win32_Battery");
+        var allBatteries = wmi.GetInstances();
+        var status = BatteryStatus.Undefined;
+
+        foreach (var battery in allBatteries)
         {
-            var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
-            var collection = searcher.Get();
-            foreach (var obj in collection.Cast<ManagementObject>())
+            var pData = battery.Properties["BatteryStatus"];
+
+            if (pData != null && pData.Value != null && Enum.IsDefined(typeof(BatteryStatus), pData.Value))
             {
-                return obj["Name"].ToString();
+                status = (BatteryStatus)pData.Value;
             }
         }
-        catch { }
-        return "";
+
+        return status;
     }
-    public static string? GetGPUName(int i)
+    public static decimal GetBatteryHealth()
     {
-        try
-        {
-            var count = 0;
-            var searcher = new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController"); // Change AdapterCompatibility as per your requirement
-            var collection = searcher.Get();
+        var designCap = ReadDesignCapacity();
+        var fullCap = ReadFullChargeCapacity();
 
-            foreach (var obj in collection.Cast<ManagementObject>())
-            {
-                if (count == i)
-                {
-                    _ = Garbage.Garbage_Collect();
-                    return obj["Name"].ToString();
-                }
-                count++;
-            }
-        }
-        catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+        var health = fullCap / designCap;
 
-        _ = Garbage.Garbage_Collect();
-        return "";
-    } 
-    public static string? Availability
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return GetAvailability(int.Parse(queryObj[nameof(Availability)].ToString()!));
-                }
-                return "";
-            }
-            catch 
-            {
-                return "";
-            }
-        }
-    } 
-    public static bool HostingBoard
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    if (queryObj[nameof(HostingBoard)].ToString() == "True")
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                return false;
-            }
-            catch 
-            {
-                return false;
-            }
-        }
-    } 
-    public static string InstallDate
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return ConvertToDateTime(queryObj[nameof(InstallDate)].ToString()!);
-                }
-                return "";
-            }
-            catch 
-            {
-                return "";
-            }
-        }
-    } 
-    public static string? Manufacturer
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return queryObj[nameof(Manufacturer)].ToString();
-                }
-                return "";
-            }
-            catch 
-            {
-                return "";
-            }
-        }
+        return health;
     }
-
-    public static string? Model
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return Convert.ToString(queryObj[nameof(Model)]);
-                }
-                return "";
-            }
-            catch 
-            {
-                return "";
-            }
-        }
-    }
-
-    public static string? PartNumber
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return queryObj[nameof(PartNumber)].ToString();
-                }
-                return "";
-            }
-            catch 
-            {
-                return "";
-            }
-        }
-    }
-
-    public static string? PNPDeviceID
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return queryObj[nameof(PNPDeviceID)].ToString();
-                }
-                return "";
-            }
-            catch {
-                return "";
-            }
-        }
-    }
-
-    public static string? PrimaryBusType
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return queryObj[nameof(PrimaryBusType)].ToString();
-                }
-                return "";
-            }
-            catch {
-                return "";
-            }
-        }
-    }
-
-    public static string? Product
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in ComputerSsystemInfo.Get().Cast<ManagementObject>())
-                {
-                    return queryObj["Name"].ToString();
-                }
-                return "";
-            }
-            catch {
-                return "";
-            }
-        }
-    }
-
-    public static bool Removable
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return queryObj[nameof(Removable)].ToString() == "True";
-                }
-                return false;
-            }
-            catch {
-                return false;
-            }
-        }
-    }
-
-    public static bool Replaceable
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return queryObj[nameof(Replaceable)].ToString() == "True";
-                }
-                return false;
-            }
-            catch {
-                return false;
-            }
-        }
-    }
-
-    public static string? RevisionNumber
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return queryObj[nameof(RevisionNumber)].ToString();
-                }
-                return "";
-            }
-            catch {
-                return "";
-            }
-        }
-    }
-
-    public static string? SecondaryBusType
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return queryObj[nameof(SecondaryBusType)].ToString();
-                }
-                return "";
-            }
-            catch {
-                return "";
-            }
-        }
-    }
-
-    public static string? SerialNumber
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return queryObj[nameof(SerialNumber)].ToString();
-                }
-                return "";
-            }
-            catch {
-                return "";
-            }
-        }
-    }
-
-    public static string? Status
-    {
-        get
-        {
-            try
-            {
-                foreach (var querObj in baseboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return querObj[nameof(Status)].ToString();
-                }
-                return "";
-            }
-            catch {
-                return "";
-            }
-        }
-    }
-
-    public static string? SystemName
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return queryObj[nameof(SystemName)].ToString();
-                }
-                return "";
-            }
-            catch {
-                return "";
-            }
-        }
-    }
-
-    public static string? Version
-    {
-        get
-        {
-            try
-            {
-                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
-                {
-                    return queryObj[nameof(Version)].ToString();
-                }
-                return "";
-            }
-            catch {
-                return "";
-            }
-        }
-    }
-
     private static string GetAvailability(int availability)
     {
         return availability switch
@@ -405,7 +95,6 @@ internal class GetSystemInfo
             _ => "Unknown",
         };
     }
-
     private static string ConvertToDateTime(string unconvertedTime)
     {
         var year = int.Parse(unconvertedTime[..4]);
@@ -423,9 +112,8 @@ internal class GetSystemInfo
         var convertedTime = date.ToString() + "/" + month.ToString() + "/" + year.ToString() + " " + hours.ToString() + ":" + minutes.ToString() + ":" + seconds.ToString() + " " + meridian;
         return convertedTime;
     }
-
     public static decimal GetBatteryRate()
-    { 
+    {
         try
         {
             var scope = new ManagementScope("root\\WMI");
@@ -444,17 +132,16 @@ internal class GetSystemInfo
                 {
                     return -dischargeRate;
                 }
-            } 
-            return 0; 
+            }
+            return 0;
         }
-        catch  
+        catch
         {
             return 0;
         }
     }
-
     public static decimal ReadFullChargeCapacity()
-    { 
+    {
         try
         {
             var scope = new ManagementScope("root\\WMI");
@@ -467,12 +154,11 @@ internal class GetSystemInfo
             }
             return 0;
         }
-        catch  
+        catch
         {
             return 0;
-        } 
+        }
     }
-
     public static decimal ReadDesignCapacity()
     {
         try
@@ -487,12 +173,11 @@ internal class GetSystemInfo
             }
             return 0;
         }
-        catch  
+        catch
         {
             return 0;
         }
     }
-
     public static int GetBatteryCycle()
     {
         try
@@ -502,12 +187,12 @@ internal class GetSystemInfo
                 "SELECT * FROM BatteryCycleCount");
 
             foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
-            { 
+            {
                 return Convert.ToInt32(queryObj["CycleCount"]);
             }
             return 0;
         }
-        catch 
+        catch
         {
             return 0;
         }
@@ -556,6 +241,98 @@ internal class GetSystemInfo
             throw new InvalidOperationException("Unable to get power status.");
         }
     }
+    #endregion
+    #region OS Info
+    public static string? Availability
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return GetAvailability(int.Parse(queryObj[nameof(Availability)].ToString()!));
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static string InstallDate
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return ConvertToDateTime(queryObj[nameof(InstallDate)].ToString()!);
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static string? Status
+    {
+        get
+        {
+            try
+            {
+                foreach (var querObj in baseboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return querObj[nameof(Status)].ToString();
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static string? SystemName
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return queryObj[nameof(SystemName)].ToString();
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static string? Version
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return queryObj[nameof(Version)].ToString();
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
     public static string? GetOSVersion()
     {
         try
@@ -571,12 +348,12 @@ internal class GetSystemInfo
             {
                 return string.Concat("Windows ", endString[1].AsSpan(0, Math.Min(3, endString[1].Length)).Trim());
             }
-            else 
-            { 
-                return "Windows 10"; 
+            else
+            {
+                return "Windows 10";
             }
         }
-        catch 
+        catch
         {
             return "Windows 10";
         }
@@ -599,84 +376,16 @@ internal class GetSystemInfo
             return "BIOS: Unknown";
         }
     }
-
-    public static string? GetBatteryName()
-    {
-        var wmi = new ManagementClass("Win32_Battery");
-        var allBatteries = wmi.GetInstances();
-        var batteryName = "Battery not found";
-        foreach (var battery in allBatteries)
-        {
-            if (battery["Name"] != null)
-            {
-                batteryName = battery["Name"].ToString();
-                break;
-            }
-        }
-        return batteryName;
-    } 
-    public static BatteryStatus GetBatteryStatus()
-    {
-        var wmi = new ManagementClass("Win32_Battery");
-        var allBatteries = wmi.GetInstances();
-        var status = BatteryStatus.Undefined;
-
-        foreach (var battery in allBatteries)
-        {
-            var pData = battery.Properties["BatteryStatus"];
-
-            if (pData != null && pData.Value != null && Enum.IsDefined(typeof(BatteryStatus), pData.Value))
-            {
-                status = (BatteryStatus)pData.Value;
-            }
-        }
-
-        return status;
-    }
-
-    public static decimal GetBatteryHealth()
-    {
-        var designCap = ReadDesignCapacity();
-        var fullCap = ReadFullChargeCapacity();
-
-        var health = fullCap / designCap;
-
-        return health;
-    }
-
-    public enum CacheLevel : ushort
-    {
-        Level1 = 3,
-        Level2 = 4,
-        Level3 = 5,
-    }
-
-    public static List<uint> GetCacheSizes(CacheLevel level)
-    {
-        var mc = new ManagementClass("Win32_CacheMemory");
-        var moc = mc.GetInstances();
-        var cacheSizes = new List<uint>(moc.Count);
-
-        cacheSizes.AddRange(moc
-          .Cast<ManagementObject>()
-          .Where(p => (ushort)(p.Properties["Level"].Value) == (ushort)level)
-          .Select(p => (uint)(p.Properties["MaxCacheSize"].Value)));
-
-        return cacheSizes;
-    }
-
     public static string? GetWindowsEdition()
     {
         using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
         return key?.GetValue("EditionID")?.ToString();
     }
-
     public static string? GetWindowsVersion()
     {
         using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
         return key?.GetValue("CurrentVersion")?.ToString();
     }
-
     public static DateTime GetWindowsInstallDate()
     {
         using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion"))
@@ -690,13 +399,469 @@ internal class GetSystemInfo
 
         return DateTime.MinValue;
     }
-
     public static string? GetWindowsFeaturePack()
     {
         using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
         return key?.GetValue("ProductName")?.ToString();
     }
+    #endregion
+    #region Motherboard Info
+    public static string? GetGPUName(int i)
+    {
+        try
+        {
+            var count = 0;
+            var searcher = new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController"); // Change AdapterCompatibility as per your requirement
+            var collection = searcher.Get();
 
+            foreach (var obj in collection.Cast<ManagementObject>())
+            {
+                if (count == i)
+                {
+                    _ = Garbage.Garbage_Collect();
+                    return obj["Name"].ToString();
+                }
+                count++;
+            }
+        }
+        catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+
+        _ = Garbage.Garbage_Collect();
+        return "";
+    }
+    public static bool HostingBoard
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    if (queryObj[nameof(HostingBoard)].ToString() == "True")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+    public static string? Manufacturer
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return queryObj[nameof(Manufacturer)].ToString();
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static string? Model
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return Convert.ToString(queryObj[nameof(Model)]);
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static string? PartNumber
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return queryObj[nameof(PartNumber)].ToString();
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static string? PNPDeviceID
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return queryObj[nameof(PNPDeviceID)].ToString();
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static string? PrimaryBusType
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return queryObj[nameof(PrimaryBusType)].ToString();
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static string? Product
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in ComputerSsystemInfo.Get().Cast<ManagementObject>())
+                {
+                    return queryObj["Name"].ToString();
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static bool Removable
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return queryObj[nameof(Removable)].ToString() == "True";
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+    public static bool Replaceable
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return queryObj[nameof(Replaceable)].ToString() == "True";
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+    public static string? RevisionNumber
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return queryObj[nameof(RevisionNumber)].ToString();
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static string? SecondaryBusType
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in motherboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return queryObj[nameof(SecondaryBusType)].ToString();
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    public static string? SerialNumber
+    {
+        get
+        {
+            try
+            {
+                foreach (var queryObj in baseboardSearcher.Get().Cast<ManagementObject>())
+                {
+                    return queryObj[nameof(SerialNumber)].ToString();
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+    }
+    #endregion
+    #region CPU Information
+    public static string? GetCPUName()
+    {
+        try
+        {
+            var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+            var collection = searcher.Get();
+            foreach (var obj in collection.Cast<ManagementObject>())
+            {
+                return obj["Name"].ToString();
+            }
+        }
+        catch { }
+        return "";
+    }
+    public static long GetMaxClockSpeedMHz()
+    {
+        try
+        {
+            var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT MaxClockSpeed FROM Win32_Processor");
+            foreach (var obj in searcher.Get().Cast<ManagementObject>())
+            {
+                if (obj["MaxClockSpeed"] != null)
+                {
+                    return Convert.ToInt64(obj["MaxClockSpeed"]);
+                }
+            }
+        }
+        catch { }
+        return -1;
+    }
+    public static int GetNumLogicalCores()
+    {
+        try
+        {
+            var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT NumberOfLogicalProcessors FROM Win32_Processor");
+            foreach (var obj in searcher.Get().Cast<ManagementObject>())
+            {
+                if (obj["NumberOfLogicalProcessors"] != null)
+                {
+                    return Convert.ToInt32(obj["NumberOfLogicalProcessors"]);
+                }
+            }
+        }
+        catch { }
+        return -1;
+    }
+    public static float GetCurrentClockSpeedMHz(int threadId)
+    {
+        try
+        {
+            var maxClockSpeedMHz = GetMaxClockSpeedMHz();
+            if (maxClockSpeedMHz == -1)
+            {
+                return -1;
+            }
+
+            var data = QueryWmi("Win32_PerfFormattedData_Counters_ProcessorInformation", "PercentProcessorPerformance");
+            if (data == null || data.Count <= threadId)
+            {
+                return -1;
+            }
+
+            var performance = double.Parse(data[threadId]!) / 100.0;
+            return (float)((maxClockSpeedMHz * performance) / 1000);
+        }
+        catch
+        {
+            return -1;
+        }
+    }
+    public static List<long> GetCurrentClockSpeedMHz()
+    {
+        try
+        {
+            var maxClockSpeedMHz = GetMaxClockSpeedMHz();
+            var numLogicalCores = GetNumLogicalCores();
+            if (maxClockSpeedMHz == -1 || numLogicalCores == -1)
+            {
+                return Enumerable.Repeat(-1L, numLogicalCores).ToList();
+            }
+
+            var result = new List<long>(numLogicalCores);
+            var data = QueryWmi("Win32_PerfFormattedData_Counters_ProcessorInformation", "PercentProcessorPerformance");
+            if (data == null || data.Count == 0)
+            {
+                return Enumerable.Repeat(-1L, numLogicalCores).ToList();
+            }
+
+            foreach (var v in data)
+            {
+                var performance = double.Parse(v!) / 100.0;
+                result.Add((long)(maxClockSpeedMHz * performance));
+            }
+
+            return result;
+        }
+        catch
+        {
+            return [];
+        }
+    }
+    public static double GetCurrentUtilisation()
+    {
+        try
+        {
+            var res = QueryWmi("Win32_PerfFormattedData_Counters_ProcessorInformation",
+                               "PercentProcessorUtility",
+                               "Name='_Total'");
+            if (res == null || res.Count == 0)
+            {
+                return -1.0;
+            }
+
+            return double.Parse(res[0]!);
+        }
+        catch
+        {
+            return -1.0;
+        }
+    }
+    public static double GetThreadUtilisation(int threadId)
+    {
+        try
+        {
+            var data = QueryWmi("Win32_PerfFormattedData_Counters_ProcessorInformation", "PercentProcessorUtility");
+            if (data == null || data.Count <= threadId || string.IsNullOrEmpty(data[threadId]))
+            {
+                return -1.0;
+            }
+
+            return double.Parse(data[threadId]!);
+        }
+        catch
+        {
+            return -1.0;
+        }
+    }
+    public static List<double> GetThreadsUtilisation()
+    {
+        try
+        {
+            var numLogicalCores = GetNumLogicalCores();
+            if (numLogicalCores == -1)
+            {
+                return Enumerable.Repeat(-1.0, 0).ToList();
+            }
+
+            var threadUtility = new List<double>(numLogicalCores);
+            var data = QueryWmi("Win32_PerfFormattedData_Counters_ProcessorInformation", "PercentProcessorUtility");
+
+            if (data == null || data.Count == 0)
+            {
+                return Enumerable.Repeat(-1.0, numLogicalCores).ToList();
+            }
+
+            foreach (var v in data)
+            {
+                threadUtility.Add(string.IsNullOrEmpty(v) ? -1.0 : double.Parse(v) / 100.0);
+            }
+
+            return threadUtility;
+        }
+        catch
+        {
+            return [];
+        }
+    }
+    private static List<string?> QueryWmi(string className, string propertyName, string condition = "")
+    {
+        try
+        {
+            var query = $"SELECT {propertyName} FROM {className}";
+            if (!string.IsNullOrEmpty(condition))
+            {
+                query += $" WHERE {condition}";
+            }
+
+            var searcher = new ManagementObjectSearcher("root\\CIMV2", query);
+            return searcher.Get()
+                           .Cast<ManagementObject>()
+                           .Select(obj => obj[propertyName]?.ToString())
+                           .Where(value => value != null)
+                           .ToList();
+        }
+        catch
+        {
+            return [];
+        }
+    }
+    public enum CacheLevel : ushort
+    {
+        Level1 = 3,
+        Level2 = 4,
+        Level3 = 5,
+    }
+    public static List<uint> GetCacheSizes(CacheLevel level)
+    {
+        var mc = new ManagementClass("Win32_CacheMemory");
+        var moc = mc.GetInstances();
+        var cacheSizes = new List<uint>(moc.Count);
+
+        cacheSizes.AddRange(moc
+          .Cast<ManagementObject>()
+          .Where(p => (ushort)(p.Properties["Level"].Value) == (ushort)level)
+          .Select(p => (uint)(p.Properties["MaxCacheSize"].Value)));
+
+        return cacheSizes;
+    }
     public static string Codename()
     {
         var cpuName = FamilyHelpers.CPUName;
@@ -848,7 +1013,7 @@ internal class GetSystemInfo
                 else if (l2 % 2 == 0)
                 {
                     bigCores = (int)(l2 / 2);
-                } 
+                }
                 smallCores = cores - bigCores;
 
                 if (smallCores > 0)
@@ -881,46 +1046,45 @@ internal class GetSystemInfo
             }
         }
     }
-
     public static string InstructionSets()
     {
         var list = "";
         if (IsMMXSupported())
         {
             list += "MMX";
-        } 
+        }
         if (Sse.IsSupported)
         {
             list += ", SSE";
-        } 
+        }
         if (Sse2.IsSupported)
         {
             list += ", SSE2";
-        } 
+        }
         if (Sse3.IsSupported)
         {
             list += ", SSE3";
-        } 
+        }
         if (Ssse3.IsSupported)
         {
             list += ", SSSE3";
-        } 
+        }
         if (Sse41.IsSupported)
         {
             list += ", SSE4.1";
-        } 
+        }
         if (Sse42.IsSupported)
         {
             list += ", SSE4.2";
-        } 
+        }
         if (IsEM64TSupported())
         {
             list += ", EM64T";
-        } 
+        }
         if (Environment.Is64BitProcess)
         {
             list += ", x86-64";
-        } 
+        }
         if (IsVirtualizationEnabled() && FamilyHelpers.TYPE == Family.ProcessorType.Intel)
         {
             list += ", VT-x";
@@ -928,32 +1092,31 @@ internal class GetSystemInfo
         else if (IsVirtualizationEnabled())
         {
             list += ", AMD-V";
-        } 
+        }
         if (Aes.IsSupported)
         {
             list += ", AES";
-        } 
+        }
         if (Avx.IsSupported)
         {
             list += ", AVX";
-        } 
+        }
         if (Avx2.IsSupported)
         {
             list += ", AVX2";
-        } 
+        }
         if (CheckAVX512Support())
         {
             list += ", AVX512";
-        } 
+        }
         if (Fma.IsSupported)
         {
             list += ", FMA3";
-        } 
+        }
         var result = RemoveCommaSpaceFromStart(list);
-        list = result; 
+        list = result;
         return list;
     }
-
     private static string RemoveCommaSpaceFromStart(string input)
     {
         var prefixToRemove = ", ";
@@ -962,7 +1125,7 @@ internal class GetSystemInfo
             input = input.Remove(0, prefixToRemove.Length);
         }
         return input;
-    } 
+    }
     private static bool IsVirtualizationEnabled()
     {
         try
@@ -980,12 +1143,12 @@ internal class GetSystemInfo
                 }
             }
         }
-        catch 
+        catch
         {
 
-        } 
+        }
         return false;
-    } 
+    }
     public static bool IsEM64TSupported()
     {
         ManagementObject mo;
@@ -993,7 +1156,7 @@ internal class GetSystemInfo
         var i = (ushort)mo["Architecture"];
 
         return i == 9;
-    } 
+    }
     private static bool CheckAVX512Support()
     {
         try
@@ -1013,7 +1176,7 @@ internal class GetSystemInfo
             // If there's an exception during CPUID call, AVX-512 is not supported
             return false;
         }
-    } 
+    }
     private static bool IsMMXSupported()
     {
         if (Environment.Is64BitProcess)
@@ -1027,7 +1190,8 @@ internal class GetSystemInfo
             return NativeMethods.IsProcessorFeaturePresent(NativeMethods.PF_MMX_INSTRUCTIONS_AVAILABLE);
         }
     }
-} 
+    #endregion
+}
 public static partial class NativeMethods
 {
     // Import the CPUID intrinsic (Intel x86 instruction)
@@ -1053,7 +1217,7 @@ public static partial class NativeMethods
         public uint dwAllocationGranularity;
         public ushort wProcessorLevel;
         public ushort wProcessorRevision;
-    } 
+    }
     // Helper method to check MMX support on Windows.
     public static bool IsProcessorFeaturePresent(int processorFeature)
     {
@@ -1076,7 +1240,7 @@ internal partial class Garbage
         {
             await Task.Run(() =>
             {
-                _ = EmptyWorkingSet(Process.GetCurrentProcess().Handle); 
+                _ = EmptyWorkingSet(Process.GetCurrentProcess().Handle);
                 var usedMemory = GC.GetTotalMemory(true);
             });
         }

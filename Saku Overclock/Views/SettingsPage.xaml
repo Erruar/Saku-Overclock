@@ -561,14 +561,14 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                             <Grid>
                                 <Button Margin="0,0,20,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Right">
                                     <StackPanel Margin="-5,-4,-5,-5" HorizontalAlignment="Stretch" Orientation="Horizontal">
-                                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="50" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
-                                            <TextBlock Text="Ctrl" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="50" Height="35" Background="{Binding ElementName=Settings_DiscordButton, Path=Background, Mode=OneWay}">
+                                            <TextBlock Text="Ctrl" Foreground="{Binding ElementName=Settings_DiscordText, Path=Foreground, Mode=OneWay}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
                                         </Border>
-                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
-                                            <TextBlock Text="Alt" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{Binding ElementName=Settings_DiscordButton, Path=Background, Mode=OneWay}">
+                                            <TextBlock Text="Alt" Foreground="{Binding ElementName=Settings_DiscordText, Path=Foreground, Mode=OneWay}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
                                         </Border>
-                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
-                                            <TextBlock Text="W" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{Binding ElementName=Settings_DiscordButton, Path=Background, Mode=OneWay}">
+                                            <TextBlock Text="W" Foreground="{Binding ElementName=Settings_DiscordText, Path=Foreground, Mode=OneWay}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
                                         </Border>
                                     </StackPanel>
                                 </Button>
@@ -579,14 +579,14 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                             <Grid>
                                 <Button Margin="0,0,20,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Right">
                                     <StackPanel Margin="-5,-4,-5,-5" HorizontalAlignment="Stretch" Orientation="Horizontal">
-                                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="50" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
-                                            <TextBlock Text="Ctrl" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="50" Height="35" Background="{Binding ElementName=Settings_DiscordButton, Path=Background, Mode=OneWay}">
+                                            <TextBlock Text="Ctrl" Foreground="{Binding ElementName=Settings_DiscordText, Path=Foreground, Mode=OneWay}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
                                         </Border>
-                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
-                                            <TextBlock Text="Alt" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{Binding ElementName=Settings_DiscordButton, Path=Background, Mode=OneWay}">
+                                            <TextBlock Text="Alt" Foreground="{Binding ElementName=Settings_DiscordText, Path=Foreground, Mode=OneWay}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
                                         </Border>
-                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
-                                            <TextBlock Text="P" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{Binding ElementName=Settings_DiscordButton, Path=Background, Mode=OneWay}">
+                                            <TextBlock Text="P" Foreground="{Binding ElementName=Settings_DiscordText, Path=Foreground, Mode=OneWay}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
                                         </Border>
                                     </StackPanel>
                                 </Button>
@@ -597,14 +597,14 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                             <Grid>
                                 <Button Margin="0,0,20,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Right">
                                     <StackPanel Margin="-5,-4,-5,-5" HorizontalAlignment="Stretch" Orientation="Horizontal">
-                                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="50" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
-                                            <TextBlock Text="Ctrl" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        <Border CornerRadius="4" HorizontalAlignment="Left" Width="50" Height="35" Background="{Binding ElementName=Settings_DiscordButton, Path=Background, Mode=OneWay}">
+                                            <TextBlock Text="Ctrl" Foreground="{Binding ElementName=Settings_DiscordText, Path=Foreground, Mode=OneWay}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
                                         </Border>
-                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
-                                            <TextBlock Text="Alt" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{Binding ElementName=Settings_DiscordButton, Path=Background, Mode=OneWay}">
+                                            <TextBlock Text="Alt" Foreground="{Binding ElementName=Settings_DiscordText, Path=Foreground, Mode=OneWay}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
                                         </Border>
-                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{StaticResource AccentAAFillColorDefaultBrush}">
-                                            <TextBlock Text="R" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
+                                        <Border CornerRadius="4" Margin="5,0,0,0" HorizontalAlignment="Left" Width="40" Height="35" Background="{Binding ElementName=Settings_DiscordButton, Path=Background, Mode=OneWay}">
+                                            <TextBlock Text="R" Foreground="{Binding ElementName=Settings_DiscordText, Path=Foreground, Mode=OneWay}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
                                         </Border>
                                     </StackPanel>
                                 </Button>
@@ -621,10 +621,10 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                 <TextBlock Margin="0,10,0,0" x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
                 <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
                 <TextBlock x:Uid="Settings_AboutDescription" Style="{ThemeResource BodyTextBlockStyle}" />
-                <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,40" CornerRadius="26" Height="50"  Margin="{StaticResource XSmallTopMargin}"  Width="300" HorizontalAlignment="Left" Style="{StaticResource AccentButtonStyle}" Click="Discord_Click">
+                <Button x:Name="Settings_DiscordButton" Shadow="{StaticResource SharedShadow}" Translation="0,0,40" CornerRadius="26" Height="50"  Margin="{StaticResource XSmallTopMargin}"  Width="300" HorizontalAlignment="Left" Style="{StaticResource AccentButtonStyle}" Click="Discord_Click">
                     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Left">
                         <BitmapIcon UriSource="/Assets/discord.png" VerticalAlignment="Center" Height="25" Margin="-90,0,0,0" HorizontalAlignment="Left"></BitmapIcon>
-                        <TextBlock Margin="0,2,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="ExtraBold">Discord</TextBlock>
+                        <TextBlock x:Name="Settings_DiscordText" Margin="0,2,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="ExtraBold">Discord</TextBlock>
                     </Grid> 
                 </Button>
                 <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
