@@ -853,11 +853,11 @@ internal class SendSMUCommand
                     try
                     {
                         var status = cpu?.smu.SendSmuCommand(testMailbox, command, ref args);
-                        if (Log) { sw.WriteLine($"{DateTime.Now:HH:mm:ss} | MailBox: {Mailbox} | CMD: {command:X} | Arg: {j:X} | Status: {status}"); }
+                        if (Log) { sw.WriteLine($"{DateTime.Now:HH:mm:ss} | MailBox: {Mailbox} | CMD: {command:X} | Arg: {j:X} | Status: {status} | Output HEX: {args[0]:X2} | Output DEC: {args[0]}"); }
                     }
                     catch (Exception ex)
                     {
-                        if (Log) { sw.WriteLine($"{DateTime.Now:HH:mm:ss} | MailBox: {Mailbox} | CMD: {command:X} | Arg: {j:X} | Status: {ex.Message}"); }
+                        if (Log) { sw.WriteLine($"{DateTime.Now:HH:mm:ss} | MailBox: {Mailbox} | CMD: {command:X} | Arg: {j:X} | Status: {ex.Message} | Output: {args[0]:X2} | Output: {args[0]}"); }
                     }
                 }
                 // ConfigLoad(); config.RangeApplied = true; ConfigSave(); 
