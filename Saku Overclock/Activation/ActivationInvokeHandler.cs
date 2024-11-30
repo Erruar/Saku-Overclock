@@ -29,11 +29,7 @@ internal static class ActivationInvokeHandler
     public static bool BringToFrontWindow(IntPtr hWnd)
     {
         return SetForegroundWindow(hWnd);
-    }
-    public static bool AllowSetForegroundWindow(int processId)
-    {
-        return AllowSetForegroundWindowMethod(processId);
-    }
+    } 
     public static bool ChangeWindowState(IntPtr hWnd, int command)
     {
         return ShowWindowAsync(hWnd, command);

@@ -13,7 +13,7 @@ internal class GetSystemInfo
     private static readonly ManagementObjectSearcher baseboardSearcher = new("root\\CIMV2", "SELECT * FROM Win32_BaseBoard");
     private static readonly ManagementObjectSearcher motherboardSearcher = new("root\\CIMV2", "SELECT * FROM Win32_MotherboardDevice");
     private static readonly ManagementObjectSearcher ComputerSsystemInfo = new("root\\CIMV2", "SELECT * FROM Win32_ComputerSystemProduct");
-
+    private static long maxClockSpeedMHz = -1;
     #region Battery Information
     public static string? GetBatteryName()
     {
@@ -64,9 +64,9 @@ internal class GetSystemInfo
     }
     public static decimal GetBatteryHealth()
     {
-        var designCap = ReadDesignCapacity();
+        var designCap = ReadDesignCapacity(out _);
         var fullCap = ReadFullChargeCapacity();
-
+        if (designCap == 0) { return 0; }
         var health = fullCap / designCap;
 
         return health;
@@ -119,8 +119,9 @@ internal class GetSystemInfo
             var scope = new ManagementScope("root\\WMI");
             var query = new ObjectQuery("SELECT * FROM BatteryStatus");
 
-            using var searcher = new ManagementObjectSearcher(scope, query);
-            foreach (var obj in searcher.Get().Cast<ManagementObject>())
+            var searcher = new ManagementObjectSearcher(scope, query);
+            var results = searcher.Get();
+            foreach (var obj in results.OfType<ManagementObject>())
             {
                 var chargeRate = Convert.ToUInt32(obj["ChargeRate"]);
                 var dischargeRate = Convert.ToUInt32(obj["DischargeRate"]);
@@ -135,11 +136,16 @@ internal class GetSystemInfo
             }
             return 0;
         }
+        catch (ManagementException) 
+        {  
+            return 0;
+        }
         catch
         {
             return 0;
         }
-    }
+    } 
+
     public static decimal ReadFullChargeCapacity()
     {
         try
@@ -159,22 +165,25 @@ internal class GetSystemInfo
             return 0;
         }
     }
-    public static decimal ReadDesignCapacity()
+    public static decimal ReadDesignCapacity(out bool doNotTrack)
     {
         try
         {
             var scope = new ManagementScope("root\\WMI");
             var query = new ObjectQuery("SELECT * FROM BatteryStaticData");
-
-            using var searcher = new ManagementObjectSearcher(scope, query);
+            var searcher = new ManagementObjectSearcher(scope, query);
+            if (searcher == null) { doNotTrack = true; return 0; }
             foreach (var obj in searcher.Get().Cast<ManagementObject>())
             {
+                doNotTrack = false;
                 return Convert.ToDecimal(obj["DesignedCapacity"]);
             }
+            doNotTrack = true;
             return 0;
         }
         catch
         {
+            doNotTrack = true;
             return 0;
         }
     }
@@ -704,10 +713,9 @@ internal class GetSystemInfo
     {
         try
         {
-            var maxClockSpeedMHz = GetMaxClockSpeedMHz();
             if (maxClockSpeedMHz == -1)
             {
-                return -1;
+                maxClockSpeedMHz = GetMaxClockSpeedMHz();
             }
 
             var data = QueryWmi("Win32_PerfFormattedData_Counters_ProcessorInformation", "PercentProcessorPerformance");
@@ -724,12 +732,14 @@ internal class GetSystemInfo
             return -1;
         }
     }
-    public static List<long> GetCurrentClockSpeedMHz()
+    public static List<long> GetCurrentClockSpeedsMHz(int numLogicalCores)
     {
         try
         {
-            var maxClockSpeedMHz = GetMaxClockSpeedMHz();
-            var numLogicalCores = GetNumLogicalCores();
+            if (maxClockSpeedMHz == -1)
+            {
+                maxClockSpeedMHz = GetMaxClockSpeedMHz();
+            }
             if (maxClockSpeedMHz == -1 || numLogicalCores == -1)
             {
                 return Enumerable.Repeat(-1L, numLogicalCores).ToList();
@@ -745,7 +755,7 @@ internal class GetSystemInfo
             foreach (var v in data)
             {
                 var performance = double.Parse(v!) / 100.0;
-                result.Add((long)(maxClockSpeedMHz * performance));
+                result.Add((long)(maxClockSpeedMHz * performance) / 1000);
             }
 
             return result;

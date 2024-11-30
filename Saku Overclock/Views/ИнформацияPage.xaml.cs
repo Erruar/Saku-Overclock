@@ -29,6 +29,7 @@ public sealed partial class ИнформацияPage : Page
     private readonly List<MinMax> niicons_Min_MaxValues = [new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()]; // Лист для хранения минимальных и максимальных значений Ni-Icons
     public double refreshtime; // Время обновления
     private bool loaded = false; // Страница загружена
+    private bool doNotTrackBattery = false;
     private string? rtss_line; // Строка для вывода в модуль RTSS
     private readonly List<InfoPageCPUPoints> CPUPointer = []; // Лист графика использования процессора
     private readonly List<InfoPageCPUPoints> GPUPointer = []; // Лист графика частоты графического процессора
@@ -526,18 +527,25 @@ public sealed partial class ИнформацияPage : Page
     }
     private void GetBATInfo()
     {
+        if (BATBannerButton.Visibility == Visibility.Collapsed) { return; }
         try
         {
             tbBAT.Text = GetSystemInfo.GetBatteryPercent().ToString() + "W";
             tbBATState.Text = GetSystemInfo.GetBatteryStatus().ToString();
             tbBATHealth.Text = $"{100 - (GetSystemInfo.GetBatteryHealth() * 100):0.##}%";
             tbBATCycles.Text = $"{GetSystemInfo.GetBatteryCycle()}";
-            tbBATCapacity.Text = $"{GetSystemInfo.ReadFullChargeCapacity()}mAh/{GetSystemInfo.ReadDesignCapacity()}mAh";
+            tbBATCapacity.Text = $"{GetSystemInfo.ReadFullChargeCapacity()}mAh/{GetSystemInfo.ReadDesignCapacity(out var notTrack)}mAh";
             tbBATChargeRate.Text = $"{(GetSystemInfo.GetBatteryRate() / 1000):0.##}W";
             BATName = GetSystemInfo.GetBatteryName();
+            if (notTrack)
+            {
+                BATBannerButton.Visibility = Visibility.Collapsed;
+                doNotTrackBattery = true;
+            }
         }
         catch
         {
+            doNotTrackBattery = true;
             if (BATBannerButton.Visibility != Visibility.Collapsed) { BATBannerButton.Visibility = Visibility.Collapsed; }
         }
     }
@@ -843,9 +851,16 @@ public sealed partial class ИнформацияPage : Page
                 InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoAPSTBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49)); 
 
-                _ = RyzenADJWrapper.Refresh_table(ryzenAccess);
-
-                var batteryRate = GetSystemInfo.GetBatteryRate() / 1000;
+                if (ryzenAccess == 0x0)
+                {
+                    if (cpu != null)
+                    {
+                        RyzenADJWrapper.CpuFrequencyManager.RefreshPowerTable(cpu);
+                        RyzenADJWrapper.CpuFrequencyManager.InitializeCoreIndexMapAsync(numberOfCores);
+                    }
+                }
+                decimal batteryRate = 0;
+                if (BATBannerButton.Visibility == Visibility.Visible && !doNotTrackBattery) { batteryRate = GetSystemInfo.GetBatteryRate() / 1000; }
                 tbBATChargeRate.Text = $"{batteryRate}W";
                 tbBAT.Text = GetSystemInfo.GetBatteryPercent() + "%";
                 var batLifeTime = GetSystemInfo.GetBatteryLifeTime() + 0d;
