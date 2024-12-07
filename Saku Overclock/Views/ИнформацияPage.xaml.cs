@@ -897,6 +897,10 @@ public sealed partial class ИнформацияPage : Page
                     GPUBannerButton.Visibility = infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 2 ? Visibility.Visible : Visibility.Collapsed;
                     InfoCPUSectionGetInfoSelectIndexesButton.Visibility = infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 2 ? Visibility.Visible : Visibility.Collapsed; 
                 }
+                else
+                {
+                    RyzenADJWrapper.Refresh_table(ryzenAccess);
+                }
                 decimal batteryRate = 0;
                 if (BATBannerButton.Visibility == Visibility.Visible && !doNotTrackBattery) { batteryRate = GetSystemInfo.GetBatteryRate() / 1000; }
                 tbBATChargeRate.Text = $"{batteryRate}W";

@@ -354,10 +354,6 @@ public sealed partial class ПараметрыPage : Page
     }
     public void SlidersInit()
     {
-        //PLS don't beat me for this WEIRDEST initialization.
-        //I know about that. If you can do better - do!
-        //Open pull requests and create own with your code.
-        //App still in BETA state. Make sense that I choosed "do it faster but poorly" instead of "do it slowly but better" at project start and now I'm fixing that situation
         if (isLoaded == false)
         {
             return;
@@ -414,7 +410,6 @@ public sealed partial class ПараметрыPage : Page
                 }
             }
         } 
-        //Main INIT. It will be better soon! - Serzhik Saku, Erruar
         MainInit(indexprofile);
         waitforload = false;
     }
@@ -472,7 +467,7 @@ public sealed partial class ПараметрыPage : Page
         CCD2_7.IsEnabled = locks; CCD2_7v.IsEnabled = locks;
         CCD2_8.IsEnabled = locks; CCD2_8v.IsEnabled = locks;
     }
-    private void MainInit(int index)
+    private async void MainInit(int index)
     {
         if (SettingsViewModel.VersionId != 5) // Если не дебаг
         {
@@ -542,7 +537,7 @@ public sealed partial class ПараметрыPage : Page
                 Action_IncompatibleProfile.IsOpen = false;
                 Action_IncompatibleCPU.IsOpen = true;
             }
-            var cores = ИнформацияPage.GetCPUCoresAsync().Result;
+            var cores = await ИнформацияPage.GetCPUCoresAsync();
             if (cores > 8)
             {
                 if (cores <= 15) { CCD2_Grid7_2.Visibility = Visibility.Collapsed; CCD2_Grid7_1.Visibility = Visibility.Collapsed; }
