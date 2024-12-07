@@ -549,7 +549,7 @@ public sealed partial class ИнформацияPage : Page
         }
     }
 
-    private async Task<double> CalculateCacheSizeAsync(GetSystemInfo.CacheLevel level)
+    private static async Task<double> CalculateCacheSizeAsync(GetSystemInfo.CacheLevel level)
     {
         return await Task.Run(() =>
         {
