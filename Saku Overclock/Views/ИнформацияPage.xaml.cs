@@ -438,7 +438,7 @@ public sealed partial class ИнформацияPage : Page
         });
     }
 
-    private async void GetCPUInfo()
+    private async Task GetCPUInfo()
     {
         try
         {
@@ -562,19 +562,50 @@ public sealed partial class ИнформацияPage : Page
         });
     }
 
-    private void GetBATInfo()
+    private async Task GetBATInfoAsync()
     {
         if (BATBannerButton.Visibility == Visibility.Collapsed) { return; }
+
         try
         {
-            tbBAT.Text = GetSystemInfo.GetBatteryPercent().ToString() + "W";
-            tbBATState.Text = GetSystemInfo.GetBatteryStatus().ToString();
-            tbBATHealth.Text = $"{100 - (GetSystemInfo.GetBatteryHealth() * 100):0.##}%";
-            tbBATCycles.Text = $"{GetSystemInfo.GetBatteryCycle()}";
-            tbBATCapacity.Text = $"{GetSystemInfo.ReadFullChargeCapacity()}mAh/{GetSystemInfo.ReadDesignCapacity(out var notTrack)}mAh";
-            tbBATChargeRate.Text = $"{(GetSystemInfo.GetBatteryRate() / 1000):0.##}W";
-            BATName = GetSystemInfo.GetBatteryName();
-            if (notTrack)
+            // Асинхронное выполнение операций
+            var batteryInfoTask = Task.Run(() =>
+            {
+                var batteryPercent = GetSystemInfo.GetBatteryPercent().ToString() + "W";
+                var batteryState = GetSystemInfo.GetBatteryStatus().ToString();
+                var batteryHealth = $"{100 - (GetSystemInfo.GetBatteryHealth() * 100):0.##}%";
+                var batteryCycles = $"{GetSystemInfo.GetBatteryCycle()}";
+                var fullChargeCapacity = GetSystemInfo.ReadFullChargeCapacity();
+                var designCapacity = GetSystemInfo.ReadDesignCapacity(out var notTrack);
+                var chargeRate = $"{(GetSystemInfo.GetBatteryRate() / 1000):0.##}W";
+                var batteryName = GetSystemInfo.GetBatteryName();
+
+                return new
+                {
+                    batteryPercent,
+                    batteryState,
+                    batteryHealth,
+                    batteryCycles,
+                    fullChargeCapacity,
+                    designCapacity,
+                    chargeRate,
+                    batteryName,
+                    notTrack
+                };
+            });
+
+            var batteryInfo = await batteryInfoTask;
+
+            // Обновление UI
+            tbBAT.Text = batteryInfo.batteryPercent;
+            tbBATState.Text = batteryInfo.batteryState;
+            tbBATHealth.Text = batteryInfo.batteryHealth;
+            tbBATCycles.Text = batteryInfo.batteryCycles;
+            tbBATCapacity.Text = $"{batteryInfo.fullChargeCapacity}mAh/{batteryInfo.designCapacity}mAh";
+            tbBATChargeRate.Text = batteryInfo.chargeRate;
+            BATName = batteryInfo.batteryName;
+
+            if (batteryInfo.notTrack)
             {
                 BATBannerButton.Visibility = Visibility.Collapsed;
                 doNotTrackBattery = true;
@@ -582,11 +613,16 @@ public sealed partial class ИнформацияPage : Page
         }
         catch
         {
+            // При ошибке скрываем элементы и отмечаем, что батарея не отслеживается
             doNotTrackBattery = true;
-            if (BATBannerButton.Visibility != Visibility.Collapsed) { BATBannerButton.Visibility = Visibility.Collapsed; }
+            if (BATBannerButton.Visibility != Visibility.Collapsed)
+            {
+                BATBannerButton.Visibility = Visibility.Collapsed;
+            }
         }
     }
-    private async void GetRAMInfo()
+
+    private async Task GetRAMInfo()
     {
         double capacity = 0;
         var speed = 0;
@@ -722,16 +758,16 @@ public sealed partial class ИнформацияPage : Page
     {
         base.OnNavigatedFrom(e); StopInfoUpdate();
     }
-    private void ИнформацияPage_Loaded(object sender, RoutedEventArgs e)
+    private async void ИнформацияPage_Loaded(object sender, RoutedEventArgs e)
     {
         loaded = true;
         SelectedBrush = CPUBannerButton.Background;
         SelectedBorderBrush = CPUBannerButton.BorderBrush;
         TransparentBrush = GPUBannerButton.Background;
-        GetCPUInfo();
-        GetRAMInfo();
+        await GetCPUInfo();
+        await GetRAMInfo();
         ReadPstate();
-        GetBATInfo();
+        await GetBATInfoAsync();
         if (CPUBannerButton.Shadow != new ThemeShadow())
         {
             CPUBannerButton.Shadow ??= new ThemeShadow();
