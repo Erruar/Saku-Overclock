@@ -1,5 +1,6 @@
 ﻿using System.Management;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json.Linq;
 using ZenStates.Core;
 
 namespace Saku_Overclock.SMUEngine;
@@ -9,8 +10,10 @@ public static class RyzenADJWrapper
     private static bool IsDllRunning = false;
     private static bool IsTableRunning = false;
     private static IntPtr runningLibRyzenAdjIntPtr = -1;
-    private static List<long> currentCPUClocks = [];
+    private static List<double> currentCPUClocks = [];
+    private static float currentCPULoad = 0;
     private static int globalCoreCounter = -1;
+    private static int globalCPUDetectionMethod = 0;
     public enum RyzenFamily
     {
         WAIT_FOR_LOAD = -2,
@@ -293,13 +296,11 @@ public static class RyzenADJWrapper
     }
     public static float Get_fast_limit(IntPtr ry)
     {
-        if (ry == 0x0) { return 0; }
-        return get_fast_limit(ry);
+        return CpuFrequencyManager.GetFastLimit(ry);
     }
     public static float Get_fast_value(IntPtr ry)
     {
-        if (ry == 0x0) { return 0; }
-        return get_fast_value(ry);
+        return CpuFrequencyManager.GetFastValue(ry);
     }
     public static float Get_slow_limit(IntPtr ry)
     {
@@ -343,13 +344,11 @@ public static class RyzenADJWrapper
     }
     public static float Get_vrmmax_current(IntPtr ry)
     {
-        if (ry == 0x0) { return 0; }
-        return get_vrmmax_current(ry);
+        return CpuFrequencyManager.GetVRMEDCLimit(ry);
     }
     public static float Get_vrmmax_current_value(IntPtr ry)
     {
-        if (ry == 0x0) { return 0; }
-        return get_vrmmax_current_value(ry);
+        return CpuFrequencyManager.GetVRMEDCValue(ry);
     }
     public static float Get_vrmsocmax_current(IntPtr ry)
     {
@@ -363,13 +362,11 @@ public static class RyzenADJWrapper
     }
     public static float Get_tctl_temp(IntPtr ry)
     {
-        if (ry == 0x0) { return 0; }
-        return get_tctl_temp(ry);
+        return CpuFrequencyManager.GetTCTLLimit(ry);
     }
     public static float Get_tctl_temp_value(IntPtr ry)
     {
-        if (ry == 0x0) { return 0; }
-        return get_tctl_temp_value(ry);
+        return CpuFrequencyManager.GetTCTLValue(ry);
     }
     public static float Get_apu_skin_temp_limit(IntPtr ry)
     {
@@ -418,14 +415,11 @@ public static class RyzenADJWrapper
     }
     public static float Get_cclk_busy_value(IntPtr ry)
     {
-        if (ry == 0x0) { return 0; }
-        return get_cclk_busy_value(ry);
+        return CpuFrequencyManager.GetCoreLoad(ry);
     }
     public static float Get_core_clk(IntPtr ry, uint value)
     {
-        return CpuFrequencyManager.GetCoreClock(ry, value);
-        /*if (ry == 0x0) { return GetSystemInfo.GetCurrentClockSpeedMHz((int)value); }
-        return get_core_clk(ry, value); */
+        return CpuFrequencyManager.GetCoreClock(ry, value); 
     }
     public static float Get_core_volt(IntPtr ry, uint value)
     {
@@ -517,16 +511,19 @@ public static class RyzenADJWrapper
     public class CpuFrequencyManager
     {
         private static readonly Dictionary<int, int> _coreIndexMap = [];
+        private static int _cpuLoadIndex = 0;
         private static float[]? _cachedTable;
         // Флаг для проверки готовности таблицы
         private static bool _isInitialized = false;
 
         public static void InitializeCoreIndexMapAsync(int coreCounter)
         {
+            globalCPUDetectionMethod = 1;
             if (_isInitialized) { return; }
             _coreIndexMap.Clear();
             // Асинхронная загрузка WMI
             if (currentCPUClocks.Count == 0) { currentCPUClocks = GetSystemInfo.GetCurrentClockSpeedsMHz(coreCounter); }
+            if (currentCPULoad == 0) { currentCPULoad = (float)GetSystemInfo.GetCurrentUtilisation(); }
             if (coreCounter == 0) 
             {
                 if (globalCoreCounter == -1 || globalCoreCounter == 0)
@@ -548,7 +545,18 @@ public static class RyzenADJWrapper
                     _coreIndexMap[core] = index;
                 }
             }
+            _cpuLoadIndex = FindIndexInPowerTable(currentCPULoad);
+            
             _isInitialized = true;
+        }
+        public static async Task AsyncWMIGetCoreFreq(int coreCounter)
+        {
+            globalCPUDetectionMethod = 2; 
+            await Task.Run(() => 
+            {
+                currentCPUClocks = GetSystemInfo.GetCurrentClockSpeedsMHz(coreCounter);
+                currentCPULoad = (float)GetSystemInfo.GetCurrentUtilisation();
+            });
         }
 
         public static void RefreshPowerTable(Cpu cpu)
@@ -561,7 +569,7 @@ public static class RyzenADJWrapper
             catch { }
         }
 
-        private static int FindIndexInPowerTable(float clockSpeedMHz)
+        private static int FindIndexInPowerTable(double clockSpeedMHz)
         {
             if (_cachedTable == null)
             {
@@ -569,12 +577,83 @@ public static class RyzenADJWrapper
             }
             for (var i = 0; i < _cachedTable.Length; i++)
             {
-                if (Math.Abs(_cachedTable[i] - clockSpeedMHz) < 0.100) // Допустимая погрешность
+                if (Math.Abs(_cachedTable[i] - clockSpeedMHz) < 0.100 && _cachedTable[i] > 0.38) // Допустимая погрешность
                 {
                     return i;
                 }
             }
             return -1;
+        }
+        public static float GetCoreLoad(IntPtr ry)
+        {
+            if (ry != IntPtr.Zero)
+            {
+                return get_cclk_busy_value(ry);
+            }
+            if (!_isInitialized)
+            {
+                return currentCPULoad;
+            }
+            if (_cpuLoadIndex == 0)
+            {
+                return 0;
+            }
+            if (globalCPUDetectionMethod == 1)
+            {
+                return (_cachedTable != null && _cachedTable.Length >= _cpuLoadIndex && _cpuLoadIndex >= 0) ? _cachedTable[_cpuLoadIndex] : 0;
+            }
+            else
+            { 
+                return currentCPULoad;
+            }
+        }
+        public static float GetFastLimit(IntPtr ry)
+        {
+            if (ry != IntPtr.Zero)
+            {
+                return get_fast_limit(ry);
+            }
+            return _cachedTable != null ? _cachedTable[2] : 0;
+        }
+        public static float GetFastValue(IntPtr ry)
+        {
+            if (ry != IntPtr.Zero)
+            {
+                return get_fast_value(ry);
+            }
+            return _cachedTable != null ? _cachedTable[3] : 0;
+        }
+        public static float GetVRMEDCLimit(IntPtr ry)
+        {
+            if (ry != IntPtr.Zero)
+            {
+                return get_vrmmax_current(ry);
+            }
+            return _cachedTable != null ? _cachedTable[8] : 0;
+        }
+        public static float GetVRMEDCValue(IntPtr ry)
+        {
+            if (ry != IntPtr.Zero)
+            {
+                return get_vrmmax_current_value(ry);
+            }
+            return _cachedTable != null ? _cachedTable[9] : 0;
+        }
+        public static float GetTCTLLimit(IntPtr ry)
+        {
+            if (ry != IntPtr.Zero)
+            {
+                return get_tctl_temp(ry);
+            }
+            return _cachedTable != null ? _cachedTable[10] : 0;
+        }
+        public static float GetTCTLValue(IntPtr ry)
+        {
+            if (ry != IntPtr.Zero)
+            {
+                return get_tctl_temp_value(ry);
+            }
+            return _cachedTable != null ? _cachedTable[11] : 0;
         }
 
         public static float GetCoreClock(IntPtr ry, uint core)
@@ -586,11 +665,10 @@ public static class RyzenADJWrapper
 
             if (!_isInitialized)
             {
-                return -1;
+                return (float)currentCPUClocks[(int)core];
             }
             if (!_coreIndexMap.TryGetValue((int)core, out var value))
             {
-                //SendSMUCommand.TraceIt_TraceError($"Core {core} not found in index map.");
                 return -1;
             }
 
@@ -598,9 +676,35 @@ public static class RyzenADJWrapper
             {
                 SendSMUCommand.TraceIt_TraceError("Cached table is invalid or out of range.");
                 return -1;
+            } 
+            if (_cachedTable[value] >= 7 && globalCPUDetectionMethod == 1) 
+            {
+                foreach(var el in _cachedTable)
+                {
+                    if (el < 7)
+                    {
+                        return el;
+                    }
+                }
             }
-
-            return _cachedTable[value];
+            if (globalCPUDetectionMethod == 1)
+            {
+                return _cachedTable[value];
+            }
+            else
+            {
+                if (currentCPUClocks[(int)core] == 0)
+                {
+                    foreach (var el in currentCPUClocks)
+                    {
+                        if (el > 0)
+                        {
+                            return (float)el;
+                        }
+                    }
+                }
+                return (float)currentCPUClocks[(int)core];
+            }
         }
     }
 

@@ -487,7 +487,15 @@ StrokeThickness="1.5" >
                                     <ComboBoxItem x:Uid="InfoCPUComboPowr" Content="Powers"/>
                                     <ComboBoxItem x:Uid="InfoCPUComboTemp" Content="Temperatures"/>
                                 </ComboBox>
-                            </Grid> 
+                                <ComboBox Margin="1,0,0,0" Visibility="Collapsed" CornerRadius="5" Style="{ThemeResource AcrylicComboBoxStyle}" Width="134.5" SelectedIndex="1" x:Name="infoCPUSectionGetInfoTypeComboBox">
+                                    <ComboBoxItem Content="WMI"/>
+                                    <ComboBoxItem Content="WMI + PM TABLE"/> 
+                                    <ComboBoxItem Content="PM TABLE"/> 
+                                </ComboBox>
+                            </Grid>
+                            <Button Visibility="Collapsed" Margin="1,0,-5,-5" Style="{StaticResource AccentButtonStyle}" x:Name="InfoCPUSectionGetInfoSelectIndexesButton" Width="31" Height="32">
+                                <FontIcon Margin="-5" Glyph="&#xE762;" />
+                            </Button>
                         </StackPanel>
                         <TextBlock VerticalAlignment="Bottom" FontWeight="SemiBold" x:Name="tbProcessor" HorizontalAlignment="Right"></TextBlock>
                         <TextBlock VerticalAlignment="Bottom" FontWeight="SemiBold" Visibility="Collapsed" HorizontalAlignment="Right">AMD Ryzen 7 4800H with Radeon Vega Mobile Gfx</TextBlock>
@@ -512,7 +520,7 @@ StrokeThickness="1.5" >
                                     <TextBlock x:Name="tbCPUFreq" Text="? GHz" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel Padding="30,0,0,0" Orientation="Vertical">
-                                    <TextBlock x:Uid="infoAVOLTCPU" Text="Voltage" FontWeight="Light"/>
+                                    <TextBlock x:Uid="infoAVOLTCPU" Text="Voltage" x:Name="tbCPUVoltDesc" FontWeight="Light"/>
                                     <TextBlock x:Name="tbCPUVolt" Text="? V" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>

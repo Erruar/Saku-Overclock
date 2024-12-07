@@ -419,25 +419,43 @@ internal class GetSystemInfo
     {
         try
         {
-            var count = 0;
-            var searcher = new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController"); // Change AdapterCompatibility as per your requirement
-            var collection = searcher.Get();
-
-            foreach (var obj in collection.Cast<ManagementObject>())
-            {
-                if (count == i)
+            // Создаем отфильтрованный список видеокарт
+            var predictedGPUList = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
+                .Get()
+                .Cast<ManagementObject>()
+                .Where(element =>
                 {
-                    _ = Garbage.Garbage_Collect();
-                    return obj["Name"].ToString();
-                }
-                count++;
+                    var name = element["Name"]?.ToString() ?? string.Empty;
+                    return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
+                           !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
+                })
+                .ToList(); // Преобразуем в список для индексации
+
+            // Проверяем, что индекс i находится в пределах допустимых значений
+            if (i >= 0 && i < predictedGPUList.Count)
+            {
+                // Получаем объект видеокарты
+                var gpu = predictedGPUList[i];
+                // Читаем имя видеокарты
+                var gpuName = gpu["Name"]?.ToString() ?? "Unknown GPU";
+                _ = Garbage.Garbage_Collect();
+                return gpuName;
+            }
+            else
+            {
+                return "GPU index out of range";
             }
         }
-        catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error retrieving GPU name: {ex}");
+        }
 
         _ = Garbage.Garbage_Collect();
-        return "";
+        return "Error retrieving GPU";
     }
+
+
     public static bool HostingBoard
     {
         get
@@ -732,7 +750,7 @@ internal class GetSystemInfo
             return -1;
         }
     }
-    public static List<long> GetCurrentClockSpeedsMHz(int numLogicalCores)
+    public static List<double> GetCurrentClockSpeedsMHz(int numLogicalCores)
     {
         try
         {
@@ -742,20 +760,20 @@ internal class GetSystemInfo
             }
             if (maxClockSpeedMHz == -1 || numLogicalCores == -1)
             {
-                return Enumerable.Repeat(-1L, numLogicalCores).ToList();
+                return Enumerable.Repeat(-1.0d, numLogicalCores).ToList();
             }
 
-            var result = new List<long>(numLogicalCores);
+            var result = new List<double>(numLogicalCores);
             var data = QueryWmi("Win32_PerfFormattedData_Counters_ProcessorInformation", "PercentProcessorPerformance");
             if (data == null || data.Count == 0)
             {
-                return Enumerable.Repeat(-1L, numLogicalCores).ToList();
+                return Enumerable.Repeat(-1.0d, numLogicalCores).ToList();
             }
 
             foreach (var v in data)
             {
                 var performance = double.Parse(v!) / 100.0;
-                result.Add((long)(maxClockSpeedMHz * performance) / 1000);
+                result.Add((maxClockSpeedMHz * performance) / 1000);
             }
 
             return result;

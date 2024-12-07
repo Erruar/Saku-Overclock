@@ -108,7 +108,7 @@ public sealed partial class AsusКулерPage : Page
         var countVolt = 0;
         if (availableCPUCores == 0)
         {
-            availableCPUCores = ИнформацияPage.GetCPUCores(); // Оптимизация приложения, лишний раз не обновлять это значение
+            availableCPUCores = ИнформацияPage.GetCPUCoresAsync().Result; // Оптимизация приложения, лишний раз не обновлять это значение
         }
         for (var f = 0u; f < availableCPUCores; f++)
         {

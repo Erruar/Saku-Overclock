@@ -2,7 +2,6 @@
 using System.Drawing.Drawing2D;
 using System.Management;
 using System.Text.RegularExpressions;
-using Accord.Math;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -26,6 +25,12 @@ public sealed partial class ИнформацияPage : Page
         public float Min;
         public float Max;
     }
+    private class TotalBusyRam // Класс для хранения текущего использования ОЗУ и всего ОЗУ
+    {
+        public double BusyRam;
+        public double TotalRam;
+    }
+    private readonly List<TotalBusyRam> ramUsageHelper = []; // Лист текущего использования ОЗУ и всего ОЗУ
     private readonly List<MinMax> niicons_Min_MaxValues = [new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()]; // Лист для хранения минимальных и максимальных значений Ni-Icons
     public double refreshtime; // Время обновления
     private bool loaded = false; // Страница загружена
@@ -406,28 +411,33 @@ public sealed partial class ИнформацияPage : Page
     }
     #endregion
     #region Get-Info voids
-    public static int GetCPUCores()
+    public static async Task<int> GetCPUCoresAsync()
     {
-        var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
-        try
+        return await Task.Run(() =>
         {
-            foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
+            var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+            try
             {
-                var numberOfCores = Convert.ToInt32(queryObj["NumberOfCores"]);
-                var numberOfLogicalProcessors = Convert.ToInt32(queryObj["NumberOfLogicalProcessors"]);
-                var l2Size = Convert.ToDouble(queryObj["L2CacheSize"]) / 1024;
+                foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
+                {
+                    var numberOfCores = Convert.ToInt32(queryObj["NumberOfCores"]);
+                    var numberOfLogicalProcessors = Convert.ToInt32(queryObj["NumberOfLogicalProcessors"]);
+                    var l2Size = Convert.ToDouble(queryObj["L2CacheSize"]) / 1024;
 
-                return numberOfLogicalProcessors == numberOfCores
-                    ? numberOfCores
-                    : int.Parse(GetSystemInfo.GetBigLITTLE(numberOfCores, l2Size));
+                    return numberOfLogicalProcessors == numberOfCores
+                        ? numberOfCores
+                        : int.Parse(GetSystemInfo.GetBigLITTLE(numberOfCores, l2Size));
+                }
             }
-        }
-        catch
-        {
-            return 0;
-        }
-        return 0;
+            catch
+            {
+                return 0; // Возвращаем 0 в случае ошибки
+            }
+
+            return 0; // Возвращаем 0, если данные не были найдены
+        });
     }
+
     private async void GetCPUInfo()
     {
         try
@@ -646,7 +656,14 @@ public sealed partial class ИнформацияPage : Page
                 uint CpuFid = 0x0;
                 CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
                 var textBlock = (TextBlock)InfoPSTSectionMetrics.FindName($"tbPSTP{i}");
-                textBlock.Text = $"FID: {Convert.ToString(CpuFid, 10)}/DID: {Convert.ToString(CpuDfsId, 10)}\n{CpuFid * 25 / (CpuDfsId * 12.5) / 10}" + "infoAGHZ".GetLocalized();
+                if (CpuFid != 0)
+                {
+                    textBlock.Text = $"FID: {Convert.ToString(CpuFid, 10)}/DID: {Convert.ToString(CpuDfsId, 10)}\n{CpuFid * 25 / (CpuDfsId * 12.5) / 10}" + "infoAGHZ".GetLocalized();
+                }
+                else
+                {
+                    textBlock.Text = "Disabled on\nplatform";
+                }
                 PSTatesList[i] = CpuFid * 25 / (CpuDfsId * 12.5) / 10;
             }
         }
@@ -735,7 +752,7 @@ public sealed partial class ИнформацияPage : Page
     }
     #endregion
     #region Info Update voids
-    private void UpdateInfoAsync()
+    private async void UpdateInfoAsync()
     {
         try
         {
@@ -849,15 +866,36 @@ public sealed partial class ИнформацияPage : Page
                 InfoABATBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoABATBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoAPSTBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49)); 
+                InfoAPSTBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
 
                 if (ryzenAccess == 0x0)
                 {
                     if (cpu != null)
                     {
                         RyzenADJWrapper.CpuFrequencyManager.RefreshPowerTable(cpu);
-                        RyzenADJWrapper.CpuFrequencyManager.InitializeCoreIndexMapAsync(numberOfCores);
+                        if (infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 1)
+                        {
+                            RyzenADJWrapper.CpuFrequencyManager.InitializeCoreIndexMapAsync(numberOfCores);
+                        }
                     }
+                    if (InfoCPUComboBoxBorderSharedShadow_Element.Visibility == Visibility.Visible || infoCPUSectionComboBox.Visibility == Visibility.Visible)
+                    {
+                        InfoCPUComboBoxBorderSharedShadow_Element.Visibility = Visibility.Collapsed;
+                        infoCPUSectionComboBox.Visibility = Visibility.Collapsed;
+                    }
+                    if (infoCPUSectionGetInfoTypeComboBox.Visibility == Visibility.Collapsed)
+                    {
+                        infoCPUSectionGetInfoTypeComboBox.Visibility = Visibility.Visible;
+                    }
+                    if (!Info_RyzenADJLoadError_InfoBar.IsOpen)
+                    {
+                        Info_RyzenADJLoadError_InfoBar.IsOpen = true;
+                        infoRTSSButton.Visibility = Visibility.Collapsed;
+                        infoNiIconsButton.Visibility = Visibility.Collapsed;
+                    }
+                    //VRMBannerButton.Visibility = infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 2 ? Visibility.Visible : Visibility.Collapsed;
+                    GPUBannerButton.Visibility = infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 2 ? Visibility.Visible : Visibility.Collapsed;
+                    InfoCPUSectionGetInfoSelectIndexesButton.Visibility = infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 2 ? Visibility.Visible : Visibility.Collapsed; 
                 }
                 decimal batteryRate = 0;
                 if (BATBannerButton.Visibility == Visibility.Visible && !doNotTrackBattery) { batteryRate = GetSystemInfo.GetBatteryRate() / 1000; }
@@ -871,12 +909,25 @@ public sealed partial class ИнформацияPage : Page
                 var currBatRate = batteryRate >= 0 ? batteryRate : -1 * batteryRate;
                 var beforeMaxBatRate = MaxBatRate;
                 if (MaxBatRate < currBatRate) { MaxBatRate = currBatRate; }
-                tbStapmL.Text = Math.Round(RyzenADJWrapper.Get_stapm_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.Get_stapm_limit(ryzenAccess), 3) + "W";
+                if (RyzenADJWrapper.Get_stapm_limit(ryzenAccess) == 0)
+                {
+                    tbStapmL.Text = "Disabled";
+                }
+                else
+                {
+                    tbStapmL.Text = Math.Round(RyzenADJWrapper.Get_stapm_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.Get_stapm_limit(ryzenAccess), 3) + "W";
+                }
 
                 tbActualL.Text = Math.Round(RyzenADJWrapper.Get_fast_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.Get_fast_limit(ryzenAccess), 3) + "W";
                 tbAclualPowerL.Text = tbActualL.Text;
-
-                tbAVGL.Text = Math.Round(RyzenADJWrapper.Get_slow_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.Get_slow_limit(ryzenAccess), 3) + "W";
+                if (RyzenADJWrapper.Get_slow_limit(ryzenAccess) == 0)
+                {
+                    tbAVGL.Text = "Disabled";
+                }
+                else
+                {
+                    tbAVGL.Text = Math.Round(RyzenADJWrapper.Get_slow_value(ryzenAccess), 3) + "W/" + Math.Round(RyzenADJWrapper.Get_slow_limit(ryzenAccess), 3) + "W";
+                }
 
                 tbFast.Text = Math.Round(RyzenADJWrapper.Get_stapm_time(ryzenAccess), 3) + "S";
                 tbSlow.Text = Math.Round(RyzenADJWrapper.Get_slow_time(ryzenAccess), 3) + "S";
@@ -890,10 +941,10 @@ public sealed partial class ИнформацияPage : Page
                 infoVRMUsageBanner.Text = Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess), 3) + "A\n" + Math.Round(RyzenADJWrapper.Get_fast_value(ryzenAccess), 3) + "W"; infoIVRMUsageBigBanner.Text = infoVRMUsageBanner.Text;
                 infoAVRMUsageBannerPolygonText.Text = Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess), 3) + "A"; infoAVRMUsageBigBannerPolygonText.Text = infoAVRMUsageBannerPolygonText.Text;
                 tbSOCEDCL.Text = Math.Round(RyzenADJWrapper.Get_vrmsocmax_current_value(ryzenAccess), 3) + "A/" + Math.Round(RyzenADJWrapper.Get_vrmsocmax_current(ryzenAccess), 3) + "A";
-                tbSOCVOLT.Text = Math.Round(RyzenADJWrapper.Get_soc_volt(ryzenAccess), 3) + "V";
-                tbSOCPOWER.Text = Math.Round(RyzenADJWrapper.Get_soc_power(ryzenAccess), 3) + "W";
-                tbMEMCLOCK.Text = Math.Round(RyzenADJWrapper.Get_mem_clk(ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
-                tbFabricClock.Text = Math.Round(RyzenADJWrapper.Get_fclk(ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
+                tbSOCVOLT.Text = Math.Round(RyzenADJWrapper.Get_soc_volt(ryzenAccess), 3) == 0 ? Math.Round(cpu!.powerTable.VDDCR_SOC, 3).ToString() + "V" : Math.Round(RyzenADJWrapper.Get_soc_volt(ryzenAccess), 3) + "V";
+                tbSOCPOWER.Text = Math.Round(RyzenADJWrapper.Get_soc_power(ryzenAccess), 3) == 0 ? Math.Round((cpu!.powerTable.VDDCR_SOC * 10), 3).ToString() + "W" : Math.Round(RyzenADJWrapper.Get_soc_power(ryzenAccess), 3) + "W";
+                tbMEMCLOCK.Text = Math.Round(RyzenADJWrapper.Get_mem_clk(ryzenAccess), 3) == 0 ? Math.Round(cpu!.powerTable.MCLK, 3).ToString() + "InfoFreqBoundsMHZ".GetLocalized() : Math.Round(RyzenADJWrapper.Get_mem_clk(ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
+                tbFabricClock.Text = Math.Round(RyzenADJWrapper.Get_fclk(ryzenAccess), 3) == 0 ? Math.Round(cpu!.powerTable.FCLK, 3).ToString() + "InfoFreqBoundsMHZ".GetLocalized() : Math.Round(RyzenADJWrapper.Get_fclk(ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
                 var core_Clk = 0f;
                 var endtrace = 0;
                 var core_Volt = 0f;
@@ -936,10 +987,7 @@ public sealed partial class ИнформацияPage : Page
                             {
                                 if (SelectedGroup == 1)
                                 {
-                                    foreach (var element in (new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController").Get().Cast<ManagementObject>()))
-                                    {
-                                        currText.Text = GetSystemInfo.GetGPUName((int)f);
-                                    }
+                                    currText.Text = GetSystemInfo.GetGPUName((int)f);
                                 }
 
                                 if (SelectedGroup == 2)
@@ -970,12 +1018,15 @@ public sealed partial class ИнформацияPage : Page
                         }
                         if (f < numberOfCores)
                         {
-                            core_Clk += getCurrFreq;
-                            endtrace += 1;
+                            if (getCurrFreq != -1 && getCurrFreq != 0 && getCurrFreq < 7)
+                            {
+                                core_Clk += getCurrFreq;
+                                endtrace += 1;
+                            }
                         }
                     }
                     var currVolt = RyzenADJWrapper.Get_core_volt(ryzenAccess, f);
-                    if (!float.IsNaN(currVolt))
+                    if (!float.IsNaN(currVolt) && currVolt != 0 && currVolt != -1 && currVolt < 1.7)
                     {
                         core_Volt += currVolt;
                         endtraced += 1;
@@ -1013,6 +1064,8 @@ public sealed partial class ИнформацияPage : Page
                 }
                 else
                 {
+                    tbCPUVoltDesc.Visibility = Visibility.Collapsed;
+                    tbCPUVolt.Visibility = Visibility.Collapsed;
                     tbCPUVolt.Text = "?V";
                 }
                 tbPSTFREQ.Text = tbCPUFreq.Text;
@@ -1034,7 +1087,7 @@ public sealed partial class ИнформацияPage : Page
                 tbDGPUMaxL.Text = Math.Round(RyzenADJWrapper.Get_dgpu_skin_temp_value(ryzenAccess), 3) + "C/" + Math.Round(RyzenADJWrapper.Get_dgpu_skin_temp_limit(ryzenAccess), 3) + "C";
                 var CoreCPUUsage = Math.Round(RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess), 3);
                 tbCPUUsage.Text = CoreCPUUsage + "%"; infoACPUUsageBannerPolygonText.Text = Math.Round(CoreCPUUsage, 0) + "%";
-                infoICPUUsageBanner.Text = Math.Round(CoreCPUUsage, 0) + "%  " + tbCPUFreq.Text + "\n" + tbCPUVolt.Text;
+                infoICPUUsageBanner.Text = Math.Round(CoreCPUUsage, 0) + "%  " + tbCPUFreq.Text + "\n" + (tbCPUVolt.Text != "?V" ? tbCPUVolt.Text : string.Empty);
                 infoACPUUsageBigBannerPolygonText.Text = tbCPUUsage.Text; infoICPUUsageBigBanner.Text = infoICPUUsageBanner.Text;
 
                 //InfoACPUBanner График
@@ -1211,33 +1264,22 @@ public sealed partial class ИнформацияPage : Page
                 }
                 if (BATFlyout.IsOpen) { InfoABATBigBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 49)); }
                 InfoABATBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 49));
-
-
-                var totalRam = 0d;
-                var busyRam = 0d;
-                //Раз в шесть секунд обновляет состояние памяти 
-                var ramMonitor = new ManagementObjectSearcher("SELECT TotalVisibleMemorySize,FreePhysicalMemory FROM Win32_OperatingSystem");
-                foreach (var objram in ramMonitor.Get().Cast<ManagementObject>())
-                {
-                    totalRam = Convert.ToDouble(objram["TotalVisibleMemorySize"]);
-                    busyRam = totalRam - Convert.ToDouble(objram["FreePhysicalMemory"]);
-                    var RAMUsage = Math.Round(busyRam * 100 / totalRam, 0) + "%";
-                    InfoRAMUsage.Text = RAMUsage + "\n" + Math.Round(busyRam / 1024 / 1024, 3) + "GB/" + Math.Round(totalRam / 1024 / 1024, 1) + "GB";
-                    infoARAMUsageBannerPolygonText.Text = RAMUsage; infoARAMUsageBigBannerPolygonText.Text = infoARAMUsageBannerPolygonText.Text; infoIRAMUsageBigBanner.Text = InfoRAMUsage.Text;
-                }
-
-                //InfoARAMBanner График
                 try
                 {
-                    if (busyRam != 0 && totalRam != 0)
+                    if (ramUsageHelper.Count != 0)
                     {
-                        InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
-                        RAMPointer.Add(new InfoPageCPUPoints() { X = 60, Y = 48 - (int)(busyRam * 100 / totalRam * 0.48) });
-                        InfoARAMBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 48 - (int)(busyRam * 100 / totalRam * 0.48)));
-                        if (RAMFlyout.IsOpen)
+                        var busyRam = ramUsageHelper[0].BusyRam;
+                        var usageResult = ramUsageHelper[0].TotalRam;
+                        if (busyRam != 0 && usageResult != 0)
                         {
-                            InfoARAMBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
-                            InfoARAMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 48 - (int)(busyRam * 100 / totalRam * 0.48)));
+                            InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
+                            RAMPointer.Add(new InfoPageCPUPoints() { X = 60, Y = 48 - (int)(busyRam * 100 / usageResult * 0.48) });
+                            InfoARAMBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 48 - (int)(busyRam * 100 / usageResult * 0.48)));
+                            if (RAMFlyout.IsOpen)
+                            {
+                                InfoARAMBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
+                                InfoARAMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 48 - (int)(busyRam * 100 / usageResult * 0.48)));
+                            }
                         }
                     }
                     foreach (var element in RAMPointer.ToList())
@@ -1267,6 +1309,32 @@ public sealed partial class ИнформацияPage : Page
                 {
                     SendSMUCommand.TraceIt_TraceError(ex.ToString());
                 }
+                //Раз в шесть секунд обновляет состояние памяти 
+                var RAMUsage = Task.Run(() =>
+                {
+                    var ramMonitor = new ManagementObjectSearcher("SELECT TotalVisibleMemorySize,FreePhysicalMemory FROM Win32_OperatingSystem");
+                    foreach (var objram in ramMonitor.Get().Cast<ManagementObject>())
+                    {
+                        var totalRam = Convert.ToDouble(objram["TotalVisibleMemorySize"]);
+                        var busyRam = totalRam - Convert.ToDouble(objram["FreePhysicalMemory"]);
+                        var usage = Math.Round(busyRam * 100 / totalRam, 0) + "%";
+
+                        return new { Usage = usage, BusyRam = busyRam, TotalRam = totalRam }; // Анонимный тип
+                    }
+                    return new { Usage = "Unknown", BusyRam = 0.0, TotalRam = 0.0 }; // Значения по умолчанию
+                });
+                dynamic RAMUsageResult = await RAMUsage;
+                InfoRAMUsage.Text = RAMUsageResult.Usage + "\n" + Math.Round(RAMUsageResult.BusyRam / 1024 / 1024, 2) + "GB/" + Math.Round(RAMUsageResult.TotalRam / 1024 / 1024, 1) + "GB";
+                infoARAMUsageBannerPolygonText.Text = RAMUsageResult.Usage;
+                infoARAMUsageBigBannerPolygonText.Text = infoARAMUsageBannerPolygonText.Text;
+                infoIRAMUsageBigBanner.Text = InfoRAMUsage.Text;
+                //InfoARAMBanner График
+                ramUsageHelper.Clear();
+                ramUsageHelper.Add(new TotalBusyRam { BusyRam = RAMUsageResult.BusyRam, TotalRam = RAMUsageResult.TotalRam });
+            }
+            if (infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 0 && ryzenAccess == 0x0)
+            {
+                await RyzenADJWrapper.CpuFrequencyManager.AsyncWMIGetCoreFreq(numberOfCores);
             }
             var avgCoreCLK = 0d;
             var avgCoreVolt = 0d;
@@ -1398,15 +1466,6 @@ public sealed partial class ИнформацияPage : Page
             Change_Ni_Icons_Text("Settings_ni_Values_GFXCLK", Math.Round(RyzenADJWrapper.Get_gfx_clk(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXCLK".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_clk(ryzenAccess) + "MHz", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[8].Min.ToString() + "MHz" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[8].Max.ToString() + "MHz");
             Change_Ni_Icons_Text("Settings_ni_Values_GFXTEMP", Math.Round(RyzenADJWrapper.Get_gfx_temp(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXTEMP".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_temp(ryzenAccess) + "C", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[9].Min.ToString() + "C" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[9].Max.ToString() + "C");
             Change_Ni_Icons_Text("Settings_ni_Values_GFXVOLT", Math.Round(RyzenADJWrapper.Get_gfx_volt(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXVOLT".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_volt(ryzenAccess) + "V", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[10].Min.ToString() + "V" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[10].Max.ToString() + "V");
-
-            if (ryzenAccess == 0x0 && !Info_RyzenADJLoadError_InfoBar.IsOpen)
-            {
-                Info_RyzenADJLoadError_InfoBar.IsOpen = true;
-                infoRTSSButton.Visibility = Visibility.Collapsed;
-                infoNiIconsButton.Visibility = Visibility.Collapsed;
-
-            }
-
             if (infoRTSSButton.IsChecked == true)
             {
                 RTSSHandler.ChangeOSDText(rtss_line);
@@ -1463,19 +1522,36 @@ public sealed partial class ИнформацияPage : Page
     }
     #endregion
     #region Information builders
-    private void InfoCPUSectionGridBuilder()
+    private async void InfoCPUSectionGridBuilder()
     {
         InfoMainCPUFreqGrid.RowDefinitions.Clear();
         InfoMainCPUFreqGrid.ColumnDefinitions.Clear();
         /*numberOfCores = 8;
         numberOfLogicalProcessors = 16;*/
+        var predictedGPUCount = new List<ManagementObject>();
+        await Task.Run(() =>
+        {
+            predictedGPUCount = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
+                   .Get()
+                   .Cast<ManagementObject>()
+                   .Where(element =>
+                   {
+                       var name = element["Name"]?.ToString() ?? string.Empty;
+                       return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
+                              !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
+                   })
+                   .ToList(); // Преобразуем в список для индексации
+        });
+
+        var GPUCounter = predictedGPUCount.Count;
+
         var backupNumberLogical = numberOfLogicalProcessors;
         var coreCounter = (SelectedGroup == 0 || SelectedGroup == 5) ? /*Это секция процессор или PStates*/
             (numberOfCores > 2 ? numberOfCores : /*Это секция процессор или PStates - да! Количество ядер больше 2? - да! тогда coreCounter - количество ядер numberOfCores*/
             (infoCPUSectionComboBox.SelectedIndex == 0 ? numberOfLogicalProcessors /*Нет! У процессора менее или ровно 2 ядра, Выбрано отображение частоты? - да! - тогда numberOfLogicalProcessors*/
             : numberOfCores)) /*Выбрана не частота, хотя при этом у нас меньше или ровно 2 ядра и это секция 0 или 5, тогда - numberOfCores*/
             : SelectedGroup == 1 ? /*Это НЕ секция процессор или PStates. Это секция GFX?*/
-            new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController").Get().Cast<ManagementObject>().Count() /*Да! - Это секция GFX - тогда найти количество видеокарт*/
+            GPUCounter /*Да! - Это секция GFX - тогда найти количество видеокарт*/
             : (SelectedGroup == 2 ? /*Нет! Выбрана не секция 0, 1, 5, возможно что-то другое? Выбрана секция 2?*/
             tbRAMModel.Text.Split('/').Length /*Да! Выбрана секция RAM, найти количество установленных плат ОЗУ*/
             : (SelectedGroup == 3 ? 4 /*Это не секции 0, 1, 2, 5! Это секция 3? - да! Тогда - 4*/
@@ -1510,7 +1586,7 @@ public sealed partial class ИнформацияPage : Page
                     numberOfLogicalProcessors - coreCounter
                     : numberOfCores - coreCounter)
                     : SelectedGroup == 1 ?
-                    new ManagementObjectSearcher("root\\CIMV2", $"SELECT * FROM Win32_VideoController").Get().Cast<ManagementObject>().Count() - coreCounter
+                    GPUCounter - coreCounter
                     : (SelectedGroup == 2 ?
                     tbRAMModel.Text.Split('/').Length - coreCounter
                     : (SelectedGroup == 3 ?
