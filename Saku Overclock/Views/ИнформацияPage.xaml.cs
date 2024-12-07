@@ -442,44 +442,65 @@ public sealed partial class ИнформацияPage : Page
     {
         try
         {
-            // CPU information using WMI
-            var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+            // Переменные для хранения данных
+            string name = "", description = "", baseClock = "";
+            int numberOfCores = 0, numberOfLogicalProcessors = 0;
+            double l2Size = 0, l3Size = 0;
+            var gpuName = "";
+            string bigLITTLE = "", instructionSets = "";
+            double l1Cache = 0, l2Cache = 0;
 
-            var name = "";
-            var description = "";
-            double l2Size = 0;
-            double l3Size = 0;
-            var baseClock = "";
-
+            // Асинхронное выполнение WMI-запросов
             await Task.Run(() =>
             {
-                foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
-                {
-                    name = queryObj["Name"].ToString();
-                    description = queryObj["Description"].ToString();
-                    numberOfCores = Convert.ToInt32(queryObj["NumberOfCores"]);
-                    numberOfLogicalProcessors = Convert.ToInt32(queryObj["NumberOfLogicalProcessors"]);
-                    l2Size = Convert.ToDouble(queryObj["L2CacheSize"]) / 1024;
-                    l3Size = Convert.ToDouble(queryObj["L3CacheSize"]) / 1024;
-                    baseClock = queryObj["MaxClockSpeed"].ToString();
-                }
                 try
                 {
-                    if (GetSystemInfo.GetGPUName(0) != null)
+                    var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+                    foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
                     {
-                        GPUName = GetSystemInfo.GetGPUName(0)!.Contains("AMD") ? GetSystemInfo.GetGPUName(0)! : GetSystemInfo.GetGPUName(1)!;
+                        name = queryObj["Name"]?.ToString() ?? "";
+                        description = queryObj["Description"]?.ToString() ?? "";
+                        numberOfCores = Convert.ToInt32(queryObj["NumberOfCores"]);
+                        numberOfLogicalProcessors = Convert.ToInt32(queryObj["NumberOfLogicalProcessors"]);
+                        l2Size = Convert.ToDouble(queryObj["L2CacheSize"]) / 1024;
+                        l3Size = Convert.ToDouble(queryObj["L3CacheSize"]) / 1024;
+                        baseClock = queryObj["MaxClockSpeed"]?.ToString() ?? "";
+                    }
+
+                    gpuName = GetSystemInfo.GetGPUName(0) ?? "";
+                    if (!gpuName.Contains("AMD"))
+                    {
+                        gpuName = GetSystemInfo.GetGPUName(1) ?? gpuName;
                     }
                 }
-                catch (Exception ex) { SendSMUCommand.TraceIt_TraceError(ex.ToString()); }
+                catch (ManagementException ex)
+                {
+                    Console.WriteLine("Error querying WMI: " + ex.Message);
+                }
             });
+
+            // Асинхронное выполнение других медленных операций
+            var bigLITTLETask = Task.Run(() => GetSystemInfo.GetBigLITTLE(numberOfCores, l2Size));
+            var instructionSetsTask = Task.Run(() => GetSystemInfo.InstructionSets());
+            var l1CacheTask = Task.Run(() => CalculateCacheSizeAsync(GetSystemInfo.CacheLevel.Level1));
+            var l2CacheTask = Task.Run(() => CalculateCacheSizeAsync(GetSystemInfo.CacheLevel.Level2));
+
+            await Task.WhenAll(bigLITTLETask, instructionSetsTask, l1CacheTask, l2CacheTask);
+
+            // Получение результатов
+            bigLITTLE = bigLITTLETask.Result;
+            instructionSets = instructionSetsTask.Result;
+            l1Cache = l1CacheTask.Result;
+            l2Cache = l2CacheTask.Result;
+
+            // Обновление UI в основном потоке
             InfoCPUSectionGridBuilder();
             tbProcessor.Text = name;
             CPUName = name;
             tbCaption.Text = description;
+
             var codeName = GetSystemInfo.Codename();
-            //CODENAME OVERRIDE
-            // codeName = "Renoir";
-            if (codeName != "")
+            if (!string.IsNullOrEmpty(codeName))
             {
                 tbCodename.Text = codeName;
                 tbCodename1.Visibility = Visibility.Collapsed;
@@ -499,6 +520,7 @@ public sealed partial class ИнформацияPage : Page
                 tbCodename.Visibility = Visibility.Collapsed;
                 tbCode.Visibility = Visibility.Collapsed;
             }
+
             try
             {
                 tbSMU.Text = cpu?.systemInfo.GetSmuVersionString();
@@ -508,33 +530,38 @@ public sealed partial class ИнформацияPage : Page
                 tbSMU.Visibility = Visibility.Collapsed;
                 infoSMU.Visibility = Visibility.Collapsed;
             }
-            tbCores.Text = numberOfLogicalProcessors == numberOfCores ? numberOfCores.ToString() : GetSystemInfo.GetBigLITTLE(numberOfCores, l2Size);
+
+            tbCores.Text = numberOfLogicalProcessors == numberOfCores
+                ? numberOfCores.ToString()
+                : bigLITTLE;
+            GPUName = gpuName;
+            this.numberOfCores = numberOfCores;
             tbThreads.Text = numberOfLogicalProcessors.ToString();
             tbL3Cache.Text = $"{l3Size:0.##} MB";
-            uint sum = 0;
-            foreach (var number in GetSystemInfo.GetCacheSizes(GetSystemInfo.CacheLevel.Level1))
-            {
-                sum += number;
-            }
-            decimal total = sum;
-            total /= 1024;
-            tbL1Cache.Text = $"{total:0.##} MB";
-            sum = 0;
-            foreach (var number in GetSystemInfo.GetCacheSizes(GetSystemInfo.CacheLevel.Level2))
-            {
-                sum += number;
-            }
-            total = sum;
-            total /= 1024;
-            tbL2Cache.Text = $"{total:0.##} MB";
+            tbL1Cache.Text = $"{l1Cache:0.##} MB";
+            tbL2Cache.Text = $"{l2Cache:0.##} MB";
             tbBaseClock.Text = $"{baseClock} MHz";
-            tbInstructions.Text = GetSystemInfo.InstructionSets();
+            tbInstructions.Text = instructionSets;
         }
-        catch (ManagementException ex)
+        catch (Exception ex)
         {
-            Console.WriteLine("An error occurred while querying for WMI data: " + ex.Message);
+            Console.WriteLine("An error occurred: " + ex.Message);
         }
     }
+
+    private async Task<double> CalculateCacheSizeAsync(GetSystemInfo.CacheLevel level)
+    {
+        return await Task.Run(() =>
+        {
+            var sum = 0u;
+            foreach (var number in GetSystemInfo.GetCacheSizes(level))
+            {
+                sum += number;
+            }
+            return sum / 1024.0;
+        });
+    }
+
     private void GetBATInfo()
     {
         if (BATBannerButton.Visibility == Visibility.Collapsed) { return; }

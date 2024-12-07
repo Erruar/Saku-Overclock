@@ -557,7 +557,7 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                 <StackPanel Padding="0,0,0,10">
                     <TextBlock x:Name="Settings_Keybinds_Enable_Name" Text="Комбинации клавиш" x:Uid="Settings_Keybinds_Elements" />
                     <StackPanel Width="355" HorizontalAlignment="Left" Margin="{StaticResource XSmallTopMargin}" Orientation="Vertical">
-                        <Border Height="70" CornerRadius="4" Background="{StaticResource ControlFillColorDefaultBrush}">
+                        <Border Height="70" CornerRadius="4" Background="{Binding ElementName=nudAutoReapply, Path=BorderBrush}">
                             <Grid>
                                 <Button Margin="0,0,20,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Right">
                                     <StackPanel Margin="-5,-4,-5,-5" HorizontalAlignment="Stretch" Orientation="Horizontal">
@@ -575,7 +575,7 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                                 <TextBlock Width="170" TextWrapping="WrapWholeWords" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="20,0,0,0" x:Uid="Settings_Keybinds_Elements_Custom" Text="Switch between custom user profiles"/>
                             </Grid>
                         </Border>
-                        <Border Margin="0,7,0,0" Height="70" CornerRadius="4" Background="{StaticResource ControlFillColorDefaultBrush}">
+                        <Border Margin="0,7,0,0" Height="70" CornerRadius="4" Background="{Binding ElementName=nudAutoReapply, Path=BorderBrush}">
                             <Grid>
                                 <Button Margin="0,0,20,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Right">
                                     <StackPanel Margin="-5,-4,-5,-5" HorizontalAlignment="Stretch" Orientation="Horizontal">
@@ -593,7 +593,7 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                                 <TextBlock Width="170" TextWrapping="WrapWholeWords" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="20,0,0,0" x:Uid="Settings_Keybinds_Elements_Premaded" Text="Switch between premaded profiles"/>
                             </Grid>
                         </Border>
-                        <Border Margin="0,7,0,0" Height="70" CornerRadius="4" Background="{StaticResource ControlFillColorDefaultBrush}">
+                        <Border Margin="0,7,0,0" Height="70" CornerRadius="4" Background="{Binding ElementName=nudAutoReapply, Path=BorderBrush}">
                             <Grid>
                                 <Button Margin="0,0,20,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Right">
                                     <StackPanel Margin="-5,-4,-5,-5" HorizontalAlignment="Stretch" Orientation="Horizontal">
