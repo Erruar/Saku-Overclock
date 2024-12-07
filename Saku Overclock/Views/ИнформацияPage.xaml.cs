@@ -725,7 +725,7 @@ public sealed partial class ИнформацияPage : Page
                 }
                 else
                 {
-                    textBlock.Text = "Disabled on\nplatform";
+                    textBlock.Text = "Info_PowerSumInfo_DisabledPState".GetLocalized();
                 }
                 PSTatesList[i] = CpuFid * 25 / (CpuDfsId * 12.5) / 10;
             }
@@ -978,7 +978,7 @@ public sealed partial class ИнформацияPage : Page
                 if (MaxBatRate < currBatRate) { MaxBatRate = currBatRate; }
                 if (RyzenADJWrapper.Get_stapm_limit(ryzenAccess) == 0)
                 {
-                    tbStapmL.Text = "Disabled";
+                    tbStapmL.Text = "Info_PowerSumInfo_Disabled".GetLocalized();
                 }
                 else
                 {
@@ -989,7 +989,7 @@ public sealed partial class ИнформацияPage : Page
                 tbAclualPowerL.Text = tbActualL.Text;
                 if (RyzenADJWrapper.Get_slow_limit(ryzenAccess) == 0)
                 {
-                    tbAVGL.Text = "Disabled";
+                    tbAVGL.Text = "Info_PowerSumInfo_Disabled".GetLocalized();
                 }
                 else
                 {
