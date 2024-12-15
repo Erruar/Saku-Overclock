@@ -17,7 +17,7 @@ public sealed partial class AsusКулерPage : Page
     private Config config = new();
     public bool isLoaded = false;
     private IntPtr ry = IntPtr.Zero;
-    private System.Windows.Threading.DispatcherTimer? tempUpdateTimer;
+    private DispatcherTimer? tempUpdateTimer;
 
     public AsusКулерPage()
     {
@@ -79,7 +79,7 @@ public sealed partial class AsusКулерPage : Page
     }
     private void StartTempUpdate()
     {
-        tempUpdateTimer = new System.Windows.Threading.DispatcherTimer();
+        tempUpdateTimer = new DispatcherTimer();
         tempUpdateTimer.Tick += async (sender, e) => await UpdateTemperatureAsync();
         tempUpdateTimer.Interval = TimeSpan.FromMilliseconds(500);
         tempUpdateTimer.Start();
