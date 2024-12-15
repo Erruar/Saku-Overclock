@@ -480,24 +480,6 @@
   <data name="Info_Text.ToolTipService.ToolTip" xml:space="preserve">
     <value>О текущих и максимальных значениях: Текущие значения - текущие значения прямо сейчас, Максимальные значение - значения установленные в программе, теоретически процессор должен достигнуть их, чтобы убедиться в этом смотрите на текущие значения</value>
   </data>
-  <data name="Tray_Inforfation" xml:space="preserve">
-    <value>Показатели</value>
-  </data>
-  <data name="Tray_Parameters" xml:space="preserve">
-    <value>Разгон</value>
-  </data>
-  <data name="Tray_Presets" xml:space="preserve">
-    <value>Пресеты</value>
-  </data>
-  <data name="Tray_Quit" xml:space="preserve">
-    <value>Выйти</value>
-  </data>
-  <data name="Tray_Saku_Overclock" xml:space="preserve">
-    <value>Saku Overclock©</value>
-  </data>
-  <data name="Tray_Show" xml:space="preserve">
-    <value>Развернуть</value>
-  </data>
   <data name="Param_Edit_Preset.ToolTipService.ToolTip" xml:space="preserve">
     <value>Изменить имя пресета
 Для того, чтобы его изменить, в текстовом
@@ -2855,7 +2837,7 @@ Asus. Может не поддерживаться на
     <value>Внимание</value>
   </data>
   <data name="Info_RyzenADJNotLoaded.Title" xml:space="preserve">
-    <value>Невозможно получить информацию от RyzenADJ</value>
+    <value>Информация здесь не является точной!</value>
   </data>
   <data name="Info_PowerSumInfo_Disabled" xml:space="preserve">
     <value>Отключен</value>
@@ -2863,5 +2845,73 @@ Asus. Может не поддерживаться на
   <data name="Info_PowerSumInfo_DisabledPState" xml:space="preserve">
     <value>Отключен на 
 платформе</value>
+  </data>
+  <data name="Tray_Cooler.Description" xml:space="preserve">
+    <value>Управление кулерами и NBFC</value>
+  </data>
+  <data name="Tray_Cooler.Label" xml:space="preserve">
+    <value>Кулер</value>
+  </data>
+  <data name="Tray_EcoMode.Description" xml:space="preserve">
+    <value>Включает готовый пресет Эко, когда вам необходимо оставаться на связи при последних процентах</value>
+  </data>
+  <data name="Tray_EcoMode.Label" xml:space="preserve">
+    <value>Режим Эко</value>
+  </data>
+  <data name="Tray_Exit.Description" xml:space="preserve">
+    <value>Выйти</value>
+  </data>
+  <data name="Tray_Exit.Label" xml:space="preserve">
+    <value>Выйти</value>
+  </data>
+  <data name="Tray_Information.Description" xml:space="preserve">
+    <value>Детализированная информация о состоянии компьютера</value>
+  </data>
+  <data name="Tray_Information.Label" xml:space="preserve">
+    <value>Информация</value>
+  </data>
+  <data name="Tray_Overclock.Description" xml:space="preserve">
+    <value>Свои пресеты и не только</value>
+  </data>
+  <data name="Tray_Overclock.Label" xml:space="preserve">
+    <value>Разгон</value>
+  </data>
+  <data name="Tray_PowerMon.Description" xml:space="preserve">
+    <value>Монитор всех параметров и таблиц устройства.
+Учтите что его запуск может занять до 2 
+минут!</value>
+  </data>
+  <data name="Tray_PowerMon.Label" xml:space="preserve">
+    <value>PowerMon Pro</value>
+  </data>
+  <data name="Tray_Profiles.Description" xml:space="preserve">
+    <value>Готовые пресеты на все случаи жизни</value>
+  </data>
+  <data name="Tray_Profiles.Label" xml:space="preserve">
+    <value>Пресеты</value>
+  </data>
+  <data name="Tray_SakuLogo.Description" xml:space="preserve">
+    <value>Saku Overclock© - Для тех, кто желает максимум!</value>
+  </data>
+  <data name="Tray_SakuLogo.Label" xml:space="preserve">
+    <value>Saku Overclock©</value>
+  </data>
+  <data name="Tray_Settings.Description" xml:space="preserve">
+    <value>Настройки приложения</value>
+  </data>
+  <data name="Tray_Settings.Label" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Tray_ShowHide.Description" xml:space="preserve">
+    <value>Скрыть/Показать окно</value>
+  </data>
+  <data name="Tray_ShowHide.Label" xml:space="preserve">
+    <value>Скрыть/Показать окно</value>
+  </data>
+  <data name="Info_RyzenADJNotLoaded.ToolTipService.ToolTip" xml:space="preserve">
+    <value>RyzenADJ недоступен. Используется WMI: 
+медленнее, но точнее. PM Table может 
+давать как точные, так и неверные данные. 
+Учтите, других способов получить данные нет.</value>
   </data>
 </root>

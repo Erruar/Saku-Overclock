@@ -476,24 +476,6 @@ performance</value>
   <data name="Info_Text.ToolTipService.ToolTip" xml:space="preserve">
     <value>About the Setted and Current values: Setted is the value that you set in the program for the processor. Theoretically, the processor should reach it under load. Current is the value that shows the current value of this parameter right now</value>
   </data>
-  <data name="Tray_Inforfation" xml:space="preserve">
-    <value>Inforfation</value>
-  </data>
-  <data name="Tray_Parameters" xml:space="preserve">
-    <value>Parameters</value>
-  </data>
-  <data name="Tray_Presets" xml:space="preserve">
-    <value>Presets</value>
-  </data>
-  <data name="Tray_Quit" xml:space="preserve">
-    <value>Quit</value>
-  </data>
-  <data name="Tray_Saku_Overclock" xml:space="preserve">
-    <value>Saku Overclock©</value>
-  </data>
-  <data name="Tray_Show" xml:space="preserve">
-    <value>Show</value>
-  </data>
   <data name="Param_Edit_Preset.ToolTipService.ToolTip" xml:space="preserve">
     <value>Edit preset name
 To change it, just write the desired 
@@ -2779,7 +2761,7 @@ set the value to 0</value>
     <value>Warning</value>
   </data>
   <data name="Info_RyzenADJNotLoaded.Title" xml:space="preserve">
-    <value>Unable to get information from RyzenADJ</value>
+    <value>Information here is not accurate!</value>
   </data>
   <data name="Info_PowerSumInfo_Disabled" xml:space="preserve">
     <value>Disabled</value>
@@ -2787,5 +2769,73 @@ set the value to 0</value>
   <data name="Info_PowerSumInfo_DisabledPState" xml:space="preserve">
     <value>Disabled on
 platform</value>
+  </data>
+  <data name="Tray_Cooler.Description" xml:space="preserve">
+    <value>Tuning cooler speeds and NBFC</value>
+  </data>
+  <data name="Tray_Cooler.Label" xml:space="preserve">
+    <value>Cooler tune</value>
+  </data>
+  <data name="Tray_EcoMode.Description" xml:space="preserve">
+    <value>Turn on Eco mode when you need to stay up online with few battery percents</value>
+  </data>
+  <data name="Tray_EcoMode.Label" xml:space="preserve">
+    <value>Eco mode</value>
+  </data>
+  <data name="Tray_Exit.Description" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Tray_Exit.Label" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Tray_Information.Description" xml:space="preserve">
+    <value>Detail information about your device</value>
+  </data>
+  <data name="Tray_Information.Label" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Tray_Overclock.Description" xml:space="preserve">
+    <value>Own overclocking parameters</value>
+  </data>
+  <data name="Tray_Overclock.Label" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="Tray_PowerMon.Description" xml:space="preserve">
+    <value>Monitor for all parameters and tables of the device.
+Please note that it may take up to 2 minutes to launch!</value>
+  </data>
+  <data name="Tray_PowerMon.Label" xml:space="preserve">
+    <value>PowerMon Pro</value>
+  </data>
+  <data name="Tray_Profiles.Description" xml:space="preserve">
+    <value>Premaded presets for each situation</value>
+  </data>
+  <data name="Tray_Profiles.Label" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="Tray_SakuLogo.Description" xml:space="preserve">
+    <value>Saku Overclock© - An awesome Ryzen Laptop overclocking app</value>
+  </data>
+  <data name="Tray_SakuLogo.Label" xml:space="preserve">
+    <value>Saku Overclock©</value>
+  </data>
+  <data name="Tray_Settings.Description" xml:space="preserve">
+    <value>Application settings</value>
+  </data>
+  <data name="Tray_Settings.Label" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Tray_ShowHide.Description" xml:space="preserve">
+    <value>Show/Hide Window</value>
+  </data>
+  <data name="Tray_ShowHide.Label" xml:space="preserve">
+    <value>Show/Hide Window</value>
+  </data>
+  <data name="Info_RyzenADJNotLoaded.ToolTipService.ToolTip" xml:space="preserve">
+    <value>RyzenADJ is unavailable. WMI is used: 
+slower but more accurate. PM Table 
+can provide either precise or incorrect 
+data. Note: no other sensor data 
+methods are available.</value>
   </data>
 </root>
