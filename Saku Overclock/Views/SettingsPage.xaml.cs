@@ -1,21 +1,20 @@
 ﻿using System.Diagnostics;
-using System.IO;
 using System.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.Win32;
 using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
-using Windows.UI.Text;
+using Windows.Storage.Pickers;
+using Windows.UI;
+using WinRT.Interop;
 using Task = System.Threading.Tasks.Task;
 namespace Saku_Overclock.Views;
 
@@ -864,6 +863,7 @@ public sealed partial class SettingsPage : Page
         {
             Height = 90,
             HorizontalAlignment = HorizontalAlignment.Stretch,
+            IsEnabled = false,
             Content = new Grid
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -887,7 +887,8 @@ public sealed partial class SettingsPage : Page
                         {
                             new TextBlock
                             {
-                                Text = "ThemeBgFromFile".GetLocalized(),
+                                Text = "ThemeBgFromFile".GetLocalized() + "\nCURRENTRLY UNAVAILABLE",
+                                Foreground =  new SolidColorBrush(Color.FromArgb(255,255,0,0)),
                                 FontWeight = new Windows.UI.Text.FontWeight(600)
                             },
                             fromFileWhy,
@@ -976,30 +977,43 @@ public sealed partial class SettingsPage : Page
             PrimaryButtonText = "ThemeSelect".GetLocalized(),
             DefaultButton = ContentDialogButton.Close
         };
-        fromFile.Click += (s, a) =>
+        fromFile.Click += async (s, a) =>
         {
+            return;
             fromFilePickedFile.Text = "";
-            OpenFileDialog fileDialog = new();
-            var result = fileDialog.ShowDialog();
-            if (result == true)
+
+            // Создаём FileOpenPicker
+            var filePicker = new Windows.Storage.Pickers.FileOpenPicker
             {
-                if (fileDialog.FileName.Contains(".gif") || fileDialog.FileName.Contains(".GIF") || fileDialog.FileName.Contains(".png") || fileDialog.FileName.Contains(".PNG")
-                || fileDialog.FileName.Contains(".jpg") || fileDialog.FileName.Contains(".JPG") || fileDialog.FileName.Contains(".JPEG") || fileDialog.FileName.Contains(".JPEG")
-                || fileDialog.FileName.Contains(".bmp") || fileDialog.FileName.Contains(".BMP")
-                )
-                {
-                    fromFilePickedFile.Text = "ThemePickedFile".GetLocalized() + fileDialog.FileName;
-                    endStringPath = fileDialog.FileName;
-                }
-                else
-                {
-                    fromFilePickedFile.Text = "ThemeTypeFile".GetLocalized();
-                }
+                SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary
+            };
+            //var hwnd = WindowNative.GetWindowHandle(App.MainWindow); // App.MainWindow — Главный Window
+            //var hwnd = ActivationInvokeHandler.FindMainWindowHWND(null, "Saku Overclock");
+            var hwnd = App.MainWindow.GetWindowHandle();
+            InitializeWithWindow.Initialize(filePicker, hwnd); 
+
+            // Устанавливаем фильтры для поддерживаемых форматов
+            filePicker.FileTypeFilter.Add(".gif");
+            filePicker.FileTypeFilter.Add(".png");
+            filePicker.FileTypeFilter.Add(".jpg");
+            filePicker.FileTypeFilter.Add(".jpeg");
+            filePicker.FileTypeFilter.Add(".bmp");
+            filePicker.ViewMode = PickerViewMode.Thumbnail;  
+
+            // Открываем диалог выбора файла 
+            var file = await filePicker.PickSingleFileAsync();
+            if (file != null)
+            {
+                // Проверяем, является ли файл поддерживаемым изображением
+                fromFilePickedFile.Text = "ThemePickedFile".GetLocalized() + file.Path;
+                endStringPath = file.Path;
             }
             else
             {
                 fromFilePickedFile.Text = "ThemeOpCancel".GetLocalized();
             }
+
+            // Переключение видимости элементов
             if (fromFilePickedFile.Visibility == Visibility.Collapsed)
             {
                 fromFileWhy.Visibility = Visibility.Collapsed;
@@ -1011,6 +1025,7 @@ public sealed partial class SettingsPage : Page
                 fromFilePickedFile.Visibility = Visibility.Collapsed;
             }
         };
+
         fromLink.Click += (s, a) =>
         {
             if (fromLinkTextBox.Visibility == Visibility.Collapsed)
