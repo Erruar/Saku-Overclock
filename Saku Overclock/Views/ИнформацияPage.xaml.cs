@@ -19,7 +19,7 @@ public sealed partial class ИнформацияPage : Page
     private Config config = new(); // Основной конфиг приложения
     private JsonContainers.RTSSsettings rtssset = new(); // Конфиг с настройками модуля RTSS
     private JsonContainers.NiIconsSettings niicons = new(); // Конфиг с настройками Ni-Icons
-    private readonly Dictionary<string, System.Windows.Forms.NotifyIcon> trayIcons = []; // Хранилище включенных в данный момент иконок Ni-Icons
+    private readonly Dictionary<string, H.NotifyIcon.TaskbarIcon> trayIcons = []; // Хранилище включенных в данный момент иконок Ni-Icons
     private class MinMax // Класс для хранения минимальных и максимальных значений Ni-Icons
     {
         public float Min;
@@ -57,7 +57,7 @@ public sealed partial class ИнформацияPage : Page
     private string? BATName = "Unknown"; // Название батареи в системе
     private int numberOfCores = 0; // Количество ядер
     private int numberOfLogicalProcessors = 0; // Количество потоков
-    private System.Windows.Threading.DispatcherTimer? dispatcherTimer; // Таймер для автообновления информации
+    private DispatcherTimer? dispatcherTimer; // Таймер для автообновления информации
     private readonly Cpu? cpu; // Инициализация ZenStates Core
     public ИнформацияViewModel ViewModel
     {
@@ -170,17 +170,21 @@ public sealed partial class ИнформацияPage : Page
                 continue;
             }
 
-            // Создаём NotifyIcon
-            var notifyIcon = new System.Windows.Forms.NotifyIcon
+            if (element.Guid == string.Empty)
             {
-                Visible = true,
-
+                element.Guid = System.Guid.NewGuid().ToString(); NiSave();
+            }
+            // Создаём NotifyIcon
+            var notifyIcon = new H.NotifyIcon.TaskbarIcon
+            {
                 // Генерация иконки
-                Icon = CreateIconFromElement(element)!
+                Icon = CreateIconFromElement(element)!,
+                Id = System.Guid.Parse(element.Guid) // Уникальный ID иконки ЕСЛИ ЕГО НЕТ - ПЕРЕЗАПИШЕТ ОСНОВНОЕ ТРЕЙ МЕНЮ
             };
+            notifyIcon.ForceCreate();
             if (element.ContextMenuType != 0)
             {
-                notifyIcon.Text = element.Name;
+                notifyIcon.ToolTipText = element.Name;
             }
             trayIcons[element.Name] = notifyIcon;
         }
@@ -195,37 +199,45 @@ public sealed partial class ИнформацияPage : Page
 
         // Для простоты примера создадим пустую иконку
         var bitmap = new System.Drawing.Bitmap(32, 32);
-        using (var g = System.Drawing.Graphics.FromImage(bitmap))
+        var g = System.Drawing.Graphics.FromImage(bitmap);
+        // Задаём цвет фона и форму
+        var bgColor = System.Drawing.ColorTranslator.FromHtml("#" + element.Color);
+        System.Drawing.Brush bgBrush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb((int)(element.BgOpacity * 255), bgColor));
+        switch (element.IconShape)
         {
-            // Задаём цвет фона и форму
-            var bgColor = System.Drawing.ColorTranslator.FromHtml("#" + element.Color);
-            System.Drawing.Brush bgBrush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb((int)(element.BgOpacity * 255), bgColor));
-            switch (element.IconShape)
-            {
-                case 0: // Куб
-                    g.FillRectangle(bgBrush, 0, 0, 32, 32);
-                    break;
-                case 1: // Скруглённый куб
-                    var path = CreateRoundedRectanglePath(new Rectangle(0, 0, 32, 32), 7);
-                    g.FillPath(bgBrush, path!);
-                    break;
-                case 2: // Круг
-                    g.FillEllipse(bgBrush, 0, 0, 32, 32);
-                    break;
-                // Добавьте остальные фигуры и обработку ico
-                default:
-                    g.FillRectangle(bgBrush, 0, 0, 32, 32);
-                    break;
-            }
+            case 0: // Куб
+                g.FillRectangle(bgBrush, 0, 0, 32, 32);
+                break;
+            case 1: // Скруглённый куб
+                var path = CreateRoundedRectanglePath(new Rectangle(0, 0, 32, 32), 7);
+                g.FillPath(bgBrush, path!);
+                break;
+            case 2: // Круг
+                g.FillEllipse(bgBrush, 0, 0, 32, 32);
+                break;
+            // Добавьте остальные фигуры и обработку ico
+            default:
+                g.FillRectangle(bgBrush, 0, 0, 32, 32);
+                break;
+        }
 
-            // Добавляем текст
-            try
-            {
-                var font = new System.Drawing.Font(new System.Drawing.FontFamily("Arial"), element.FontSize * 2, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-                System.Windows.Forms.TextRenderer.DrawText(g, "Text", font, new System.Drawing.Point(-6, 5), InvertColor(element.Color));
-
-            }
-            catch { } // Игнорим
+        // Добавляем текст
+        try
+        {
+            var font = new System.Drawing.Font(new System.Drawing.FontFamily("Arial"), element.FontSize * 2, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            var textBrush = new System.Drawing.SolidBrush(InvertColor(element.Color));
+            // Центруем текст
+            var textSize = g.MeasureString("Text", font);
+            var textPosition = new System.Drawing.PointF(
+                (bitmap.Width - textSize.Width) / 2,
+                (bitmap.Height - textSize.Height) / 2
+            );
+            // Рисуем текст
+            g.DrawString("Text", font, textBrush, textPosition);
+        }
+        catch
+        {
+            // Игнорируем ошибки
         }
         try
         {
@@ -288,9 +300,9 @@ public sealed partial class ИнформацияPage : Page
                         notifyIcon.Icon = UpdateIconText(NewText, element.Color, element.FontSize, element.IconShape, element.BgOpacity, notifyIcon.Icon);
 
                         // Обновляем TooltipText, если он задан
-                        if (TooltipText != null && notifyIcon.Text != null)
+                        if (TooltipText != null && notifyIcon.ToolTipText != null)
                         {
-                            notifyIcon.Text = element.ContextMenuType == 2 ? TooltipText + "\n" + AdvancedTooltip : TooltipText;
+                            notifyIcon.ToolTipText = element.ContextMenuType == 2 ? TooltipText + "\n" + AdvancedTooltip : TooltipText;
                         }
                     }
                 }
@@ -301,7 +313,7 @@ public sealed partial class ИнформацияPage : Page
             CreateNotifyIcons();
         }
     }
-    private static System.Drawing.Icon UpdateIconText(string? newText, string NewColor, int FontSize, int IconShape, double Opacity, System.Drawing.Icon? oldIcon = null)
+    private static System.Drawing.Icon? UpdateIconText(string? newText, string NewColor, int FontSize, int IconShape, double Opacity, System.Drawing.Icon? oldIcon = null)
     {
         // Уничтожаем старую иконку, если она существует
         if (oldIcon != null)
@@ -343,15 +355,23 @@ public sealed partial class ИнформацияPage : Page
                 break;
         }
         // Определение позиции текста
-        var textPosition = GetTextPosition(newText, FontSize, out var NewFontSize);
-        // Установка шрифта
-        var font = new System.Drawing.Font(new System.Drawing.FontFamily("Arial"), NewFontSize * 2, System.Drawing.FontStyle.Regular, GraphicsUnit.Pixel);
-
+        var font = new System.Drawing.Font(new System.Drawing.FontFamily("Arial"), FontSize * 2, System.Drawing.FontStyle.Regular, GraphicsUnit.Pixel);
+        var textBrush = new System.Drawing.SolidBrush(InvertColor(NewColor));
+        // Центрируем текст
+        var textSize = g.MeasureString(newText, font);
+        var textPosition = new System.Drawing.PointF(
+            (bitmap.Width - textSize.Width) / 10,
+            (bitmap.Height - textSize.Height) / 2
+        );
         // Рисуем текст
-        System.Windows.Forms.TextRenderer.DrawText(g, newText, font, textPosition, InvertColor(NewColor));
+        g.DrawString(newText, font, textBrush, textPosition);
         // Создание иконки из Bitmap
         // Создание иконки из Bitmap и освобождение ресурсов
-        return System.Drawing.Icon.FromHandle(bitmap.GetHicon());
+        try
+        {
+            return System.Drawing.Icon.FromHandle(bitmap.GetHicon());
+        }
+        catch { return null; }
     }
     // Метод для освобождения ресурсов, используемый после GetHicon()
     [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
@@ -443,63 +463,59 @@ public sealed partial class ИнформацияPage : Page
         try
         {
             // Переменные для хранения данных
-            string name = "", description = "", baseClock = "";
-            int numberOfCores = 0, numberOfLogicalProcessors = 0;
+            string name = string.Empty, description = string.Empty, baseClock = string.Empty;
             double l2Size = 0, l3Size = 0;
-            var gpuName = "";
-            string bigLITTLE = "", instructionSets = "";
+            var gpuName = string.Empty;
+            var instructionSets = string.Empty;
             double l1Cache = 0, l2Cache = 0;
 
-            // Асинхронное выполнение WMI-запросов
-            await Task.Run(() =>
+            // Асинхронное выполнение WMI-запросов и первичных операций
+            var cpuInfoTask = Task.Run(() =>
             {
-                try
+                var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+                foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
                 {
-                    var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
-                    foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
-                    {
-                        name = queryObj["Name"]?.ToString() ?? "";
-                        description = queryObj["Description"]?.ToString() ?? "";
-                        numberOfCores = Convert.ToInt32(queryObj["NumberOfCores"]);
-                        numberOfLogicalProcessors = Convert.ToInt32(queryObj["NumberOfLogicalProcessors"]);
-                        l2Size = Convert.ToDouble(queryObj["L2CacheSize"]) / 1024;
-                        l3Size = Convert.ToDouble(queryObj["L3CacheSize"]) / 1024;
-                        baseClock = queryObj["MaxClockSpeed"]?.ToString() ?? "";
-                    }
-
-                    gpuName = GetSystemInfo.GetGPUName(0) ?? "";
-                    if (!gpuName.Contains("AMD"))
-                    {
-                        gpuName = GetSystemInfo.GetGPUName(1) ?? gpuName;
-                    }
-                }
-                catch (ManagementException ex)
-                {
-                    Console.WriteLine("Error querying WMI: " + ex.Message);
+                    name = queryObj["Name"]?.ToString() ?? "";
+                    description = queryObj["Description"]?.ToString() ?? "";
+                    numberOfCores = Convert.ToInt32(queryObj["NumberOfCores"]);
+                    numberOfLogicalProcessors = Convert.ToInt32(queryObj["NumberOfLogicalProcessors"]);
+                    l2Size = Convert.ToDouble(queryObj["L2CacheSize"]) / 1024;
+                    l3Size = Convert.ToDouble(queryObj["L3CacheSize"]) / 1024;
+                    baseClock = queryObj["MaxClockSpeed"]?.ToString() ?? "";
                 }
             });
 
-            // Асинхронное выполнение других медленных операций
-            var bigLITTLETask = Task.Run(() => GetSystemInfo.GetBigLITTLE(numberOfCores, l2Size));
+            if (numberOfCores == 0 && cpu != null) { numberOfCores = (int)cpu.info.topology.cores; }
+            if (numberOfLogicalProcessors == 0 && cpu != null) { numberOfLogicalProcessors = (int)cpu.info.topology.logicalCores; }
+            
+            var gpuNameTask = Task.Run(() =>
+            {
+                var name = GetSystemInfo.GetGPUName(0) ?? "";
+                return name.Contains("AMD") ? name : GetSystemInfo.GetGPUName(1) ?? name;
+            });
+
+            // Асинхронное выполнение других операций
             var instructionSetsTask = Task.Run(() => GetSystemInfo.InstructionSets());
             var l1CacheTask = Task.Run(() => CalculateCacheSizeAsync(GetSystemInfo.CacheLevel.Level1));
             var l2CacheTask = Task.Run(() => CalculateCacheSizeAsync(GetSystemInfo.CacheLevel.Level2));
+            var codeNameTask = Task.Run(() => GetSystemInfo.Codename());
 
-            await Task.WhenAll(bigLITTLETask, instructionSetsTask, l1CacheTask, l2CacheTask);
+            // Ожидание выполнения всех задач
+            await Task.WhenAll(cpuInfoTask, gpuNameTask, instructionSetsTask, l1CacheTask, l2CacheTask, codeNameTask);
 
             // Получение результатов
-            bigLITTLE = bigLITTLETask.Result;
+            gpuName = gpuNameTask.Result;
             instructionSets = instructionSetsTask.Result;
             l1Cache = l1CacheTask.Result;
             l2Cache = l2CacheTask.Result;
+            var codeName = codeNameTask.Result;
 
             // Обновление UI в основном потоке
             InfoCPUSectionGridBuilder();
-            tbProcessor.Text = name;
-            CPUName = name;
+            CPUName = cpu == null ? name : cpu.info.cpuName;
+            tbProcessor.Text = CPUName;
             tbCaption.Text = description;
 
-            var codeName = GetSystemInfo.Codename();
             if (!string.IsNullOrEmpty(codeName))
             {
                 tbCodename.Text = codeName;
@@ -521,6 +537,10 @@ public sealed partial class ИнформацияPage : Page
                 tbCode.Visibility = Visibility.Collapsed;
             }
 
+            tbCores.Text = numberOfLogicalProcessors == numberOfCores
+                ? numberOfCores.ToString()
+                : GetSystemInfo.GetBigLITTLE(numberOfCores, l2Cache);
+            GPUName = gpuName;
             try
             {
                 tbSMU.Text = cpu?.systemInfo.GetSmuVersionString();
@@ -530,12 +550,6 @@ public sealed partial class ИнформацияPage : Page
                 tbSMU.Visibility = Visibility.Collapsed;
                 infoSMU.Visibility = Visibility.Collapsed;
             }
-
-            tbCores.Text = numberOfLogicalProcessors == numberOfCores
-                ? numberOfCores.ToString()
-                : bigLITTLE;
-            GPUName = gpuName;
-            this.numberOfCores = numberOfCores;
             tbThreads.Text = numberOfLogicalProcessors.ToString();
             tbL3Cache.Text = $"{l3Size:0.##} MB";
             tbL1Cache.Text = $"{l1Cache:0.##} MB";
@@ -548,6 +562,7 @@ public sealed partial class ИнформацияPage : Page
             Console.WriteLine("An error occurred: " + ex.Message);
         }
     }
+
 
     private static async Task<double> CalculateCacheSizeAsync(GetSystemInfo.CacheLevel level)
     {
@@ -629,8 +644,8 @@ public sealed partial class ИнформацияPage : Page
         var type = 0;
         var width = 0;
         var slots = 0;
-        var producer = "";
-        var model = "";
+        var producer = string.Empty;
+        var model = string.Empty;
 
         try
         {
@@ -654,7 +669,7 @@ public sealed partial class ИнформацияPage : Page
                 }
             });
             capacity = capacity / 1024 / 1024 / 1024;
-            var DDRType = "";
+            var DDRType = string.Empty;
             DDRType = type switch
             {
                 20 => "DDR",
@@ -958,7 +973,7 @@ public sealed partial class ИнформацияPage : Page
                     }
                     //VRMBannerButton.Visibility = infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 2 ? Visibility.Visible : Visibility.Collapsed;
                     GPUBannerButton.Visibility = infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 2 ? Visibility.Visible : Visibility.Collapsed;
-                    InfoCPUSectionGetInfoSelectIndexesButton.Visibility = infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 2 ? Visibility.Visible : Visibility.Collapsed; 
+                    InfoCPUSectionGetInfoSelectIndexesButton.Visibility = infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 2 ? Visibility.Visible : Visibility.Collapsed;
                 }
                 else
                 {
@@ -1405,7 +1420,7 @@ public sealed partial class ИнформацияPage : Page
             }
             var avgCoreCLK = 0d;
             var avgCoreVolt = 0d;
-            var endCLKString = "";
+            var endCLKString = string.Empty;
             var pattern = @"\$cpu_clock_cycle\$(.*?)\$cpu_clock_cycle_end\$";
             var match = Regex.Match(rtssset.AdvancedCodeEditor, pattern);
             for (var f = 0u; f < numberOfCores; f++)
@@ -1571,7 +1586,7 @@ public sealed partial class ИнформацияPage : Page
             InfoAPSTBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
             ryzenAccess = RyzenADJWrapper.Init_ryzenadj();
             _ = RyzenADJWrapper.Init_Table(ryzenAccess);
-            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) => UpdateInfoAsync();
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(300);
             App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
