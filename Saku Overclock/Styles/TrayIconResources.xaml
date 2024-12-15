@@ -1,0 +1,154 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:tb="using:H.NotifyIcon"
+    >
+    <XamlUICommand
+        x:Key="Command1"
+        x:Uid="Tray_SakuLogo"
+        Label="Saku Overclock©"
+        Description="Saku Overclock© - An awesome Ryzen Laptop overclocking app"
+        >
+        <XamlUICommand.IconSource>
+            <BitmapIconSource ShowAsMonochrome="False" UriSource="WindowIcon.ico"/>
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="Command2"
+        x:Uid="Tray_PowerMon"
+        Label="PowerMon Pro"
+        Description="PowerMon Pro"
+        >
+        <XamlUICommand.IconSource>
+            <FontIconSource Glyph="&#xec4a;" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="Command3"
+        x:Uid="Tray_Settings"
+        Label="Settings"
+        Description="Settings"
+        >
+        <XamlUICommand.IconSource>
+            <FontIconSource Glyph="&#xe713;" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="Command4"
+        x:Uid="Tray_Profiles"
+        Label="Profiles"
+        Description="Profiles"
+        >
+        <XamlUICommand.IconSource>
+            <FontIconSource Glyph="&#xeadf;" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="Command5"
+        x:Uid="Tray_Overclock"
+        Label="Overclock"
+        Description="Overclock"
+        >
+        <XamlUICommand.IconSource>
+            <FontIconSource Glyph="&#xe945;" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="Command6"
+        x:Uid="Tray_Information"
+        Label="Information"
+        Description="Information"
+        >
+        <XamlUICommand.IconSource>
+            <FontIconSource Glyph="&#xe950;" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="Command7"
+        x:Uid="Tray_Cooler"
+        Label="Cooler tune"
+        Description="Cooler tune"
+        >
+        <XamlUICommand.IconSource>
+            <FontIconSource Glyph="&#xe9ca;" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="Command8"
+        x:Uid="Tray_EcoMode"
+        Label="Eco mode"
+        Description="Eco mode"
+        >
+        <XamlUICommand.IconSource>
+            <FontIconSource Glyph="&#xec0a;" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="ShowHideWindowCommand"
+        x:Uid="Tray_ShowHide"
+        Label="Show/Hide Window"
+        Description="Show/Hide Window"
+        >
+        <XamlUICommand.IconSource>
+            <SymbolIconSource Symbol="OpenPane" />
+        </XamlUICommand.IconSource>
+        <XamlUICommand.KeyboardAccelerators>
+            <KeyboardAccelerator
+                Key="S"
+                Modifiers="Control"
+                />
+        </XamlUICommand.KeyboardAccelerators>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="ExitApplicationCommand"
+        x:Uid="Tray_Exit"
+        Label="Exit"
+        Description="Exit"
+        >
+        <XamlUICommand.IconSource>
+            <SymbolIconSource Symbol="ClosePane" />
+        </XamlUICommand.IconSource>
+        <XamlUICommand.KeyboardAccelerators>
+            <KeyboardAccelerator
+                Key="E"
+                Modifiers="Control"
+                />
+        </XamlUICommand.KeyboardAccelerators>
+    </XamlUICommand>
+    <tb:TaskbarIcon
+        x:Key="TrayIcon"
+        Visibility="Visible"
+        ToolTipText="Saku Overclock©"
+        ContextMenuMode="SecondWindow"
+        LeftClickCommand="{StaticResource ShowHideWindowCommand}"
+        NoLeftClickDelay="True"
+        IconSource="ms-appx:///WindowIcon.ico"
+        >
+        <!--<tb:TaskbarIcon.GeneratedIcon>
+            <tb:GeneratedIcon
+                Text="❤️"
+                Foreground="Red"
+                />
+        </tb:TaskbarIcon.GeneratedIcon>-->
+        <tb:TaskbarIcon.ContextFlyout>
+            <MenuFlyout>
+                <MenuFlyoutItem Command="{StaticResource Command1}" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Command="{StaticResource Command2}" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Command="{StaticResource Command3}" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Command="{StaticResource Command4}" />
+                <MenuFlyoutItem Command="{StaticResource Command5}" />
+                <MenuFlyoutItem Command="{StaticResource Command6}" />
+                <MenuFlyoutItem Command="{StaticResource Command7}" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Command="{StaticResource Command8}" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Command="{StaticResource ShowHideWindowCommand}" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Command="{StaticResource ExitApplicationCommand}" />
+            </MenuFlyout>
+        </tb:TaskbarIcon.ContextFlyout>
+    </tb:TaskbarIcon>
+</ResourceDictionary>
