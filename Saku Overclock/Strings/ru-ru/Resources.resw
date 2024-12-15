@@ -2914,4 +2914,16 @@ Asus. Может не поддерживаться на
 давать как точные, так и неверные данные. 
 Учтите, других способов получить данные нет.</value>
   </data>
+  <data name="Settings_ni_TrayMonGradient.Header" xml:space="preserve">
+    <value>Градиент</value>
+  </data>
+  <data name="Settings_ni_TrayMonGradient.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="Settings_ni_TrayMonGradient.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="Settings_ni_TrayMonGradientColorSwitch.Content" xml:space="preserve">
+    <value>Цвет</value>
+  </data>
 </root>

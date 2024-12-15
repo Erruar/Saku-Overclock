@@ -2838,4 +2838,16 @@ can provide either precise or incorrect
 data. Note: no other sensor data 
 methods are available.</value>
   </data>
+  <data name="Settings_ni_TrayMonGradient.Header" xml:space="preserve">
+    <value>Gradient</value>
+  </data>
+  <data name="Settings_ni_TrayMonGradient.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="Settings_ni_TrayMonGradient.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
+  <data name="Settings_ni_TrayMonGradientColorSwitch.Content" xml:space="preserve">
+    <value>Color</value>
+  </data>
 </root>
