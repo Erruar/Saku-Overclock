@@ -15,7 +15,9 @@ using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation;
 using Windows.System;
+using Windows.UI.Core;
 using Button = Microsoft.UI.Xaml.Controls.Button;
+using WindowActivatedEventArgs = Microsoft.UI.Xaml.WindowActivatedEventArgs;
 
 namespace Saku_Overclock.Views;
 
@@ -24,16 +26,18 @@ public sealed partial class ShellPage : Page
 {
     private const int WH_KEYBOARD_LL = 13; // ID хука на клавиатуру
     private const int WM_KEYDOWN = 0x0100; // ID события нажатия клавиши
+    private const int VK_MENU = 0x12; // ID клавиши Alt
+    private const int KEY_PRESSED = 0x8000; // ID нажатой клавиши, а не события
     private readonly LowLevelKeyboardProc _proc; // Коллбэк метод (вызывается при срабатывании хука)
     private static IntPtr _hookID = IntPtr.Zero; // ID хука, используется, например, для удаления
-    private System.Windows.Threading.DispatcherTimer? dispatcherTimer; // Таймер обновления уведомлений
+    private Microsoft.UI.Xaml.DispatcherTimer? dispatcherTimer; // Таймер обновления уведомлений
     private bool loaded = true; // Запустился ли UI поток приложения
     private bool IsNotificationPanelShow; // Флаг: Открыта ли панель уведомлений
     private int? compareList; // Нет новых уведомлений - пока
     private Config config = new(); // Класс с конфигом приложения
     private JsonContainers.Notifications notify = new(); // Класс с уведомлениями
     private Profile[] profile = new Profile[1]; // Класс с профилями параметров разгона пользователя
-    private readonly Microsoft.UI.Windowing.AppWindow m_AppWindow; // Получить AppWindow для тайтлбара
+    public readonly Microsoft.UI.Windowing.AppWindow m_AppWindow; // Получить AppWindow для тайтлбара
     private bool fixedTitleBar = false; // Флаг фиксированного тайтлбара
     private Themer themer = new(); // Класс с темами приложения
 
@@ -807,7 +811,7 @@ public sealed partial class ShellPage : Page
     }
     private void StartInfoUpdate()
     {
-        dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+        dispatcherTimer = new DispatcherTimer();
         dispatcherTimer.Tick += async (sender, e) => await GetNotify();
         dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1000);
         App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
@@ -1491,8 +1495,14 @@ public sealed partial class ShellPage : Page
 
             GetModuleHandle(curModule?.ModuleName!), 0);//Получаем хэндл модуля
 
-    }
+    } 
+    [DllImport("user32.dll")]
+    private static extern short GetKeyState(int nVirtKey);
 
+    public static bool IsAltPressed()
+    {
+        return (GetKeyState(VK_MENU) & KEY_PRESSED) != 0;
+    }
     private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam); // Callback делегат(для вызова callback метода)
     private nint HookCallbackAsync(int nCode, IntPtr wParam, IntPtr lParam) // Собственно сам callback метод
     {
@@ -1501,7 +1511,7 @@ public sealed partial class ShellPage : Page
         {
             var virtualkeyCode = Marshal.ReadInt32(lParam); // Получаем код клавиши из неуправляемой памяти
             // Переключить между своими пресетами - Switch profile to next Custom
-            if ((Keys)virtualkeyCode == Keys.W && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
+            if ((Windows.System.VirtualKey)virtualkeyCode == Windows.System.VirtualKey.W && GetAsyncKeyState(0x11) < 0 && IsAltPressed()) //0x11 - Control, 0x4000 - Alt
             {
                 //Создать уведомление
                 var nextProfile = NextCustomProfile_Switch();
@@ -1510,7 +1520,7 @@ public sealed partial class ShellPage : Page
                 MainWindow.Applyer.ApplyWithoutADJLine(false);
             }
             // Переключить между готовыми пресетами - Switch profile to next Premaded
-            if ((Keys)virtualkeyCode == Keys.P && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
+            if ((Windows.System.VirtualKey)virtualkeyCode == Windows.System.VirtualKey.P && GetAsyncKeyState(0x11) < 0 && IsAltPressed()) //0x11 - Control, 0x4000 - Alt
             {
                 var nextProfile = NextPremadeProfile_Switch();
                 ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextProfile);
@@ -1518,7 +1528,7 @@ public sealed partial class ShellPage : Page
                 MainWindow.Applyer.ApplyWithoutADJLine(false);
             }
             // Переключить состояние RTSS
-            if ((Keys)virtualkeyCode == Keys.R && GetAsyncKeyState(0x11) < 0 && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))) //0x11 - Control, 0x4000 - Alt
+            if ((Windows.System.VirtualKey)virtualkeyCode == Windows.System.VirtualKey.R && GetAsyncKeyState(0x11) < 0 && IsAltPressed()) //0x11 - Control, 0x4000 - Alt
             {
                 ConfigLoad();
                 if (config.RTSSMetricsEnabled)
