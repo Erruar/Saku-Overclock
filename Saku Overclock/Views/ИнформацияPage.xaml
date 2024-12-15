@@ -489,8 +489,8 @@ StrokeThickness="1.5" >
                                 </ComboBox>
                                 <ComboBox Margin="1,0,0,0" Visibility="Collapsed" CornerRadius="5" Style="{ThemeResource AcrylicComboBoxStyle}" Width="134.5" SelectedIndex="1" x:Name="infoCPUSectionGetInfoTypeComboBox">
                                     <ComboBoxItem Content="WMI"/>
-                                    <ComboBoxItem Content="WMI + PM TABLE"/> 
-                                    <ComboBoxItem Content="PM TABLE"/> 
+                                    <ComboBoxItem Content="WMI + PM TABLE"/>
+                                    <!--<ComboBoxItem Content="PM TABLE"/> Пока такого функционала нет.-->
                                 </ComboBox>
                             </Grid>
                             <Button Visibility="Collapsed" Margin="1,0,-5,-5" Style="{StaticResource AccentButtonStyle}" x:Name="InfoCPUSectionGetInfoSelectIndexesButton" Width="31" Height="32">
