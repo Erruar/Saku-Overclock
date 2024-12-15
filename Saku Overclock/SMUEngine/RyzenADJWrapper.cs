@@ -563,6 +563,7 @@ public static class RyzenADJWrapper
         {
             try
             {
+                cpu ??= CpuSingleton.GetInstance(); 
                 cpu?.RefreshPowerTable();
                 _cachedTable = cpu?.powerTable.Table;
             }
