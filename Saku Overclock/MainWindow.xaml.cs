@@ -39,8 +39,6 @@ public sealed partial class MainWindow : WindowEx
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         Content = null;
         Title = "AppDisplayName".GetLocalized();
-        /* try
-         {*/
         var showHideWindowCommand = (XamlUICommand)Application.Current.Resources["ShowHideWindowCommand"];
         showHideWindowCommand.ExecuteRequested += ShowHideWindowCommand_ExecuteRequested;
 
@@ -73,11 +71,7 @@ public sealed partial class MainWindow : WindowEx
 
         ni = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
         ni.ForceCreate();
-        /* }
-         catch
-         { 
 
-         }*/
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event   
@@ -213,7 +207,20 @@ public sealed partial class MainWindow : WindowEx
                     ПараметрыPage.WritePstates();
                 }
             }
-            if (config.AutostartType == 1 || config.AutostartType == 3) { await Task.Delay(700); this.Hide(); }
+            // Параллельный поток для выполнения задачи
+            await Task.Run(async () =>
+            { 
+                while (!_contentLoaded)
+                {
+                    await Task.Delay(50); 
+                }
+
+                // После того как _contentLoaded стал true, выполняем условие
+                if (config.AutostartType == 1 || config.AutostartType == 3)
+                {
+                    this.Hide();
+                }
+            });
             // Генерация строки с информацией о релизах
             await UpdateChecker.GenerateReleaseInfoString();
             // Вызов проверки обновлений
