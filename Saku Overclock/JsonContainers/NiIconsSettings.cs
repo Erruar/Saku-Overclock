@@ -12,5 +12,7 @@ public class NiIconsElements
     public int IconShape = 0; // 0 - Куб, 1 - скруглённый куб, 2 - круг, 3 - лист, 4 - звезда, 5 - Saku Overclock
     public int FontSize = 9;
     public double BgOpacity = 1.0d;
+    public bool IsGradient = false;
+    public string SecondColor = "143BB6";
     public string Guid = "";
 }
