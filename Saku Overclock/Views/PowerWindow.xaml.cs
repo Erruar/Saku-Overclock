@@ -1,4 +1,5 @@
 using System;
+using System.Runtime;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Microsoft.UI.Xaml;
@@ -28,8 +29,8 @@ internal partial class PowerWindow : Window, IDisposable
         this.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/powermon.ico"));
         this.SetWindowSize(342, 579);
         NoteLoad();
-        PowerCfgTimer.Interval = 2000;
-        PowerCfgTimer.Tick += new EventHandler(PowerCfgTimer_Tick!);
+        PowerCfgTimer.Interval = new TimeSpan(0,0,0,0,500);
+        PowerCfgTimer.Tick += PowerCfgTimer_Tick;
         PowerCfgTimer.Stop();
         InitializeComponent();
         cpu?.RefreshPowerTable();
@@ -194,6 +195,7 @@ internal partial class PowerWindow : Window, IDisposable
     private void PowerWindow_Closed(object sender, WindowEventArgs args)
     {
         //CPU?.powerTable.Dispose();
+        _ = Garbage.Garbage_Collect();
         CPU = null;
         UnloadObject(PowerGridView);
         Dispose();
@@ -203,8 +205,8 @@ internal partial class PowerWindow : Window, IDisposable
     {
         App.AppTitlebar = AppTitleBarText as UIElement;
     }
-    private readonly System.Windows.Forms.Timer PowerCfgTimer = new();
-    private void PowerCfgTimer_Tick(object sender, EventArgs e)
+    private readonly Microsoft.UI.Xaml.DispatcherTimer PowerCfgTimer = new();
+    private void PowerCfgTimer_Tick(object? sender, object e)
     {
         if (CPU?.RefreshPowerTable() == ZenStates.Core.SMU.Status.OK)
         {
@@ -215,12 +217,12 @@ internal partial class PowerWindow : Window, IDisposable
     {
         try
         {
-            PowerCfgTimer.Interval = Convert.ToInt32(numericUpDownInterval.Value);
+            PowerCfgTimer.Interval = new TimeSpan(0, 0, 0, 0, Convert.ToInt32(numericUpDownInterval.Value));
         }
         catch
         {
-            numericUpDownInterval.Value = 2000;
-            PowerCfgTimer.Interval = Convert.ToInt32(numericUpDownInterval.Value);
+            numericUpDownInterval.Value = 500;
+            PowerCfgTimer.Interval = new TimeSpan(0, 0, 0, 0, Convert.ToInt32(numericUpDownInterval.Value));
         }
     }
     private void Settings_Click(object sender, RoutedEventArgs e)
