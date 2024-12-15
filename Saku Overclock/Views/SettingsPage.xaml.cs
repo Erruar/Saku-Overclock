@@ -1436,6 +1436,7 @@ public sealed partial class SettingsPage : Page
                 }
                 NiIconCombobox.SelectedIndex = niicons.Elements[config.NiIconsType].ContextMenuType;
                 NiIcons_ColorPicker_ColorPicker.Color = ParseColor(niicons.Elements[config.NiIconsType].Color);
+                Settings_Ni_GradientToggle.IsOn = niicons.Elements[config.NiIconsType].IsGradient;
                 NiIconShapeCombobox.SelectedIndex = niicons.Elements[config.NiIconsType].IconShape;
                 Settings_ni_Fontsize.Value = niicons.Elements[config.NiIconsType].FontSize;
                 Settings_ni_Opacity.Value = niicons.Elements[config.NiIconsType].BgOpacity;
@@ -1497,6 +1498,7 @@ public sealed partial class SettingsPage : Page
             }
             NiIconCombobox.SelectedIndex = niicons.Elements[config.NiIconsType].ContextMenuType;
             NiIcons_ColorPicker_ColorPicker.Color = ParseColor(niicons.Elements[config.NiIconsType].Color);
+            Settings_Ni_GradientToggle.IsOn = niicons.Elements[config.NiIconsType].IsGradient;
             NiIconShapeCombobox.SelectedIndex = niicons.Elements[config.NiIconsType].IconShape;
             Settings_ni_Fontsize.Value = niicons.Elements[config.NiIconsType].FontSize;
             Settings_ni_Opacity.Value = niicons.Elements[config.NiIconsType].BgOpacity;
@@ -1900,7 +1902,40 @@ public sealed partial class SettingsPage : Page
     private void NiIcons_ColorPicker_ColorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
     {
         if (!isLoaded) { return; }
-        NiLoad(); niicons.Elements[config.NiIconsType].Color = $"{NiIcons_ColorPicker_ColorPicker.Color.R:X2}{NiIcons_ColorPicker_ColorPicker.Color.G:X2}{NiIcons_ColorPicker_ColorPicker.Color.B:X2}"; NiSave();
+        NiLoad();
+        if (Settings_Ni_GradientColorSwitcher.IsChecked == false) 
+        {
+            niicons.Elements[config.NiIconsType].Color = $"{NiIcons_ColorPicker_ColorPicker.Color.R:X2}{NiIcons_ColorPicker_ColorPicker.Color.G:X2}{NiIcons_ColorPicker_ColorPicker.Color.B:X2}";
+        }
+        else if (Settings_Ni_GradientColorSwitcher.IsChecked == true)
+        {
+            niicons.Elements[config.NiIconsType].SecondColor = $"{NiIcons_ColorPicker_ColorPicker.Color.R:X2}{NiIcons_ColorPicker_ColorPicker.Color.G:X2}{NiIcons_ColorPicker_ColorPicker.Color.B:X2}";
+        }
+        NiSave();
+    }
+    private void Settings_Ni_GradientToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (!isLoaded) { return; }
+        NiLoad(); niicons.Elements[config.NiIconsType].IsGradient = true; NiSave();
+    }
+
+    private void Settings_Ni_GradientColorSwitcher_Click(object sender, RoutedEventArgs e)
+    {
+        if (!isLoaded) { return; }
+        var button = sender as ToggleButton;
+        if (button != null)
+        {
+            if (button.IsChecked == true)
+            {
+                button.Content = "Settings_ni_TrayMonGradientColorSwitch/Content".GetLocalized() + "2";
+                NiIcons_ColorPicker_ColorPicker.Color = ParseColor(niicons.Elements[config.NiIconsType].SecondColor);
+            }
+            else if (button.IsChecked == false)
+            {
+                button.Content = "Settings_ni_TrayMonGradientColorSwitch/Content".GetLocalized() + "1";
+                NiIcons_ColorPicker_ColorPicker.Color = ParseColor(niicons.Elements[config.NiIconsType].Color);
+            }
+        }
     }
 
     private void Settings_ni_Delete_Click(object sender, RoutedEventArgs e)
@@ -2221,5 +2256,5 @@ public sealed partial class SettingsPage : Page
         rtssset.AdvancedCodeEditor = newString.Replace("\r", "\n").TrimEnd();
         RtssSave();
     }
-    #endregion
+    #endregion 
 }
