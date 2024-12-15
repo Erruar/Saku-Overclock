@@ -23,7 +23,7 @@ namespace Saku_Overclock.ProfileSwitcher;
 public sealed partial class ProfileSwitcher : Window
 {
     private static ProfileSwitcher? _instance;
-    private readonly System.Windows.Forms.Timer _timer;
+    private readonly DispatcherTimer _timer;
     private readonly Visual _windowVisual; 
 
     public enum DWM_WINDOW_CORNER_PREFERENCE
@@ -49,10 +49,11 @@ public sealed partial class ProfileSwitcher : Window
     {
         InitializeComponent(); 
         _windowVisual = ElementCompositionPreview.GetElementVisual(Content);
-        _timer = new System.Windows.Forms.Timer
+        _timer = new DispatcherTimer()
         {
-            Interval = 1500
+            
         };
+        _timer.Interval = new TimeSpan(0,0,0,1,500);
         this.SetWindowSize(400, 200);  
         this.SystemBackdrop = new MicaBackdrop
         {
@@ -136,9 +137,9 @@ public sealed partial class ProfileSwitcher : Window
 
 
         // ѕервый таймер на 1,5 секунды
-        var displayTimer = new System.Windows.Forms.Timer
+        var displayTimer = new DispatcherTimer()
         {
-            Interval = 2500
+            Interval = new TimeSpan(0, 0, 0, 2, 500)
         };
 
         displayTimer.Tick += (s, e) =>
@@ -154,9 +155,9 @@ public sealed partial class ProfileSwitcher : Window
                 fadeOutAnimation.Duration = TimeSpan.FromSeconds(1); // «а 1 секунду
                 _instance._windowVisual.StartAnimation(nameof(_instance._windowVisual.Opacity), fadeOutAnimation);
                 // “аймер дл€ ожидани€ завершени€ анимации перед скрытием фона
-                var hideTimer = new System.Windows.Forms.Timer
+                var hideTimer = new DispatcherTimer
                 {
-                    Interval = 1000 // 1 секунда, совпадает с длительностью анимации
+                    Interval = new TimeSpan(0, 0, 0, 1) // 1 секунда, совпадает с длительностью анимации
                 };
                 hideTimer.Tick += (sender, args) =>
                 {
