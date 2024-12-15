@@ -1,7 +1,9 @@
 ﻿using System.Drawing;
+using System.Globalization;
 using System.Drawing.Drawing2D;
 using System.Management;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -202,7 +204,12 @@ public sealed partial class ИнформацияPage : Page
         var g = System.Drawing.Graphics.FromImage(bitmap);
         // Задаём цвет фона и форму
         var bgColor = System.Drawing.ColorTranslator.FromHtml("#" + element.Color);
-        System.Drawing.Brush bgBrush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb((int)(element.BgOpacity * 255), bgColor));
+        //System.Drawing.Brush bgBrush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb((int)(element.BgOpacity * 255), bgColor));
+        var bgBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
+        new System.Drawing.Rectangle(0, 0, 32, 32),
+        System.Drawing.Color.FromArgb((int)(element.BgOpacity * 255), bgColor),
+        System.Drawing.Color.FromArgb((int)(element.BgOpacity * 255), System.Drawing.Color.Blue),
+        System.Drawing.Drawing2D.LinearGradientMode.Horizontal);
         switch (element.IconShape)
         {
             case 0: // Куб
@@ -214,8 +221,7 @@ public sealed partial class ИнформацияPage : Page
                 break;
             case 2: // Круг
                 g.FillEllipse(bgBrush, 0, 0, 32, 32);
-                break;
-            // Добавьте остальные фигуры и обработку ico
+                break; 
             default:
                 g.FillRectangle(bgBrush, 0, 0, 32, 32);
                 break;
@@ -297,7 +303,7 @@ public sealed partial class ИнформацияPage : Page
                     if (element.Name == IconName)
                     {
                         // Изменяем текст на иконке (слой 2)
-                        notifyIcon.Icon = UpdateIconText(NewText, element.Color, element.FontSize, element.IconShape, element.BgOpacity, notifyIcon.Icon);
+                        notifyIcon.Icon = UpdateIconText(NewText, element.Color, element.IsGradient ? element.SecondColor : string.Empty, element.FontSize, element.IconShape, element.BgOpacity, notifyIcon.Icon);
 
                         // Обновляем TooltipText, если он задан
                         if (TooltipText != null && notifyIcon.ToolTipText != null)
@@ -313,7 +319,7 @@ public sealed partial class ИнформацияPage : Page
             CreateNotifyIcons();
         }
     }
-    private static System.Drawing.Icon? UpdateIconText(string? newText, string NewColor, int FontSize, int IconShape, double Opacity, System.Drawing.Icon? oldIcon = null)
+    private static System.Drawing.Icon? UpdateIconText(string? newText, string NewColor, string SecondColor, int FontSize, int IconShape, double Opacity, System.Drawing.Icon? oldIcon = null)
     {
         // Уничтожаем старую иконку, если она существует
         if (oldIcon != null)
@@ -327,35 +333,44 @@ public sealed partial class ИнформацияPage : Page
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
         // Цвет фона и кисть
-        var bgColor = System.Drawing.ColorTranslator.FromHtml("#" + NewColor);
-        var bgBrush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb((int)(Opacity * 255), bgColor));
+        var bgColor = System.Drawing.ColorTranslator.FromHtml("#" + NewColor); 
+        object bgBrush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb((int)(Opacity * 255), bgColor));
+        if (SecondColor != string.Empty) 
+        {
+            var scColor = System.Drawing.ColorTranslator.FromHtml("#" + SecondColor);
+            bgBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
+        new System.Drawing.Rectangle(0, 0, 32, 32),
+        System.Drawing.Color.FromArgb((int)(Opacity * 255), bgColor),
+        System.Drawing.Color.FromArgb((int)(Opacity * 255), scColor),
+        System.Drawing.Drawing2D.LinearGradientMode.Horizontal);
+        }
         // Рисуем фон иконки в зависимости от формы
         switch (IconShape)
         {
             case 0: // Куб
-                g.FillRectangle(bgBrush, 0, 0, 32, 32);
+                g.FillRectangle((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
                 break;
             case 1: // Скруглённый куб
                 var path = CreateRoundedRectanglePath(new Rectangle(0, 0, 32, 32), 7);
                 if (path != null)
                 {
-                    g.FillPath(bgBrush, path);
+                    g.FillPath((System.Drawing.Brush)bgBrush, path);
                 }
                 else
                 {
-                    g.FillRectangle(bgBrush, 0, 0, 32, 32);
+                    g.FillRectangle((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
                 }
                 break;
             case 2: // Круг
-                g.FillEllipse(bgBrush, 0, 0, 32, 32);
+                g.FillEllipse((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
                 break;
             // Добавьте остальные фигуры и обработку ico при необходимости
             default:
-                g.FillRectangle(bgBrush, 0, 0, 32, 32);
+                g.FillRectangle((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
                 break;
         }
         // Определение позиции текста
-        var font = new System.Drawing.Font(new System.Drawing.FontFamily("Arial"), FontSize * 2, System.Drawing.FontStyle.Regular, GraphicsUnit.Pixel);
+        var font = new System.Drawing.Font(new System.Drawing.FontFamily("Segoe UI"), FontSize * 2f, System.Drawing.FontStyle.Bold, GraphicsUnit.Pixel);
         var textBrush = new System.Drawing.SolidBrush(InvertColor(NewColor));
         // Центрируем текст
         var textSize = g.MeasureString(newText, font);
@@ -424,9 +439,17 @@ public sealed partial class ИнформацияPage : Page
             g = System.Convert.ToInt32(valuestring!.Substring(2, 2), 16);
             b = System.Convert.ToInt32(valuestring!.Substring(4, 2), 16);
         }
-        r = 255 - r;
+        if (r + g + b > 325)
+        {
+            r = 0; b = 0; g = 0;
+        }
+        else
+        {
+            r = 255; b = 255; g = 255;
+        }
+        /*r = 255 - r;
         g = 255 - g;
-        b = 255 - b;
+        b = 255 - b;*/
         return System.Drawing.Color.FromArgb(r, g, b);
     }
     #endregion
@@ -1526,10 +1549,10 @@ public sealed partial class ИнформацияPage : Page
             niicons_Min_MaxValues[4].Min = RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess) < niicons_Min_MaxValues[4].Min ? RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess) : niicons_Min_MaxValues[4].Min;
             niicons_Min_MaxValues[5].Max = RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess) > niicons_Min_MaxValues[5].Max ? RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess) : niicons_Min_MaxValues[5].Max;
             niicons_Min_MaxValues[5].Min = RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess) < niicons_Min_MaxValues[5].Min ? RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess) : niicons_Min_MaxValues[5].Min;
-            niicons_Min_MaxValues[6].Max = (float)((avgCoreCLK / numberOfCores) > niicons_Min_MaxValues[6].Max ? (avgCoreCLK / numberOfCores) : niicons_Min_MaxValues[6].Max);
-            niicons_Min_MaxValues[6].Min = (float)((avgCoreCLK / numberOfCores) < niicons_Min_MaxValues[6].Min ? (avgCoreCLK / numberOfCores) : niicons_Min_MaxValues[6].Min);
-            niicons_Min_MaxValues[7].Max = (float)((avgCoreVolt / numberOfCores) > niicons_Min_MaxValues[7].Max ? (avgCoreVolt / numberOfCores) : niicons_Min_MaxValues[7].Max);
-            niicons_Min_MaxValues[7].Min = (float)((avgCoreVolt / numberOfCores) < niicons_Min_MaxValues[7].Min ? (avgCoreVolt / numberOfCores) : niicons_Min_MaxValues[7].Min);
+            niicons_Min_MaxValues[6].Max = ConvertFromTextToFloat(tbCPUFreq.Text.Replace("infoAGHZ".GetLocalized(), string.Empty)) > niicons_Min_MaxValues[6].Max ? ConvertFromTextToFloat(tbCPUFreq.Text.Replace("infoAGHZ".GetLocalized(), string.Empty)) : niicons_Min_MaxValues[6].Max;
+            niicons_Min_MaxValues[6].Min = ConvertFromTextToFloat(tbCPUFreq.Text.Replace("infoAGHZ".GetLocalized(), string.Empty)) < niicons_Min_MaxValues[6].Min ? ConvertFromTextToFloat(tbCPUFreq.Text.Replace("infoAGHZ".GetLocalized(), string.Empty)) : niicons_Min_MaxValues[6].Min;
+            niicons_Min_MaxValues[7].Max = ConvertFromTextToFloat(tbCPUVolt.Text.Replace("V",string.Empty)) > niicons_Min_MaxValues[7].Max ? ConvertFromTextToFloat(tbCPUVolt.Text.Replace("V", string.Empty)) : niicons_Min_MaxValues[7].Max;
+            niicons_Min_MaxValues[7].Min = ConvertFromTextToFloat(tbCPUVolt.Text.Replace("V", string.Empty)) < niicons_Min_MaxValues[7].Min ? ConvertFromTextToFloat(tbCPUVolt.Text.Replace("V", string.Empty)) : niicons_Min_MaxValues[7].Min;
             niicons_Min_MaxValues[8].Max = RyzenADJWrapper.Get_gfx_clk(ryzenAccess) > niicons_Min_MaxValues[8].Max ? RyzenADJWrapper.Get_gfx_clk(ryzenAccess) : niicons_Min_MaxValues[8].Max;
             niicons_Min_MaxValues[8].Min = RyzenADJWrapper.Get_gfx_clk(ryzenAccess) < niicons_Min_MaxValues[8].Min ? RyzenADJWrapper.Get_gfx_clk(ryzenAccess) : niicons_Min_MaxValues[8].Min;
             niicons_Min_MaxValues[9].Max = RyzenADJWrapper.Get_gfx_temp(ryzenAccess) > niicons_Min_MaxValues[9].Max ? RyzenADJWrapper.Get_gfx_temp(ryzenAccess) : niicons_Min_MaxValues[9].Max;
@@ -1543,8 +1566,8 @@ public sealed partial class ИнформацияPage : Page
             Change_Ni_Icons_Text("Settings_ni_Values_VRMEDC", Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_VRMEDC".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_vrmmax_current_value(ryzenAccess) + "A", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[3].Min.ToString() + "A" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[3].Max.ToString() + "A");
             Change_Ni_Icons_Text("Settings_ni_Values_CPUTEMP", Math.Round(RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_CPUTEMP".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_tctl_temp_value(ryzenAccess) + "C", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[4].Min.ToString() + "C" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[4].Max.ToString() + "C");
             Change_Ni_Icons_Text("Settings_ni_Values_CPUUsage", Math.Round(RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_CPUUsage".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_cclk_busy_value(ryzenAccess) + "%", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[5].Min.ToString() + "%" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[5].Max.ToString() + "%");
-            Change_Ni_Icons_Text("Settings_ni_Values_AVGCPUCLK", Math.Round(avgCoreCLK / numberOfCores, 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_AVGCPUCLK".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + avgCoreCLK / numberOfCores + "GHz", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[6].Min.ToString() + "GHz" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[6].Max.ToString() + "GHz");
-            Change_Ni_Icons_Text("Settings_ni_Values_AVGCPUVOLT", Math.Round(avgCoreVolt / numberOfCores, 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_AVGCPUVOLT".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + avgCoreVolt / numberOfCores + "V", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[7].Min.ToString() + "V" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[7].Max.ToString() + "V");
+            Change_Ni_Icons_Text("Settings_ni_Values_AVGCPUCLK", ConvertFromTextToFloat(tbCPUFreq.Text.Replace("infoAGHZ".GetLocalized(), string.Empty)).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_AVGCPUCLK".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + ConvertFromTextToFloat(tbCPUFreq.Text.Replace("infoAGHZ".GetLocalized(), string.Empty)).ToString() + "GHz", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[6].Min.ToString() + "GHz" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[6].Max.ToString() + "GHz");
+            Change_Ni_Icons_Text("Settings_ni_Values_AVGCPUVOLT", ConvertFromTextToFloat(tbCPUVolt.Text.Replace("V", string.Empty)).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_AVGCPUVOLT".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + ConvertFromTextToFloat(tbCPUVolt.Text.Replace("V", string.Empty)).ToString() + "V", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[7].Min.ToString() + "V" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[7].Max.ToString() + "V");
             Change_Ni_Icons_Text("Settings_ni_Values_GFXCLK", Math.Round(RyzenADJWrapper.Get_gfx_clk(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXCLK".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_clk(ryzenAccess) + "MHz", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[8].Min.ToString() + "MHz" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[8].Max.ToString() + "MHz");
             Change_Ni_Icons_Text("Settings_ni_Values_GFXTEMP", Math.Round(RyzenADJWrapper.Get_gfx_temp(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXTEMP".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_temp(ryzenAccess) + "C", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[9].Min.ToString() + "C" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[9].Max.ToString() + "C");
             Change_Ni_Icons_Text("Settings_ni_Values_GFXVOLT", Math.Round(RyzenADJWrapper.Get_gfx_volt(ryzenAccess), 3).ToString(), "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXVOLT".GetLocalized() + "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_volt(ryzenAccess) + "V", "Settings_ni_Values_MinValue".GetLocalized() + niicons_Min_MaxValues[10].Min.ToString() + "V" + "Settings_ni_Values_MaxValue".GetLocalized() + niicons_Min_MaxValues[10].Max.ToString() + "V");
@@ -1554,6 +1577,19 @@ public sealed partial class ИнформацияPage : Page
             }
         }
         catch (Exception ex) { SendSMUCommand.TraceIt_TraceError(ex.ToString()); }
+    }
+    private static float ConvertFromTextToFloat(string input)
+    {
+        try
+        {
+            // Попробуем преобразовать строку в float
+            _ = float.TryParse(input, out var result);
+            return result;
+        }
+        catch
+        {
+            return 0f;
+        }
     }
     // Автообновление информации 
     private void StartInfoUpdate()
