@@ -13,6 +13,7 @@ internal class GetSystemInfo
     private static readonly ManagementObjectSearcher baseboardSearcher = new("root\\CIMV2", "SELECT * FROM Win32_BaseBoard");
     private static readonly ManagementObjectSearcher motherboardSearcher = new("root\\CIMV2", "SELECT * FROM Win32_MotherboardDevice");
     private static readonly ManagementObjectSearcher ComputerSsystemInfo = new("root\\CIMV2", "SELECT * FROM Win32_ComputerSystemProduct");
+    private static List<ManagementObject>? CachedGPUList = null;
     private static long maxClockSpeedMHz = -1;
     #region Battery Information
     public static string? GetBatteryName()
@@ -420,22 +421,23 @@ internal class GetSystemInfo
         try
         {
             // Создаем отфильтрованный список видеокарт
-            var predictedGPUList = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
-                .Get()
-                .Cast<ManagementObject>()
-                .Where(element =>
-                {
-                    var name = element["Name"]?.ToString() ?? string.Empty;
-                    return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
-                           !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
-                })
-                .ToList(); // Преобразуем в список для индексации
+            CachedGPUList ??= new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
+            .Get()
+            .Cast<ManagementObject>()
+            .Where(element =>
+            {
+                var name = element["Name"]?.ToString() ?? string.Empty;
+                return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
+                       !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
+            })
+            .ToList(); // Преобразуем в список для индексации
+
 
             // Проверяем, что индекс i находится в пределах допустимых значений
-            if (i >= 0 && i < predictedGPUList.Count)
+            if (i >= 0 && i < CachedGPUList.Count)
             {
                 // Получаем объект видеокарты
-                var gpu = predictedGPUList[i];
+                var gpu = CachedGPUList[i];
                 // Читаем имя видеокарты
                 var gpuName = gpu["Name"]?.ToString() ?? "Unknown GPU";
                 _ = Garbage.Garbage_Collect();
@@ -448,7 +450,7 @@ internal class GetSystemInfo
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error retrieving GPU name: {ex}");
+            SendSMUCommand.TraceIt_TraceError($"Error retrieving GPU name: {ex}");
         }
 
         _ = Garbage.Garbage_Collect();
