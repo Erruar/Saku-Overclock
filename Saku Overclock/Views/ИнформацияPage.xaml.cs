@@ -1756,7 +1756,9 @@ public sealed partial class ИнформацияPage : Page
                                             (currCore < numberOfCores ? "InfoCPUCore".GetLocalized()
                                             : "InfoCPUThread".GetLocalized())
                                             : (SelectedGroup == 1 ? "InfoGPUName".GetLocalized()
-                                            : (SelectedGroup == 2 ? tbSlots.Text.Split('*')[1].Replace("Bit","")
+                                            : (SelectedGroup == 2 ? 
+                                              (tbSlots.Text.Contains('*') ? tbSlots.Text.Split('*')[1].Replace("bit","") 
+                                            : "64")
                                             : (SelectedGroup == 3 ?
                                               (currCore == 0 ? "VRM EDC"
                                             : ( currCore == 1 ? "VRM TDC"
