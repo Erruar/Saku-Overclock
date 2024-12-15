@@ -1,9 +1,14 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
+using CommunityToolkit.Mvvm.Input;
+using H.NotifyIcon;
+using H.NotifyIcon.Core;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
-using Saku_Overclock.Activation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
@@ -18,23 +23,8 @@ public sealed partial class MainWindow : WindowEx
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
     private readonly UISettings settings;
     private Config config = new();
-    public enum DWMWINDOWATTRIBUTE
-    {
-        DWMWA_WINDOW_CORNER_PREFERENCE = 33
-    }
-    public enum DWM_WINDOW_CORNER_PREFERENCE
-    {
-        DWMWCP_DEFAULT = 0,
-        DWMWCP_DONOTROUND = 1,
-        DWMWCP_ROUND = 2,
-        DWMWCP_ROUNDSMALL = 3
-    }
-    private static NotifyIcon ni = new();
-    [LibraryImport("dwmapi.dll", SetLastError = true)]
-    private static partial long DwmSetWindowAttribute(IntPtr hwnd,
-                                                     DWMWINDOWATTRIBUTE attribute,
-                                                     ref DWM_WINDOW_CORNER_PREFERENCE pvAttribute,
-                                                     uint cbAttribute);
+    private static TaskbarIcon? ni;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -49,44 +39,50 @@ public sealed partial class MainWindow : WindowEx
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         Content = null;
         Title = "AppDisplayName".GetLocalized();
-        try
-        {
-            ni.Icon = new System.Drawing.Icon(GetType(), "WindowIcon.ico");
-            ni.Visible = true;
-            ni.DoubleClick +=
-                    delegate (object sender, EventArgs args)
-                    {
-                        this.Show();
-                        WindowState = WindowState.Normal;
-                    }
-            !;
-            ni.ContextMenuStrip = new ContextMenuStrip() { Size = new System.Drawing.Size(300, 300) }; //Трей меню
-            var attribute = DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE; //Закруглить трей меню на Windows 11
-            var preference = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND; //Закруглить трей меню на Windows 11
-            DwmSetWindowAttribute(ni.ContextMenuStrip.Handle, attribute, ref preference, sizeof(uint)); //Закруглить трей меню на Windows 11 
-            ni.ContextMenuStrip.Items.Add("Tray_Saku_Overclock".GetLocalized(), new System.Drawing.Bitmap(GetType(), "WindowIcon.ico"), Menu_Show1!);
-            ni.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-            ni.ContextMenuStrip.Items.Add("Tray_Presets".GetLocalized(), new System.Drawing.Bitmap(GetType(), "preset.png"), Open_Preset!);
-            ni.ContextMenuStrip.Items.Add("Tray_Parameters".GetLocalized(), new System.Drawing.Bitmap(GetType(), "param.png"), Open_Param!);
-            ni.ContextMenuStrip.Items.Add("Tray_Inforfation".GetLocalized(), new System.Drawing.Bitmap(GetType(), "info.png"), Open_Info!);
-            ni.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-            ni.ContextMenuStrip.Items.Add("Tray_Show".GetLocalized(), new System.Drawing.Bitmap(GetType(), "show.png"), Menu_Show1!);
-            ni.ContextMenuStrip.Items.Add("Tray_Quit".GetLocalized(), new System.Drawing.Bitmap(GetType(), "exit.png"), Menu_Exit1!);
-            ni.ContextMenuStrip.Items[0].Enabled = false;
-            ni.ContextMenuStrip.Opacity = 0.89;
-            ni.ContextMenuStrip.ForeColor = System.Drawing.Color.Purple;
-            ni.ContextMenuStrip.BackColor = System.Drawing.Color.White;
-            ni.Text = "Saku Overclock©";
-        }
-        catch
-        {
+        /* try
+         {*/
+        var showHideWindowCommand = (XamlUICommand)Application.Current.Resources["ShowHideWindowCommand"];
+        showHideWindowCommand.ExecuteRequested += ShowHideWindowCommand_ExecuteRequested;
 
-        }
+        var exitApplicationCommand = (XamlUICommand)Application.Current.Resources["ExitApplicationCommand"];
+        exitApplicationCommand.ExecuteRequested += ExitApplicationCommand_ExecuteRequested;
+
+        var powerMonCommand = (XamlUICommand)Application.Current.Resources["Command2"];
+        powerMonCommand.ExecuteRequested += PowerMonOpen_ExecuteRequested;
+
+        var settingsCommand = (XamlUICommand)Application.Current.Resources["Command3"];
+        settingsCommand.ExecuteRequested += SettingsOpen_ExecuteRequested;
+
+        var appProfilesCommand = (XamlUICommand)Application.Current.Resources["Command4"];
+        appProfilesCommand.ExecuteRequested += ProfilesOpen_ExecuteRequested;
+
+        var overclockPageCommand = (XamlUICommand)Application.Current.Resources["Command5"];
+        overclockPageCommand.ExecuteRequested += OverclockPageOpen_ExecuteRequested;
+
+        var informationPageCommand = (XamlUICommand)Application.Current.Resources["Command6"];
+        informationPageCommand.ExecuteRequested += InfoPageOpen_ExecuteRequested;
+
+        var coolerTuneCommand = (XamlUICommand)Application.Current.Resources["Command7"];
+        coolerTuneCommand.ExecuteRequested += CoolerPageOpen_ExecuteRequested;
+
+        var ecoModeCommand = (XamlUICommand)Application.Current.Resources["Command8"];
+        ecoModeCommand.ExecuteRequested += EcoMode_ExecuteRequested;
+
+        var sakuLogoCommand = (XamlUICommand)Application.Current.Resources["Command1"];
+        sakuLogoCommand.ExecuteRequested += GithubLink_ExecuteRequested;
+
+        ni = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
+        ni.ForceCreate();
+        /* }
+         catch
+         { 
+
+         }*/
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event   
         Tray_Start();
-        Closed += Dispose_Tray; 
+        Closed += Dispose_Tray;
     }
     #region Colours 
     // this handles updating the caption button colors correctly when indows system theme is changed
@@ -98,20 +94,107 @@ public sealed partial class MainWindow : WindowEx
     }
     #endregion
     #region Tray utils 
-    public static void Remove_ContextMenu_Tray()
+    public static void Set_ContextMenu_Tray()
     {
-        ni.ContextMenuStrip?.Items.Clear();
-        ni.Text = "Saku Overclock©\nContext menu is disabled";
+        ni = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
+    }
+    public static void Remove_ContextMenu_Tray()
+    { 
+        if (ni == null) { return; }
+        ni.ContextFlyout = null;
+        ni.ToolTipText = "Saku Overclock©\nContext menu is disabled";
     }
     private void Dispose_Tray(object sender, WindowEventArgs args)
     {
-        ni.Dispose();
+        ni?.Dispose();
         var workers = Process.GetProcessesByName("Saku Overclock");
         foreach (var worker in workers)
         {
             worker.Kill(); // Закрыть весь разгон, даже если открыт PowerMon или оверлей ProfileSwitcher
             worker.WaitForExit();
             worker.Dispose();
+        }
+    }
+    private void PowerMonOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    {
+        try
+        { 
+            var newWindow = new PowerWindow(CpuSingleton.GetInstance());
+            var micaBackdrop = new MicaBackdrop
+            {
+                Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
+            };
+            newWindow.SystemBackdrop = micaBackdrop;
+            newWindow.Activate();
+        }
+        catch (Exception ex) { throw new Exception(ex.ToString()); }
+    } 
+    private void SettingsOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    {
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
+        App.MainWindow.Show(); App.MainWindow.BringToFront(); App.MainWindow.WindowState = WindowState.Normal;
+    }
+    private void ProfilesOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    {
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
+        App.MainWindow.Show(); App.MainWindow.BringToFront(); App.MainWindow.WindowState = WindowState.Normal;
+    }
+    private void OverclockPageOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    {
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!);
+        App.MainWindow.Show(); App.MainWindow.BringToFront(); App.MainWindow.WindowState = WindowState.Normal;
+    }
+    private void InfoPageOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    {
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!);
+        App.MainWindow.Show(); App.MainWindow.BringToFront(); App.MainWindow.WindowState = WindowState.Normal;
+    }
+    private void CoolerPageOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    {
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(КулерViewModel).FullName!);
+        App.MainWindow.Show(); App.MainWindow.BringToFront(); App.MainWindow.WindowState = WindowState.Normal;
+    }
+    private void EcoMode_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    {
+        ConfigLoad();
+        config.PremadeEcoActivated = true;
+        config.PremadeBalanceActivated = false;
+        config.PremadeMaxActivated = false;
+        config.PremadeMinActivated = false;
+        config.PremadeSpeedActivated = false;
+        ConfigSave();
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
+        App.MainWindow.Show(); App.MainWindow.BringToFront();
+    }
+    private void GithubLink_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    { 
+        Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/") { UseShellExecute = true });
+    }
+    private void ShowHideWindowCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    {
+        if (App.MainWindow.Visible)
+        {
+            App.MainWindow.Hide();
+        }
+        else
+        {
+            App.MainWindow.Show(); BringToFront(); App.MainWindow.WindowState = WindowState.Normal;
+        }
+    }
+
+    private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    {
+        ni?.Dispose();
+        App.MainWindow?.Close(); 
+        if (App.MainWindow == null)
+        {
+            Environment.Exit(0);
         }
     }
     private async void Tray_Start() // Запустить все команды после запуска приложения если включен Автоприменять Разгон
@@ -141,40 +224,7 @@ public sealed partial class MainWindow : WindowEx
             JsonRepair('c');
             JsonRepair('d');
         }
-    }
-    private void Open_Preset(object sender, EventArgs e)
-    {
-        var navigationService = App.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
-        this.Show(); BringToFront();
-    }
-    private void Open_Param(object sender, EventArgs e)
-    {
-        var navigationService = App.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!);
-        this.Show(); BringToFront();
-    }
-    private void Open_Info(object sender, EventArgs e)
-    {
-        var navigationService = App.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!);
-        this.Show(); BringToFront();
-    }
-    private void Menu_Show1(object sender, EventArgs e)
-    {
-        ni = new NotifyIcon
-        {
-            Visible = true
-        };
-        this.Show(); BringToFront();
-    }
-    private void Menu_Exit1(object sender, EventArgs e)
-    {
-        ni = new NotifyIcon
-        {
-            Visible = false
-        }; Close();
-    }
+    }  
     #endregion
     #region Applyer class
     public class Applyer

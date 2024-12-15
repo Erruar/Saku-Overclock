@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Reflection;
 using System.Windows.Forms;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -6,10 +7,12 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
 using Windows.UI;
 using ZenStates.Core;
@@ -976,7 +979,7 @@ public sealed partial class ПараметрыPage : Page
             }
         }
         catch (Exception ex) { TraceIt_TraceError(ex.ToString()); }
-    }
+    }  
     private void ScanSmuRange(uint start, uint end, uint step, uint offset)
     {
         matches = [];
@@ -990,7 +993,7 @@ public sealed partial class ПараметрыPage : Page
             if (cpu?.ReadDword(start) != 0xFFFFFFFF)
             {
                 // Send unknown command 0xFF to each pair of this start and possible response addresses
-                if (cpu?.WriteDwordEx(start, 0x120) == true) //CHANGED FROM 0xFF!!!!!!!!!!!!!!
+                if (cpu?.WriteDwordEx(start, 0xFF) == true) // ЗДЕСЬ БЫЛО FF
                 {
                     Thread.Sleep(10);
 
@@ -1000,7 +1003,7 @@ public sealed partial class ПараметрыPage : Page
                         if (cpu?.ReadDword(smuRspAddress) == 0xFE)
                         {
                             // Send Get_SMU_Version command
-                            if (cpu?.WriteDwordEx(start, 0x2) == true) //CHANGED FROM 0x2!!!!!!!!!!!!!!
+                            if (cpu?.WriteDwordEx(start, 0x2) == true)
                             {
                                 Thread.Sleep(10);
                                 if (cpu?.ReadDword(smuRspAddress) == 0x1)
@@ -1013,21 +1016,27 @@ public sealed partial class ПараметрыPage : Page
                     }
                 }
             }
+
             start += step;
         }
+
         if (temp.Count > 0)
         {
-            foreach (var t in temp)
+            for (var i = 0; i < temp.Count; i++)
             {
-                Console.WriteLine($"{t.Key:X8}: {t.Value:X8}");
+                Console.WriteLine($"{temp[i].Key:X8}: {temp[i].Value:X8}");
             }
+
+            Console.WriteLine();
         }
+
         var possibleArgAddresses = new List<uint>();
+
         foreach (var pair in temp)
         {
             Console.WriteLine($"Testing {pair.Key:X8}: {pair.Value:X8}");
 
-            if (TrySettings(pair.Key, pair.Value, 0xFFFFFFFF, 0x2, 0xFF) == ZenStates.Core.SMU.Status.OK)
+            if (TrySettings(pair.Key, pair.Value, 0xFFFFFFAF, 0x2, 0xFF) == SMU.Status.OK) //ЗДЕСЬ БЫЛО FFFFFFFF
             {
                 var smuArgAddress = pair.Value + 4;
                 while (smuArgAddress <= end)
@@ -1039,18 +1048,20 @@ public sealed partial class ПараметрыPage : Page
                     smuArgAddress += step;
                 }
             }
+
             // Verify the arg address returns correct value (should be test argument + 1)
             foreach (var address in possibleArgAddresses)
             {
                 var testArg = 0xFAFAFAFA;
                 var retries = 3;
+
                 while (retries > 0)
                 {
                     testArg++;
                     retries--;
 
                     // Send test command
-                    if (TrySettings(pair.Key, pair.Value, address, 0x1, testArg) == ZenStates.Core.SMU.Status.OK)
+                    if (TrySettings(pair.Key, pair.Value, address, 0x1, testArg) == SMU.Status.OK)
                     {
                         if (cpu?.ReadDword(address) != testArg + 1)
                         {
@@ -1058,6 +1069,7 @@ public sealed partial class ПараметрыPage : Page
                         }
                     }
                 }
+
                 if (retries == 0)
                 {
                     matches.Add(new SmuAddressSet(pair.Key, pair.Value, address));
@@ -1066,6 +1078,7 @@ public sealed partial class ПараметрыPage : Page
             }
         }
     }
+
     private SMU.Status? TrySettings(uint msgAddr, uint rspAddr, uint argAddr, uint cmd, uint value)
     {
         var args = new uint[6];
@@ -1711,14 +1724,24 @@ public sealed partial class ПараметрыPage : Page
         if (textBoxARG0.SelectedText != "")
         {
             // Скопировать текст в буфер обмена
-            Clipboard.SetText(textBoxARG0.SelectedText);
+            var dataPackage = new DataPackage
+            {
+                RequestedOperation = DataPackageOperation.Copy
+            };
+            dataPackage.SetText(textBoxARG0.SelectedText);
+            Clipboard.SetContent(dataPackage);
         }
         else
         {
             // Выделить весь текст
             textBoxARG0.SelectAll();
             // Скопировать текст в буфер обмена
-            Clipboard.SetText(textBoxARG0.Text);
+            var dataPackage = new DataPackage
+            {
+                RequestedOperation = DataPackageOperation.Copy
+            };
+            dataPackage.SetText(textBoxARG0.Text);
+            Clipboard.SetContent(dataPackage);
         }
     }
     private void CutThis_Click(object sender, RoutedEventArgs e)
@@ -1726,7 +1749,13 @@ public sealed partial class ПараметрыPage : Page
         if (textBoxARG0.SelectedText != "")
         {
             // Скопировать текст в буфер обмена
-            Clipboard.SetText(textBoxARG0.SelectedText);
+            var dataPackage = new DataPackage
+            {
+                RequestedOperation = DataPackageOperation.Copy
+            };
+            dataPackage.SetText(textBoxARG0.SelectedText);
+            Clipboard.SetContent(dataPackage);
+            // Обнулить текст
             textBoxARG0.SelectedText = "";
         }
         else
@@ -1734,7 +1763,12 @@ public sealed partial class ПараметрыPage : Page
             // Выделить весь текст
             textBoxARG0.SelectAll();
             // Скопировать текст в буфер обмена
-            Clipboard.SetText(textBoxARG0.Text);
+            var dataPackage = new DataPackage
+            {
+                RequestedOperation = DataPackageOperation.Copy
+            };
+            dataPackage.SetText(textBoxARG0.Text);
+            Clipboard.SetContent(dataPackage);
             textBoxARG0.Text = "";
         }
     }
@@ -3543,8 +3577,9 @@ public sealed partial class ПараметрыPage : Page
             for (var p = 0; p < 3; p++)
             {
                 if (pstatesFID[p] == 0 || pstatesDID[p] == 0 || pstatesVID[p] == 0) 
-                { 
-                    ReadPstate(); MessageBox.Show("Corrupted Pstates in config","Critical Error!");
+                {
+                    ReadPstate();
+                    App.GetService<IAppNotificationService>().Show($"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Corrupted Pstates in config</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>"); 
                 }
                 //Logic
                 var pstateId = p;
@@ -3559,7 +3594,7 @@ public sealed partial class ПараметрыPage : Page
                 var Vidtext = 56.0;
                 if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) == false)
                 {
-                    MessageBox.Show("Error reading PState! ID = " + pstateId);
+                    App.GetService<IAppNotificationService>().Show($"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error reading PState! ID = {pstateId}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                     return;
                 }
                 CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
@@ -3586,8 +3621,10 @@ public sealed partial class ПараметрыPage : Page
                     }
                 }
                 if (!WritePstateClick(pstateId, eax, edx)) { return; }
-                if (cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false) { MessageBox.Show("Error writing PState! ID = " + pstateId); }
-                //if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); }
+                if (cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false) 
+                {
+                    App.GetService<IAppNotificationService>().Show($"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error writing PState! ID = {pstateId}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
+                } 
                 equalvid = Math.Round((1.55 - Vidtext / 1000) / 0.00625).ToString();
                 var f = new Process();
                 f.StartInfo.UseShellExecute = false;
@@ -3630,7 +3667,7 @@ public sealed partial class ПараметрыPage : Page
                 var Fidtext = "102";
                 if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) == false)
                 {
-                    MessageBox.Show("Error reading PState! ID = " + pstateId);
+                    App.GetService<IAppNotificationService>().Show($"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error reading PState! ID = {pstateId}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                     return;
                 }
                 CalculatePstateDetails(eax, ref IddDiv, ref IddVal, ref CpuVid, ref CpuDfsId, ref CpuFid);
@@ -3671,12 +3708,8 @@ public sealed partial class ПараметрыPage : Page
                 }
                 if (cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false)
                 {
-                    MessageBox.Show("Error writing PState! ID = " + pstateId);
-                }
-                /*  if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx))
-                  {
-                      MessageBox.Show("Error writing PState! ID = " + pstateId);
-                  }*/
+                    App.GetService<IAppNotificationService>().Show($"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error writing PState! ID = {pstateId}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
+                } 
             }
             ReadPstate();
         }
@@ -3703,7 +3736,7 @@ public sealed partial class ПараметрыPage : Page
                 return cpu.WriteMsr(0xC0010015, eax, edx);
                 // return cpu.WriteMsrWn(0xC0010015, eax, edx);
             }
-            MessageBox.Show("Error applying TSC fix!");
+            App.GetService<IAppNotificationService>().Show($"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error applying TSC CPU P-States fix</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
             return false;
         }
         catch
@@ -3722,8 +3755,11 @@ public sealed partial class ПараметрыPage : Page
                 Enumerable.Range(0, Environment.ProcessorCount).ToArray());
             }
             if (!ApplyTscWorkaround()) { return false; }
-            if (cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; }
-            //  if (!cpu.WriteMsrWn(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx)) { MessageBox.Show("Error writing PState! ID = " + pstateId); return false; }
+            if (cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false) 
+            {
+                App.GetService<IAppNotificationService>().Show($"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error writing PState! ID = {pstateId}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
+                return false; 
+            } 
             return true;
         }
         catch (Exception ex) { TraceIt_TraceError(ex.ToString()); return false; }

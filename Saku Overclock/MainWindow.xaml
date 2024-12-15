@@ -12,5 +12,5 @@
     mc:Ignorable="d" WindowState="Minimized"> 
     <Window.SystemBackdrop>
         <MicaBackdrop/>
-    </Window.SystemBackdrop>
+    </Window.SystemBackdrop> 
 </windowex:WindowEx>

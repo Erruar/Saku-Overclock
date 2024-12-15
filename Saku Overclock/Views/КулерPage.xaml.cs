@@ -26,8 +26,8 @@ public sealed partial class КулерPage : Page
     {
         get;
     }
-    private System.Windows.Threading.DispatcherTimer? tempUpdateTimer;
-    private readonly System.Windows.Threading.DispatcherTimer? fanUpdateTimer;
+    private DispatcherTimer? tempUpdateTimer;
+    private readonly DispatcherTimer? fanUpdateTimer;
     public КулерPage()
     {
         ViewModel = App.GetService<КулерViewModel>();
@@ -38,7 +38,7 @@ public sealed partial class КулерPage : Page
         config.FlagRyzenADJConsoleTemperatureCheckRunning = true; //Автообновление информации о кулере включено! Это нужно для того, чтобы обновление информации не происходило нигде кроме страницы с оптимизацией кулера, так как контроллировать асинхронные методы бывает сложно
         ConfigSave();
         Loaded += Page_Loaded;
-        fanUpdateTimer = new System.Windows.Threading.DispatcherTimer();
+        fanUpdateTimer = new DispatcherTimer();
         fanUpdateTimer.Tick += async (sender, e) => await CheckFan();
         fanUpdateTimer.Interval = TimeSpan.FromMilliseconds(6000);
         Unloaded += Page_Unloaded;
@@ -290,7 +290,7 @@ public sealed partial class КулерPage : Page
                     }
                     catch (Exception ex)
                     {
-                        System.Windows.Forms.MessageBox.Show("Cooler_DownloadNBFC_ErrorDesc".GetLocalized() + $": {ex.Message}", "Error".GetLocalized(), System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                        await App.MainWindow.ShowMessageDialogAsync("Cooler_DownloadNBFC_ErrorDesc".GetLocalized() + $": {ex.Message}", "Error".GetLocalized());
                         await Task.Delay(2000);
                         goto label_8; // Повторить задачу открытия автообновления приложения, в случае если возникла ошибка доступа
                     }
@@ -665,7 +665,7 @@ public sealed partial class КулерPage : Page
     }
     private void StartTempUpdate()
     {
-        tempUpdateTimer = new System.Windows.Threading.DispatcherTimer();
+        tempUpdateTimer = new DispatcherTimer();
         tempUpdateTimer.Tick += (sender, e) => UpdateTemperatureAsync();
         tempUpdateTimer.Interval = TimeSpan.FromMilliseconds(500);
         App.MainWindow.Activated += Window_Activated; //Проверка фокуса на программе для экономии ресурсов

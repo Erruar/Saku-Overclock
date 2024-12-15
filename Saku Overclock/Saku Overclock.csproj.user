@@ -23,6 +23,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Styles\TrayIconResources.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\AsusКулерPage.xaml">
       <SubType>Designer</SubType>
     </Page>

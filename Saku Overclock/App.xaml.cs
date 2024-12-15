@@ -40,7 +40,8 @@ public partial class App : Application
         }
 
         return service;
-    }  
+    }
+    public static IntPtr HWND => WinRT.Interop.WindowNative.GetWindowHandle(MainWindow); 
     public static WindowEx MainWindow { get; } = new MainWindow(); 
     public static UIElement? AppTitlebar { get; set; }
     private Config config = new();
@@ -118,8 +119,8 @@ public partial class App : Application
         config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
     }
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
-    { 
-        MessageBox.Show(e.Message + "\n" + e.Exception + "\n" + e.Handled + "\n" + e.ToString()  + "\nRerun application and contact developer", "Critical Error!", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1); 
+    {
+        GetService<IAppNotificationService>().Show($"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app crash</text>\r\n      <text>{e.Message + " " + e.Exception + " " + e.Handled}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>"); 
     } 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
