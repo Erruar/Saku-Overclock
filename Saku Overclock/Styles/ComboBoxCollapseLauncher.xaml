@@ -3,7 +3,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Saku_Overclock.Styles"
-     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals" xmlns:interactions="using:Microsoft.Xaml.Interactions.Core" xmlns:interactivity="using:Microsoft.Xaml.Interactivity">
+    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"  
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity">
+    <!--:interactions="using:Microsoft.Xaml.Interactions.Core"  -->
     <Style x:Key="AcrylicComboBoxStyle"
            TargetType="ComboBox">
         <!-- 
@@ -238,7 +240,7 @@ SOFTWARE.
                                Grid.Column="0">
                             <!--  Force ShouldConstrainToRootBounds to True  -->
                             <!--  Fix https://github.com/microsoft/microsoft-ui-xaml/issues/8657  -->
-                            <interactivity:Interaction.Behaviors>
+                            <!--  <interactivity:Interaction.Behaviors>
                                 <interactions:DataTriggerBehavior Binding="{Binding ShouldConstrainToRootBounds, ElementName=Popup}"
                                                                   ComparisonCondition="Equal"
                                                                   Value="False">
@@ -246,7 +248,7 @@ SOFTWARE.
                                                                        TargetObject="{Binding ElementName=Popup}"
                                                                        Value="True"/>
                                 </interactions:DataTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
+                            </interactivity:Interaction.Behaviors>  -->
                             <Border x:Name="PopupBorder"
                                     Margin="0,-0.5,0,-1"
                                     Padding="{ThemeResource ComboBoxDropdownBorderPadding}"
