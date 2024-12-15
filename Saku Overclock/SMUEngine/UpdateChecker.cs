@@ -45,7 +45,7 @@ public class UpdateChecker
 
         if (latestRelease == null)
         {
-            MessageBox.Show("Не удалось найти релизы на GitHub.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            await App.MainWindow.ShowMessageDialogAsync("Не удалось найти релизы на GitHub.", "Ошибка");
             return;
         }
         updateNewVersion = latestRelease.Release;
@@ -106,7 +106,7 @@ public class UpdateChecker
         var asset = release.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe"));
         if (asset == null)
         {
-            MessageBox.Show("Не удалось найти установочный файл в релизе.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            await App.MainWindow.ShowMessageDialogAsync("Не удалось найти установочный файл в релизе.", "Ошибка");
             return;
         }
 
@@ -186,7 +186,7 @@ public class UpdateChecker
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Произошла ошибка при загрузке обновления: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    await App.MainWindow.ShowMessageDialogAsync($"Произошла ошибка при загрузке обновления: {ex.Message}", "Ошибка");
                     await Task.Delay(2000);
                     goto label_8; // Повторить задачу открытия автообновления приложения, в случае если возникла ошибка доступа
                 }
@@ -195,7 +195,7 @@ public class UpdateChecker
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Произошла ошибка при загрузке обновления: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            await App.MainWindow.ShowMessageDialogAsync($"Произошла ошибка при загрузке обновления: {ex.Message}", "Ошибка");
         }
     }
 
