@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:Saku_Overclock.Helpers"
-    xmlns:xaml="using:Microsoft.UI.Xaml" xmlns:local="using:Saku_Overclock.ViewModels" xmlns:data="using:System.Windows.Data"
+    xmlns:xaml="using:Microsoft.UI.Xaml" xmlns:local="using:Saku_Overclock.ViewModels" 
     mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"></ThemeShadow>
@@ -111,6 +111,10 @@
                           IsAlphaEnabled="False"
                           IsAlphaSliderVisible="True"
                           IsAlphaTextInputVisible="True"></ColorPicker>
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="100,0,-70,17">
+                                            <ToggleSwitch x:Name="Settings_Ni_GradientToggle" x:Uid="Settings_ni_TrayMonGradient" Toggled="Settings_Ni_GradientToggle_Toggled">Градиент</ToggleSwitch>
+                                            <ToggleButton Width="76" Height="40" x:Name="Settings_Ni_GradientColorSwitcher" Click="Settings_Ni_GradientColorSwitcher_Click" x:Uid="Settings_ni_TrayMonGradientColorSwitch" Visibility="{Binding ElementName=Settings_Ni_GradientToggle, Path=IsOn}"></ToggleButton>
+                                        </StackPanel>
                                     </Grid>
                                 </Flyout>
                             </Button.Flyout>
