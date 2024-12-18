@@ -540,7 +540,7 @@ public sealed partial class ПараметрыPage : Page
                 Action_IncompatibleProfile.IsOpen = false;
                 Action_IncompatibleCPU.IsOpen = true;
             }
-            var cores = await ИнформацияPage.GetCPUCoresAsync();
+            var cores = await ИнформацияPage.GetCpuCoresAsync();
             if (cores > 8)
             {
                 if (cores <= 15) { CCD2_Grid7_2.Visibility = Visibility.Collapsed; CCD2_Grid7_1.Visibility = Visibility.Collapsed; }
