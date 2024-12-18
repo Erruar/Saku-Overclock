@@ -11,12 +11,21 @@ public partial class ГлавнаяViewModel : ObservableRecipient
     public ГлавнаяViewModel()
     {
         _versionDescription = GetVersionDescription();
+        _version = Versioning;
         _version = GetVersion();
     }
-    [ObservableProperty]
     private string _versionDescription;
-    [ObservableProperty]
-    private string _version = Versioning;
+    public string VersionDescription
+    {
+        get => _versionDescription;
+        set => SetProperty(ref _versionDescription, value);
+    } 
+    private string _version;
+    public string Version
+    {
+        get => _version;
+        set => SetProperty(ref _version, value);
+    }
     private static string GetVersionDescription()
     {
         Version version;
@@ -24,7 +33,7 @@ public partial class ГлавнаяViewModel : ObservableRecipient
         if (RuntimeHelper.IsMSIX)
         {
             var packageVersion = Package.Current.Id.Version;
-            version = new(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
+            version = new Version(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
         }
         else
         {
