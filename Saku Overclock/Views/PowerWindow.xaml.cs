@@ -1,5 +1,3 @@
-using System;
-using System.Runtime;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Microsoft.UI.Xaml;
@@ -11,14 +9,14 @@ using Saku_Overclock.SMUEngine;
 using ZenStates.Core;
 
 namespace Saku_Overclock.Views;
-internal partial class PowerWindow : Window, IDisposable
+internal partial class PowerWindow : IDisposable
 {
-    private Cpu? CPU;
-    private Visibility mode = Visibility.Visible;
-    private int noteColumnOverrider = 3;
-    private Powercfg? notes = new();
-    private PowerMonRTSS rtssTable = new();
-    private ObservableCollection<PowerMonitorItem>? PowerGridItems;
+    private Cpu? _cpu;
+    private Visibility _mode = Visibility.Visible;
+    private int _noteColumnOverrider = 3;
+    private Powercfg? _notes;
+    private PowerMonRTSS _rtssTable = new();
+    private ObservableCollection<PowerMonitorItem>? _powerGridItems;
     public PowerWindow(Cpu? cpu)
     {
         InitializeComponent();
@@ -29,163 +27,156 @@ internal partial class PowerWindow : Window, IDisposable
         this.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/powermon.ico"));
         this.SetWindowSize(342, 579);
         NoteLoad();
-        PowerCfgTimer.Interval = new TimeSpan(0,0,0,0,500);
-        PowerCfgTimer.Tick += PowerCfgTimer_Tick;
-        PowerCfgTimer.Stop();
+        _powerCfgTimer.Interval = new TimeSpan(0,0,0,0,500);
+        _powerCfgTimer.Tick += PowerCfgTimer_Tick;
+        _powerCfgTimer.Stop();
         InitializeComponent();
         cpu?.RefreshPowerTable();
-        notes = new Powercfg();
+        _notes = new Powercfg();
         FillInData(cpu?.powerTable.Table!);
-        CPU = cpu; // Добавим инициализацию CPU здесь
+        _cpu = cpu; // Добавим инициализацию CPU здесь
         Closed += PowerWindow_Closed;
     }
     #region JSON containers
-    public void NoteSave()
+
+    private void NoteSave()
     {
         try
         {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\", "PowerMon"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json", JsonConvert.SerializeObject(notes, Formatting.Indented));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\", "PowerMon"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\powercfg.json", JsonConvert.SerializeObject(_notes, Formatting.Indented));
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
     }
-    public void NoteLoad()
+
+    private void NoteLoad()
     {
         try
         {
-            notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json"))!;
+            _notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\powercfg.json"))!;
         }
         catch
         {
             JsonRepair('n');
         }
     }
-    public void RtssSave()
+
+    private void RtssSave()
     {
         try
         {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\", "PowerMon"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\rtsscfg.json", JsonConvert.SerializeObject(notes, Formatting.Indented));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\", "PowerMon"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\rtsscfg.json", JsonConvert.SerializeObject(_notes, Formatting.Indented));
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
     }
-    public void RtssLoad()
+
+    private void RtssLoad()
     {
         try
         {
-            rtssTable = JsonConvert.DeserializeObject<PowerMonRTSS>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\rtsscfg.json"))!;
+            _rtssTable = JsonConvert.DeserializeObject<PowerMonRTSS>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\rtsscfg.json"))!;
         }
         catch
         {
             JsonRepair('r');
         }
     }
-    public void JsonRepair(char file)
-    {
-        if (file == 'n')
-        {
-            if (notes != null) //перепроверка на соответствие, восстановление конфига.
-            {
-                try
-                {
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\", "PowerMon"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json", JsonConvert.SerializeObject(notes));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json");
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\", "PowerMon"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json", JsonConvert.SerializeObject(notes));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-            else //Всё же если за 5 раз пересканирования файл пуст
-            {
-                notes = new Powercfg();
-                try
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json");
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\", "PowerMon"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json", JsonConvert.SerializeObject(notes));
-                    App.MainWindow.Close();
-                }
-                catch
-                {
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-            try
-            {
-                for (var j = 0; j < 5; j++)
-                {
-                    notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\powercfg.json"))!;
-                    if (notes != null) { break; }
-                }
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                App.MainWindow.Close();
-            }
-        }
-        if (file == 'r')
-        {
-            if (rtssTable != null) //перепроверка на соответствие, восстановление конфига.
-            {
-                try
-                {
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\", "PowerMon"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\rtsscfg.json", JsonConvert.SerializeObject(rtssTable));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\rtsscfg.json");
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\", "PowerMon"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\rtsscfg.json", JsonConvert.SerializeObject(rtssTable));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-            else //Всё же если за 5 раз пересканирования файл пуст
-            {
-                rtssTable = new PowerMonRTSS();
-                try
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\rtsscfg.json");
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\", "PowerMon"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\rtsscfg.json", JsonConvert.SerializeObject(rtssTable));
-                    App.MainWindow.Close();
-                }
-                catch
-                {
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-            try
-            {
-                for (var j = 0; j < 5; j++)
-                {
-                    rtssTable = JsonConvert.DeserializeObject<PowerMonRTSS>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\PowerMon\\rtsscfg.json"))!;
-                    if (rtssTable != null) { break; }
-                }
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                App.MainWindow.Close();
-            }
 
+    private void JsonRepair(char file)
+    {
+        switch (file)
+        {
+            case 'n':
+            {
+                if (_notes != null) //перепроверка на соответствие, восстановление конфига.
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                        Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\", "PowerMon"));
+                        File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\powercfg.json", JsonConvert.SerializeObject(_notes));
+                    }
+                    catch
+                    {
+                        File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\powercfg.json");
+                        Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                        Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\", "PowerMon"));
+                        File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\powercfg.json", JsonConvert.SerializeObject(_notes));
+                        App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                        App.MainWindow.Close();
+                    }
+                }
+                else //Всё же если за 5 раз пересканирования файл пуст
+                {
+                    _notes = new Powercfg();
+                    try
+                    {
+                        File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\powercfg.json");
+                        Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                        Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\", "PowerMon"));
+                        File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\powercfg.json", JsonConvert.SerializeObject(_notes));
+                        App.MainWindow.Close();
+                    }
+                    catch
+                    {
+                        App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                        App.MainWindow.Close();
+                    }
+                }
+                try
+                {
+                    for (var j = 0; j < 5; j++)
+                    {
+                        _notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\powercfg.json"))!;
+                        if (_notes != null) { break; }
+                    }
+                }
+                catch
+                {
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+
+                break;
+            }
+            case 'r':
+            {
+                try
+                {
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\", "PowerMon"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\rtsscfg.json", JsonConvert.SerializeObject(_rtssTable));
+                }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\rtsscfg.json");
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\", "PowerMon"));
+                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\rtsscfg.json", JsonConvert.SerializeObject(_rtssTable));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+                try
+                { 
+                    _rtssTable = JsonConvert.DeserializeObject<PowerMonRTSS>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\rtsscfg.json"))!;
+                }
+                catch
+                {
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    App.MainWindow.Close();
+                }
+
+                break;
+            }
         }
     }
     #endregion
@@ -196,54 +187,53 @@ internal partial class PowerWindow : Window, IDisposable
     {
         //CPU?.powerTable.Dispose();
         _ = Garbage.Garbage_Collect();
-        CPU = null;
-        UnloadObject(PowerGridView);
+        _cpu = null;
         Dispose();
-        notes = null;
+        _notes = null;
     }
     private void PowerWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
-        App.AppTitlebar = AppTitleBarText as UIElement;
+        App.AppTitlebar = AppTitleBarText;
     }
-    private readonly Microsoft.UI.Xaml.DispatcherTimer PowerCfgTimer = new();
+    private readonly DispatcherTimer _powerCfgTimer = new();
     private void PowerCfgTimer_Tick(object? sender, object e)
     {
-        if (CPU?.RefreshPowerTable() == ZenStates.Core.SMU.Status.OK)
+        if (_cpu?.RefreshPowerTable() == SMU.Status.OK)
         {
-            RefreshData(CPU.powerTable.Table);
+            RefreshData(_cpu.powerTable.Table);
         }
     }
     private void Button_Click(object sender, RoutedEventArgs e)
     {
         try
         {
-            PowerCfgTimer.Interval = new TimeSpan(0, 0, 0, 0, Convert.ToInt32(numericUpDownInterval.Value));
+            _powerCfgTimer.Interval = new TimeSpan(0, 0, 0, 0, Convert.ToInt32(NumericUpDownInterval.Value));
         }
         catch
         {
-            numericUpDownInterval.Value = 500;
-            PowerCfgTimer.Interval = new TimeSpan(0, 0, 0, 0, Convert.ToInt32(numericUpDownInterval.Value));
+            NumericUpDownInterval.Value = 500;
+            _powerCfgTimer.Interval = new TimeSpan(0, 0, 0, 0, Convert.ToInt32(NumericUpDownInterval.Value));
         }
     }
     private void Settings_Click(object sender, RoutedEventArgs e)
     {
-        mode = mode == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+        _mode = _mode == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
         IndexName.Text = IndexName.Text == "Index" ? "OSD" : "Index";
         OffsetName.Text = OffsetName.Text == "Offset" ? "Color #" : "Offset";
         NoteName.Text = NoteName.Text == "Quick Note" ? "OSD Name (value)" : "Quick Note";
-        noteColumnOverrider = noteColumnOverrider == 3 ? 4 : 3;
-        NoteName.Margin = mode == Visibility.Visible ? new(10, 0, 0, 0) : new(100, 0, 0, 0);
-        NotePos.Margin = new(12, 0, 0, 0);
-        NotePos.Visibility = mode == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+        _noteColumnOverrider = _noteColumnOverrider == 3 ? 4 : 3;
+        NoteName.Margin = _mode == Visibility.Visible ? new Thickness(10, 0, 0, 0) : new Thickness(100, 0, 0, 0);
+        NotePos.Margin = new Thickness(12, 0, 0, 0);
+        NotePos.Visibility = _mode == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
     }
     #endregion
     #region PowerMon PowerTable voids
-    private class PowerMonitorItem : INotifyPropertyChanged
+    private sealed partial class PowerMonitorItem : INotifyPropertyChanged
     {
         private Visibility _rtss = Visibility.Collapsed;
         private Visibility _normal = Visibility.Visible;
         private string? _value;
-        private string? _note;
+        private readonly string? _note;
         private string? _notevalue;
         private bool _osd;
         private int _row;
@@ -262,23 +252,27 @@ internal partial class PowerWindow : Window, IDisposable
             get => _value;
             set
             {
-                if (_value != value)
+                if (_value == value)
                 {
-                    _value = value;
-                    OnPropertyChanged(nameof(Value));
+                    return;
                 }
+
+                _value = value;
+                OnPropertyChanged(nameof(Value));
             }
         }
         public string? Note
         {
             get => _note;
-            set
+            init
             {
-                if (_note != value)
+                if (_note == value)
                 {
-                    _note = value;
-                    OnPropertyChanged(nameof(Note));
+                    return;
                 }
+
+                _note = value;
+                OnPropertyChanged(nameof(Note));
             }
         }
         public bool Osd
@@ -286,11 +280,13 @@ internal partial class PowerWindow : Window, IDisposable
             get => _osd;
             set
             {
-                if (_osd != value)
+                if (_osd == value)
                 {
-                    _osd = value;
-                    OnPropertyChanged(nameof(Osd));
+                    return;
                 }
+
+                _osd = value;
+                OnPropertyChanged(nameof(Osd));
             }
         }
         public int Row
@@ -298,11 +294,13 @@ internal partial class PowerWindow : Window, IDisposable
             get => _row;
             set
             {
-                if (_row != value)
+                if (_row == value)
                 {
-                    _row = value;
-                    OnPropertyChanged(nameof(Row));
+                    return;
                 }
+
+                _row = value;
+                OnPropertyChanged(nameof(Row));
             }
         }
         public int Column
@@ -310,11 +308,13 @@ internal partial class PowerWindow : Window, IDisposable
             get => _column;
             set
             {
-                if (_column != value)
+                if (_column == value)
                 {
-                    _column = value;
-                    OnPropertyChanged(nameof(Column));
+                    return;
                 }
+
+                _column = value;
+                OnPropertyChanged(nameof(Column));
             }
         }
         public Thickness NoteColumn
@@ -322,11 +322,13 @@ internal partial class PowerWindow : Window, IDisposable
             get => _notecolumn;
             set
             {
-                if (_notecolumn != value)
+                if (_notecolumn == value)
                 {
-                    _notecolumn = value;
-                    OnPropertyChanged(nameof(NoteColumn));
+                    return;
                 }
+
+                _notecolumn = value;
+                OnPropertyChanged(nameof(NoteColumn));
             }
         }
         public Visibility Rtss
@@ -334,11 +336,13 @@ internal partial class PowerWindow : Window, IDisposable
             get => _rtss;
             set
             {
-                if (_rtss != value)
+                if (_rtss == value)
                 {
-                    _rtss = value;
-                    OnPropertyChanged(nameof(Rtss));
+                    return;
                 }
+
+                _rtss = value;
+                OnPropertyChanged(nameof(Rtss));
             }
         }
         public Visibility Normal
@@ -346,11 +350,13 @@ internal partial class PowerWindow : Window, IDisposable
             get => _normal;
             set
             {
-                if (_normal != value)
+                if (_normal == value)
                 {
-                    _normal = value;
-                    OnPropertyChanged(nameof(Normal));
+                    return;
                 }
+
+                _normal = value;
+                OnPropertyChanged(nameof(Normal));
             }
         }
         public string? NoteValue
@@ -358,43 +364,47 @@ internal partial class PowerWindow : Window, IDisposable
             get => _notevalue;
             set
             {
-                if (_notevalue != value)
+                if (_notevalue == value)
                 {
-                    _notevalue = value;
-                    OnPropertyChanged(nameof(NoteValue));
+                    return;
                 }
+
+                _notevalue = value;
+                OnPropertyChanged(nameof(NoteValue));
             }
         }
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
     private async void FillInData(float[] table)
     {
-        await Task.Run(() =>
+        try
         {
-            NoteLoad();
-            RtssLoad();
-            PowerGridItems = [];
-            for (var i = 0; i < table.Length; i++)
+            await Task.Run(() =>
             {
-                if (notes?._notelist.Count <= i)
+                NoteLoad();
+                RtssLoad();
+                _powerGridItems = [];
+                for (var i = 0; i < table.Length; i++)
                 {
-                    notes._notelist.Add(" ");
-                }
-                var subItem = new PowerMonitorItem
-                {
-                    Rtss = mode == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible,
-                    Normal = mode,
-                    Index = $"{i:D4}",
-                    Offset = $"0x{i * 4:X4}",
-                    Value = $"{table[i]:F6}",
-                    Note = notes?._notelist[i]
-                };
-               /* try
+                    if (_notes?._notelist.Count <= i)
+                    {
+                        _notes._notelist.Add(" ");
+                    }
+                    var subItem = new PowerMonitorItem
+                    {
+                        Rtss = _mode == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible,
+                        Normal = _mode,
+                        Index = $"{i:D4}",
+                        Offset = $"0x{i * 4:X4}",
+                        Value = $"{table[i]:F6}",
+                        Note = _notes?._notelist[i]
+                    };
+                    /* try
                 {
                     while (rtssTable == null)
                     {
@@ -413,23 +423,29 @@ internal partial class PowerWindow : Window, IDisposable
                 {
                     //unregistered
                 }*/
-                PowerGridItems.Add(subItem);
-            }
-        });
-        PowerGridView.ItemsSource = PowerGridItems;
-        PowerCfgTimer.Start();
+                    _powerGridItems.Add(subItem);
+                }
+            });
+            PowerGridView.ItemsSource = _powerGridItems;
+            _powerCfgTimer.Start();
+        }
+        catch (Exception e)
+        {
+            // ReSharper disable once AsyncVoidMethod
+            throw new Exception("Unable to fill in data to PowerMon PowerTable " + e); // TODO handle exception
+        }
     }
     private void RefreshData(float[] table)
     {
         try
         {
             var index = 0;
-            foreach (var item in PowerGridItems!)
+            foreach (var item in _powerGridItems!)
             {
-                var saveFlag = false; // Если есть изменения - сохранить
-                item.Rtss = mode == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-                item.Normal = mode;
-                item.NoteColumn = mode == Visibility.Visible ? new(10, 0, 0, 0) : new(100, 0, 0, 0);
+                const bool saveFlag = false; // Если есть изменения - сохранить
+                item.Rtss = _mode == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                item.Normal = _mode;
+                item.NoteColumn = _mode == Visibility.Visible ? new Thickness(10, 0, 0, 0) : new Thickness(100, 0, 0, 0);
                 //Конец безопасной зоны
 
                 // Проверка и добавление элемента, если индекс выходит за пределы массива
@@ -495,24 +511,24 @@ internal partial class PowerWindow : Window, IDisposable
                     }
 
                 }*/
-                if (saveFlag && rtssTable != null && rtssTable.Elements != null)
+                if (saveFlag && _rtssTable is { Elements: not null })
                 {
-                    rtssTable.Elements[index].Offset = $"0x{index * 4:X4}";
+                    _rtssTable.Elements[index].Offset = $"0x{index * 4:X4}";
                     RtssSave();
                 }
 
                 //Безопасная зона 
                 item.Value = $"{table[index]:F6}"; // Обновление информации
-                if (item.Note != notes?._notelist[index])
+                if (item.Note != _notes?._notelist[index])
                 {
-                    notes!._notelist[index] = item.Note!;
+                    _notes!._notelist[index] = item.Note!;
                     NoteSave();
                 }
 
                 index++;
             }
             // Явное обновление GridView
-            PowerGridView.ItemsSource = PowerGridItems;
+            PowerGridView.ItemsSource = _powerGridItems;
         }
         catch
         {
