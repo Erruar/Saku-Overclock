@@ -1,5 +1,4 @@
 ﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
@@ -8,16 +7,16 @@ using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Views;
 
-public sealed partial class AsusКулерPage : Page
+public sealed partial class AsusКулерPage
 {
-    private static int fanCount = -1;
-    private static bool unavailableFlag = false;
-    private static int setFanIndex = -1;
-    private static int availableCPUCores = 0;
-    private Config config = new();
-    public bool isLoaded = false;
-    private IntPtr ry = IntPtr.Zero;
-    private DispatcherTimer? tempUpdateTimer;
+    private static int _fanCount = -1;
+    private static bool _unavailableFlag;
+    private static int _setFanIndex = -1;
+    private static int _availableCpuCores;
+    private Config _config = new();
+    private bool _isPageLoaded;
+    private IntPtr _ry = IntPtr.Zero;
+    private DispatcherTimer? _tempUpdateTimer;
 
     public AsusКулерPage()
     {
@@ -30,15 +29,15 @@ public sealed partial class AsusКулерPage : Page
     private void AsusКулерPage_Unloaded(object sender, RoutedEventArgs e)
     {
         AsusWinIOWrapper.Cleanup_WinIo();
-        isLoaded = false;
+        _isPageLoaded = false;
         StopTempUpdate();
     }
     private void AsusКулерPage_Loaded(object sender, RoutedEventArgs e)
     {
         AsusWinIOWrapper.Init_WinIo();
         ConfigLoad();
-        Fan1.Value = config.AsusModeFan1UserFanSpeedRPM;
-        switch (config.AsusModeSelectedMode)
+        Fan1.Value = _config.AsusModeFan1UserFanSpeedRPM;
+        switch (_config.AsusModeSelectedMode)
         {
             case -1:
                 AsusFans_ManualToggle.IsChecked = false;
@@ -70,19 +69,19 @@ public sealed partial class AsusКулерPage : Page
                 AsusFans_BalanceToggle.IsChecked = false;
                 AsusFans_QuietToggle.IsChecked = true;
                 break;
-        };
-        isLoaded = true;
+        }
+        _isPageLoaded = true;
         UpdateSystemInformation();
-        ry = RyzenADJWrapper.Init_ryzenadj();
-        RyzenADJWrapper.Init_Table(ry);
+        _ry = RyzenADJWrapper.Init_ryzenadj();
+        RyzenADJWrapper.Init_Table(_ry);
         StartTempUpdate();
     }
     private void StartTempUpdate()
     {
-        tempUpdateTimer = new DispatcherTimer();
-        tempUpdateTimer.Tick += async (sender, e) => await UpdateTemperatureAsync();
-        tempUpdateTimer.Interval = TimeSpan.FromMilliseconds(500);
-        tempUpdateTimer.Start();
+        _tempUpdateTimer = new DispatcherTimer();
+        _tempUpdateTimer.Tick += async (_, _) => await UpdateTemperatureAsync();
+        _tempUpdateTimer.Interval = TimeSpan.FromMilliseconds(500);
+        _tempUpdateTimer.Start();
     }
     private async Task UpdateTemperatureAsync()
     {
@@ -90,36 +89,34 @@ public sealed partial class AsusКулерPage : Page
         await Task.Run(() =>
         {
             var fanSpeeds = GetFanSpeeds();
-            if (fanSpeeds.Count > 0)
-            {
-                tempLine = fanSpeeds[0].ToString();
-            }
-            else
-            {
-                tempLine = "-.-";
-            }
+            tempLine = fanSpeeds.Count > 0 ? fanSpeeds[0].ToString() : "-.-";
         });
-        ry = RyzenADJWrapper.Init_ryzenadj();
-        RyzenADJWrapper.Init_Table(ry);
-        _ = RyzenADJWrapper.Refresh_table(ry);
-        var avgCoreCLK = 0d;
-        var avgCoreVolt = 0d;
-        var countCLK = 0;
-        var countVolt = 0;
-        if (availableCPUCores == 0)
+        _ry = RyzenADJWrapper.Init_ryzenadj();
+        if (_ry == IntPtr.Zero)
         {
-            availableCPUCores = await ИнформацияPage.GetCPUCoresAsync(); // Оптимизация приложения, лишний раз не обновлять это значение
+            CPUFanRPM.Text = tempLine;
+            return;
         }
-        for (var f = 0u; f < availableCPUCores; f++)
+        RyzenADJWrapper.Init_Table(_ry);
+        _ = RyzenADJWrapper.Refresh_table(_ry);
+        var avgCoreClk = 0d;
+        var avgCoreVolt = 0d;
+        var countClk = 0;
+        var countVolt = 0;
+        if (_availableCpuCores == 0)
+        {
+            _availableCpuCores = await ИнформацияPage.GetCpuCoresAsync(); // Оптимизация приложения, лишний раз не обновлять это значение
+        }
+        for (var f = 0u; f < _availableCpuCores; f++)
         {
             if (f < 8)
             {
-                var clk = Math.Round(RyzenADJWrapper.Get_core_clk(ry, f), 3);
-                var volt = Math.Round(RyzenADJWrapper.Get_core_volt(ry, f), 3);
+                var clk = Math.Round(RyzenADJWrapper.Get_core_clk(_ry, f), 3);
+                var volt = Math.Round(RyzenADJWrapper.Get_core_volt(_ry, f), 3);
                 if (clk != 0)
                 {
-                    avgCoreCLK += clk;
-                    countCLK += 1;
+                    avgCoreClk += clk;
+                    countClk += 1;
                 }
                 if (volt != 0)
                 {
@@ -128,57 +125,59 @@ public sealed partial class AsusКулерPage : Page
                 }
             }
         }
-        if (countCLK == 0) { countCLK = 1; }
+        if (countClk == 0) { countClk = 1; }
         if (countVolt == 0) { countVolt = 1; }
-        UpdateValues(Math.Round(RyzenADJWrapper.Get_tctl_temp_value(ry), 3) + "℃", Math.Round(avgCoreCLK / countCLK, 3) + "GHz", Math.Round(avgCoreVolt / countVolt, 3) + "V", tempLine);
+        UpdateValues(Math.Round(RyzenADJWrapper.Get_tctl_temp_value(_ry), 3) + "℃", Math.Round(avgCoreClk / countClk, 3) + "GHz", Math.Round(avgCoreVolt / countVolt, 3) + "V", tempLine);
     }
-    private void UpdateValues(string Temp, string Freq, string Volt, string RPM) // Обновление информации вне асинхронного метода
+    private void UpdateValues(string temp, string freq, string volt, string rpm) // Обновление информации вне асинхронного метода
     {
-        CPUTemp.Text = Temp;
-        CPUFreq.Text = Freq;
-        CPUVolt.Text = Volt;
-        CPUFanRPM.Text = RPM;
+        CPUTemp.Text = temp;
+        CPUFreq.Text = freq;
+        CPUVolt.Text = volt;
+        CPUFanRPM.Text = rpm;
     }
     private void StopTempUpdate()
     {
-        RyzenADJWrapper.Cleanup_ryzenadj(ry);
-        tempUpdateTimer?.Stop();
+        RyzenADJWrapper.Cleanup_ryzenadj(_ry);
+        _tempUpdateTimer?.Stop();
     }
     private void UpdateSystemInformation()
     {
         var prod = GetSystemInfo.Product;
-        LaptopName.Text = (prod?.Contains("Asus") == true || prod?.Contains("ASUS") == true || prod?.Contains("asus") == true)  ? "Asus " + prod?.Replace("ASUS", "").Replace("Asus", "").Replace("asus", "").Replace('_', ' ').Replace("  ", " ") 
+        LaptopName.Text = (prod?.Contains("Asus") == true || prod?.Contains("ASUS") == true || prod?.Contains("asus") == true)  ? "Asus " + prod.Replace("ASUS", "").Replace("Asus", "").Replace("asus", "").Replace('_', ' ').Replace("  ", " ") 
             : prod?.Replace('_', ' ').Replace("  ", " ");
         OSName.Text = GetSystemInfo.GetOSVersion() + " " + GetSystemInfo.GetWindowsEdition();
         BIOSVersion.Text = GetSystemInfo.GetBIOSVersion();
-        fanCount = HealthyTable_FanCounts();
-        if (fanCount == -1)
+        _fanCount = HealthyTable_FanCounts();
+        if (_fanCount == -1)
         {
             UnavailableLabel.IsOpen = true;
-            unavailableFlag = true;
+            _unavailableFlag = true;
         }
     }
-    public void ConfigSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
-        }
-        catch
-        {
 
-        }
-    }
-    public void ConfigLoad()
+    private void ConfigSave()
     {
         try
         {
-            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(_config, Formatting.Indented));
         }
         catch
         {
-            App.MainWindow.ShowMessageDialogAsync("Пресеты 3", "Критическая ошибка!");
+            // ignored
+        }
+    }
+
+    private void ConfigLoad()
+    {
+        try
+        {
+            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
+        }
+        catch
+        { 
+            // ignored
         }
     }
     #endregion
@@ -191,17 +190,17 @@ public sealed partial class AsusКулерPage : Page
 
     private void Fan1_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (!isLoaded) { return; }
+        if (!_isPageLoaded) { return; }
         ConfigLoad();
-        config.AsusModeSelectedMode = 0;
-        config.AsusModeFan1UserFanSpeedRPM = Fan1.Value;
+        _config.AsusModeSelectedMode = 0;
+        _config.AsusModeFan1UserFanSpeedRPM = Fan1.Value;
         ConfigSave();
         SetFanSpeeds((int)Fan1.Value);
     }
 
     private void AsusFans_ManualToggle_Checked(object sender, RoutedEventArgs e)
     {
-        if (!isLoaded) { return; }
+        if (!_isPageLoaded) { return; }
         var toggleButton = sender as ToggleButton;
         if (toggleButton == null) { return; }
         if (toggleButton.IsChecked == true)
@@ -211,8 +210,8 @@ public sealed partial class AsusКулерPage : Page
             {
                 case "AsusFans_ManualToggle":
                     ConfigLoad();
-                    config.AsusModeSelectedMode = 0; 
-                    config.AsusModeFan1UserFanSpeedRPM = Fan1.Value;
+                    _config.AsusModeSelectedMode = 0; 
+                    _config.AsusModeFan1UserFanSpeedRPM = Fan1.Value;
                     ConfigSave();
                     AsusFans_BalanceToggle.IsChecked = false;
                     AsusFans_TurboToggle.IsChecked = false;
@@ -221,7 +220,7 @@ public sealed partial class AsusКулерPage : Page
                     break;
                 case "AsusFans_TurboToggle":
                     ConfigLoad();
-                    config.AsusModeSelectedMode = 1;
+                    _config.AsusModeSelectedMode = 1;
                     ConfigSave();
                     AsusFans_BalanceToggle.IsChecked = false;
                     AsusFans_ManualToggle.IsChecked = false;
@@ -230,7 +229,7 @@ public sealed partial class AsusКулерPage : Page
                     break;
                 case "AsusFans_BalanceToggle":
                     ConfigLoad();
-                    config.AsusModeSelectedMode = 2;
+                    _config.AsusModeSelectedMode = 2;
                     ConfigSave();
                     AsusFans_ManualToggle.IsChecked = false;
                     AsusFans_TurboToggle.IsChecked = false;
@@ -239,80 +238,80 @@ public sealed partial class AsusКулерPage : Page
                     break;
                 case "AsusFans_QuietToggle":
                     ConfigLoad();
-                    config.AsusModeSelectedMode = 3;
+                    _config.AsusModeSelectedMode = 3;
                     ConfigSave();
                     AsusFans_BalanceToggle.IsChecked = false;
                     AsusFans_TurboToggle.IsChecked = false;
                     AsusFans_ManualToggle.IsChecked = false;
                     SetFanSpeeds(37);
                     break;
-                default:
-                    break; 
-            };
+            }
         }
         if (AsusFans_BalanceToggle.IsChecked == false && AsusFans_ManualToggle.IsChecked == false &&
             AsusFans_QuietToggle.IsChecked == false && AsusFans_TurboToggle.IsChecked == false)
         {
             ConfigLoad();
-            config.AsusModeSelectedMode = -1; 
+            _config.AsusModeSelectedMode = -1; 
             ConfigSave();
             SetFanSpeeds(0);
         }
     }
     #endregion
     #region Asus WinIo Voids
-    public static void SetFanSpeed(byte value, byte fanIndex = 0)
+
+    private static void SetFanSpeed(byte value, byte fanIndex = 0)
     {
         AsusWinIOWrapper.HealthyTable_SetFanIndex(fanIndex);
         AsusWinIOWrapper.HealthyTable_SetFanTestMode((char)(value > 0 ? 0x01 : 0x00));
         AsusWinIOWrapper.HealthyTable_SetFanPwmDuty(value);
     }
 
-    public static void SetFanSpeed(int percent, byte fanIndex = 0)
+    private static async void SetFanSpeeds(byte value)
     {
-        var value = (byte)(percent / 100.0f * 255);
-        SetFanSpeed(value, fanIndex);
+        try
+        {
+            if (_fanCount == -1 && _unavailableFlag == false)
+            {
+                _fanCount = AsusWinIOWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
+            }
+            for (byte fanIndex = 0; fanIndex < _fanCount; fanIndex++)
+            {
+                SetFanSpeed(value, fanIndex);
+                await Task.Delay(20);
+            }
+        }
+        catch (Exception e)
+        {
+            SendSMUCommand.TraceIt_TraceError(e.ToString());
+        }
     }
 
-    public static async void SetFanSpeeds(byte value)
-    {
-        if (fanCount == -1 && unavailableFlag == false)
-        {
-            fanCount = AsusWinIOWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
-        }
-        for (byte fanIndex = 0; fanIndex < fanCount; fanIndex++)
-        {
-            SetFanSpeed(value, fanIndex);
-            await Task.Delay(20);
-        }
-    }
-
-    public static void SetFanSpeeds(int percent)
+    private static void SetFanSpeeds(int percent)
     {
         var value = (byte)(percent / 100.0f * 255);
         SetFanSpeeds(value);
     }
 
-    public static int GetFanSpeed(byte fanIndex = 0)
+    private static int GetFanSpeed(byte fanIndex = 0)
     {
-        if (setFanIndex != fanIndex)
+        if (_setFanIndex != fanIndex)
         {
             AsusWinIOWrapper.HealthyTable_SetFanIndex(fanIndex);
-            setFanIndex = fanIndex; // Лишний раз не использовать, после использования задать значение, которое было использовано
+            _setFanIndex = fanIndex; // Лишний раз не использовать, после использования задать значение, которое было использовано
         }
         var fanSpeed = AsusWinIOWrapper.HealthyTable_FanRPM();
         return fanSpeed;
     }
 
-    public static List<int> GetFanSpeeds()
+    private static List<int> GetFanSpeeds()
     {
         var fanSpeeds = new List<int>();
 
-        if (fanCount == -1 && unavailableFlag == false)
+        if (_fanCount == -1 && _unavailableFlag == false)
         {
-            fanCount = AsusWinIOWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
+            _fanCount = AsusWinIOWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
         }
-        for (byte fanIndex = 0; fanIndex < fanCount; fanIndex++)
+        for (byte fanIndex = 0; fanIndex < _fanCount; fanIndex++)
         {
             var fanSpeed = GetFanSpeed(fanIndex);
             fanSpeeds.Add(fanSpeed);
@@ -321,7 +320,7 @@ public sealed partial class AsusКулерPage : Page
         return fanSpeeds;
     }
 
-    public static int HealthyTable_FanCounts()
+    private static int HealthyTable_FanCounts()
     {
         return AsusWinIOWrapper.HealthyTable_FanCounts();
     } 
