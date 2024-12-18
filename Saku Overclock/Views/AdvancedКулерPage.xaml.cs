@@ -14,58 +14,57 @@ using Saku_Overclock.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
+using Saku_Overclock.SMUEngine;
 
 namespace Saku_Overclock.Views;
-public sealed partial class AdvancedКулерPage : Page
+public sealed partial class AdvancedКулерPage
 {
-    public AdvancedКулерViewModel ViewModel
-    {
-        get;
-    }
-    private Config config = new();
-    private Windows.Foundation.Point cursorPosition; 
-    // Создаём списки для хранения NumberBox'ов каждого типа для каждого FanConfiguration
-    private readonly List<List<NumberBox>> downThresholdBoxes = [];
-    private readonly List<List<NumberBox>> upThresholdBoxes = [];
-    private readonly List<List<NumberBox>> fanSpeedBoxes = [];
+    private Config _config = new();
+    private Windows.Foundation.Point _cursorPosition;  
     public AdvancedКулерPage()
     {
-        ViewModel = App.GetService<AdvancedКулерViewModel>();
+        App.GetService<AdvancedКулерViewModel>();
         InitializeComponent();
         Load_example();
         ConfigLoad();
-        config.NBFCFlagConsoleCheckSpeedRunning = false;
-        config.FlagRyzenADJConsoleTemperatureCheckRunning = false;
+        _config.NBFCFlagConsoleCheckSpeedRunning = false;
+        _config.FlagRyzenADJConsoleTemperatureCheckRunning = false;
         ConfigSave();
         LoadFanCurvesFromConfig();
         Init_Configs();
     }
     #region JSON and Initialization
-    public void ConfigSave()
+
+    private void ConfigSave()
     {
         try
         {
             Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(_config));
         }
-        catch { }
+        catch
+        {
+            // ignored
+        }
     }
-    public void ConfigLoad()
+
+    private void ConfigLoad()
     {
         try
         {
 #pragma warning disable CS8601 // Возможно, назначение-ссылка, допускающее значение NULL.
-            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
+            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"));
         }
         catch
         {
-            App.MainWindow.ShowMessageDialogAsync("Пресеты 3", "Критическая ошибка!");
+            // ignored
         }
     }
     private void Init_Configs()
     {
         // Найти XML конфиги
-        var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\"; 
+        const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\";
+        if (!File.Exists(folderPath)) { CurveFan1.Visibility = Visibility.Collapsed; CurveFan2.Visibility = Visibility.Collapsed; return; }
         // Получить все XML-файлы в этой папке
         var xmlFiles = Directory.GetFiles(folderPath, "*.xml"); 
         Others_CC.Items.Clear(); 
@@ -91,11 +90,19 @@ public sealed partial class AdvancedКулерPage : Page
     private void Load_example()
     {
         var pathToExecutableFile = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        // Получите путь к папке с программой
+        // Путь к папке с программой
         var pathToProgramDirectory = System.IO.Path.GetDirectoryName(pathToExecutableFile);
-        // Получите путь к файлу конфига
+        // Путь к файлу конфига
         var pathToConfig = System.IO.Path.Combine(pathToProgramDirectory!, @"C:\Program Files (x86)\NoteBook FanControl\Configs\ASUS Vivobook X580VD.xml");
-        try { ReadEx.Text = File.ReadAllText(pathToConfig); ReadEx.Text = ReadEx.Text.Replace("<?xml version=\"1.0\"?>", "\n"); } catch { }
+        try
+        {
+            ReadEx.Text = File.ReadAllText(pathToConfig);
+            ReadEx.Text = ReadEx.Text.Replace("<?xml version=\"1.0\"?>", "\n");
+        }
+        catch (Exception ex)
+        {
+            SendSMUCommand.TraceIt_TraceError(ex.ToString());
+        }
     } 
     private static string GetXmlFileContent(string filePath, TabViewItem newTab)
     { 
@@ -105,266 +112,261 @@ public sealed partial class AdvancedКулерPage : Page
         }
         catch
         {
-            return File.ReadAllText(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" + newTab.Header.ToString() + ".xml");
+            return File.ReadAllText(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" + newTab.Header + ".xml");
         }
     }
     private async void LoadFanCurvesFromConfig()
     {
-        FanDef.Children.Clear();
-        FanDef1.Children.Clear();
-        var FanDefGrid = FanDef;
-        for (var fdsa = 0; fdsa < 2; fdsa++)
-        {
-            if (fdsa != 0)
-            {
-                FanDefGrid = FanDef1;
-            }
-            var minimumButton = new Button
-            {
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Width = 65,
-                Height = 32,
-                Content = new Grid
-                {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Stretch, 
-                    Children =
-                    {
-                        new TextBlock
-                        {
-                            Text = "Min",
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment = VerticalAlignment.Center,
-                            FontSize = 12,
-                            Margin = new Thickness(0,-12,0,0),
-                            FontWeight = new Windows.UI.Text.FontWeight(600)
-                        },
-                        new TextBlock
-                        {
-                            Text = "Temp (C)",
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment = VerticalAlignment.Bottom,
-                            FontSize = 10,
-                            Margin = new Thickness(0,10,0,0)
-                        }
-                    }
-                }
-            };
-            var maximumButton = new Button
-            {
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Width = 65,
-                Height = 32,
-                Content = new Grid
-                {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Stretch,
-                    Children =
-                    {
-                        new TextBlock
-                        {
-                            Text = "Max",
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment = VerticalAlignment.Center,
-                            FontSize = 12,
-                            Margin = new Thickness(0,-12,0,0),
-                            FontWeight = new Windows.UI.Text.FontWeight(600)
-                        },
-                        new TextBlock
-                        {
-                            Text = "Temp (C)",
-                            FontSize = 10,
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment = VerticalAlignment.Bottom,
-                            Margin = new Thickness(0,10,0,0)
-                        }
-                    }
-                }
-            };
-            var fanspeedButton = new Button
-            {
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Width = 65,
-                Height = 32,
-                Content = new Grid
-                {
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    VerticalAlignment = VerticalAlignment.Stretch, 
-                    Children =
-                    {
-                        new TextBlock
-                        {
-                            Text = "Fan",
-                            FontSize = 12,
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment = VerticalAlignment.Center,
-                            Margin = new Thickness(0,-12,0,0),
-                            FontWeight = new Windows.UI.Text.FontWeight(600)
-                        },
-                        new TextBlock
-                        {
-                            Text = "RPM (%)",
-                            FontSize = 10,
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment = VerticalAlignment.Bottom,
-                            Margin = new Thickness(0,10,0,0)
-                        }
-                    }
-                }
-            };
-            Grid.SetRow(minimumButton, 0);
-            Grid.SetRow(maximumButton, 0);
-            Grid.SetRow(fanspeedButton, 0);
-            Grid.SetColumn(minimumButton, 0);
-            Grid.SetColumn(maximumButton, 2);
-            Grid.SetColumn(fanspeedButton, 4);
-            FanDefGrid.Children.Add(minimumButton);
-            FanDefGrid.Children.Add(maximumButton);
-            FanDefGrid.Children.Add(fanspeedButton);
-        } 
-        ExtFan1C.Points.Clear();
-        ExtFan2C.Points.Clear();
-        var currentFanDef = FanDef;
-        var currentInvFanC = ExtFan1C;
-        // Создаем списки для текущего FanConfiguration
-        var currentDownThresholdBoxes = new List<NumberBox>();
-        var currentUpThresholdBoxes = new List<NumberBox>();
-        var currentFanSpeedBoxes = new List<NumberBox>();
-        var rowCounter = 1; // Счетчик строк в Grid
         try
         {
-            ConfigLoad();
-            var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" + config.NBFCConfigXMLName + ".xml";
-            Config_Name1.Text = config.NBFCConfigXMLName;
-            if (File.Exists(configFilePath))
+            FanDef.Children.Clear();
+            FanDef1.Children.Clear();
+            var fanDefGrid = FanDef;
+            for (var fdsa = 0; fdsa < 2; fdsa++)
             {
-                // Загрузка XML-документа из файла
-                var configXml = XDocument.Load(configFilePath);
-
-                // Извлечение всех FanConfiguration-элементов в документе
-                var fanConfigurations = configXml.Descendants("FanConfiguration").ToList();
-
-                // Обход каждого FanConfiguration-элемента в файле
-                for (var i = 0; i < fanConfigurations.Count; i++)
+                if (fdsa != 0)
                 {
-                    // Извлечение элементов TemperatureThresholds
-                    var thresholdElements = fanConfigurations[i].Descendants("TemperatureThreshold");
-                    // Обход каждого элемента TemperatureThreshold внутри FanConfiguration
-                    foreach (var thresholdElement in thresholdElements)
+                    fanDefGrid = FanDef1;
+                }
+                var minimumButton = new Button
+                {
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Width = 65,
+                    Height = 32,
+                    Content = new Grid
                     {
-                        // Извлечение значений UpThreshold, DownThreshold и FanSpeed из текущего элемента
-                        var upThreshold = double.Parse(thresholdElement.Element("UpThreshold")!.Value);
-                        var downThreshold = double.Parse(thresholdElement.Element("DownThreshold")!.Value);
-                        var fanSpeed = 0.0;
-                        try
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        VerticalAlignment = VerticalAlignment.Stretch, 
+                        Children =
                         {
-                            // Округление значения FanSpeed до ближайшего целого числа
-                            fanSpeed = double.Parse(thresholdElement.Element("FanSpeed")!.Value.Trim(), CultureInfo.InvariantCulture);
+                            new TextBlock
+                            {
+                                Text = "Min",
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center,
+                                FontSize = 12,
+                                Margin = new Thickness(0,-12,0,0),
+                                FontWeight = new Windows.UI.Text.FontWeight(600)
+                            },
+                            new TextBlock
+                            {
+                                Text = "Temp (C)",
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Bottom,
+                                FontSize = 10,
+                                Margin = new Thickness(0,10,0,0)
+                            }
                         }
-                        catch { }
-                        // Добавление точек на соответствующий Polyline в соответствии с текущими значениями и идентификатором FanConfiguration
-                        AddThresholdToPolyline((i + 1).ToString(), downThreshold, upThreshold, fanSpeed);
-
-                        //При каждом Tresholds отрисовывать NumberBox
-                        // 1.1 Создаем и настраиваем NumberBox'ы
-                        var downThresholdBox = new NumberBox
-                        {
-                            HorizontalAlignment = HorizontalAlignment.Left,
-                            VerticalAlignment = VerticalAlignment.Top,
-                            Width = 65,
-                            Value = double.Parse(thresholdElement.Element("DownThreshold")!.Value),
-                            Name = $"DownThresholdBox_{rowCounter - 1}" // Уникальное имя для идентификации NumberBox'а
-                        };
-                        if (rowCounter == 0) { downThresholdBox.Margin = new Thickness(0, 65, 0, 0); }
-                        else { downThresholdBox.Margin = new Thickness(0, 5, 0, 0); }
-                        Grid.SetRow(downThresholdBox, rowCounter);
-                        Grid.SetColumn(downThresholdBox, 0);
-
-                        var upThresholdBox = new NumberBox
-                        {
-                            HorizontalAlignment = HorizontalAlignment.Left,
-                            VerticalAlignment = VerticalAlignment.Top,
-                            Width = 65,
-                            Value = double.Parse(thresholdElement.Element("UpThreshold")!.Value),
-                            Name = $"UpThresholdBox_{rowCounter - 1}"
-                        };
-                        if (rowCounter == 0) { upThresholdBox.Margin = new Thickness(0, 65, 0, 0); }
-                        else { upThresholdBox.Margin = new Thickness(0, 5, 0, 0); }
-                        Grid.SetRow(upThresholdBox, rowCounter);
-                        Grid.SetColumn(upThresholdBox, 2);
-                        var fanSpeedBox = new NumberBox
-                        {
-                            HorizontalAlignment = HorizontalAlignment.Left,
-                            VerticalAlignment = VerticalAlignment.Top,
-                            Width = 65,
-                            Value = double.Parse(thresholdElement.Element("FanSpeed")!.Value.Trim(), CultureInfo.InvariantCulture),
-                            Name = $"FanSpeedBox_{rowCounter - 1}"
-                        };
-                        if (rowCounter == 0) { fanSpeedBox.Margin = new Thickness(0, 65, 0, 0); }
-                        else { fanSpeedBox.Margin = new Thickness(0, 5, 0, 0); }
-                        Grid.SetRow(fanSpeedBox, rowCounter);
-                        Grid.SetColumn(fanSpeedBox, 4);
-                        var fanDefNow = 1;
-                        if (currentFanDef == FanDef) { fanDefNow = 1; } else { fanDefNow = 2; }
-                        // 1.2 Добавляем вызовы методов при изменении значений NumberBox'ов
-                        downThresholdBox.ValueChanged += (s, args) => DownThresholdValueChanged(args, int.Parse(s.Name.ToString().Replace("DownThresholdBox_", "")), fanDefNow);
-                        upThresholdBox.ValueChanged += (s, args) => UpThresholdValueChanged(args, int.Parse(s.Name.ToString().Replace("UpThresholdBox_", "")), fanDefNow);
-                        fanSpeedBox.ValueChanged += (s, args) => FanSpeedValueChanged(args, int.Parse(s.Name.ToString().Replace("FanSpeedBox_", "")), fanDefNow);
-
-                        // 1.3 Добавляем NumberBox'ы в текущий Grid и списки
-                        currentFanDef.Children.Add(downThresholdBox);
-                        currentFanDef.Children.Add(upThresholdBox);
-                        currentFanDef.Children.Add(fanSpeedBox);
-
-                        currentDownThresholdBoxes.Add(downThresholdBox);
-                        currentUpThresholdBoxes.Add(upThresholdBox);
-                        currentFanSpeedBoxes.Add(fanSpeedBox);
-                        // Увеличиваем счетчик строк
-                        rowCounter++;
                     }
-                    // Добавляем списки NumberBox'ов текущего FanConfiguration в соответствующие списки
-                    downThresholdBoxes.Add(currentDownThresholdBoxes);
-                    upThresholdBoxes.Add(currentUpThresholdBoxes);
-                    fanSpeedBoxes.Add(currentFanSpeedBoxes);
-
-                    // 2. Переключаемся на следующий FanDef, InvFanC и FanConfiguration
-                    if (currentFanDef == FanDef)
+                };
+                var maximumButton = new Button
+                {
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Width = 65,
+                    Height = 32,
+                    Content = new Grid
                     {
-                        rowCounter = 1;
-                        currentFanDef = FanDef1;
-                        currentInvFanC = ExtFan2C;
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        VerticalAlignment = VerticalAlignment.Stretch,
+                        Children =
+                        {
+                            new TextBlock
+                            {
+                                Text = "Max",
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center,
+                                FontSize = 12,
+                                Margin = new Thickness(0,-12,0,0),
+                                FontWeight = new Windows.UI.Text.FontWeight(600)
+                            },
+                            new TextBlock
+                            {
+                                Text = "Temp (C)",
+                                FontSize = 10,
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Bottom,
+                                Margin = new Thickness(0,10,0,0)
+                            }
+                        }
+                    }
+                };
+                var fanspeedButton = new Button
+                {
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Width = 65,
+                    Height = 32,
+                    Content = new Grid
+                    {
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        VerticalAlignment = VerticalAlignment.Stretch, 
+                        Children =
+                        {
+                            new TextBlock
+                            {
+                                Text = "Fan",
+                                FontSize = 12,
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center,
+                                Margin = new Thickness(0,-12,0,0),
+                                FontWeight = new Windows.UI.Text.FontWeight(600)
+                            },
+                            new TextBlock
+                            {
+                                Text = "RPM (%)",
+                                FontSize = 10,
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Bottom,
+                                Margin = new Thickness(0,10,0,0)
+                            }
+                        }
+                    }
+                };
+                Grid.SetRow(minimumButton, 0);
+                Grid.SetRow(maximumButton, 0);
+                Grid.SetRow(fanspeedButton, 0);
+                Grid.SetColumn(minimumButton, 0);
+                Grid.SetColumn(maximumButton, 2);
+                Grid.SetColumn(fanspeedButton, 4);
+                fanDefGrid.Children.Add(minimumButton);
+                fanDefGrid.Children.Add(maximumButton);
+                fanDefGrid.Children.Add(fanspeedButton);
+            } 
+            ExtFan1C.Points.Clear();
+            ExtFan2C.Points.Clear();
+            var currentFanDef = FanDef;
+            // Создаем списки для текущего FanConfiguration 
+            var rowCounter = 1; // Счетчик строк в Grid
+            try
+            {
+                ConfigLoad();
+                var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" + _config.NBFCConfigXMLName + ".xml";
+                Config_Name1.Text = _config.NBFCConfigXMLName;
+                if (File.Exists(configFilePath))
+                {
+                    // Загрузка XML-документа из файла
+                    var configXml = XDocument.Load(configFilePath);
+
+                    // Извлечение всех FanConfiguration-элементов в документе
+                    var fanConfigurations = configXml.Descendants("FanConfiguration").ToList();
+
+                    // Обход каждого FanConfiguration-элемента в файле
+                    for (var i = 0; i < fanConfigurations.Count; i++)
+                    {
+                        // Извлечение элементов TemperatureThresholds
+                        var thresholdElements = fanConfigurations[i].Descendants("TemperatureThreshold");
+                        // Обход каждого элемента TemperatureThreshold внутри FanConfiguration
+                        foreach (var thresholdElement in thresholdElements)
+                        {
+                            // Извлечение значений UpThreshold, DownThreshold и FanSpeed из текущего элемента
+                            var upThreshold = double.Parse(thresholdElement.Element("UpThreshold")!.Value);
+                            var downThreshold = double.Parse(thresholdElement.Element("DownThreshold")!.Value);
+                            var fanSpeed = 0.0;
+                            try
+                            {
+                                // Округление значения FanSpeed до ближайшего целого числа
+                                fanSpeed = double.Parse(thresholdElement.Element("FanSpeed")!.Value.Trim(), CultureInfo.InvariantCulture);
+                            }
+                            catch (Exception ex)
+                            {
+                                SendSMUCommand.TraceIt_TraceError(ex.ToString());
+                            }
+
+                            // Добавление точек на соответствующий Polyline в соответствии с текущими значениями и идентификатором FanConfiguration
+                            AddThresholdToPolyline((i + 1).ToString(), downThreshold, upThreshold, fanSpeed);
+
+                            //При каждом Tresholds отрисовывать NumberBox
+                            // 1.1 Создаем и настраиваем NumberBox'ы
+                            var downThresholdBox = new NumberBox
+                            {
+                                HorizontalAlignment = HorizontalAlignment.Left,
+                                VerticalAlignment = VerticalAlignment.Top,
+                                Width = 65,
+                                Value = double.Parse(thresholdElement.Element("DownThreshold")!.Value),
+                                Name = $"DownThresholdBox_{rowCounter - 1}",
+                                Margin = rowCounter == 0 ? new Thickness(0, 65, 0, 0) : new Thickness(0, 5, 0, 0) // Уникальное имя для идентификации NumberBox'а
+                            };
+                            Grid.SetRow(downThresholdBox, rowCounter);
+                            Grid.SetColumn(downThresholdBox, 0);
+
+                            var upThresholdBox = new NumberBox
+                            {
+                                HorizontalAlignment = HorizontalAlignment.Left,
+                                VerticalAlignment = VerticalAlignment.Top,
+                                Width = 65,
+                                Value = double.Parse(thresholdElement.Element("UpThreshold")!.Value),
+                                Name = $"UpThresholdBox_{rowCounter - 1}",
+                                Margin = rowCounter == 0 ? new Thickness(0, 65, 0, 0) : new Thickness(0, 5, 0, 0)
+                            };
+                            Grid.SetRow(upThresholdBox, rowCounter);
+                            Grid.SetColumn(upThresholdBox, 2);
+                            var fanSpeedBox = new NumberBox
+                            {
+                                HorizontalAlignment = HorizontalAlignment.Left,
+                                VerticalAlignment = VerticalAlignment.Top,
+                                Width = 65,
+                                Value = double.Parse(thresholdElement.Element("FanSpeed")!.Value.Trim(), CultureInfo.InvariantCulture),
+                                Name = $"FanSpeedBox_{rowCounter - 1}",
+                                Margin = rowCounter == 0 ? new Thickness(0, 65, 0, 0) : new Thickness(0, 5, 0, 0)
+                            };
+                            Grid.SetRow(fanSpeedBox, rowCounter);
+                            Grid.SetColumn(fanSpeedBox, 4);
+                            var fanDefNow = currentFanDef == FanDef ? 1 : 2;
+                            // 1.2 Добавляем вызовы методов при изменении значений NumberBox'ов
+                            downThresholdBox.ValueChanged += (s, args) => DownThresholdValueChanged(args, int.Parse(s.Name.ToString().Replace("DownThresholdBox_", "")), fanDefNow);
+                            upThresholdBox.ValueChanged += (s, args) => UpThresholdValueChanged(args, int.Parse(s.Name.ToString().Replace("UpThresholdBox_", "")), fanDefNow);
+                            fanSpeedBox.ValueChanged += (s, args) => FanSpeedValueChanged(args, int.Parse(s.Name.ToString().Replace("FanSpeedBox_", "")), fanDefNow);
+
+                            // 1.3 Добавляем NumberBox'ы в текущий Grid и списки
+                            currentFanDef.Children.Add(downThresholdBox);
+                            currentFanDef.Children.Add(upThresholdBox);
+                            currentFanDef.Children.Add(fanSpeedBox);
+ 
+                            // Увеличиваем счетчик строк
+                            rowCounter++;
+                        } 
+                        
+                        // 2. Переключаемся на следующий FanDef, InvFanC и FanConfiguration
+                        if (currentFanDef == FanDef)
+                        {
+                            rowCounter = 1;
+                            currentFanDef = FanDef1;
+                        }
+                        else
+                        {
+                            break; // Прерываем цикл, так как у нас нет FanDef2 или InvFan3C
+                        }
+                    }
+                    if (fanConfigurations.Count == 1)
+                    {
+                        CurveFan2.Visibility = Visibility.Collapsed;
+                        myListButton1.Visibility = Visibility.Collapsed;
+                        FanDef1.Visibility = Visibility.Collapsed;
                     }
                     else
                     {
-                        break; // Прерываем цикл, так как у нас нет FanDef2 или InvFan3C
+                        CurveFan2.Visibility = Visibility.Visible;
+                        myListButton1.Visibility = Visibility.Visible;
+                        FanDef1.Visibility = Visibility.Visible;
                     }
-                }
-                if (fanConfigurations.Count == 1)
-                {
-                    CurveFan2.Visibility = Visibility.Collapsed;
-                    myListButton1.Visibility = Visibility.Collapsed;
-                    FanDef1.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    CurveFan2.Visibility = Visibility.Visible;
-                    myListButton1.Visibility = Visibility.Visible;
-                    FanDef1.Visibility = Visibility.Visible;
+                    // Если файл не найден, выводим сообщение
+                    var messageDialog = new Windows.UI.Popups.MessageDialog("File not found: " + configFilePath);
+                    await messageDialog.ShowAsync();
                 }
             }
-            else
+            catch (Exception ex)
             {
-                // Если файл не найден, выводим сообщение
-                var messageDialog = new Windows.UI.Popups.MessageDialog("File not found: " + configFilePath);
-                await messageDialog.ShowAsync();
+                Console.WriteLine("Error loading fan curves from config: " + ex.Message);
             }
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            Console.WriteLine("Error loading fan curves from config: " + ex.Message);
+            SendSMUCommand.TraceIt_TraceError(e.ToString());
         }
     }
     private void AddThresholdToPolyline(string fanName, double minTemp, double maxTemp, double fanSpeed)
@@ -395,22 +397,13 @@ public sealed partial class AdvancedКулерPage : Page
     private void TabView_PointerMoved(object sender, PointerRoutedEventArgs e)
     {
         // Сохраните текущее положение курсора
-        cursorPosition = e.GetCurrentPoint(MainTab).Position;
+        _cursorPosition = e.GetCurrentPoint(MainTab).Position;
     }
     private void Tabs_AddTabButtonClick(TabView sender, object args)
     {
-        // Получите кнопку, на которой был выполнен щелчок
-        var addButton = (TabView)sender;
-        // Получите контекстное меню из ресурсов
         var contextMenu = (MenuFlyout)Resources["TabContextM"];
-        // Получите позицию курсора относительно TabView
-
         // Отобразите контекстное меню относительно кнопки
-        contextMenu.ShowAt(addButton, cursorPosition);
-
-        // Остановите дальнейшую обработку события
-        //var tab = CreateNewTVI("New Item", "New Item");
-        //sender.TabItems.Add(tab);
+        contextMenu.ShowAt(sender, _cursorPosition);
     }
     private void Tabs_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
     {
@@ -428,7 +421,7 @@ public sealed partial class AdvancedКулерPage : Page
         // Ищем следующий видимый элемент и устанавливаем его в качестве текущего
         for (var i = 0; i < MainTab.TabItems.Count; i++)
         {
-            if (MainTab.TabItems[i] is UIElement itemElement && itemElement.Visibility == Visibility.Visible)
+            if (MainTab.TabItems[i] is UIElement { Visibility: Visibility.Visible })
             {
                 MainTab.SelectedIndex = i;
                 foundVisibleTab = true;
@@ -442,7 +435,7 @@ public sealed partial class AdvancedКулерPage : Page
             var newTab = new TabViewItem
             {
                 Header = "Empty",
-                IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource { Symbol = Symbol.Placeholder },
+                IconSource = new SymbolIconSource { Symbol = Symbol.Placeholder },
                 Content = new TextBlock { Text = "There is no any Tabs, open a new one" }
             };
 
@@ -461,15 +454,36 @@ public sealed partial class AdvancedКулерPage : Page
     }
     private async void DownThresholdValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
     {
-        await ReplaceNumberB("DownThreshold", args.NewValue, values, fan);
+        try
+        {
+            await ReplaceNumberB("DownThreshold", args.NewValue, values, fan);
+        }
+        catch (Exception e)
+        {
+            SendSMUCommand.TraceIt_TraceError(e.ToString());
+        }
     }
     private async void UpThresholdValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
     {
-        await ReplaceNumberB("UpThreshold", args.NewValue, values, fan);
+        try
+        {
+            await ReplaceNumberB("UpThreshold", args.NewValue, values, fan);
+        }
+        catch (Exception e)
+        {
+            SendSMUCommand.TraceIt_TraceError(e.ToString());
+        }
     }
     private async void FanSpeedValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
     {
-        await ReplaceNumberB("FanSpeed", args.NewValue, values, fan);
+        try
+        {
+            await ReplaceNumberB("FanSpeed", args.NewValue, values, fan);
+        }
+        catch (Exception e)
+        {
+            SendSMUCommand.TraceIt_TraceError(e.ToString());
+        }
     }
     private void Example_Click(object sender, RoutedEventArgs e)
     {
@@ -483,7 +497,7 @@ public sealed partial class AdvancedКулерPage : Page
     }
     private void Create_Example_Click(object sender, RoutedEventArgs e)
     {
-        var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
+        const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
         var baseFileName = "ASUS Vivobook X580VD.xml";
 
         // Находим первое свободное имя файла
@@ -505,7 +519,7 @@ public sealed partial class AdvancedКулерPage : Page
     {
         var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
 
-        for (var i = 1; i <= int.MaxValue; i++)
+        for (var i = 1;; i++)
         {
             var fileName = $"Custom{i}.xml";
             var filePath = System.IO.Path.Combine(folderPath, fileName);
@@ -537,19 +551,23 @@ public sealed partial class AdvancedКулерPage : Page
         Task.Delay(10).ContinueWith(_ => myListButton1.Flyout.Hide(), TaskScheduler.FromCurrentSynchronizationContext());
 
     }
-    private void MyListButton_IsCheckedChanged(ToggleSplitButton sender, ToggleSplitButtonIsCheckedChangedEventArgs args)
+
+    private void MyListButton_IsCheckedChanged(ToggleSplitButton sender,
+        ToggleSplitButtonIsCheckedChangedEventArgs args)
     {
-        if (myListButton.IsChecked) { ExtFan1C.Visibility = Visibility.Visible; } else { ExtFan1C.Visibility = Visibility.Collapsed; }
+        ExtFan1C.Visibility = myListButton.IsChecked ? Visibility.Visible : Visibility.Collapsed;
     }
-    private void MyListButton1_IsCheckedChanged(ToggleSplitButton sender, ToggleSplitButtonIsCheckedChangedEventArgs args)
+
+    private void MyListButton1_IsCheckedChanged(ToggleSplitButton sender,
+        ToggleSplitButtonIsCheckedChangedEventArgs args)
     {
-        if (myListButton1.IsChecked) { ExtFan2C.Visibility = Visibility.Visible; } else { ExtFan2C.Visibility = Visibility.Collapsed; }
+        ExtFan2C.Visibility = myListButton1.IsChecked ? Visibility.Visible : Visibility.Collapsed;
     }
     #endregion
     #region XML-Config Utils
     private void CreateFromFile(string baseFileName)
     {
-        var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
+        const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
 
         // Находим первое свободное имя файла
         var index = 1;
@@ -611,7 +629,7 @@ public sealed partial class AdvancedКулерPage : Page
             } 
         }; 
         // Добавить обработчик события для кнопки
-        copyButton.Click += (sender, args) =>
+        copyButton.Click += (_, _) =>
         {
             // Копировать текст в буфер обмена
             var textToCopy = GetXmlFileContent(filePath, newTab);
@@ -648,7 +666,7 @@ public sealed partial class AdvancedКулерPage : Page
                 }
             }
         };
-        saveButton.Click += (sender, e) => SaveRichEditBoxContentToFile(xmlContent, filePath, newTab);
+        saveButton.Click += (_, _) => SaveRichEditBoxContentToFile(xmlContent, filePath, newTab);
         // Создать кнопку для переименования
         var renameButton = new Button
         {
@@ -669,9 +687,9 @@ public sealed partial class AdvancedКулерPage : Page
                 }
             }
         };
-        renameButton.Click += (sender, e) =>
+        renameButton.Click += (_, _) =>
         {
-            ShowRenameDialog(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" + newTab.Header.ToString() + ".xml", newTab);
+            ShowRenameDialog(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" + newTab.Header + ".xml", newTab);
 
         };
         // Добавить элементы в Grid
@@ -691,83 +709,90 @@ public sealed partial class AdvancedКулерPage : Page
     }
     private async void ShowRenameDialog(string filePath, TabViewItem tabItem)
     {
-        // Проверяем, что файл имеет в себе имя "Custom"
-        var isCustomFile = System.IO.Path.GetFileNameWithoutExtension(filePath).StartsWith("Custom");
+        try
+        {
+            // Проверяем, что файл имеет в себе имя "Custom"
+            var isCustomFile = System.IO.Path.GetFileNameWithoutExtension(filePath).StartsWith("Custom");
 
-        // Создать ContentDialog
-        var renameDialog = new ContentDialog
-        {
-            Title = isCustomFile ? "AdvancedCooler_Del_Action".GetLocalized() : "AdvancedCooler_Del_Action_Rename".GetLocalized(),
-            Content = new TextBox { PlaceholderText = "New_Name".GetLocalized() },
-            PrimaryButtonText = "Rename".GetLocalized(),
-            CloseButtonText = "Cancel".GetLocalized(),
-            DefaultButton = ContentDialogButton.Close
-        };
-        if (isCustomFile) { renameDialog.SecondaryButtonText = "Delete".GetLocalized(); }
-        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-        {
-            renameDialog.XamlRoot = XamlRoot;
-        }
-        // Отобразить ContentDialog и обработать результат
-        var result = await renameDialog.ShowAsync();
-        // Если файл имеет в себе имя "Custom", добавляем опцию "Удалить файл"
-        if (result == ContentDialogResult.Secondary)
-        {
-            await Task.Delay(1000);
-            var deleteConfirmationDialog = new ContentDialog
+            // Создать ContentDialog
+            var renameDialog = new ContentDialog
             {
-                Title = "AdvancedCooler_Del_Action_Delete".GetLocalized(),
-                Content = "AdvancedCooler_Del_Action_Sure".GetLocalized(),
-                PrimaryButtonText = "Delete".GetLocalized(),
+                Title = isCustomFile ? "AdvancedCooler_Del_Action".GetLocalized() : "AdvancedCooler_Del_Action_Rename".GetLocalized(),
+                Content = new TextBox { PlaceholderText = "New_Name".GetLocalized() },
+                PrimaryButtonText = "Rename".GetLocalized(),
                 CloseButtonText = "Cancel".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
             };
+            if (isCustomFile) { renameDialog.SecondaryButtonText = "Delete".GetLocalized(); }
             if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
             {
-                deleteConfirmationDialog.XamlRoot = XamlRoot;
+                renameDialog.XamlRoot = XamlRoot;
             }
-            var deleteConfirmationResult = await deleteConfirmationDialog.ShowAsync();
-            if (deleteConfirmationResult == ContentDialogResult.Primary)
+            // Отобразить ContentDialog и обработать результат
+            var result = await renameDialog.ShowAsync();
+            // Если файл имеет в себе имя "Custom", добавляем опцию "Удалить файл"
+            if (result == ContentDialogResult.Secondary)
             {
-                // Удалить файл
-                try
+                await Task.Delay(1000);
+                var deleteConfirmationDialog = new ContentDialog
                 {
-                    File.Delete(filePath);
-                    // Удалить вкладку
-                    MainTab.TabItems.Remove(tabItem);
-                    Init_Configs();
+                    Title = "AdvancedCooler_Del_Action_Delete".GetLocalized(),
+                    Content = "AdvancedCooler_Del_Action_Sure".GetLocalized(),
+                    PrimaryButtonText = "Delete".GetLocalized(),
+                    CloseButtonText = "Cancel".GetLocalized(),
+                    DefaultButton = ContentDialogButton.Close
+                };
+                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+                {
+                    deleteConfirmationDialog.XamlRoot = XamlRoot;
                 }
-                catch
+                var deleteConfirmationResult = await deleteConfirmationDialog.ShowAsync();
+                if (deleteConfirmationResult == ContentDialogResult.Primary)
                 {
-                    Init_Configs();
+                    // Удалить файл
+                    try
+                    {
+                        File.Delete(filePath);
+                        // Удалить вкладку
+                        MainTab.TabItems.Remove(tabItem);
+                        Init_Configs();
+                    }
+                    catch
+                    {
+                        Init_Configs();
+                    }
+                }
+            }
+
+
+
+            if (result == ContentDialogResult.Primary)
+            {
+                var textBox = (TextBox)renameDialog.Content;
+
+                // Проверить, что введено новое имя
+                if (!string.IsNullOrWhiteSpace(textBox.Text))
+                {
+                    var newName = textBox.Text + ".xml";
+                    try
+                    {
+                        // Переименовать файл
+                        File.Move(filePath, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(filePath)!, newName));
+
+                        // Переименовать вкладку
+                        tabItem.Header = textBox.Text;
+                        Init_Configs();
+                    }
+                    catch
+                    {
+                        Init_Configs();
+                    }
                 }
             }
         }
-
-
-
-        if (result == ContentDialogResult.Primary)
+        catch (Exception e)
         {
-            var textBox = (TextBox)renameDialog.Content;
-
-            // Проверить, что введено новое имя
-            if (!string.IsNullOrWhiteSpace(textBox.Text))
-            {
-                var newName = textBox.Text + ".xml";
-                try
-                {
-                    // Переименовать файл
-                    File.Move(filePath, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(filePath)!, newName));
-
-                    // Переименовать вкладку
-                    tabItem.Header = textBox.Text;
-                    Init_Configs();
-                }
-                catch
-                {
-                    Init_Configs();
-                }
-            }
+            SendSMUCommand.TraceIt_TraceError(e.ToString());
         }
     }
     private static async void SaveRichEditBoxContentToFile(RichEditBox richEditBox, string filePath, TabViewItem tabItem)
@@ -776,8 +801,7 @@ public sealed partial class AdvancedКулерPage : Page
         {
             // Получить текст из RichEditBox
             var documentRange = richEditBox.Document.GetRange(0, Microsoft.UI.Text.TextConstants.MaxUnitCount);
-            var content = "";
-            documentRange.GetText(Microsoft.UI.Text.TextGetOptions.None, out content);
+            documentRange.GetText(Microsoft.UI.Text.TextGetOptions.None, out var content);
             // Сохранить текст в файл
             try
             {
@@ -785,7 +809,7 @@ public sealed partial class AdvancedКулерPage : Page
             }
             catch
             {
-                await FileIO.WriteTextAsync(await StorageFile.GetFileFromPathAsync(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" + tabItem.Header.ToString() + ".xml"), content);
+                await FileIO.WriteTextAsync(await StorageFile.GetFileFromPathAsync(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" + tabItem.Header + ".xml"), content);
             }
         }
         catch (Exception ex)
@@ -800,7 +824,7 @@ public sealed partial class AdvancedКулерPage : Page
         try
         {
             ConfigLoad();
-            var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" + config.NBFCConfigXMLName + ".xml";
+            var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" + _config.NBFCConfigXMLName + ".xml";
             if (File.Exists(configFilePath))
             {
                 // Загрузка XML-документа из файла
@@ -822,13 +846,13 @@ public sealed partial class AdvancedКулерPage : Page
                                 switch (foundValue)
                                 {
                                     case "DownThreshold":
-                                        thresholdElement.Element("DownThreshold")!.Value = newValue.ToString();
+                                        thresholdElement.Element("DownThreshold")!.Value = newValue.ToString(CultureInfo.InvariantCulture);
                                         break;
                                     case "UpThreshold":
-                                        thresholdElement.Element("UpThreshold")!.Value = newValue.ToString();
+                                        thresholdElement.Element("UpThreshold")!.Value = newValue.ToString(CultureInfo.InvariantCulture);
                                         break;
                                     case "FanSpeed":
-                                        thresholdElement.Element("FanSpeed")!.Value = newValue.ToString();
+                                        thresholdElement.Element("FanSpeed")!.Value = newValue.ToString(CultureInfo.InvariantCulture);
                                         break;
                                 }
                                 try
@@ -846,13 +870,13 @@ public sealed partial class AdvancedКулерPage : Page
                                 switch (foundValue)
                                 {
                                     case "DownThreshold":
-                                        thresholdElement.Element("DownThreshold")!.Value = newValue.ToString().Replace(",", ".");
+                                        thresholdElement.Element("DownThreshold")!.Value = newValue.ToString(CultureInfo.InvariantCulture).Replace(",", ".");
                                         break;
                                     case "UpThreshold":
-                                        thresholdElement.Element("UpThreshold")!.Value = newValue.ToString().Replace(",", ".");
+                                        thresholdElement.Element("UpThreshold")!.Value = newValue.ToString(CultureInfo.InvariantCulture).Replace(",", ".");
                                         break;
                                     case "FanSpeed":
-                                        thresholdElement.Element("FanSpeed")!.Value = newValue.ToString().Replace(",",".");
+                                        thresholdElement.Element("FanSpeed")!.Value = newValue.ToString(CultureInfo.InvariantCulture).Replace(",",".");
                                         break;
                                 }
                                 try
