@@ -1,41 +1,45 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Text;
-using System.Windows.Forms;
 using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
+using Application = Microsoft.UI.Xaml.Application;
 using FileMode = System.IO.FileMode;
 
 namespace Saku_Overclock.SMUEngine;
-public class UpdateChecker
+public abstract class UpdateChecker
 {
-    private static readonly Version currentVersion = RuntimeHelper.IsMSIX == true ?
-        new(Windows.ApplicationModel.Package.Current.Id.Version.Major,
+    private static readonly Version CurrentVersion = RuntimeHelper.IsMSIX ?
+        new Version(Windows.ApplicationModel.Package.Current.Id.Version.Major,
             Windows.ApplicationModel.Package.Current.Id.Version.Minor,
             Windows.ApplicationModel.Package.Current.Id.Version.Build,
             Windows.ApplicationModel.Package.Current.Id.Version.Revision)
         : Assembly.GetExecutingAssembly().GetName().Version!;
-    private static readonly string currentSubVersion = ГлавнаяViewModel.GetVersion();
-    private const string repoOwner = "Erruar";
-    private const string repoName = "Saku-Overclock";
-    private static double downloadPercent = 0; // Процент скачивания
-    private static string timeElapsed = "0:00"; // Время, прошедшее с начала скачивания
-    private static string timeLeft = "0:01"; // Время, оставшееся до завершения скачивания
+
+    private const string RepoOwner = "Erruar";
+    private const string RepoName = "Saku-Overclock";
+    private static double _downloadPercent; // Процент скачивания
+    private static string _timeElapsed = "0:00"; // Время, прошедшее с начала скачивания
+    private static string _timeLeft = "0:01"; // Время, оставшееся до завершения скачивания
 
     public static string? GitHubInfoString
     {
         get; private set;
     }
 
-    public static string CurrentSubVersion => currentSubVersion;
-    private static Release? updateNewVersion;
+    public static string CurrentSubVersion
+    {
+        get;
+    } = ГлавнаяViewModel.GetVersion();
+
+    private static Release? _updateNewVersion;
 
     public static async Task CheckForUpdates()
     {
         var client = new GitHubClient(new ProductHeaderValue("Saku-Overclock-Updater"));
-        var releases = await client.Repository.Release.GetAll(repoOwner, repoName);
+        var releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
 
         // Выбираем релиз с самой высокой версией
         var latestRelease = releases
@@ -48,8 +52,8 @@ public class UpdateChecker
             await App.MainWindow.ShowMessageDialogAsync("Не удалось найти релизы на GitHub.", "Ошибка");
             return;
         }
-        updateNewVersion = latestRelease.Release;
-        if (latestRelease.Version > currentVersion)
+        _updateNewVersion = latestRelease.Release;
+        if (latestRelease.Version > CurrentVersion)
         {
             var navigationService = App.GetService<INavigationService>();
             navigationService.NavigateTo(typeof(ОбновлениеViewModel).FullName!, null, true);
@@ -57,7 +61,7 @@ public class UpdateChecker
     }
     public static Release? GetNewVersion()
     {
-        return updateNewVersion;
+        return _updateNewVersion;
     }
 
     public static async Task GenerateReleaseInfoString()
@@ -66,7 +70,7 @@ public class UpdateChecker
         {
 
             var client = new GitHubClient(new ProductHeaderValue("Saku-Overclock-Updater"));
-            var releases = await client.Repository.Release.GetAll(repoOwner, repoName);
+            var releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
 
             var sb = new StringBuilder();
             foreach (var release in releases.OrderByDescending(r => r.CreatedAt))
@@ -91,19 +95,19 @@ public class UpdateChecker
     }
     public static double GetDownloadPercent()
     {
-        return downloadPercent;
+        return _downloadPercent;
     }
     public static string GetDownloadTimeLeft()
     {
-        return timeLeft;
+        return _timeLeft;
     }
     public static string GetDownloadTimeElapsed()
     {
-        return timeElapsed;
+        return _timeElapsed;
     }
     public static async Task DownloadAndUpdate(Release release, IProgress<(double percent, string elapsed, string left)> progress)
     {
-        var asset = release.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe"));
+        var asset = release.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe") || a.Name.EndsWith(".msi"));
         if (asset == null)
         {
             await App.MainWindow.ShowMessageDialogAsync("Не удалось найти установочный файл в релизе.", "Ошибка");
@@ -143,29 +147,29 @@ public class UpdateChecker
                 // Обновление процентов скачивания
                 if (totalBytes > 0)
                 {
-                    downloadPercent = (double)totalRead / totalBytes * 100;
+                    _downloadPercent = (double)totalRead / totalBytes * 100;
                 }
 
                 // Обновление времени загрузки
                 var elapsed = stopwatch.Elapsed;
-                timeElapsed = $"{elapsed.Minutes}:{elapsed.Seconds:D2}";
+                _timeElapsed = $"{elapsed.Minutes}:{elapsed.Seconds:D2}";
 
                 // Оценка оставшегося времени
-                if (totalRead > 0 && downloadPercent > 0)
+                if (totalRead > 0 && _downloadPercent > 0)
                 {
-                    var estimatedTotalTime = TimeSpan.FromMilliseconds(elapsed.TotalMilliseconds / downloadPercent * 100);
+                    var estimatedTotalTime = TimeSpan.FromMilliseconds(elapsed.TotalMilliseconds / _downloadPercent * 100);
                     var remainingTime = estimatedTotalTime - elapsed;
-                    timeLeft = $"{remainingTime.Minutes}:{remainingTime.Seconds:D2}";
+                    _timeLeft = $"{remainingTime.Minutes}:{remainingTime.Seconds:D2}";
                 }
 
                 // Сообщаем о прогрессе в UI, если progress не null
-                progress?.Report((downloadPercent, timeElapsed, timeLeft));
+                progress?.Report((_downloadPercent, _timeElapsed, _timeLeft));
             }
 
             await fs.FlushAsync(); // Убедиться, что все данные записаны на диск
 
             stopwatch.Stop();
-            fs.Dispose();
+            await fs.DisposeAsync();
 
             // Убедиться, что файл полностью закрыт перед запуском
             if (File.Exists(tempFilePath))
@@ -181,7 +185,7 @@ public class UpdateChecker
                     });
 
                     // Закрытие текущего приложения
-                    App.Current.Exit();
+                    Application.Current.Exit();
                     App.MainWindow.Close();
                 }
                 catch (Exception ex)
