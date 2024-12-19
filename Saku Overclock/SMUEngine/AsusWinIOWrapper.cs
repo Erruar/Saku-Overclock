@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 
 namespace Saku_Overclock.SMUEngine;
 
 public static class AsusWinIOWrapper
 {
     private const string DllName = "AWinIo64.dll";
-    private static bool IsDllRunning = false;
+    private static bool IsDllRunning;
     /*Included AsusWinIO64.dll is licenced to (c) ASUSTek COMPUTER INC*/
     /*ASUS System Control Interface is necessary for this software to work - ASUS System Analysis service must be running. It's automatically installed with MyASUS app.*/
 
