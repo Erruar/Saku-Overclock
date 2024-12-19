@@ -1,7 +1,8 @@
 ﻿namespace Saku_Overclock.SMUEngine;
-internal class PowerMonRTSSElement
+
+internal class PowerMonRtssElement
 {
-    public bool IsShown = false;
+    public bool IsShown;
     public string Name = "New Element";
     public string Abbreviation = "A";
     public string Offset = "0x0000";
