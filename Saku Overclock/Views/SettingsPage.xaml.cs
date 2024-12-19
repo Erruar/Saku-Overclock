@@ -1,5 +1,11 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
+using System.Reflection;
 using System.Text;
+using Windows.Foundation.Metadata;
+using Windows.Storage.Pickers;
+using Windows.UI;
+using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -9,13 +15,15 @@ using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
+using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
-using Windows.Foundation.Metadata;
-using Windows.Storage.Pickers;
-using Windows.UI;
 using WinRT.Interop;
 using Task = System.Threading.Tasks.Task;
+using TextGetOptions = Microsoft.UI.Text.TextGetOptions;
+using TextSetOptions = Microsoft.UI.Text.TextSetOptions;
+
 namespace Saku_Overclock.Views;
 
 public sealed partial class SettingsPage : Page
@@ -26,9 +34,9 @@ public sealed partial class SettingsPage : Page
     }
     private Config config = new();
     private Themer themer = new();
-    private JsonContainers.RTSSsettings rtssset = new();
-    private JsonContainers.NiIconsSettings niicons = new();
-    private bool isLoaded = false;
+    private RTSSsettings rtssset = new();
+    private NiIconsSettings niicons = new();
+    private bool isLoaded;
     private JsonContainers.Notifications notify = new();
 
     public SettingsPage()
@@ -236,7 +244,7 @@ public sealed partial class SettingsPage : Page
                     var r = Convert.ToByte(color.Substring(1, 2), 16);
                     var g = Convert.ToByte(color.Substring(3, 2), 16);
                     var b = Convert.ToByte(color.Substring(5, 2), 16);
-                    colorPicker.Color = Windows.UI.Color.FromArgb(255, r, g, b);
+                    colorPicker.Color = Color.FromArgb(255, r, g, b);
                 }
             }
         } 
@@ -512,16 +520,16 @@ public sealed partial class SettingsPage : Page
 
          */
 
-    private Windows.UI.Color ParseColor(string hex)
+    private Color ParseColor(string hex)
     {
         if (hex.Length == 6)
         {
-            return Windows.UI.Color.FromArgb(255,
-                byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber),
-                byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber),
-                byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber));
+            return Color.FromArgb(255,
+                byte.Parse(hex.Substring(0, 2), NumberStyles.HexNumber),
+                byte.Parse(hex.Substring(2, 2), NumberStyles.HexNumber),
+                byte.Parse(hex.Substring(4, 2), NumberStyles.HexNumber));
         }
-        return Windows.UI.Color.FromArgb(255, 255, 255, 255); // если цвет неизвестен
+        return Color.FromArgb(255, 255, 255, 255); // если цвет неизвестен
     }
     // Вспомогательный метод для преобразования HEX в Windows.UI.Color
     private void LoadAndFormatAdvancedCodeEditor(string advancedCode)
@@ -530,7 +538,7 @@ public sealed partial class SettingsPage : Page
         {
             return;
         }
-        RTSS_AdvancedCodeEditor_EditBox.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, advancedCode.Replace("<Br>", "\n").TrimEnd());
+        RTSS_AdvancedCodeEditor_EditBox.Document.SetText(TextSetOptions.None, advancedCode.Replace("<Br>", "\n").TrimEnd());
     }
 
 
@@ -538,7 +546,7 @@ public sealed partial class SettingsPage : Page
     {
         try
         {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
         }
         catch { }
@@ -556,7 +564,7 @@ public sealed partial class SettingsPage : Page
     {
         try
         {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json", JsonConvert.SerializeObject(rtssset, Formatting.Indented));
         }
         catch { }
@@ -565,17 +573,17 @@ public sealed partial class SettingsPage : Page
     {
         try
         {
-            rtssset = JsonConvert.DeserializeObject<JsonContainers.RTSSsettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json"))!;
+            rtssset = JsonConvert.DeserializeObject<RTSSsettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json"))!;
             rtssset.RTSS_Elements.RemoveRange(0, 9);
             //if (rtssset == null) { rtssset = new JsonContainers.RTSSsettings(); RtssSave(); }
         }
-        catch { rtssset = new JsonContainers.RTSSsettings(); RtssSave(); }
+        catch { rtssset = new RTSSsettings(); RtssSave(); }
     }
     public void NiSave()
     {
         try
         {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json", JsonConvert.SerializeObject(niicons, Formatting.Indented));
         }
         catch { }
@@ -584,15 +592,15 @@ public sealed partial class SettingsPage : Page
     {
         try
         {
-            niicons = JsonConvert.DeserializeObject<JsonContainers.NiIconsSettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json"))!;
+            niicons = JsonConvert.DeserializeObject<NiIconsSettings>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json"))!;
         }
-        catch { niicons = new JsonContainers.NiIconsSettings(); NiSave(); }
+        catch { niicons = new NiIconsSettings(); NiSave(); }
     }
     public void ThemeSave()
     {
         try
         {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", "");
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer, Formatting.Indented));
         }
@@ -711,7 +719,7 @@ public sealed partial class SettingsPage : Page
         var autoruns = new TaskService();
         if (AutostartCom.SelectedIndex == 2 || AutostartCom.SelectedIndex == 3)
         {
-            var pathToExecutableFile = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
             var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
             var pathToStartupLnk = Path.Combine(pathToProgramDirectory!, "Saku Overclock.exe");
             // Добавить программу в автозагрузку
@@ -734,21 +742,21 @@ public sealed partial class SettingsPage : Page
     {
         if (!isLoaded) { return; }
         ConfigLoad();
-        if (CbApplyStart.IsOn == true) { config.ReapplyLatestSettingsOnAppLaunch = true; ConfigSave(); }
+        if (CbApplyStart.IsOn) { config.ReapplyLatestSettingsOnAppLaunch = true; ConfigSave(); }
         else { config.ReapplyLatestSettingsOnAppLaunch = false; ConfigSave(); };
     }
     private void CbAutoReapply_Click(object sender, RoutedEventArgs e)
     {
         if (!isLoaded) { return; }
         ConfigLoad();
-        if (CbAutoReapply.IsOn == true) { AutoReapplyNumberboxPanel.Visibility = Visibility.Visible; config.ReapplyOverclock = true; config.ReapplyOverclockTimer = nudAutoReapply.Value; ConfigSave(); }
+        if (CbAutoReapply.IsOn) { AutoReapplyNumberboxPanel.Visibility = Visibility.Visible; config.ReapplyOverclock = true; config.ReapplyOverclockTimer = nudAutoReapply.Value; ConfigSave(); }
         else { AutoReapplyNumberboxPanel.Visibility = Visibility.Collapsed; config.ReapplyOverclock = false; config.ReapplyOverclockTimer = 3; ConfigSave(); };
     }
     private void CbAutoCheck_Click(object sender, RoutedEventArgs e)
     {
         if (!isLoaded) { return; }
         ConfigLoad();
-        if (CbAutoCheck.IsOn == true) { config.CheckForUpdates = true; ConfigSave(); }
+        if (CbAutoCheck.IsOn) { config.CheckForUpdates = true; ConfigSave(); }
         else { config.CheckForUpdates = false; ConfigSave(); };
     }
     private async void NudAutoReapply_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
@@ -763,7 +771,7 @@ public sealed partial class SettingsPage : Page
         if (!isLoaded) { return; }
         ConfigLoad();
         await Task.Delay(20);
-        config.ReapplySafeOverclock = ReapplySafe.IsOn; SendSMUCommand.SafeReapply = ReapplySafe.IsOn; ConfigSave();
+        config.ReapplySafeOverclock = ReapplySafe.IsOn; SendSmuCommand.SafeReapply = ReapplySafe.IsOn; ConfigSave();
     }
     private void ThemeCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -849,7 +857,7 @@ public sealed partial class SettingsPage : Page
             MaxWidth = 300,
             Text = "ThemeBgFromFileWhy".GetLocalized(),
             TextWrapping = TextWrapping.WrapWholeWords,
-            FontWeight = new Windows.UI.Text.FontWeight(300)
+            FontWeight = new FontWeight(300)
         };
         var fromFilePickedFile = new TextBlock
         {
@@ -857,7 +865,7 @@ public sealed partial class SettingsPage : Page
             Visibility = Visibility.Collapsed,
             Text = "ThemeUnknownNewFile".GetLocalized(),
             TextWrapping = TextWrapping.WrapWholeWords,
-            FontWeight = new Windows.UI.Text.FontWeight(300)
+            FontWeight = new FontWeight(300)
         };
         var fromFile = new Button
         {
@@ -889,7 +897,7 @@ public sealed partial class SettingsPage : Page
                             {
                                 Text = "ThemeBgFromFile".GetLocalized() + "\nCURRENTRLY UNAVAILABLE",
                                 Foreground =  new SolidColorBrush(Color.FromArgb(255,255,0,0)),
-                                FontWeight = new Windows.UI.Text.FontWeight(600)
+                                FontWeight = new FontWeight(600)
                             },
                             fromFileWhy,
                             fromFilePickedFile
@@ -911,7 +919,7 @@ public sealed partial class SettingsPage : Page
             HorizontalAlignment = HorizontalAlignment.Left,
             Text = "ThemeBgFromURLWhy".GetLocalized(),
             TextWrapping = TextWrapping.WrapWholeWords,
-            FontWeight = new Windows.UI.Text.FontWeight(300)
+            FontWeight = new FontWeight(300)
         };
         var fromLinkTextBox = new TextBox
         {
@@ -948,7 +956,7 @@ public sealed partial class SettingsPage : Page
                             new TextBlock
                             {
                                 Text = "ThemeBgFromURL".GetLocalized(),
-                                FontWeight = new Windows.UI.Text.FontWeight(600)
+                                FontWeight = new FontWeight(600)
                             },
                             fromLinkWhy,
                             fromLinkTextBox
@@ -983,9 +991,9 @@ public sealed partial class SettingsPage : Page
             fromFilePickedFile.Text = "";
 
             // Создаём FileOpenPicker
-            var filePicker = new Windows.Storage.Pickers.FileOpenPicker
+            var filePicker = new FileOpenPicker
             {
-                SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary
+                SuggestedStartLocation = PickerLocationId.PicturesLibrary
             };
             //var hwnd = WindowNative.GetWindowHandle(App.MainWindow); // App.MainWindow — Главный Window
             //var hwnd = ActivationInvokeHandler.FindMainWindowHWND(null, "Saku Overclock");
@@ -1183,7 +1191,7 @@ public sealed partial class SettingsPage : Page
                         VerticalAlignment = VerticalAlignment.Center,
                         TextWrapping = TextWrapping.Wrap,
                         Text = baseThemeName,
-                        FontWeight = new Windows.UI.Text.FontWeight(800)
+                        FontWeight = new FontWeight(800)
                     };
                     var buttonsPanel = new StackPanel
                     {
@@ -1296,7 +1304,7 @@ public sealed partial class SettingsPage : Page
                 Style = (Style)Application.Current.Resources["AccentButtonStyle"],
                 Content = new TextBlock
                 {
-                    FontWeight = new Windows.UI.Text.FontWeight(700),
+                    FontWeight = new FontWeight(700),
                     Text = "ThemeNewName".GetLocalized()
                 }
             };
@@ -1341,7 +1349,7 @@ public sealed partial class SettingsPage : Page
                     {
                         try 
                         {
-                            themer!.Themes!.Add(new Styles.ThemeClass { ThemeName = textBoxThemeName.Text });
+                            themer!.Themes!.Add(new ThemeClass { ThemeName = textBoxThemeName.Text });
                             newTheme.Flyout.Hide();
                             ThemerDialog.Hide(); 
                             ThemeSave();
@@ -1597,7 +1605,7 @@ public sealed partial class SettingsPage : Page
             CloseButtonText = "ThemeDone".GetLocalized(),
             DefaultButton = ContentDialogButton.Close
         };
-        var baseNiBackground = Windows.UI.Color.FromArgb(255, 255, 255, 255); // Белый 
+        var baseNiBackground = Color.FromArgb(255, 255, 255, 255); // Белый 
         var baseNiName = "New Element";
         NiLoad();
         try
@@ -1615,10 +1623,10 @@ public sealed partial class SettingsPage : Page
                         }
                         catch
                         {
-                            baseNiBackground = Windows.UI.Color.FromArgb(255, 255, 255, 255);
+                            baseNiBackground = Color.FromArgb(255, 255, 255, 255);
                         }
                     }
-                    else { baseNiBackground = Windows.UI.Color.FromArgb(255, 255, 255, 255); }
+                    else { baseNiBackground = Color.FromArgb(255, 255, 255, 255); }
                     var sureDelete =
                     new Button
                     {
@@ -1646,7 +1654,7 @@ public sealed partial class SettingsPage : Page
                         VerticalAlignment = VerticalAlignment.Center,
                         TextWrapping = TextWrapping.Wrap,
                         Text = baseNiName,
-                        FontWeight = new Windows.UI.Text.FontWeight(800)
+                        FontWeight = new FontWeight(800)
                     };
                     var buttonsPanel = new StackPanel
                     {
@@ -1735,7 +1743,7 @@ public sealed partial class SettingsPage : Page
                 Style = (Style)Application.Current.Resources["AccentButtonStyle"],
                 Content = new TextBlock
                 {
-                    FontWeight = new Windows.UI.Text.FontWeight(700),
+                    FontWeight = new FontWeight(700),
                     Text = "ThemeNewName".GetLocalized()
                 }
             };
@@ -1754,7 +1762,7 @@ public sealed partial class SettingsPage : Page
                 };
                 if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_STAPM".GetLocalized()))
                 {
-                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem
                     {
                         Content = "Settings_ni_Values_STAPM".GetLocalized(),
                         Name = "Settings_ni_Values_STAPM"
@@ -1762,7 +1770,7 @@ public sealed partial class SettingsPage : Page
                 }
                 if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_Fast".GetLocalized()))
                 {
-                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem
                     {
                         Content = "Settings_ni_Values_Fast".GetLocalized(),
                         Name = "Settings_ni_Values_Fast"
@@ -1770,7 +1778,7 @@ public sealed partial class SettingsPage : Page
                 }
                 if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_Slow".GetLocalized()))
                 {
-                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem
                     {
                         Content = "Settings_ni_Values_Slow".GetLocalized(),
                         Name = "Settings_ni_Values_Slow"
@@ -1778,7 +1786,7 @@ public sealed partial class SettingsPage : Page
                 }
                 if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_VRMEDC".GetLocalized()))
                 {
-                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem
                     {
                         Content = "Settings_ni_Values_VRMEDC".GetLocalized(),
                         Name = "Settings_ni_Values_VRMEDC"
@@ -1786,7 +1794,7 @@ public sealed partial class SettingsPage : Page
                 }
                 if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_CPUTEMP".GetLocalized()))
                 {
-                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem
                     {
                         Content = "Settings_ni_Values_CPUTEMP".GetLocalized(),
                         Name = "Settings_ni_Values_CPUTEMP"
@@ -1794,7 +1802,7 @@ public sealed partial class SettingsPage : Page
                 }
                 if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_CPUUsage".GetLocalized()))
                 {
-                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem
                     {
                         Content = "Settings_ni_Values_CPUUsage".GetLocalized(),
                         Name = "Settings_ni_Values_CPUUsage"
@@ -1802,7 +1810,7 @@ public sealed partial class SettingsPage : Page
                 }
                 if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_AVGCPUCLK".GetLocalized()))
                 {
-                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem
                     {
                         Content = "Settings_ni_Values_AVGCPUCLK".GetLocalized(),
                         Name = "Settings_ni_Values_AVGCPUCLK"
@@ -1810,7 +1818,7 @@ public sealed partial class SettingsPage : Page
                 }
                 if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_AVGCPUVOLT".GetLocalized()))
                 {
-                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem
                     {
                         Content = "Settings_ni_Values_AVGCPUVOLT".GetLocalized(),
                         Name = "Settings_ni_Values_AVGCPUVOLT"
@@ -1818,7 +1826,7 @@ public sealed partial class SettingsPage : Page
                 }
                 if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_GFXCLK".GetLocalized()))
                 {
-                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem
                     {
                         Content = "Settings_ni_Values_GFXCLK".GetLocalized(),
                         Name = "Settings_ni_Values_GFXCLK"
@@ -1826,7 +1834,7 @@ public sealed partial class SettingsPage : Page
                 }
                 if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_GFXTEMP".GetLocalized()))
                 {
-                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem
                     {
                         Content = "Settings_ni_Values_GFXTEMP".GetLocalized(),
                         Name = "Settings_ni_Values_GFXTEMP"
@@ -1834,7 +1842,7 @@ public sealed partial class SettingsPage : Page
                 }
                 if (!NiIconComboboxElements.Items.Contains("Settings_ni_Values_GFXVOLT".GetLocalized()))
                 {
-                    niIconSelectedComboBox.Items.Add(new ComboBoxItem()
+                    niIconSelectedComboBox.Items.Add(new ComboBoxItem
                     {
                         Content = "Settings_ni_Values_GFXVOLT".GetLocalized(),
                         Name = "Settings_ni_Values_GFXVOLT"
@@ -1870,7 +1878,7 @@ public sealed partial class SettingsPage : Page
                     {
                         try
                         {
-                            niicons.Elements!.Add(new JsonContainers.NiIconsElements { Name = ((ComboBoxItem)niIconSelectedComboBox.SelectedItem).Name.ToString()! });
+                            niicons.Elements!.Add(new NiIconsElements { Name = ((ComboBoxItem)niIconSelectedComboBox.SelectedItem).Name! });
                             newNiIcon.Flyout.Hide();
                             niAddIconDialog.Hide();
                             NiSave();
@@ -1951,7 +1959,7 @@ public sealed partial class SettingsPage : Page
         }
         catch (Exception ex)
         {
-            SendSMUCommand.TraceIt_TraceError(ex.ToString());
+            SendSmuCommand.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -2228,7 +2236,7 @@ public sealed partial class SettingsPage : Page
         // Финальная строка присваивается в rtssset.AdvancedCodeEditor
         rtssset.AdvancedCodeEditor = advancedCodeEditor.ToString();
         LoadAndFormatAdvancedCodeEditor(rtssset.AdvancedCodeEditor);
-        RTSSHandler.ChangeOSDText(rtssset.AdvancedCodeEditor);
+        RtssHandler.ChangeOsdText(rtssset.AdvancedCodeEditor);
         RtssSave();
     }
 
@@ -2252,7 +2260,7 @@ public sealed partial class SettingsPage : Page
     private void RTSS_AdvancedCodeEditor_EditBox_TextChanged(object sender, RoutedEventArgs e)
     {
         string? newString;
-        RTSS_AdvancedCodeEditor_EditBox.Document.GetText(Microsoft.UI.Text.TextGetOptions.None, out newString);
+        RTSS_AdvancedCodeEditor_EditBox.Document.GetText(TextGetOptions.None, out newString);
         rtssset.AdvancedCodeEditor = newString.Replace("\r", "\n").TrimEnd();
         RtssSave();
     }
