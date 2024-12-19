@@ -105,7 +105,7 @@ public partial class App : Application
             services.AddTransient<ОбновлениеPage>();
             services.AddTransient<ОбновлениеViewModel>();
             services.AddTransient<MainWindow.Applyer>();
-            services.AddTransient<SendSMUCommand>();
+            services.AddTransient<SendSmuCommand>();
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
         }).
