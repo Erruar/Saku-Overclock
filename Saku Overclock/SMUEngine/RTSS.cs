@@ -1,30 +1,32 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+
 namespace Saku_Overclock.SMUEngine;
 
-public static partial class RTSSHandler
+public static class RtssHandler
 {
     private const string DllName = "SakuRTSSCLI.dll";
-    private static bool isRTSSInitialized = false;
-    public static void ChangeOSDText(string text)
-    { 
-        if (!isRTSSInitialized)
+    private static bool _isRtssInitialized;
+
+    public static void ChangeOsdText(string text)
+    {
+        if (!_isRtssInitialized)
         {
             displayText(text);
-            isRTSSInitialized = true;
-        } 
+            _isRtssInitialized = true;
+        }
         else
         {
             UpdateOSD(text.Replace("<Br>", "\n"));
         }
     }
-    public static void ResetOSDText()
+
+    public static void ResetOsdText()
     {
-        if (isRTSSInitialized)
+        if (_isRtssInitialized)
         {
             _ = ReleaseOSD();
-            isRTSSInitialized = false;
-        }  
+            _isRtssInitialized = false;
+        }
     }
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
@@ -34,7 +36,8 @@ public static partial class RTSSHandler
     private static extern int Refresh();
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern uint EmbedGraph(uint dwOffset, float[] lpBuffer, uint dwBufferPos, uint dwBufferSize, int dwWidth, int dwHeight, int dwMargin, float fltMin, float fltMax, uint dwFlags);
+    private static extern uint EmbedGraph(uint dwOffset, float[] lpBuffer, uint dwBufferPos, uint dwBufferSize,
+        int dwWidth, int dwHeight, int dwMargin, float fltMin, float fltMax, uint dwFlags);
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern uint GetClientsNum();
@@ -46,5 +49,5 @@ public static partial class RTSSHandler
     private static extern bool UpdateOSD(string lpText);
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern int ReleaseOSD(); 
+    private static extern int ReleaseOSD();
 }
