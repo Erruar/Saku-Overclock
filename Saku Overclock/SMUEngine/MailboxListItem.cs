@@ -1,44 +1,48 @@
 namespace Saku_Overclock.SMUEngine;
+
 /*This is a modified processor driver file. Zen-States.Core Version is 1.6.8.1. Its author is https://github.com/irusanov
 This file has been refactored many times and optimized to work with Saku Overclock by Sakurazhima Serzhik. I do not recommend rereading this file, it is better to familiarize yourself with https://github.com/irusanov/ZenStates-Core
 there you can see the source files in detail*/
 public class MailboxListItem
 {
-    public uint msgAddr
+    public uint MsgAddr
     {
         get;
     }
-    public uint rspAddr
+
+    public uint RspAddr
     {
         get;
     }
-    public uint argAddr
+
+    public uint ArgAddr
     {
         get;
     }
-    public string label
+
+    private string Label
     {
         get;
     }
 
     public MailboxListItem(string label, SmuAddressSet addressSet)
     {
-        this.label = label;
-        msgAddr = addressSet.MsgAddress;
-        rspAddr = addressSet.RspAddress;
-        argAddr = addressSet.ArgAddress;
+        Label = label;
+        MsgAddr = addressSet.MsgAddress;
+        RspAddr = addressSet.RspAddress;
+        ArgAddr = addressSet.ArgAddress;
     }
 
     public MailboxListItem(string label, ZenStates.Core.Mailbox mailbox)
     {
-        this.label = label;
-        msgAddr = mailbox.SMU_ADDR_MSG;
-        rspAddr = mailbox.SMU_ADDR_RSP;
-        argAddr = mailbox.SMU_ADDR_ARG;
+        Label = label;
+        MsgAddr = mailbox.SMU_ADDR_MSG;
+        RspAddr = mailbox.SMU_ADDR_RSP;
+        ArgAddr = mailbox.SMU_ADDR_ARG;
     }
 
     public override string ToString()
     {
-        return label;
+        return Label;
     }
 }
