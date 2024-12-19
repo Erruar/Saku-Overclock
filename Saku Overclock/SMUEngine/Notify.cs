@@ -1,5 +1,4 @@
 ﻿using Microsoft.UI.Xaml.Controls;
-using Windows.Foundation;
 
 namespace Saku_Overclock.SMUEngine;
 public class Notify
