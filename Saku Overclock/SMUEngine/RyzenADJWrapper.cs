@@ -1,19 +1,18 @@
 ﻿using System.Management;
 using System.Runtime.InteropServices;
-using Newtonsoft.Json.Linq;
 using ZenStates.Core;
 
 namespace Saku_Overclock.SMUEngine;
 public static class RyzenADJWrapper
 {
     private const string DllName = "libryzenadj.dll";
-    private static bool IsDllRunning = false;
-    private static bool IsTableRunning = false;
+    private static bool IsDllRunning;
+    private static bool IsTableRunning;
     private static IntPtr runningLibRyzenAdjIntPtr = -1;
     private static List<double> currentCPUClocks = [];
-    private static float currentCPULoad = 0;
+    private static float currentCPULoad;
     private static int globalCoreCounter = -1;
-    private static int globalCPUDetectionMethod = 0;
+    private static int globalCPUDetectionMethod;
     public enum RyzenFamily
     {
         WAIT_FOR_LOAD = -2,
@@ -53,10 +52,8 @@ public static class RyzenADJWrapper
                 IsTableRunning = true;
                 return init_table(ryzenAccess);
             }
-            else
-            {
-                return 0;
-            }
+
+            return 0;
         }
         catch
         {
@@ -511,10 +508,10 @@ public static class RyzenADJWrapper
     public class CpuFrequencyManager
     {
         private static readonly Dictionary<int, int> _coreIndexMap = [];
-        private static int _cpuLoadIndex = 0;
+        private static int _cpuLoadIndex;
         private static float[]? _cachedTable;
         // Флаг для проверки готовности таблицы
-        private static bool _isInitialized = false;
+        private static bool _isInitialized;
 
         public static void InitializeCoreIndexMapAsync(int coreCounter)
         {
@@ -603,10 +600,8 @@ public static class RyzenADJWrapper
             {
                 return (_cachedTable != null && _cachedTable.Length >= _cpuLoadIndex && _cpuLoadIndex >= 0) ? _cachedTable[_cpuLoadIndex] : 0;
             }
-            else
-            { 
-                return currentCPULoad;
-            }
+
+            return currentCPULoad;
         }
         public static float GetFastLimit(IntPtr ry)
         {
@@ -675,7 +670,7 @@ public static class RyzenADJWrapper
 
             if (_cachedTable == null || value >= _cachedTable.Length)
             {
-                SendSMUCommand.TraceIt_TraceError("Cached table is invalid or out of range.");
+                SendSmuCommand.TraceIt_TraceError("Cached table is invalid or out of range.");
                 return -1;
             } 
             if (_cachedTable[value] >= 7 && globalCPUDetectionMethod == 1) 
@@ -692,20 +687,18 @@ public static class RyzenADJWrapper
             {
                 return _cachedTable[value];
             }
-            else
+
+            if (currentCPUClocks[(int)core] == 0)
             {
-                if (currentCPUClocks[(int)core] == 0)
+                foreach (var el in currentCPUClocks)
                 {
-                    foreach (var el in currentCPUClocks)
+                    if (el > 0)
                     {
-                        if (el > 0)
-                        {
-                            return (float)el;
-                        }
+                        return (float)el;
                     }
                 }
-                return (float)currentCPUClocks[(int)core];
             }
+            return (float)currentCPUClocks[(int)core];
         }
     }
 
