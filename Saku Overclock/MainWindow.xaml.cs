@@ -238,7 +238,7 @@ public sealed partial class MainWindow : WindowEx
     {
         public bool execute = false;
         private static Config config = new();
-        private static SendSMUCommand? sendSMUCommand;
+        private static SendSmuCommand? sendSMUCommand;
         public static readonly DispatcherTimer timer = new() { Interval = TimeSpan.FromMilliseconds(3 * 1000) };
         private static EventHandler<object>? tickHandler;
         public static void ApplyWithoutADJLine(bool saveinfo)
@@ -256,7 +256,7 @@ public sealed partial class MainWindow : WindowEx
 
         public static async void Apply(string RyzenADJline, bool saveinfo, bool ReapplyOverclock, double ReapplyOverclockTimer)
         {
-            try { sendSMUCommand = App.GetService<SendSMUCommand>(); } catch { return; }
+            try { sendSMUCommand = App.GetService<SendSmuCommand>(); } catch { return; }
             if (ReapplyOverclock == true)
             {
                 try
