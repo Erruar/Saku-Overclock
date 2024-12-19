@@ -2,8 +2,8 @@
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
-using System.Windows;
 using Microsoft.Win32;
+
 /*This is a modified processor WMI info file. It from Universal x86 Tuning Utility. Its author is https://github.com/JamesCJ60
 This file has been refactored many times and optimized to work with Saku Overclock by Sakurazhima Serzhik. I do not recommend rereading this file, it is better to familiarize yourself with https://github.com/JamesCJ60/Universal-x86-Tuning-Utility
 there you can see the source files in detail*/
@@ -13,7 +13,7 @@ internal class GetSystemInfo
     private static readonly ManagementObjectSearcher baseboardSearcher = new("root\\CIMV2", "SELECT * FROM Win32_BaseBoard");
     private static readonly ManagementObjectSearcher motherboardSearcher = new("root\\CIMV2", "SELECT * FROM Win32_MotherboardDevice");
     private static readonly ManagementObjectSearcher ComputerSsystemInfo = new("root\\CIMV2", "SELECT * FROM Win32_ComputerSystemProduct");
-    private static List<ManagementObject>? CachedGPUList = null;
+    private static List<ManagementObject>? CachedGPUList;
     private static long maxClockSpeedMHz = -1;
     #region Battery Information
     public static string? GetBatteryName()
@@ -110,7 +110,7 @@ internal class GetSystemInfo
             hours -= 12;
             meridian = "PM";
         }
-        var convertedTime = date.ToString() + "/" + month.ToString() + "/" + year.ToString() + " " + hours.ToString() + ":" + minutes.ToString() + ":" + seconds.ToString() + " " + meridian;
+        var convertedTime = date + "/" + month + "/" + year + " " + hours + ":" + minutes + ":" + seconds + " " + meridian;
         return convertedTime;
     }
     public static decimal GetBatteryRate()
@@ -130,10 +130,8 @@ internal class GetSystemInfo
                 {
                     return chargeRate;
                 }
-                else
-                {
-                    return -dischargeRate;
-                }
+
+                return -dischargeRate;
             }
             return 0;
         }
@@ -227,10 +225,8 @@ internal class GetSystemInfo
         {
             return sps.BatteryLifePercent != 100 ? sps.BatteryLifePercent + 0.1m : sps.BatteryLifePercent; // Примерно добавляет 0.1 для иллюстрации, если Windows Power Management даст не точное значение
         }
-        else
-        {
-            throw new InvalidOperationException("Unable to get power status.");
-        }
+
+        throw new InvalidOperationException("Unable to get power status.");
     }
     public static int GetBatteryLifeTime()
     {
@@ -241,15 +237,11 @@ internal class GetSystemInfo
             {
                 return -1; // От сети
             }
-            else
-            {
-                return sps.BatteryLifeTime; // Возвращаем оставшееся время работы от батареи в секундах
-            }
+
+            return sps.BatteryLifeTime; // Возвращаем оставшееся время работы от батареи в секундах
         }
-        else
-        {
-            throw new InvalidOperationException("Unable to get power status.");
-        }
+
+        throw new InvalidOperationException("Unable to get power status.");
     }
     #endregion
     #region OS Info
@@ -358,10 +350,8 @@ internal class GetSystemInfo
             {
                 return string.Concat("Windows ", endString[1].AsSpan(0, Math.Min(3, endString[1].Length)).Trim());
             }
-            else
-            {
-                return "Windows 10";
-            }
+
+            return "Windows 10";
         }
         catch
         {
@@ -443,14 +433,12 @@ internal class GetSystemInfo
                 _ = Garbage.Garbage_Collect();
                 return gpuName;
             }
-            else
-            {
-                return "GPU index out of range";
-            }
+
+            return "GPU index out of range";
         }
         catch (Exception ex)
         {
-            SendSMUCommand.TraceIt_TraceError($"Error retrieving GPU name: {ex}");
+            SendSmuCommand.TraceIt_TraceError($"Error retrieving GPU name: {ex}");
         }
 
         _ = Garbage.Garbage_Collect();
@@ -470,10 +458,8 @@ internal class GetSystemInfo
                     {
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
+
+                    return false;
                 }
                 return false;
             }
@@ -911,11 +897,13 @@ internal class GetSystemInfo
             {
                 return "Kaby Lake";
             }
-            else if (cpuName.Contains("8121U") || cpuName.Contains("8114Y"))
+
+            if (cpuName.Contains("8121U") || cpuName.Contains("8114Y"))
             {
                 return "Cannon Lake";
             }
-            else if (cpuName.Contains("8th"))
+
+            if (cpuName.Contains("8th"))
             {
                 return "Coffee Lake";
             }
@@ -929,7 +917,8 @@ internal class GetSystemInfo
             {
                 return "Ice Lake";
             }
-            else if (cpuName.Contains("10th"))
+
+            if (cpuName.Contains("10th"))
             {
                 return "Comet Lake";
             }
@@ -938,7 +927,8 @@ internal class GetSystemInfo
             {
                 return "Tiger Lake";
             }
-            else if (cpuName.Contains("11th"))
+
+            if (cpuName.Contains("11th"))
             {
                 return "Rocket Lake";
             }
@@ -993,10 +983,8 @@ internal class GetSystemInfo
                     {
                         return "Barcelo";
                     }
-                    else
-                    {
-                        return "Cezanne";
-                    }
+
+                    return "Cezanne";
 
                 case Family.RyzenFamily.Rembrandt:
                     return "Rembrandt";
@@ -1052,29 +1040,21 @@ internal class GetSystemInfo
                         ? $"{cores} ({bigCores} Performance Cores + {smallCores - 2} Efficiency Cores + 2 LP Efficiency Cores)"
                         : $"{cores} ({bigCores} Performance Cores + {smallCores} Efficiency Cores)";
                 }
-                else
-                {
-                    return cores.ToString();
-                }
-            }
-            else
-            {
+
                 return cores.ToString();
             }
+
+            return cores.ToString();
         }
-        else
+
+        if (FamilyHelpers.CPUName.Contains("7540U") || FamilyHelpers.CPUName.Contains("7440U"))
         {
-            if (FamilyHelpers.CPUName.Contains("7540U") || FamilyHelpers.CPUName.Contains("7440U"))
-            {
-                bigCores = 2;
-                smallCores = cores - bigCores;
-                return $"{cores} ({bigCores} Prime Cores + {smallCores} Compact Cores)";
-            }
-            else
-            {
-                return cores.ToString();
-            }
+            bigCores = 2;
+            smallCores = cores - bigCores;
+            return $"{cores} ({bigCores} Prime Cores + {smallCores} Compact Cores)";
         }
+
+        return cores.ToString();
     }
     public static string InstructionSets()
     {
@@ -1214,11 +1194,9 @@ internal class GetSystemInfo
             // For 64-bit processes, MMX is always supported on Windows.
             return true;
         }
-        else
-        {
-            // For 32-bit processes, check for MMX support on Windows.
-            return NativeMethods.IsProcessorFeaturePresent(NativeMethods.PF_MMX_INSTRUCTIONS_AVAILABLE);
-        }
+
+        // For 32-bit processes, check for MMX support on Windows.
+        return NativeMethods.IsProcessorFeaturePresent(NativeMethods.PF_MMX_INSTRUCTIONS_AVAILABLE);
     }
     #endregion
 }
