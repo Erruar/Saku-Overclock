@@ -7,15 +7,16 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
 using Application = Microsoft.UI.Xaml.Application;
 using FileMode = System.IO.FileMode;
+using Package = Windows.ApplicationModel.Package;
 
 namespace Saku_Overclock.SMUEngine;
 public abstract class UpdateChecker
 {
     private static readonly Version CurrentVersion = RuntimeHelper.IsMSIX ?
-        new Version(Windows.ApplicationModel.Package.Current.Id.Version.Major,
-            Windows.ApplicationModel.Package.Current.Id.Version.Minor,
-            Windows.ApplicationModel.Package.Current.Id.Version.Build,
-            Windows.ApplicationModel.Package.Current.Id.Version.Revision)
+        new Version(Package.Current.Id.Version.Major,
+            Package.Current.Id.Version.Minor,
+            Package.Current.Id.Version.Build,
+            Package.Current.Id.Version.Revision)
         : Assembly.GetExecutingAssembly().GetName().Version!;
 
     private const string RepoOwner = "Erruar";
