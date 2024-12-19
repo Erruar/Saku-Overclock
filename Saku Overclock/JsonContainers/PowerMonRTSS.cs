@@ -1,7 +1,11 @@
 ﻿using Saku_Overclock.SMUEngine;
 
 namespace Saku_Overclock.JsonContainers;
-internal class PowerMonRTSS
+
+internal class PowerMonRtss
 {
-    public List<PowerMonRTSSElement>? Elements { get; set; }
+    public List<PowerMonRtssElement>? Elements
+    {
+        get;
+    }
 }
