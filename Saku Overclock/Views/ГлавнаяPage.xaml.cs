@@ -1,84 +1,103 @@
 ﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
+using Windows.UI;
+using Windows.UI.Text;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Saku_Overclock.ViewModels;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.SMUEngine;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml;
-using System.Text.RegularExpressions;
-using Microsoft.UI.Xaml.Media.Imaging;
+using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Views;
 
-public sealed partial class ГлавнаяPage : Page
-{ 
+public sealed partial class ГлавнаяPage
+{
     public ГлавнаяViewModel ViewModel
     {
         get;
-    } 
+    }
+
     public ГлавнаяPage()
     {
         ViewModel = App.GetService<ГлавнаяViewModel>();
         InitializeComponent();
         GetUpdates();
     }
+
     #region Updater
+
     private async void GetUpdates()
     {
-        MainChangelogStackPanel.Children.Clear();
-        if (UpdateChecker.GitHubInfoString == string.Empty)
+        try
         {
-            await UpdateChecker.GenerateReleaseInfoString();
+            MainChangelogStackPanel.Children.Clear();
+            if (UpdateChecker.GitHubInfoString == string.Empty)
+            {
+                await UpdateChecker.GenerateReleaseInfoString();
+            }
+
+            await GenerateFormattedReleaseNotes(MainChangelogStackPanel);
+            //MainChangelogStackPanel.Children.Add(new TextBlock { Text = UpdateChecker.GitHubInfoString, TextWrapping = Microsoft.UI.Xaml.TextWrapping.WrapWholeWords, Width = 274, Foreground = (Brush)Application.Current.Resources["AccentColor"] });
         }
-        await GenerateFormattedReleaseNotes(MainChangelogStackPanel);
-        //MainChangelogStackPanel.Children.Add(new TextBlock { Text = UpdateChecker.GitHubInfoString, TextWrapping = Microsoft.UI.Xaml.TextWrapping.WrapWholeWords, Width = 274, Foreground = (Brush)Application.Current.Resources["AccentColor"] });
+        catch (Exception e)
+        {
+            SendSmuCommand.TraceIt_TraceError(e.ToString());
+        }
     }
+
     #endregion
+
     #region Event Handlers
+
     private void HyperLink_Click(object sender, RoutedEventArgs e)
     {
         var link = "https://github.com/Erruar/Saku-Overclock/wiki/FAQ";
-        if (sender is Button button)
+        if (sender is Button { Tag: string str1 })
         {
-            if (button.Tag is string str1)
-            {
-                link = str1;
-            }
-        } 
+            link = str1;
+        }
+
         Process.Start(new ProcessStartInfo(link) { UseShellExecute = true });
     }
-    private void Discrd_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+
+    private void Discrd_Click(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo("https://discord.com/invite/yVsKxqAaa7") { UseShellExecute = true });
-    } 
+    }
 
-    private void Param_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void Param_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true);
     }
 
-    private void Info_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void Info_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!);
     }
-    private void MainGithubReadmeButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+
+    private void MainGithubReadmeButton_Click(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock") { UseShellExecute = true });
     }
 
-    private void MainGithubIssuesButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void MainGithubIssuesButton_Click(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/issues") { UseShellExecute = true });
+        Process.Start(
+            new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/issues") { UseShellExecute = true });
     }
+
     #endregion
 
     #region NotesWriter
+
     public static async Task GenerateFormattedReleaseNotes(StackPanel stackPanel)
     {
         stackPanel.Children.Clear();
-        await UpdateChecker.GenerateReleaseInfoString(); 
+        await UpdateChecker.GenerateReleaseInfoString();
         var formattedText = FormatReleaseNotes(UpdateChecker.GitHubInfoString);
         foreach (var paragraph in formattedText)
         {
@@ -89,21 +108,21 @@ public sealed partial class ГлавнаяPage : Page
     private static UIElement[] FormatReleaseNotes(string? releaseNotes)
     {
         // Удаление ненужных частей текста
-        var cleanedNotes = CleanReleaseNotes(releaseNotes); 
+        var cleanedNotes = CleanReleaseNotes(releaseNotes);
         // Применение стилей markdown
-        var formattedElements = ApplyMarkdownStyles(cleanedNotes); 
+        var formattedElements = ApplyMarkdownStyles(cleanedNotes);
         return formattedElements;
     }
 
     private static string CleanReleaseNotes(string? releaseNotes)
     {
-        var lines = releaseNotes?.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-        var cleanedLines = new List<string>();  
+        var lines = releaseNotes?.Split([Environment.NewLine], StringSplitOptions.None);
+        var cleanedLines = new List<string>();
         for (var i = 0; i < lines?.Length; i++)
         {
-            var line = lines[i]; 
+            var line = lines[i];
             if (line.StartsWith("Highlights:"))
-            { 
+            {
                 cleanedLines.Add(line); // Добавляем строку Highlights: 
                 i++;
                 while (i < lines.Length)
@@ -116,21 +135,24 @@ public sealed partial class ГлавнаяPage : Page
                     {
                         break; // Удаляем всё после строки, которая не начинается с цифры или пустая
                     }
+
                     i++;
-                } 
+                }
+
                 i--; // Вернемся на шаг назад, чтобы правильно обработать следующую строку
             }
             else
             {
                 cleanedLines.Add(line);
             }
-        } 
+        }
+
         return string.Join(Environment.NewLine, cleanedLines);
     }
 
     private static UIElement[] ApplyMarkdownStyles(string cleanedNotes)
     {
-        var lines = cleanedNotes.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+        var lines = cleanedNotes.Split([Environment.NewLine], StringSplitOptions.None);
         var elements = new List<UIElement>();
 
         for (var i = 0; i < lines.Length; i++)
@@ -143,7 +165,7 @@ public sealed partial class ГлавнаяPage : Page
                 var textBlock = new TextBlock
                 {
                     Text = text,
-                    FontWeight = new Windows.UI.Text.FontWeight(500),
+                    FontWeight = new FontWeight(500),
                     TextWrapping = TextWrapping.Wrap,
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
@@ -155,7 +177,7 @@ public sealed partial class ГлавнаяPage : Page
                 var textBlock = new TextBlock
                 {
                     Text = text,
-                    FontWeight = new Windows.UI.Text.FontWeight(600),
+                    FontWeight = new FontWeight(600),
                     TextWrapping = TextWrapping.Wrap,
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
@@ -167,7 +189,7 @@ public sealed partial class ГлавнаяPage : Page
                 var textBlock = new TextBlock
                 {
                     Text = text,
-                    FontWeight = new Windows.UI.Text.FontWeight(700),
+                    FontWeight = new FontWeight(700),
                     TextWrapping = TextWrapping.Wrap,
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
@@ -175,15 +197,14 @@ public sealed partial class ГлавнаяPage : Page
             }
             else if (line.StartsWith("> "))
             {
-                continue; // Пропускаем строку с цитатой
             }
             else if (line.StartsWith("![image]("))
             {
-                var text = line.Replace("![image](","").Replace(")","");
+                var text = line.Replace("![image](", "").Replace(")", "");
                 var spoilerText = new TextBlock
                 {
                     Text = "+ Spoiler",
-                    FontWeight = new Windows.UI.Text.FontWeight(500),
+                    FontWeight = new FontWeight(500),
                     HorizontalAlignment = HorizontalAlignment.Left
                 };
                 var spoilerImage = new Image
@@ -193,8 +214,8 @@ public sealed partial class ГлавнаяPage : Page
                 };
                 var spoilerButton = new Button
                 {
-                    BorderBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(1, 0, 0, 0)),
-                    Background = new SolidColorBrush(Windows.UI.Color.FromArgb(1, 0, 0, 0)),
+                    BorderBrush = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0)),
+                    Background = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0)),
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     Content = new StackPanel
                     {
@@ -205,13 +226,15 @@ public sealed partial class ГлавнаяPage : Page
                         }
                     }
                 };
-                spoilerButton.Click += (s, a) =>
+                spoilerButton.Click += (_, _) =>
                 {
-                    spoilerImage.Visibility = spoilerImage.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+                    spoilerImage.Visibility = spoilerImage.Visibility == Visibility.Collapsed
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
                     spoilerText.Text = spoilerText.Text.Contains('-') ? "+ Spoiler" : "- Spoiler";
                 };
                 elements.Add(spoilerButton);
-            } 
+            }
             else
             {
                 var matches = UnmanagementWords().Matches(line);
@@ -234,7 +257,7 @@ public sealed partial class ГлавнаяPage : Page
                     elements.Add(new TextBlock
                     {
                         Text = highlightedText,
-                        FontWeight = new Windows.UI.Text.FontWeight(700),
+                        FontWeight = new FontWeight(700),
                         Foreground = (Brush)Application.Current.Resources["AccentColor"],
                         TextWrapping = TextWrapping.Wrap,
                         HorizontalAlignment = HorizontalAlignment.Stretch
@@ -259,9 +282,8 @@ public sealed partial class ГлавнаяPage : Page
         return [..elements];
     }
 
-
-    [GeneratedRegex("\\*\\*(.*?)\\*\\*")]
+    [GeneratedRegex(@"\*\*(.*?)\*\*")]
     private static partial Regex UnmanagementWords();
-    #endregion
 
+    #endregion
 }
