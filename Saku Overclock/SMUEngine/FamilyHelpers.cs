@@ -13,9 +13,9 @@ internal static class FamilyHelpers
 
 
     public static string CPUName = "";
-    public static int CPUFamily = 0;
-    public static int CPUModel = 0;
-    public static int CPUStepping = 0;
+    public static int CPUFamily;
+    public static int CPUModel;
+    public static int CPUStepping;
     public static void SetCpuFamily()
     {
         try
