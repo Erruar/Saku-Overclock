@@ -1,16 +1,20 @@
 ﻿using Saku_Overclock.SMUEngine;
 
-namespace Saku_Overclock;
+namespace Saku_Overclock.JsonContainers;
 
 public class Smusettings
 {
-    public string Note = ""; 
-    public  List<CustomMailBoxes>? MailBoxes
+    public string Note = "";
+
+    public List<CustomMailBoxes>? MailBoxes
     {
-        get; set;
+        get;
+        set;
     }
-    public  List<QuickSMUCommands>? QuickSMUCommands
+
+    public List<QuickSmuCommands>? QuickSmuCommands
     {
-        get; set;
-    } 
+        get;
+        set;
+    }
 }
