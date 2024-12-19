@@ -1,47 +1,57 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using System.Windows.Input;
+using Windows.Foundation;
+using Windows.Graphics;
+using Windows.System;
+using Windows.UI.Text;
 using Microsoft.UI.Input;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
-using Windows.Foundation;
-using Windows.System;
-using Windows.UI.Core;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using WindowActivatedEventArgs = Microsoft.UI.Xaml.WindowActivatedEventArgs;
 
 namespace Saku_Overclock.Views;
 
-// TODO: Update NavigationViewItem titles and icons in ShellPage.xaml.
-public sealed partial class ShellPage : Page
+public sealed partial class ShellPage
 {
-    private const int WH_KEYBOARD_LL = 13; // ID хука на клавиатуру
-    private const int WM_KEYDOWN = 0x0100; // ID события нажатия клавиши
-    private const int VK_MENU = 0x12; // ID клавиши Alt
-    private const int KEY_PRESSED = 0x8000; // ID нажатой клавиши, а не события
+    private const int WhKeyboardLl = 13; // ID хука на клавиатуру
+    private const int WmKeydown = 0x0100; // ID события нажатия клавиши
+    private const int VkMenu = 0x12; // ID клавиши Alt
+    private const int KeyPressed = 0x8000; // ID нажатой клавиши, а не события
+    private static IntPtr _hookId = IntPtr.Zero; // ID хука, используется, например, для удаления
     private readonly LowLevelKeyboardProc _proc; // Коллбэк метод (вызывается при срабатывании хука)
-    private static IntPtr _hookID = IntPtr.Zero; // ID хука, используется, например, для удаления
-    private Microsoft.UI.Xaml.DispatcherTimer? dispatcherTimer; // Таймер обновления уведомлений
-    private bool loaded = true; // Запустился ли UI поток приложения
-    private bool IsNotificationPanelShow; // Флаг: Открыта ли панель уведомлений
-    private int? compareList; // Нет новых уведомлений - пока
-    private Config config = new(); // Класс с конфигом приложения
-    private JsonContainers.Notifications notify = new(); // Класс с уведомлениями
-    private Profile[] profile = new Profile[1]; // Класс с профилями параметров разгона пользователя
-    public readonly Microsoft.UI.Windowing.AppWindow m_AppWindow; // Получить AppWindow для тайтлбара
-    private bool fixedTitleBar = false; // Флаг фиксированного тайтлбара
-    private Themer themer = new(); // Класс с темами приложения
+    private DispatcherTimer? _dispatcherTimer; // Таймер обновления уведомлений
+    private bool _loaded = true; // Запустился ли UI поток приложения
+    private bool _isNotificationPanelShow; // Флаг: Открыта ли панель уведомлений
+    private int? _compareList; // Нет новых уведомлений - пока
+    private Config _config = new(); // Класс с конфигом приложения
+    private JsonContainers.Notifications _notify = new(); // Класс с уведомлениями
+    private Profile[] _profile = new Profile[1]; // Класс с профилями параметров разгона пользователя
 
-    public static string SelectedProfile = "Unknown"; // Общая информация для выбранного профиля. Используется в RTSS на странице информации
+    private AppWindow MAppWindow
+    {
+        get;
+    }
+
+    private bool _fixedTitleBar; // Флаг фиксированного тайтлбара
+    private Themer _themer = new(); // Класс с темами приложения
+
+    public static string SelectedProfile
+    {
+        get;
+        private set;
+    } = "Unknown";
 
     public ShellViewModel ViewModel // ViewModel, установка нужной модели для UI страницы
     {
@@ -58,161 +68,202 @@ public sealed partial class ShellPage : Page
         {
             MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
         }
-        if (config.HotkeysEnabled)
+
+        if (_config.HotkeysEnabled)
         {
-            _proc = HookCallbackAsync; // Коллбэк метод (вызывается при срабатывании хука)
-            _hookID = SetHook(_proc); // Хук, который должен срабатывать
+            _proc = HookCallbackAsync;
+            _hookId = SetHook(_proc); // Хуй, который должен срабатывать
         }
         else
         {
-            _proc = (s, a, c) => { return 0; };
-            _hookID = 0;
+            _proc = (_, _, _) => 0;
+            _hookId = 0;
         }
-        m_AppWindow = App.MainWindow.AppWindow; // AppWindow, нужен для тайтлбара приложения
+
+        MAppWindow = App.MainWindow.AppWindow; // AppWindow, нужен для тайтлбара приложения
         ViewModel = viewModel; // ViewModel, установка нужной модели для UI страницы
         InitializeComponent(); // Запуск UI
         ViewModel.NavigationService.Frame = NavigationFrame; // Выбранная пользователем страница
         ViewModel.NavigationViewService.Initialize(NavigationViewControl); // Инициализировать выбор страниц
+
         // A custom title bar is required for full window theme and Mica support.
         // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated; // Приложение активировалось, выставить первую страницу
-        App.MainWindow.Closed += (s, a) =>
+        App.MainWindow.Closed += (_, _) =>
         {
-            UnhookWindowsHookEx(_hookID); // Приложение закрылось - убить хуки
+            UnhookWindowsHookEx(_hookId); // Приложение закрылось - убить хуки
         };
     }
 
     #region JSON and Initialization
+
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
-        loaded = true;
-        //MandarinAddNotification("Overclock Started!\n" + DateTime.Today, "Now you can set up your Saku Overclock", InfoBarSeverity.Success); //DEBUG. TEST MESSAGE. WILL NOT BE DISPLAYED!!!
+        _loaded = true;
         StartInfoUpdate();
         GetProfileInit();
-
     }
+
     #region App TitleBar Initialization
+
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
-        // App.AppTitlebar = AppTitleBarText as UIElement;
         App.AppTitlebar = VersionNumberIndicator;
         AppTitleBar.Loaded += AppTitleBar_Loaded;
         AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
         Theme_Loader(); //Загрузить тему
     }
+
     private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
     {
         try
         {
-            SetRegionsForCustomTitleBar();  //Установить регион взаимодействия
+            SetRegionsForCustomTitleBar(); //Установить регион взаимодействия
         }
-        catch { }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
+        }
     }
+
     private void AppTitleBar_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         try
         {
-            App.MainWindow.DispatcherQueue.TryEnqueue(SetRegionsForCustomTitleBar);//Установить регион взаимодействия
+            App.MainWindow.DispatcherQueue.TryEnqueue(SetRegionsForCustomTitleBar); //Установить регион взаимодействия
         }
-        catch { }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
+        }
     }
 
     #region User Profiles
-    public void GetProfileInit()
+
+    private void GetProfileInit()
     {
         ConfigLoad();
-        if (!config.OldTitleBar)
+        if (!_config.OldTitleBar)
         {
-            var Itemz = new ObservableCollection<ComboBoxItem>();
-            Itemz.Clear();
+            var itemz = new ObservableCollection<ComboBoxItem>();
+            itemz.Clear();
             var userProfiles = new ComboBoxItem
             {
-                Content = new TextBlock { Text = "Shell_CustomProfiles".GetLocalized(), Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"] },
+                Content = new TextBlock
+                {
+                    Text = "Shell_CustomProfiles".GetLocalized(),
+                    Foreground = (Brush)Application.Current.Resources["AccentTextFillColorTertiaryBrush"]
+                },
                 IsEnabled = false
             };
-            Itemz.Add(userProfiles);
+            itemz.Add(userProfiles);
             ProfileLoad();
-            if (profile == null)
-            {
-                profile = new Profile[1];
-                profile[0] = new Profile();
-                ProfileSave();
-            }
-            foreach (var profile in profile)
+            foreach (var profile in _profile)
             {
                 var comboBoxItem = new ComboBoxItem
                 {
-                    Content = profile != null ? profile.profilename : "NO PROFILES",
-                    IsEnabled = profile != null
+                    Content = profile.profilename,
+                    IsEnabled = true
                 };
-                Itemz.Add(comboBoxItem);
+                itemz.Add(comboBoxItem);
             }
+
             // Добавление второго элемента (с разделителем)
             var separator = new ComboBoxItem
             {
                 IsEnabled = false,
-                Content = new NavigationViewItemSeparator()
+                Content = new NavigationViewItemSeparator
                 {
                     BorderThickness = new Thickness(1)
                 }
             };
-            Itemz.Add(separator);
+            itemz.Add(separator);
             var premadedProfiles = new ComboBoxItem
             {
-                Content = new TextBlock { Text = "Shell_PremadedProfiles".GetLocalized(), Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"] },
+                Content = new TextBlock
+                {
+                    Text = "Shell_PremadedProfiles".GetLocalized(),
+                    Foreground = (Brush)Application.Current.Resources["AccentTextFillColorTertiaryBrush"]
+                },
                 IsEnabled = false
             };
-            Itemz.Add(premadedProfiles);
-            Itemz.Add(new ComboBoxItem() { Content = "Shell_Preset_Min".GetLocalized(), Name = "PremadeSsAMin" });
-            Itemz.Add(new ComboBoxItem() { Content = "Shell_Preset_Eco".GetLocalized(), Name = "PremadeSsAEco" });
-            Itemz.Add(new ComboBoxItem() { Content = "Shell_Preset_Balance".GetLocalized(), Name = "PremadeSsABal" });
-            Itemz.Add(new ComboBoxItem() { Content = "Shell_Preset_Speed".GetLocalized(), Name = "PremadeSsASpd" });
-            Itemz.Add(new ComboBoxItem() { Content = "Shell_Preset_Max".GetLocalized(), Name = "PremadeSsAMax" });
-            ViewModel.Items = Itemz;
-            if (config.Preset == -1)
+            itemz.Add(premadedProfiles);
+            itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Min".GetLocalized(), Name = "PremadeSsAMin" });
+            itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Eco".GetLocalized(), Name = "PremadeSsAEco" });
+            itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Balance".GetLocalized(), Name = "PremadeSsABal" });
+            itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Speed".GetLocalized(), Name = "PremadeSsASpd" });
+            itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Max".GetLocalized(), Name = "PremadeSsAMax" });
+            ViewModel.Items = itemz;
+            if (_config.Preset == -1)
             {
-                if (config.PremadeMinActivated) { SelectRightPremadedProfileName("PremadeSsAMin"); }
-                if (config.PremadeEcoActivated) { SelectRightPremadedProfileName("PremadeSsAEco"); }
-                if (config.PremadeBalanceActivated) { SelectRightPremadedProfileName("PremadeSsABal"); }
-                if (config.PremadeSpeedActivated) { SelectRightPremadedProfileName("PremadeSsASpd"); }
-                if (config.PremadeMaxActivated) { SelectRightPremadedProfileName("PremadeSsAMax"); }
+                if (_config.PremadeMinActivated)
+                {
+                    SelectRightPremadedProfileName("PremadeSsAMin");
+                }
+
+                if (_config.PremadeEcoActivated)
+                {
+                    SelectRightPremadedProfileName("PremadeSsAEco");
+                }
+
+                if (_config.PremadeBalanceActivated)
+                {
+                    SelectRightPremadedProfileName("PremadeSsABal");
+                }
+
+                if (_config.PremadeSpeedActivated)
+                {
+                    SelectRightPremadedProfileName("PremadeSsASpd");
+                }
+
+                if (_config.PremadeMaxActivated)
+                {
+                    SelectRightPremadedProfileName("PremadeSsAMax");
+                }
             }
             else
             {
-                ViewModel.SelectedIndex = config.Preset + 1; ProfileSetComboBox.SelectedIndex = config.Preset + 1;
+                ViewModel.SelectedIndex = _config.Preset + 1;
+                ProfileSetComboBox.SelectedIndex = _config.Preset + 1;
             }
-            if (config.ReapplyLatestSettingsOnAppLaunch) { ProfileSetButton.IsEnabled = false; }
+
+            if (_config.ReapplyLatestSettingsOnAppLaunch)
+            {
+                ProfileSetButton.IsEnabled = false;
+            }
         }
     }
-    private void SelectRightPremadedProfileName(string Names)
+
+    private void SelectRightPremadedProfileName(string names)
     {
         foreach (var box in ProfileSetComboBox.Items)
         {
             var combobox = box as ComboBoxItem;
-            if (combobox?.Name.Contains(Names) == true)
+            if (combobox?.Name.Contains(names) == true)
             {
                 ProfileSetComboBox.SelectedItem = combobox;
                 return;
             }
         }
     }
+
     private string NextPremadeProfile_Switch()
     {
         var nextProfile = string.Empty;
         ConfigLoad();
-        if (config == null) { return string.Empty; }
-        if (config.Preset != -1) // У нас был готовый пресет
+        if (_config.Preset != -1) // У нас был готовый пресет
         {
-            if (config.PremadeMinActivated)
+            if (_config.PremadeMinActivated)
             {
-                config.Preset = -1;
+                _config.Preset = -1;
                 nextProfile = "Shell_Preset_Min".GetLocalized();
-                config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                _config.RyzenADJline =
+                    " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
                     if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMin")
@@ -222,11 +273,12 @@ public sealed partial class ShellPage : Page
                     }
                 }
             }
-            else if (config.PremadeEcoActivated)
+            else if (_config.PremadeEcoActivated)
             {
-                config.Preset = -1;
+                _config.Preset = -1;
                 nextProfile = "Shell_Preset_Eco".GetLocalized();
-                config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                _config.RyzenADJline =
+                    " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
                     if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAEco")
@@ -236,11 +288,12 @@ public sealed partial class ShellPage : Page
                     }
                 }
             }
-            else if (config.PremadeBalanceActivated)
+            else if (_config.PremadeBalanceActivated)
             {
-                config.Preset = -1;
+                _config.Preset = -1;
                 nextProfile = "Shell_Preset_Balance".GetLocalized();
-                config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                _config.RyzenADJline =
+                    " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
                     if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsABal")
@@ -250,11 +303,12 @@ public sealed partial class ShellPage : Page
                     }
                 }
             }
-            else if (config.PremadeSpeedActivated)
+            else if (_config.PremadeSpeedActivated)
             {
-                config.Preset = -1;
+                _config.Preset = -1;
                 nextProfile = "Shell_Preset_Speed".GetLocalized();
-                config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                _config.RyzenADJline =
+                    " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
                     if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsASpd")
@@ -264,11 +318,12 @@ public sealed partial class ShellPage : Page
                     }
                 }
             }
-            else if (config.PremadeMaxActivated)
+            else if (_config.PremadeMaxActivated)
             {
-                config.Preset = -1;
+                _config.Preset = -1;
                 nextProfile = "Shell_Preset_Max".GetLocalized();
-                config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                _config.RyzenADJline =
+                    " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
                     if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMax")
@@ -281,16 +336,17 @@ public sealed partial class ShellPage : Page
         }
         else // У нас уже был выставлен какой-то профиль
         {
-            if (config.PremadeMinActivated)
+            if (_config.PremadeMinActivated)
             {
-                config.Preset = -1;
+                _config.Preset = -1;
                 nextProfile = "Shell_Preset_Eco".GetLocalized();
-                config.PremadeMinActivated = false;
-                config.PremadeEcoActivated = true;
-                config.PremadeBalanceActivated = false;
-                config.PremadeSpeedActivated = false;
-                config.PremadeMaxActivated = false;
-                config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                _config.PremadeMinActivated = false;
+                _config.PremadeEcoActivated = true;
+                _config.PremadeBalanceActivated = false;
+                _config.PremadeSpeedActivated = false;
+                _config.PremadeMaxActivated = false;
+                _config.RyzenADJline =
+                    " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
                     if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAEco")
@@ -300,16 +356,17 @@ public sealed partial class ShellPage : Page
                     }
                 }
             } // Эко
-            else if (config.PremadeEcoActivated)
+            else if (_config.PremadeEcoActivated)
             {
-                config.Preset = -1;
+                _config.Preset = -1;
                 nextProfile = "Shell_Preset_Balance".GetLocalized();
-                config.PremadeMinActivated = false;
-                config.PremadeEcoActivated = false;
-                config.PremadeBalanceActivated = true;
-                config.PremadeSpeedActivated = false;
-                config.PremadeMaxActivated = false;
-                config.RyzenADJline = " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                _config.PremadeMinActivated = false;
+                _config.PremadeEcoActivated = false;
+                _config.PremadeBalanceActivated = true;
+                _config.PremadeSpeedActivated = false;
+                _config.PremadeMaxActivated = false;
+                _config.RyzenADJline =
+                    " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
                     if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsABal")
@@ -319,16 +376,17 @@ public sealed partial class ShellPage : Page
                     }
                 }
             } // Баланс
-            else if (config.PremadeBalanceActivated)
+            else if (_config.PremadeBalanceActivated)
             {
-                config.Preset = -1;
+                _config.Preset = -1;
                 nextProfile = "Shell_Preset_Speed".GetLocalized();
-                config.PremadeMinActivated = false;
-                config.PremadeEcoActivated = false;
-                config.PremadeBalanceActivated = false;
-                config.PremadeSpeedActivated = true;
-                config.PremadeMaxActivated = false;
-                config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                _config.PremadeMinActivated = false;
+                _config.PremadeEcoActivated = false;
+                _config.PremadeBalanceActivated = false;
+                _config.PremadeSpeedActivated = true;
+                _config.PremadeMaxActivated = false;
+                _config.RyzenADJline =
+                    " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
                     if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsASpd")
@@ -338,16 +396,17 @@ public sealed partial class ShellPage : Page
                     }
                 }
             } // Скорость
-            else if (config.PremadeSpeedActivated)
+            else if (_config.PremadeSpeedActivated)
             {
-                config.Preset = -1;
+                _config.Preset = -1;
                 nextProfile = "Shell_Preset_Max".GetLocalized();
-                config.PremadeMinActivated = false;
-                config.PremadeEcoActivated = false;
-                config.PremadeBalanceActivated = false;
-                config.PremadeSpeedActivated = false;
-                config.PremadeMaxActivated = true;
-                config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                _config.PremadeMinActivated = false;
+                _config.PremadeEcoActivated = false;
+                _config.PremadeBalanceActivated = false;
+                _config.PremadeSpeedActivated = false;
+                _config.PremadeMaxActivated = true;
+                _config.RyzenADJline =
+                    " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
                     if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMax")
@@ -357,16 +416,17 @@ public sealed partial class ShellPage : Page
                     }
                 }
             } // Максимум
-            else if (config.PremadeMaxActivated)
+            else if (_config.PremadeMaxActivated)
             {
-                config.Preset = -1;
+                _config.Preset = -1;
                 nextProfile = "Shell_Preset_Min".GetLocalized();
-                config.PremadeMinActivated = true;
-                config.PremadeEcoActivated = false;
-                config.PremadeBalanceActivated = false;
-                config.PremadeSpeedActivated = false;
-                config.PremadeMaxActivated = false;
-                config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+                _config.PremadeMinActivated = true;
+                _config.PremadeEcoActivated = false;
+                _config.PremadeBalanceActivated = false;
+                _config.PremadeSpeedActivated = false;
+                _config.PremadeMaxActivated = false;
+                _config.RyzenADJline =
+                    " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
                     if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMin")
@@ -377,80 +437,106 @@ public sealed partial class ShellPage : Page
                 }
             } // Минимум
         }
+
         ConfigSave();
         SelectedProfile = nextProfile;
         return nextProfile;
     }
+
     private string NextCustomProfile_Switch()
     {
         var nextProfile = string.Empty;
         ProfileLoad();
         ConfigLoad();
-        if (config.Preset == -1) // У нас был готовый пресет
+        if (_config.Preset == -1) // У нас был готовый пресет
         {
-            if (profile.Length > 0 && profile[0] != null && profile[0].profilename != null) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
+            if (_profile.Length > 0 &&
+                _profile[0].profilename !=
+                string.Empty) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
             {
-                config.Preset = 0;
+                _config.Preset = 0;
                 try
                 {
                     foreach (var element in ProfileSetComboBox.Items)
                     {
-                        if (element != null && (element as ComboBoxItem) != null)
+                        if (element != null && element as ComboBoxItem != null)
                         {
                             var selectedName = (element as ComboBoxItem)!.Content.ToString();
-                            if (selectedName != null && selectedName == profile[0].profilename)
+                            if (selectedName != null && selectedName == _profile[0].profilename)
                             {
                                 ProfileSetComboBox.SelectedItem = element as ComboBoxItem;
                                 ProfileSetButton.IsEnabled = false;
                                 nextProfile = selectedName;
                             }
                         }
-                        else { MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {(element as ComboBoxItem)!.Content}", InfoBarSeverity.Error); }
+                        else
+                        {
+                            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                                $"Unable to select the profile {(element as ComboBoxItem)!.Content}",
+                                InfoBarSeverity.Error);
+                        }
                     }
+
                     MandarinSparseUnit();
                 }
                 catch
                 {
-                    MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {profile[0].profilename}", InfoBarSeverity.Error);
+                    MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                        $"Unable to select the profile {_profile[0].profilename}", InfoBarSeverity.Error);
                 }
             }
         }
         else // У нас уже был выставлен какой-то профиль
         {
-            var nextProfileIndex = (profile.Length - 1 >= config.Preset + 1) ? (config.Preset + 1) : 0;
-            if (profile.Length > nextProfileIndex && profile[nextProfileIndex] != null && profile[nextProfileIndex].profilename != null) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
+            var nextProfileIndex = _profile.Length - 1 >= _config.Preset + 1 ? _config.Preset + 1 : 0;
+            if (_profile.Length > nextProfileIndex &&
+                _profile[nextProfileIndex].profilename !=
+                string.Empty) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
             {
-                config.Preset = nextProfileIndex;
+                _config.Preset = nextProfileIndex;
                 try
                 {
                     foreach (var element in ProfileSetComboBox.Items)
                     {
-                        if (element != null && (element as ComboBoxItem) != null)
+                        if (element != null && element as ComboBoxItem != null)
                         {
                             var selectedName = (element as ComboBoxItem)!.Content.ToString();
-                            if (selectedName != null && selectedName == profile[nextProfileIndex].profilename)
+                            if (selectedName != null && selectedName == _profile[nextProfileIndex].profilename)
                             {
                                 ProfileSetComboBox.SelectedItem = element as ComboBoxItem;
                                 ProfileSetButton.IsEnabled = false;
                                 nextProfile = selectedName;
                             }
                         }
-                        else { MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {(element as ComboBoxItem)!.Content}", InfoBarSeverity.Error); }
+                        else
+                        {
+                            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                                $"Unable to select the profile {(element as ComboBoxItem)!.Content}",
+                                InfoBarSeverity.Error);
+                        }
                     }
+
                     MandarinSparseUnit();
                 }
                 catch
                 {
-                    MandarinAddNotification("TraceIt_Error".GetLocalized(), $"Unable to select the profile {profile[0].profilename}", InfoBarSeverity.Error);
+                    MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                        $"Unable to select the profile {_profile[0].profilename}", InfoBarSeverity.Error);
                 }
             }
-            else { MandarinAddNotification("TraceIt_Error".GetLocalized(), nextProfileIndex.ToString(), InfoBarSeverity.Error); }
+            else
+            {
+                MandarinAddNotification("TraceIt_Error".GetLocalized(), nextProfileIndex.ToString(),
+                    InfoBarSeverity.Error);
+            }
         }
+
         ConfigSave();
         SelectedProfile = nextProfile;
         return nextProfile;
     }
-    public void MandarinSparseUnit()
+
+    private void MandarinSparseUnit()
     {
         int indexRequired;
         var element = ProfileSetComboBox.SelectedItem as ComboBoxItem;
@@ -459,417 +545,512 @@ public sealed partial class ShellPage : Page
         if (!element!.Name.Contains("PremadeSsA"))
         {
             indexRequired = ProfileSetComboBox.SelectedIndex - 1;
-            config.Preset = ProfileSetComboBox.SelectedIndex - 1;
+            _config.Preset = ProfileSetComboBox.SelectedIndex - 1;
             ConfigSave();
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 var navigationService = App.GetService<INavigationService>();
-                if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true); }
+                if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel)
+                {
+                    navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+                    navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true);
+                }
             });
         }
         else
         {
-            if (element!.Name.Contains("Min"))
+            if (element.Name.Contains("Min"))
             {
-                config.PremadeMinActivated = true;
-                config.PremadeEcoActivated = false;
-                config.PremadeBalanceActivated = false;
-                config.PremadeSpeedActivated = false;
-                config.PremadeMaxActivated = false;
-                config.Preset = -1;
-                config.RyzenADJline = " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=64 --slow-limit=6000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                /*   param.InitSave();*/
-                MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
+                _config.PremadeMinActivated = true;
+                _config.PremadeEcoActivated = false;
+                _config.PremadeBalanceActivated = false;
+                _config.PremadeSpeedActivated = false;
+                _config.PremadeMaxActivated = false;
+                _config.Preset = -1;
+                _config.RyzenADJline =
+                    " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=64 --slow-limit=6000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
+                MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
+                    _config.ReapplyOverclockTimer);
             }
-            if (element!.Name.Contains("Eco"))
+
+            if (element.Name.Contains("Eco"))
             {
-                config.PremadeMinActivated = false;
-                config.PremadeEcoActivated = true;
-                config.PremadeBalanceActivated = false;
-                config.PremadeSpeedActivated = false;
-                config.PremadeMaxActivated = false;
-                config.Preset = -1;
-                config.RyzenADJline = " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=64 --slow-limit=16000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
+                _config.PremadeMinActivated = false;
+                _config.PremadeEcoActivated = true;
+                _config.PremadeBalanceActivated = false;
+                _config.PremadeSpeedActivated = false;
+                _config.PremadeMaxActivated = false;
+                _config.Preset = -1;
+                _config.RyzenADJline =
+                    " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=64 --slow-limit=16000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
+                MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
+                    _config.ReapplyOverclockTimer);
             }
-            if (element!.Name.Contains("Bal"))
+
+            if (element.Name.Contains("Bal"))
             {
-                config.PremadeMinActivated = false;
-                config.PremadeEcoActivated = false;
-                config.PremadeBalanceActivated = true;
-                config.PremadeSpeedActivated = false;
-                config.PremadeMaxActivated = false;
-                config.Preset = -1;
-                config.RyzenADJline = " --tctl-temp=75 --stapm-limit=18000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
+                _config.PremadeMinActivated = false;
+                _config.PremadeEcoActivated = false;
+                _config.PremadeBalanceActivated = true;
+                _config.PremadeSpeedActivated = false;
+                _config.PremadeMaxActivated = false;
+                _config.Preset = -1;
+                _config.RyzenADJline =
+                    " --tctl-temp=75 --stapm-limit=18000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
+                MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
+                    _config.ReapplyOverclockTimer);
             }
-            if (element!.Name.Contains("Spd"))
+
+            if (element.Name.Contains("Spd"))
             {
-                config.PremadeMinActivated = false;
-                config.PremadeEcoActivated = false;
-                config.PremadeBalanceActivated = false;
-                config.PremadeSpeedActivated = true;
-                config.PremadeMaxActivated = false;
-                config.Preset = -1;
-                config.RyzenADJline = " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=64 --slow-limit=20000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
+                _config.PremadeMinActivated = false;
+                _config.PremadeEcoActivated = false;
+                _config.PremadeBalanceActivated = false;
+                _config.PremadeSpeedActivated = true;
+                _config.PremadeMaxActivated = false;
+                _config.Preset = -1;
+                _config.RyzenADJline =
+                    " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=64 --slow-limit=20000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
+                MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
+                    _config.ReapplyOverclockTimer);
             }
-            if (element!.Name.Contains("Max"))
+
+            if (element.Name.Contains("Max"))
             {
-                config.PremadeMinActivated = false;
-                config.PremadeEcoActivated = false;
-                config.PremadeBalanceActivated = false;
-                config.PremadeSpeedActivated = false;
-                config.PremadeMaxActivated = true;
-                config.Preset = -1;
-                config.RyzenADJline = " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=64 --slow-limit=60000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
+                _config.PremadeMinActivated = false;
+                _config.PremadeEcoActivated = false;
+                _config.PremadeBalanceActivated = false;
+                _config.PremadeSpeedActivated = false;
+                _config.PremadeMaxActivated = true;
+                _config.Preset = -1;
+                _config.RyzenADJline =
+                    " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=64 --slow-limit=60000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
+                MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
+                    _config.ReapplyOverclockTimer);
             }
+
             ConfigSave();
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 var navigationService = App.GetService<INavigationService>();
-                if (navigationService.Frame!.GetPageViewModel() is ПресетыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!, null, true); }
-                else if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true); }
+                if (navigationService.Frame!.GetPageViewModel() is ПресетыViewModel)
+                {
+                    navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+                    navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!, null, true);
+                }
+                else if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel)
+                {
+                    navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+                    navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true);
+                }
             });
             return;
         }
+
         ProfileLoad();
         var adjline = "";
-        if (profile[indexRequired].cpu1)
+        if (_profile[indexRequired].cpu1)
         {
-            adjline += " --tctl-temp=" + profile[indexRequired].cpu1value;
+            adjline += " --tctl-temp=" + _profile[indexRequired].cpu1value;
         }
 
-        if (profile[indexRequired].cpu2)
+        if (_profile[indexRequired].cpu2)
         {
-            adjline += " --stapm-limit=" + profile[indexRequired].cpu2value + "000";
+            adjline += " --stapm-limit=" + _profile[indexRequired].cpu2value + "000";
         }
 
-        if (profile[indexRequired].cpu3)
+        if (_profile[indexRequired].cpu3)
         {
-            adjline += " --fast-limit=" + profile[indexRequired].cpu3value + "000";
+            adjline += " --fast-limit=" + _profile[indexRequired].cpu3value + "000";
         }
 
-        if (profile[indexRequired].cpu4)
+        if (_profile[indexRequired].cpu4)
         {
-            adjline += " --slow-limit=" + profile[indexRequired].cpu4value + "000";
+            adjline += " --slow-limit=" + _profile[indexRequired].cpu4value + "000";
         }
 
-        if (profile[indexRequired].cpu5)
+        if (_profile[indexRequired].cpu5)
         {
-            adjline += " --stapm-time=" + profile[indexRequired].cpu5value;
+            adjline += " --stapm-time=" + _profile[indexRequired].cpu5value;
         }
 
-        if (profile[indexRequired].cpu6)
+        if (_profile[indexRequired].cpu6)
         {
-            adjline += " --slow-time=" + profile[indexRequired].cpu6value;
+            adjline += " --slow-time=" + _profile[indexRequired].cpu6value;
         }
-        if (profile[indexRequired].cpu7)
+
+        if (_profile[indexRequired].cpu7)
         {
-            adjline += " --cHTC-temp=" + profile[indexRequired].cpu7value;
+            adjline += " --cHTC-temp=" + _profile[indexRequired].cpu7value;
         }
 
         //vrm
-        if (profile[indexRequired].vrm1)
+        if (_profile[indexRequired].vrm1)
         {
-            adjline += " --vrmmax-current=" + profile[indexRequired].vrm1value + "000";
+            adjline += " --vrmmax-current=" + _profile[indexRequired].vrm1value + "000";
         }
 
-        if (profile[indexRequired].vrm2)
+        if (_profile[indexRequired].vrm2)
         {
-            adjline += " --vrm-current=" + profile[indexRequired].vrm2value + "000";
+            adjline += " --vrm-current=" + _profile[indexRequired].vrm2value + "000";
         }
 
-        if (profile[indexRequired].vrm3)
+        if (_profile[indexRequired].vrm3)
         {
-            adjline += " --vrmsocmax-current=" + profile[indexRequired].vrm3value + "000";
+            adjline += " --vrmsocmax-current=" + _profile[indexRequired].vrm3value + "000";
         }
 
-        if (profile[indexRequired].vrm4)
+        if (_profile[indexRequired].vrm4)
         {
-            adjline += " --vrmsoc-current=" + profile[indexRequired].vrm4value + "000";
+            adjline += " --vrmsoc-current=" + _profile[indexRequired].vrm4value + "000";
         }
 
-        if (profile[indexRequired].vrm5)
+        if (_profile[indexRequired].vrm5)
         {
-            adjline += " --psi0-current=" + profile[indexRequired].vrm5value + "000";
+            adjline += " --psi0-current=" + _profile[indexRequired].vrm5value + "000";
         }
 
-        if (profile[indexRequired].vrm6)
+        if (_profile[indexRequired].vrm6)
         {
-            adjline += " --psi0soc-current=" + profile[indexRequired].vrm6value + "000";
+            adjline += " --psi0soc-current=" + _profile[indexRequired].vrm6value + "000";
         }
 
-        if (profile[indexRequired].vrm7)
+        if (_profile[indexRequired].vrm7)
         {
-            adjline += " --prochot-deassertion-ramp=" + profile[indexRequired].vrm7value;
+            adjline += " --prochot-deassertion-ramp=" + _profile[indexRequired].vrm7value;
         }
-        if (profile[indexRequired].vrm8)
+
+        if (_profile[indexRequired].vrm8)
         {
-            adjline += " --oc-volt-scalar=" + profile[indexRequired].vrm8value;
+            adjline += " --oc-volt-scalar=" + _profile[indexRequired].vrm8value;
         }
-        if (profile[indexRequired].vrm9)
+
+        if (_profile[indexRequired].vrm9)
         {
-            adjline += " --oc-volt-modular=" + profile[indexRequired].vrm9value;
+            adjline += " --oc-volt-modular=" + _profile[indexRequired].vrm9value;
         }
-        if (profile[indexRequired].vrm10)
+
+        if (_profile[indexRequired].vrm10)
         {
-            adjline += " --oc-volt-variable=" + profile[indexRequired].vrm10value;
+            adjline += " --oc-volt-variable=" + _profile[indexRequired].vrm10value;
         }
 
         //gpu
-        if (profile[indexRequired].gpu1)
+        if (_profile[indexRequired].gpu1)
         {
-            adjline += " --min-socclk-frequency=" + profile[indexRequired].gpu1value;
+            adjline += " --min-socclk-frequency=" + _profile[indexRequired].gpu1value;
         }
 
-        if (profile[indexRequired].gpu2)
+        if (_profile[indexRequired].gpu2)
         {
-            adjline += " --max-socclk-frequency=" + profile[indexRequired].gpu2value;
+            adjline += " --max-socclk-frequency=" + _profile[indexRequired].gpu2value;
         }
 
-        if (profile[indexRequired].gpu3)
+        if (_profile[indexRequired].gpu3)
         {
-            adjline += " --min-fclk-frequency=" + profile[indexRequired].gpu3value;
+            adjline += " --min-fclk-frequency=" + _profile[indexRequired].gpu3value;
         }
 
-        if (profile[indexRequired].gpu4)
+        if (_profile[indexRequired].gpu4)
         {
-            adjline += " --max-fclk-frequency=" + profile[indexRequired].gpu4value;
+            adjline += " --max-fclk-frequency=" + _profile[indexRequired].gpu4value;
         }
 
-        if (profile[indexRequired].gpu5)
+        if (_profile[indexRequired].gpu5)
         {
-            adjline += " --min-vcn=" + profile[indexRequired].gpu5value;
+            adjline += " --min-vcn=" + _profile[indexRequired].gpu5value;
         }
 
-        if (profile[indexRequired].gpu6)
+        if (_profile[indexRequired].gpu6)
         {
-            adjline += " --max-vcn=" + profile[indexRequired].gpu6value;
+            adjline += " --max-vcn=" + _profile[indexRequired].gpu6value;
         }
 
-        if (profile[indexRequired].gpu7)
+        if (_profile[indexRequired].gpu7)
         {
-            adjline += " --min-lclk=" + profile[indexRequired].gpu7value;
+            adjline += " --min-lclk=" + _profile[indexRequired].gpu7value;
         }
 
-        if (profile[indexRequired].gpu8)
+        if (_profile[indexRequired].gpu8)
         {
-            adjline += " --max-lclk=" + profile[indexRequired].gpu8value;
+            adjline += " --max-lclk=" + _profile[indexRequired].gpu8value;
         }
 
-        if (profile[indexRequired].gpu9)
+        if (_profile[indexRequired].gpu9)
         {
-            adjline += " --min-gfxclk=" + profile[indexRequired].gpu9value;
+            adjline += " --min-gfxclk=" + _profile[indexRequired].gpu9value;
         }
 
-        if (profile[indexRequired].gpu10)
+        if (_profile[indexRequired].gpu10)
         {
-            adjline += " --max-gfxclk=" + profile[indexRequired].gpu10value;
+            adjline += " --max-gfxclk=" + _profile[indexRequired].gpu10value;
         }
-        if (profile[indexRequired].gpu11)
+
+        if (_profile[indexRequired].gpu11)
         {
-            adjline += " --min-cpuclk=" + profile[indexRequired].gpu11value;
+            adjline += " --min-cpuclk=" + _profile[indexRequired].gpu11value;
         }
-        if (profile[indexRequired].gpu12)
+
+        if (_profile[indexRequired].gpu12)
         {
-            adjline += " --max-cpuclk=" + profile[indexRequired].gpu12value;
+            adjline += " --max-cpuclk=" + _profile[indexRequired].gpu12value;
         }
-        if (profile[indexRequired].gpu13)
+
+        if (_profile[indexRequired].gpu13)
         {
-            adjline += " --setgpu-arerture-low=" + profile[indexRequired].gpu13value;
+            adjline += " --setgpu-arerture-low=" + _profile[indexRequired].gpu13value;
         }
-        if (profile[indexRequired].gpu14)
+
+        if (_profile[indexRequired].gpu14)
         {
-            adjline += " --setgpu-arerture-high=" + profile[indexRequired].gpu14value;
+            adjline += " --setgpu-arerture-high=" + _profile[indexRequired].gpu14value;
         }
-        if (profile[indexRequired].gpu15)
+
+        if (_profile[indexRequired].gpu15)
         {
-            if (profile[indexRequired].gpu15value != 0) { adjline += " --start-gpu-link=" + (profile[indexRequired].gpu15value - 1).ToString(); }
-            else { adjline += " --stop-gpu-link=0"; }
+            if (_profile[indexRequired].gpu15value != 0)
+            {
+                adjline += " --start-gpu-link=" + (_profile[indexRequired].gpu15value - 1);
+            }
+            else
+            {
+                adjline += " --stop-gpu-link=0";
+            }
         }
-        if (profile[indexRequired].gpu16)
+
+        if (_profile[indexRequired].gpu16)
         {
-            if (profile[indexRequired].gpu16value != 0) { adjline += " --setcpu-freqto-ramstate=" + (profile[indexRequired].gpu16value - 1).ToString(); }
-            else { adjline += " --stopcpu-freqto-ramstate=0"; }
+            if (_profile[indexRequired].gpu16value != 0)
+            {
+                adjline += " --setcpu-freqto-ramstate=" + (_profile[indexRequired].gpu16value - 1);
+            }
+            else
+            {
+                adjline += " --stopcpu-freqto-ramstate=0";
+            }
         }
+
         //advanced
-        if (profile[indexRequired].advncd1)
+        if (_profile[indexRequired].advncd1)
         {
-            adjline += " --vrmgfx-current=" + profile[indexRequired].advncd1value + "000";
+            adjline += " --vrmgfx-current=" + _profile[indexRequired].advncd1value + "000";
         }
 
-        if (profile[indexRequired].advncd2)
+        if (_profile[indexRequired].advncd2)
         {
-            adjline += " --vrmcvip-current=" + profile[indexRequired].advncd2value + "000";
+            adjline += " --vrmcvip-current=" + _profile[indexRequired].advncd2value + "000";
         }
 
-        if (profile[indexRequired].advncd3)
+        if (_profile[indexRequired].advncd3)
         {
-            adjline += " --vrmgfxmax_current=" + profile[indexRequired].advncd3value + "000";
+            adjline += " --vrmgfxmax_current=" + _profile[indexRequired].advncd3value + "000";
         }
 
-        if (profile[indexRequired].advncd4)
+        if (_profile[indexRequired].advncd4)
         {
-            adjline += " --psi3cpu_current=" + profile[indexRequired].advncd4value + "000";
+            adjline += " --psi3cpu_current=" + _profile[indexRequired].advncd4value + "000";
         }
 
-        if (profile[indexRequired].advncd5)
+        if (_profile[indexRequired].advncd5)
         {
-            adjline += " --psi3gfx_current=" + profile[indexRequired].advncd5value + "000";
+            adjline += " --psi3gfx_current=" + _profile[indexRequired].advncd5value + "000";
         }
 
-        if (profile[indexRequired].advncd6)
+        if (_profile[indexRequired].advncd6)
         {
-            adjline += " --apu-skin-temp=" + profile[indexRequired].advncd6value;
+            adjline += " --apu-skin-temp=" + _profile[indexRequired].advncd6value;
         }
 
-        if (profile[indexRequired].advncd7)
+        if (_profile[indexRequired].advncd7)
         {
-            adjline += " --dgpu-skin-temp=" + profile[indexRequired].advncd7value;
+            adjline += " --dgpu-skin-temp=" + _profile[indexRequired].advncd7value;
         }
 
-        if (profile[indexRequired].advncd8)
+        if (_profile[indexRequired].advncd8)
         {
-            adjline += " --apu-slow-limit=" + profile[indexRequired].advncd8value + "000";
+            adjline += " --apu-slow-limit=" + _profile[indexRequired].advncd8value + "000";
         }
 
-        if (profile[indexRequired].advncd9)
+        if (_profile[indexRequired].advncd9)
         {
-            adjline += " --skin-temp-limit=" + profile[indexRequired].advncd9value + "000";
+            adjline += " --skin-temp-limit=" + _profile[indexRequired].advncd9value + "000";
         }
 
-        if (profile[indexRequired].advncd10)
+        if (_profile[indexRequired].advncd10)
         {
-            adjline += " --gfx-clk=" + profile[indexRequired].advncd10value;
+            adjline += " --gfx-clk=" + _profile[indexRequired].advncd10value;
         }
 
-        if (profile[indexRequired].advncd11)
+        if (_profile[indexRequired].advncd11)
         {
-            adjline += " --oc-clk=" + profile[indexRequired].advncd11value;
+            adjline += " --oc-clk=" + _profile[indexRequired].advncd11value;
         }
 
-        if (profile[indexRequired].advncd12)
+        if (_profile[indexRequired].advncd12)
         {
-            adjline += " --oc-volt=" + Math.Round((1.55 - profile[indexRequired].advncd12value / 1000) / 0.00625);
+            adjline += " --oc-volt=" + Math.Round((1.55 - _profile[indexRequired].advncd12value / 1000) / 0.00625);
         }
 
 
-        if (profile[indexRequired].advncd13)
+        if (_profile[indexRequired].advncd13)
         {
-            if (profile[indexRequired].advncd13value == 1)
+            if (_profile[indexRequired].advncd13value == 1)
             {
                 adjline += " --max-performance=1";
             }
 
-            if (profile[indexRequired].advncd13value == 2)
+            if (_profile[indexRequired].advncd13value == 2)
             {
                 adjline += " --power-saving=1";
             }
         }
-        if (profile[indexRequired].advncd14)
+
+        if (_profile[indexRequired].advncd14)
         {
-            if (profile[indexRequired].advncd14value == 0)
+            if (_profile[indexRequired].advncd14value == 0)
             {
                 adjline += " --disable-oc=1";
             }
 
-            if (profile[indexRequired].advncd14value == 1)
+            if (_profile[indexRequired].advncd14value == 1)
             {
                 adjline += " --enable-oc=1";
             }
         }
-        if (profile[indexRequired].advncd15)
+
+        if (_profile[indexRequired].advncd15)
         {
-            adjline += " --pbo-scalar=" + profile[indexRequired].advncd15value * 100;
+            adjline += " --pbo-scalar=" + _profile[indexRequired].advncd15value * 100;
         }
-        config.RyzenADJline = adjline + " ";
+
+        _config.RyzenADJline = adjline + " ";
         ConfigSave();
-        MainWindow.Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer); //false - logging disabled 
+        MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
+            _config.ReapplyOverclockTimer); //false - logging disabled 
         /*   if (profile[indexRequired].enablePstateEditor) { cpu.BtnPstateWrite_Click(); }*/
     }
+
     #endregion
 
-    #region Notifications 
+    #region Notifications
+
     private void Window_Activated(object sender, WindowActivatedEventArgs args)
     {
-        if (args.WindowActivationState == WindowActivationState.CodeActivated || args.WindowActivationState == WindowActivationState.PointerActivated)
+        if (args.WindowActivationState == WindowActivationState.CodeActivated ||
+            args.WindowActivationState == WindowActivationState.PointerActivated)
         {
             // Окно активировано
-            dispatcherTimer?.Start();
+            _dispatcherTimer?.Start();
         }
         else
         {
             // Окно не активировано
-            dispatcherTimer?.Stop();
+            _dispatcherTimer?.Stop();
         }
     }
+
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
     {
-        if (args.Visible) { dispatcherTimer?.Start(); } else { dispatcherTimer?.Stop(); }
+        if (args.Visible)
+        {
+            _dispatcherTimer?.Start();
+        }
+        else
+        {
+            _dispatcherTimer?.Stop();
+        }
     }
+
     private void StartInfoUpdate()
     {
-        dispatcherTimer = new DispatcherTimer();
-        dispatcherTimer.Tick += async (sender, e) => await GetNotify();
-        dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1000);
+        _dispatcherTimer = new DispatcherTimer();
+        _dispatcherTimer.Tick += async (_, _) => await GetNotify();
+        _dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1000);
         App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
         App.MainWindow.Activated += Window_Activated;
-        dispatcherTimer.Start();
+        _dispatcherTimer.Start();
     }
+
     private void StopInfoUpdate()
     {
-        dispatcherTimer?.Stop();
+        _dispatcherTimer?.Stop();
     }
+
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-        base.OnNavigatedTo(e); StartInfoUpdate();
+        base.OnNavigatedTo(e);
+        StartInfoUpdate();
     }
+
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
-        base.OnNavigatedFrom(e); StopInfoUpdate();
+        base.OnNavigatedFrom(e);
+        StopInfoUpdate();
     }
-    public Task GetNotify()
+
+    private Task GetNotify()
     {
-        if (SelectedProfile != ((ComboBoxItem)ProfileSetComboBox.SelectedItem).Content.ToString() && !ProfileSetButton.IsEnabled)
+        if (SelectedProfile != ((ComboBoxItem)ProfileSetComboBox.SelectedItem).Content.ToString() &&
+            !ProfileSetButton.IsEnabled)
         {
             SelectedProfile = ((ComboBoxItem)ProfileSetComboBox.SelectedItem).Content.ToString()!;
         }
-        if (IsNotificationPanelShow)
+
+        if (_isNotificationPanelShow)
         {
             return Task.CompletedTask;
         }
+
         NotifyLoad();
-        if (notify.Notifies == null) { return Task.CompletedTask; }
+        if (_notify.Notifies == null)
+        {
+            return Task.CompletedTask;
+        }
+
         DispatcherQueue?.TryEnqueue(() =>
         {
             var contains = false;
-            if (compareList == notify?.Notifies.Count && NotificationContainer.Children.Count != 0) { return; } //нет новых уведомлений - пока
+            if (_compareList == _notify.Notifies.Count && NotificationContainer.Children.Count != 0)
+            {
+                return;
+            } //нет новых уведомлений - пока
+
             ClearAllNotification(null, null);
             var index = 0;
-            foreach (var notify1 in notify?.Notifies!)
+            foreach (var notify1 in _notify.Notifies!)
             {
-                Grid? Subcontent = null;
-                if (notify1.Title.Equals("Theme applied!")) //Если уведомление о изменении темы
+                Grid? subcontent = null;
+                switch (notify1.Title)
                 {
-                    Theme_Loader();
-                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
-                    return; //Удалить и не показывать
-                }
-                if (notify1.Title.Equals("UpdateNAVBAR"))
-                {
-                    NavigationViewControl.Margin = NavigationViewControl.Margin == new Thickness(-40, 0, 0, 0) ? new Thickness(0, 0, 0, 0) : new Thickness(-40, 0, 0, 0);
-                    NavigationViewControl.IsBackButtonVisible = NavigationViewControl.IsBackButtonVisible == NavigationViewBackButtonVisible.Visible ? NavigationViewBackButtonVisible.Collapsed : NavigationViewBackButtonVisible.Visible;
-                    NavigationViewControl.IsSettingsVisible = !NavigationViewControl.IsSettingsVisible;
-                    NavigationViewControl.IsPaneOpen = false;
-                    foreach (var element in NavigationViewControl.MenuItems)
+                    //Если уведомление о изменении темы
+                    case "Theme applied!":
+                        Theme_Loader();
+                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                        return; //Удалить и не показывать
+                    case "UpdateNAVBAR":
                     {
-                        ((NavigationViewItem)element).Visibility = ((NavigationViewItem)element).Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+                        NavigationViewControl.Margin = NavigationViewControl.Margin == new Thickness(-40, 0, 0, 0)
+                            ? new Thickness(0, 0, 0, 0)
+                            : new Thickness(-40, 0, 0, 0);
+                        NavigationViewControl.IsBackButtonVisible =
+                            NavigationViewControl.IsBackButtonVisible == NavigationViewBackButtonVisible.Visible
+                                ? NavigationViewBackButtonVisible.Collapsed
+                                : NavigationViewBackButtonVisible.Visible;
+                        NavigationViewControl.IsSettingsVisible = !NavigationViewControl.IsSettingsVisible;
+                        NavigationViewControl.IsPaneOpen = false;
+                        foreach (var element in NavigationViewControl.MenuItems)
+                        {
+                            ((NavigationViewItem)element).Visibility =
+                                ((NavigationViewItem)element).Visibility == Visibility.Collapsed
+                                    ? Visibility.Visible
+                                    : Visibility.Collapsed;
+                        }
+
+                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                        return; //Удалить и не показывать
                     }
-                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
-                    return; //Удалить и не показывать
                 }
+
                 if (notify1.Msg.Contains("DELETEUNAVAILABLE"))
                 {
                     var but1 = new Button
@@ -878,19 +1059,19 @@ public sealed partial class ShellPage : Page
                         Content = new Grid
                         {
                             Children =
-                        {
+                            {
                                 new FontIcon
                                 {
                                     Glyph = "\uE71E",
-                                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left
+                                    HorizontalAlignment = HorizontalAlignment.Left
                                 },
                                 new TextBlock
                                 {
-                                    Margin = new Thickness(30,0,0,0),
+                                    Margin = new Thickness(30, 0, 0, 0),
                                     Text = "Shell_Notify_AboutErrors".GetLocalized(),
-                                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center
+                                    HorizontalAlignment = HorizontalAlignment.Center
                                 }
-                         }
+                            }
                         }
                     };
                     var but2 = new Button
@@ -905,33 +1086,39 @@ public sealed partial class ShellPage : Page
                                 new FontIcon
                                 {
                                     Glyph = "\uE71C",
-                                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left
+                                    HorizontalAlignment = HorizontalAlignment.Left
                                 },
                                 new TextBlock
                                 {
-                                    Margin = new Thickness(30,0,0,0),
+                                    Margin = new Thickness(30, 0, 0, 0),
                                     Text = "Shell_Notify_DisableErrors".GetLocalized(),
-                                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center
+                                    HorizontalAlignment = HorizontalAlignment.Center
                                 }
-                        }
+                            }
                         }
                     };
-                    but1.Click += (s, a) =>
+                    but1.Click += (_, _) =>
                     {
-                        Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/wiki/FAQ#error-handling") { UseShellExecute = true });
+                        Process.Start(
+                            new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/wiki/FAQ#error-handling")
+                                { UseShellExecute = true });
                     };
-                    but2.Click += async (s, a) =>
+                    but2.Click += async (_, _) =>
                     {
                         but2.IsEnabled = false;
                         var navigationService = App.GetService<INavigationService>();
-                        if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel) { navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true); }
+                        if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel)
+                        {
+                            navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+                        }
+
                         MandarinAddNotification("Shell_Notify_TaskCompleting".GetLocalized(),
                             "Shell_Notify_TaskWait".GetLocalized(),
                             InfoBarSeverity.Informational,
                             true,
                             new Grid
                             {
-                                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left,
+                                HorizontalAlignment = HorizontalAlignment.Left,
                                 VerticalAlignment = VerticalAlignment.Top,
                                 Children =
                                 {
@@ -948,78 +1135,111 @@ public sealed partial class ShellPage : Page
                             ProfileLoad();
                             var commandActions = new Dictionary<string, Action>
                             {
-                                { "Param_SMU_Func_Text/Text".GetLocalized(), () => profile[config.Preset].smuFunctionsEnabl = false },
-                                { "Param_CPU_c2/Text".GetLocalized(), () => profile[config.Preset].cpu2 = false },
-                                { "Param_VRM_v2/Text".GetLocalized(), () => profile[config.Preset].vrm2 = false },
-                                { "Param_VRM_v1/Text".GetLocalized(), () => profile[config.Preset].vrm1 = false },
-                                { "Param_CPU_c1/Text".GetLocalized(), () => profile[config.Preset].cpu1 = false },
-                                { "Param_ADV_a15/Text".GetLocalized(), () => profile[config.Preset].advncd15 = false },
-                                { "Param_ADV_a11/Text".GetLocalized(), () => profile[config.Preset].advncd11 = false },
-                                { "Param_ADV_a12/Text".GetLocalized(), () => profile[config.Preset].advncd12 = false },
-                                { "Param_CO_O1/Text".GetLocalized(), () => profile[config.Preset].coall = false },
-                                { "Param_CO_O2/Text".GetLocalized(), () => profile[config.Preset].cogfx = false },
-                                { "Param_CCD1_CO_Section/Text".GetLocalized(), () => profile[config.Preset].coprefmode = 0 },
-                                { "Param_ADV_a14_E/Content".GetLocalized(), () => profile[config.Preset].advncd14 = false },
-                                { "Param_CPU_c5/Text".GetLocalized(), () => profile[config.Preset].cpu5 = false },
-                                { "Param_CPU_c3/Text".GetLocalized(), () => profile[config.Preset].cpu3 = false },
-                                { "Param_CPU_c4/Text".GetLocalized(), () => profile[config.Preset].cpu4 = false },
-                                { "Param_CPU_c6/Text".GetLocalized(), () => profile[config.Preset].cpu6 = false },
-                                { "Param_CPU_c7/Text".GetLocalized(), () => profile[config.Preset].cpu7 = false },
-                                { "Param_ADV_a6/Text".GetLocalized(), () => profile[config.Preset].advncd6 = false },
-                                { "Param_VRM_v4/Text".GetLocalized(), () => profile[config.Preset].vrm4 = false },
-                                { "Param_VRM_v3/Text".GetLocalized(), () => profile[config.Preset].vrm3 = false },
-                                { "Param_ADV_a2/Text".GetLocalized(), () => profile[config.Preset].advncd2 = false },
-                                { "Param_ADV_a1/Text".GetLocalized(), () => profile[config.Preset].advncd1 = false },
-                                { "Param_ADV_a3/Text".GetLocalized(), () => profile[config.Preset].advncd3 = false },
-                                { "Param_VRM_v7/Text".GetLocalized(), () => profile[config.Preset].vrm7 = false },
-                                { "Param_ADV_a4/Text".GetLocalized(), () => profile[config.Preset].advncd4 = false },
-                                { "Param_ADV_a5/Text".GetLocalized(), () => profile[config.Preset].advncd5 = false },
-                                { "Param_ADV_a10/Text".GetLocalized(), () => profile[config.Preset].advncd10 = false },
-                                { "Param_ADV_a13_E/Content".GetLocalized(), () => profile[config.Preset].advncd13 = false },
-                                { "Param_ADV_a13_U/Content".GetLocalized(), () => profile[config.Preset].advncd13 = false },
-                                { "Param_ADV_a8/Text".GetLocalized(), () => profile[config.Preset].advncd8 = false },
-                                { "Param_ADV_a7/Text".GetLocalized(), () => profile[config.Preset].advncd7 = false },
-                                { "Param_VRM_v5/Text".GetLocalized(), () => profile[config.Preset].vrm5 = false },
-                                { "Param_VRM_v6/Text".GetLocalized(), () => profile[config.Preset].vrm6 = false },
-                                { "Param_ADV_a9/Text".GetLocalized(), () => profile[config.Preset].advncd9 = false },
-                                { "Param_GPU_g12/Text".GetLocalized(), () => profile[config.Preset].gpu12 = false },
-                                { "Param_GPU_g11/Text".GetLocalized(), () => profile[config.Preset].gpu11 = false },
-                                { "Param_GPU_g10/Text".GetLocalized(), () => profile[config.Preset].gpu10 = false },
-                                { "Param_GPU_g9/Text".GetLocalized(), () => profile[config.Preset].gpu9 = false },
-                                { "Param_GPU_g2/Text".GetLocalized(), () => profile[config.Preset].gpu2 = false },
-                                { "Param_GPU_g1/Text".GetLocalized(), () => profile[config.Preset].gpu1 = false },
-                                { "Param_GPU_g4/Text".GetLocalized(), () => profile[config.Preset].gpu4 = false },
-                                { "Param_GPU_g3/Text".GetLocalized(), () => profile[config.Preset].gpu3 = false },
-                                { "Param_GPU_g6/Text".GetLocalized(), () => profile[config.Preset].gpu6 = false },
-                                { "Param_GPU_g5/Text".GetLocalized(), () => profile[config.Preset].gpu5 = false },
-                                { "Param_GPU_g8/Text".GetLocalized(), () => profile[config.Preset].gpu8 = false },
-                                { "Param_GPU_g7/Text".GetLocalized(), () => profile[config.Preset].gpu7 = false },
-                                { "Param_VRM_v8/Text".GetLocalized(), () => profile[config.Preset].vrm8 = false },
-                                { "Param_GPU_g13/Text".GetLocalized(), () => profile[config.Preset].vrm9 = false },
-                                { "Param_GPU_g14/Text".GetLocalized(), () => profile[config.Preset].vrm9 = false },
-                                { "Param_GPU_g15/Text".GetLocalized(), () => profile[config.Preset].gpu15 = false },
-                                { "Param_GPU_g16/Text".GetLocalized(), () => profile[config.Preset].gpu16 = false },
+                                {
+                                    "Param_SMU_Func_Text/Text".GetLocalized(),
+                                    () => _profile[_config.Preset].smuFunctionsEnabl = false
+                                },
+                                { "Param_CPU_c2/Text".GetLocalized(), () => _profile[_config.Preset].cpu2 = false },
+                                { "Param_VRM_v2/Text".GetLocalized(), () => _profile[_config.Preset].vrm2 = false },
+                                { "Param_VRM_v1/Text".GetLocalized(), () => _profile[_config.Preset].vrm1 = false },
+                                { "Param_CPU_c1/Text".GetLocalized(), () => _profile[_config.Preset].cpu1 = false },
+                                {
+                                    "Param_ADV_a15/Text".GetLocalized(), () => _profile[_config.Preset].advncd15 = false
+                                },
+                                {
+                                    "Param_ADV_a11/Text".GetLocalized(), () => _profile[_config.Preset].advncd11 = false
+                                },
+                                {
+                                    "Param_ADV_a12/Text".GetLocalized(), () => _profile[_config.Preset].advncd12 = false
+                                },
+                                { "Param_CO_O1/Text".GetLocalized(), () => _profile[_config.Preset].coall = false },
+                                { "Param_CO_O2/Text".GetLocalized(), () => _profile[_config.Preset].cogfx = false },
+                                {
+                                    "Param_CCD1_CO_Section/Text".GetLocalized(),
+                                    () => _profile[_config.Preset].coprefmode = 0
+                                },
+                                {
+                                    "Param_ADV_a14_E/Content".GetLocalized(),
+                                    () => _profile[_config.Preset].advncd14 = false
+                                },
+                                { "Param_CPU_c5/Text".GetLocalized(), () => _profile[_config.Preset].cpu5 = false },
+                                { "Param_CPU_c3/Text".GetLocalized(), () => _profile[_config.Preset].cpu3 = false },
+                                { "Param_CPU_c4/Text".GetLocalized(), () => _profile[_config.Preset].cpu4 = false },
+                                { "Param_CPU_c6/Text".GetLocalized(), () => _profile[_config.Preset].cpu6 = false },
+                                { "Param_CPU_c7/Text".GetLocalized(), () => _profile[_config.Preset].cpu7 = false },
+                                { "Param_ADV_a6/Text".GetLocalized(), () => _profile[_config.Preset].advncd6 = false },
+                                { "Param_VRM_v4/Text".GetLocalized(), () => _profile[_config.Preset].vrm4 = false },
+                                { "Param_VRM_v3/Text".GetLocalized(), () => _profile[_config.Preset].vrm3 = false },
+                                { "Param_ADV_a2/Text".GetLocalized(), () => _profile[_config.Preset].advncd2 = false },
+                                { "Param_ADV_a1/Text".GetLocalized(), () => _profile[_config.Preset].advncd1 = false },
+                                { "Param_ADV_a3/Text".GetLocalized(), () => _profile[_config.Preset].advncd3 = false },
+                                { "Param_VRM_v7/Text".GetLocalized(), () => _profile[_config.Preset].vrm7 = false },
+                                { "Param_ADV_a4/Text".GetLocalized(), () => _profile[_config.Preset].advncd4 = false },
+                                { "Param_ADV_a5/Text".GetLocalized(), () => _profile[_config.Preset].advncd5 = false },
+                                {
+                                    "Param_ADV_a10/Text".GetLocalized(), () => _profile[_config.Preset].advncd10 = false
+                                },
+                                {
+                                    "Param_ADV_a13_E/Content".GetLocalized(),
+                                    () => _profile[_config.Preset].advncd13 = false
+                                },
+                                {
+                                    "Param_ADV_a13_U/Content".GetLocalized(),
+                                    () => _profile[_config.Preset].advncd13 = false
+                                },
+                                { "Param_ADV_a8/Text".GetLocalized(), () => _profile[_config.Preset].advncd8 = false },
+                                { "Param_ADV_a7/Text".GetLocalized(), () => _profile[_config.Preset].advncd7 = false },
+                                { "Param_VRM_v5/Text".GetLocalized(), () => _profile[_config.Preset].vrm5 = false },
+                                { "Param_VRM_v6/Text".GetLocalized(), () => _profile[_config.Preset].vrm6 = false },
+                                { "Param_ADV_a9/Text".GetLocalized(), () => _profile[_config.Preset].advncd9 = false },
+                                { "Param_GPU_g12/Text".GetLocalized(), () => _profile[_config.Preset].gpu12 = false },
+                                { "Param_GPU_g11/Text".GetLocalized(), () => _profile[_config.Preset].gpu11 = false },
+                                { "Param_GPU_g10/Text".GetLocalized(), () => _profile[_config.Preset].gpu10 = false },
+                                { "Param_GPU_g9/Text".GetLocalized(), () => _profile[_config.Preset].gpu9 = false },
+                                { "Param_GPU_g2/Text".GetLocalized(), () => _profile[_config.Preset].gpu2 = false },
+                                { "Param_GPU_g1/Text".GetLocalized(), () => _profile[_config.Preset].gpu1 = false },
+                                { "Param_GPU_g4/Text".GetLocalized(), () => _profile[_config.Preset].gpu4 = false },
+                                { "Param_GPU_g3/Text".GetLocalized(), () => _profile[_config.Preset].gpu3 = false },
+                                { "Param_GPU_g6/Text".GetLocalized(), () => _profile[_config.Preset].gpu6 = false },
+                                { "Param_GPU_g5/Text".GetLocalized(), () => _profile[_config.Preset].gpu5 = false },
+                                { "Param_GPU_g8/Text".GetLocalized(), () => _profile[_config.Preset].gpu8 = false },
+                                { "Param_GPU_g7/Text".GetLocalized(), () => _profile[_config.Preset].gpu7 = false },
+                                { "Param_VRM_v8/Text".GetLocalized(), () => _profile[_config.Preset].vrm8 = false },
+                                { "Param_GPU_g13/Text".GetLocalized(), () => _profile[_config.Preset].vrm9 = false },
+                                { "Param_GPU_g14/Text".GetLocalized(), () => _profile[_config.Preset].vrm9 = false },
+                                { "Param_GPU_g15/Text".GetLocalized(), () => _profile[_config.Preset].gpu15 = false },
+                                { "Param_GPU_g16/Text".GetLocalized(), () => _profile[_config.Preset].gpu16 = false },
                             };
                             var loggingList = string.Empty;
-                            var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\FixedFailingCommandsLog.txt";
+                            var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                              @"\SakuOverclock\FixedFailingCommandsLog.txt";
                             var sw = new StreamWriter(logFilePath, true);
-                            if (!File.Exists(logFilePath)) { sw.WriteLine("//------Fixed Failing Commands Log------\\\\"); }
+                            if (!File.Exists(logFilePath))
+                            {
+                                await sw.WriteLineAsync(@"//------Fixed Failing Commands Log------\\");
+                            }
+
                             foreach (var currPos in stringFrom)
                             {
                                 if (commandActions.TryGetValue(currPos, out var value))
                                 {
                                     value.Invoke(); // Выполнение действия
-                                    sw.WriteLine("\n" + currPos);
+                                    await sw.WriteLineAsync("\n" + currPos);
                                     loggingList += (loggingList == string.Empty ? "" : "\n") + currPos;
                                 }
                             }
+
                             ProfileSave();
                             ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
                             await Task.Delay(2000);
                             but2.IsEnabled = true;
-                            sw.WriteLine("//------OK------\\\\");
+                            await sw.WriteLineAsync(@"//------OK------\\");
                             sw.Close();
-                            if (navigationService.Frame!.GetPageViewModel() is not ПараметрыViewModel) { navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true); }
+                            if (navigationService.Frame!.GetPageViewModel() is not ПараметрыViewModel)
+                            {
+                                navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true);
+                            }
+
                             var butLogs = new Button
                             {
                                 CornerRadius = new CornerRadius(15),
@@ -1030,20 +1250,20 @@ public sealed partial class ShellPage : Page
                                         new FontIcon
                                         {
                                             Glyph = "\uE82D",
-                                            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left
+                                            HorizontalAlignment = HorizontalAlignment.Left
                                         },
                                         new TextBlock
                                         {
-                                            Margin = new Thickness(30,0,0,0),
+                                            Margin = new Thickness(30, 0, 0, 0),
                                             Text = "Shell_Notify_ErrorsShowLog".GetLocalized(),
-                                            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center
+                                            HorizontalAlignment = HorizontalAlignment.Center
                                         }
                                     }
                                 }
                             };
                             var butSavedLogs = new Button
                             {
-                                Margin = new Thickness(0,20,0,0),
+                                Margin = new Thickness(0, 20, 0, 0),
                                 CornerRadius = new CornerRadius(15),
                                 Content = new Grid
                                 {
@@ -1052,26 +1272,26 @@ public sealed partial class ShellPage : Page
                                         new FontIcon
                                         {
                                             Glyph = "\uE838",
-                                            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left
+                                            HorizontalAlignment = HorizontalAlignment.Left
                                         },
                                         new TextBlock
                                         {
-                                            Margin = new Thickness(30,0,0,0),
+                                            Margin = new Thickness(30, 0, 0, 0),
                                             Text = "Shell_Notify_ErrorsShowLogExplorer".GetLocalized(),
-                                            HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center
+                                            HorizontalAlignment = HorizontalAlignment.Center
                                         }
                                     }
                                 }
                             };
-                            butSavedLogs.Click += (s, a) =>
+                            butSavedLogs.Click += (_, _) =>
                             {
-                                if (System.IO.File.Exists(logFilePath))
+                                if (File.Exists(logFilePath))
                                 {
-                                    var filePath = System.IO.Path.GetFullPath(logFilePath);
-                                    System.Diagnostics.Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
+                                    var filePath = Path.GetFullPath(logFilePath);
+                                    Process.Start("explorer.exe", $"/select,\"{filePath}\"");
                                 }
                             };
-                            butLogs.Click += (s, a) =>
+                            butLogs.Click += (_, _) =>
                             {
                                 App.MainWindow.DispatcherQueue.TryEnqueue(() =>
                                 {
@@ -1079,27 +1299,27 @@ public sealed partial class ShellPage : Page
                                     {
                                         Content = new StackPanel
                                         {
-                                            Orientation = Microsoft.UI.Xaml.Controls.Orientation.Vertical,
+                                            Orientation = Orientation.Vertical,
                                             Children =
                                             {
                                                 new ScrollViewer
                                                 {
-                                                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch,
+                                                    HorizontalAlignment = HorizontalAlignment.Stretch,
                                                     VerticalAlignment = VerticalAlignment.Stretch,
                                                     Content = new StackPanel
                                                     {
-                                                        Orientation = Microsoft.UI.Xaml.Controls.Orientation.Vertical,
+                                                        Orientation = Orientation.Vertical,
                                                         Children =
                                                         {
                                                             new TextBlock
                                                             {
                                                                 Text = "Shell_Notify_ErrorLog".GetLocalized(),
-                                                                FontWeight = new Windows.UI.Text.FontWeight(600),
+                                                                FontWeight = new FontWeight(600),
                                                                 FontSize = 21
                                                             },
                                                             new TextBlock
                                                             {
-                                                                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch,
+                                                                HorizontalAlignment = HorizontalAlignment.Stretch,
                                                                 Text = loggingList
                                                             }
                                                         }
@@ -1111,429 +1331,437 @@ public sealed partial class ShellPage : Page
                                     };
                                     flyout1.ShowAt(butLogs);
                                 });
-                            }; 
+                            };
                             MandarinAddNotification("Shell_Notify_ErrorsDisabled".GetLocalized(),
                                 "Shell_Notify_ErrorsDisabledDesc".GetLocalized(),
                                 InfoBarSeverity.Success,
                                 true,
                                 new Grid
                                 {
-                                    Children = {
+                                    Children =
+                                    {
                                         new StackPanel
                                         {
-                                            Orientation = Microsoft.UI.Xaml.Controls.Orientation.Horizontal,
+                                            Orientation = Orientation.Horizontal,
                                             Children =
                                             {
-                                                butLogs//,
+                                                butLogs //,
                                                 //but2
                                             }
                                         }
                                     }
                                 });
-                            return; //Удалить и не показывать
                         }
-
                     };
-                    Subcontent = new Grid
+                    subcontent = new Grid
                     {
-                        Children = {
-                        new StackPanel
+                        Children =
                         {
-                            Orientation = Microsoft.UI.Xaml.Controls.Orientation.Horizontal,
-                            Children =
+                            new StackPanel
                             {
-                                but1,
-                                but2
+                                Orientation = Orientation.Horizontal,
+                                Children =
+                                {
+                                    but1,
+                                    but2
+                                }
                             }
-                        }
                         }
                     };
                     notify1.Msg = notify1.Msg.Replace("DELETEUNAVAILABLE", "");
                 }
-                MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.isClosable, Subcontent);
-                if (notify1.Title.Contains("SaveSuccessTitle".GetLocalized()) || notify1.Title.Contains("DeleteSuccessTitle".GetLocalized()) || notify1.Title.Contains("Edit_TargetTitle".GetLocalized())) { contains = true; }
-                if (SettingsViewModel.VersionId != 5 && index > 8) //Если 9 уведомлений - очистить для оптимизации производительности
+
+                MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.isClosable, subcontent);
+                if (notify1.Title.Contains("SaveSuccessTitle".GetLocalized()) ||
+                    notify1.Title.Contains("DeleteSuccessTitle".GetLocalized()) ||
+                    notify1.Title.Contains("Edit_TargetTitle".GetLocalized()))
+                {
+                    contains = true;
+                }
+
+                if (SettingsViewModel.VersionId != 5 &&
+                    index > 8) //Если 9 уведомлений - очистить для оптимизации производительности
                 {
                     index = 0; //Сброс счётчика циклов
                     ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
                 }
+
                 index++;
             }
-            if (contains) { GetProfileInit(); } //Чтобы обновить всего раз, а не много раз, чтобы не сбить конфиг
-            compareList = notify?.Notifies.Count;
+
+            if (contains)
+            {
+                GetProfileInit();
+            } //Чтобы обновить всего раз, а не много раз, чтобы не сбить конфиг
+
+            _compareList = _notify.Notifies.Count;
         });
         return Task.CompletedTask;
     }
+
     #endregion
 
     #endregion
+
     private void Theme_Loader()
     {
         ThemeLoad();
         try
         {
             ConfigLoad();
-            ThemeOpacity.Opacity = themer!.Themes[config.ThemeType]!.ThemeOpacity;
-            ThemeMaskOpacity.Opacity = themer.Themes[config.ThemeType].ThemeMaskOpacity;
+            ThemeOpacity.Opacity = _themer.Themes[_config.ThemeType].ThemeOpacity;
+            ThemeMaskOpacity.Opacity = _themer.Themes[_config.ThemeType].ThemeMaskOpacity;
             var themeMobil = App.GetService<SettingsViewModel>();
-            var themeLight = themer.Themes[config.ThemeType].ThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+            var themeLight = _themer.Themes[_config.ThemeType].ThemeLight ? ElementTheme.Light : ElementTheme.Dark;
             themeMobil.SwitchThemeCommand.Execute(themeLight);
-            if (config.ThemeType > 2)
+            if (_config.ThemeType > 2)
             {
-                ThemeBackground.ImageSource = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri(themer.Themes[config.ThemeType].ThemeBackground));
+                ThemeBackground.ImageSource =
+                    new BitmapImage(new Uri(_themer.Themes[_config.ThemeType].ThemeBackground));
             }
         }
         catch
         {
-            NotifyLoad(); notify.Notifies ??= [];
+            NotifyLoad();
+            _notify.Notifies ??= [];
             try
             {
-                notify.Notifies.Add(new Notify { Title = "ThemeError".GetLocalized() + "\"" + $"{themer!.Themes[config.ThemeType]!.ThemeName}" + "\"", Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error });
+                _notify.Notifies.Add(new Notify
+                {
+                    Title =
+                        "ThemeError".GetLocalized() + "\"" + $"{_themer.Themes[_config.ThemeType].ThemeName}" + "\"",
+                    Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error
+                });
             }
             catch
             {
-                notify.Notifies.Add(new Notify { Title = "ThemeError".GetLocalized() + "\"" + ">> " + config.ThemeType + "\"", Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error });
-
+                _notify.Notifies.Add(new Notify
+                {
+                    Title = "ThemeError".GetLocalized() + "\"" + ">> " + _config.ThemeType + "\"",
+                    Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error
+                });
             }
-            NotifySave(); config.ThemeType = 0;
-            ConfigSave(); return;
+
+            NotifySave();
+            _config.ThemeType = 0;
+            ConfigSave();
         }
     }
+
     private void ConfigSave()
     {
         try
         {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                "SakuOverclock"));
+            File.WriteAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json",
+                JsonConvert.SerializeObject(_config, Formatting.Indented));
         }
-        catch
+        catch (Exception ex)
         {
-            // ignored
+            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
         }
     }
+
     private void ConfigLoad()
     {
         try
         {
-            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
+            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json"))!;
         }
         catch
         {
             JsonRepair('c');
         }
     }
+
     private void ProfileSave()
     {
         try
         {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile, Formatting.Indented));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                "SakuOverclock"));
+            File.WriteAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                JsonConvert.SerializeObject(_profile, Formatting.Indented));
         }
-        catch
+        catch (Exception ex)
         {
-            // ignored
+            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
         }
     }
+
     private void ProfileLoad()
     {
         try
         {
-            profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
-            if (profile == null)
-            {
-                profile = new Profile[1]; ProfileSave();
-            }
+            _profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json"))!;
         }
         catch
         {
             JsonRepair('p');
         }
     }
+
     private void NotifySave()
     {
         try
         {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify, Formatting.Indented));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                "SakuOverclock"));
+            File.WriteAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
+                JsonConvert.SerializeObject(_notify, Formatting.Indented));
         }
-        catch
+        catch (Exception ex)
         {
-            // ignored
+            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
         }
     }
+
     private async void NotifyLoad()
-    {
-        var success = false;
-        var retryCount = 1;
-        while (!success && retryCount < 3)
-        {
-            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))
-            {
-                try
-                {
-                    notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json"))!;
-                    if (notify != null) { success = true; } else { JsonRepair('n'); }
-                }
-                catch { JsonRepair('n'); }
-            }
-            else { JsonRepair('n'); }
-            if (!success)
-            {
-                // Сделайте задержку перед следующей попыткой
-                await Task.Delay(30);
-                retryCount++;
-            }
-        }
-    }
-    private void ThemeSave()
     {
         try
         {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer, Formatting.Indented));
+            var success = false;
+            var retryCount = 1;
+            while (!success && retryCount < 3)
+            {
+                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                @"\SakuOverclock\notify.json"))
+                {
+                    try
+                    {
+                        _notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(
+                            await File.ReadAllTextAsync(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                                        @"\SakuOverclock\notify.json"))!;
+                        success = true;
+                    }
+                    catch
+                    {
+                        JsonRepair('n');
+                    }
+                }
+                else
+                {
+                    JsonRepair('n');
+                }
+
+                if (!success)
+                {
+                    // Сделайте задержку перед следующей попыткой
+                    await Task.Delay(30);
+                    retryCount++;
+                }
+            }
         }
-        catch { } // No need for repairing!
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
+        }
     }
+
     private void ThemeLoad()
     {
         try
         {
-            themer = JsonConvert.DeserializeObject<Themer>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json"))!;
-            if (themer.Themes.Count > 8)
+            _themer = JsonConvert.DeserializeObject<Themer>(File.ReadAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\theme.json"))!;
+            if (_themer.Themes.Count > 8)
             {
-                themer.Themes.RemoveRange(0, 8);
+                _themer.Themes.RemoveRange(0, 8);
             }
-            if (themer == null) { JsonRepair('t'); }
+
+            if (_themer.Themes.Count == 0)
+            {
+                JsonRepair('t');
+            }
         }
         catch
         {
             JsonRepair('t');
         }
     }
+
     private void JsonRepair(char file)
     {
-        if (file == 't')
+        switch (file)
         {
-            try
+            case 't':
             {
-                themer = new Themer();
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-            }
-            if (themer != null)
-            {
+                _themer = new Themer();
                 try
                 {
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
+                    Directory.CreateDirectory(
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\theme.json",
+                        JsonConvert.SerializeObject(_themer));
                 }
                 catch
                 {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                @"\SakuOverclock\theme.json");
+                    Directory.CreateDirectory(
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\theme.json",
+                        JsonConvert.SerializeObject(_themer));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
+                        AppContext.BaseDirectory));
                 }
-            }
-            else
-            {
-                try
-                {
 
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", JsonConvert.SerializeObject(themer));
-                }
-                catch
-                {
-                }
+                break;
             }
-        }
-        if (file == 'c')
-        {
-            try
+            case 'c':
             {
-                config = new Config();
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-            }
-            if (config != null)
-            {
+                _config = new Config();
                 try
                 {
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
+                    Directory.CreateDirectory(
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json",
+                        JsonConvert.SerializeObject(_config));
                 }
                 catch
                 {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                @"\SakuOverclock\config.json");
+                    Directory.CreateDirectory(
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json",
+                        JsonConvert.SerializeObject(_config));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
+                        AppContext.BaseDirectory));
                     App.MainWindow.Close();
                 }
-            }
-            else
-            {
-                try
-                {
 
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config));
-                    App.MainWindow.Close();
+                break;
+            }
+            case 'p':
+            {
+                _profile = [];
+                try
+                {
+                    Directory.CreateDirectory(
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                        JsonConvert.SerializeObject(_profile));
                 }
                 catch
                 {
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                @"\SakuOverclock\profile.json");
+                    Directory.CreateDirectory(
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                        JsonConvert.SerializeObject(_profile));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
+                        AppContext.BaseDirectory));
                     App.MainWindow.Close();
                 }
-            }
-        }
-        if (file == 'p')
-        {
-            try
-            {
-                for (var j = 0; j < 3; j++)
-                {
-                    profile[j] = new Profile();
-                }
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                App.MainWindow.Close();
-            }
-            if (profile != null)
-            {
-                try
-                {
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-            else
-            {
-                try
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json", JsonConvert.SerializeObject(profile));
-                }
-                catch
-                {
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                }
-            }
-        }
-        if (file == 'n')
-        {
-            try
-            {
-                notify = new JsonContainers.Notifications();
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-            }
-            if (notify != null)
-            {
-                try
-                {
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-            }
-            else
-            {
-                try
-                {
 
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json");
-                    Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json", JsonConvert.SerializeObject(notify));
-                    App.MainWindow.Close();
+                break;
+            }
+            case 'n':
+            {
+                _notify = new JsonContainers.Notifications();
+                try
+                {
+                    Directory.CreateDirectory(
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
+                        JsonConvert.SerializeObject(_notify));
                 }
                 catch
                 {
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                @"\SakuOverclock\notify.json");
+                    Directory.CreateDirectory(
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
+                        JsonConvert.SerializeObject(_notify));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
+                        AppContext.BaseDirectory));
                     App.MainWindow.Close();
                 }
+
+                break;
             }
         }
     }
+
     #endregion
+
     #region Keyboard Hooks
-    private static IntPtr SetHook(LowLevelKeyboardProc proc) //Эту функцию можно не изменять
+
+    private static IntPtr SetHook(LowLevelKeyboardProc proc) // Эту функцию можно не изменять
     {
+        using var curProcess = Process.GetCurrentProcess(); // Получаем текущий процесс
 
-        using var curProcess = Process.GetCurrentProcess();//Получаем текущий процесс
+        using var curModule = curProcess.MainModule!; // Получаем главный модуль процесса
 
-        using var curModule = curProcess?.MainModule!;//Получаем главный модуль процесса
+        return SetWindowsHookEx(WhKeyboardLl, proc, // Вызываем WinAPI функцию
+            GetModuleHandle(curModule.ModuleName), 0); // Получаем хэндл модуля
+    }
 
-        return SetWindowsHookEx(WH_KEYBOARD_LL, proc,//Вызываем WinAPI функцию
-
-            GetModuleHandle(curModule?.ModuleName!), 0);//Получаем хэндл модуля
-
-    } 
     [DllImport("user32.dll")]
     private static extern short GetKeyState(int nVirtKey);
 
-    public static bool IsAltPressed()
+    private static bool IsAltPressed()
     {
-        return (GetKeyState(VK_MENU) & KEY_PRESSED) != 0;
+        return (GetKeyState(VkMenu) & KeyPressed) != 0;
     }
-    private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam); // Callback делегат(для вызова callback метода)
+
+    private delegate IntPtr
+        LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam); // Callback делегат(для вызова callback метода)
+
     private nint HookCallbackAsync(int nCode, IntPtr wParam, IntPtr lParam) // Собственно сам callback метод
     {
         // Проверяем следует ли перехватывать хук (первая половина), и то, что произошло именно событие нажатия на клавишу (вторая половина)
-        if (nCode >= 0 && wParam == WM_KEYDOWN)
+        if (nCode >= 0 && wParam == WmKeydown)
         {
             var virtualkeyCode = Marshal.ReadInt32(lParam); // Получаем код клавиши из неуправляемой памяти
-            // Переключить между своими пресетами - Switch profile to next Custom
-            if ((Windows.System.VirtualKey)virtualkeyCode == Windows.System.VirtualKey.W && GetAsyncKeyState(0x11) < 0 && IsAltPressed()) //0x11 - Control, 0x4000 - Alt
+            // Переключить между своими пресетами
+            if ((VirtualKey)virtualkeyCode == VirtualKey.W && GetAsyncKeyState(0x11) < 0 &&
+                IsAltPressed()) //0x11 - Control, 0x4000 - Alt
             {
                 //Создать уведомление
                 var nextProfile = NextCustomProfile_Switch();
                 ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextProfile);
-                MandarinAddNotification("Смена пресета", "Вы успешно переключили ваши пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
+                MandarinAddNotification("Смена пресета", "Вы успешно переключили ваши пресеты на " + $"{nextProfile}!",
+                    InfoBarSeverity.Informational);
                 MainWindow.Applyer.ApplyWithoutADJLine(false);
             }
-            // Переключить между готовыми пресетами - Switch profile to next Premaded
-            if ((Windows.System.VirtualKey)virtualkeyCode == Windows.System.VirtualKey.P && GetAsyncKeyState(0x11) < 0 && IsAltPressed()) //0x11 - Control, 0x4000 - Alt
+
+            // Переключить между готовыми пресетами 
+            if ((VirtualKey)virtualkeyCode == VirtualKey.P && GetAsyncKeyState(0x11) < 0 &&
+                IsAltPressed()) //0x11 - Control, 0x4000 - Alt
             {
                 var nextProfile = NextPremadeProfile_Switch();
                 ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextProfile);
-                MandarinAddNotification("Смена пресета", "Вы успешно переключили готовые пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
+                MandarinAddNotification("Смена пресета",
+                    "Вы успешно переключили готовые пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
                 MainWindow.Applyer.ApplyWithoutADJLine(false);
             }
+
             // Переключить состояние RTSS
-            if ((Windows.System.VirtualKey)virtualkeyCode == Windows.System.VirtualKey.R && GetAsyncKeyState(0x11) < 0 && IsAltPressed()) //0x11 - Control, 0x4000 - Alt
+            if ((VirtualKey)virtualkeyCode == VirtualKey.R && GetAsyncKeyState(0x11) < 0 &&
+                IsAltPressed()) //0x11 - Control, 0x4000 - Alt
             {
                 ConfigLoad();
-                if (config.RTSSMetricsEnabled)
+                if (_config.RTSSMetricsEnabled)
                 {
-                    var iconGrid = new Grid()
+                    var iconGrid = new Grid
                     {
                         Width = 100,
                         Height = 100,
@@ -1548,9 +1776,9 @@ public sealed partial class ShellPage : Page
                             new FontIcon
                             {
                                 Glyph = "\uE711",
-                                Margin = new Thickness(4,0,0,0),
+                                Margin = new Thickness(4, 0, 0, 0),
                                 VerticalAlignment = VerticalAlignment.Center,
-                                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center,
+                                HorizontalAlignment = HorizontalAlignment.Center,
                                 FontSize = 40
                             }
                         }
@@ -1558,12 +1786,12 @@ public sealed partial class ShellPage : Page
                     ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Disabled", null, iconGrid);
                     var navigationService = App.GetService<INavigationService>();
                     navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
-                    config.RTSSMetricsEnabled = false;
+                    _config.RTSSMetricsEnabled = false;
                     ConfigSave();
                 }
                 else
                 {
-                    var iconGrid = new Grid()
+                    var iconGrid = new Grid
                     {
                         Width = 100,
                         Height = 100,
@@ -1577,50 +1805,52 @@ public sealed partial class ShellPage : Page
                         }
                     };
                     ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Enabled", null, iconGrid);
-                    config.RTSSMetricsEnabled = true;
+                    _config.RTSSMetricsEnabled = true;
                     ConfigSave();
                     var navigationService = App.GetService<INavigationService>();
                     navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!, null, true);
                 }
-                MandarinAddNotification("Смена состояния оверлея", "Вы успешно переключили отображение оверлея RTSS в игре!", InfoBarSeverity.Informational);
+
+                MandarinAddNotification("Смена состояния оверлея",
+                    "Вы успешно переключили отображение оверлея RTSS в игре!", InfoBarSeverity.Informational);
             }
         }
-        return CallNextHookEx(_hookID, nCode, wParam, lParam); // Передаем нажатие в следующее приложение
+
+        return CallNextHookEx(_hookId, nCode, wParam, lParam); // Передаем нажатие в следующее приложение
     }
 
     #region Hook DLL Imports
-    //Импорт необходимых функций из WinApi
+
+    // Импорт необходимых функций из WinApi
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-
     private static extern IntPtr SetWindowsHookEx(int idHook,
-
         LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-
     private static extern short GetAsyncKeyState(int vKey);
 
 
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-
     [return: MarshalAs(UnmanagedType.Bool)]
-
     private static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
 
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-
     private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode,
-
         IntPtr wParam, IntPtr lParam);
 
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-
     private static extern IntPtr GetModuleHandle(string lpModuleName);
+
     #endregion
+
     #endregion
-    #region Based on Collapse Launcher TitleBar 
-    private void ToggleTitleIcon(bool hide) //Based on Collapse Launcher Titlebar, check out -> https://github.com/CollapseLauncher/Collapse
+
+    #region Based on Collapse Launcher TitleBar
+
+    private void
+        ToggleTitleIcon(
+            bool hide) // Based on Collapse Launcher Titlebar, check out -> https://github.com/CollapseLauncher/Collapse
     {
         if (!hide)
         {
@@ -1629,13 +1859,15 @@ public sealed partial class ShellPage : Page
             IconImg.Opacity = 1d;
             return;
         }
+
         IconTitle.Width = 0.0;
         IconTitle.Opacity = 0d;
         IconImg.Opacity = 0.8d;
     }
+
     private void TitleIcon_PointerEntered(object sender, PointerRoutedEventArgs e)
     {
-        if (!NavigationViewControl.IsPaneOpen && !fixedTitleBar)
+        if (!NavigationViewControl.IsPaneOpen && !_fixedTitleBar)
         {
             //показать
             var curMargin = Icon.Margin;
@@ -1644,10 +1876,11 @@ public sealed partial class ShellPage : Page
             ToggleTitleIcon(false);
         }
     }
+
     private void TitleIcon_PointerExited(object sender, PointerRoutedEventArgs e)
     {
         //скрыть
-        if (!NavigationViewControl.IsPaneOpen && !fixedTitleBar)
+        if (!NavigationViewControl.IsPaneOpen && !_fixedTitleBar)
         {
             var curMargin = Icon.Margin;
             curMargin.Left = 3;
@@ -1655,13 +1888,16 @@ public sealed partial class ShellPage : Page
             ToggleTitleIcon(true);
         }
     }
+
     private void Icon_Click(object sender, RoutedEventArgs e)
     {
-        fixedTitleBar = !fixedTitleBar;
+        _fixedTitleBar = !_fixedTitleBar;
     }
-    private void NavigationViewControl_DisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)
+
+    private void NavigationViewControl_DisplayModeChanged(NavigationView sender,
+        NavigationViewDisplayModeChangedEventArgs args)
     {
-        AppTitleBar.Margin = new Thickness()
+        AppTitleBar.Margin = new Thickness
         {
             Left = sender.CompactPaneLength * (sender.DisplayMode == NavigationViewDisplayMode.Minimal ? 2 : 1),
             Top = AppTitleBar.Margin.Top,
@@ -1669,9 +1905,10 @@ public sealed partial class ShellPage : Page
             Bottom = AppTitleBar.Margin.Bottom
         };
     }
+
     private static KeyboardAccelerator BuildKeyboardAccelerator(VirtualKey key, VirtualKeyModifiers? modifiers = null)
     {
-        var keyboardAccelerator = new KeyboardAccelerator() { Key = key };
+        var keyboardAccelerator = new KeyboardAccelerator { Key = key };
 
         if (modifiers.HasValue)
         {
@@ -1682,7 +1919,9 @@ public sealed partial class ShellPage : Page
 
         return keyboardAccelerator;
     }
-    private static void OnKeyboardAcceleratorInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+
+    private static void OnKeyboardAcceleratorInvoked(KeyboardAccelerator sender,
+        KeyboardAcceleratorInvokedEventArgs args)
     {
         var navigationService = App.GetService<INavigationService>();
 
@@ -1690,6 +1929,7 @@ public sealed partial class ShellPage : Page
 
         args.Handled = result;
     }
+
     private void NavigationViewControl_PaneOpened(NavigationView sender, object args)
     {
         IconColumn.Width = new GridLength(170, GridUnitType.Pixel);
@@ -1698,9 +1938,10 @@ public sealed partial class ShellPage : Page
         Icon.Margin = curMargin;
         ToggleTitleIcon(false);
     }
+
     private void NavigationViewControl_PaneClosed(NavigationView sender, object args)
     {
-        if (!NavigationViewControl.IsPaneOpen && !fixedTitleBar)
+        if (!NavigationViewControl.IsPaneOpen && !_fixedTitleBar)
         {
             var curMargin = Icon.Margin;
             curMargin.Left = 3;
@@ -1709,163 +1950,208 @@ public sealed partial class ShellPage : Page
             IconColumn.Width = new GridLength(120, GridUnitType.Pixel);
         }
     }
+
     private void SetRegionsForCustomTitleBar()
     {
-        var scaleAdjustment = AppTitleBar.XamlRoot.RasterizationScale; // Specify the interactive regions of the title bar.
-        RightPaddingColumn.Width = new GridLength(m_AppWindow.TitleBar.RightInset / scaleAdjustment);
-        LeftPaddingColumn.Width = new GridLength(m_AppWindow.TitleBar.LeftInset / scaleAdjustment);
+        var scaleAdjustment =
+            AppTitleBar.XamlRoot.RasterizationScale; // Specify the interactive regions of the title bar.
+        RightPaddingColumn.Width = new GridLength(MAppWindow.TitleBar.RightInset / scaleAdjustment);
+        LeftPaddingColumn.Width = new GridLength(MAppWindow.TitleBar.LeftInset / scaleAdjustment);
 
         var transform = TitleIcon.TransformToVisual(null);
         var bounds = transform.TransformBounds(new Rect(0, 0,
-                                                    TitleIcon.ActualWidth,
-                                                    TitleIcon.ActualHeight));
-        var SearchBoxRect = GetRect(bounds, scaleAdjustment);
+            TitleIcon.ActualWidth,
+            TitleIcon.ActualHeight));
+        var searchBoxRect = GetRect(bounds, scaleAdjustment);
 
         transform = ProfileSetup.TransformToVisual(null);
         bounds = transform.TransformBounds(new Rect(0, 0,
-                                                    ProfileSetup.ActualWidth,
-                                                    ProfileSetup.ActualHeight));
-        var ProfileSetupRect = GetRect(bounds, scaleAdjustment);
+            ProfileSetup.ActualWidth,
+            ProfileSetup.ActualHeight));
+        var profileSetupRect = GetRect(bounds, scaleAdjustment);
 
         transform = RingerNotifGrid.TransformToVisual(null);
         bounds = transform.TransformBounds(new Rect(0, 0,
-                                                    RingerNotifGrid.ActualWidth,
-                                                    RingerNotifGrid.ActualHeight));
-        var RingerNotifRect = GetRect(bounds, scaleAdjustment);
+            RingerNotifGrid.ActualWidth,
+            RingerNotifGrid.ActualHeight));
+        var ringerNotifRect = GetRect(bounds, scaleAdjustment);
 
-        var rectArray = new Windows.Graphics.RectInt32[] { SearchBoxRect, ProfileSetupRect, RingerNotifRect };
+        var rectArray = new[] { searchBoxRect, profileSetupRect, ringerNotifRect };
 
-        var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(m_AppWindow.Id);
+        var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(MAppWindow.Id);
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
     }
-    private static Windows.Graphics.RectInt32 GetRect(Rect bounds, double scale)
+
+    private static RectInt32 GetRect(Rect bounds, double scale)
     {
-        return new Windows.Graphics.RectInt32(
+        return new RectInt32(
             _X: (int)Math.Round(bounds.X * scale),
             _Y: (int)Math.Round(bounds.Y * scale),
             _Width: (int)Math.Round(bounds.Width * scale),
             _Height: (int)Math.Round(bounds.Height * scale)
         );
     }
+
     #endregion
+
     #region Event Handlers
+
     private void ProfileSetButton_Click(object sender, RoutedEventArgs e)
     {
         MandarinSparseUnit();
         ProfileSetButton.IsEnabled = false;
     }
+
     private void ProfileSetButton_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
-        if (ProfileSetButton.IsEnabled) { ActivateText.Text = "Shell_Activate".GetLocalized(); } else { ActivateText.Text = "Shell_DeActivate".GetLocalized(); }
+        ActivateText.Text = ProfileSetButton.IsEnabled
+            ? "Shell_Activate".GetLocalized()
+            : "Shell_DeActivate".GetLocalized();
     }
+
     private void ProfileSetComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (!loaded) { return; }
+        if (!_loaded)
+        {
+            return;
+        }
+
         ConfigLoad();
-        if (ProfileSetComboBox.SelectedIndex == config.Preset + 1)
-        {
-            ProfileSetButton.IsEnabled = false;
-        }
-        else
-        {
-            ProfileSetButton.IsEnabled = true;
-        }
+        ProfileSetButton.IsEnabled = ProfileSetComboBox.SelectedIndex != _config.Preset + 1;
     }
+
     private void ToggleNotificationPanelBtn_Click(object sender, RoutedEventArgs e)
     {
-        IsNotificationPanelShow = ToggleNotificationPanelBtn.IsChecked ?? false;
+        _isNotificationPanelShow = ToggleNotificationPanelBtn.IsChecked ?? false;
         ShowHideNotificationPanel(true);
     }
+
     private void NotificationContainerBackground_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
-        IsNotificationPanelShow = false;
+        _isNotificationPanelShow = false;
         ToggleNotificationPanelBtn.IsChecked = false;
         ShowHideNotificationPanel(true);
     }
+
     private void CloseThisClickHandler(InfoBar sender, object args)
     {
-        var Container = new Grid() { Tag = sender.Name };
+        var container = new Grid { Tag = sender.Name };
         sender.IsOpen = false;
-        var list = notify?.Notifies!;
+        var list = _notify.Notifies!;
         for (var i = 0; i < list.Count; i++)
         {
             var notify1 = list[i];
             if (sender.Title == notify1.Title && sender.Message == notify1.Msg && sender.Severity == notify1.Type)
             {
                 NotifyLoad();
-                notify?.Notifies?.RemoveAt(i);
+                _notify.Notifies?.RemoveAt(i);
                 NotifySave();
                 return;
             }
         }
+
         sender.Height = 0;
         sender.Margin = new Thickness(0, 0, 0, 0);
         NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-        if (NewNotificationCountBadge.Value > 0) { NewNotificationCountBadge.Value--; }
+        if (NewNotificationCountBadge.Value > 0)
+        {
+            NewNotificationCountBadge.Value--;
+        }
+
         NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-        NewNotificationCountBadge.Visibility = NewNotificationCountBadge.Value > 0 ? Visibility.Visible : Visibility.Collapsed;
-        NotificationPanelClearAllGrid.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        NotificationContainer.Children.Remove(Container);
+        NewNotificationCountBadge.Visibility =
+            NewNotificationCountBadge.Value > 0 ? Visibility.Visible : Visibility.Collapsed;
+        NotificationPanelClearAllGrid.Visibility =
+            NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        NotificationContainer.Children.Remove(container);
     }
+
     private async void ClearAllNotification(object? sender, RoutedEventArgs? args)
     {
-        var button = sender is Button ? sender as Button : null;
-        if (button != null)
+        try
         {
-            button.IsEnabled = false;
-        }
-        var stackIndex = 0;
-        for (; stackIndex < NotificationContainer.Children.Count;)
-        {
-            if (NotificationContainer.Children[stackIndex] is not Grid container
-             || container.Children == null || container.Children.Count == 0
-             || container.Children[0] is not InfoBar notifBar || notifBar == null
-             || !notifBar.IsClosable)
+            var button = sender as Button;
+            if (button != null)
             {
-                ++stackIndex;
-                continue;
+                button.IsEnabled = false;
             }
 
-            NotificationContainer.Children.RemoveAt(stackIndex);
-            notifBar.IsOpen = false;
-            await Task.Delay(100);
-        }
-        if (NotificationContainer.Children.Count == 0)
-        {
-            await Task.Delay(500);
-            ToggleNotificationPanelBtn.IsChecked = false;
-            IsNotificationPanelShow = false;
-            ShowHideNotificationPanel(false);
-        }
-        if (button != null) { button.IsEnabled = true; NotifyLoad(); notify.Notifies = []; NotifySave(); }
-    }
-    private async void Notif_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (NotificationsPivot.SelectedIndex == 0)
-        {
-            NotificationContainer.Visibility = Visibility.Visible;
+            var stackIndex = 0;
+            for (; stackIndex < NotificationContainer.Children.Count;)
+            {
+                if (NotificationContainer.Children[stackIndex] is not Grid container
+                    || container.Children == null || container.Children.Count == 0
+                    || container.Children[0] is not InfoBar { IsClosable: true } notifBar)
+                {
+                    ++stackIndex;
+                    continue;
+                }
+
+                NotificationContainer.Children.RemoveAt(stackIndex);
+                notifBar.IsOpen = false;
+                await Task.Delay(100);
+            }
+
             if (NotificationContainer.Children.Count == 0)
             {
-                NoNotificationIndicator.Visibility = Visibility.Visible;
+                await Task.Delay(500);
+                ToggleNotificationPanelBtn.IsChecked = false;
+                _isNotificationPanelShow = false;
+                ShowHideNotificationPanel(false);
+            }
+
+            if (button != null)
+            {
+                button.IsEnabled = true;
+                NotifyLoad();
+                _notify.Notifies = [];
+                NotifySave();
             }
         }
-        else
+        catch (Exception ex)
         {
-            NotificationContainer.Visibility = Visibility.Collapsed;
-            NoNotificationIndicator.Visibility = Visibility.Collapsed;
-            if (UpdateChecker.GitHubInfoString == string.Empty)
-            {
-                await UpdateChecker.GenerateReleaseInfoString();
-            }
-            if (UpdateChecker.GitHubInfoString != "**Failed to fetch info**")
-            {
-                NotifChangelogTexts.Children.Clear();
-                await ГлавнаяPage.GenerateFormattedReleaseNotes(NotifChangelogTexts);
-            }
+            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
         }
     }
+
+    private async void Notif_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            if (NotificationsPivot.SelectedIndex == 0)
+            {
+                NotificationContainer.Visibility = Visibility.Visible;
+                if (NotificationContainer.Children.Count == 0)
+                {
+                    NoNotificationIndicator.Visibility = Visibility.Visible;
+                }
+            }
+            else
+            {
+                NotificationContainer.Visibility = Visibility.Collapsed;
+                NoNotificationIndicator.Visibility = Visibility.Collapsed;
+                if (UpdateChecker.GitHubInfoString == string.Empty)
+                {
+                    await UpdateChecker.GenerateReleaseInfoString();
+                }
+
+                if (UpdateChecker.GitHubInfoString != "**Failed to fetch info**")
+                {
+                    NotifChangelogTexts.Children.Clear();
+                    await ГлавнаяPage.GenerateFormattedReleaseNotes(NotifChangelogTexts);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
+        }
+    }
+
     #endregion
+
     #region Based on Collapse Launcher Notification voids
+
     /*
     This code region belongs to the Collapse Launcher project. Its owners are neon-nyan, bagusnl.
 
@@ -1901,83 +2187,115 @@ SOFTWARE.
     */
     private void ShowHideNotificationPanel(bool hider)
     {
-        if (!hider) { return; }
+        if (!hider)
+        {
+            return;
+        }
+
         var lastMargin = NotificationPanel.Margin;
-        lastMargin.Right = IsNotificationPanelShow ? 0 : NotificationPanel.ActualWidth * -1;
+        lastMargin.Right = _isNotificationPanelShow ? 0 : NotificationPanel.ActualWidth * -1;
         NotificationPanel.Margin = lastMargin;
         NewNotificationCountBadge.Value = 0;
         NewNotificationCountBadge.Visibility = Visibility.Collapsed;
-        ShowHideNotificationLostFocusBackground(IsNotificationPanelShow);
+        ShowHideNotificationLostFocusBackground(_isNotificationPanelShow);
     }
+
     private async void ShowHideNotificationLostFocusBackground(bool show)
     {
-        if (show)
+        try
         {
-            NotificationLostFocusBackground.Visibility = Visibility.Visible;
-            NotificationLostFocusBackground.Opacity = 0.3;
-        }
-        else
-        {
-            if (NotificationContainer.Children.Count > 7)
+            if (show)
             {
-                ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все, затем добавить один
+                NotificationLostFocusBackground.Visibility = Visibility.Visible;
+                NotificationLostFocusBackground.Opacity = 0.3;
             }
-            NotificationLostFocusBackground.Opacity = 0;
-            await Task.Delay(200);
-            NotificationLostFocusBackground.Visibility = Visibility.Collapsed;
+            else
+            {
+                if (NotificationContainer.Children.Count > 7)
+                {
+                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все, затем добавить один
+                }
+
+                NotificationLostFocusBackground.Opacity = 0;
+                await Task.Delay(200);
+                NotificationLostFocusBackground.Visibility = Visibility.Collapsed;
+            }
+        }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
         }
     }
-    public void MandarinAddNotification(string Title, string Msg, InfoBarSeverity Type, bool IsClosable = true, Grid? Subcontent = null, TypedEventHandler<InfoBar, object>? CloseClickHandler = null)
+
+    private void MandarinAddNotification(string title, string msg, InfoBarSeverity type, bool isClosable = true,
+        Grid? subcontent = null, TypedEventHandler<InfoBar, object>? closeClickHandler = null)
     {
         DispatcherQueue?.TryEnqueue(() =>
         {
-            var OtherContentContainer = new StackPanel() { Margin = new Thickness(0, -4, 0, 8) };
-            var Notification = new InfoBar
+            var otherContentContainer = new StackPanel { Margin = new Thickness(0, -4, 0, 8) };
+            var notification = new InfoBar
             {
-                Title = Title,
-                Message = Msg,
-                Severity = Type,
-                IsClosable = IsClosable,
+                Title = title,
+                Message = msg,
+                Severity = type,
+                IsClosable = isClosable,
                 IsIconVisible = true,
                 Shadow = SharedShadow,
                 IsOpen = true,
                 Margin = new Thickness(0, 4, 4, 0),
                 Width = 600,
                 CornerRadius = new CornerRadius(8),
-                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Right
+                HorizontalAlignment = HorizontalAlignment.Right
             };
-            if (Subcontent != null) { OtherContentContainer.Children.Add(Subcontent); Notification.Content = OtherContentContainer; }
-            Notification.Name = Msg + " " + DateTime.Now.ToString();
-            Notification.CloseButtonClick += CloseClickHandler;
-            MandarinShowNotify(Name, Notification);
-            if (CloseClickHandler == null) { Notification.CloseButtonClick += CloseThisClickHandler; }
+            if (subcontent != null)
+            {
+                otherContentContainer.Children.Add(subcontent);
+                notification.Content = otherContentContainer;
+            }
+
+            notification.Name = msg + " " + DateTime.Now;
+            notification.CloseButtonClick += closeClickHandler;
+            MandarinShowNotify(Name, notification);
+            if (closeClickHandler == null)
+            {
+                notification.CloseButtonClick += CloseThisClickHandler;
+            }
         });
     }
-    public void MandarinShowNotify(string Name, InfoBar Notification)
+
+    private void MandarinShowNotify(string name, InfoBar notification)
     {
-        var Container = new Grid() { Tag = Name };
-        Notification.Loaded += (a, b) =>
+        var container = new Grid { Tag = name };
+        notification.Loaded += (_, _) =>
         {
             NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
             NewNotificationCountBadge.Visibility = Visibility.Visible;
             NewNotificationCountBadge.Value++;
-            NotificationPanelClearAllGrid.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            NotificationPanelClearAllGrid.Visibility =
+                NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         };
 
-        Notification.Closed += (s, a) =>
+        notification.Closed += (s, _) =>
         {
             s.Height = 0;
             s.Margin = new Thickness(0, 0, 0, 0);
             //var msg = (int)s.Tag; 
             NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-            if (NewNotificationCountBadge.Value > 0) { NewNotificationCountBadge.Value--; }
+            if (NewNotificationCountBadge.Value > 0)
+            {
+                NewNotificationCountBadge.Value--;
+            }
+
             NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
-            NewNotificationCountBadge.Visibility = NewNotificationCountBadge.Value > 0 ? Visibility.Visible : Visibility.Collapsed;
-            NotificationPanelClearAllGrid.Visibility = NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-            NotificationContainer.Children.Remove(Container);
+            NewNotificationCountBadge.Visibility =
+                NewNotificationCountBadge.Value > 0 ? Visibility.Visible : Visibility.Collapsed;
+            NotificationPanelClearAllGrid.Visibility =
+                NotificationContainer.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            NotificationContainer.Children.Remove(container);
         };
-        Container.Children.Add(Notification);
-        NotificationContainer.Children.Add(Container);
+        container.Children.Add(notification);
+        NotificationContainer.Children.Add(container);
     }
-    #endregion 
+
+    #endregion
 }
