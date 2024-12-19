@@ -1,18 +1,23 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
+using Windows.Foundation.Metadata;
+using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.ViewModels;
-using Windows.Foundation.Metadata;
 using Saku_Overclock.Services;
+using Saku_Overclock.SMUEngine;
+using Saku_Overclock.ViewModels;
 using Application = Microsoft.UI.Xaml.Application;
+using FileMode = System.IO.FileMode;
 
 namespace Saku_Overclock.Views;
+
 public sealed partial class КулерPage
 {
     private Config _config = new();
@@ -22,6 +27,7 @@ public sealed partial class КулерPage
     private IntPtr _ry = IntPtr.Zero;
     private DispatcherTimer? _tempUpdateTimer;
     private readonly DispatcherTimer? _fanUpdateTimer;
+
     public КулерPage()
     {
         App.GetService<КулерViewModel>();
@@ -29,7 +35,8 @@ public sealed partial class КулерPage
         ConfigLoad();
         FanInit();
         Update();
-        _config.FlagRyzenADJConsoleTemperatureCheckRunning = true; //Автообновление информации о кулере включено! Это нужно для того, чтобы обновление информации не происходило нигде кроме страницы с оптимизацией кулера, так как контроллировать асинхронные методы бывает сложно
+        _config.FlagRyzenADJConsoleTemperatureCheckRunning =
+            true; //Автообновление информации о кулере включено! Это нужно для того, чтобы обновление информации не происходило нигде кроме страницы с оптимизацией кулера, так как контроллировать асинхронные методы бывает сложно
         ConfigSave();
         Loaded += Page_Loaded;
         _fanUpdateTimer = new DispatcherTimer();
@@ -39,26 +46,34 @@ public sealed partial class КулерPage
     }
 
     #region Page Navigation and Window State
+
     private void Window_Activated(object sender, WindowActivatedEventArgs args)
     {
-        if (args.WindowActivationState == WindowActivationState.CodeActivated || args.WindowActivationState == WindowActivationState.PointerActivated)
+        if (args.WindowActivationState == WindowActivationState.CodeActivated ||
+            args.WindowActivationState == WindowActivationState.PointerActivated)
         {
             _tempUpdateTimer?.Start();
-            if (Fanauto.IsChecked == true) { _fanUpdateTimer?.Start(); }
+            if (Fanauto.IsChecked == true)
+            {
+                _fanUpdateTimer?.Start();
+            }
         }
         else
         {
             _tempUpdateTimer?.Stop();
             _fanUpdateTimer?.Stop();
         }
-
     }
+
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
     {
         if (args.Visible)
         {
             _tempUpdateTimer?.Start();
-            if (Fanauto.IsChecked == true) { _fanUpdateTimer?.Start(); }
+            if (Fanauto.IsChecked == true)
+            {
+                _fanUpdateTimer?.Start();
+            }
         }
         else
         {
@@ -66,35 +81,44 @@ public sealed partial class КулерPage
             _fanUpdateTimer?.Stop();
         }
     }
+
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
         StartTempUpdate();
     }
+
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
         base.OnNavigatedFrom(e);
         StopTempUpdate(false);
     }
+
     private void AdvancedCooler_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(AdvancedКулерViewModel).FullName!);
     }
+
     private void AsusCoolerMode_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(AsusКулерViewModel).FullName!);
     }
+
     #endregion
+
     #region JSON and Initialization
 
     private void ConfigSave()
     {
         try
         {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(_config));
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                "SakuOverclock"));
+            File.WriteAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json",
+                JsonConvert.SerializeObject(_config));
         }
         catch
         {
@@ -106,7 +130,8 @@ public sealed partial class КулерPage
     {
         try
         {
-            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
+            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
         }
         catch
         {
@@ -121,7 +146,9 @@ public sealed partial class КулерPage
             ConfigLoad();
             try
             {
-                const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs"; // Получить папку, в которой хранятся файлы XML с конфигами
+                const string
+                    folderPath =
+                        @"C:\Program Files (x86)\NoteBook FanControl\Configs"; // Получить папку, в которой хранятся файлы XML с конфигами
                 var xmlFiles = Directory.GetFiles(folderPath, "*.xml");
                 Selfan.Items.Clear();
                 foreach (var xmlFile in xmlFiles)
@@ -131,6 +158,7 @@ public sealed partial class КулерPage
                     {
                         fileName = fileName.Replace(".xml", "");
                     }
+
                     var item = new ComboBoxItem
                     {
                         Content = fileName,
@@ -146,7 +174,10 @@ public sealed partial class КулерPage
             catch
             {
                 _isNbfcNotLoaded = true;
-                if (!_isPageLoaded) { return; }
+                if (!_isPageLoaded)
+                {
+                    return;
+                }
 
                 await ShowNbfcDialogAsync();
             }
@@ -169,25 +200,29 @@ public sealed partial class КулерPage
                 if (Fan2.Value > 100)
                 {
                     Fan2Val.Text = "Auto";
-                } 
-            } 
+                }
+            }
+
             if (_config.NBFCServiceStatusReadOnly)
             {
                 Enabl.IsChecked = false;
                 Readon.IsChecked = true;
                 Disabl.IsChecked = false;
-            } 
+            }
+
             if (_config.NBFCServiceStatusDisabled)
             {
                 Enabl.IsChecked = false;
                 Readon.IsChecked = false;
                 Disabl.IsChecked = true;
-            } 
+            }
+
             if (_config.NBFCAutoUpdateInformation)
             {
                 await Task.Delay(20);
                 Fanauto.IsChecked = true;
             }
+
             if (Enabl.IsChecked == true)
             {
                 NbfcFan1();
@@ -202,9 +237,11 @@ public sealed partial class КулерPage
                     Fan1Pr.Value = Fan1.Value;
                     Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan1.Value;
                     _config.NBFCFlagConsoleCheckSpeedRunning = false;
-                } 
+                }
+
                 ConfigSave();
             }
+
             if (Readon.IsChecked == true)
             {
                 Fan1Val.Text = "Auto";
@@ -213,16 +250,17 @@ public sealed partial class КулерPage
         }
         catch (Exception e)
         {
-            SMUEngine.SendSMUCommand.TraceIt_TraceError(e.ToString());
+            SendSmuCommand.TraceIt_TraceError(e.ToString());
         }
     }
+
     // Метод для отображения диалога и загрузки NBFC
     private async Task ShowNbfcDialogAsync()
     {
         // Создаем элементы интерфейса, которые понадобятся в диалоге
         var downloadButton = new Button
         {
-            Margin = new Thickness(0,12,0,0),
+            Margin = new Thickness(0, 12, 0, 0),
             CornerRadius = new CornerRadius(15),
             Style = (Style)Application.Current.Resources["AccentButtonStyle"],
             Content = new StackPanel
@@ -231,7 +269,11 @@ public sealed partial class КулерPage
                 Children =
                 {
                     new FontIcon { Glyph = "\uE74B" }, // Иконка загрузки
-                    new TextBlock { Margin = new Thickness(10,0,0,0), Text = "Cooler_DownloadNBFC_Title".GetLocalized(), FontWeight = new Windows.UI.Text.FontWeight(700) }
+                    new TextBlock
+                    {
+                        Margin = new Thickness(10, 0, 0, 0), Text = "Cooler_DownloadNBFC_Title".GetLocalized(),
+                        FontWeight = new FontWeight(700)
+                    }
                 }
             },
             HorizontalAlignment = HorizontalAlignment.Center
@@ -297,7 +339,7 @@ public sealed partial class КулерPage
                 var totalBytes = response.Content.Headers.ContentLength ?? 1;
                 var downloadPath = Path.Combine(Path.GetTempPath(), "NBFC");
 
-                var fileStream = new FileStream(downloadPath, System.IO.FileMode.Create, FileAccess.Write,
+                var fileStream = new FileStream(downloadPath, FileMode.Create, FileAccess.Write,
                     FileShare.None);
                 var downloadStream = await response.Content.ReadAsStreamAsync();
                 var buffer = new byte[8192];
@@ -327,11 +369,14 @@ public sealed partial class КулерPage
                     }
                     catch (Exception ex)
                     {
-                        await App.MainWindow.ShowMessageDialogAsync("Cooler_DownloadNBFC_ErrorDesc".GetLocalized() + $": {ex.Message}", "Error".GetLocalized());
+                        await App.MainWindow.ShowMessageDialogAsync(
+                            "Cooler_DownloadNBFC_ErrorDesc".GetLocalized() + $": {ex.Message}", "Error".GetLocalized());
                         await Task.Delay(2000);
-                        goto label_8; // Повторить задачу открытия автообновления приложения, в случае если возникла ошибка доступа
+                        goto
+                            label_8; // Повторить задачу открытия автообновления приложения, в случае если возникла ошибка доступа
                     }
                 }
+
                 downloadButton.Opacity = 0.0;
                 progressBar.Opacity = 0.0;
                 // Изменение текста диалога и активация кнопки "Далее"
@@ -342,20 +387,21 @@ public sealed partial class КулерPage
                 };
                 themerDialog.IsPrimaryButtonEnabled = true;
             }
-        }; 
+        };
         var result = await themerDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
             PageService.ReloadPage(typeof(КулерViewModel).FullName!); // Вызов метода перезагрузки страницы
         }
-    } 
+    }
+
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
         try
         {
             _isPageLoaded = true;
-            _ry = SMUEngine.RyzenADJWrapper.Init_ryzenadj();
-            SMUEngine.RyzenADJWrapper.Init_Table(_ry);
+            _ry = RyzenADJWrapper.Init_ryzenadj();
+            RyzenADJWrapper.Init_Table(_ry);
             if (_isNbfcNotLoaded)
             {
                 await ShowNbfcDialogAsync();
@@ -363,34 +409,47 @@ public sealed partial class КулерPage
         }
         catch (Exception xException)
         {
-            SMUEngine.SendSMUCommand.TraceIt_TraceError(xException.ToString());
+            SendSmuCommand.TraceIt_TraceError(xException.ToString());
         }
     }
+
     private void Page_Unloaded(object sender, RoutedEventArgs e) => StopTempUpdate(true);
 
     #endregion
+
     #region Event Handlers
+
     private void Disabl_Checked(object sender, RoutedEventArgs e)
     {
-        _config.NBFCServiceStatusDisabled = true; _config.NBFCServiceStatusReadOnly = false; _config.NBFCServiceStatusEnabled = false; _config.NBFCFlagConsoleCheckSpeedRunning = false;
+        _config.NBFCServiceStatusDisabled = true;
+        _config.NBFCServiceStatusReadOnly = false;
+        _config.NBFCServiceStatusEnabled = false;
+        _config.NBFCFlagConsoleCheckSpeedRunning = false;
         ConfigSave();
         NbfcEnable();
     }
+
     private void Readon_Checked(object sender, RoutedEventArgs e)
     {
-        _config.NBFCServiceStatusReadOnly = true; _config.NBFCServiceStatusEnabled = false; _config.NBFCServiceStatusDisabled = false;
+        _config.NBFCServiceStatusReadOnly = true;
+        _config.NBFCServiceStatusEnabled = false;
+        _config.NBFCServiceStatusDisabled = false;
         ConfigSave();
         NbfcEnable();
         Fan1Val.Text = "Auto";
         Update();
     }
+
     private void Enabl_Checked(object sender, RoutedEventArgs e)
     {
-        _config.NBFCServiceStatusEnabled = true; _config.NBFCServiceStatusDisabled = false; _config.NBFCServiceStatusReadOnly = false;
+        _config.NBFCServiceStatusEnabled = true;
+        _config.NBFCServiceStatusDisabled = false;
+        _config.NBFCServiceStatusReadOnly = false;
         ConfigSave();
         NbfcEnable();
     }
-    private async void Fan1_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void Fan1_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         try
         {
@@ -405,17 +464,17 @@ public sealed partial class КулерPage
                     Fan1Val.Text = "Auto";
                     Update();
                     _config.NBFCFan1UserFanSpeedRPM = 110.0;
-                    ConfigSave();
                 }
                 else
                 {
                     Fan1Pr.Value = Fan1.Value;
                     Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan1.Value;
                     _config.NBFCFlagConsoleCheckSpeedRunning = false;
-                    ConfigSave();
                 }
+
                 ConfigSave();
             }
+
             if (Readon.IsChecked == true)
             {
                 Fan1Val.Text = "Auto";
@@ -424,10 +483,11 @@ public sealed partial class КулерPage
         }
         catch (Exception exception)
         {
-            SMUEngine.SendSMUCommand.TraceIt_TraceError(exception.ToString());
+            SendSmuCommand.TraceIt_TraceError(exception.ToString());
         }
     }
-    private async void Fan2_ValueChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+
+    private async void Fan2_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         try
         {
@@ -443,7 +503,10 @@ public sealed partial class КулерPage
                     Update();
                     _config.NBFCFan2UserFanSpeedRPM = 110.0;
                     ConfigSave();
-                    if (Fan1Pr.Value - 10.0d == 0.0d) { Fan1Pr.Value = 100; }
+                    if (Fan1Pr.Value - 10.0d == 0.0d)
+                    {
+                        Fan1Pr.Value = 100;
+                    }
                 }
                 else
                 {
@@ -452,8 +515,10 @@ public sealed partial class КулерPage
                     _config.NBFCFlagConsoleCheckSpeedRunning = false;
                     ConfigSave();
                 }
+
                 ConfigSave();
             }
+
             if (Readon.IsChecked == true)
             {
                 Fan2Val.Text = "Auto";
@@ -462,9 +527,10 @@ public sealed partial class КулерPage
         }
         catch (Exception exception)
         {
-            SMUEngine.SendSMUCommand.TraceIt_TraceError(exception.ToString());
+            SendSmuCommand.TraceIt_TraceError(exception.ToString());
         }
     }
+
     private async void Selfan_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         try
@@ -473,6 +539,7 @@ public sealed partial class КулерPage
             {
                 return;
             }
+
             await Task.Delay(200);
             _config.NBFCConfigXMLName = (string)((ComboBoxItem)Selfan.SelectedItem).Content;
             ConfigSave();
@@ -480,9 +547,10 @@ public sealed partial class КулерPage
         }
         catch (Exception exception)
         {
-            SMUEngine.SendSMUCommand.TraceIt_TraceError(exception.ToString());
+            SendSmuCommand.TraceIt_TraceError(exception.ToString());
         }
     }
+
     private async void Fanauto_Checked(object sender, RoutedEventArgs e)
     {
         try
@@ -505,36 +573,53 @@ public sealed partial class КулерPage
                     {
                         autoDialog.XamlRoot = XamlRoot;
                     }
+
                     var result = await autoDialog.ShowAsync();
                     if (result == ContentDialogResult.Primary)
                     {
-                        _config.NBFCAutoUpdateInformation = true; ConfigSave();
+                        _config.NBFCAutoUpdateInformation = true;
+                        ConfigSave();
                     }
-                    else { Fanauto.IsChecked = false; _config.NBFCAutoUpdateInformation = false; ConfigSave(); }
+                    else
+                    {
+                        Fanauto.IsChecked = false;
+                        _config.NBFCAutoUpdateInformation = false;
+                        ConfigSave();
+                    }
                 }
-                _config.NBFCFlagConsoleCheckSpeedRunning = false; ConfigSave();
+
+                _config.NBFCFlagConsoleCheckSpeedRunning = false;
+                ConfigSave();
                 GetInfo0(true);
             }
-            else { _config.NBFCAutoUpdateInformation = false; ConfigSave(); GetInfo0(false); }
+            else
+            {
+                _config.NBFCAutoUpdateInformation = false;
+                ConfigSave();
+                GetInfo0(false);
+            }
         }
         catch (Exception exception)
         {
-            SMUEngine.SendSMUCommand.TraceIt_TraceError(exception.ToString());
+            SendSmuCommand.TraceIt_TraceError(exception.ToString());
         }
     }
+
     private async void Update_Click(object sender, RoutedEventArgs e)
     {
         try
         {
-            _config.NBFCFlagConsoleCheckSpeedRunning = true; ConfigSave();
+            _config.NBFCFlagConsoleCheckSpeedRunning = true;
+            ConfigSave();
             await CheckFan();
             Fanauto.IsChecked = false;
         }
         catch (Exception exception)
         {
-            SMUEngine.SendSMUCommand.TraceIt_TraceError(exception.ToString());
+            SendSmuCommand.TraceIt_TraceError(exception.ToString());
         }
     }
+
     private async void Suggest_Click(object sender, RoutedEventArgs e)
     {
         try
@@ -543,11 +628,12 @@ public sealed partial class КулерPage
         }
         catch (Exception exception)
         {
-            SMUEngine.SendSMUCommand.TraceIt_TraceError(exception.ToString());
+            SendSmuCommand.TraceIt_TraceError(exception.ToString());
         }
     }
 
     #endregion
+
     #region NBFC Tasks
 
     private void NbfcEnable()
@@ -560,14 +646,17 @@ public sealed partial class КулерPage
         {
             p.StartInfo.Arguments = " stop";
         }
+
         if (_config.NBFCServiceStatusEnabled)
         {
             p.StartInfo.Arguments = " start --enabled";
         }
+
         if (_config.NBFCServiceStatusReadOnly)
         {
             p.StartInfo.Arguments = " start --readonly";
         }
+
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
@@ -583,9 +672,16 @@ public sealed partial class КулерPage
         ConfigLoad();
         if (_config.NBFCServiceStatusEnabled)
         {
-            if (Fan1.Value < 100) { p.StartInfo.Arguments = " set --fan 0 --speed " + Fan1.Value; }
-            else { p.StartInfo.Arguments = " set --fan 0 --auto"; }
+            if (Fan1.Value < 100)
+            {
+                p.StartInfo.Arguments = " set --fan 0 --speed " + Fan1.Value;
+            }
+            else
+            {
+                p.StartInfo.Arguments = " set --fan 0 --auto";
+            }
         }
+
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
@@ -601,9 +697,16 @@ public sealed partial class КулерPage
         ConfigLoad();
         if (_config.NBFCServiceStatusEnabled)
         {
-            if (Fan2.Value < 100) { p.StartInfo.Arguments = " set --fan 1 --speed " + Fan2.Value; }
-            else { p.StartInfo.Arguments = " set --fan 1 --auto"; }
+            if (Fan2.Value < 100)
+            {
+                p.StartInfo.Arguments = " set --fan 1 --speed " + Fan2.Value;
+            }
+            else
+            {
+                p.StartInfo.Arguments = " set --fan 1 --auto";
+            }
         }
+
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
@@ -630,7 +733,14 @@ public sealed partial class КулерPage
     {
         _config.NBFCFlagConsoleCheckSpeedRunning = true;
         ConfigSave();
-        if (start) { _fanUpdateTimer?.Start(); } else { _fanUpdateTimer?.Stop(); }
+        if (start)
+        {
+            _fanUpdateTimer?.Start();
+        }
+        else
+        {
+            _fanUpdateTimer?.Stop();
+        }
     }
 
     private async Task CheckFan()
@@ -649,21 +759,30 @@ public sealed partial class КулерPage
                 p.StartInfo.RedirectStandardError = true;
                 p.StartInfo.RedirectStandardInput = true;
                 p.StartInfo.RedirectStandardOutput = true;
-                try { p.Start(); } catch (Exception ex) { await App.MainWindow.ShowMessageDialogAsync("Error " + ex.Message + " of КулерPage.xaml.cs in com.sakuoverclock.org", "Critical error!"); }
+                try
+                {
+                    p.Start();
+                }
+                catch (Exception ex)
+                {
+                    await App.MainWindow.ShowMessageDialogAsync(
+                        "Error " + ex.Message + " of КулерPage.xaml.cs in com.sakuoverclock.org", "Critical error!");
+                }
 
                 var outputWriter = p.StandardOutput;
                 var line = await outputWriter.ReadLineAsync();
                 while (line != null)
                 {
-
                     if (line.Contains("Current fan speed"))
                     {
-                        _config.NBFCAnswerSpeedFan1 = line.Replace("Current fan speed", "").Replace(" ", "").Replace(":", "").Replace("\t", "");
+                        _config.NBFCAnswerSpeedFan1 = line.Replace("Current fan speed", "").Replace(" ", "")
+                            .Replace(":", "").Replace("\t", "");
                         ConfigSave();
                     }
 
                     line = await outputWriter.ReadLineAsync();
                 }
+
                 await p.WaitForExitAsync();
                 var p1 = new Process(); //fan 2
                 p1.StartInfo.UseShellExecute = false;
@@ -678,28 +797,38 @@ public sealed partial class КулерPage
                 var line1 = await outputWriter1.ReadLineAsync();
                 while (line1 != null)
                 {
-
                     if (line1.Contains("Current fan speed"))
                     {
-                        _config.NBFCAnswerSpeedFan2 = line1.Replace("Current fan speed", "").Replace(" ", "").Replace(":", "").Replace("\t", "");
+                        _config.NBFCAnswerSpeedFan2 = line1.Replace("Current fan speed", "").Replace(" ", "")
+                            .Replace(":", "").Replace("\t", "");
                         ConfigSave();
                     }
 
                     line1 = await outputWriter1.ReadLineAsync();
                 }
+
                 await p1.WaitForExitAsync();
                 Update();
             }
         }
     }
+
     private void Update()
     {
         ConfigLoad();
-        if (_config.NBFCAnswerSpeedFan1 == string.Empty) { return; }
+        if (_config.NBFCAnswerSpeedFan1 == string.Empty)
+        {
+            return;
+        }
+
         try
         {
             Fan1Pr.Value = Convert.ToInt32(double.Parse(_config.NBFCAnswerSpeedFan1, CultureInfo.InvariantCulture));
-            if (Fan1Pr.Value > 100) { Fan1Pr.Value = 100; }
+            if (Fan1Pr.Value > 100)
+            {
+                Fan1Pr.Value = 100;
+            }
+
             Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + _config.NBFCAnswerSpeedFan1 + "%";
         }
         catch
@@ -710,11 +839,20 @@ public sealed partial class КулерPage
                 Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan1.Value + "%";
             }
         }
-        if (_config.NBFCAnswerSpeedFan2 == string.Empty) { return; }
+
+        if (_config.NBFCAnswerSpeedFan2 == string.Empty)
+        {
+            return;
+        }
+
         try
         {
             Fan2Pr.Value = Convert.ToInt32(double.Parse(_config.NBFCAnswerSpeedFan2, CultureInfo.InvariantCulture));
-            if (Fan2Pr.Value > 100) { Fan2Pr.Value = 100; }
+            if (Fan2Pr.Value > 100)
+            {
+                Fan2Pr.Value = 100;
+            }
+
             Fan2Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + _config.NBFCAnswerSpeedFan2 + "%";
         }
         catch
@@ -726,6 +864,7 @@ public sealed partial class КулерPage
             }
         }
     }
+
     private async Task SuggestClickAsync()
     {
         SuggestTip.Subtitle = "";
@@ -743,8 +882,9 @@ public sealed partial class КулерPage
         }
         catch (Exception ex)
         {
-            SMUEngine.SendSMUCommand.TraceIt_TraceError(ex.ToString());
+            SendSmuCommand.TraceIt_TraceError(ex.ToString());
         }
+
         var outputWriter = p.StandardOutput;
         var line = await outputWriter.ReadLineAsync();
         while (line != null)
@@ -753,40 +893,49 @@ public sealed partial class КулерPage
             {
                 SuggestTip.Subtitle += line + "\n";
             }
+
             line = await outputWriter.ReadLineAsync();
         }
+
         await p.WaitForExitAsync();
         SuggestTip.IsOpen = true;
     }
+
     private void StartTempUpdate()
     {
         _tempUpdateTimer = new DispatcherTimer();
         _tempUpdateTimer.Tick += (_, _) => UpdateTemperatureAsync();
         _tempUpdateTimer.Interval = TimeSpan.FromMilliseconds(500);
         App.MainWindow.Activated += Window_Activated; //Проверка фокуса на программе для экономии ресурсов
-        App.MainWindow.VisibilityChanged += Window_VisibilityChanged; //Проверка программу на трей меню для экономии ресурсов
+        App.MainWindow.VisibilityChanged +=
+            Window_VisibilityChanged; //Проверка программу на трей меню для экономии ресурсов
         _tempUpdateTimer.Start();
     }
+
     private void UpdateTemperatureAsync()
     {
-        _ry = SMUEngine.RyzenADJWrapper.Init_ryzenadj();
+        _ry = RyzenADJWrapper.Init_ryzenadj();
         if (_ry == 0x0 || _doNotUseRyzenAdj)
         {
             _doNotUseRyzenAdj = true;
             Temp.Text = "?℃";
             return;
-        } 
-        _ = SMUEngine.RyzenADJWrapper.Init_Table(_ry);
-        _ = SMUEngine.RyzenADJWrapper.Refresh_table(_ry);
-        Temp.Text = Math.Round(SMUEngine.RyzenADJWrapper.Get_tctl_temp_value(_ry), 3) + "℃";
+        }
+
+        _ = RyzenADJWrapper.Init_Table(_ry);
+        _ = RyzenADJWrapper.Refresh_table(_ry);
+        Temp.Text = Math.Round(RyzenADJWrapper.Get_tctl_temp_value(_ry), 3) + "℃";
     }
+
     private void StopTempUpdate(bool exit)
     {
         if (exit)
         {
-            SMUEngine.RyzenADJWrapper.Cleanup_ryzenadj(_ry);
+            RyzenADJWrapper.Cleanup_ryzenadj(_ry);
         }
+
         _tempUpdateTimer?.Stop();
     }
+
     #endregion
 }
