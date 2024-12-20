@@ -1165,7 +1165,6 @@ public sealed partial class ИнформацияPage
                         infoNiIconsButton.Visibility = Visibility.Collapsed;
                     }
 
-                    //VRMBannerButton.Visibility = infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 2 ? Visibility.Visible : Visibility.Collapsed;
                     GPUBannerButton.Visibility = infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 2
                         ? Visibility.Visible
                         : Visibility.Collapsed;
