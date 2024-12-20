@@ -2850,4 +2850,19 @@ methods are available.</value>
   <data name="Settings_ni_TrayMonGradientColorSwitch.Content" xml:space="preserve">
     <value>Color</value>
   </data>
+  <data name="Shell_ProfileChanging" xml:space="preserve">
+    <value>Profile switched</value>
+  </data>
+  <data name="Shell_ProfileChanging_Custom" xml:space="preserve">
+    <value>You have successfully switched your profiles to </value>
+  </data>
+  <data name="Shell_ProfileChanging_Premade" xml:space="preserve">
+    <value>You have successfully switched premaded profiles to </value>
+  </data>
+  <data name="Shell_RTSSChanging" xml:space="preserve">
+    <value>Overlay state changed</value>
+  </data>
+  <data name="Shell_RTSSChanging_Success" xml:space="preserve">
+    <value>You have successfully switched the RTSS overlay display in the game!</value>
+  </data>
 </root>

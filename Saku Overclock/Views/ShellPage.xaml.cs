@@ -72,7 +72,7 @@ public sealed partial class ShellPage
         if (_config.HotkeysEnabled)
         {
             _proc = HookCallbackAsync;
-            _hookId = SetHook(_proc); // Хуй, который должен срабатывать
+            _hookId = SetHook(_proc); // Хук, который должен срабатывать
         }
         else
         {
@@ -1742,20 +1742,22 @@ public sealed partial class ShellPage
                         //Создать уведомление
                         var nextCustomProfile = NextCustomProfile_Switch();
                         ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextCustomProfile);
-                        MandarinAddNotification("Смена пресета",
-                            "Вы успешно переключили ваши пресеты на " + $"{nextCustomProfile}!",
+                        MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
+                            "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
                             InfoBarSeverity.Informational);
                         MainWindow.Applyer.ApplyWithoutADJLine(false);
                         break;
                     }
+                    // Переключить между готовыми пресетами
                     case VirtualKey.P:
                         var nextPremadeProfile = NextPremadeProfile_Switch();
                         ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextPremadeProfile);
-                        MandarinAddNotification("Смена пресета",
-                            "Вы успешно переключили готовые пресеты на " + $"{nextPremadeProfile}!",
+                        MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
+                            "Shell_ProfileChanging_Premade".GetLocalized() + $"{nextPremadeProfile}!",
                             InfoBarSeverity.Informational);
                         MainWindow.Applyer.ApplyWithoutADJLine(false);
                         break;
+                    // Переключить состояние RTSS
                     case VirtualKey.R:
                         ConfigLoad();
                         if (_config.RTSSMetricsEnabled)
@@ -1782,7 +1784,7 @@ public sealed partial class ShellPage
                                     }
                                 }
                             };
-                            ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Disabled", null, iconGrid);
+                            ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS " + "Cooler_Service_Disabled/Content".GetLocalized(), null, iconGrid);
                             var navigationService = App.GetService<INavigationService>();
                             navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
                             _config.RTSSMetricsEnabled = false;
@@ -1803,15 +1805,15 @@ public sealed partial class ShellPage
                                     }
                                 }
                             };
-                            ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Enabled", null, iconGrid);
+                            ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS " + "Cooler_Service_Enabled/Content".GetLocalized(), null, iconGrid);
                             _config.RTSSMetricsEnabled = true;
                             ConfigSave();
                             var navigationService = App.GetService<INavigationService>();
                             navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!, null, true);
                         }
 
-                        MandarinAddNotification("Смена состояния оверлея",
-                            "Вы успешно переключили отображение оверлея RTSS в игре!", InfoBarSeverity.Informational); //TODO: ПЕРЕВЕСТИ
+                        MandarinAddNotification("Shell_RTSSChanging".GetLocalized(),
+                            "Shell_RTSSChanging_Success".GetLocalized(), InfoBarSeverity.Informational);
                         break;
                 }
             }

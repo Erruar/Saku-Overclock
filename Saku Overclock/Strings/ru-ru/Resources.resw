@@ -2926,4 +2926,19 @@ Asus. Может не поддерживаться на
   <data name="Settings_ni_TrayMonGradientColorSwitch.Content" xml:space="preserve">
     <value>Цвет</value>
   </data>
+  <data name="Shell_ProfileChanging" xml:space="preserve">
+    <value>Смена пресета</value>
+  </data>
+  <data name="Shell_ProfileChanging_Custom" xml:space="preserve">
+    <value>Вы успешно переключили ваши пресеты на </value>
+  </data>
+  <data name="Shell_ProfileChanging_Premade" xml:space="preserve">
+    <value>Вы успешно переключили готовые пресеты на </value>
+  </data>
+  <data name="Shell_RTSSChanging" xml:space="preserve">
+    <value>Смена состояния оверлея</value>
+  </data>
+  <data name="Shell_RTSSChanging_Success" xml:space="preserve">
+    <value>Вы успешно переключили отображение оверлея RTSS в игре!</value>
+  </data>
 </root>
