@@ -1731,88 +1731,89 @@ public sealed partial class ShellPage
         if (nCode >= 0 && wParam == WmKeydown)
         {
             var virtualkeyCode = Marshal.ReadInt32(lParam); // Получаем код клавиши из неуправляемой памяти
-            // Переключить между своими пресетами
-            if ((VirtualKey)virtualkeyCode == VirtualKey.W && GetAsyncKeyState(0x11) < 0 &&
+            if (GetAsyncKeyState(0x11) < 0 &&
                 IsAltPressed()) //0x11 - Control, 0x4000 - Alt
             {
-                //Создать уведомление
-                var nextProfile = NextCustomProfile_Switch();
-                ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextProfile);
-                MandarinAddNotification("Смена пресета", "Вы успешно переключили ваши пресеты на " + $"{nextProfile}!",
-                    InfoBarSeverity.Informational);
-                MainWindow.Applyer.ApplyWithoutADJLine(false);
-            }
-
-            // Переключить между готовыми пресетами 
-            if ((VirtualKey)virtualkeyCode == VirtualKey.P && GetAsyncKeyState(0x11) < 0 &&
-                IsAltPressed()) //0x11 - Control, 0x4000 - Alt
-            {
-                var nextProfile = NextPremadeProfile_Switch();
-                ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextProfile);
-                MandarinAddNotification("Смена пресета",
-                    "Вы успешно переключили готовые пресеты на " + $"{nextProfile}!", InfoBarSeverity.Informational);
-                MainWindow.Applyer.ApplyWithoutADJLine(false);
-            }
-
-            // Переключить состояние RTSS
-            if ((VirtualKey)virtualkeyCode == VirtualKey.R && GetAsyncKeyState(0x11) < 0 &&
-                IsAltPressed()) //0x11 - Control, 0x4000 - Alt
-            {
-                ConfigLoad();
-                if (_config.RTSSMetricsEnabled)
+                switch ((VirtualKey)virtualkeyCode)
                 {
-                    var iconGrid = new Grid
+                    // Переключить между своими пресетами
+                    case VirtualKey.W:
                     {
-                        Width = 100,
-                        Height = 100,
-                        Children =
+                        //Создать уведомление
+                        var nextCustomProfile = NextCustomProfile_Switch();
+                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextCustomProfile);
+                        MandarinAddNotification("Смена пресета",
+                            "Вы успешно переключили ваши пресеты на " + $"{nextCustomProfile}!",
+                            InfoBarSeverity.Informational);
+                        MainWindow.Applyer.ApplyWithoutADJLine(false);
+                        break;
+                    }
+                    case VirtualKey.P:
+                        var nextPremadeProfile = NextPremadeProfile_Switch();
+                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextPremadeProfile);
+                        MandarinAddNotification("Смена пресета",
+                            "Вы успешно переключили готовые пресеты на " + $"{nextPremadeProfile}!",
+                            InfoBarSeverity.Informational);
+                        MainWindow.Applyer.ApplyWithoutADJLine(false);
+                        break;
+                    case VirtualKey.R:
+                        ConfigLoad();
+                        if (_config.RTSSMetricsEnabled)
                         {
-                            new FontIcon
+                            var iconGrid = new Grid
                             {
-                                Glyph = "\uE7AC",
-                                Opacity = 0.543d,
-                                FontSize = 40
-                            },
-                            new FontIcon
-                            {
-                                Glyph = "\uE711",
-                                Margin = new Thickness(4, 0, 0, 0),
-                                VerticalAlignment = VerticalAlignment.Center,
-                                HorizontalAlignment = HorizontalAlignment.Center,
-                                FontSize = 40
-                            }
+                                Width = 100,
+                                Height = 100,
+                                Children =
+                                {
+                                    new FontIcon
+                                    {
+                                        Glyph = "\uE7AC",
+                                        Opacity = 0.543d,
+                                        FontSize = 40
+                                    },
+                                    new FontIcon
+                                    {
+                                        Glyph = "\uE711",
+                                        Margin = new Thickness(4, 0, 0, 0),
+                                        VerticalAlignment = VerticalAlignment.Center,
+                                        HorizontalAlignment = HorizontalAlignment.Center,
+                                        FontSize = 40
+                                    }
+                                }
+                            };
+                            ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Disabled", null, iconGrid);
+                            var navigationService = App.GetService<INavigationService>();
+                            navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+                            _config.RTSSMetricsEnabled = false;
+                            ConfigSave();
                         }
-                    };
-                    ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Disabled", null, iconGrid);
-                    var navigationService = App.GetService<INavigationService>();
-                    navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
-                    _config.RTSSMetricsEnabled = false;
-                    ConfigSave();
-                }
-                else
-                {
-                    var iconGrid = new Grid
-                    {
-                        Width = 100,
-                        Height = 100,
-                        Children =
+                        else
                         {
-                            new FontIcon
+                            var iconGrid = new Grid
                             {
-                                Glyph = "\uE7AC",
-                                FontSize = 40
-                            }
+                                Width = 100,
+                                Height = 100,
+                                Children =
+                                {
+                                    new FontIcon
+                                    {
+                                        Glyph = "\uE7AC",
+                                        FontSize = 40
+                                    }
+                                }
+                            };
+                            ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Enabled", null, iconGrid);
+                            _config.RTSSMetricsEnabled = true;
+                            ConfigSave();
+                            var navigationService = App.GetService<INavigationService>();
+                            navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!, null, true);
                         }
-                    };
-                    ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS Enabled", null, iconGrid);
-                    _config.RTSSMetricsEnabled = true;
-                    ConfigSave();
-                    var navigationService = App.GetService<INavigationService>();
-                    navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!, null, true);
-                }
 
-                MandarinAddNotification("Смена состояния оверлея",
-                    "Вы успешно переключили отображение оверлея RTSS в игре!", InfoBarSeverity.Informational);
+                        MandarinAddNotification("Смена состояния оверлея",
+                            "Вы успешно переключили отображение оверлея RTSS в игре!", InfoBarSeverity.Informational); //TODO: ПЕРЕВЕСТИ
+                        break;
+                }
             }
         }
 
