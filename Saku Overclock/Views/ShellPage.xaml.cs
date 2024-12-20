@@ -68,7 +68,7 @@ public sealed partial class ShellPage
         {
             MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
         }
-
+        
         if (_config.HotkeysEnabled)
         {
             _proc = HookCallbackAsync;
@@ -1029,21 +1029,13 @@ public sealed partial class ShellPage
                         return; //Удалить и не показывать
                     case "UpdateNAVBAR":
                     {
-                        NavigationViewControl.Margin = NavigationViewControl.Margin == new Thickness(-40, 0, 0, 0)
-                            ? new Thickness(0, 0, 0, 0)
-                            : new Thickness(-40, 0, 0, 0);
-                        NavigationViewControl.IsBackButtonVisible =
-                            NavigationViewControl.IsBackButtonVisible == NavigationViewBackButtonVisible.Visible
-                                ? NavigationViewBackButtonVisible.Collapsed
-                                : NavigationViewBackButtonVisible.Visible;
-                        NavigationViewControl.IsSettingsVisible = !NavigationViewControl.IsSettingsVisible;
+                        NavigationViewControl.Margin = new Thickness(-40, 0, 0, 0);
+                        NavigationViewControl.IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
+                        NavigationViewControl.IsSettingsVisible = false;
                         NavigationViewControl.IsPaneOpen = false;
                         foreach (var element in NavigationViewControl.MenuItems)
                         {
-                            ((NavigationViewItem)element).Visibility =
-                                ((NavigationViewItem)element).Visibility == Visibility.Collapsed
-                                    ? Visibility.Visible
-                                    : Visibility.Collapsed;
+                            ((NavigationViewItem)element).Visibility = Visibility.Collapsed;
                         }
 
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
@@ -2095,7 +2087,7 @@ public sealed partial class ShellPage
                 await Task.Delay(100);
             }
 
-            if (NotificationContainer.Children.Count == 0)
+            if (NotificationContainer.Children.Count == 0 && sender != null)
             {
                 await Task.Delay(500);
                 ToggleNotificationPanelBtn.IsChecked = false;
@@ -2282,7 +2274,6 @@ SOFTWARE.
         {
             s.Height = 0;
             s.Margin = new Thickness(0, 0, 0, 0);
-            //var msg = (int)s.Tag; 
             NoNotificationIndicator.Opacity = NotificationContainer.Children.Count > 0 ? 0f : 1f;
             if (NewNotificationCountBadge.Value > 0)
             {
