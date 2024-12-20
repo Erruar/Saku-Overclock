@@ -95,8 +95,26 @@ public sealed partial class MainWindow : WindowEx
     public static void Remove_ContextMenu_Tray()
     { 
         if (ni == null) { return; }
-        ni.ContextFlyout = null;
-        ni.ToolTipText = "Saku Overclock©\nContext menu is disabled";
+        ni.Dispose();
+        ni = new TaskbarIcon
+        {
+            ToolTipText = "Saku Overclock©\nContext menu is disabled",
+            Icon = new System.Drawing.Icon("Assets/WindowIcon.ico")
+        };
+        XamlUICommand xamlUICommand = new();
+        xamlUICommand.ExecuteRequested += static (_, _) =>
+        {
+            if (App.MainWindow.Visible)
+            {
+                App.MainWindow.Hide();
+            }
+            else
+            {
+                App.MainWindow.Show(); App.MainWindow.BringToFront(); App.MainWindow.WindowState = WindowState.Normal;
+            }
+        };
+        ni.LeftClickCommand = xamlUICommand;
+        ni.ForceCreate();
     }
     private void Dispose_Tray(object sender, WindowEventArgs args)
     {
