@@ -1131,7 +1131,7 @@ public sealed partial class ИнформацияPage
                         await RyzenADJWrapper.CpuFrequencyManager.RefreshPowerTable(_cpu);
                         if (infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 1)
                         {
-                            await RyzenADJWrapper.CpuFrequencyManager.InitializeCoreIndexMapAsync(_numberOfCores).ConfigureAwait(false);
+                            await RyzenADJWrapper.CpuFrequencyManager.InitializeCoreIndexMapAsync(_numberOfCores);
                         }
                     } 
 
