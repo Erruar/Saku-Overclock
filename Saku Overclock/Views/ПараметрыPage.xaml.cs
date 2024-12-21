@@ -620,8 +620,8 @@ public sealed partial class ПараметрыPage
                         ? (StackPanel)CCD1_Grid.FindName($"CCD1_Grid{i+1}_1")
                         : (StackPanel)CCD2_Grid.FindName($"CCD2_Grid{i-8}_1");
                             var setGrid2 = i < 8
-                        ? (StackPanel)CCD1_Grid.FindName($"CCD1_Grid{i+1}_2")
-                        : (StackPanel)CCD2_Grid.FindName($"CCD2_Grid{i-8}_2");
+                        ? (Grid)CCD1_Grid.FindName($"CCD1_Grid{i+1}_2")
+                        : (Grid)CCD2_Grid.FindName($"CCD2_Grid{i-8}_2");
                             if (setGrid1 != null)
                             {
                                 setGrid1.Visibility = Visibility.Collapsed;
@@ -1194,7 +1194,7 @@ public sealed partial class ПараметрыPage
 
     private uint GetCoreMask(int coreIndex)
     {
-        var ccxInCcd = _cpu?.info.family == Cpu.Family.FAMILY_19H ? 1U : 2U;
+        var ccxInCcd = _cpu?.info.family >= Cpu.Family.FAMILY_19H ? 1U : 2U;
         var coresInCcx = 8 / ccxInCcd;
 
         var ccd = Convert.ToUInt32(coreIndex / 8);

@@ -516,8 +516,11 @@ internal class SendSmuCommand
                 {
                     Socket_FT6_FP7_FP8();
                 }
-                else if (_cpu?.info.codeName == Cpu.CodeName.Raphael /*||
-                 cpu.info.codeName == Cpu.CodeName.GraniteRidge*/)
+                else if (_cpu?.info.codeName == Cpu.CodeName.Raphael ||
+                 _cpu?.info.codeName == Cpu.CodeName.GraniteRidge || 
+                 _cpu?.info.codeName == Cpu.CodeName.Genoa || 
+                 _cpu?.info.codeName == Cpu.CodeName.StormPeak || 
+                 _cpu?.info.codeName == Cpu.CodeName.Bergamo)
                 {
                     Socket_AM5_V1();
                 } //Не всё поддерживается, но это будет в будущем исправлено
@@ -726,8 +729,11 @@ internal class SendSmuCommand
             {
                 Socket_FT6_FP7_FP8();
             }
-            else if (_cpu?.info.codeName == Cpu.CodeName.Raphael /*||
-                 cpu.info.codeName == Cpu.CodeName.GraniteRidge*/)
+            else if (_cpu?.info.codeName == Cpu.CodeName.Raphael ||
+                 _cpu?.info.codeName == Cpu.CodeName.GraniteRidge ||
+                 _cpu?.info.codeName == Cpu.CodeName.Genoa ||
+                 _cpu?.info.codeName == Cpu.CodeName.StormPeak ||
+                 _cpu?.info.codeName == Cpu.CodeName.Bergamo)
             {
                 Socket_AM5_V1();
             } //Не всё поддерживается, но это будет в будущем исправлено
@@ -1004,8 +1010,10 @@ internal class SendSmuCommand
             case Cpu.CodeName.DragonRange:
             case Cpu.CodeName.HawkPoint:
                 Socket_FT6_FP7_FP8();
-                break;
-            /*|| cpu.info.codeName == Cpu.CodeName.GraniteRidge*/
+                break; 
+            case Cpu.CodeName.GraniteRidge:
+            case Cpu.CodeName.Genoa:
+            case Cpu.CodeName.Bergamo:
             case Cpu.CodeName.Raphael:
                 Socket_AM5_V1();
                 break;
@@ -1058,7 +1066,9 @@ internal class SendSmuCommand
             case Cpu.CodeName.HawkPoint:
                 Socket_FT6_FP7_FP8();
                 break;
-            /*|| cpu.info.codeName == Cpu.CodeName.GraniteRidge*/
+            case Cpu.CodeName.GraniteRidge:
+            case Cpu.CodeName.Genoa:
+            case Cpu.CodeName.Bergamo:
             case Cpu.CodeName.Raphael:
                 Socket_AM5_V1();
                 break;
