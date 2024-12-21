@@ -120,7 +120,10 @@ public partial class App : Application
     }
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
-        GetService<IAppNotificationService>().Show($"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app crash</text>\r\n      <text>{e.Message + " " + e.Exception + " " + e.Handled}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>"); 
+        var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                     @"\SakuOverclock\ERRORlog.txt";
+        var sw = new StreamWriter(logFilePath, true);
+        sw.WriteLine(e.ToString());
     } 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
