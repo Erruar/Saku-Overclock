@@ -115,11 +115,10 @@
                             </Grid.RowDefinitions>
 
                             <!-- Первая секция -->
-                            <StackPanel Padding="0,0,0,10" Orientation="Vertical" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                            <StackPanel Padding="0,0,0,13" Orientation="Vertical" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <StackPanel Orientation="Horizontal">
-                                    <Border Height="20" Width="20" CornerRadius="15" Margin="0,0,0,0">
-                                        <FontIcon Glyph="&#xE9CA;" FontSize="15" >
-                                        </FontIcon>
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE9CA;" FontSize="15"/>
                                         <Border.Background>
                                             <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
                                                 <GradientStop Color="#AAADD8E6" Offset="0.0" />
@@ -134,9 +133,9 @@
                                         </FontIcon.RenderTransform>
                                     </FontIcon>
                                 </StackPanel>
-                                <StackPanel Margin="0,10,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
                                     <Grid>
-                                        <CheckBox Width="10" x:Name="c1" Checked="C1_Checked" Unchecked="C1_Checked"></CheckBox>
+                                        <CheckBox Width="10" x:Name="c1" Checked="C1_Checked" Unchecked="C1_Checked"/>
                                         <Slider x:Name="c1v" ValueChanged="C1_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" Value="80" HorizontalAlignment="Left" Minimum="50" Maximum="100"/>
                                     </Grid>
                                     <NumberBox Margin="10,0,0,0" Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c1t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c1v, Path=Value, Mode=TwoWay}"></NumberBox>
@@ -144,51 +143,67 @@
                             </StackPanel>
                             <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="Param_CPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
-                                <TextBlock Text="                                    75(С)                         90(С)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" Text="                                    75(С)                         90(С)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="1" x:Name="Laptops_HTC_Temp" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <StackPanel Orientation="Horizontal"> 
-                                    <TextBlock x:Uid="Param_CPU_c7"  Text="Максимальная температура cHTC (C)" FontSize="15"></TextBlock>
-                                    <Border Height="20" Width="20" CornerRadius="15" Margin="3,-30,0,0">
-                                        <FontIcon Glyph="&#xE9CA;" FontSize="15" >
-                                        </FontIcon>
+                            <StackPanel Padding="0,0,0,13" Grid.Row="1" x:Name="Laptops_HTC_Temp" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE9CA;" FontSize="15"/>
                                         <Border.Background>
                                             <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
                                                 <GradientStop Color="#AAADD8E6" Offset="0.0" />
                                                 <GradientStop Color="#AAFFC0CB" Offset="0.10" />
                                             </LinearGradientBrush>
                                         </Border.Background>
-                                    </Border> 
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c7" Text="Максимальная температура cHTC (C)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
                                 </StackPanel>
-                                <CheckBox  Margin="0,20,0,0" x:Name="c7" Checked="C7_Checked" Unchecked="C7_Checked"></CheckBox>
-                                <Slider x:Name="c7v" ValueChanged="C7_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" Value="80" HorizontalAlignment="Left" Minimum="50" Maximum="100">
-                                </Slider>
-                                <NumberBox Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c7t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c7v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <Grid>
+                                        <CheckBox x:Name="c7" Checked="C7_Checked" Unchecked="C7_Checked"/>
+                                        <Slider x:Name="c7v" ValueChanged="C7_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" Value="80" HorizontalAlignment="Left" Minimum="50" Maximum="100"/>
+                                    </Grid>
+                                    <NumberBox Margin="10,0,0,0" Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c7t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c7v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel> 
+                            </StackPanel>
                             <Grid Grid.Row="1" x:Name="Laptops_HTC_Temp_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock Text="                                    45(С)                         90(С)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" Text="                                    45(С)                         90(С)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CPU_c2"  Text="Лимит CPU (W)" FontSize="15"></TextBlock>
-                                <CheckBox  Margin="0,20,0,0" x:Name="c2" Checked="C2_Checked" Unchecked="C2_Checked"></CheckBox>
-                                <Slider x:Name="c2v" ValueChanged="C2_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="40" Value="20">
-                                </Slider>
-                                <NumberBox CornerRadius="6" Height="33" Width="120" Minimum="1" x:Name="c2t" HorizontalAlignment="Left" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged"  SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Value="{Binding ElementName=c2v, Path=Value, Mode=TwoWay}"/>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c2_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c2" Text="Лимит CPU (W)" FontSize="15"></TextBlock>
+                                    <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c2_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox Margin="0,20,0,0" x:Name="c2" Checked="C2_Checked" Unchecked="C2_Checked"/>
+                                        <Slider x:Name="c2v" ValueChanged="C2_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="40" Value="20"/>
+                                    </Grid>
+                                    <NumberBox CornerRadius="6" Height="33" Width="120" Minimum="1" x:Name="c2t" HorizontalAlignment="Left" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged"  SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Value="{Binding ElementName=c2v, Path=Value, Mode=TwoWay}"/>
+                                </StackPanel>
+                            </StackPanel>
                             <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock Text="                                    20(W)                        30(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" Text="                                    20(W)                        30(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="3" x:Name="Laptops_Real_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                            <StackPanel Padding="0,0,0,10" Grid.Row="3" x:Name="Laptops_Real_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c3" Text="Реальный CPU (W)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c3" Checked="C3_Checked" Unchecked="C3_Checked"></CheckBox>
                                 <Slider x:Name="c3v" ValueChanged="C3_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="25">
@@ -199,11 +214,11 @@
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
-                            </Grid>
+                            </StackPanel>
                             <Grid Grid.Row="3" x:Name="Laptops_Real_Wattage_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="4" x:Name="Laptops_Avg_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                            <StackPanel Padding="0,0,0,10" Grid.Row="4" x:Name="Laptops_Avg_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c4" Text="Средний CPU (W)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c4" Checked="C4_Checked" Unchecked="C4_Checked"></CheckBox>
                                 <Slider x:Name="c4v" ValueChanged="C4_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="25">
@@ -214,11 +229,11 @@
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
-                            </Grid>
+                            </StackPanel>
                             <Grid Grid.Row="4" x:Name="Laptops_Avg_Wattage_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="5" x:Name="Laptops_Fast_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                            <StackPanel Padding="0,0,0,10" Grid.Row="5" x:Name="Laptops_Fast_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c5" Text="Тик быстрого разгона (S)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c5" Checked="C5_Checked" Unchecked="C5_Checked"></CheckBox>
                                 <Slider x:Name="c5v" ValueChanged="C5_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="128" Value="64">
@@ -229,11 +244,11 @@
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
-                            </Grid>
+                            </StackPanel>
                             <Grid Grid.Row="5" x:Name="Laptops_Fast_Speed_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock Text="                                     64(S)                         48(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" Text="                                     64(S)                         48(S)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="6" x:Name="Laptops_slow_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                            <StackPanel Padding="0,0,0,10" Grid.Row="6" x:Name="Laptops_slow_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c6" Text="Тик медленного разгона (S)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c6" Checked="C6_Checked" Unchecked="C6_Checked"></CheckBox>
                                 <Slider x:Name="c6v" ValueChanged="C6_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="128" Value="128">
@@ -244,9 +259,9 @@
                                         <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
                                     </FontIcon.RenderTransform>
                                 </FontIcon>
-                            </Grid>
+                            </StackPanel>
                             <Grid Grid.Row="6" x:Name="Laptops_slow_Speed_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid> 
                         </Grid>
                     </Expander>
