@@ -617,11 +617,11 @@ public sealed partial class ПараметрыPage
                                 checkbox.IsChecked = false;
                             }
                             var setGrid1 = i < 8
-                        ? (Grid)CCD1_Grid.FindName($"CCD1_Grid{i+1}_1")
-                        : (Grid)CCD2_Grid.FindName($"CCD2_Grid{i-8}_1");
+                        ? (StackPanel)CCD1_Grid.FindName($"CCD1_Grid{i+1}_1")
+                        : (StackPanel)CCD2_Grid.FindName($"CCD2_Grid{i-8}_1");
                             var setGrid2 = i < 8
-                        ? (Grid)CCD1_Grid.FindName($"CCD1_Grid{i+1}_2")
-                        : (Grid)CCD2_Grid.FindName($"CCD2_Grid{i-8}_2");
+                        ? (StackPanel)CCD1_Grid.FindName($"CCD1_Grid{i+1}_2")
+                        : (StackPanel)CCD2_Grid.FindName($"CCD2_Grid{i-8}_2");
                             if (setGrid1 != null)
                             {
                                 setGrid1.Visibility = Visibility.Collapsed;

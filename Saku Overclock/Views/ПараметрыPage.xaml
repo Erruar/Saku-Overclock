@@ -1094,7 +1094,7 @@
                             </StackPanel>
                             <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="Param_GPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
-                                <TextBlock x:Uid="ADV_Auto" Text="                                              Keep auto " Grid.Column="1" Margin="0,26,0,0" ></TextBlock>
+                                <TextBlock x:Uid="ADV_Auto" Text="                                              Keep auto " FontWeight="SemiBold" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
                             <StackPanel Padding="0,0,0,10" Grid.Row="1" Grid.Column="0" x:Name="A1_main" HorizontalAlignment="Left" Width="2000">
                                 <StackPanel Orientation="Horizontal">
@@ -1447,11 +1447,11 @@
                             <StackPanel Padding="0,0,0,10" Grid.Row="13" x:Name="ADV_Laptop_OCVOLT" Grid.Column="0" Width="2000">
                                 <StackPanel Orientation="Horizontal">
                                     <Border Height="20" Width="20" CornerRadius="15">
-                                        <FontIcon Glyph="&#xE9E9;" FontSize="15"/>
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
                                         <Border.Background>
                                             <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                <GradientStop Color="#AAfecce6" Offset="0.0" />
-                                                <GradientStop Color="#AA971932" Offset="0.10" />
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
                                             </LinearGradientBrush>
                                         </Border.Background>
                                     </Border>
@@ -1503,7 +1503,7 @@
                                 </StackPanel>
                             </StackPanel>
                             <Grid Grid.Row="14" Grid.Column="1" x:Name="ADV_Laptop_Pref_Mode_Desc" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock x:Uid="ADV_Auto" Text="                                              Keep auto " Grid.Column="1" Margin="0,26,0,0" ></TextBlock>
+                                <TextBlock x:Uid="ADV_Auto" Text="                                              Keep auto " FontWeight="SemiBold" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid> 
                         </Grid>
                     </Expander>
@@ -1994,32 +1994,62 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <RowDefinition></RowDefinition>
                                 <RowDefinition></RowDefinition> 
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" Grid.Column="0" Width="2000">
-                                <TextBlock x:Uid="Param_CO_O1" Text="All Core Curve optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox x:Name="O1" Checked="O1_Checked" Unchecked="O1_Checked"/>
-                                <Slider x:Name="O1v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="O1v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=O1v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_O1_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="0" Grid.Column="0" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_O1" Text="All Core Curve optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_O1_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox x:Name="O1" Checked="O1_Checked" Unchecked="O1_Checked"/>
+                                        <Slider x:Name="O1v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="O1v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=O1v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel>
+                            </StackPanel>
                             <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="Param_GPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
-                                <TextBlock x:Uid="ADV_Change" Text="                                              Keep auto " Grid.Column="1" Margin="0,26,0,0" ></TextBlock>
+                                <TextBlock x:Uid="ADV_Change" Text="                                              Keep auto " FontWeight="SemiBold" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="1" x:Name="CO_Grid0_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_O2" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox x:Name="O2" Checked="O2_Checked" Unchecked="O2_Checked"/>
-                                <Slider x:Name="O2v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="O2v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
-                                <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=O2v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_O2_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="1" x:Name="CO_Grid0_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_O2" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_O2_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox x:Name="O2" Checked="O2_Checked" Unchecked="O2_Checked"/>
+                                        <Slider x:Name="O2v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="O2v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=O2v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel> 
+                            </StackPanel>
                             <Grid Grid.Row="1" x:Name="CO_Grid0_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid> 
@@ -2050,148 +2080,269 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <RowDefinition></RowDefinition>
                                 <RowDefinition></RowDefinition>
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" x:Name="CCD1_Grid0_1" Grid.Column="0" Width="2000">
-                                <TextBlock Text="Curve Optimizer preferred mode" FontSize="15"></TextBlock>
-                                <CheckBox Checked="CCD_CO_Mode_Sel_Checked" Unchecked="CCD_CO_Mode_Sel_Checked"  x:Name="CCD_CO_Mode_Sel" Margin="0,25,0,0"></CheckBox>
-                                <ComboBox Style="{StaticResource AcrylicComboBoxStyle}" x:Name="CCD_CO_Mode" SelectionChanged="CCD_CO_Mode_SelectionChanged" Margin="35,26,0,0" SelectedIndex="0"  VerticalAlignment="Top" Width="330" HorizontalAlignment="Left">
-                                    <ComboBoxItem x:Uid="Param_ADV_a14_A">Auto/Disabled</ComboBoxItem>
-                                    <ComboBoxItem >Saku Laptops</ComboBoxItem>
-                                    <ComboBoxItem >Saku Desktops</ComboBoxItem>
-                                    <ComboBoxItem >Irusanov method</ComboBoxItem>
-                                </ComboBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a14_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="0" x:Name="CCD1_Grid0_1" Grid.Column="0" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" Text="Curve Optimizer preferred mode" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a14_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox Checked="CCD_CO_Mode_Sel_Checked" Unchecked="CCD_CO_Mode_Sel_Checked"  x:Name="CCD_CO_Mode_Sel"></CheckBox>
+                                        <ComboBox Style="{StaticResource AcrylicComboBoxStyle}" x:Name="CCD_CO_Mode" SelectionChanged="CCD_CO_Mode_SelectionChanged" Margin="35,0,0,0" SelectedIndex="0"  VerticalAlignment="Top" Width="330" HorizontalAlignment="Left">
+                                            <ComboBoxItem x:Uid="Param_ADV_a14_A">Auto/Disabled</ComboBoxItem>
+                                            <ComboBoxItem >Saku Laptops</ComboBoxItem>
+                                            <ComboBoxItem >Saku Desktops</ComboBoxItem>
+                                            <ComboBoxItem >Irusanov method</ComboBoxItem>
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel> 
+                            </StackPanel>
                             <Grid Grid.Row="0" x:Name="CCD1_Grid0_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="Param_GPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
-                                <TextBlock x:Uid="ADV_Auto" Text="                                              Keep auto " Grid.Column="1" Margin="0,36,0,0" ></TextBlock>
+                                <TextBlock x:Uid="ADV_Auto" Text="                                              Keep auto " FontWeight="SemiBold" Grid.Column="1" Margin="0,36,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="1" x:Name="CCD1_Grid1_1" Grid.Column="0" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD1_1" Text="Core 0 Curve optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_1" Checked="CCD1_1_Checked" Unchecked="CCD1_1_Checked" />
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_1v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_1v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_1v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="1" x:Name="CCD1_Grid1_1" Grid.Column="0" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD1_1" Text="Core 0 Curve optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_1" Checked="CCD1_1_Checked" Unchecked="CCD1_1_Checked" />
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_1v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_1v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_1v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel>
+                            </StackPanel>
                             <Grid Grid.Row="1" x:Name="CCD1_Grid1_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock x:Uid="ADV_Change" Text="                                              Keep auto " Grid.Column="1" Margin="0,26,0,0" ></TextBlock>
+                                <TextBlock x:Uid="ADV_Change" Text="                                              Keep auto " Grid.Column="1" FontWeight="SemiBold" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="2" x:Name="CCD1_Grid2_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD1_2" Text="Core 1 Curve optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_2" Checked="CCD1_2_Checked" Unchecked="CCD1_2_Checked" />
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_2v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_2v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_2v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="2" x:Name="CCD1_Grid2_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD1_2" Text="Core 1 Curve optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_2" Checked="CCD1_2_Checked" Unchecked="CCD1_2_Checked" />
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_2v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_2v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_2v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel>
+                            </StackPanel>
                             <Grid Grid.Row="2" x:Name="CCD1_Grid2_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="3" x:Name="CCD1_Grid3_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD1_3" Text="Core 2 Curve optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_3" Checked="CCD1_3_Checked" Unchecked="CCD1_3_Checked" />
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_3v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_3v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_3v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="3" x:Name="CCD1_Grid3_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD1_3" Text="Core 2 Curve optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_3" Checked="CCD1_3_Checked" Unchecked="CCD1_3_Checked" />
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_3v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_3v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_3v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel>
+                            </StackPanel>
                             <Grid Grid.Row="3" x:Name="CCD1_Grid3_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="4" x:Name="CCD1_Grid4_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD1_4" Text="Core 3 Curve optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_4" Checked="CCD1_4_Checked" Unchecked="CCD1_4_Checked" />
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_4v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_4v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_4v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="4" x:Name="CCD1_Grid4_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD1_4" Text="Core 3 Curve optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_4" Checked="CCD1_4_Checked" Unchecked="CCD1_4_Checked" />
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_4v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_4v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_4v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel> 
+                            </StackPanel>
                             <Grid Grid.Row="4" x:Name="CCD1_Grid4_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="5" x:Name="CCD1_Grid5_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD1_5" Text="Core 4 Curve optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_5" Checked="CCD1_5_Checked" Unchecked="CCD1_5_Checked" />
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_5v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_5v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_5v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="5" x:Name="CCD1_Grid5_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD1_5" Text="Core 4 Curve optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_5" Checked="CCD1_5_Checked" Unchecked="CCD1_5_Checked" />
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_5v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_5v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_5v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel> 
+                            </StackPanel>
                             <Grid Grid.Row="5" x:Name="CCD1_Grid5_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="6" x:Name="CCD1_Grid6_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD1_6" Text="Core 5 Curve optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_6" Checked="CCD1_6_Checked" Unchecked="CCD1_6_Checked" />
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_6v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_6v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_6v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="6" x:Name="CCD1_Grid6_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD1_6" Text="Core 5 Curve optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_6" Checked="CCD1_6_Checked" Unchecked="CCD1_6_Checked" />
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_6v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_6v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_6v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel>
+                            </StackPanel>
                             <Grid Grid.Row="6" x:Name="CCD1_Grid6_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="7" x:Name="CCD1_Grid7_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD1_7" Text="Core 6 Curve optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_7" Checked="CCD1_7_Checked" Unchecked="CCD1_7_Checked" />
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_7v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_7v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_7v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="7" x:Name="CCD1_Grid7_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD1_7" Text="Core 6 Curve optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_7" Checked="CCD1_7_Checked" Unchecked="CCD1_7_Checked" />
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_7v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_7v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_7v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel> 
+                            </StackPanel>
                             <Grid Grid.Row="7" x:Name="CCD1_Grid7_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="8" x:Name="CCD1_Grid8_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD1_8" Text="Core 7 Curve optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_8" Checked="CCD1_8_Checked" Unchecked="CCD1_8_Checked"/>
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_8v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_8v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_8v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="8" x:Name="CCD1_Grid8_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD1_8" Text="Core 7 Curve optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_8" Checked="CCD1_8_Checked" Unchecked="CCD1_8_Checked"/>
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD1_8v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD1_8v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD1_8v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel> 
+                            </StackPanel>
                             <Grid Grid.Row="8" x:Name="CCD1_Grid8_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
@@ -2221,130 +2372,236 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                 <RowDefinition></RowDefinition>
                                 <RowDefinition></RowDefinition>
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" x:Name="CCD2_Grid0_1" Grid.Column="0" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD2_1" Text="All Core Curve optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_1" Checked="CCD2_1_Checked" Unchecked="CCD2_1_Checked"/>
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_1v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_1v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_1v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="0" x:Name="CCD2_Grid0_1" Grid.Column="0" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD2_1" Text="All Core Curve optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_1" Checked="CCD2_1_Checked" Unchecked="CCD2_1_Checked"/>
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_1v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_1v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_1v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel> 
+                            </StackPanel>
                             <Grid Grid.Row="0" x:Name="CCD2_Grid0_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="Param_GPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
-                                <TextBlock x:Uid="ADV_Change" Text="                                              Keep auto " Grid.Column="1" Margin="0,26,0,0" ></TextBlock>
+                                <TextBlock x:Uid="ADV_Change" Text="                                              Keep auto " Grid.Column="1" FontWeight="SemiBold" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="1" x:Name="CCD2_Grid1_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD2_2" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_2" Checked="CCD2_2_Checked" Unchecked="CCD2_2_Checked"/>
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_2v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_2v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_2v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="1" x:Name="CCD2_Grid1_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD2_2" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_2" Checked="CCD2_2_Checked" Unchecked="CCD2_2_Checked"/>
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_2v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_2v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_2v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel> 
+                            </StackPanel>
                             <Grid Grid.Row="1" x:Name="CCD2_Grid1_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="2" x:Name="CCD2_Grid2_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD2_3" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_3" Checked="CCD2_3_Checked" Unchecked="CCD2_3_Checked"/>
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_3v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_3v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_3v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="2" x:Name="CCD2_Grid2_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD2_3" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_3" Checked="CCD2_3_Checked" Unchecked="CCD2_3_Checked"/>
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_3v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_3v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_3v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel>
+                            </StackPanel>
                             <Grid Grid.Row="2" x:Name="CCD2_Grid2_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="3" x:Name="CCD2_Grid3_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD2_4" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_4" Checked="CCD2_4_Checked" Unchecked="CCD2_4_Checked"/>
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_4v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_4v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_4v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="3" x:Name="CCD2_Grid3_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD2_4" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_4" Checked="CCD2_4_Checked" Unchecked="CCD2_4_Checked"/>
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_4v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_4v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_4v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel>
+                            </StackPanel>
                             <Grid Grid.Row="3" x:Name="CCD2_Grid3_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="4" x:Name="CCD2_Grid4_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD2_5" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_5" Checked="CCD2_5_Checked" Unchecked="CCD2_5_Checked"/>
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_5v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_5v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_5v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="4" x:Name="CCD2_Grid4_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD2_5" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_5" Checked="CCD2_5_Checked" Unchecked="CCD2_5_Checked"/>
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_5v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_5v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_5v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel>
+                            </StackPanel>
                             <Grid Grid.Row="4" x:Name="CCD2_Grid4_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="5" x:Name="CCD2_Grid5_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD2_6" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_6" Checked="CCD2_6_Checked" Unchecked="CCD2_6_Checked"/>
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_6v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_6v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_6v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="5" x:Name="CCD2_Grid5_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD2_6" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_6" Checked="CCD2_6_Checked" Unchecked="CCD2_6_Checked"/>
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_6v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_6v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_6v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel>
+                            </StackPanel>
                             <Grid Grid.Row="5" x:Name="CCD2_Grid5_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="6" x:Name="CCD2_Grid6_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD2_7" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_7" Checked="CCD2_7_Checked" Unchecked="CCD2_7_Checked"/>
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_7v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_7v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_7v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="6" x:Name="CCD2_Grid6_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD2_7" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_7" Checked="CCD2_7_Checked" Unchecked="CCD2_7_Checked"/>
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_7v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_7v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_7v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel> 
+                            </StackPanel>
                             <Grid Grid.Row="6" x:Name="CCD2_Grid6_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <Grid Grid.Row="7" x:Name="CCD2_Grid7_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CO_CCD2_8" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
-                                <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_8" Checked="CCD2_8_Checked" Unchecked="CCD2_8_Checked"/>
-                                <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_8v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_8v_ValueChanged"  Margin="35,20,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0">
-
-                                </Slider>
-                                <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Margin="245,18,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_8v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="7" x:Name="CCD2_Grid7_1" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_CO_CCD2_8" Text="iGPU Curve Optimizer (CO)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_CO_CCD_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_8" Checked="CCD2_8_Checked" Unchecked="CCD2_8_Checked"/>
+                                        <Slider IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" x:Name="CCD2_8v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" ValueChanged="CCD2_8v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
+                                    </Grid>
+                                    <NumberBox IsEnabled="{Binding ElementName=CCD_CO_Mode_Sel, Path=IsChecked}" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10"  Margin="10,0,0,0" Minimum="-50" Maximum="30" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=CCD2_8v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel>
+                            </StackPanel>
                             <Grid Grid.Row="7" x:Name="CCD2_Grid7_2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                    50(А)                         50(А)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>

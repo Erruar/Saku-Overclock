@@ -27,7 +27,7 @@ public partial class SettingsViewModel : ObservableRecipient
         get;
     }
 
-    public const int VersionId = 1; //"Consumer Creative" = 0; "Release Candidate" = 1
+    public const int VersionId = 5; //"Consumer Creative" = 0; "Release Candidate" = 1
     private static string? VersionString;
 
     public SettingsViewModel(IThemeSelectorService themeSelectorService)
