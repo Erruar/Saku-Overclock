@@ -1,8 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation.Metadata;
-using Windows.UI;
 using Microsoft.UI;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Text;
@@ -16,6 +13,9 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation.Metadata;
+using Windows.UI;
 using ZenStates.Core;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using CheckBox = Microsoft.UI.Xaml.Controls.CheckBox;
@@ -507,7 +507,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            if (SettingsViewModel.VersionId != 5) // Если не дебаг
+            if (SettingsViewModel.VersionId != 5) // Если не дебаг. В дебаг версии отображаются все параметры
             {
                 if (_cpu?.info.codeName.ToString().Contains("VanGogh") == false)
                 {
@@ -575,6 +575,8 @@ public sealed partial class ПараметрыPage
                     DesktopCPU_HideUnavailableParameters();
                 }
 
+                uint cores = 0;
+
                 if (_cpu == null || _cpu?.info.codeName.ToString().Contains("Unsupported") == true)
                 {
                     MainScroll.IsEnabled = false;
@@ -586,12 +588,68 @@ public sealed partial class ПараметрыPage
                     EditProfileButton.IsEnabled = false;
                     Action_IncompatibleProfile.IsOpen = false;
                     Action_IncompatibleCPU.IsOpen = true;
+                    cores = (uint)await ИнформацияPage.GetCpuCoresAsync();
                 }
 
-                var cores = await ИнформацияPage.GetCpuCoresAsync();
+                if (_cpu != null) 
+                { 
+                    cores = _cpu.info.topology.physicalCores; 
+                }
+
+                for (var i = 0; i < cores; i++)
+                {
+                    var mapIndex = i < 8 ? 0 : 1;
+                    if ((~_cpu?.info.topology.coreDisableMap[mapIndex] >> i % 8 & 1) == 0)
+                    {
+                        try
+                        {
+                            var checkbox = i < 8
+                        ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i+1}")
+                        : (CheckBox)CCD2_Grid.FindName($"CCD2_{i-8}");
+                            if (checkbox != null && checkbox.IsChecked == true)
+                            {
+                                var setVal = i < 8
+                                    ? (Slider)CCD1_Grid.FindName($"CCD1_{i+1}v")
+                                    : (Slider)CCD2_Grid.FindName($"CCD2_{i-8}v");
+                                setVal.IsEnabled = false;
+                                setVal.Opacity = 0.4;
+                                checkbox.IsEnabled = false;
+                                checkbox.IsChecked = false;
+                            }
+                            var setGrid1 = i < 8
+                        ? (Grid)CCD1_Grid.FindName($"CCD1_Grid{i+1}_1")
+                        : (Grid)CCD2_Grid.FindName($"CCD2_Grid{i-8}_1");
+                            var setGrid2 = i < 8
+                        ? (Grid)CCD1_Grid.FindName($"CCD1_Grid{i+1}_2")
+                        : (Grid)CCD2_Grid.FindName($"CCD2_Grid{i-8}_2");
+                            if (setGrid1 != null)
+                            {
+                                setGrid1.Visibility = Visibility.Collapsed;
+                                setGrid1.Opacity = 0.4;
+                            } 
+                            if (setGrid2 != null)
+                            {
+                                setGrid2.Visibility = Visibility.Collapsed;
+                                setGrid2.Opacity = 0.4;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            TraceIt_TraceError(e.ToString());
+                        }
+                    }
+                } 
+                /*using (RegistryKey key = Registry.CurrentUser.OpenSubKey
+                    ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+                {
+                    if (key != null)
+                    {
+                        checkBoxApplyCOStartup.Checked = key.GetValue("RyzenSDT") != null;
+                    }
+                }*/
                 if (cores > 8)
                 {
-                    if (cores <= 15)
+                    /*if (cores <= 15)
                     {
                         CCD2_Grid7_2.Visibility = Visibility.Collapsed;
                         CCD2_Grid7_1.Visibility = Visibility.Collapsed;
@@ -631,7 +689,7 @@ public sealed partial class ПараметрыPage
                     {
                         CCD2_Grid1_2.Visibility = Visibility.Collapsed;
                         CCD2_Grid1_1.Visibility = Visibility.Collapsed;
-                    }
+                    }*/
                 }
                 else
                 {
@@ -1316,7 +1374,11 @@ public sealed partial class ПараметрыPage
             NotifyLoad(); // Добавить уведомление
             _notify.Notifies ??= [];
             _notify.Notifies.Add(new Notify
-                { Title = "TraceIt_Error".GetLocalized(), Msg = error, Type = InfoBarSeverity.Error });
+            {
+                Title = "TraceIt_Error".GetLocalized(),
+                Msg = error,
+                Type = InfoBarSeverity.Error
+            });
             NotifySave();
         }
     }
@@ -4924,16 +4986,16 @@ public sealed partial class ПараметрыPage
                     for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
                     {
                         var checkbox = i < 8
-                            ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i}")
-                            : (CheckBox)CCD1_Grid.FindName($"CCD2_{i}");
+                            ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i+1}")
+                            : (CheckBox)CCD2_Grid.FindName($"CCD2_{i-7}");
                         if (checkbox != null && checkbox.IsChecked == true)
                         {
                             var setVal = i < 8
-                                ? (Slider)CCD1_Grid.FindName($"CCD1_{i}v")
-                                : (Slider)CCD2_Grid.FindName($"CCD2_{i}v");
-                            if (((~_cpu.info.topology.coreDisableMap.Length >> i) & 1) == 1)
+                                ? (Slider)CCD1_Grid.FindName($"CCD1_{i+1}v")
+                                : (Slider)CCD2_Grid.FindName($"CCD2_{i-7}v");
+                            if (((~_cpu.info.topology.coreDisableMap.Length >> i) & 1) == 1) // Если ядро включено
                             {
-                                if (_cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
+                                if (_cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U) // Если команда существует
                                 {
                                     _cpu.SetPsmMarginSingleCore(GetCoreMask(i), Convert.ToInt32(setVal.Value));
                                 }
@@ -5082,7 +5144,7 @@ public sealed partial class ПараметрыPage
             }
             else
 #pragma warning disable CS0162 // Unreachable code detected
-                // ReSharper disable once HeuristicUnreachableCode
+            // ReSharper disable once HeuristicUnreachableCode
             {
                 Apply_tooltip.Title = "Apply_Success".GetLocalized();
                 Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + _config.RyzenADJline;
@@ -5162,7 +5224,8 @@ public sealed partial class ПараметрыPage
                     _notify.Notifies.Add(new Notify
                     {
                         Title = "SaveSuccessTitle".GetLocalized(),
-                        Msg = "SaveSuccessDesc".GetLocalized() + " " + SaveProfileN.Text, Type = InfoBarSeverity.Success
+                        Msg = "SaveSuccessDesc".GetLocalized() + " " + SaveProfileN.Text,
+                        Type = InfoBarSeverity.Success
                     });
                     NotifySave();
                 }
@@ -5179,7 +5242,9 @@ public sealed partial class ПараметрыPage
                 _notify.Notifies ??= [];
                 _notify.Notifies.Add(new Notify
                 {
-                    Title = Add_tooltip_Error.Title, Msg = Add_tooltip_Error.Subtitle, Type = InfoBarSeverity.Error
+                    Title = Add_tooltip_Error.Title,
+                    Msg = Add_tooltip_Error.Subtitle,
+                    Type = InfoBarSeverity.Error
                 });
                 NotifySave();
                 Add_tooltip_Error.IsOpen = true;
@@ -5240,7 +5305,8 @@ public sealed partial class ПараметрыPage
                     _notify.Notifies ??= [];
                     _notify.Notifies.Add(new Notify
                     {
-                        Title = Edit_tooltip.Title, Msg = Edit_tooltip.Subtitle + " " + SaveProfileN.Text,
+                        Title = Edit_tooltip.Title,
+                        Msg = Edit_tooltip.Subtitle + " " + SaveProfileN.Text,
                         Type = InfoBarSeverity.Success
                     });
                     NotifySave();
@@ -5255,7 +5321,9 @@ public sealed partial class ПараметрыPage
                 _notify.Notifies ??= [];
                 _notify.Notifies.Add(new Notify
                 {
-                    Title = Edit_tooltip_Error.Title, Msg = Edit_tooltip_Error.Subtitle, Type = InfoBarSeverity.Error
+                    Title = Edit_tooltip_Error.Title,
+                    Msg = Edit_tooltip_Error.Subtitle,
+                    Type = InfoBarSeverity.Error
                 });
                 NotifySave();
                 Edit_tooltip_Error.IsOpen = true;
@@ -5297,7 +5365,8 @@ public sealed partial class ПараметрыPage
                     _notify.Notifies ??= [];
                     _notify.Notifies.Add(new Notify
                     {
-                        Title = Delete_tooltip_error.Title, Msg = Delete_tooltip_error.Subtitle,
+                        Title = Delete_tooltip_error.Title,
+                        Msg = Delete_tooltip_error.Subtitle,
                         Type = InfoBarSeverity.Error
                     });
                     NotifySave();
@@ -5320,7 +5389,8 @@ public sealed partial class ПараметрыPage
                     _notify.Notifies ??= [];
                     _notify.Notifies.Add(new Notify
                     {
-                        Title = "DeleteSuccessTitle".GetLocalized(), Msg = "DeleteSuccessDesc".GetLocalized(),
+                        Title = "DeleteSuccessTitle".GetLocalized(),
+                        Msg = "DeleteSuccessDesc".GetLocalized(),
                         Type = InfoBarSeverity.Success
                     });
                     NotifySave();
