@@ -4738,7 +4738,8 @@ public sealed partial class ПараметрыPage
                 //Using Irusanov method
                 for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
                 {
-                    if (((~_cpu.info.topology.coreDisableMap.Length >> i) & 1) == 1)
+                    var mapIndex = i < 8 ? 0 : 1; 
+                    if (((~_cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1)
                     {
                         if (_cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
                         {
@@ -4993,7 +4994,8 @@ public sealed partial class ПараметрыPage
                             var setVal = i < 8
                                 ? (Slider)CCD1_Grid.FindName($"CCD1_{i+1}v")
                                 : (Slider)CCD2_Grid.FindName($"CCD2_{i-7}v");
-                            if (((~_cpu.info.topology.coreDisableMap.Length >> i) & 1) == 1) // Если ядро включено
+                            var mapIndex = i < 8 ? 0 : 1;
+                            if (((~_cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1) // Если ядро включено
                             {
                                 if (_cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U) // Если команда существует
                                 {
