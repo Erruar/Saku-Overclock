@@ -1028,7 +1028,7 @@ public sealed partial class ИнформацияPage
                 if (_selectedGroup != 0)
                 {
                     infoCPUSectionComboBox.Visibility = Visibility.Collapsed;
-                    InfoCPUComboBoxBorderSharedShadow_Element.Visibility = Visibility.Collapsed;
+                    InfoCPUComboBoxBorderSharedShadow_Element.Visibility = _ryzenAccess == 0x0 ? Visibility.Visible : Visibility.Collapsed;
                     if (_selectedGroup == 1)
                     {
                         //Показать свойства видеокарты
@@ -1107,10 +1107,10 @@ public sealed partial class ИнформацияPage
                 }
                 else
                 {
-                    InfoCPUComboBoxBorderSharedShadow_Element.Visibility = Visibility.Visible;
                     infoCPUMAINSection.Visibility = Visibility.Visible;
                     infoRAMMAINSection.Visibility = Visibility.Collapsed;
-                    infoCPUSectionComboBox.Visibility = Visibility.Visible;
+                    infoCPUSectionComboBox.Visibility = _ryzenAccess != 0x0 ? Visibility.Visible : Visibility.Collapsed;
+                    InfoCPUComboBoxBorderSharedShadow_Element.Visibility = Visibility.Visible;
                     InfoCPUSectionMetrics.Visibility = Visibility.Visible;
                     InfoVRMSectionMetrics.Visibility = Visibility.Collapsed;
                     InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
@@ -1122,36 +1122,18 @@ public sealed partial class ИнформацияPage
                     tbProcessor.Text = _cpuName;
                 }
 
-                InfoACPUBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoACPUBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoAGPUBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoAGPUBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoARAMBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoAVRMBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoAVRMBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoABATBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoABATBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
-                InfoAPSTBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+               
 
                 if (_ryzenAccess == 0x0)
                 {
                     if (_cpu != null)
                     {
-                        RyzenADJWrapper.CpuFrequencyManager.RefreshPowerTable(_cpu);
+                        await RyzenADJWrapper.CpuFrequencyManager.RefreshPowerTable(_cpu);
                         if (infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 1)
                         {
-                            RyzenADJWrapper.CpuFrequencyManager.InitializeCoreIndexMapAsync(_numberOfCores);
+                            await RyzenADJWrapper.CpuFrequencyManager.InitializeCoreIndexMapAsync(_numberOfCores).ConfigureAwait(false);
                         }
-                    }
-
-                    if (InfoCPUComboBoxBorderSharedShadow_Element.Visibility == Visibility.Visible ||
-                        infoCPUSectionComboBox.Visibility == Visibility.Visible)
-                    {
-                        InfoCPUComboBoxBorderSharedShadow_Element.Visibility = Visibility.Collapsed;
-                        infoCPUSectionComboBox.Visibility = Visibility.Collapsed;
-                    }
+                    } 
 
                     if (infoCPUSectionGetInfoTypeComboBox.Visibility == Visibility.Collapsed)
                     {
@@ -1177,6 +1159,19 @@ public sealed partial class ИнформацияPage
                 {
                     RyzenADJWrapper.Refresh_table(_ryzenAccess);
                 }
+
+                InfoACPUBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoACPUBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoAGPUBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoAGPUBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoARAMBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoAVRMBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoAVRMBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoABATBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoABATBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
+                InfoAPSTBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
 
                 decimal batteryRate = 0;
                 if (BATBannerButton.Visibility == Visibility.Visible && !_doNotTrackBattery)
@@ -1762,7 +1757,7 @@ public sealed partial class ИнформацияPage
                 }
 
                 //Раз в шесть секунд обновляет состояние памяти 
-                var ramUsage = Task.Run(() =>
+                var ramUsage = await Task.Run(() =>
                 {
                     var ramMonitor =
                         new ManagementObjectSearcher(
@@ -1778,7 +1773,7 @@ public sealed partial class ИнформацияPage
 
                     return new { Usage = "Unknown", BusyRam = 0.0, TotalRam = 0.0 }; // Значения по умолчанию
                 });
-                dynamic ramUsageResult = await ramUsage;
+                dynamic ramUsageResult = ramUsage;
                 InfoRAMUsage.Text = ramUsageResult.Usage + "\n" + Math.Round(ramUsageResult.BusyRam / 1024 / 1024, 2) +
                                     "GB/" + Math.Round(ramUsageResult.TotalRam / 1024 / 1024, 1) + "GB";
                 infoARAMUsageBannerPolygonText.Text = ramUsageResult.Usage;
