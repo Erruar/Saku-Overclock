@@ -338,34 +338,34 @@
 Удалит ваш пресет после подтверждения</value>
   </data>
   <data name="Param_GPU_g1.Text" xml:space="preserve">
-    <value>Минимальная частота SoC (MHz)</value>
+    <value>Минимальная частота SoC</value>
   </data>
   <data name="Param_GPU_g10.Text" xml:space="preserve">
-    <value>Максимальная частота iGPU (MHz)</value>
+    <value>Максимальная частота iGPU</value>
   </data>
   <data name="Param_GPU_g2.Text" xml:space="preserve">
-    <value>Максимальная частота SoC (MHz)</value>
+    <value>Максимальная частота SoC</value>
   </data>
   <data name="Param_GPU_g3.Text" xml:space="preserve">
-    <value>Минимальная частота Infinity Fabric(MHz)</value>
+    <value>Минимальная частота Infinity Fabric</value>
   </data>
   <data name="Param_GPU_g4.Text" xml:space="preserve">
-    <value>Максимальная частота Infinity Fabric (MHz)</value>
+    <value>Максимальная частота Infinity Fabric</value>
   </data>
   <data name="Param_GPU_g5.Text" xml:space="preserve">
-    <value>Минимальная частота VCE (MHz)</value>
+    <value>Минимальная частота VCE </value>
   </data>
   <data name="Param_GPU_g6.Text" xml:space="preserve">
-    <value>Максимальная частота VCE (MHz)</value>
+    <value>Максимальная частота VCE</value>
   </data>
   <data name="Param_GPU_g7.Text" xml:space="preserve">
-    <value>Минимальная частота Data Latch (MHz)</value>
+    <value>Минимальная частота Data Latch</value>
   </data>
   <data name="Param_GPU_g8.Text" xml:space="preserve">
-    <value>Максимальная частота Data Latch (MHz)</value>
+    <value>Максимальная частота Data Latch</value>
   </data>
   <data name="Param_GPU_g9.Text" xml:space="preserve">
-    <value>Минимальная частота iGPU (MHz)</value>
+    <value>Минимальная частота iGPU</value>
   </data>
   <data name="Param_GPU_Ram.Text" xml:space="preserve">
     <value>                                Частота оперативной памяти</value>
@@ -393,25 +393,25 @@
     <value>Разгон VRM</value>
   </data>
   <data name="Param_VRM_v1.Text" xml:space="preserve">
-    <value>Максимальный ток VRM (A)</value>
+    <value>Максимальный ток VRM </value>
   </data>
   <data name="Param_VRM_v2.Text" xml:space="preserve">
-    <value>Лимит по току VRM (A)</value>
+    <value>Лимит по току VRM </value>
   </data>
   <data name="Param_VRM_v3.Text" xml:space="preserve">
-    <value>Максимальный ток SoC (A)</value>
+    <value>Максимальный ток SoC</value>
   </data>
   <data name="Param_VRM_v4.Text" xml:space="preserve">
-    <value>Лимит по току SoC (A)</value>
+    <value>Лимит по току SoC</value>
   </data>
   <data name="Param_VRM_v5.Text" xml:space="preserve">
-    <value>Максимальный ток PSI0 VDD (A)</value>
+    <value>Максимальный ток PSI0 VDD</value>
   </data>
   <data name="Param_VRM_v6.Text" xml:space="preserve">
-    <value>Максимальный ток PSI0 SoC (A)</value>
+    <value>Максимальный ток PSI0 SoC</value>
   </data>
   <data name="Param_VRM_v7.Text" xml:space="preserve">
-    <value>Время восстановления частоты (mS)</value>
+    <value>Время восстановления частоты </value>
   </data>
   <data name="Preset_Balance" xml:space="preserve">
     <value>Баланс мощности</value>
@@ -831,43 +831,43 @@ AMD APU + AMD dGPU
 информации!</value>
   </data>
   <data name="Param_ADV_a1.Text" xml:space="preserve">
-    <value>Лимит по току iGPU (A)</value>
+    <value>Лимит по току iGPU</value>
   </data>
   <data name="Param_ADV_a10.Text" xml:space="preserve">
-    <value>Зафиксировать частоту iGPU (MHz)</value>
+    <value>Зафиксировать частоту iGPU</value>
   </data>
   <data name="Param_ADV_a11.Text" xml:space="preserve">
-    <value>Зафиксировать частоту CPU (MHz)</value>
+    <value>Зафиксировать частоту CPU</value>
   </data>
   <data name="Param_ADV_a12.Text" xml:space="preserve">
-    <value>Зафиксировать напряжение CPU (mV)</value>
+    <value>Зафиксировать напряжение CPU</value>
   </data>
   <data name="Param_ADV_a13.Text" xml:space="preserve">
     <value>Предпочтительный режим</value>
   </data>
   <data name="Param_ADV_a2.Text" xml:space="preserve">
-    <value>Лимит по току NPU (A)</value>
+    <value>Лимит по току CVIP</value>
   </data>
   <data name="Param_ADV_a3.Text" xml:space="preserve">
-    <value>Максимальный ток iGPU (A)</value>
+    <value>Максимальный ток iGPU</value>
   </data>
   <data name="Param_ADV_a4.Text" xml:space="preserve">
-    <value>Максимальный ток CPU по линии PCI (A)</value>
+    <value>Максимальный ток CPU по линии PCI</value>
   </data>
   <data name="Param_ADV_a5.Text" xml:space="preserve">
-    <value>Максимальный ток GPU по линии PCI (A)</value>
+    <value>Максимальный ток GPU по линии PCI</value>
   </data>
   <data name="Param_ADV_a6.Text" xml:space="preserve">
-    <value>Максимальная температура iGPU (C)</value>
+    <value>Максимальная температура iGPU</value>
   </data>
   <data name="Param_ADV_a7.Text" xml:space="preserve">
-    <value>Максимальная температура dGPU (C)</value>
+    <value>Максимальная температура dGPU</value>
   </data>
   <data name="Param_ADV_a8.Text" xml:space="preserve">
-    <value>Лимит потребления iGPU (W)</value>
+    <value>Лимит потребления iGPU </value>
   </data>
   <data name="Param_ADV_a9.Text" xml:space="preserve">
-    <value>Общий лимит потребления (W)</value>
+    <value>Общий лимит потребления </value>
   </data>
   <data name="Param_ADV_Pdesc.Text" xml:space="preserve">
     <value>Экспериментальные опасные параметры</value>
@@ -1456,22 +1456,16 @@ CPU VID
 отключайте</value>
   </data>
   <data name="Param_GPU_g11.Text" xml:space="preserve">
-    <value>Минимальная частота CPU (MHz)</value>
+    <value>Минимальная частота CPU</value>
   </data>
   <data name="Param_GPU_g12.Text" xml:space="preserve">
-    <value>Максимальная частота CPU (MHz)</value>
-  </data>
-  <data name="Param_GPU_g13.Text" xml:space="preserve">
-    <value>Минимальный объём VRAM iGPU (MB)</value>
-  </data>
-  <data name="Param_GPU_g14.Text" xml:space="preserve">
-    <value>Максимальный объём VRAM iGPU (MB)</value>
+    <value>Максимальная частота CPU</value>
   </data>
   <data name="Param_GPU_g15.Text" xml:space="preserve">
-    <value>Фиксировать частоту dGPU (Состояние)</value>
+    <value>Фиксировать частоту dGPU</value>
   </data>
   <data name="Param_GPU_g16.Text" xml:space="preserve">
-    <value>Исправление 0,4 ГГц CPU (Состояние)</value>
+    <value>Исправление 0,4 ГГц CPU</value>
   </data>
   <data name="Param_GPU_State0.Content" xml:space="preserve">
     <value>Состояние 0</value>
@@ -1742,10 +1736,10 @@ CPU VID
     <value>Настройте кривую частоты-напряжения для ядер 8-15</value>
   </data>
   <data name="Param_CO_O1.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для всех ядер (CO)</value>
+    <value>Оптимизатор кривой для всех ядер</value>
   </data>
   <data name="Param_CO_O2.Text" xml:space="preserve">
-    <value>Оптимизатор кривой iGPU (CO)</value>
+    <value>Оптимизатор кривой iGPU</value>
   </data>
   <data name="Param_CO_Section.Text" xml:space="preserve">
     <value>Оптимизатор кривой</value>
@@ -1788,52 +1782,52 @@ CPU VID
 НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
   </data>
   <data name="Param_CO_CCD1_1.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 0 (CO)</value>
+    <value>Оптимизатор кривой для ядра 0 </value>
   </data>
   <data name="Param_CO_CCD1_2.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 1 (CO)</value>
+    <value>Оптимизатор кривой для ядра 1</value>
   </data>
   <data name="Param_CO_CCD1_3.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 2 (CO)</value>
+    <value>Оптимизатор кривой для ядра 2</value>
   </data>
   <data name="Param_CO_CCD1_4.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 3 (CO)</value>
+    <value>Оптимизатор кривой для ядра 3</value>
   </data>
   <data name="Param_CO_CCD1_5.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 4 (CO)</value>
+    <value>Оптимизатор кривой для ядра 4</value>
   </data>
   <data name="Param_CO_CCD1_6.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 5 (CO)</value>
+    <value>Оптимизатор кривой для ядра 5</value>
   </data>
   <data name="Param_CO_CCD1_7.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 6 (CO)</value>
+    <value>Оптимизатор кривой для ядра 6</value>
   </data>
   <data name="Param_CO_CCD1_8.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 7 (CO)</value>
+    <value>Оптимизатор кривой для ядра 7</value>
   </data>
   <data name="Param_CO_CCD2_1.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 8 (CO)</value>
+    <value>Оптимизатор кривой для ядра 8</value>
   </data>
   <data name="Param_CO_CCD2_2.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 9 (CO)</value>
+    <value>Оптимизатор кривой для ядра 9</value>
   </data>
   <data name="Param_CO_CCD2_3.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 10 (CO)</value>
+    <value>Оптимизатор кривой для ядра 10</value>
   </data>
   <data name="Param_CO_CCD2_4.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 11 (CO)</value>
+    <value>Оптимизатор кривой для ядра 11</value>
   </data>
   <data name="Param_CO_CCD2_5.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 12 (CO)</value>
+    <value>Оптимизатор кривой для ядра 12</value>
   </data>
   <data name="Param_CO_CCD2_6.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 13 (CO)</value>
+    <value>Оптимизатор кривой для ядра 13</value>
   </data>
   <data name="Param_CO_CCD2_7.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 14 (CO)</value>
+    <value>Оптимизатор кривой для ядра 14</value>
   </data>
   <data name="Param_CO_CCD2_8.Text" xml:space="preserve">
-    <value>Оптимизатор кривой для ядра 15 (CO)</value>
+    <value>Оптимизатор кривой для ядра 15</value>
   </data>
   <data name="Param_CO_CCD_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Оптимизатор кривой для отдельного ядра

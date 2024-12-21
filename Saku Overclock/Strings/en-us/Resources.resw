@@ -264,16 +264,16 @@
     <value>CPU Overclocking</value>
   </data>
   <data name="Param_CPU_c2.Text" xml:space="preserve">
-    <value>Sustained Power Limit (W)</value>
+    <value>Sustained Power Limit</value>
   </data>
   <data name="Param_CPU_c3.Text" xml:space="preserve">
-    <value>Actual Power Limit (W)</value>
+    <value>Actual Power Limit</value>
   </data>
   <data name="Param_CPU_c4.Text" xml:space="preserve">
-    <value>Average Power Limit (W)</value>
+    <value>Average Power Limit</value>
   </data>
   <data name="Param_CPU_c5.Text" xml:space="preserve">
-    <value>Time of slow frequency rise (S)</value>
+    <value>Time of slow frequency rise</value>
   </data>
   <data name="Param_Name.Text" xml:space="preserve">
     <value>Overclocking parameters</value>
@@ -320,10 +320,10 @@ You can apply all enabled
 values by clicking at this button</value>
   </data>
   <data name="Param_CPU_c1.Text" xml:space="preserve">
-    <value>Maximum CPU temperature (C)</value>
+    <value>Maximum CPU temperature</value>
   </data>
   <data name="Param_CPU_c6.Text" xml:space="preserve">
-    <value>Time of fast frequency rise (S)</value>
+    <value>Time of fast frequency rise</value>
   </data>
   <data name="Param_CPU_Recommend.Text" xml:space="preserve">
     <value>Recommendation:     Balance                 Performance</value>
@@ -335,34 +335,34 @@ preset by clicking
 at this button</value>
   </data>
   <data name="Param_GPU_g1.Text" xml:space="preserve">
-    <value>Minimum SoC clock (MHz)</value>
+    <value>Minimum SoC clock</value>
   </data>
   <data name="Param_GPU_g10.Text" xml:space="preserve">
-    <value>Maximum iGPU clock (MHz)</value>
+    <value>Maximum iGPU clock</value>
   </data>
   <data name="Param_GPU_g2.Text" xml:space="preserve">
-    <value>Maximum SoC clock (MHz)</value>
+    <value>Maximum SoC clock</value>
   </data>
   <data name="Param_GPU_g3.Text" xml:space="preserve">
-    <value>Minimum Infinity Fabric clock (MHz)</value>
+    <value>Minimum Infinity Fabric clock</value>
   </data>
   <data name="Param_GPU_g4.Text" xml:space="preserve">
-    <value>Maximum Infinity Fabric clock (MHz)</value>
+    <value>Maximum Infinity Fabric clock</value>
   </data>
   <data name="Param_GPU_g5.Text" xml:space="preserve">
-    <value>Minimum VCE clock (MHz)</value>
+    <value>Minimum VCE clock</value>
   </data>
   <data name="Param_GPU_g6.Text" xml:space="preserve">
-    <value>Maximum VCE clock (MHz)</value>
+    <value>Maximum VCE clock</value>
   </data>
   <data name="Param_GPU_g7.Text" xml:space="preserve">
-    <value>Minimum Data Latch clock (MHz)</value>
+    <value>Minimum Data Latch clock</value>
   </data>
   <data name="Param_GPU_g8.Text" xml:space="preserve">
-    <value>Maximum Data Latch clock (MHz)</value>
+    <value>Maximum Data Latch clock</value>
   </data>
   <data name="Param_GPU_g9.Text" xml:space="preserve">
-    <value>Minimum iGPU clock (MHz)</value>
+    <value>Minimum iGPU clock</value>
   </data>
   <data name="Param_GPU_Ram.Text" xml:space="preserve">
     <value>                                       Your RAM frequency</value>
@@ -389,25 +389,25 @@ All presets have autosaving</value>
     <value>VRM Tuning</value>
   </data>
   <data name="Param_VRM_v1.Text" xml:space="preserve">
-    <value>VRM Maximum EDC (A)</value>
+    <value>VRM Maximum EDC</value>
   </data>
   <data name="Param_VRM_v2.Text" xml:space="preserve">
-    <value>VRM Maximum TDC (A)</value>
+    <value>VRM Maximum TDC</value>
   </data>
   <data name="Param_VRM_v3.Text" xml:space="preserve">
-    <value>SoC Maximum EDC (A)</value>
+    <value>SoC Maximum EDC</value>
   </data>
   <data name="Param_VRM_v4.Text" xml:space="preserve">
-    <value>SoC Maximum TDC (A)</value>
+    <value>SoC Maximum TDC</value>
   </data>
   <data name="Param_VRM_v5.Text" xml:space="preserve">
-    <value>PSI0 VDD Maximum EDC (A)</value>
+    <value>PSI0 VDD Maximum EDC</value>
   </data>
   <data name="Param_VRM_v6.Text" xml:space="preserve">
-    <value>PSI0 SoC Maximum EDC (A)</value>
+    <value>PSI0 SoC Maximum EDC</value>
   </data>
   <data name="Param_VRM_v7.Text" xml:space="preserve">
-    <value>Restore Frequency time (mS)</value>
+    <value>Restore Frequency time</value>
   </data>
   <data name="Preset_Balance" xml:space="preserve">
     <value>Balance</value>
@@ -800,43 +800,43 @@ if you see the temperature values on
 the information page!</value>
   </data>
   <data name="Param_ADV_a1.Text" xml:space="preserve">
-    <value>iGPU Maximum TDC (A)</value>
+    <value>iGPU Maximum TDC</value>
   </data>
   <data name="Param_ADV_a10.Text" xml:space="preserve">
-    <value>Fixed iGPU freq (MHz)</value>
+    <value>Fixed iGPU freq</value>
   </data>
   <data name="Param_ADV_a11.Text" xml:space="preserve">
-    <value>Fixed CPU freq (MHz)</value>
+    <value>Fixed CPU freq</value>
   </data>
   <data name="Param_ADV_a12.Text" xml:space="preserve">
-    <value>Fixed CPU voltage (mV)</value>
+    <value>Fixed CPU voltage</value>
   </data>
   <data name="Param_ADV_a13.Text" xml:space="preserve">
     <value>Preferred mode</value>
   </data>
   <data name="Param_ADV_a2.Text" xml:space="preserve">
-    <value>NPU Maximum TDC (A)</value>
+    <value>NPU Maximum TDC</value>
   </data>
   <data name="Param_ADV_a3.Text" xml:space="preserve">
-    <value>iGPU Maximum EDC (A)</value>
+    <value>iGPU Maximum EDC</value>
   </data>
   <data name="Param_ADV_a4.Text" xml:space="preserve">
-    <value>CPU Maximum EDC (A)</value>
+    <value>CPU Maximum EDC</value>
   </data>
   <data name="Param_ADV_a5.Text" xml:space="preserve">
-    <value>GPU Maximum EDC (A)</value>
+    <value>GPU Maximum EDC</value>
   </data>
   <data name="Param_ADV_a6.Text" xml:space="preserve">
-    <value>iGPU Maximum temperature (C)</value>
+    <value>iGPU Maximum temperature</value>
   </data>
   <data name="Param_ADV_a7.Text" xml:space="preserve">
-    <value>dGPU Maximum temperature (C)</value>
+    <value>dGPU Maximum temperature</value>
   </data>
   <data name="Param_ADV_a8.Text" xml:space="preserve">
-    <value>iGPU Actual Power Limit (W)</value>
+    <value>iGPU Actual Power Limit</value>
   </data>
   <data name="Param_ADV_a9.Text" xml:space="preserve">
-    <value>Laptop Power Limit (W)</value>
+    <value>Laptop Power Limit</value>
   </data>
   <data name="Param_ADV_Pdesc.Text" xml:space="preserve">
     <value>Experimental CPU parameters</value>
@@ -1318,7 +1318,7 @@ Changing P0 state have MORE chances to crash your system</value>
     <value>You have applied your settings but:</value>
   </data>
   <data name="Param_CPU_c7.Text" xml:space="preserve">
-    <value>Maximum cHTC temp (C)</value>
+    <value>Maximum cHTC temp</value>
   </data>
   <data name="Param_a14_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Advanced Overclock
@@ -1413,10 +1413,10 @@ that you can disable checkbox
 IT IS NOT RECOMMENDED TO TOUCH IT</value>
   </data>
   <data name="Param_GPU_g11.Text" xml:space="preserve">
-    <value>Min CPU frequency (MHz)</value>
+    <value>Min CPU frequency</value>
   </data>
   <data name="Param_GPU_g12.Text" xml:space="preserve">
-    <value>Max CPU frequency (MHz)</value>
+    <value>Max CPU frequency</value>
   </data>
   <data name="Param_GPU_g13.Text" xml:space="preserve">
     <value>iGPU VRAM Low-DWORD address</value>
@@ -1425,7 +1425,7 @@ IT IS NOT RECOMMENDED TO TOUCH IT</value>
     <value>iGPU VRAM Hi-DWORD address</value>
   </data>
   <data name="Param_GPU_g15.Text" xml:space="preserve">
-    <value>Fix dGPU freq (State)</value>
+    <value>Fix dGPU freq</value>
   </data>
   <data name="Param_GPU_g16.Text" xml:space="preserve">
     <value>Fix 0,4 GHz frequency </value>
@@ -1698,10 +1698,10 @@ ARE DOING!!! IT CAN BURN YOUR CPU!</value>
     <value>Set your curve for CPU cores 8-15</value>
   </data>
   <data name="Param_CO_O1.Text" xml:space="preserve">
-    <value>All cores Curve Optimizer (CO)</value>
+    <value>All cores Curve Optimizer</value>
   </data>
   <data name="Param_CO_O2.Text" xml:space="preserve">
-    <value>iGPU Curve Optimizer (CO)</value>
+    <value>iGPU Curve Optimizer</value>
   </data>
   <data name="Param_CO_Section.Text" xml:space="preserve">
     <value>All cores curve optimizer settings</value>
@@ -1739,52 +1739,52 @@ any artifacts - DON'T USE this parameter
 IT IS NOT RECOMMENDED TO TOUCH IT</value>
   </data>
   <data name="Param_CO_CCD1_1.Text" xml:space="preserve">
-    <value>Core 0 Curve Optimizer (CO)</value>
+    <value>Core 0 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD1_2.Text" xml:space="preserve">
-    <value>Core 1 Curve Optimizer (CO)</value>
+    <value>Core 1 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD1_3.Text" xml:space="preserve">
-    <value>Core 2 Curve Optimizer (CO)</value>
+    <value>Core 2 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD1_4.Text" xml:space="preserve">
-    <value>Core 3 Curve Optimizer (CO)</value>
+    <value>Core 3 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD1_5.Text" xml:space="preserve">
-    <value>Core 4 Curve Optimizer (CO)</value>
+    <value>Core 4 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD1_6.Text" xml:space="preserve">
-    <value>Core 5 Curve Optimizer (CO)</value>
+    <value>Core 5 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD1_7.Text" xml:space="preserve">
-    <value>Core 6 Curve Optimizer (CO)</value>
+    <value>Core 6 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD1_8.Text" xml:space="preserve">
-    <value>Core 7 Curve Optimizer (CO)</value>
+    <value>Core 7 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD2_1.Text" xml:space="preserve">
-    <value>Core 8 Curve Optimizer (CO)</value>
+    <value>Core 8 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD2_2.Text" xml:space="preserve">
-    <value>Core 9 Curve Optimizer (CO)</value>
+    <value>Core 9 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD2_3.Text" xml:space="preserve">
-    <value>Core 10 Curve Optimizer (CO)</value>
+    <value>Core 10 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD2_4.Text" xml:space="preserve">
-    <value>Core 11 Curve Optimizer (CO)</value>
+    <value>Core 11 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD2_5.Text" xml:space="preserve">
-    <value>Core 12 Curve Optimizer (CO)</value>
+    <value>Core 12 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD2_6.Text" xml:space="preserve">
-    <value>Core 13 Curve Optimizer (CO)</value>
+    <value>Core 13 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD2_7.Text" xml:space="preserve">
-    <value>Core 14 Curve Optimizer (CO)</value>
+    <value>Core 14 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD2_8.Text" xml:space="preserve">
-    <value>Core 15 Curve Optimizer (CO)</value>
+    <value>Core 15 Curve Optimizer</value>
   </data>
   <data name="Param_CO_CCD_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Per core curve optimizer settings
