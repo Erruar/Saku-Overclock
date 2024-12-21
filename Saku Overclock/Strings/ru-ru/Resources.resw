@@ -264,16 +264,16 @@
     <value>Разгон</value>
   </data>
   <data name="Param_CPU_c2.Text" xml:space="preserve">
-    <value>Лимит CPU (W)</value>
+    <value>Лимит мощности STAPM</value>
   </data>
   <data name="Param_CPU_c3.Text" xml:space="preserve">
-    <value>Реальный CPU (W)</value>
+    <value>Реальная мощность</value>
   </data>
   <data name="Param_CPU_c4.Text" xml:space="preserve">
-    <value>Средний CPU (W)</value>
+    <value>Средняя мощность</value>
   </data>
   <data name="Param_CPU_c5.Text" xml:space="preserve">
-    <value>Тик медленного разгона (S)</value>
+    <value>Время медленного разгона</value>
   </data>
   <data name="Param_Name.Text" xml:space="preserve">
     <value>Разгон</value>
@@ -328,7 +328,7 @@
     <value>Максимальная температура CPU</value>
   </data>
   <data name="Param_CPU_c6.Text" xml:space="preserve">
-    <value>Тик быстрого разгона (S)</value>
+    <value>Время быстрого разгона</value>
   </data>
   <data name="Param_CPU_Recommend.Text" xml:space="preserve">
     <value>Рекомендации:        Баланс          Производительность</value>
@@ -1352,7 +1352,7 @@ AOD, Power, Temp, Load таблиц устройства.
     <value>Вы применили параметры, но:</value>
   </data>
   <data name="Param_CPU_c7.Text" xml:space="preserve">
-    <value>Максимальная температура cHTC (C)</value>
+    <value>Максимальная температура cHTC</value>
   </data>
   <data name="Param_a14_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Расширенный разгон
