@@ -511,39 +511,40 @@ public static class RyzenADJWrapper
         private static int _cpuLoadIndex;
         private static float[]? _cachedTable;
         // Флаг для проверки готовности таблицы
-        private static bool _isInitialized;
-
-        public static void InitializeCoreIndexMapAsync(int coreCounter)
+        private static bool _isInitialized; 
+        public static async Task InitializeCoreIndexMapAsync(int coreCounter)
         {
             globalCPUDetectionMethod = 1;
             if (_isInitialized) { return; }
             _coreIndexMap.Clear();
             // Асинхронная загрузка WMI
-            if (currentCPUClocks.Count == 0) { currentCPUClocks = GetSystemInfo.GetCurrentClockSpeedsMHz(coreCounter); }
-            if (currentCPULoad == 0) { currentCPULoad = (float)GetSystemInfo.GetCurrentUtilisation(); }
-            if (coreCounter == 0) 
+            await Task.Run(() => 
             {
-                if (globalCoreCounter == -1 || globalCoreCounter == 0)
+                if (currentCPUClocks.Count == 0) { currentCPUClocks = GetSystemInfo.GetCurrentClockSpeedsMHz(coreCounter); }
+                if (currentCPULoad == 0) { currentCPULoad = (float)GetSystemInfo.GetCurrentUtilisation(); }
+                if (coreCounter == 0)
                 {
-                    var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
-                    foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
+                    if (globalCoreCounter == -1 || globalCoreCounter == 0)
                     {
-                        coreCounter = Convert.ToInt32(queryObj["NumberOfCores"]);
+                        var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+                        foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
+                        {
+                            coreCounter = Convert.ToInt32(queryObj["NumberOfCores"]);
+                        }
+                        globalCoreCounter = coreCounter;
                     }
-                    globalCoreCounter = coreCounter;
+                    coreCounter = globalCoreCounter;
                 }
-                coreCounter = globalCoreCounter;
-            }
-            for (var core = 0; core < coreCounter; core++)
-            {
-                var index = FindIndexInPowerTable(currentCPUClocks[core]);
-                if (index >= 0)
+                for (var core = 0; core < coreCounter; core++)
                 {
-                    _coreIndexMap[core] = index;
+                    var index = FindIndexInPowerTable(currentCPUClocks[core]);
+                    if (index >= 0)
+                    {
+                        _coreIndexMap[core] = index;
+                    }
                 }
-            }
-            _cpuLoadIndex = FindIndexInPowerTable(currentCPULoad);
-            
+                _cpuLoadIndex = FindIndexInPowerTable(currentCPULoad);
+            }).ConfigureAwait(false);
             _isInitialized = true;
         }
         public static async Task AsyncWMIGetCoreFreq(int coreCounter)
@@ -556,13 +557,16 @@ public static class RyzenADJWrapper
             });
         }
 
-        public static void RefreshPowerTable(Cpu cpu)
+        public static async Task RefreshPowerTable(Cpu cpu)
         {
             try
             {
-                cpu ??= CpuSingleton.GetInstance(); 
-                cpu?.RefreshPowerTable();
-                _cachedTable = cpu?.powerTable.Table;
+                await Task.Run(() => 
+                {
+                    cpu ??= CpuSingleton.GetInstance();
+                    cpu?.RefreshPowerTable();
+                    _cachedTable = cpu?.powerTable.Table;
+                }).ConfigureAwait(false);
             }
             catch { }
         }
