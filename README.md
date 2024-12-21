@@ -533,8 +533,6 @@ Don't forget to give the project a star! Thanks again!
 
 Distributed under the GPL-3.0 License. See `LICENSE.md` for more information. The application contains elements of [Collapse Launcher](https://github.com/CollapseLauncher/Collapse), which is licensed by [MIT license](https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE), such elements are marked in the code as [Collapse Launcher](https://github.com/CollapseLauncher/Collapse), also, get acquainted with the [MIT license](https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE) if you want to use their elements too. The GPL and MIT licenses have similar concepts, as a result of which I did not copy their license into my project
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 > [!IMPORTANT]
 > ## Copyright policy
 > **I allow the placement of releases of my application on external sources, external servers, but I am AGAINST completely copying the source code anywhere other than the forks of my application, and I am also against completely copying my Readme and placing it somewhere. I allow copying of my product to other sites ONLY WITH THE INDICATION OF ME AS THE AUTHOR IN THE TEXT. Everything else will be required to delete or resolve this issue.**
@@ -543,6 +541,7 @@ Distributed under the GPL-3.0 License. See `LICENSE.md` for more information. Th
 > ### What is the best way to copy my app to your site?
 > Please **install** my program, it's not difficult and take some **your screenshots** of my program. Rate app work and write a review. Your feedback. Instead of copying the Readme completely, write something from yourself or rephrase it, I won't mind seeing something like this, for example, it was done on [Softpedia](https://www.softpedia.com/get/Tweak/System-Tweak/Saku-Overclock.shtml#download) and on [Top4Downloads](https://www.top4download.com/saku-overclock/tuykfucn.html). And don't forget to specify me as the author of the program! Just links to the program are not enough, you need to specify me as the author, I am trying for you alone and I hope that you understand if I wrote this, then there have already been cases. It would be great if you also provided a link to our [discord community](https://discord.gg/WzgsFvgTuh). Thanks for understanding.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->
 ## Contact
