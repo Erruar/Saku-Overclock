@@ -325,7 +325,7 @@
 секунд</value>
   </data>
   <data name="Param_CPU_c1.Text" xml:space="preserve">
-    <value>Максимальная температура CPU (C)</value>
+    <value>Максимальная температура CPU</value>
   </data>
   <data name="Param_CPU_c6.Text" xml:space="preserve">
     <value>Тик быстрого разгона (S)</value>

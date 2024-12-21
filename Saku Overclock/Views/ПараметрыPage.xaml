@@ -115,7 +115,64 @@
                             </Grid.RowDefinitions>
 
                             <!-- Первая секция -->
-
+                            <StackPanel Padding="0,0,0,10" Orientation="Vertical" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15" Margin="0,0,0,0">
+                                        <FontIcon Glyph="&#xE9CA;" FontSize="15" >
+                                        </FontIcon>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAADD8E6" Offset="0.0" />
+                                                <GradientStop Color="#AAFFC0CB" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock x:Uid="Param_CPU_c1" Margin="5,0,0,0" Text="Максимальная температура CPU" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,10,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <Grid>
+                                        <CheckBox Width="10" x:Name="c1" Checked="C1_Checked" Unchecked="C1_Checked"></CheckBox>
+                                        <Slider x:Name="c1v" ValueChanged="C1_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" Value="80" HorizontalAlignment="Left" Minimum="50" Maximum="100"/>
+                                    </Grid>
+                                    <NumberBox Margin="10,0,0,0" Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c1t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c1v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel> 
+                            </StackPanel>
+                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
+                                <TextBlock x:Uid="Param_CPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
+                                <TextBlock Text="                                    75(С)                         90(С)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
+                            <Grid Grid.Row="1" x:Name="Laptops_HTC_Temp" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                                <StackPanel Orientation="Horizontal"> 
+                                    <TextBlock x:Uid="Param_CPU_c7"  Text="Максимальная температура cHTC (C)" FontSize="15"></TextBlock>
+                                    <Border Height="20" Width="20" CornerRadius="15" Margin="3,-30,0,0">
+                                        <FontIcon Glyph="&#xE9CA;" FontSize="15" >
+                                        </FontIcon>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAADD8E6" Offset="0.0" />
+                                                <GradientStop Color="#AAFFC0CB" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border> 
+                                </StackPanel>
+                                <CheckBox  Margin="0,20,0,0" x:Name="c7" Checked="C7_Checked" Unchecked="C7_Checked"></CheckBox>
+                                <Slider x:Name="c7v" ValueChanged="C7_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" Value="80" HorizontalAlignment="Left" Minimum="50" Maximum="100">
+                                </Slider>
+                                <NumberBox Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c7t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c7v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
+                                    <FontIcon.RenderTransform>
+                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Grid>
+                            <Grid Grid.Row="1" x:Name="Laptops_HTC_Temp_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
+                                <TextBlock Text="                                    45(С)                         90(С)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
+                            </Grid>
                             <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <TextBlock x:Uid="Param_CPU_c2"  Text="Лимит CPU (W)" FontSize="15"></TextBlock>
                                 <CheckBox  Margin="0,20,0,0" x:Name="c2" Checked="C2_Checked" Unchecked="C2_Checked"></CheckBox>
@@ -190,38 +247,7 @@
                             </Grid>
                             <Grid Grid.Row="6" x:Name="Laptops_slow_Speed_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
-                            </Grid>
-                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CPU_c1" Text="Максимальная температура CPU (C)" FontSize="15"></TextBlock>
-                                <CheckBox  Margin="0,20,0,0" x:Name="c1" Checked="C1_Checked" Unchecked="C1_Checked"></CheckBox>
-                                <Slider x:Name="c1v" ValueChanged="C1_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" Value="80" HorizontalAlignment="Left" Minimum="50" Maximum="100">
-                                </Slider>
-                                <NumberBox Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c1t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c1v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
-                            <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock x:Uid="Param_CPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc" Grid.Column="1" ></TextBlock>
-                                <TextBlock Text="                                    75(С)                         90(С)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
-                            </Grid>
-                            <Grid Grid.Row="1" x:Name="Laptops_HTC_Temp" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
-                                <TextBlock x:Uid="Param_CPU_c7"  Text="Максимальная температура cHTC (C)" FontSize="15"></TextBlock>
-                                <CheckBox  Margin="0,20,0,0" x:Name="c7" Checked="C7_Checked" Unchecked="C7_Checked"></CheckBox>
-                                <Slider x:Name="c7v" ValueChanged="C7_ValueChanged" Margin="35,20,0,0" VerticalAlignment="Top" Width="200" Value="80" HorizontalAlignment="Left" Minimum="50" Maximum="100">
-                                </Slider>
-                                <NumberBox Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c7t" Margin="245,18,0,0"  ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c7v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="355,7,0,0" Glyph="&#xe9ce;">
-                                    <FontIcon.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                    </FontIcon.RenderTransform>
-                                </FontIcon>
-                            </Grid>
-                            <Grid Grid.Row="1" x:Name="Laptops_HTC_Temp_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock Text="                                    45(С)                         90(С)" Grid.Column="1" Margin="0,20,0,0" ></TextBlock>
-                            </Grid>
+                            </Grid> 
                         </Grid>
                     </Expander>
 
