@@ -15,11 +15,12 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers;
+using Saku_Overclock.Helpers; 
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using WindowActivatedEventArgs = Microsoft.UI.Xaml.WindowActivatedEventArgs;
+// ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
 
 namespace Saku_Overclock.Views;
 
@@ -35,8 +36,8 @@ public sealed partial class ShellPage
     private bool _loaded = true; // Запустился ли UI поток приложения
     private bool _isNotificationPanelShow; // Флаг: Открыта ли панель уведомлений
     private int? _compareList; // Нет новых уведомлений - пока
-    private Config _config = new(); // Класс с конфигом приложения
     private JsonContainers.Notifications _notify = new(); // Класс с уведомлениями
+    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
     private Profile[] _profile = new Profile[1]; // Класс с профилями параметров разгона пользователя
 
     private AppWindow MAppWindow
@@ -59,17 +60,9 @@ public sealed partial class ShellPage
     }
 
     public ShellPage(ShellViewModel viewModel)
-    {
-        try
-        {
-            ConfigLoad();
-        }
-        catch (Exception ex)
-        {
-            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
-        }
+    { 
         
-        if (_config.HotkeysEnabled)
+        if (SettingsService.HotkeysEnabled)
         {
             _proc = HookCallbackAsync;
             _hookId = SetHook(_proc); // Хук, который должен срабатывать
@@ -147,8 +140,7 @@ public sealed partial class ShellPage
 
     private void GetProfileInit()
     {
-        ConfigLoad();
-        if (!_config.OldTitleBar)
+        if (!SettingsService.OldTitleBar)
         {
             var itemz = new ObservableCollection<ComboBoxItem>();
             itemz.Clear();
@@ -199,40 +191,40 @@ public sealed partial class ShellPage
             itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Speed".GetLocalized(), Name = "PremadeSsASpd" });
             itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Max".GetLocalized(), Name = "PremadeSsAMax" });
             ViewModel.Items = itemz;
-            if (_config.Preset == -1)
+            if (SettingsService.Preset == -1)
             {
-                if (_config.PremadeMinActivated)
+                if (SettingsService.PremadeMinActivated)
                 {
                     SelectRightPremadedProfileName("PremadeSsAMin");
                 }
 
-                if (_config.PremadeEcoActivated)
+                if (SettingsService.PremadeEcoActivated)
                 {
                     SelectRightPremadedProfileName("PremadeSsAEco");
                 }
 
-                if (_config.PremadeBalanceActivated)
+                if (SettingsService.PremadeBalanceActivated)
                 {
                     SelectRightPremadedProfileName("PremadeSsABal");
                 }
 
-                if (_config.PremadeSpeedActivated)
+                if (SettingsService.PremadeSpeedActivated)
                 {
                     SelectRightPremadedProfileName("PremadeSsASpd");
                 }
 
-                if (_config.PremadeMaxActivated)
+                if (SettingsService.PremadeMaxActivated)
                 {
                     SelectRightPremadedProfileName("PremadeSsAMax");
                 }
             }
             else
             {
-                ViewModel.SelectedIndex = _config.Preset + 1;
-                ProfileSetComboBox.SelectedIndex = _config.Preset + 1;
+                ViewModel.SelectedIndex = SettingsService.Preset + 1;
+                ProfileSetComboBox.SelectedIndex = SettingsService.Preset + 1;
             }
 
-            if (_config.ReapplyLatestSettingsOnAppLaunch)
+            if (SettingsService.ReapplyLatestSettingsOnAppLaunch)
             {
                 ProfileSetButton.IsEnabled = false;
             }
@@ -255,14 +247,13 @@ public sealed partial class ShellPage
     private string NextPremadeProfile_Switch()
     {
         var nextProfile = string.Empty;
-        ConfigLoad();
-        if (_config.Preset != -1) // У нас был готовый пресет
+        if (SettingsService.Preset != -1) // У нас был готовый пресет
         {
-            if (_config.PremadeMinActivated)
+            if (SettingsService.PremadeMinActivated)
             {
-                _config.Preset = -1;
+                SettingsService.Preset = -1;
                 nextProfile = "Shell_Preset_Min".GetLocalized();
-                _config.RyzenADJline =
+                SettingsService.RyzenADJline =
                     " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -273,11 +264,11 @@ public sealed partial class ShellPage
                     }
                 }
             }
-            else if (_config.PremadeEcoActivated)
+            else if (SettingsService.PremadeEcoActivated)
             {
-                _config.Preset = -1;
+                SettingsService.Preset = -1;
                 nextProfile = "Shell_Preset_Eco".GetLocalized();
-                _config.RyzenADJline =
+                SettingsService.RyzenADJline =
                     " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -288,11 +279,11 @@ public sealed partial class ShellPage
                     }
                 }
             }
-            else if (_config.PremadeBalanceActivated)
+            else if (SettingsService.PremadeBalanceActivated)
             {
-                _config.Preset = -1;
+                SettingsService.Preset = -1;
                 nextProfile = "Shell_Preset_Balance".GetLocalized();
-                _config.RyzenADJline =
+                SettingsService.RyzenADJline =
                     " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -303,11 +294,11 @@ public sealed partial class ShellPage
                     }
                 }
             }
-            else if (_config.PremadeSpeedActivated)
+            else if (SettingsService.PremadeSpeedActivated)
             {
-                _config.Preset = -1;
+                SettingsService.Preset = -1;
                 nextProfile = "Shell_Preset_Speed".GetLocalized();
-                _config.RyzenADJline =
+                SettingsService.RyzenADJline =
                     " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -318,11 +309,11 @@ public sealed partial class ShellPage
                     }
                 }
             }
-            else if (_config.PremadeMaxActivated)
+            else if (SettingsService.PremadeMaxActivated)
             {
-                _config.Preset = -1;
+                SettingsService.Preset = -1;
                 nextProfile = "Shell_Preset_Max".GetLocalized();
-                _config.RyzenADJline =
+                SettingsService.RyzenADJline =
                     " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -336,16 +327,16 @@ public sealed partial class ShellPage
         }
         else // У нас уже был выставлен какой-то профиль
         {
-            if (_config.PremadeMinActivated)
+            if (SettingsService.PremadeMinActivated)
             {
-                _config.Preset = -1;
+                SettingsService.Preset = -1;
                 nextProfile = "Shell_Preset_Eco".GetLocalized();
-                _config.PremadeMinActivated = false;
-                _config.PremadeEcoActivated = true;
-                _config.PremadeBalanceActivated = false;
-                _config.PremadeSpeedActivated = false;
-                _config.PremadeMaxActivated = false;
-                _config.RyzenADJline =
+                SettingsService.PremadeMinActivated = false;
+                SettingsService.PremadeEcoActivated = true;
+                SettingsService.PremadeBalanceActivated = false;
+                SettingsService.PremadeSpeedActivated = false;
+                SettingsService.PremadeMaxActivated = false;
+                SettingsService.RyzenADJline =
                     " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -356,16 +347,16 @@ public sealed partial class ShellPage
                     }
                 }
             } // Эко
-            else if (_config.PremadeEcoActivated)
+            else if (SettingsService.PremadeEcoActivated)
             {
-                _config.Preset = -1;
+                SettingsService.Preset = -1;
                 nextProfile = "Shell_Preset_Balance".GetLocalized();
-                _config.PremadeMinActivated = false;
-                _config.PremadeEcoActivated = false;
-                _config.PremadeBalanceActivated = true;
-                _config.PremadeSpeedActivated = false;
-                _config.PremadeMaxActivated = false;
-                _config.RyzenADJline =
+                SettingsService.PremadeMinActivated = false;
+                SettingsService.PremadeEcoActivated = false;
+                SettingsService.PremadeBalanceActivated = true;
+                SettingsService.PremadeSpeedActivated = false;
+                SettingsService.PremadeMaxActivated = false;
+                SettingsService.RyzenADJline =
                     " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -376,16 +367,16 @@ public sealed partial class ShellPage
                     }
                 }
             } // Баланс
-            else if (_config.PremadeBalanceActivated)
+            else if (SettingsService.PremadeBalanceActivated)
             {
-                _config.Preset = -1;
+                SettingsService.Preset = -1;
                 nextProfile = "Shell_Preset_Speed".GetLocalized();
-                _config.PremadeMinActivated = false;
-                _config.PremadeEcoActivated = false;
-                _config.PremadeBalanceActivated = false;
-                _config.PremadeSpeedActivated = true;
-                _config.PremadeMaxActivated = false;
-                _config.RyzenADJline =
+                SettingsService.PremadeMinActivated = false;
+                SettingsService.PremadeEcoActivated = false;
+                SettingsService.PremadeBalanceActivated = false;
+                SettingsService.PremadeSpeedActivated = true;
+                SettingsService.PremadeMaxActivated = false;
+                SettingsService.RyzenADJline =
                     " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -396,16 +387,16 @@ public sealed partial class ShellPage
                     }
                 }
             } // Скорость
-            else if (_config.PremadeSpeedActivated)
+            else if (SettingsService.PremadeSpeedActivated)
             {
-                _config.Preset = -1;
+                SettingsService.Preset = -1;
                 nextProfile = "Shell_Preset_Max".GetLocalized();
-                _config.PremadeMinActivated = false;
-                _config.PremadeEcoActivated = false;
-                _config.PremadeBalanceActivated = false;
-                _config.PremadeSpeedActivated = false;
-                _config.PremadeMaxActivated = true;
-                _config.RyzenADJline =
+                SettingsService.PremadeMinActivated = false;
+                SettingsService.PremadeEcoActivated = false;
+                SettingsService.PremadeBalanceActivated = false;
+                SettingsService.PremadeSpeedActivated = false;
+                SettingsService.PremadeMaxActivated = true;
+                SettingsService.RyzenADJline =
                     " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -416,16 +407,16 @@ public sealed partial class ShellPage
                     }
                 }
             } // Максимум
-            else if (_config.PremadeMaxActivated)
+            else if (SettingsService.PremadeMaxActivated)
             {
-                _config.Preset = -1;
+                SettingsService.Preset = -1;
                 nextProfile = "Shell_Preset_Min".GetLocalized();
-                _config.PremadeMinActivated = true;
-                _config.PremadeEcoActivated = false;
-                _config.PremadeBalanceActivated = false;
-                _config.PremadeSpeedActivated = false;
-                _config.PremadeMaxActivated = false;
-                _config.RyzenADJline =
+                SettingsService.PremadeMinActivated = true;
+                SettingsService.PremadeEcoActivated = false;
+                SettingsService.PremadeBalanceActivated = false;
+                SettingsService.PremadeSpeedActivated = false;
+                SettingsService.PremadeMaxActivated = false;
+                SettingsService.RyzenADJline =
                     " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
                 foreach (var element in ProfileSetComboBox.Items)
                 {
@@ -438,7 +429,7 @@ public sealed partial class ShellPage
             } // Минимум
         }
 
-        ConfigSave();
+        SettingsService.SaveSettings();
         SelectedProfile = nextProfile;
         return nextProfile;
     }
@@ -446,15 +437,14 @@ public sealed partial class ShellPage
     private string NextCustomProfile_Switch()
     {
         var nextProfile = string.Empty;
-        ProfileLoad();
-        ConfigLoad();
-        if (_config.Preset == -1) // У нас был готовый пресет
+        ProfileLoad(); 
+        if (SettingsService.Preset == -1) // У нас был готовый пресет
         {
             if (_profile.Length > 0 &&
                 _profile[0].profilename !=
                 string.Empty) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
             {
-                _config.Preset = 0;
+                SettingsService.Preset = 0;
                 try
                 {
                     foreach (var element in ProfileSetComboBox.Items)
@@ -488,12 +478,12 @@ public sealed partial class ShellPage
         }
         else // У нас уже был выставлен какой-то профиль
         {
-            var nextProfileIndex = _profile.Length - 1 >= _config.Preset + 1 ? _config.Preset + 1 : 0;
+            var nextProfileIndex = _profile.Length - 1 >= SettingsService.Preset + 1 ? SettingsService.Preset + 1 : 0;
             if (_profile.Length > nextProfileIndex &&
                 _profile[nextProfileIndex].profilename !=
                 string.Empty) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
             {
-                _config.Preset = nextProfileIndex;
+                SettingsService.Preset = nextProfileIndex;
                 try
                 {
                     foreach (var element in ProfileSetComboBox.Items)
@@ -531,7 +521,7 @@ public sealed partial class ShellPage
             }
         }
 
-        ConfigSave();
+        SettingsService.SaveSettings(); 
         SelectedProfile = nextProfile;
         return nextProfile;
     }
@@ -539,14 +529,13 @@ public sealed partial class ShellPage
     private void MandarinSparseUnit()
     {
         int indexRequired;
-        var element = ProfileSetComboBox.SelectedItem as ComboBoxItem;
-        ConfigLoad();
+        var element = ProfileSetComboBox.SelectedItem as ComboBoxItem; 
         //Required index
         if (!element!.Name.Contains("PremadeSsA"))
         {
             indexRequired = ProfileSetComboBox.SelectedIndex - 1;
-            _config.Preset = ProfileSetComboBox.SelectedIndex - 1;
-            ConfigSave();
+            SettingsService.Preset = ProfileSetComboBox.SelectedIndex - 1;
+            SettingsService.SaveSettings(); 
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 var navigationService = App.GetService<INavigationService>();
@@ -561,75 +550,75 @@ public sealed partial class ShellPage
         {
             if (element.Name.Contains("Min"))
             {
-                _config.PremadeMinActivated = true;
-                _config.PremadeEcoActivated = false;
-                _config.PremadeBalanceActivated = false;
-                _config.PremadeSpeedActivated = false;
-                _config.PremadeMaxActivated = false;
-                _config.Preset = -1;
-                _config.RyzenADJline =
+                SettingsService.PremadeMinActivated = true;
+                SettingsService.PremadeEcoActivated = false;
+                SettingsService.PremadeBalanceActivated = false;
+                SettingsService.PremadeSpeedActivated = false;
+                SettingsService.PremadeMaxActivated = false;
+                SettingsService.Preset = -1;
+                SettingsService.RyzenADJline =
                     " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=64 --slow-limit=6000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
-                    _config.ReapplyOverclockTimer);
+                MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
+                    SettingsService.ReapplyOverclockTimer);
             }
 
             if (element.Name.Contains("Eco"))
             {
-                _config.PremadeMinActivated = false;
-                _config.PremadeEcoActivated = true;
-                _config.PremadeBalanceActivated = false;
-                _config.PremadeSpeedActivated = false;
-                _config.PremadeMaxActivated = false;
-                _config.Preset = -1;
-                _config.RyzenADJline =
+                SettingsService.PremadeMinActivated = false;
+                SettingsService.PremadeEcoActivated = true;
+                SettingsService.PremadeBalanceActivated = false;
+                SettingsService.PremadeSpeedActivated = false;
+                SettingsService.PremadeMaxActivated = false;
+                SettingsService.Preset = -1;
+                SettingsService.RyzenADJline =
                     " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=64 --slow-limit=16000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
-                    _config.ReapplyOverclockTimer);
+                MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
+                    SettingsService.ReapplyOverclockTimer);
             }
 
             if (element.Name.Contains("Bal"))
             {
-                _config.PremadeMinActivated = false;
-                _config.PremadeEcoActivated = false;
-                _config.PremadeBalanceActivated = true;
-                _config.PremadeSpeedActivated = false;
-                _config.PremadeMaxActivated = false;
-                _config.Preset = -1;
-                _config.RyzenADJline =
+                SettingsService.PremadeMinActivated = false;
+                SettingsService.PremadeEcoActivated = false;
+                SettingsService.PremadeBalanceActivated = true;
+                SettingsService.PremadeSpeedActivated = false;
+                SettingsService.PremadeMaxActivated = false;
+                SettingsService.Preset = -1;
+                SettingsService.RyzenADJline =
                     " --tctl-temp=75 --stapm-limit=18000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
-                    _config.ReapplyOverclockTimer);
+                MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
+                    SettingsService.ReapplyOverclockTimer);
             }
 
             if (element.Name.Contains("Spd"))
             {
-                _config.PremadeMinActivated = false;
-                _config.PremadeEcoActivated = false;
-                _config.PremadeBalanceActivated = false;
-                _config.PremadeSpeedActivated = true;
-                _config.PremadeMaxActivated = false;
-                _config.Preset = -1;
-                _config.RyzenADJline =
+                SettingsService.PremadeMinActivated = false;
+                SettingsService.PremadeEcoActivated = false;
+                SettingsService.PremadeBalanceActivated = false;
+                SettingsService.PremadeSpeedActivated = true;
+                SettingsService.PremadeMaxActivated = false;
+                SettingsService.Preset = -1;
+                SettingsService.RyzenADJline =
                     " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=64 --slow-limit=20000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
-                    _config.ReapplyOverclockTimer);
+                MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
+                    SettingsService.ReapplyOverclockTimer);
             }
 
             if (element.Name.Contains("Max"))
             {
-                _config.PremadeMinActivated = false;
-                _config.PremadeEcoActivated = false;
-                _config.PremadeBalanceActivated = false;
-                _config.PremadeSpeedActivated = false;
-                _config.PremadeMaxActivated = true;
-                _config.Preset = -1;
-                _config.RyzenADJline =
+                SettingsService.PremadeMinActivated = false;
+                SettingsService.PremadeEcoActivated = false;
+                SettingsService.PremadeBalanceActivated = false;
+                SettingsService.PremadeSpeedActivated = false;
+                SettingsService.PremadeMaxActivated = true;
+                SettingsService.Preset = -1;
+                SettingsService.RyzenADJline =
                     " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=64 --slow-limit=60000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
-                    _config.ReapplyOverclockTimer);
+                MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
+                    SettingsService.ReapplyOverclockTimer);
             }
 
-            ConfigSave();
+            SettingsService.SaveSettings(); 
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 var navigationService = App.GetService<INavigationService>();
@@ -923,10 +912,10 @@ public sealed partial class ShellPage
             adjline += " --pbo-scalar=" + _profile[indexRequired].advncd15value * 100;
         }
 
-        _config.RyzenADJline = adjline + " ";
-        ConfigSave();
-        MainWindow.Applyer.Apply(_config.RyzenADJline, false, _config.ReapplyOverclock,
-            _config.ReapplyOverclockTimer); //false - logging disabled 
+        SettingsService.RyzenADJline = adjline + " ";
+        SettingsService.SaveSettings(); 
+        MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
+            SettingsService.ReapplyOverclockTimer); //false - logging disabled 
         /*   if (profile[indexRequired].enablePstateEditor) { cpu.BtnPstateWrite_Click(); }*/
     }
 
@@ -1129,78 +1118,78 @@ public sealed partial class ShellPage
                             {
                                 {
                                     "Param_SMU_Func_Text/Text".GetLocalized(),
-                                    () => _profile[_config.Preset].smuFunctionsEnabl = false
+                                    () => _profile[SettingsService.Preset].smuFunctionsEnabl = false
                                 },
-                                { "Param_CPU_c2/Text".GetLocalized(), () => _profile[_config.Preset].cpu2 = false },
-                                { "Param_VRM_v2/Text".GetLocalized(), () => _profile[_config.Preset].vrm2 = false },
-                                { "Param_VRM_v1/Text".GetLocalized(), () => _profile[_config.Preset].vrm1 = false },
-                                { "Param_CPU_c1/Text".GetLocalized(), () => _profile[_config.Preset].cpu1 = false },
+                                { "Param_CPU_c2/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu2 = false },
+                                { "Param_VRM_v2/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm2 = false },
+                                { "Param_VRM_v1/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm1 = false },
+                                { "Param_CPU_c1/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu1 = false },
                                 {
-                                    "Param_ADV_a15/Text".GetLocalized(), () => _profile[_config.Preset].advncd15 = false
-                                },
-                                {
-                                    "Param_ADV_a11/Text".GetLocalized(), () => _profile[_config.Preset].advncd11 = false
+                                    "Param_ADV_a15/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd15 = false
                                 },
                                 {
-                                    "Param_ADV_a12/Text".GetLocalized(), () => _profile[_config.Preset].advncd12 = false
+                                    "Param_ADV_a11/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd11 = false
                                 },
-                                { "Param_CO_O1/Text".GetLocalized(), () => _profile[_config.Preset].coall = false },
-                                { "Param_CO_O2/Text".GetLocalized(), () => _profile[_config.Preset].cogfx = false },
+                                {
+                                    "Param_ADV_a12/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd12 = false
+                                },
+                                { "Param_CO_O1/Text".GetLocalized(), () => _profile[SettingsService.Preset].coall = false },
+                                { "Param_CO_O2/Text".GetLocalized(), () => _profile[SettingsService.Preset].cogfx = false },
                                 {
                                     "Param_CCD1_CO_Section/Text".GetLocalized(),
-                                    () => _profile[_config.Preset].coprefmode = 0
+                                    () => _profile[SettingsService.Preset].coprefmode = 0
                                 },
                                 {
                                     "Param_ADV_a14_E/Content".GetLocalized(),
-                                    () => _profile[_config.Preset].advncd14 = false
+                                    () => _profile[SettingsService.Preset].advncd14 = false
                                 },
-                                { "Param_CPU_c5/Text".GetLocalized(), () => _profile[_config.Preset].cpu5 = false },
-                                { "Param_CPU_c3/Text".GetLocalized(), () => _profile[_config.Preset].cpu3 = false },
-                                { "Param_CPU_c4/Text".GetLocalized(), () => _profile[_config.Preset].cpu4 = false },
-                                { "Param_CPU_c6/Text".GetLocalized(), () => _profile[_config.Preset].cpu6 = false },
-                                { "Param_CPU_c7/Text".GetLocalized(), () => _profile[_config.Preset].cpu7 = false },
-                                { "Param_ADV_a6/Text".GetLocalized(), () => _profile[_config.Preset].advncd6 = false },
-                                { "Param_VRM_v4/Text".GetLocalized(), () => _profile[_config.Preset].vrm4 = false },
-                                { "Param_VRM_v3/Text".GetLocalized(), () => _profile[_config.Preset].vrm3 = false },
-                                { "Param_ADV_a2/Text".GetLocalized(), () => _profile[_config.Preset].advncd2 = false },
-                                { "Param_ADV_a1/Text".GetLocalized(), () => _profile[_config.Preset].advncd1 = false },
-                                { "Param_ADV_a3/Text".GetLocalized(), () => _profile[_config.Preset].advncd3 = false },
-                                { "Param_VRM_v7/Text".GetLocalized(), () => _profile[_config.Preset].vrm7 = false },
-                                { "Param_ADV_a4/Text".GetLocalized(), () => _profile[_config.Preset].advncd4 = false },
-                                { "Param_ADV_a5/Text".GetLocalized(), () => _profile[_config.Preset].advncd5 = false },
+                                { "Param_CPU_c5/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu5 = false },
+                                { "Param_CPU_c3/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu3 = false },
+                                { "Param_CPU_c4/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu4 = false },
+                                { "Param_CPU_c6/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu6 = false },
+                                { "Param_CPU_c7/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu7 = false },
+                                { "Param_ADV_a6/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd6 = false },
+                                { "Param_VRM_v4/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm4 = false },
+                                { "Param_VRM_v3/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm3 = false },
+                                { "Param_ADV_a2/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd2 = false },
+                                { "Param_ADV_a1/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd1 = false },
+                                { "Param_ADV_a3/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd3 = false },
+                                { "Param_VRM_v7/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm7 = false },
+                                { "Param_ADV_a4/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd4 = false },
+                                { "Param_ADV_a5/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd5 = false },
                                 {
-                                    "Param_ADV_a10/Text".GetLocalized(), () => _profile[_config.Preset].advncd10 = false
+                                    "Param_ADV_a10/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd10 = false
                                 },
                                 {
                                     "Param_ADV_a13_E/Content".GetLocalized(),
-                                    () => _profile[_config.Preset].advncd13 = false
+                                    () => _profile[SettingsService.Preset].advncd13 = false
                                 },
                                 {
                                     "Param_ADV_a13_U/Content".GetLocalized(),
-                                    () => _profile[_config.Preset].advncd13 = false
+                                    () => _profile[SettingsService.Preset].advncd13 = false
                                 },
-                                { "Param_ADV_a8/Text".GetLocalized(), () => _profile[_config.Preset].advncd8 = false },
-                                { "Param_ADV_a7/Text".GetLocalized(), () => _profile[_config.Preset].advncd7 = false },
-                                { "Param_VRM_v5/Text".GetLocalized(), () => _profile[_config.Preset].vrm5 = false },
-                                { "Param_VRM_v6/Text".GetLocalized(), () => _profile[_config.Preset].vrm6 = false },
-                                { "Param_ADV_a9/Text".GetLocalized(), () => _profile[_config.Preset].advncd9 = false },
-                                { "Param_GPU_g12/Text".GetLocalized(), () => _profile[_config.Preset].gpu12 = false },
-                                { "Param_GPU_g11/Text".GetLocalized(), () => _profile[_config.Preset].gpu11 = false },
-                                { "Param_GPU_g10/Text".GetLocalized(), () => _profile[_config.Preset].gpu10 = false },
-                                { "Param_GPU_g9/Text".GetLocalized(), () => _profile[_config.Preset].gpu9 = false },
-                                { "Param_GPU_g2/Text".GetLocalized(), () => _profile[_config.Preset].gpu2 = false },
-                                { "Param_GPU_g1/Text".GetLocalized(), () => _profile[_config.Preset].gpu1 = false },
-                                { "Param_GPU_g4/Text".GetLocalized(), () => _profile[_config.Preset].gpu4 = false },
-                                { "Param_GPU_g3/Text".GetLocalized(), () => _profile[_config.Preset].gpu3 = false },
-                                { "Param_GPU_g6/Text".GetLocalized(), () => _profile[_config.Preset].gpu6 = false },
-                                { "Param_GPU_g5/Text".GetLocalized(), () => _profile[_config.Preset].gpu5 = false },
-                                { "Param_GPU_g8/Text".GetLocalized(), () => _profile[_config.Preset].gpu8 = false },
-                                { "Param_GPU_g7/Text".GetLocalized(), () => _profile[_config.Preset].gpu7 = false },
-                                { "Param_VRM_v8/Text".GetLocalized(), () => _profile[_config.Preset].vrm8 = false },
-                                { "Param_GPU_g13/Text".GetLocalized(), () => _profile[_config.Preset].vrm9 = false },
-                                { "Param_GPU_g14/Text".GetLocalized(), () => _profile[_config.Preset].vrm9 = false },
-                                { "Param_GPU_g15/Text".GetLocalized(), () => _profile[_config.Preset].gpu15 = false },
-                                { "Param_GPU_g16/Text".GetLocalized(), () => _profile[_config.Preset].gpu16 = false },
+                                { "Param_ADV_a8/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd8 = false },
+                                { "Param_ADV_a7/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd7 = false },
+                                { "Param_VRM_v5/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm5 = false },
+                                { "Param_VRM_v6/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm6 = false },
+                                { "Param_ADV_a9/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd9 = false },
+                                { "Param_GPU_g12/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu12 = false },
+                                { "Param_GPU_g11/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu11 = false },
+                                { "Param_GPU_g10/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu10 = false },
+                                { "Param_GPU_g9/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu9 = false },
+                                { "Param_GPU_g2/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu2 = false },
+                                { "Param_GPU_g1/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu1 = false },
+                                { "Param_GPU_g4/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu4 = false },
+                                { "Param_GPU_g3/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu3 = false },
+                                { "Param_GPU_g6/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu6 = false },
+                                { "Param_GPU_g5/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu5 = false },
+                                { "Param_GPU_g8/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu8 = false },
+                                { "Param_GPU_g7/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu7 = false },
+                                { "Param_VRM_v8/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm8 = false },
+                                { "Param_GPU_g13/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm9 = false },
+                                { "Param_GPU_g14/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm9 = false },
+                                { "Param_GPU_g15/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu15 = false },
+                                { "Param_GPU_g16/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu16 = false },
                             };
                             var loggingList = string.Empty;
                             var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
@@ -1400,16 +1389,15 @@ public sealed partial class ShellPage
         ThemeLoad();
         try
         {
-            ConfigLoad();
-            ThemeOpacity.Opacity = _themer.Themes[_config.ThemeType].ThemeOpacity;
-            ThemeMaskOpacity.Opacity = _themer.Themes[_config.ThemeType].ThemeMaskOpacity;
+            ThemeOpacity.Opacity = _themer.Themes[SettingsService.ThemeType].ThemeOpacity;
+            ThemeMaskOpacity.Opacity = _themer.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
             var themeMobil = App.GetService<SettingsViewModel>();
-            var themeLight = _themer.Themes[_config.ThemeType].ThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+            var themeLight = _themer.Themes[SettingsService.ThemeType].ThemeLight ? ElementTheme.Light : ElementTheme.Dark;
             themeMobil.SwitchThemeCommand.Execute(themeLight);
-            if (_config.ThemeType > 2)
+            if (SettingsService.ThemeType > 2)
             {
                 ThemeBackground.ImageSource =
-                    new BitmapImage(new Uri(_themer.Themes[_config.ThemeType].ThemeBackground));
+                    new BitmapImage(new Uri(_themer.Themes[SettingsService.ThemeType].ThemeBackground));
             }
         }
         catch
@@ -1421,7 +1409,7 @@ public sealed partial class ShellPage
                 _notify.Notifies.Add(new Notify
                 {
                     Title =
-                        "ThemeError".GetLocalized() + "\"" + $"{_themer.Themes[_config.ThemeType].ThemeName}" + "\"",
+                        "ThemeError".GetLocalized() + "\"" + $"{_themer.Themes[SettingsService.ThemeType].ThemeName}" + "\"",
                     Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error
                 });
             }
@@ -1429,46 +1417,16 @@ public sealed partial class ShellPage
             {
                 _notify.Notifies.Add(new Notify
                 {
-                    Title = "ThemeError".GetLocalized() + "\"" + ">> " + _config.ThemeType + "\"",
+                    Title = "ThemeError".GetLocalized() + "\"" + ">> " + SettingsService.ThemeType + "\"",
                     Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error
                 });
             }
 
             NotifySave();
-            _config.ThemeType = 0;
-            ConfigSave();
+            SettingsService.ThemeType = 0;
+            SettingsService.SaveSettings(); 
         }
-    }
-
-    private void ConfigSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json",
-                JsonConvert.SerializeObject(_config, Formatting.Indented));
-        }
-        catch (Exception ex)
-        {
-            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
-        }
-    }
-
-    private void ConfigLoad()
-    {
-        try
-        {
-            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json"))!;
-        }
-        catch
-        {
-            JsonRepair('c');
-        }
-    }
-
+    } 
     private void ProfileSave()
     {
         try
@@ -1607,34 +1565,7 @@ public sealed partial class ShellPage
                 }
 
                 break;
-            }
-            case 'c':
-            {
-                _config = new Config();
-                try
-                {
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json",
-                        JsonConvert.SerializeObject(_config));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\config.json");
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json",
-                        JsonConvert.SerializeObject(_config));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-
-                break;
-            }
+            } 
             case 'p':
             {
                 _profile = [];
@@ -1737,7 +1668,7 @@ public sealed partial class ShellPage
                         MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
                             "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
                             InfoBarSeverity.Informational);
-                        MainWindow.Applyer.ApplyWithoutADJLine(false);
+                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
                         break;
                     }
                     // Переключить между готовыми пресетами
@@ -1747,12 +1678,11 @@ public sealed partial class ShellPage
                         MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
                             "Shell_ProfileChanging_Premade".GetLocalized() + $"{nextPremadeProfile}!",
                             InfoBarSeverity.Informational);
-                        MainWindow.Applyer.ApplyWithoutADJLine(false);
+                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
                         break;
                     // Переключить состояние RTSS
-                    case VirtualKey.R:
-                        ConfigLoad();
-                        if (_config.RTSSMetricsEnabled)
+                    case VirtualKey.R: 
+                        if (SettingsService.RTSSMetricsEnabled)
                         {
                             var iconGrid = new Grid
                             {
@@ -1779,8 +1709,8 @@ public sealed partial class ShellPage
                             ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS " + "Cooler_Service_Disabled/Content".GetLocalized(), null, iconGrid);
                             var navigationService = App.GetService<INavigationService>();
                             navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
-                            _config.RTSSMetricsEnabled = false;
-                            ConfigSave();
+                            SettingsService.RTSSMetricsEnabled = false;
+                            SettingsService.SaveSettings(); 
                         }
                         else
                         {
@@ -1798,8 +1728,8 @@ public sealed partial class ShellPage
                                 }
                             };
                             ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS " + "Cooler_Service_Enabled/Content".GetLocalized(), null, iconGrid);
-                            _config.RTSSMetricsEnabled = true;
-                            ConfigSave();
+                            SettingsService.RTSSMetricsEnabled = true;
+                            SettingsService.SaveSettings(); 
                             var navigationService = App.GetService<INavigationService>();
                             navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!, null, true);
                         }
@@ -2011,8 +1941,8 @@ public sealed partial class ShellPage
             return;
         }
 
-        ConfigLoad();
-        ProfileSetButton.IsEnabled = ProfileSetComboBox.SelectedIndex != _config.Preset + 1;
+        SettingsService.SaveSettings(); 
+        ProfileSetButton.IsEnabled = ProfileSetComboBox.SelectedIndex != SettingsService.Preset + 1;
     }
 
     private void ToggleNotificationPanelBtn_Click(object sender, RoutedEventArgs e)
