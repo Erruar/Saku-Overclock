@@ -1,7 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Newtonsoft.Json;
-using Saku_Overclock.Contracts.Services;
+using Microsoft.UI.Xaml.Controls.Primitives; 
+using Saku_Overclock.Contracts.Services; 
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 
@@ -12,11 +11,11 @@ public sealed partial class AsusКулерPage
     private static int _fanCount = -1;
     private static bool _unavailableFlag;
     private static int _setFanIndex = -1;
-    private static int _availableCpuCores;
-    private Config _config = new();
+    private static int _availableCpuCores; 
     private bool _isPageLoaded;
     private IntPtr _ry = IntPtr.Zero;
     private DispatcherTimer? _tempUpdateTimer;
+    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
 
     public AsusКулерPage()
     {
@@ -25,7 +24,7 @@ public sealed partial class AsusКулерPage
         Unloaded += AsusКулерPage_Unloaded;
     }
 
-    #region JSON and Initialization
+    #region Initialization
 
     private void AsusКулерPage_Unloaded(object sender, RoutedEventArgs e)
     {
@@ -36,10 +35,9 @@ public sealed partial class AsusКулерPage
 
     private void AsusКулерPage_Loaded(object sender, RoutedEventArgs e)
     {
-        AsusWinIOWrapper.Init_WinIo();
-        ConfigLoad();
-        Fan1.Value = _config.AsusModeFan1UserFanSpeedRPM;
-        switch (_config.AsusModeSelectedMode)
+        AsusWinIOWrapper.Init_WinIo(); 
+        Fan1.Value = SettingsService.AsusModeFan1UserFanSpeedRPM;
+        switch (SettingsService.AsusModeSelectedMode)
         {
             case -1:
                 AsusFans_ManualToggle.IsChecked = false;
@@ -180,36 +178,7 @@ public sealed partial class AsusКулерPage
             UnavailableLabel.IsOpen = true;
             _unavailableFlag = true;
         }
-    }
-
-    private void ConfigSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json",
-                JsonConvert.SerializeObject(_config, Formatting.Indented));
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private void ConfigLoad()
-    {
-        try
-        {
-            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
-        }
-        catch
-        {
-            // ignored
-        }
-    }
+    } 
 
     #endregion
 
@@ -227,11 +196,10 @@ public sealed partial class AsusКулерPage
         {
             return;
         }
-
-        ConfigLoad();
-        _config.AsusModeSelectedMode = 0;
-        _config.AsusModeFan1UserFanSpeedRPM = Fan1.Value;
-        ConfigSave();
+ 
+        SettingsService.AsusModeSelectedMode = 0;
+        SettingsService.AsusModeFan1UserFanSpeedRPM = Fan1.Value;
+        SettingsService.SaveSettings();
         SetFanSpeeds((int)Fan1.Value);
     }
 
@@ -253,52 +221,45 @@ public sealed partial class AsusКулерPage
             AsusWinIOWrapper.Init_WinIo();
             switch (toggleButton.Name)
             {
-                case "AsusFans_ManualToggle":
-                    ConfigLoad();
-                    _config.AsusModeSelectedMode = 0;
-                    _config.AsusModeFan1UserFanSpeedRPM = Fan1.Value;
-                    ConfigSave();
+                case "AsusFans_ManualToggle": 
+                    SettingsService.AsusModeSelectedMode = 0;
+                    SettingsService.AsusModeFan1UserFanSpeedRPM = Fan1.Value; 
                     AsusFans_BalanceToggle.IsChecked = false;
                     AsusFans_TurboToggle.IsChecked = false;
                     AsusFans_QuietToggle.IsChecked = false;
                     SetFanSpeeds((int)Fan1.Value);
                     break;
-                case "AsusFans_TurboToggle":
-                    ConfigLoad();
-                    _config.AsusModeSelectedMode = 1;
-                    ConfigSave();
+                case "AsusFans_TurboToggle": 
+                    SettingsService.AsusModeSelectedMode = 1; 
                     AsusFans_BalanceToggle.IsChecked = false;
                     AsusFans_ManualToggle.IsChecked = false;
                     AsusFans_QuietToggle.IsChecked = false;
                     SetFanSpeeds(90);
                     break;
-                case "AsusFans_BalanceToggle":
-                    ConfigLoad();
-                    _config.AsusModeSelectedMode = 2;
-                    ConfigSave();
+                case "AsusFans_BalanceToggle": 
+                    SettingsService.AsusModeSelectedMode = 2; 
                     AsusFans_ManualToggle.IsChecked = false;
                     AsusFans_TurboToggle.IsChecked = false;
                     AsusFans_QuietToggle.IsChecked = false;
                     SetFanSpeeds(57);
                     break;
-                case "AsusFans_QuietToggle":
-                    ConfigLoad();
-                    _config.AsusModeSelectedMode = 3;
-                    ConfigSave();
+                case "AsusFans_QuietToggle": 
+                    SettingsService.AsusModeSelectedMode = 3; 
                     AsusFans_BalanceToggle.IsChecked = false;
                     AsusFans_TurboToggle.IsChecked = false;
                     AsusFans_ManualToggle.IsChecked = false;
                     SetFanSpeeds(37);
                     break;
             }
+            SettingsService.SaveSettings();
+
         }
 
         if (AsusFans_BalanceToggle.IsChecked == false && AsusFans_ManualToggle.IsChecked == false &&
             AsusFans_QuietToggle.IsChecked == false && AsusFans_TurboToggle.IsChecked == false)
-        {
-            ConfigLoad();
-            _config.AsusModeSelectedMode = -1;
-            ConfigSave();
+        { 
+            SettingsService.AsusModeSelectedMode = -1;
+            SettingsService.SaveSettings(); 
             SetFanSpeeds(0);
         }
     }
