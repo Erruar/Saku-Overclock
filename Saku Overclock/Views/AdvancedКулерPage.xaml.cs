@@ -14,10 +14,9 @@ using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Shapes;
-using Newtonsoft.Json;
+using Microsoft.UI.Xaml.Shapes; 
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers;
+using Saku_Overclock.Helpers; 
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
@@ -30,57 +29,23 @@ namespace Saku_Overclock.Views;
 
 public sealed partial class AdvancedКулерPage
 {
-    private Config _config = new(); // Инициализируем конфиг
     private Point _cursorPosition; // Точка, для отображения Flyout, чтобы его точно расположить при нажатии на кнопку +
+    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
 
     public AdvancedКулерPage()
     {
         App.GetService<AdvancedКулерViewModel>(); // Инициализация ViewModel
         InitializeComponent();
         Load_example(); // Загрузка примера из файла
-        ConfigLoad(); // Загрузить конфиг
-        _config.NBFCFlagConsoleCheckSpeedRunning =
+        SettingsService.NBFCFlagConsoleCheckSpeedRunning =
             false; // Старые флаги для выключения автообновления информации в фоне программы
-        _config.FlagRyzenADJConsoleTemperatureCheckRunning = false;
-        ConfigSave(); // Сохранить конфиг
+        SettingsService.FlagRyzenADJConsoleTemperatureCheckRunning = false;
+        SettingsService.SaveSettings();
         LoadFanCurvesFromConfig(); // Загрузить кривые
         Init_Configs(); // Инициализация конфигов NBFC
     }
 
-    #region JSON and Initialization
-
-    // Воиды с JSON и инициализацией страницы
-    private void ConfigSave() // Сохранить конфиг
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json",
-                JsonConvert.SerializeObject(_config));
-        }
-        catch
-        {
-            // Действие не требуется
-        }
-    }
-
-    private void ConfigLoad() // Загрузить конфиг
-    {
-        try
-        {
-            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(
-                          Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                          "\\SakuOverclock\\config.json")) ??
-                      new Config();
-        }
-        catch
-        {
-            ПараметрыPage.JsonRepair('c'); // Пофиксить конфиг
-        }
-    }
-
+    #region Initialization
     private void Init_Configs() // Инициализация конфигов NBFC
     {
         // Найти XML конфиги
@@ -274,10 +239,9 @@ public sealed partial class AdvancedКулерPage
             var rowCounter = 1; // Счетчик строк в Grid
             try
             {
-                ConfigLoad();
                 var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" +
-                                     _config.NBFCConfigXMLName + ".xml";
-                Config_Name1.Text = _config.NBFCConfigXMLName;
+                                     SettingsService.NBFCConfigXMLName + ".xml";
+                Config_Name1.Text = SettingsService.NBFCConfigXMLName;
                 if (File.Exists(configFilePath))
                 {
                     // Загрузка XML-документа из файла
@@ -896,8 +860,7 @@ public sealed partial class AdvancedКулерPage
         var rowCounter = 0; // Счетчик строк в Grid
         try
         {
-            ConfigLoad();
-            var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" + _config.NBFCConfigXMLName +
+            var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" + SettingsService.NBFCConfigXMLName +
                                  ".xml";
             if (File.Exists(configFilePath))
             {
