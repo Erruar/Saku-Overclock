@@ -27,14 +27,14 @@ public class FileService : IFileService
             Directory.CreateDirectory(folderPath);
         }
 
-        var fileContent = JsonConvert.SerializeObject(content);
+        var fileContent = JsonConvert.SerializeObject(content, Formatting.Indented);
         try
         {
             File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
         }
         catch
         {
-            //Can't change theme
+            //Can't save file
         }
     }
 
