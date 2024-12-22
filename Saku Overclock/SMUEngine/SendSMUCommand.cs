@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
+using Saku_Overclock.Services;
 using Saku_Overclock.Views;
 using ZenStates.Core;
 
@@ -23,7 +24,7 @@ cancelrange: флаг для отмены диапазона команд.
 
 OC_Detect: пытается определить, поддерживает ли процессор возможность разгона.
 Init_OC_Mode: запускает процесс установки режима разгона.
-SmuSettingsSave, SmuSettingsLoad, ProfileLoad, ConfigLoad, ConfigSave: методы для сохранения и загрузки настроек из JSON-файлов.
+SmuSettingsSave, SmuSettingsLoad, ProfileLoad, SettingsServiceLoad, SettingsServiceSave: методы для сохранения и загрузки настроек из JSON-файлов.
 Play_Invernate_QuickSMU, ApplySettings, ApplyThis, SendRange: устаревшие методы, отвечающие за отправку команд SMU на процессор.
 JsonRepair: метод для восстановления JSON-файлов в случае их повреждения.
 CancelRange: устанавливает флаг отмены диапазона команд.
@@ -76,11 +77,11 @@ internal class SendSmuCommand
     private bool _saveinfo;
     private Cpu? _cpu;
     public static Cpu.CodeName Codename;
+    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
     private static string _cpuCodenameString = string.Empty;
     private Smusettings _smusettings = new();
-    private Config _config = new();
     private static JsonContainers.Notifications _notify = new();
-    private readonly ZenStates.Core.Mailbox _testMailbox = new();
+    private readonly Mailbox _testMailbox = new();
     private Profile[] _profile = new Profile[1];
     private bool _cancelrange;
     private bool _dangersettingsapplied;
@@ -108,8 +109,7 @@ internal class SendSmuCommand
 
         try
         {
-            ConfigLoad();
-            SafeReapply = _config.ReapplySafeOverclock;
+            SafeReapply = SettingsService.ReapplySafeOverclock;
         }
         catch (Exception ex)
         {
@@ -144,22 +144,7 @@ internal class SendSmuCommand
             JsonRepair('p');
             TraceIt_TraceError(ex.ToString());
         }
-    }
-
-    private void ConfigLoad()
-    {
-        try
-        {
-            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json")) ?? new Config();
-        }
-        catch (Exception ex)
-        {
-            JsonRepair('c');
-            TraceIt_TraceError(ex.ToString());
-        }
-    }
-
+    } 
     private static async void NotifyLoad()
     {
         try
@@ -245,34 +230,7 @@ internal class SendSmuCommand
     private void JsonRepair(char file)
     {
         switch (file)
-        {
-            case 'c':
-            {
-                _config = new Config();
-                try
-                {
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json",
-                        JsonConvert.SerializeObject(_config));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\config.json");
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json",
-                        JsonConvert.SerializeObject(_config));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-
-                break;
-            }
+        { 
             case 's':
             {
                 _smusettings = new Smusettings();
@@ -348,15 +306,14 @@ internal class SendSmuCommand
     {
         SmuSettingsLoad();
         ProfileLoad();
-        ConfigLoad();
         if (_smusettings.QuickSmuCommands == null)
         {
             return;
         }
 
-        if (_config.Preset != -1)
+        if (SettingsService.Preset != -1)
         {
-            if (_profile[_config.Preset].smuEnabled == false)
+            if (_profile[SettingsService.Preset].smuEnabled == false)
             {
                 return;
             }
@@ -385,7 +342,7 @@ internal class SendSmuCommand
     {
         try
         {
-            ZenStates.Core.Mailbox quickMailbox1 = new();
+            Mailbox quickMailbox1 = new();
             SmuSettingsLoad();
             var args = Utils.MakeCmdArgs();
             var userArgs = _smusettings.QuickSmuCommands?[commandIndex].Argument.Trim().Split(',');
@@ -958,7 +915,7 @@ internal class SendSmuCommand
                         }
                     }
 
-                    // ConfigLoad(); config.RangeApplied = true; ConfigSave(); 
+                    // SettingsServiceLoad(); SettingsService.RangeApplied = true; SettingsServiceSave(); 
                     if (log)
                     {
                         sw.WriteLine(@"//------OK------\\");
