@@ -7,16 +7,21 @@ using Saku_Overclock.Views;
 namespace Saku_Overclock.Services;
 public class ActivationService : IActivationService
 {
+    private UIElement? _shell;
     private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
     private readonly IThemeSelectorService _themeSelectorService;
-    private UIElement? _shell = null;
+    private readonly IAppSettingsService _appSettingsService;
 
-    public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IThemeSelectorService themeSelectorService)
+    public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
+        IEnumerable<IActivationHandler> activationHandlers,
+        IThemeSelectorService themeSelectorService,
+        IAppSettingsService appSettingsService)
     {
         _defaultHandler = defaultHandler;
         _activationHandlers = activationHandlers;
         _themeSelectorService = themeSelectorService;
+        _appSettingsService = appSettingsService;
     }
 
     public async Task ActivateAsync(object activationArgs)
@@ -65,6 +70,7 @@ public class ActivationService : IActivationService
     private async Task StartupAsync()
     {
         await _themeSelectorService.SetRequestedThemeAsync();
+        _appSettingsService.LoadSettings();
         await Task.CompletedTask;
     }
 }
