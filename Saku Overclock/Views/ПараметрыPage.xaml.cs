@@ -15,7 +15,7 @@ using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
-using Windows.UI;
+using Windows.UI; 
 using ZenStates.Core;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using CheckBox = Microsoft.UI.Xaml.Controls.CheckBox;
@@ -29,12 +29,12 @@ namespace Saku_Overclock.Views;
 public sealed partial class ПараметрыPage
 {
     private FontIcon? _smuSymbol1; // тоже самое что и SMUSymbol
-    private List<SmuAddressSet>? _matches; // Совпадения адресов SMU
-    private static Config _config = new(); // Основной конфиг приложения
+    private List<SmuAddressSet>? _matches; // Совпадения адресов SMU 
     private static Smusettings _smusettings = new(); // Загрузка настроек быстрых команд SMU
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
     private static JsonContainers.Notifications _notify = new(); // Уведомления приложения
     private int _indexprofile; // Выбранный профиль
+    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>(); 
 
     private string
         _smuSymbol =
@@ -64,13 +64,12 @@ public sealed partial class ПараметрыPage
     public ПараметрыPage()
     {
         App.GetService<ПараметрыViewModel>();
-        InitializeComponent();
-        ConfigLoad();
+        InitializeComponent(); 
         ProfileLoad();
-        _indexprofile = _config.Preset;
-        _config.NBFCFlagConsoleCheckSpeedRunning = false;
-        _config.FlagRyzenADJConsoleTemperatureCheckRunning = false;
-        ConfigSave();
+        _indexprofile = SettingsService.Preset;
+        SettingsService.NBFCFlagConsoleCheckSpeedRunning = false;
+        SettingsService.FlagRyzenADJConsoleTemperatureCheckRunning = false;
+        SettingsService.SaveSettings();
         try
         {
             _cpu ??= CpuSingleton.GetInstance();
@@ -102,10 +101,9 @@ public sealed partial class ПараметрыPage
             {
                 TraceIt_TraceError(ex.ToString());
                 try
-                {
-                    ConfigLoad();
-                    _config.Preset = -1;
-                    ConfigSave();
+                { 
+                    SettingsService.Preset = -1;
+                    SettingsService.SaveSettings();
                     _indexprofile = -1;
                     SlidersInit();
                 }
@@ -122,37 +120,7 @@ public sealed partial class ПараметрыPage
             TraceIt_TraceError(exception.ToString());
         }
     }
-
-    private static void ConfigSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json",
-                JsonConvert.SerializeObject(_config, Formatting.Indented));
-        }
-        catch (Exception ex)
-        {
-            TraceIt_TraceError(ex.ToString());
-        }
-    }
-
-    private static void ConfigLoad()
-    {
-        try
-        {
-            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json"))!;
-        }
-        catch (Exception ex)
-        {
-            TraceIt_TraceError(ex.ToString());
-            JsonRepair('c');
-        }
-    }
-
+ 
     private static void NotifySave()
     {
         try
@@ -274,32 +242,7 @@ public sealed partial class ПараметрыPage
     public static void JsonRepair(char file)
     {
         switch (file)
-        {
-            case 'c':
-                _config = new Config();
-                try
-                {
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json",
-                        JsonConvert.SerializeObject(_config));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\config.json");
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\config.json",
-                        JsonConvert.SerializeObject(_config));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-
-                break;
+        { 
             case 's':
                 _smusettings = new Smusettings();
                 try
@@ -388,8 +331,7 @@ public sealed partial class ПараметрыPage
         }
 
         _waitforload = true;
-        ProfileLoad();
-        ConfigLoad();
+        ProfileLoad(); 
         ProfileCOM.Items.Clear();
         ProfileCOM.Items.Add(new ComboBoxItem
         {
@@ -408,21 +350,21 @@ public sealed partial class ПараметрыPage
             }
         }
 
-        if (_config.Preset > _profile.Length)
+        if (SettingsService.Preset > _profile.Length)
         {
-            _config.Preset = 0;
-            ConfigSave();
+            SettingsService.Preset = 0;
+            SettingsService.SaveSettings();
         }
         else
         {
-            if (_config.Preset == -1)
+            if (SettingsService.Preset == -1)
             {
                 _indexprofile = 0;
                 ProfileCOM.SelectedIndex = 0;
             }
             else
             {
-                _indexprofile = _config.Preset;
+                _indexprofile = SettingsService.Preset;
                 ProfileCOM.SelectedIndex = _indexprofile + 1;
             }
         }
@@ -744,9 +686,8 @@ public sealed partial class ПараметрыPage
                 }
             }
 
-            _waitforload = true;
-            ConfigLoad();
-            if (_config.Preset == -1 || index == -1) //Load from unsaved
+            _waitforload = true; 
+            if (SettingsService.Preset == -1 || index == -1) //Load from unsaved
             {
                 MainScroll.IsEnabled = false;
                 ActionButton_Apply.IsEnabled = false;
@@ -1143,7 +1084,7 @@ public sealed partial class ПараметрыPage
             }
             catch (Exception ex)
             {
-                if (_config.Preset != -1)
+                if (SettingsService.Preset != -1)
                 {
                     TraceIt_TraceError(ex.ToString());
                 }
@@ -2402,8 +2343,7 @@ public sealed partial class ПараметрыPage
     private async void ProfileCOM_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         try
-        {
-            ConfigLoad();
+        { 
             while (_isLoaded == false || _waitforload)
             {
                 await Task.Delay(100);
@@ -2411,8 +2351,8 @@ public sealed partial class ПараметрыPage
 
             if (ProfileCOM.SelectedIndex != -1)
             {
-                _config.Preset = ProfileCOM.SelectedIndex - 1;
-                ConfigSave();
+                SettingsService.Preset = ProfileCOM.SelectedIndex - 1;
+                SettingsService.SaveSettings();
             }
 
             _indexprofile = ProfileCOM.SelectedIndex - 1;
@@ -5108,15 +5048,14 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=0,1024";
                 }
             }
-
-            ConfigLoad();
-            _config.RyzenADJline = _adjline + " ";
+ 
+            SettingsService.RyzenADJline = _adjline + " ";
             _adjline = "";
             ApplyInfo = "";
-            ConfigSave();
+            SettingsService.SaveSettings();
             SendSmuCommand.Codename = _cpu!.info.codeName;
-            MainWindow.Applyer.Apply(_config.RyzenADJline, true, _config.ReapplyOverclock,
-                _config.ReapplyOverclockTimer);
+            MainWindow.Applyer.Apply(SettingsService.RyzenADJline, true, SettingsService.ReapplyOverclock,
+                SettingsService.ReapplyOverclockTimer);
             if (EnablePstates.IsOn)
             {
                 BtnPstateWrite_Click();
@@ -5149,7 +5088,7 @@ public sealed partial class ПараметрыPage
             // ReSharper disable once HeuristicUnreachableCode
             {
                 Apply_tooltip.Title = "Apply_Success".GetLocalized();
-                Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + _config.RyzenADJline;
+                Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + SettingsService.RyzenADJline;
             }
 #pragma warning restore CS0162 // Unreachable code detected
             Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
@@ -5193,12 +5132,11 @@ public sealed partial class ПараметрыPage
         try
         {
             if (SaveProfileN.Text != "")
-            {
-                ConfigLoad();
+            { 
                 ProfileLoad();
                 try
                 {
-                    _config.Preset += 1;
+                    SettingsService.Preset += 1;
                     _indexprofile += 1;
                     _waitforload = true;
                     ProfileCOM.Items.Add(SaveProfileN.Text);
@@ -5254,7 +5192,7 @@ public sealed partial class ПараметрыPage
                 Add_tooltip_Error.IsOpen = false;
             }
 
-            ConfigSave();
+            SettingsService.SaveSettings();
             ProfileSave();
         }
         catch (Exception exception)
@@ -5781,19 +5719,18 @@ public sealed partial class ПараметрыPage
     private async void BtnPstateWrite_Click()
     {
         try
-        {
-            ConfigLoad();
-            _profile[_config.Preset].did0 = DID_0.Value;
-            _profile[_config.Preset].did1 = DID_1.Value;
-            _profile[_config.Preset].did2 = DID_2.Value;
-            _profile[_config.Preset].fid0 = FID_0.Value;
-            _profile[_config.Preset].fid1 = FID_1.Value;
-            _profile[_config.Preset].fid2 = FID_2.Value;
-            _profile[_config.Preset].vid0 = VID_0.Value;
-            _profile[_config.Preset].vid1 = VID_1.Value;
-            _profile[_config.Preset].vid2 = VID_2.Value;
+        { 
+            _profile[SettingsService.Preset].did0 = DID_0.Value;
+            _profile[SettingsService.Preset].did1 = DID_1.Value;
+            _profile[SettingsService.Preset].did2 = DID_2.Value;
+            _profile[SettingsService.Preset].fid0 = FID_0.Value;
+            _profile[SettingsService.Preset].fid1 = FID_1.Value;
+            _profile[SettingsService.Preset].fid2 = FID_2.Value;
+            _profile[SettingsService.Preset].vid0 = VID_0.Value;
+            _profile[SettingsService.Preset].vid1 = VID_1.Value;
+            _profile[SettingsService.Preset].vid2 = VID_2.Value;
             ProfileSave();
-            if (_profile[_config.Preset].autoPstate)
+            if (_profile[SettingsService.Preset].autoPstate)
             {
                 if (Without_P0.IsOn)
                 {
@@ -5893,18 +5830,17 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            var cpu = CpuSingleton.GetInstance();
-            ConfigLoad();
+            var cpu = CpuSingleton.GetInstance(); 
             ProfileLoad();
-            PstatesDid[0] = _profile[_config.Preset].did0;
-            PstatesDid[1] = _profile[_config.Preset].did1;
-            PstatesDid[2] = _profile[_config.Preset].did2;
-            PstatesFid[0] = _profile[_config.Preset].fid0;
-            PstatesFid[1] = _profile[_config.Preset].fid1;
-            PstatesFid[2] = _profile[_config.Preset].fid2;
-            PstatesVid[0] = _profile[_config.Preset].vid0;
-            PstatesVid[1] = _profile[_config.Preset].vid1;
-            PstatesVid[2] = _profile[_config.Preset].vid2;
+            PstatesDid[0] = _profile[SettingsService.Preset].did0;
+            PstatesDid[1] = _profile[SettingsService.Preset].did1;
+            PstatesDid[2] = _profile[SettingsService.Preset].did2;
+            PstatesFid[0] = _profile[SettingsService.Preset].fid0;
+            PstatesFid[1] = _profile[SettingsService.Preset].fid1;
+            PstatesFid[2] = _profile[SettingsService.Preset].fid2;
+            PstatesVid[0] = _profile[SettingsService.Preset].vid0;
+            PstatesVid[1] = _profile[SettingsService.Preset].vid1;
+            PstatesVid[2] = _profile[SettingsService.Preset].vid2;
             for (var p = 0; p < 3; p++)
             {
                 if (PstatesFid[p] == 0 || PstatesDid[p] == 0 || PstatesVid[p] == 0)
