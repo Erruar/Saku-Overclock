@@ -1,41 +1,34 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
-using CommunityToolkit.Mvvm.Input;
 using H.NotifyIcon;
-using H.NotifyIcon.Core;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
-using Windows.UI.ViewManagement;
+using Windows.UI.ViewManagement; 
 
 namespace Saku_Overclock;
 
-public sealed partial class MainWindow : WindowEx
+public sealed partial class MainWindow
 {
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
-    private readonly UISettings settings;
-    private Config config = new();
-    private static TaskbarIcon? ni;
-
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue;
+    private readonly UISettings _settings; 
+    private static TaskbarIcon? _ni;
+    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
     public MainWindow()
     {
         InitializeComponent();
-        WindowStateChanged += (sender, e) =>
+        WindowStateChanged += (_, _) =>
         {
             if (WindowState == WindowState.Minimized)
             {
                 this.Hide();
             }
-        };
-        ConfigLoad();
+        }; 
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         Content = null;
         Title = "AppDisplayName".GetLocalized();
@@ -69,12 +62,12 @@ public sealed partial class MainWindow : WindowEx
         var sakuLogoCommand = (XamlUICommand)Application.Current.Resources["Command1"];
         sakuLogoCommand.ExecuteRequested += GithubLink_ExecuteRequested;
 
-        ni = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
-        ni.ForceCreate();
+        _ni = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
+        _ni.ForceCreate();
 
-        dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        settings = new UISettings();
-        settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event   
+        _dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _settings = new UISettings();
+        _settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event   
         Tray_Start();
         Closed += Dispose_Tray;
     }
@@ -84,25 +77,25 @@ public sealed partial class MainWindow : WindowEx
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
         // This calls comes off-thread, hence we will need to dispatch it to current app's thread
-        dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
+        _dispatcherQueue.TryEnqueue(TitleBarHelper.ApplySystemThemeToCaptionButtons);
     }
     #endregion
     #region Tray utils 
     public static void Set_ContextMenu_Tray()
     {
-        ni = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
+        _ni = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
     }
     public static void Remove_ContextMenu_Tray()
     { 
-        if (ni == null) { return; }
-        ni.Dispose();
-        ni = new TaskbarIcon
+        if (_ni == null) { return; }
+        _ni.Dispose();
+        _ni = new TaskbarIcon
         {
             ToolTipText = "Saku Overclock©\nContext menu is disabled",
             Icon = new System.Drawing.Icon("Assets/WindowIcon.ico")
         };
-        XamlUICommand xamlUICommand = new();
-        xamlUICommand.ExecuteRequested += static (_, _) =>
+        XamlUICommand xamlUiCommand = new();
+        xamlUiCommand.ExecuteRequested += static (_, _) =>
         {
             if (App.MainWindow.Visible)
             {
@@ -113,12 +106,12 @@ public sealed partial class MainWindow : WindowEx
                 App.MainWindow.Show(); App.MainWindow.BringToFront(); App.MainWindow.WindowState = WindowState.Normal;
             }
         };
-        ni.LeftClickCommand = xamlUICommand;
-        ni.ForceCreate();
+        _ni.LeftClickCommand = xamlUiCommand;
+        _ni.ForceCreate();
     }
     private void Dispose_Tray(object sender, WindowEventArgs args)
     {
-        ni?.Dispose();
+        _ni?.Dispose();
         var workers = Process.GetProcessesByName("Saku Overclock");
         foreach (var worker in workers)
         {
@@ -173,13 +166,12 @@ public sealed partial class MainWindow : WindowEx
     }
     private void EcoMode_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
-        ConfigLoad();
-        config.PremadeEcoActivated = true;
-        config.PremadeBalanceActivated = false;
-        config.PremadeMaxActivated = false;
-        config.PremadeMinActivated = false;
-        config.PremadeSpeedActivated = false;
-        ConfigSave();
+        SettingsService.PremadeEcoActivated = true;
+        SettingsService.PremadeBalanceActivated = false;
+        SettingsService.PremadeMaxActivated = false;
+        SettingsService.PremadeMinActivated = false;
+        SettingsService.PremadeSpeedActivated = false; 
+        SettingsService.SaveSettings();
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
         App.MainWindow.Show(); App.MainWindow.BringToFront();
@@ -202,27 +194,27 @@ public sealed partial class MainWindow : WindowEx
 
     private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
-        ni?.Dispose();
-        App.MainWindow?.Close(); 
-        if (App.MainWindow == null)
-        {
-            Environment.Exit(0);
-        }
+        _ni?.Dispose();
+        App.MainWindow.Close(); 
+        Environment.Exit(0);
     }
     private async void Tray_Start() // Запустить все команды после запуска приложения если включен Автоприменять Разгон
     {
-        ConfigLoad();
         try
         {
-            if (config.ReapplyLatestSettingsOnAppLaunch == true)
+            if (SettingsService.ReapplyLatestSettingsOnAppLaunch)
             {
-                var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(config.RyzenADJline, false, config.ReapplyOverclock, config.ReapplyOverclockTimer);
-                /*cpu.Play_Invernate_QuickSMU(1);*/
-                var profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\profile.json"))!;
-
-                if (profile != null && profile[config.Preset] != null && profile[config.Preset].autoPstate == true && profile[config.Preset].enablePstateEditor == true)
+                /*var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock, SettingsService.ReapplyOverclockTimer);
+                /*cpu.Play_Invernate_QuickSMU(1);#1#*/
+                var profileFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                             "\\SakuOverclock\\profile.json";
+                if (File.Exists(profileFolder))
                 {
-                    ПараметрыPage.WritePstates();
+                    var profile = JsonConvert.DeserializeObject<Profile[]>(profileFolder)!;
+                    if (SettingsService.Preset >= profile.Length && profile[SettingsService.Preset].autoPstate && profile[SettingsService.Preset].enablePstateEditor)
+                    {
+                        ПараметрыPage.WritePstates();
+                    }
                 }
             }
             // Параллельный поток для выполнения задачи
@@ -234,7 +226,7 @@ public sealed partial class MainWindow : WindowEx
                 }
 
                 // После того как _contentLoaded стал true, выполняем условие
-                if (config.AutostartType == 1 || config.AutostartType == 3)
+                if (SettingsService.AutostartType == 1 || SettingsService.AutostartType == 3)
                 {
                     this.Hide();
                 }
@@ -245,147 +237,88 @@ public sealed partial class MainWindow : WindowEx
             await UpdateChecker.CheckForUpdates();
         }
         catch
-        {
-            JsonRepair('c');
-            JsonRepair('d');
+        { 
+            //
         }
     }  
     #endregion
     #region Applyer class
     public class Applyer
     {
-        public bool execute = false;
-        private static Config config = new();
-        private static SendSmuCommand? sendSMUCommand;
-        public static readonly DispatcherTimer timer = new() { Interval = TimeSpan.FromMilliseconds(3 * 1000) };
-        private static EventHandler<object>? tickHandler;
-        public static void ApplyWithoutADJLine(bool saveinfo)
+        private static SendSmuCommand? _sendSmuCommand;
+        private static readonly DispatcherTimer Timer = new() { Interval = TimeSpan.FromMilliseconds(3 * 1000) };
+        private static EventHandler<object>? _tickHandler;
+        public static void ApplyWithoutAdjLine(bool saveinfo)
+        {
+            Apply(SettingsService.RyzenADJline, saveinfo, SettingsService.ReapplyOverclock, SettingsService.ReapplyOverclockTimer);
+        }
+
+        public static async void Apply(string ryzenAdJline, bool saveinfo, bool reapplyOverclock, double reapplyOverclockTimer)
         {
             try
             {
-                config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
-            }
-            catch
-            {
-                config = new Config();
-            }
-            Apply(config.RyzenADJline, saveinfo, config.ReapplyOverclock, config.ReapplyOverclockTimer);
-        }
-
-        public static async void Apply(string RyzenADJline, bool saveinfo, bool ReapplyOverclock, double ReapplyOverclockTimer)
-        {
-            try { sendSMUCommand = App.GetService<SendSmuCommand>(); } catch { return; }
-            if (ReapplyOverclock == true)
-            {
-                try
+                try { _sendSmuCommand = App.GetService<SendSmuCommand>(); } catch { return; }
+                if (reapplyOverclock)
                 {
-                    timer.Interval = TimeSpan.FromMilliseconds(ReapplyOverclockTimer * 1000);
-                    timer.Stop();
-                }
-                catch
-                {
-                    await App.MainWindow.ShowMessageDialogAsync("Время автообновления разгона некорректно и было исправлено на 3000 мс", "Критическая ошибка!");
-                    ReapplyOverclockTimer = 3000;
-                    timer.Interval = TimeSpan.FromMilliseconds(ReapplyOverclockTimer);
-                }
-                if (tickHandler != null)
-                {
-                    timer.Tick -= tickHandler;  // Удаляем старый обработчик
-                }
-                tickHandler = async (sender, e) =>
-                {
-                    if (ReapplyOverclock)
+                    try
                     {
-                        await Process(RyzenADJline, false); // Запустить SendSMUCommand снова, БЕЗ логирования, false
-                        sendSMUCommand?.Play_Invernate_QuickSMU(1); // Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
+                        Timer.Interval = TimeSpan.FromMilliseconds(reapplyOverclockTimer * 1000);
+                        Timer.Stop();
                     }
-                };
+                    catch
+                    {
+                        await App.MainWindow.ShowMessageDialogAsync("Время автообновления разгона некорректно и было исправлено на 3000 мс", "Критическая ошибка!");
+                        reapplyOverclockTimer = 3000;
+                        Timer.Interval = TimeSpan.FromMilliseconds(reapplyOverclockTimer);
+                    }
+                    if (_tickHandler != null)
+                    {
+                        Timer.Tick -= _tickHandler;  // Удаляем старый обработчик
+                    }
+                    _tickHandler = async void (_, _) =>
+                    {
+                        try
+                        {
+                            if (reapplyOverclock)
+                            {
+                                await Process(ryzenAdJline, false); // Запустить SendSMUCommand снова, БЕЗ логирования, false
+                                _sendSmuCommand?.Play_Invernate_QuickSMU(1); // Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
+                            }
+                        }
+                        catch 
+                        {
+                            //
+                        }
+                    };
 
-                timer.Tick += tickHandler;  // Добавляем новый обработчик
-                timer.Start();
+                    Timer.Tick += _tickHandler;  // Добавляем новый обработчик
+                    Timer.Start();
+                }
+                else
+                {
+                    Timer.Stop();
+                }
+                await Process(ryzenAdJline, saveinfo);
             }
-            else
+            catch 
             {
-                timer.Stop();
+                //
             }
-            await Process(RyzenADJline, saveinfo);
         }
-        private static async Task Process(string ADJLine, bool saveinfo)
+        private static async Task Process(string adjLine, bool saveinfo)
         {
             try
             {
                 await Task.Run(() =>
                 {
-                    sendSMUCommand?.Translate(ADJLine, saveinfo);
+                    _sendSmuCommand?.Translate(adjLine, saveinfo);
                 });
             }
             catch
             {
-
+                // Ignored
             }
         }
     }
-    #endregion
-    #region JSON Containers voids
-    public void JsonRepair(char file)
-    {
-        if (file == 'c')
-        {
-            try
-            {
-                config = new Config();
-            }
-            catch
-            {
-                Close();
-            }
-            if (config != null)
-            {
-                try
-                {
-                    Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
-                }
-                catch
-                {
-                    Close();
-                }
-            }
-            else
-            {
-                try
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json");
-                    Close();
-                }
-                catch
-                {
-                    Close();
-                }
-            }
-        }
-    }
-
-    public void ConfigSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
-        }
-        catch { }
-    }
-
-    public void ConfigLoad()
-    {
-        try
-        {
-            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
-        }
-        catch
-        {
-            JsonRepair('c');
-        }
-    }
-    #endregion
+    #endregion 
 }
