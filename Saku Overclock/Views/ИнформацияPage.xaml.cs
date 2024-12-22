@@ -15,7 +15,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
+using Saku_Overclock.JsonContainers; 
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using ZenStates.Core;
@@ -28,9 +28,9 @@ namespace Saku_Overclock.Views;
 
 public sealed partial class ИнформацияPage
 {
-    private Config _config = new(); // Основной конфиг приложения
     private RTSSsettings _rtssset = new(); // Конфиг с настройками модуля RTSS
     private NiIconsSettings _niicons = new(); // Конфиг с настройками Ni-Icons
+    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
 
     private readonly Dictionary<string, TaskbarIcon>
         _trayIcons = []; // Хранилище включенных в данный момент иконок Ni-Icons
@@ -112,35 +112,7 @@ public sealed partial class ИнформацияPage
 
     #region JSON only voids
 
-    //JSON форматирование
-    private void ConfigSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json",
-                JsonConvert.SerializeObject(_config));
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private void ConfigLoad()
-    {
-        try
-        {
-            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
-        }
-        catch
-        {
-            App.MainWindow.ShowMessageDialogAsync("Пресеты 3", "Критическая ошибка!");
-        }
-    }
+    //JSON форматирование 
 
     private void RtssSave()
     {
@@ -484,6 +456,7 @@ public sealed partial class ИнформацияPage
     private static extern bool DestroyIcon(IntPtr hIcon);
 
     // Метод для вычисления позиции текста в зависимости от условий
+    // ReSharper disable once UnusedMember.Local
     private static Point GetTextPosition(string? newText, int fontSize, out int newFontSize)
     {
         // По умолчанию позиция текста для трех символов
@@ -626,10 +599,10 @@ public sealed partial class ИнформацияPage
             });
 
             // Асинхронное выполнение других операций
-            var instructionSetsTask = Task.Run(() => GetSystemInfo.InstructionSets());
+            var instructionSetsTask = Task.Run(GetSystemInfo.InstructionSets);
             var l1CacheTask = Task.Run(() => CalculateCacheSizeAsync(GetSystemInfo.CacheLevel.Level1));
             var l2CacheTask = Task.Run(() => CalculateCacheSizeAsync(GetSystemInfo.CacheLevel.Level2));
-            var codeNameTask = Task.Run(() => GetSystemInfo.Codename());
+            var codeNameTask = Task.Run(GetSystemInfo.Codename);
 
             // Ожидание выполнения всех задач
             await Task.WhenAll(cpuInfoTask, gpuNameTask, instructionSetsTask, l1CacheTask, l2CacheTask, codeNameTask);
@@ -852,12 +825,9 @@ public sealed partial class ИнформацияPage
 
     #region P-State voids
 
-    public static void CalculatePstateDetails(uint eax, ref uint iddDiv, ref uint iddVal, ref uint cpuVid,
-        ref uint cpuDfsId, ref uint cpuFid)
+    private static void CalculatePstateDetails(uint eax,
+        out uint cpuDfsId, out uint cpuFid)
     {
-        iddDiv = eax >> 30;
-        iddVal = eax >> 22 & 0xFF;
-        cpuVid = eax >> 14 & 0xFF;
         cpuDfsId = eax >> 8 & 0x3F;
         cpuFid = eax & 0xFF;
     }
@@ -868,7 +838,7 @@ public sealed partial class ИнформацияPage
         {
             for (var i = 0; i < 3; i++)
             {
-                uint eax = default, edx = default;
+                uint eax = 0, edx = 0;
                 var pstateId = i;
                 try
                 {
@@ -884,12 +854,7 @@ public sealed partial class ИнформацияPage
                     SendSmuCommand.TraceIt_TraceError(ex.ToString());
                 }
 
-                uint iddDiv = 0x0;
-                uint iddVal = 0x0;
-                uint cpuVid = 0x0;
-                uint cpuDfsId = 0x0;
-                uint cpuFid = 0x0;
-                CalculatePstateDetails(eax, ref iddDiv, ref iddVal, ref cpuVid, ref cpuDfsId, ref cpuFid);
+                CalculatePstateDetails(eax, out var cpuDfsId, out var cpuFid);
                 var textBlock = (TextBlock)InfoPSTSectionMetrics.FindName($"tbPSTP{i}");
                 if (cpuFid != 0)
                 {
@@ -924,7 +889,7 @@ public sealed partial class ИнформацияPage
         }
         else
         {
-            if (infoRTSSButton.IsChecked == false && _config.NiIconsEnabled == false)
+            if (infoRTSSButton.IsChecked == false && SettingsService.NiIconsEnabled == false)
             {
                 _dispatcherTimer?.Stop();
                 _isAppInTray = true;
@@ -967,11 +932,10 @@ public sealed partial class ИнформацияPage
             }
 
             try
-            {
-                ConfigLoad();
-                infoRTSSButton.IsChecked = _config.RTSSMetricsEnabled;
-                infoNiIconsButton.IsChecked = _config.NiIconsEnabled;
-                if (_config.NiIconsEnabled)
+            { 
+                infoRTSSButton.IsChecked = SettingsService.RTSSMetricsEnabled;
+                infoNiIconsButton.IsChecked = SettingsService.NiIconsEnabled;
+                if (SettingsService.NiIconsEnabled)
                 {
                     CreateNotifyIcons();
                 }
@@ -2267,143 +2231,150 @@ public sealed partial class ИнформацияPage
 
     private async void InfoCpuSectionGridBuilder()
     {
-        InfoMainCPUFreqGrid.RowDefinitions.Clear();
-        InfoMainCPUFreqGrid.ColumnDefinitions.Clear();
-        /*numberOfCores = 8;
+        try
+        {
+            InfoMainCPUFreqGrid.RowDefinitions.Clear();
+            InfoMainCPUFreqGrid.ColumnDefinitions.Clear();
+            /*numberOfCores = 8;
         numberOfLogicalProcessors = 16;*/
-        var predictedGpuCount = new List<ManagementObject>();
-        await Task.Run(() =>
-        {
-            predictedGpuCount = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
-                .Get()
-                .Cast<ManagementObject>()
-                .Where(element =>
-                {
-                    var name = element["Name"]?.ToString() ?? string.Empty;
-                    return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
-                           !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
-                })
-                .ToList(); // Преобразуем в список для индексации
-        });
-
-        var gpuCounter = predictedGpuCount.Count;
-
-        var backupNumberLogical = _numberOfLogicalProcessors;
-        var coreCounter = _selectedGroup == 0 || _selectedGroup == 5 ? /*Это секция процессор или PStates*/
-            _numberOfCores > 2
-                ? _numberOfCores
-                : /*Это секция процессор или PStates - да! Количество ядер больше 2? - да! тогда coreCounter - количество ядер numberOfCores*/
-                infoCPUSectionComboBox.SelectedIndex == 0
-                    ? _numberOfLogicalProcessors /*Нет! У процессора менее или ровно 2 ядра, Выбрано отображение частоты? - да! - тогда numberOfLogicalProcessors*/
-                    : _numberOfCores /*Выбрана не частота, хотя при этом у нас меньше или ровно 2 ядра и это секция 0 или 5, тогда - numberOfCores*/
-            : _selectedGroup == 1 ? /*Это НЕ секция процессор или PStates. Это секция GFX?*/
-            gpuCounter /*Да! - Это секция GFX - тогда найти количество видеокарт*/
-            : _selectedGroup == 2 ? /*Нет! Выбрана не секция 0, 1, 5, возможно что-то другое? Выбрана секция 2?*/
-            tbRAMModel.Text.Split('/').Length /*Да! Выбрана секция RAM, найти количество установленных плат ОЗУ*/
-            : _selectedGroup == 3 ? 4 /*Это не секции 0, 1, 2, 5! Это секция 3? - да! Тогда - 4*/
-            : 1; /*Это не секции 0, 1, 2, 3, 5! Тогда - 1*/
-        if (_numberOfCores > 2)
-        {
-            _numberOfLogicalProcessors = coreCounter;
-        }
-
-        for (var i = 0; i < (_numberOfLogicalProcessors / 2 > 4 ? 4 : _numberOfLogicalProcessors / 2); i++)
-        {
-            InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
-            InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
-        }
-
-        if (_numberOfLogicalProcessors % 2 != 0 || _numberOfLogicalProcessors == 2)
-        {
-            InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
-            InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
-        }
-
-        _numberOfLogicalProcessors = backupNumberLogical;
-        for (var j = 0; j < InfoMainCPUFreqGrid.RowDefinitions.Count; j++)
-        {
-            for (var f = 0; f < InfoMainCPUFreqGrid.ColumnDefinitions.Count; f++)
+            var predictedGpuCount = new List<ManagementObject>();
+            await Task.Run(() =>
             {
-                if (coreCounter <= 0)
-                {
-                    return;
-                }
-
-                var currCore = _selectedGroup == 0 || _selectedGroup == 5 ? _numberOfCores > 2
-                        ? _numberOfCores - coreCounter
-                        : infoCPUSectionComboBox.SelectedIndex == 0
-                            ? _numberOfLogicalProcessors - coreCounter
-                            : _numberOfCores - coreCounter
-                    : _selectedGroup == 1 ? gpuCounter - coreCounter
-                    : _selectedGroup == 2 ? tbRAMModel.Text.Split('/').Length - coreCounter
-                    : _selectedGroup == 3 ? 4 - coreCounter
-                    : 0;
-                var elementButton = new Grid
-                {
-                    VerticalAlignment = VerticalAlignment.Stretch,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Margin = new Thickness(3, 3, 3, 3),
-                    Children =
+                predictedGpuCount = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
+                    .Get()
+                    .Cast<ManagementObject>()
+                    .Where(element =>
                     {
-                        new Button
+                        var name = element["Name"]?.ToString() ?? string.Empty;
+                        return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
+                               !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
+                    })
+                    .ToList(); // Преобразуем в список для индексации
+            });
+
+            var gpuCounter = predictedGpuCount.Count;
+
+            var backupNumberLogical = _numberOfLogicalProcessors;
+            var coreCounter = _selectedGroup == 0 || _selectedGroup == 5 ? /*Это секция процессор или PStates*/
+                _numberOfCores > 2
+                    ? _numberOfCores
+                    : /*Это секция процессор или PStates - да! Количество ядер больше 2? - да! тогда coreCounter - количество ядер numberOfCores*/
+                    infoCPUSectionComboBox.SelectedIndex == 0
+                        ? _numberOfLogicalProcessors /*Нет! У процессора менее или ровно 2 ядра, Выбрано отображение частоты? - да! - тогда numberOfLogicalProcessors*/
+                        : _numberOfCores /*Выбрана не частота, хотя при этом у нас меньше или ровно 2 ядра и это секция 0 или 5, тогда - numberOfCores*/
+                : _selectedGroup == 1 ? /*Это НЕ секция процессор или PStates. Это секция GFX?*/
+                gpuCounter /*Да! - Это секция GFX - тогда найти количество видеокарт*/
+                : _selectedGroup == 2 ? /*Нет! Выбрана не секция 0, 1, 5, возможно что-то другое? Выбрана секция 2?*/
+                tbRAMModel.Text.Split('/').Length /*Да! Выбрана секция RAM, найти количество установленных плат ОЗУ*/
+                : _selectedGroup == 3 ? 4 /*Это не секции 0, 1, 2, 5! Это секция 3? - да! Тогда - 4*/
+                : 1; /*Это не секции 0, 1, 2, 3, 5! Тогда - 1*/
+            if (_numberOfCores > 2)
+            {
+                _numberOfLogicalProcessors = coreCounter;
+            }
+
+            for (var i = 0; i < (_numberOfLogicalProcessors / 2 > 4 ? 4 : _numberOfLogicalProcessors / 2); i++)
+            {
+                InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
+                InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+
+            if (_numberOfLogicalProcessors % 2 != 0 || _numberOfLogicalProcessors == 2)
+            {
+                InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
+                InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+
+            _numberOfLogicalProcessors = backupNumberLogical;
+            for (var j = 0; j < InfoMainCPUFreqGrid.RowDefinitions.Count; j++)
+            {
+                for (var f = 0; f < InfoMainCPUFreqGrid.ColumnDefinitions.Count; f++)
+                {
+                    if (coreCounter <= 0)
+                    {
+                        return;
+                    }
+
+                    var currCore = _selectedGroup == 0 || _selectedGroup == 5 ? _numberOfCores > 2
+                            ? _numberOfCores - coreCounter
+                            : infoCPUSectionComboBox.SelectedIndex == 0
+                                ? _numberOfLogicalProcessors - coreCounter
+                                : _numberOfCores - coreCounter
+                        : _selectedGroup == 1 ? gpuCounter - coreCounter
+                        : _selectedGroup == 2 ? tbRAMModel.Text.Split('/').Length - coreCounter
+                        : _selectedGroup == 3 ? 4 - coreCounter
+                        : 0;
+                    var elementButton = new Grid
+                    {
+                        VerticalAlignment = VerticalAlignment.Stretch,
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        Margin = new Thickness(3, 3, 3, 3),
+                        Children =
                         {
-                            Shadow = new ThemeShadow(),
-                            Translation = new Vector3(0, 0, 20),
-                            HorizontalAlignment = HorizontalAlignment.Stretch,
-                            HorizontalContentAlignment = HorizontalAlignment.Stretch,
-                            VerticalAlignment = VerticalAlignment.Stretch,
-                            Content = new Grid
+                            new Button
                             {
-                                VerticalAlignment = VerticalAlignment.Stretch,
+                                Shadow = new ThemeShadow(),
+                                Translation = new Vector3(0, 0, 20),
                                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                                Children =
+                                HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                                VerticalAlignment = VerticalAlignment.Stretch,
+                                Content = new Grid
                                 {
-                                    new TextBlock
+                                    VerticalAlignment = VerticalAlignment.Stretch,
+                                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                                    Children =
                                     {
-                                        VerticalAlignment = VerticalAlignment.Center,
-                                        HorizontalAlignment = HorizontalAlignment.Left,
-                                        Text = currCore.ToString(),
-                                        FontWeight = new FontWeight(200)
-                                    },
-                                    new TextBlock
-                                    {
-                                        Text = "0.00 Ghz",
-                                        Name = $"FreqButtonText_{currCore}",
-                                        VerticalAlignment = VerticalAlignment.Center,
-                                        HorizontalAlignment = HorizontalAlignment.Center,
-                                        FontWeight = new FontWeight(800)
-                                    },
-                                    new TextBlock
-                                    {
-                                        FontSize = 13,
-                                        Margin = new Thickness(3, -2, 0, 0),
-                                        VerticalAlignment = VerticalAlignment.Center,
-                                        HorizontalAlignment = HorizontalAlignment.Right,
-                                        Text = _selectedGroup == 0 || _selectedGroup == 5 ? currCore < _numberOfCores
-                                                ? "InfoCPUCore".GetLocalized()
-                                                : "InfoCPUThread".GetLocalized()
-                                            : _selectedGroup == 1 ? "InfoGPUName".GetLocalized()
-                                            : _selectedGroup == 2 ? tbSlots.Text.Contains('*')
-                                                ? tbSlots.Text.Split('*')[1].Replace("bit", "")
-                                                : "64"
-                                            : _selectedGroup == 3 ? currCore == 0 ? "VRM EDC"
-                                            : currCore == 1 ? "VRM TDC"
-                                            : currCore == 2 ? "SoC EDC"
-                                            : "SoC TDC"
-                                            : "InfoBatteryName".GetLocalized(),
-                                        FontWeight = new FontWeight(200)
+                                        new TextBlock
+                                        {
+                                            VerticalAlignment = VerticalAlignment.Center,
+                                            HorizontalAlignment = HorizontalAlignment.Left,
+                                            Text = currCore.ToString(),
+                                            FontWeight = new FontWeight(200)
+                                        },
+                                        new TextBlock
+                                        {
+                                            Text = "0.00 Ghz",
+                                            Name = $"FreqButtonText_{currCore}",
+                                            VerticalAlignment = VerticalAlignment.Center,
+                                            HorizontalAlignment = HorizontalAlignment.Center,
+                                            FontWeight = new FontWeight(800)
+                                        },
+                                        new TextBlock
+                                        {
+                                            FontSize = 13,
+                                            Margin = new Thickness(3, -2, 0, 0),
+                                            VerticalAlignment = VerticalAlignment.Center,
+                                            HorizontalAlignment = HorizontalAlignment.Right,
+                                            Text = _selectedGroup == 0 || _selectedGroup == 5 ? currCore < _numberOfCores
+                                                    ? "InfoCPUCore".GetLocalized()
+                                                    : "InfoCPUThread".GetLocalized()
+                                                : _selectedGroup == 1 ? "InfoGPUName".GetLocalized()
+                                                : _selectedGroup == 2 ? tbSlots.Text.Contains('*')
+                                                    ? tbSlots.Text.Split('*')[1].Replace("bit", "")
+                                                    : "64"
+                                                : _selectedGroup == 3 ? currCore == 0 ? "VRM EDC"
+                                                : currCore == 1 ? "VRM TDC"
+                                                : currCore == 2 ? "SoC EDC"
+                                                : "SoC TDC"
+                                                : "InfoBatteryName".GetLocalized(),
+                                            FontWeight = new FontWeight(200)
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                };
+                    };
 
-                Grid.SetRow(elementButton, j);
-                Grid.SetColumn(elementButton, f);
-                InfoMainCPUFreqGrid.Children.Add(elementButton);
-                coreCounter--;
+                    Grid.SetRow(elementButton, j);
+                    Grid.SetColumn(elementButton, f);
+                    InfoMainCPUFreqGrid.Children.Add(elementButton);
+                    coreCounter--;
+                }
             }
+        }
+        catch (Exception e)
+        {
+            SendSmuCommand.TraceIt_TraceError(e.ToString());
         }
     }
 
@@ -2626,25 +2597,31 @@ public sealed partial class ИнформацияPage
 
     private async void InfoRTSSButton_Click(object sender, RoutedEventArgs e)
     {
-        if (infoRTSSButton.IsChecked == false)
+        try
         {
-            RtssHandler.ResetOsdText();
-        }
-        else
-        {
-            Info_RTSSTeacherTip.IsOpen = true;
-            await Task.Delay(3000);
-            Info_RTSSTeacherTip.IsOpen = false;
-        }
+            if (infoRTSSButton.IsChecked == false)
+            {
+                RtssHandler.ResetOsdText();
+            }
+            else
+            {
+                Info_RTSSTeacherTip.IsOpen = true;
+                await Task.Delay(3000);
+                Info_RTSSTeacherTip.IsOpen = false;
+            }
 
-        if (!_loaded)
-        {
-            return;
+            if (!_loaded)
+            {
+                return;
+            }
+ 
+            SettingsService.RTSSMetricsEnabled = infoRTSSButton.IsChecked == true;
+            SettingsService.SaveSettings();
         }
-
-        ConfigLoad();
-        _config.RTSSMetricsEnabled = infoRTSSButton.IsChecked == true;
-        ConfigSave();
+        catch  
+        {
+            //
+        }
     }
 
     private void InfoNiIconsButton_Click(object sender, RoutedEventArgs e)
@@ -2662,10 +2639,9 @@ public sealed partial class ИнформацияPage
         {
             DisposeAllNotifyIcons();
         }
-
-        ConfigLoad();
-        _config.NiIconsEnabled = infoNiIconsButton.IsChecked == true;
-        ConfigSave();
+ 
+        SettingsService.NiIconsEnabled = infoNiIconsButton.IsChecked == true;
+        SettingsService.SaveSettings();
     }
 
     private void CPUFlyout_Opening(object sender, object e)
