@@ -5,8 +5,7 @@ using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Navigation;
-using Newtonsoft.Json;
+using Microsoft.UI.Xaml.Navigation; 
 using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -19,25 +18,24 @@ using FileMode = System.IO.FileMode;
 namespace Saku_Overclock.Views;
 
 public sealed partial class КулерPage
-{
-    private Config _config = new();
+{ 
     private bool _isPageLoaded;
     private bool _isNbfcNotLoaded;
     private bool _doNotUseRyzenAdj;
     private IntPtr _ry = IntPtr.Zero;
     private DispatcherTimer? _tempUpdateTimer;
     private readonly DispatcherTimer? _fanUpdateTimer;
+    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
 
     public КулерPage()
     {
         App.GetService<КулерViewModel>();
-        InitializeComponent();
-        ConfigLoad();
+        InitializeComponent(); 
         FanInit();
         Update();
-        _config.FlagRyzenADJConsoleTemperatureCheckRunning =
+        SettingsService.FlagRyzenADJConsoleTemperatureCheckRunning =
             true; //Автообновление информации о кулере включено! Это нужно для того, чтобы обновление информации не происходило нигде кроме страницы с оптимизацией кулера, так как контроллировать асинхронные методы бывает сложно
-        ConfigSave();
+        SettingsService.SaveSettings();
         Loaded += Page_Loaded;
         _fanUpdateTimer = new DispatcherTimer();
         _fanUpdateTimer.Tick += async (_, _) => await CheckFan();
@@ -108,42 +106,11 @@ public sealed partial class КулерPage
 
     #endregion
 
-    #region JSON and Initialization
-
-    private void ConfigSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json",
-                JsonConvert.SerializeObject(_config));
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private void ConfigLoad()
-    {
-        try
-        {
-            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\config.json"))!;
-        }
-        catch
-        {
-            App.MainWindow.ShowMessageDialogAsync("Пресеты 3", "Критическая ошибка!");
-        }
-    }
-
+    #region Initialization 
     private async void FanInit()
     {
         try
-        {
-            ConfigLoad();
+        { 
             try
             {
                 const string
@@ -165,7 +132,7 @@ public sealed partial class КулерPage
                         Tag = xmlFile
                     };
                     Selfan.Items.Add(item);
-                    if (_config.NBFCConfigXMLName == fileName)
+                    if (SettingsService.NBFCConfigXMLName == fileName)
                     {
                         Selfan.SelectedItem = item;
                     }
@@ -182,11 +149,10 @@ public sealed partial class КулерPage
                 await ShowNbfcDialogAsync();
             }
 
-            if (_config.NBFCServiceStatusEnabled)
-            {
-                ConfigLoad();
-                Fan1.Value = _config.NBFCFan1UserFanSpeedRPM;
-                Fan2.Value = _config.NBFCFan2UserFanSpeedRPM;
+            if (SettingsService.NBFCServiceStatusEnabled)
+            { 
+                Fan1.Value = SettingsService.NBFCFan1UserFanSpeedRPM;
+                Fan2.Value = SettingsService.NBFCFan2UserFanSpeedRPM;
                 Enabl.IsChecked = true;
                 Readon.IsChecked = false;
                 Disabl.IsChecked = false;
@@ -203,21 +169,21 @@ public sealed partial class КулерPage
                 }
             }
 
-            if (_config.NBFCServiceStatusReadOnly)
+            if (SettingsService.NBFCServiceStatusReadOnly)
             {
                 Enabl.IsChecked = false;
                 Readon.IsChecked = true;
                 Disabl.IsChecked = false;
             }
 
-            if (_config.NBFCServiceStatusDisabled)
+            if (SettingsService.NBFCServiceStatusDisabled)
             {
                 Enabl.IsChecked = false;
                 Readon.IsChecked = false;
                 Disabl.IsChecked = true;
             }
 
-            if (_config.NBFCAutoUpdateInformation)
+            if (SettingsService.NBFCAutoUpdateInformation)
             {
                 await Task.Delay(20);
                 Fanauto.IsChecked = true;
@@ -230,16 +196,16 @@ public sealed partial class КулерPage
                 {
                     Fan1Val.Text = "Auto";
                     Update();
-                    _config.NBFCFan1UserFanSpeedRPM = 110.0;
+                    SettingsService.NBFCFan1UserFanSpeedRPM = 110.0;
                 }
                 else
                 {
                     Fan1Pr.Value = Fan1.Value;
                     Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan1.Value;
-                    _config.NBFCFlagConsoleCheckSpeedRunning = false;
+                    SettingsService.NBFCFlagConsoleCheckSpeedRunning = false;
                 }
 
-                ConfigSave();
+                SettingsService.SaveSettings();
             }
 
             if (Readon.IsChecked == true)
@@ -421,20 +387,20 @@ public sealed partial class КулерPage
 
     private void Disabl_Checked(object sender, RoutedEventArgs e)
     {
-        _config.NBFCServiceStatusDisabled = true;
-        _config.NBFCServiceStatusReadOnly = false;
-        _config.NBFCServiceStatusEnabled = false;
-        _config.NBFCFlagConsoleCheckSpeedRunning = false;
-        ConfigSave();
+        SettingsService.NBFCServiceStatusDisabled = true;
+        SettingsService.NBFCServiceStatusReadOnly = false;
+        SettingsService.NBFCServiceStatusEnabled = false;
+        SettingsService.NBFCFlagConsoleCheckSpeedRunning = false;
+        SettingsService.SaveSettings();
         NbfcEnable();
     }
 
     private void Readon_Checked(object sender, RoutedEventArgs e)
     {
-        _config.NBFCServiceStatusReadOnly = true;
-        _config.NBFCServiceStatusEnabled = false;
-        _config.NBFCServiceStatusDisabled = false;
-        ConfigSave();
+        SettingsService.NBFCServiceStatusReadOnly = true;
+        SettingsService.NBFCServiceStatusEnabled = false;
+        SettingsService.NBFCServiceStatusDisabled = false;
+        SettingsService.SaveSettings();
         NbfcEnable();
         Fan1Val.Text = "Auto";
         Update();
@@ -442,10 +408,10 @@ public sealed partial class КулерPage
 
     private void Enabl_Checked(object sender, RoutedEventArgs e)
     {
-        _config.NBFCServiceStatusEnabled = true;
-        _config.NBFCServiceStatusDisabled = false;
-        _config.NBFCServiceStatusReadOnly = false;
-        ConfigSave();
+        SettingsService.NBFCServiceStatusEnabled = true;
+        SettingsService.NBFCServiceStatusDisabled = false;
+        SettingsService.NBFCServiceStatusReadOnly = false;
+        SettingsService.SaveSettings();
         NbfcEnable();
     }
 
@@ -457,22 +423,22 @@ public sealed partial class КулерPage
             {
                 NbfcFan1();
                 await Task.Delay(200);
-                _config.NBFCFan1UserFanSpeedRPM = Fan1.Value;
+                SettingsService.NBFCFan1UserFanSpeedRPM = Fan1.Value;
                 Fan1Val.Text = Fan1.Value.ToString(CultureInfo.InvariantCulture) + " %";
                 if (Fan1.Value > 100)
                 {
                     Fan1Val.Text = "Auto";
                     Update();
-                    _config.NBFCFan1UserFanSpeedRPM = 110.0;
+                    SettingsService.NBFCFan1UserFanSpeedRPM = 110.0;
                 }
                 else
                 {
                     Fan1Pr.Value = Fan1.Value;
                     Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan1.Value;
-                    _config.NBFCFlagConsoleCheckSpeedRunning = false;
+                    SettingsService.NBFCFlagConsoleCheckSpeedRunning = false;
                 }
 
-                ConfigSave();
+                SettingsService.SaveSettings();
             }
 
             if (Readon.IsChecked == true)
@@ -495,14 +461,13 @@ public sealed partial class КулерPage
             {
                 NbfcFan2();
                 await Task.Delay(200);
-                _config.NBFCFan2UserFanSpeedRPM = Fan2.Value;
+                SettingsService.NBFCFan2UserFanSpeedRPM = Fan2.Value;
                 Fan2Val.Text = Fan2.Value.ToString(CultureInfo.InvariantCulture) + " %";
                 if (Fan2.Value > 100)
                 {
                     Fan2Val.Text = "Auto";
                     Update();
-                    _config.NBFCFan2UserFanSpeedRPM = 110.0;
-                    ConfigSave();
+                    SettingsService.NBFCFan2UserFanSpeedRPM = 110.0; 
                     if (Fan1Pr.Value - 10.0d == 0.0d)
                     {
                         Fan1Pr.Value = 100;
@@ -512,11 +477,10 @@ public sealed partial class КулерPage
                 {
                     Fan2Pr.Value = Fan2.Value;
                     Fan2Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan2.Value;
-                    _config.NBFCFlagConsoleCheckSpeedRunning = false;
-                    ConfigSave();
+                    SettingsService.NBFCFlagConsoleCheckSpeedRunning = false; 
                 }
 
-                ConfigSave();
+                SettingsService.SaveSettings();
             }
 
             if (Readon.IsChecked == true)
@@ -541,8 +505,8 @@ public sealed partial class КулерPage
             }
 
             await Task.Delay(200);
-            _config.NBFCConfigXMLName = (string)((ComboBoxItem)Selfan.SelectedItem).Content;
-            ConfigSave();
+            SettingsService.NBFCConfigXMLName = (string)((ComboBoxItem)Selfan.SelectedItem).Content;
+            SettingsService.SaveSettings();
             NbfcFanState();
         }
         catch (Exception exception)
@@ -557,7 +521,7 @@ public sealed partial class КулерPage
         {
             if (Fanauto.IsChecked == true)
             {
-                if (_config.NBFCAutoUpdateInformation == false)
+                if (SettingsService.NBFCAutoUpdateInformation == false)
                 {
                     var autoDialog = new ContentDialog
                     {
@@ -577,27 +541,24 @@ public sealed partial class КулерPage
                     var result = await autoDialog.ShowAsync();
                     if (result == ContentDialogResult.Primary)
                     {
-                        _config.NBFCAutoUpdateInformation = true;
-                        ConfigSave();
+                        SettingsService.NBFCAutoUpdateInformation = true; 
                     }
                     else
                     {
                         Fanauto.IsChecked = false;
-                        _config.NBFCAutoUpdateInformation = false;
-                        ConfigSave();
+                        SettingsService.NBFCAutoUpdateInformation = false; 
                     }
                 }
 
-                _config.NBFCFlagConsoleCheckSpeedRunning = false;
-                ConfigSave();
+                SettingsService.NBFCFlagConsoleCheckSpeedRunning = false; 
                 GetInfo0(true);
             }
             else
             {
-                _config.NBFCAutoUpdateInformation = false;
-                ConfigSave();
+                SettingsService.NBFCAutoUpdateInformation = false; 
                 GetInfo0(false);
             }
+            SettingsService.SaveSettings();
         }
         catch (Exception exception)
         {
@@ -609,8 +570,8 @@ public sealed partial class КулерPage
     {
         try
         {
-            _config.NBFCFlagConsoleCheckSpeedRunning = true;
-            ConfigSave();
+            SettingsService.NBFCFlagConsoleCheckSpeedRunning = true;
+            SettingsService.SaveSettings();
             await CheckFan();
             Fanauto.IsChecked = false;
         }
@@ -640,19 +601,18 @@ public sealed partial class КулерPage
     {
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
-        p.StartInfo.FileName = "nbfc/nbfc.exe";
-        ConfigLoad();
-        if (_config.NBFCServiceStatusDisabled)
+        p.StartInfo.FileName = "nbfc/nbfc.exe"; 
+        if (SettingsService.NBFCServiceStatusDisabled)
         {
             p.StartInfo.Arguments = " stop";
         }
 
-        if (_config.NBFCServiceStatusEnabled)
+        if (SettingsService.NBFCServiceStatusEnabled)
         {
             p.StartInfo.Arguments = " start --enabled";
         }
 
-        if (_config.NBFCServiceStatusReadOnly)
+        if (SettingsService.NBFCServiceStatusReadOnly)
         {
             p.StartInfo.Arguments = " start --readonly";
         }
@@ -668,9 +628,8 @@ public sealed partial class КулерPage
     {
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
-        p.StartInfo.FileName = @"nbfc/nbfc.exe";
-        ConfigLoad();
-        if (_config.NBFCServiceStatusEnabled)
+        p.StartInfo.FileName = @"nbfc/nbfc.exe"; 
+        if (SettingsService.NBFCServiceStatusEnabled)
         {
             if (Fan1.Value < 100)
             {
@@ -693,9 +652,8 @@ public sealed partial class КулерPage
     {
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
-        p.StartInfo.FileName = @"nbfc/nbfc.exe";
-        ConfigLoad();
-        if (_config.NBFCServiceStatusEnabled)
+        p.StartInfo.FileName = @"nbfc/nbfc.exe"; 
+        if (SettingsService.NBFCServiceStatusEnabled)
         {
             if (Fan2.Value < 100)
             {
@@ -719,9 +677,8 @@ public sealed partial class КулерPage
         const string quote = "\"";
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
-        p.StartInfo.FileName = @"nbfc/nbfc.exe";
-        ConfigLoad();
-        p.StartInfo.Arguments = " config --apply " + quote + _config.NBFCConfigXMLName + quote;
+        p.StartInfo.FileName = @"nbfc/nbfc.exe"; 
+        p.StartInfo.Arguments = " config --apply " + quote + SettingsService.NBFCConfigXMLName + quote;
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
@@ -731,8 +688,8 @@ public sealed partial class КулерPage
 
     private void GetInfo0(bool start)
     {
-        _config.NBFCFlagConsoleCheckSpeedRunning = true;
-        ConfigSave();
+        SettingsService.NBFCFlagConsoleCheckSpeedRunning = true;
+        SettingsService.SaveSettings();
         if (start)
         {
             _fanUpdateTimer?.Start();
@@ -747,10 +704,10 @@ public sealed partial class КулерPage
     {
         if (Readon.IsChecked == true || Enabl.IsChecked == true)
         {
-            if (_config.NBFCFlagConsoleCheckSpeedRunning)
+            if (SettingsService.NBFCFlagConsoleCheckSpeedRunning)
             {
-                _config.NBFCAnswerSpeedFan1 = "";
-                _config.NBFCAnswerSpeedFan2 = "";
+                SettingsService.NBFCAnswerSpeedFan1 = "";
+                SettingsService.NBFCAnswerSpeedFan2 = "";
                 var p = new Process();
                 p.StartInfo.UseShellExecute = false;
                 p.StartInfo.FileName = @"nbfc/nbfc.exe";
@@ -775,9 +732,9 @@ public sealed partial class КулерPage
                 {
                     if (line.Contains("Current fan speed"))
                     {
-                        _config.NBFCAnswerSpeedFan1 = line.Replace("Current fan speed", "").Replace(" ", "")
+                        SettingsService.NBFCAnswerSpeedFan1 = line.Replace("Current fan speed", "").Replace(" ", "")
                             .Replace(":", "").Replace("\t", "");
-                        ConfigSave();
+                        SettingsService.SaveSettings();
                     }
 
                     line = await outputWriter.ReadLineAsync();
@@ -799,9 +756,9 @@ public sealed partial class КулерPage
                 {
                     if (line1.Contains("Current fan speed"))
                     {
-                        _config.NBFCAnswerSpeedFan2 = line1.Replace("Current fan speed", "").Replace(" ", "")
+                        SettingsService.NBFCAnswerSpeedFan2 = line1.Replace("Current fan speed", "").Replace(" ", "")
                             .Replace(":", "").Replace("\t", "");
-                        ConfigSave();
+                        SettingsService.SaveSettings();
                     }
 
                     line1 = await outputWriter1.ReadLineAsync();
@@ -814,22 +771,21 @@ public sealed partial class КулерPage
     }
 
     private void Update()
-    {
-        ConfigLoad();
-        if (_config.NBFCAnswerSpeedFan1 == string.Empty)
+    { 
+        if (SettingsService.NBFCAnswerSpeedFan1 == string.Empty)
         {
             return;
         }
 
         try
         {
-            Fan1Pr.Value = Convert.ToInt32(double.Parse(_config.NBFCAnswerSpeedFan1, CultureInfo.InvariantCulture));
+            Fan1Pr.Value = Convert.ToInt32(double.Parse(SettingsService.NBFCAnswerSpeedFan1, CultureInfo.InvariantCulture));
             if (Fan1Pr.Value > 100)
             {
                 Fan1Pr.Value = 100;
             }
 
-            Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + _config.NBFCAnswerSpeedFan1 + "%";
+            Fan1Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + SettingsService.NBFCAnswerSpeedFan1 + "%";
         }
         catch
         {
@@ -840,20 +796,20 @@ public sealed partial class КулерPage
             }
         }
 
-        if (_config.NBFCAnswerSpeedFan2 == string.Empty)
+        if (SettingsService.NBFCAnswerSpeedFan2 == string.Empty)
         {
             return;
         }
 
         try
         {
-            Fan2Pr.Value = Convert.ToInt32(double.Parse(_config.NBFCAnswerSpeedFan2, CultureInfo.InvariantCulture));
+            Fan2Pr.Value = Convert.ToInt32(double.Parse(SettingsService.NBFCAnswerSpeedFan2, CultureInfo.InvariantCulture));
             if (Fan2Pr.Value > 100)
             {
                 Fan2Pr.Value = 100;
             }
 
-            Fan2Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + _config.NBFCAnswerSpeedFan2 + "%";
+            Fan2Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + SettingsService.NBFCAnswerSpeedFan2 + "%";
         }
         catch
         {
