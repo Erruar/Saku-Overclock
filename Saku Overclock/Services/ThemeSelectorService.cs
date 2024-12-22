@@ -10,11 +10,6 @@ public class ThemeSelectorService : IThemeSelectorService
     private const string SettingsKey = "AppBackgroundRequestedTheme";
 
     public ElementTheme Theme { get; set; } = ElementTheme.Default;
-    public ElementTheme Blue
-    {
-        get;
-        set;
-    }
 
     private readonly ILocalSettingsService _localSettingsService;
 
