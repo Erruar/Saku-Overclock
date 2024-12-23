@@ -1366,6 +1366,7 @@ public sealed partial class ShellPage
                 {
                     index = 0; //Сброс счётчика циклов
                     ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                    return;
                 }
 
                 index++;
@@ -1394,11 +1395,15 @@ public sealed partial class ShellPage
             var themeMobil = App.GetService<SettingsViewModel>();
             var themeLight = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight ? ElementTheme.Light : ElementTheme.Dark;
             themeMobil.SwitchThemeCommand.Execute(themeLight);
-            if (SettingsService.ThemeType > 2)
+            var themeBackground = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeBackground;
+
+            if (SettingsService.ThemeType > 2 &&
+                !string.IsNullOrEmpty(themeBackground) &&
+                (themeBackground.Contains("http") || File.Exists(themeBackground)))
             {
-                ThemeBackground.ImageSource =
-                    new BitmapImage(new Uri(_themeSelectorService.Themes[SettingsService.ThemeType].ThemeBackground));
+                ThemeBackground.ImageSource = new BitmapImage(new Uri(themeBackground));
             }
+
         }
         catch
         {
@@ -1423,7 +1428,6 @@ public sealed partial class ShellPage
             }
 
             NotifySave();
-            SettingsService.ThemeType = 0;
             SettingsService.SaveSettings(); 
         }
     } 
