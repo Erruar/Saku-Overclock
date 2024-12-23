@@ -851,7 +851,7 @@ public sealed partial class SettingsPage
             return;
         }
  
-        SettingsService.ThemeType = ThemeCombobox.SelectedIndex;
+        SettingsService.ThemeType = ThemeCombobox.SelectedIndex != -1 ? ThemeCombobox.SelectedIndex : 0;
         SettingsService.SaveSettings(); 
         if (_themeSelectorService.Themes.Count != 0)
         {
@@ -900,7 +900,7 @@ public sealed partial class SettingsPage
 
         Theme_Custom(); 
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustom = ThemeCustom.IsOn;
-        _themeSelectorService.SaveCustomTheme();
+        _themeSelectorService.SaveThemeInSettings();
     }
 
     private void ThemeOpacity_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
@@ -911,7 +911,7 @@ public sealed partial class SettingsPage
         }
  
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity = ThemeOpacity.Value;
-        _themeSelectorService.SaveCustomTheme();
+        _themeSelectorService.SaveThemeInSettings();
         NotifyLoad();
         _notify.Notifies ??= [];
         _notify.Notifies.Add(new Notify
@@ -929,7 +929,7 @@ public sealed partial class SettingsPage
         }
  
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity = ThemeMaskOpacity.Value;
-        _themeSelectorService.SaveCustomTheme();
+        _themeSelectorService.SaveThemeInSettings();
         NotifyLoad();
         _notify.Notifies ??= [];
         _notify.Notifies.Add(new Notify
@@ -947,7 +947,7 @@ public sealed partial class SettingsPage
         }
  
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustomBg = ThemeCustomBg.IsOn;
-        _themeSelectorService.SaveCustomTheme();
+        _themeSelectorService.SaveThemeInSettings();
         ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
     }
 
@@ -1167,7 +1167,7 @@ public sealed partial class SettingsPage
                 {
                     var backupIndex = ThemeCombobox.SelectedIndex; 
                     _themeSelectorService.Themes[backupIndex].ThemeBackground = endStringPath;
-                    _themeSelectorService.SaveCustomTheme();
+                    _themeSelectorService.SaveThemeInSettings();
                     NotifyLoad();
                     _notify.Notifies ??= [];
                     _notify.Notifies.Add(new Notify
@@ -1386,7 +1386,7 @@ public sealed partial class SettingsPage
                                 _themeSelectorService.Themes[int.Parse(sureDelete.Name)].ThemeName = textBoxThemeName.Text;
                                 themeNameText.Text = textBoxThemeName.Text;
                                 editFlyout.Hide();
-                                _themeSelectorService.SaveCustomTheme();
+                                _themeSelectorService.SaveThemeInSettings();
                                 InitVal();
                             }
                         };
@@ -1405,7 +1405,7 @@ public sealed partial class SettingsPage
                             try
                             {
                                 _themeSelectorService.Themes.RemoveAt(int.Parse(sureDelete.Name));
-                                _themeSelectorService.SaveCustomTheme();
+                                _themeSelectorService.SaveThemeInSettings();
                                 SettingsService.ThemeType = 0;
                                 SettingsService.SaveSettings();
                                 InitVal();
@@ -1476,7 +1476,7 @@ public sealed partial class SettingsPage
                                 _themeSelectorService.Themes.Add(new ThemeClass { ThemeName = textBoxThemeName.Text });
                                 newTheme.Flyout.Hide();
                                 themerDialog.Hide();
-                                _themeSelectorService.SaveCustomTheme();
+                                _themeSelectorService.SaveThemeInSettings();
                                 InitVal();
                             }
                             catch
@@ -1517,7 +1517,7 @@ public sealed partial class SettingsPage
         }
  
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight = ThemeLight.IsOn;
-        _themeSelectorService.SaveCustomTheme();
+        _themeSelectorService.SaveThemeInSettings();
         //if (ThemeLight.IsOn) { ViewModel.SwitchThemeCommand.Execute(ElementTheme.Light); } else { ViewModel.SwitchThemeCommand.Execute(ElementTheme.Dark); }
         NotifyLoad();
         _notify.Notifies ??= [];
@@ -1577,22 +1577,24 @@ public sealed partial class SettingsPage
                     Settings_NiIconComboboxElements.Visibility = Visibility.Visible;
                     Settings_ni_EnabledElement.Visibility = Visibility.Visible;
                 }
-
-                Settings_ni_EnabledElement.IsOn = _niicons.Elements[SettingsService.NiIconsType].IsEnabled;
-                if (!_niicons.Elements[SettingsService.NiIconsType].IsEnabled)
+                if (SettingsService.NiIconsType >= 0 && _niicons.Elements.Count >= SettingsService.NiIconsType)
                 {
-                    NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
-                    Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
-                }
+                    Settings_ni_EnabledElement.IsOn = _niicons.Elements[SettingsService.NiIconsType].IsEnabled;
+                    if (!_niicons.Elements[SettingsService.NiIconsType].IsEnabled)
+                    {
+                        NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
+                        Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
+                    }
 
-                NiIconCombobox.SelectedIndex =
-                    _niicons.Elements[SettingsService.NiIconsType].ContextMenuType;
-                NiIcons_ColorPicker_ColorPicker.Color =
-                    ParseColor(_niicons.Elements[SettingsService.NiIconsType].Color);
-                Settings_Ni_GradientToggle.IsOn = _niicons.Elements[SettingsService.NiIconsType].IsGradient;
-                NiIconShapeCombobox.SelectedIndex = _niicons.Elements[SettingsService.NiIconsType].IconShape;
-                Settings_ni_Fontsize.Value = _niicons.Elements[SettingsService.NiIconsType].FontSize;
-                Settings_ni_Opacity.Value = _niicons.Elements[SettingsService.NiIconsType].BgOpacity;
+                    NiIconCombobox.SelectedIndex =
+                        _niicons.Elements[SettingsService.NiIconsType].ContextMenuType;
+                    NiIcons_ColorPicker_ColorPicker.Color =
+                        ParseColor(_niicons.Elements[SettingsService.NiIconsType].Color);
+                    Settings_Ni_GradientToggle.IsOn = _niicons.Elements[SettingsService.NiIconsType].IsGradient;
+                    NiIconShapeCombobox.SelectedIndex = _niicons.Elements[SettingsService.NiIconsType].IconShape;
+                    Settings_ni_Fontsize.Value = _niicons.Elements[SettingsService.NiIconsType].FontSize;
+                    Settings_ni_Opacity.Value = _niicons.Elements[SettingsService.NiIconsType].BgOpacity;
+                }
             }
 
             if (Settings_ni_Icons.IsOn)
