@@ -21,6 +21,6 @@ public interface IThemeSelectorService
 
     Task SetRequestedThemeAsync();
     
-    void LoadCustomTheme();
-    void SaveCustomTheme();
+    void LoadThemeFromSettings();
+    void SaveThemeInSettings();
 }
