@@ -4,7 +4,7 @@ namespace Saku_Overclock;
 /*
          T H E M E    C O N T A I N E R
  */
-public class Themer
+/*public class Themer
 {
     public List<ThemeClass> Themes =
     [
@@ -89,4 +89,4 @@ public class Themer
             ThemeBackground = "https://i.imgur.com/ZqjqlOs.png"
         }
     ];
-} 
+} */

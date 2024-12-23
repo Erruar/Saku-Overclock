@@ -30,8 +30,7 @@ public sealed partial class SettingsPage
     {
         get;
     }
-
-    private Themer _themer = new();
+    private readonly IThemeSelectorService _themeSelectorService = App.GetService<IThemeSelectorService>(); 
     private RTSSsettings _rtssset = new();
     private NiIconsSettings _niicons = new();
     private bool _isLoaded;
@@ -82,14 +81,13 @@ public sealed partial class SettingsPage
     }
 
     private void UpdateTheme_ComboBox()
-    {
-        ThemeLoad();
+    { 
         ThemeCombobox.Items.Clear();
         try
         {
-            if (_themer.Themes.Count != 0)
+            if (_themeSelectorService.Themes.Count != 0)
             {
-                foreach (var theme in _themer.Themes)
+                foreach (var theme in _themeSelectorService.Themes)
                 {
                     try
                     {
@@ -101,10 +99,10 @@ public sealed partial class SettingsPage
                     }
                 }
 
-                ThemeOpacity.Value = _themer.Themes[SettingsService.ThemeType].ThemeOpacity;
-                ThemeMaskOpacity.Value = _themer.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
-                ThemeCustom.IsOn = _themer.Themes[SettingsService.ThemeType].ThemeCustom;
-                ThemeCustomBg.IsOn = _themer.Themes[SettingsService.ThemeType].ThemeCustomBg;
+                ThemeOpacity.Value = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity;
+                ThemeMaskOpacity.Value = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
+                ThemeCustom.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustom;
+                ThemeCustomBg.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustomBg;
                 Theme_Custom();
             }
 
@@ -637,77 +635,7 @@ public sealed partial class SettingsPage
             _niicons = new NiIconsSettings();
             NiSave();
         }
-    }
-
-    private void ThemeSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json", "");
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json",
-                JsonConvert.SerializeObject(_themer, Formatting.Indented));
-        }
-        catch
-        {
-            //
-        }
-    }
-
-    private void ThemeLoad()
-    {
-        try
-        {
-            _themer = JsonConvert.DeserializeObject<Themer>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json"))!;
-            if (_themer.Themes.Count > 8)
-            {
-                _themer.Themes.RemoveRange(0, 8);
-            }
-        }
-        catch
-        {
-            Fix_Themer();
-        }
-    }
-
-    private void Fix_Themer()
-    {
-        try
-        {
-            _themer = new Themer();
-        }
-        catch
-        {
-            App.GetService<IAppNotificationService>()
-                .Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-        }
-
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json",
-                JsonConvert.SerializeObject(_themer));
-        }
-        catch
-        {
-            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                        "\\SakuOverclock\\theme.json");
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\theme.json",
-                JsonConvert.SerializeObject(_themer));
-            App.GetService<IAppNotificationService>()
-                .Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-        }
-    }
-
+    }   
     private void NotifySave()
     {
         try
@@ -922,15 +850,14 @@ public sealed partial class SettingsPage
         {
             return;
         }
-
-        ThemeLoad(); //Если нет конфига с темами - создать! 
+ 
         SettingsService.ThemeType = ThemeCombobox.SelectedIndex;
         SettingsService.SaveSettings(); 
-        if (_themer.Themes.Count != 0)
+        if (_themeSelectorService.Themes.Count != 0)
         {
             try
             {
-                ViewModel.SwitchThemeCommand.Execute(_themer.Themes[SettingsService.ThemeType].ThemeLight
+                ViewModel.SwitchThemeCommand.Execute(_themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight
                     ? ElementTheme.Light
                     : ElementTheme.Dark);
             }
@@ -945,12 +872,12 @@ public sealed partial class SettingsPage
                 ViewModel.SwitchThemeCommand.Execute(ElementTheme.Default);
             }
 
-            ThemeCustom.IsOn = _themer.Themes[SettingsService.ThemeType].ThemeCustom;
-            ThemeOpacity.Value = _themer.Themes[SettingsService.ThemeType].ThemeOpacity;
-            ThemeMaskOpacity.Value = _themer.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
-            ThemeCustomBg.IsOn = _themer.Themes[SettingsService.ThemeType].ThemeCustomBg;
+            ThemeCustom.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustom;
+            ThemeOpacity.Value = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity;
+            ThemeMaskOpacity.Value = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
+            ThemeCustomBg.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustomBg;
             ThemeCustomBg.IsEnabled = ThemeCombobox.SelectedIndex > 7;
-            ThemeLight.IsOn = _themer.Themes[SettingsService.ThemeType].ThemeLight;
+            ThemeLight.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight;
             ThemeLight.Visibility = ThemeCombobox.SelectedIndex > 7 ? Visibility.Visible : Visibility.Collapsed;
             ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
             Theme_Custom();
@@ -971,10 +898,9 @@ public sealed partial class SettingsPage
             return;
         }
 
-        Theme_Custom();
-        ThemeLoad();
-        _themer.Themes[SettingsService.ThemeType].ThemeCustom = ThemeCustom.IsOn;
-        ThemeSave();
+        Theme_Custom(); 
+        _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustom = ThemeCustom.IsOn;
+        _themeSelectorService.SaveCustomTheme();
     }
 
     private void ThemeOpacity_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
@@ -983,10 +909,9 @@ public sealed partial class SettingsPage
         {
             return;
         }
-
-        ThemeLoad();
-        _themer.Themes[SettingsService.ThemeType].ThemeOpacity = ThemeOpacity.Value;
-        ThemeSave();
+ 
+        _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity = ThemeOpacity.Value;
+        _themeSelectorService.SaveCustomTheme();
         NotifyLoad();
         _notify.Notifies ??= [];
         _notify.Notifies.Add(new Notify
@@ -1002,10 +927,9 @@ public sealed partial class SettingsPage
         {
             return;
         }
-
-        ThemeLoad();
-        _themer.Themes[SettingsService.ThemeType].ThemeMaskOpacity = ThemeMaskOpacity.Value;
-        ThemeSave();
+ 
+        _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity = ThemeMaskOpacity.Value;
+        _themeSelectorService.SaveCustomTheme();
         NotifyLoad();
         _notify.Notifies ??= [];
         _notify.Notifies.Add(new Notify
@@ -1021,10 +945,9 @@ public sealed partial class SettingsPage
         {
             return;
         }
-
-        ThemeLoad();
-        _themer.Themes[SettingsService.ThemeType].ThemeCustomBg = ThemeCustomBg.IsOn;
-        ThemeSave();
+ 
+        _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustomBg = ThemeCustomBg.IsOn;
+        _themeSelectorService.SaveCustomTheme();
         ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
     }
 
@@ -1242,10 +1165,9 @@ public sealed partial class SettingsPage
             {
                 if (endStringPath != "")
                 {
-                    var backupIndex = ThemeCombobox.SelectedIndex;
-                    ThemeLoad();
-                    _themer.Themes[backupIndex].ThemeBackground = endStringPath;
-                    ThemeSave();
+                    var backupIndex = ThemeCombobox.SelectedIndex; 
+                    _themeSelectorService.Themes[backupIndex].ThemeBackground = endStringPath;
+                    _themeSelectorService.SaveCustomTheme();
                     NotifyLoad();
                     _notify.Notifies ??= [];
                     _notify.Notifies.Add(new Notify
@@ -1295,21 +1217,20 @@ public sealed partial class SettingsPage
                 },
                 CloseButtonText = "ThemeDone".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
-            };
-            ThemeLoad();
+            }; 
             try
             {
-                if (_themer.Themes.Count != 0)
+                if (_themeSelectorService.Themes.Count != 0)
                 {
-                    for (var element = 8; element < _themer.Themes.Count; element++)
+                    for (var element = 8; element < _themeSelectorService.Themes.Count; element++)
                     {
-                        var baseThemeName = _themer.Themes[element].ThemeName;
+                        var baseThemeName = _themeSelectorService.Themes[element].ThemeName;
                         Uri? baseThemeUri;
-                        if (_themer.Themes[element].ThemeBackground != "")
+                        if (_themeSelectorService.Themes[element].ThemeBackground != "")
                         {
                             try
                             {
-                                baseThemeUri = new Uri(_themer.Themes[element].ThemeBackground);
+                                baseThemeUri = new Uri(_themeSelectorService.Themes[element].ThemeBackground);
                             }
                             catch
                             {
@@ -1419,7 +1340,7 @@ public sealed partial class SettingsPage
                                         MinHeight = 40,
                                         CornerRadius = new CornerRadius(17),
                                         Width = 430,
-                                        Opacity = _themer.Themes[element].ThemeOpacity,
+                                        Opacity = _themeSelectorService.Themes[element].ThemeOpacity,
                                         VerticalAlignment = VerticalAlignment.Stretch,
                                         HorizontalAlignment = HorizontalAlignment.Stretch,
                                         Background = new ImageBrush
@@ -1437,7 +1358,7 @@ public sealed partial class SettingsPage
                                         HorizontalAlignment = HorizontalAlignment.Stretch,
                                         Background =
                                             (Brush)Application.Current.Resources["BackgroundImageMaskAcrylicBrush"],
-                                        Opacity = _themer.Themes[element].ThemeMaskOpacity
+                                        Opacity = _themeSelectorService.Themes[element].ThemeMaskOpacity
                                     },
                                     new Grid
                                     {
@@ -1462,10 +1383,10 @@ public sealed partial class SettingsPage
                         {
                             if (textBoxThemeName.Text != "" || textBoxThemeName.Text != name)
                             {
-                                _themer.Themes[int.Parse(sureDelete.Name)].ThemeName = textBoxThemeName.Text;
+                                _themeSelectorService.Themes[int.Parse(sureDelete.Name)].ThemeName = textBoxThemeName.Text;
                                 themeNameText.Text = textBoxThemeName.Text;
                                 editFlyout.Hide();
-                                ThemeSave();
+                                _themeSelectorService.SaveCustomTheme();
                                 InitVal();
                             }
                         };
@@ -1483,8 +1404,8 @@ public sealed partial class SettingsPage
                         {
                             try
                             {
-                                _themer.Themes.RemoveAt(int.Parse(sureDelete.Name));
-                                ThemeSave(); 
+                                _themeSelectorService.Themes.RemoveAt(int.Parse(sureDelete.Name));
+                                _themeSelectorService.SaveCustomTheme();
                                 SettingsService.ThemeType = 0;
                                 SettingsService.SaveSettings();
                                 InitVal();
@@ -1552,10 +1473,10 @@ public sealed partial class SettingsPage
                         {
                             try
                             {
-                                _themer.Themes.Add(new ThemeClass { ThemeName = textBoxThemeName.Text });
+                                _themeSelectorService.Themes.Add(new ThemeClass { ThemeName = textBoxThemeName.Text });
                                 newTheme.Flyout.Hide();
                                 themerDialog.Hide();
-                                ThemeSave();
+                                _themeSelectorService.SaveCustomTheme();
                                 InitVal();
                             }
                             catch
@@ -1594,10 +1515,9 @@ public sealed partial class SettingsPage
         {
             return;
         }
-
-        ThemeLoad();
-        _themer.Themes[SettingsService.ThemeType].ThemeLight = ThemeLight.IsOn;
-        ThemeSave();
+ 
+        _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight = ThemeLight.IsOn;
+        _themeSelectorService.SaveCustomTheme();
         //if (ThemeLight.IsOn) { ViewModel.SwitchThemeCommand.Execute(ElementTheme.Light); } else { ViewModel.SwitchThemeCommand.Execute(ElementTheme.Dark); }
         NotifyLoad();
         _notify.Notifies ??= [];

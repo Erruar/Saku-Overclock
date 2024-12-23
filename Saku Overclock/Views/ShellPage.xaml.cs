@@ -15,7 +15,8 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers; 
+using Saku_Overclock.Helpers;
+using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Button = Microsoft.UI.Xaml.Controls.Button;
@@ -45,8 +46,8 @@ public sealed partial class ShellPage
         get;
     }
 
-    private bool _fixedTitleBar; // Флаг фиксированного тайтлбара
-    private Themer _themer = new(); // Класс с темами приложения
+    private bool _fixedTitleBar; // Флаг фиксированного тайтлбара 
+    private readonly IThemeSelectorService _themeSelectorService = App.GetService<IThemeSelectorService>();
 
     public static string SelectedProfile
     {
@@ -1385,19 +1386,18 @@ public sealed partial class ShellPage
     #endregion
 
     private void Theme_Loader()
-    {
-        ThemeLoad();
+    { 
         try
         {
-            ThemeOpacity.Opacity = _themer.Themes[SettingsService.ThemeType].ThemeOpacity;
-            ThemeMaskOpacity.Opacity = _themer.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
+            ThemeOpacity.Opacity = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity;
+            ThemeMaskOpacity.Opacity = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
             var themeMobil = App.GetService<SettingsViewModel>();
-            var themeLight = _themer.Themes[SettingsService.ThemeType].ThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+            var themeLight = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight ? ElementTheme.Light : ElementTheme.Dark;
             themeMobil.SwitchThemeCommand.Execute(themeLight);
             if (SettingsService.ThemeType > 2)
             {
                 ThemeBackground.ImageSource =
-                    new BitmapImage(new Uri(_themer.Themes[SettingsService.ThemeType].ThemeBackground));
+                    new BitmapImage(new Uri(_themeSelectorService.Themes[SettingsService.ThemeType].ThemeBackground));
             }
         }
         catch
@@ -1409,7 +1409,7 @@ public sealed partial class ShellPage
                 _notify.Notifies.Add(new Notify
                 {
                     Title =
-                        "ThemeError".GetLocalized() + "\"" + $"{_themer.Themes[SettingsService.ThemeType].ThemeName}" + "\"",
+                        "ThemeError".GetLocalized() + "\"" + $"{_themeSelectorService.Themes[SettingsService.ThemeType].ThemeName}" + "\"",
                     Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error
                 });
             }
@@ -1514,18 +1514,18 @@ public sealed partial class ShellPage
         }
     }
 
-    private void ThemeLoad()
+    /*private void ThemeLoad()
     {
         try
         {
-            _themer = JsonConvert.DeserializeObject<Themer>(File.ReadAllText(
+            _themeSelectorService.Themes = JsonConvert.DeserializeObject<Themer>(File.ReadAllText(
                 Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\theme.json"))!;
-            if (_themer.Themes.Count > 8)
+            if (_themeSelectorService.Themes.Themes.Count > 8)
             {
-                _themer.Themes.RemoveRange(0, 8);
+                _themeSelectorService.Themes.Themes.RemoveRange(0, 8);
             }
 
-            if (_themer.Themes.Count == 0)
+            if (_themeSelectorService.Themes.Themes.Count == 0)
             {
                 JsonRepair('t');
             }
@@ -1535,37 +1535,12 @@ public sealed partial class ShellPage
             JsonRepair('t');
         }
     }
+    */
 
     private void JsonRepair(char file)
     {
         switch (file)
-        {
-            case 't':
-            {
-                _themer = new Themer();
-                try
-                {
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\theme.json",
-                        JsonConvert.SerializeObject(_themer));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\theme.json");
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\theme.json",
-                        JsonConvert.SerializeObject(_themer));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                }
-
-                break;
-            } 
+        { 
             case 'p':
             {
                 _profile = [];
