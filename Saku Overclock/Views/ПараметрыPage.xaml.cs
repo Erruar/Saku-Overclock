@@ -197,15 +197,21 @@ public sealed partial class ПараметрыPage
 
     private static void SmuSettingsLoad()
     {
-        try
+        var filePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\smusettings.json";
+        if (File.Exists(filePath))
         {
-            _smusettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\smusettings.json"))!;
+            try
+            {
+                _smusettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(filePath))!;
+            }
+            catch
+            {
+                JsonRepair('s');
+            }
         }
-        catch (Exception ex)
+        else
         {
             JsonRepair('s');
-            TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -365,7 +371,10 @@ public sealed partial class ПараметрыPage
             else
             {
                 _indexprofile = SettingsService.Preset;
-                ProfileCOM.SelectedIndex = _indexprofile + 1;
+                if (ProfileCOM.Items.Count >= _indexprofile + 1)
+                {
+                    ProfileCOM.SelectedIndex = _indexprofile + 1;
+                }
             }
         }
 
@@ -693,7 +702,9 @@ public sealed partial class ПараметрыPage
                 ActionButton_Apply.IsEnabled = false;
                 ActionButton_Delete.IsEnabled = false;
                 ActionButton_Mon.IsEnabled = false;
-                ActionButton_Save.IsEnabled = false;
+                ActionButton_Save.IsEnabled = true;
+                ActionButton_Save.BorderBrush = new SolidColorBrush(Colors.Red);
+                ActionButton_Save.BorderThickness = new Thickness(8);
                 ActionButton_Share.IsEnabled = false;
                 EditProfileButton.IsEnabled = false;
                 Action_IncompatibleProfile.IsOpen = true;
@@ -701,6 +712,8 @@ public sealed partial class ПараметрыPage
             }
             else
             {
+                ActionButton_Save.BorderBrush = ActionButton_Delete.BorderBrush;
+                ActionButton_Save.BorderThickness = ActionButton_Delete.BorderThickness;
                 MainScroll.IsEnabled = true;
                 ActionButton_Apply.IsEnabled = true;
                 ActionButton_Delete.IsEnabled = true;
