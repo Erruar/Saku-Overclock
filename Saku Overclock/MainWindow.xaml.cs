@@ -210,7 +210,8 @@ public sealed partial class MainWindow
                                              "\\SakuOverclock\\profile.json";
                 if (File.Exists(profileFolder))
                 {
-                    var profile = JsonConvert.DeserializeObject<Profile[]>(profileFolder)!;
+                    var profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json"))!;
                     if (SettingsService.Preset >= profile.Length && profile[SettingsService.Preset].autoPstate && profile[SettingsService.Preset].enablePstateEditor)
                     {
                         ПараметрыPage.WritePstates();
