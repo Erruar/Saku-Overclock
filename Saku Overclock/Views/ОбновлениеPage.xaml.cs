@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Newtonsoft.Json;
+using Microsoft.UI.Xaml.Controls; 
 using Octokit;
+using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 
@@ -10,74 +10,28 @@ namespace Saku_Overclock.Views;
 
 public sealed partial class ОбновлениеPage
 {
-    private static JsonContainers.Notifications _notify = new(); // Уведомления приложения
     private static Release? _newVersion = UpdateChecker.GetNewVersion();
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>();
 
     public ОбновлениеPage()
     {
         App.GetService<ОбновлениеViewModel>();
         InitializeComponent();
         MainWindow.Remove_ContextMenu_Tray();
-        NotifyLoad();
-        _notify.Notifies ??= [];
-        _notify.Notifies.Add(new Notify { Title = "UpdateNAVBAR", Msg = "true", Type = InfoBarSeverity.Informational });
-        NotifySave();
+        NotificationsService.Notifies ??= [];
+        NotificationsService.Notifies.Add(new Notify
+            { Title = "UpdateNAVBAR", Msg = "true", Type = InfoBarSeverity.Informational });
+        NotificationsService.SaveNotificationsSettings();
+
         GetUpdates();
         Unloaded += (_, _) =>
         {
-            NotifyLoad();
-            _notify.Notifies ??= [];
-            _notify.Notifies.Add(new Notify
+            NotificationsService.Notifies ??= [];
+            NotificationsService.Notifies.Add(new Notify
                 { Title = "UpdateNAVBAR", Msg = "true", Type = InfoBarSeverity.Informational });
-            NotifySave();
+            NotificationsService.SaveNotificationsSettings();
         };
     }
-
-    #region JSON
-
-    private static void NotifySave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
-                JsonConvert.SerializeObject(_notify, Formatting.Indented));
-        }
-        catch (Exception ex)
-        {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
-        }
-    }
-
-    private static void NotifyLoad()
-    {
-        var success = false;
-        var retryCount = 1;
-        while (!success && retryCount < 3)
-        {
-            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                            @"\SakuOverclock\notify.json"))
-            {
-                try
-                {
-                    _notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(
-                        File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                         @"\SakuOverclock\notify.json"))!;
-                    success = true;
-                }
-                catch (Exception ex)
-                {
-                    SendSmuCommand.TraceIt_TraceError(ex.ToString());
-                }
-            }
-
-            retryCount++;
-        }
-    }
-
-    #endregion
 
     #region Updater
 
@@ -104,8 +58,7 @@ public sealed partial class ОбновлениеPage
                 await UpdateChecker.GenerateReleaseInfoString();
             }
 
-            await ГлавнаяPage.GenerateFormattedReleaseNotes(MainChangelogContent);
-            //MainChangelogStackPanel.Children.Add(new TextBlock { Text = UpdateChecker.GitHubInfoString, TextWrapping = Microsoft.UI.Xaml.TextWrapping.WrapWholeWords, Width = 274, Foreground = (Brush)Application.Current.Resources["AccentColor"] });
+            await ГлавнаяPage.GenerateFormattedReleaseNotes(MainChangelogContent); 
         }
         catch (Exception e)
         {
