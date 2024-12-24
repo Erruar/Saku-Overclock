@@ -32,7 +32,7 @@ public sealed partial class ПараметрыPage
     private List<SmuAddressSet>? _matches; // Совпадения адресов SMU 
     private static Smusettings _smusettings = new(); // Загрузка настроек быстрых команд SMU
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
-    private static JsonContainers.Notifications _notify = new(); // Уведомления приложения
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private int _indexprofile; // Выбранный профиль
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>(); 
 
@@ -120,65 +120,7 @@ public sealed partial class ПараметрыPage
             TraceIt_TraceError(exception.ToString());
         }
     }
- 
-    private static void NotifySave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
-                JsonConvert.SerializeObject(_notify, Formatting.Indented));
-        }
-        catch (Exception ex)
-        {
-            TraceIt_TraceError(ex.ToString());
-        }
-    }
-
-    private static async void NotifyLoad()
-    {
-        try
-        {
-            var success = false;
-            var retryCount = 1;
-            while (!success && retryCount < 3)
-            {
-                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\notify.json"))
-                {
-                    try
-                    {
-                        _notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(
-                            await File.ReadAllTextAsync(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                                        @"\SakuOverclock\notify.json"))!;
-                        success = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        TraceIt_TraceError(ex.ToString());
-                        JsonRepair('n');
-                    }
-                }
-                else
-                {
-                    JsonRepair('n');
-                }
-
-                if (!success)
-                {
-                    await Task.Delay(30);
-                    retryCount++;
-                }
-            }
-        }
-        catch
-        {
-            // Игнорим
-        }
-    }
-
+  
     private static void SmuSettingsSave()
     {
         try
@@ -300,32 +242,7 @@ public sealed partial class ПараметрыPage
                     App.MainWindow.Close();
                 }
 
-                break;
-            case 'n':
-                _notify = new JsonContainers.Notifications();
-                try
-                {
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
-                        JsonConvert.SerializeObject(_notify));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\notify.json");
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
-                        JsonConvert.SerializeObject(_notify));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                    App.MainWindow.Close();
-                }
-
-                break;
+                break; 
         }
     }
 
@@ -1324,16 +1241,15 @@ public sealed partial class ПараметрыPage
     private static void TraceIt_TraceError(string error) // Система TraceIt! позволит логгировать все ошибки
     {
         if (error != string.Empty)
-        {
-            NotifyLoad(); // Добавить уведомление
-            _notify.Notifies ??= [];
-            _notify.Notifies.Add(new Notify
+        { 
+            NotificationsService.Notifies ??= [];
+            NotificationsService.Notifies.Add(new Notify
             {
                 Title = "TraceIt_Error".GetLocalized(),
                 Msg = error,
                 Type = InfoBarSeverity.Error
             });
-            NotifySave();
+            NotificationsService.SaveNotificationsSettings();
         }
     }
 
@@ -5121,16 +5037,15 @@ public sealed partial class ПараметрыPage
                 await Task.Delay(3000);
                 Apply_tooltip.IsOpen = false;
             }
-
-            NotifyLoad();
-            _notify.Notifies ??= [];
-            _notify.Notifies.Add(new Notify
+ 
+            NotificationsService.Notifies ??= [];
+            NotificationsService.Notifies.Add(new Notify
             {
                 Title = Apply_tooltip.Title,
                 Msg = Apply_tooltip.Subtitle + (ApplyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
                 Type = infoSet
             });
-            NotifySave();
+            NotificationsService.SaveNotificationsSettings();
             _cpusend ??= new SendSmuCommand();
             _cpusend.Play_Invernate_QuickSMU(0);
         }
@@ -5171,16 +5086,15 @@ public sealed partial class ПараметрыPage
                         _profile = [.. profileList];
                     }
 
-                    _waitforload = false;
-                    NotifyLoad();
-                    _notify.Notifies ??= [];
-                    _notify.Notifies.Add(new Notify
+                    _waitforload = false; 
+                    NotificationsService.Notifies ??= [];
+                    NotificationsService.Notifies.Add(new Notify
                     {
                         Title = "SaveSuccessTitle".GetLocalized(),
                         Msg = "SaveSuccessDesc".GetLocalized() + " " + SaveProfileN.Text,
                         Type = InfoBarSeverity.Success
                     });
-                    NotifySave();
+                    NotificationsService.SaveNotificationsSettings();
                 }
                 catch
                 {
@@ -5190,16 +5104,15 @@ public sealed partial class ПараметрыPage
                 }
             }
             else
-            {
-                NotifyLoad();
-                _notify.Notifies ??= [];
-                _notify.Notifies.Add(new Notify
+            { 
+                NotificationsService.Notifies ??= [];
+                NotificationsService.Notifies.Add(new Notify
                 {
                     Title = Add_tooltip_Error.Title,
                     Msg = Add_tooltip_Error.Subtitle,
                     Type = InfoBarSeverity.Error
                 });
-                NotifySave();
+                NotificationsService.SaveNotificationsSettings();
                 Add_tooltip_Error.IsOpen = true;
                 await Task.Delay(3000);
                 Add_tooltip_Error.IsOpen = false;
@@ -5253,36 +5166,33 @@ public sealed partial class ПараметрыPage
 
                     ProfileCOM.SelectedIndex = 0;
                     _waitforload = false;
-                    ProfileCOM.SelectedItem = EditProfileN.Text;
-                    NotifyLoad();
-                    _notify.Notifies ??= [];
-                    _notify.Notifies.Add(new Notify
+                    ProfileCOM.SelectedItem = EditProfileN.Text; 
+                    NotificationsService.Notifies ??= [];
+                    NotificationsService.Notifies.Add(new Notify
                     {
                         Title = Edit_tooltip.Title,
                         Msg = Edit_tooltip.Subtitle + " " + SaveProfileN.Text,
                         Type = InfoBarSeverity.Success
-                    });
-                    NotifySave();
+                    }); 
                     Edit_tooltip.IsOpen = true;
                     await Task.Delay(3000);
                     Edit_tooltip.IsOpen = false;
                 }
             }
             else
-            {
-                NotifyLoad();
-                _notify.Notifies ??= [];
-                _notify.Notifies.Add(new Notify
+            { 
+                NotificationsService.Notifies ??= [];
+                NotificationsService.Notifies.Add(new Notify
                 {
                     Title = Edit_tooltip_Error.Title,
                     Msg = Edit_tooltip_Error.Subtitle,
                     Type = InfoBarSeverity.Error
                 });
-                NotifySave();
                 Edit_tooltip_Error.IsOpen = true;
                 await Task.Delay(3000);
                 Edit_tooltip_Error.IsOpen = false;
             }
+            NotificationsService.SaveNotificationsSettings();
         }
         catch (Exception exception)
         {
@@ -5314,15 +5224,14 @@ public sealed partial class ПараметрыPage
             {
                 if (ProfileCOM.SelectedIndex == 0)
                 {
-                    NotifyLoad();
-                    _notify.Notifies ??= [];
-                    _notify.Notifies.Add(new Notify
+                    NotificationsService.Notifies ??= [];
+                    NotificationsService.Notifies.Add(new Notify
                     {
                         Title = Delete_tooltip_error.Title,
                         Msg = Delete_tooltip_error.Subtitle,
                         Type = InfoBarSeverity.Error
                     });
-                    NotifySave();
+                    NotificationsService.SaveNotificationsSettings();
                     Delete_tooltip_error.IsOpen = true;
                     await Task.Delay(3000);
                     Delete_tooltip_error.IsOpen = false;
@@ -5337,16 +5246,15 @@ public sealed partial class ПараметрыPage
                     _profile = [.. profileList];
                     _indexprofile = 0;
                     _waitforload = false;
-                    ProfileCOM.SelectedIndex = 0;
-                    NotifyLoad();
-                    _notify.Notifies ??= [];
-                    _notify.Notifies.Add(new Notify
+                    ProfileCOM.SelectedIndex = 0; 
+                    NotificationsService.Notifies ??= [];
+                    NotificationsService.Notifies.Add(new Notify
                     {
                         Title = "DeleteSuccessTitle".GetLocalized(),
                         Msg = "DeleteSuccessDesc".GetLocalized(),
                         Type = InfoBarSeverity.Success
                     });
-                    NotifySave();
+                    NotificationsService.SaveNotificationsSettings();
                 }
 
                 ProfileSave();
