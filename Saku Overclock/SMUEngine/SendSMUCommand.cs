@@ -2,8 +2,7 @@
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
-using Saku_Overclock.Services;
+using Saku_Overclock.JsonContainers; 
 using Saku_Overclock.Views;
 using ZenStates.Core;
 
@@ -79,8 +78,8 @@ internal class SendSmuCommand
     public static Cpu.CodeName Codename;
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
     private static string _cpuCodenameString = string.Empty;
-    private Smusettings _smusettings = new();
-    private static JsonContainers.Notifications _notify = new();
+    private Smusettings _smusettings = new(); 
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); 
     private readonly Mailbox _testMailbox = new();
     private Profile[] _profile = new Profile[1];
     private bool _cancelrange;
@@ -144,89 +143,7 @@ internal class SendSmuCommand
             JsonRepair('p');
             TraceIt_TraceError(ex.ToString());
         }
-    } 
-    private static async void NotifyLoad()
-    {
-        try
-        {
-            var success = false;
-            var retryCount = 1;
-            while (!success && retryCount < 3)
-            {
-                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\notify.json"))
-                {
-                    try
-                    {
-                        _notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(
-                            await File.ReadAllTextAsync(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                                        @"\SakuOverclock\notify.json"))!;
-                        success = true;
-                    }
-                    catch
-                    {
-                        RepairTraceIt_Notify();
-                    }
-                }
-                else
-                {
-                    RepairTraceIt_Notify();
-                }
-
-                if (!success)
-                {
-                    await Task.Delay(30);
-                    retryCount++;
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            TraceIt_TraceError(e.ToString());
-        }
-    }
-
-    private static void NotifySave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
-                JsonConvert.SerializeObject(_notify, Formatting.Indented));
-        }
-        catch (Exception ex)
-        {
-            TraceIt_TraceError(ex.ToString());
-        }
-    }
-
-    private static void RepairTraceIt_Notify()
-    {
-        _notify = new JsonContainers.Notifications();
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
-                JsonConvert.SerializeObject(_notify));
-        }
-        catch
-        {
-            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json");
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
-                JsonConvert.SerializeObject(_notify));
-            App.GetService<IAppNotificationService>()
-                .Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-            App.MainWindow.Close();
-        }
-    }
-
+    }   
     private void JsonRepair(char file)
     {
         switch (file)
@@ -432,7 +349,7 @@ internal class SendSmuCommand
                     _cpuCodenameString = Codename.ToString();
                     if (_cpuCodenameString == string.Empty)
                     {
-                        _cpuCodenameString = RyzenADJWrapper.GetCPUCodename();
+                        _cpuCodenameString = RyzenAdjWrapper.GetCpuCodename();
                     }
                 }
 
@@ -644,7 +561,7 @@ internal class SendSmuCommand
                 _cpuCodenameString = Codename.ToString();
                 if (_cpuCodenameString == string.Empty)
                 {
-                    _cpuCodenameString = RyzenADJWrapper.GetCPUCodename();
+                    _cpuCodenameString = RyzenAdjWrapper.GetCpuCodename();
                 }
             }
 
@@ -832,12 +749,11 @@ internal class SendSmuCommand
     public static void TraceIt_TraceError(string error) //Система TraceIt! позволит логгировать все ошибки
     {
         if (error != string.Empty)
-        {
-            NotifyLoad(); //Добавить уведомление
-            _notify.Notifies ??= [];
-            _notify.Notifies.Add(new Notify
+        { 
+            NotificationsService.Notifies ??= [];
+            NotificationsService.Notifies.Add(new Notify
                 { Title = "TraceIt_Error".GetLocalized(), Msg = error, Type = InfoBarSeverity.Error });
-            NotifySave();
+            NotificationsService.SaveNotificationsSettings();
         }
     }
 
@@ -1163,10 +1079,7 @@ internal class SendSmuCommand
             ("oc-volt", true, 0x33),
             ("dgpu-skin-temp", true, 0x37),
             ("apu-skin-temp", true, 0x39),
-            ("skin-temp-limit", true, 0x53),
-            ("set-coper", true, 0x54),
-            ("set-coall", true, 0x55),
-            ("set-cogfx", true, 0x64),
+            ("skin-temp-limit", true, 0x53), 
             ("enable-oc", false, 0x17), // Use RSMU address
             ("disable-oc", false, 0x18),
             ("oc-clk", false, 0x19),
@@ -1177,8 +1090,12 @@ internal class SendSmuCommand
             ("cHTC-temp", false, 0x37),
             ("pbo-scalar", false, 0x3F),
             ("set-cogfx", false, 0x57),
+            ("set-coper", true, 0x54),
+            ("set-coper", false, 0x52),
+            ("set-coall", true, 0x55),
+            ("set-cogfx", true, 0x64),
+            ("set-coall", false, 0xB1),
             ("gfx-clk", false, 0x89),
-            ("set-coall", false, 0xB1)
         ];
     }
 
@@ -1234,8 +1151,9 @@ internal class SendSmuCommand
             ("pbo-scalar", false, 0x3E),
             ("oc-clk", false, 0x19),
             ("per-core-oc-clk", false, 0x1a),
-            ("set-coall", true, 0x4c),
             ("set-coall", false, 0x5d),
+            ("set-coper", false, 0x53),
+            ("set-coall", true, 0x4c),
             ("set-coper", true, 0x4b),
             ("set-cogfx", false, 0xb7),
             ("enable-oc", false, 0x17),
@@ -1335,24 +1253,25 @@ internal class SendSmuCommand
             ("stapm-limit", false, 0x53), // Use RSMU address
             ("vrm-current", true, 0x3B),
             ("vrm-current", false, 0x54),
-            ("vrmmax-current", true, 0x3c),
+            ("vrmmax-current", true, 0x3C),
             ("vrmmax-current", false, 0x55),
             ("tctl-temp", true, 0x23),
             ("tctl-temp", false, 0x56),
             ("pbo-scalar", false, 0x58),
             ("oc-clk", true, 0x26),
-            ("oc-clk", false, 0x5c),
+            ("oc-clk", false, 0x5C),
             ("per-core-oc-clk", true, 0x27),
-            ("per-core-oc-clk", false, 0x5d),
+            ("per-core-oc-clk", false, 0x5D),
             ("oc-volt", true, 0x28),
             ("oc-volt", false, 0x61),
             ("set-coall", true, 0x36),
-            ("set-coall", false, 0xb),
             ("set-coper", true, 0x35),
+            ("set-coall", false, 0xB),
+            ("set-coper", false, 0xA), 
             ("enable-oc", true, 0x24),
-            ("enable-oc", false, 0x5a),
+            ("enable-oc", false, 0x5A),
             ("disable-oc", true, 0x25),
-            ("disable-oc", false, 0x5b),
+            ("disable-oc", false, 0x5B),
         ];
     }
 
