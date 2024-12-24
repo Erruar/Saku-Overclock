@@ -34,7 +34,7 @@ public sealed partial class SettingsPage
     private RTSSsettings _rtssset = new();
     private NiIconsSettings _niicons = new();
     private bool _isLoaded;
-    private JsonContainers.Notifications _notify = new();
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); 
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
 
     public SettingsPage()
@@ -635,67 +635,7 @@ public sealed partial class SettingsPage
             _niicons = new NiIconsSettings();
             NiSave();
         }
-    }   
-    private void NotifySave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\notify.json",
-                JsonConvert.SerializeObject(_notify, Formatting.Indented));
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private async void NotifyLoad()
-    {
-        try
-        {
-            var success = false;
-            var retryCount = 1;
-            while (!success && retryCount < 3)
-            {
-                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                "\\SakuOverclock\\notify.json"))
-                {
-                    try
-                    {
-                        _notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(
-                            await File.ReadAllTextAsync(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                                        "\\SakuOverclock\\notify.json"))!;
-                        success = true;
-                    }
-                    catch
-                    {
-                        _notify = new JsonContainers.Notifications();
-                        NotifySave();
-                    }
-                }
-                else
-                {
-                    _notify = new JsonContainers.Notifications();
-                    NotifySave();
-                }
-
-                if (!success)
-                {
-                    // Сделайте задержку перед следующей попыткой
-                    await Task.Delay(30);
-                    retryCount++;
-                }
-            }
-        }
-        catch  
-        {
-            //
-        }
-    }
-
+    }    
     #endregion
 
     #region Event Handlers
@@ -880,14 +820,13 @@ public sealed partial class SettingsPage
             ThemeLight.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight;
             ThemeLight.Visibility = ThemeCombobox.SelectedIndex > 7 ? Visibility.Visible : Visibility.Collapsed;
             ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
-            Theme_Custom();
-            NotifyLoad();
-            _notify.Notifies ??= [];
-            _notify.Notifies.Add(new Notify
+            Theme_Custom(); 
+            NotificationsService.Notifies ??= [];
+            NotificationsService.Notifies.Add(new Notify
             {
                 Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success
             });
-            NotifySave();
+            NotificationsService.SaveNotificationsSettings();
         }
     }
 
@@ -911,14 +850,13 @@ public sealed partial class SettingsPage
         }
  
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity = ThemeOpacity.Value;
-        _themeSelectorService.SaveThemeInSettings();
-        NotifyLoad();
-        _notify.Notifies ??= [];
-        _notify.Notifies.Add(new Notify
+        _themeSelectorService.SaveThemeInSettings(); 
+        NotificationsService.Notifies ??= [];
+        NotificationsService.Notifies.Add(new Notify
         {
             Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success
         });
-        NotifySave();
+        NotificationsService.SaveNotificationsSettings();
     }
 
     private void ThemeMaskOpacity_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
@@ -929,14 +867,13 @@ public sealed partial class SettingsPage
         }
  
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity = ThemeMaskOpacity.Value;
-        _themeSelectorService.SaveThemeInSettings();
-        NotifyLoad();
-        _notify.Notifies ??= [];
-        _notify.Notifies.Add(new Notify
+        _themeSelectorService.SaveThemeInSettings(); 
+        NotificationsService.Notifies ??= [];
+        NotificationsService.Notifies.Add(new Notify
         {
             Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success
         });
-        NotifySave();
+        NotificationsService.SaveNotificationsSettings();
     }
 
     private void ThemeCustomBg_Toggled(object sender, RoutedEventArgs e)
@@ -1167,15 +1104,14 @@ public sealed partial class SettingsPage
                 {
                     var backupIndex = ThemeCombobox.SelectedIndex; 
                     _themeSelectorService.Themes[backupIndex].ThemeBackground = endStringPath;
-                    _themeSelectorService.SaveThemeInSettings();
-                    NotifyLoad();
-                    _notify.Notifies ??= [];
-                    _notify.Notifies.Add(new Notify
+                    _themeSelectorService.SaveThemeInSettings(); 
+                    NotificationsService.Notifies ??= [];
+                    NotificationsService.Notifies.Add(new Notify
                     {
                         Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS",
                         Type = InfoBarSeverity.Success
                     });
-                    NotifySave();
+                    NotificationsService.SaveNotificationsSettings();
                     ThemeCombobox.SelectedIndex = 0;
                     ThemeCombobox.SelectedIndex = backupIndex;
                 }
@@ -1517,15 +1453,13 @@ public sealed partial class SettingsPage
         }
  
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight = ThemeLight.IsOn;
-        _themeSelectorService.SaveThemeInSettings();
-        //if (ThemeLight.IsOn) { ViewModel.SwitchThemeCommand.Execute(ElementTheme.Light); } else { ViewModel.SwitchThemeCommand.Execute(ElementTheme.Dark); }
-        NotifyLoad();
-        _notify.Notifies ??= [];
-        _notify.Notifies.Add(new Notify
+        _themeSelectorService.SaveThemeInSettings(); 
+        NotificationsService.Notifies ??= [];
+        NotificationsService.Notifies.Add(new Notify
         {
             Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success
         });
-        NotifySave();
+        NotificationsService.SaveNotificationsSettings();
     }
 
     private void C2t_FocusEngaged(object sender, object args)
