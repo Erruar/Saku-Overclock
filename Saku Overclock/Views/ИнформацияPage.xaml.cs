@@ -1092,10 +1092,10 @@ public sealed partial class ИнформацияPage
                 {
                     if (_cpu != null)
                     {
-                        await RyzenADJWrapper.CpuFrequencyManager.RefreshPowerTable(_cpu);
+                        await RyzenAdjWrapper.CpuFrequencyManager.RefreshPowerTable(_cpu);
                         if (infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 1)
                         {
-                            await RyzenADJWrapper.CpuFrequencyManager.InitializeCoreIndexMapAsync(_numberOfCores);
+                            await RyzenAdjWrapper.CpuFrequencyManager.InitializeCoreIndexMapAsync(_numberOfCores);
                         }
                     } 
 
@@ -1121,7 +1121,7 @@ public sealed partial class ИнформацияPage
                 }
                 else
                 {
-                    RyzenADJWrapper.Refresh_table(_ryzenAccess);
+                    RyzenAdjWrapper.Refresh_table(_ryzenAccess);
                 }
 
                 InfoACPUBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
@@ -1162,62 +1162,62 @@ public sealed partial class ИнформацияPage
                     _maxBatRate = currBatRate;
                 }
 
-                if (RyzenADJWrapper.Get_stapm_limit(_ryzenAccess) == 0)
+                if (RyzenAdjWrapper.Get_stapm_limit(_ryzenAccess) == 0)
                 {
                     tbStapmL.Text = "Info_PowerSumInfo_Disabled".GetLocalized();
                 }
                 else
                 {
-                    tbStapmL.Text = Math.Round(RyzenADJWrapper.Get_stapm_value(_ryzenAccess), 3) + "W/" +
-                                    Math.Round(RyzenADJWrapper.Get_stapm_limit(_ryzenAccess), 3) + "W";
+                    tbStapmL.Text = Math.Round(RyzenAdjWrapper.Get_stapm_value(_ryzenAccess), 3) + "W/" +
+                                    Math.Round(RyzenAdjWrapper.Get_stapm_limit(_ryzenAccess), 3) + "W";
                 }
 
-                tbActualL.Text = Math.Round(RyzenADJWrapper.Get_fast_value(_ryzenAccess), 3) + "W/" +
-                                 Math.Round(RyzenADJWrapper.Get_fast_limit(_ryzenAccess), 3) + "W";
+                tbActualL.Text = Math.Round(RyzenAdjWrapper.Get_fast_value(_ryzenAccess), 3) + "W/" +
+                                 Math.Round(RyzenAdjWrapper.Get_fast_limit(_ryzenAccess), 3) + "W";
                 tbAclualPowerL.Text = tbActualL.Text;
-                if (RyzenADJWrapper.Get_slow_limit(_ryzenAccess) == 0)
+                if (RyzenAdjWrapper.Get_slow_limit(_ryzenAccess) == 0)
                 {
                     tbAVGL.Text = "Info_PowerSumInfo_Disabled".GetLocalized();
                 }
                 else
                 {
-                    tbAVGL.Text = Math.Round(RyzenADJWrapper.Get_slow_value(_ryzenAccess), 3) + "W/" +
-                                  Math.Round(RyzenADJWrapper.Get_slow_limit(_ryzenAccess), 3) + "W";
+                    tbAVGL.Text = Math.Round(RyzenAdjWrapper.Get_slow_value(_ryzenAccess), 3) + "W/" +
+                                  Math.Round(RyzenAdjWrapper.Get_slow_limit(_ryzenAccess), 3) + "W";
                 }
 
-                tbFast.Text = Math.Round(RyzenADJWrapper.Get_stapm_time(_ryzenAccess), 3) + "S";
-                tbSlow.Text = Math.Round(RyzenADJWrapper.Get_slow_time(_ryzenAccess), 3) + "S";
+                tbFast.Text = Math.Round(RyzenAdjWrapper.Get_stapm_time(_ryzenAccess), 3) + "S";
+                tbSlow.Text = Math.Round(RyzenAdjWrapper.Get_slow_time(_ryzenAccess), 3) + "S";
 
-                tbAPUL.Text = Math.Round(RyzenADJWrapper.Get_apu_slow_value(_ryzenAccess), 3) + "W/" +
-                              Math.Round(RyzenADJWrapper.Get_apu_slow_limit(_ryzenAccess), 3) + "W";
+                tbAPUL.Text = Math.Round(RyzenAdjWrapper.Get_apu_slow_value(_ryzenAccess), 3) + "W/" +
+                              Math.Round(RyzenAdjWrapper.Get_apu_slow_limit(_ryzenAccess), 3) + "W";
 
-                tbVRMTDCL.Text = Math.Round(RyzenADJWrapper.Get_vrm_current_value(_ryzenAccess), 3) + "A/" +
-                                 Math.Round(RyzenADJWrapper.Get_vrm_current(_ryzenAccess), 3) + "A";
-                tbSOCTDCL.Text = Math.Round(RyzenADJWrapper.Get_vrmsoc_current_value(_ryzenAccess), 3) + "A/" +
-                                 Math.Round(RyzenADJWrapper.Get_vrmsoc_current(_ryzenAccess), 3) + "A";
-                tbVRMEDCL.Text = Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess), 3) + "A/" +
-                                 Math.Round(RyzenADJWrapper.Get_vrmmax_current(_ryzenAccess), 3) + "A";
+                tbVRMTDCL.Text = Math.Round(RyzenAdjWrapper.Get_vrm_current_value(_ryzenAccess), 3) + "A/" +
+                                 Math.Round(RyzenAdjWrapper.Get_vrm_current(_ryzenAccess), 3) + "A";
+                tbSOCTDCL.Text = Math.Round(RyzenAdjWrapper.Get_vrmsoc_current_value(_ryzenAccess), 3) + "A/" +
+                                 Math.Round(RyzenAdjWrapper.Get_vrmsoc_current(_ryzenAccess), 3) + "A";
+                tbVRMEDCL.Text = Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3) + "A/" +
+                                 Math.Round(RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess), 3) + "A";
                 tbVRMEDCVRML.Text = tbVRMEDCL.Text;
-                infoVRMUsageBanner.Text = Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess), 3) +
-                                          "A\n" + Math.Round(RyzenADJWrapper.Get_fast_value(_ryzenAccess), 3) + "W";
+                infoVRMUsageBanner.Text = Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3) +
+                                          "A\n" + Math.Round(RyzenAdjWrapper.Get_fast_value(_ryzenAccess), 3) + "W";
                 infoIVRMUsageBigBanner.Text = infoVRMUsageBanner.Text;
                 infoAVRMUsageBannerPolygonText.Text =
-                    Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess), 3) + "A";
+                    Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3) + "A";
                 infoAVRMUsageBigBannerPolygonText.Text = infoAVRMUsageBannerPolygonText.Text;
-                tbSOCEDCL.Text = Math.Round(RyzenADJWrapper.Get_vrmsocmax_current_value(_ryzenAccess), 3) + "A/" +
-                                 Math.Round(RyzenADJWrapper.Get_vrmsocmax_current(_ryzenAccess), 3) + "A";
-                tbSOCVOLT.Text = Math.Round(RyzenADJWrapper.Get_soc_volt(_ryzenAccess), 3) == 0
+                tbSOCEDCL.Text = Math.Round(RyzenAdjWrapper.Get_vrmsocmax_current_value(_ryzenAccess), 3) + "A/" +
+                                 Math.Round(RyzenAdjWrapper.Get_vrmsocmax_current(_ryzenAccess), 3) + "A";
+                tbSOCVOLT.Text = Math.Round(RyzenAdjWrapper.Get_soc_volt(_ryzenAccess), 3) == 0
                     ? Math.Round(_cpu!.powerTable.VDDCR_SOC, 3) + "V"
-                    : Math.Round(RyzenADJWrapper.Get_soc_volt(_ryzenAccess), 3) + "V";
-                tbSOCPOWER.Text = Math.Round(RyzenADJWrapper.Get_soc_power(_ryzenAccess), 3) == 0
+                    : Math.Round(RyzenAdjWrapper.Get_soc_volt(_ryzenAccess), 3) + "V";
+                tbSOCPOWER.Text = Math.Round(RyzenAdjWrapper.Get_soc_power(_ryzenAccess), 3) == 0
                     ? Math.Round(_cpu!.powerTable.VDDCR_SOC * 10, 3) + "W"
-                    : Math.Round(RyzenADJWrapper.Get_soc_power(_ryzenAccess), 3) + "W";
-                tbMEMCLOCK.Text = Math.Round(RyzenADJWrapper.Get_mem_clk(_ryzenAccess), 3) == 0
+                    : Math.Round(RyzenAdjWrapper.Get_soc_power(_ryzenAccess), 3) + "W";
+                tbMEMCLOCK.Text = Math.Round(RyzenAdjWrapper.Get_mem_clk(_ryzenAccess), 3) == 0
                     ? Math.Round(_cpu!.powerTable.MCLK, 3) + "InfoFreqBoundsMHZ".GetLocalized()
-                    : Math.Round(RyzenADJWrapper.Get_mem_clk(_ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
-                tbFabricClock.Text = Math.Round(RyzenADJWrapper.Get_fclk(_ryzenAccess), 3) == 0
+                    : Math.Round(RyzenAdjWrapper.Get_mem_clk(_ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
+                tbFabricClock.Text = Math.Round(RyzenAdjWrapper.Get_fclk(_ryzenAccess), 3) == 0
                     ? Math.Round(_cpu!.powerTable.FCLK, 3) + "InfoFreqBoundsMHZ".GetLocalized()
-                    : Math.Round(RyzenADJWrapper.Get_fclk(_ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
+                    : Math.Round(RyzenAdjWrapper.Get_fclk(_ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
                 var coreClk = 0f;
                 var endtrace = 0;
                 var coreVolt = 0f;
@@ -1226,7 +1226,7 @@ public sealed partial class ИнформацияPage
                 var currentPstate = 4;
                 for (uint f = 0; f < 16; f++)
                 {
-                    var getCurrFreq = RyzenADJWrapper.Get_core_clk(_ryzenAccess, f);
+                    var getCurrFreq = RyzenAdjWrapper.Get_core_clk(_ryzenAccess, f);
                     if (!float.IsNaN(getCurrFreq) && getCurrFreq > maxFreq)
                     {
                         maxFreq = getCurrFreq;
@@ -1235,9 +1235,9 @@ public sealed partial class ИнформацияPage
                     var currCore = infoCPUSectionComboBox.SelectedIndex switch
                     {
                         0 => getCurrFreq,
-                        1 => RyzenADJWrapper.Get_core_volt(_ryzenAccess, f),
-                        2 => RyzenADJWrapper.Get_core_power(_ryzenAccess, f),
-                        3 => RyzenADJWrapper.Get_core_temp(_ryzenAccess, f),
+                        1 => RyzenAdjWrapper.Get_core_volt(_ryzenAccess, f),
+                        2 => RyzenAdjWrapper.Get_core_power(_ryzenAccess, f),
+                        3 => RyzenAdjWrapper.Get_core_temp(_ryzenAccess, f),
                         _ => getCurrFreq
                     };
                     if (!float.IsNaN(currCore))
@@ -1287,13 +1287,13 @@ public sealed partial class ИнформацияPage
                                     currText.Text = f switch
                                     {
                                         0 =>
-                                            $"{Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.Get_vrmmax_current(_ryzenAccess), 3)}A",
+                                            $"{Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess), 3)}A",
                                         1 =>
-                                            $"{Math.Round(RyzenADJWrapper.Get_vrm_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.Get_vrm_current(_ryzenAccess), 3)}A",
+                                            $"{Math.Round(RyzenAdjWrapper.Get_vrm_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenAdjWrapper.Get_vrm_current(_ryzenAccess), 3)}A",
                                         2 =>
-                                            $"{Math.Round(RyzenADJWrapper.Get_vrmsocmax_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.Get_vrmsocmax_current(_ryzenAccess), 3)}A",
+                                            $"{Math.Round(RyzenAdjWrapper.Get_vrmsocmax_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenAdjWrapper.Get_vrmsocmax_current(_ryzenAccess), 3)}A",
                                         3 =>
-                                            $"{Math.Round(RyzenADJWrapper.Get_vrmsoc_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenADJWrapper.Get_vrmsoc_current(_ryzenAccess), 3)}A",
+                                            $"{Math.Round(RyzenAdjWrapper.Get_vrmsoc_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenAdjWrapper.Get_vrmsoc_current(_ryzenAccess), 3)}A",
                                         _ => "0A"
                                     };
                                 }
@@ -1315,7 +1315,7 @@ public sealed partial class ИнформацияPage
                         }
                     }
 
-                    var currVolt = RyzenADJWrapper.Get_core_volt(_ryzenAccess, f);
+                    var currVolt = RyzenAdjWrapper.Get_core_volt(_ryzenAccess, f);
                     if (!float.IsNaN(currVolt) && currVolt != 0 && currVolt - -1.0f > 0 && currVolt < 1.7)
                     {
                         coreVolt += currVolt;
@@ -1378,9 +1378,9 @@ public sealed partial class ИнформацияPage
                 }
 
                 tbPSTFREQ.Text = tbCPUFreq.Text;
-                var gfxClk = Math.Round(RyzenADJWrapper.Get_gfx_clk(_ryzenAccess) / 1000, 3);
-                var gfxVolt = Math.Round(RyzenADJWrapper.Get_gfx_volt(_ryzenAccess), 3);
-                var gfxTemp = RyzenADJWrapper.Get_gfx_temp(_ryzenAccess);
+                var gfxClk = Math.Round(RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess) / 1000, 3);
+                var gfxVolt = Math.Round(RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess), 3);
+                var gfxTemp = RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess);
                 var beforeMaxGfx = _maxGfxClock;
                 if (_maxGfxClock < gfxClk)
                 {
@@ -1394,18 +1394,18 @@ public sealed partial class ИнформацияPage
                 infoAGPUUsageBigBannerPolygonText.Text = infoAGPUUsageBannerPolygonText.Text;
                 infoIGPUUsageBigBanner.Text = infoGPUUsageBanner.Text;
                 tbGPUVolt.Text = gfxVolt + "V";
-                var maxTemp = Math.Round(RyzenADJWrapper.Get_tctl_temp(_ryzenAccess), 3);
-                tbCPUMaxL.Text = Math.Round(RyzenADJWrapper.Get_tctl_temp_value(_ryzenAccess), 3) + "C/" + maxTemp +
+                var maxTemp = Math.Round(RyzenAdjWrapper.Get_tctl_temp(_ryzenAccess), 3);
+                tbCPUMaxL.Text = Math.Round(RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess), 3) + "C/" + maxTemp +
                                  "C";
                 tbCPUMaxTempL.Text = tbCPUMaxL.Text;
                 tbCPUMaxTempVRML.Text = tbCPUMaxL.Text;
-                var apuTemp = Math.Round(RyzenADJWrapper.Get_apu_skin_temp_value(_ryzenAccess), 3);
-                var apuTempLimit = Math.Round(RyzenADJWrapper.Get_apu_skin_temp_limit(_ryzenAccess), 3);
+                var apuTemp = Math.Round(RyzenAdjWrapper.Get_apu_skin_temp_value(_ryzenAccess), 3);
+                var apuTempLimit = Math.Round(RyzenAdjWrapper.Get_apu_skin_temp_limit(_ryzenAccess), 3);
                 tbAPUMaxL.Text = (!double.IsNaN(apuTemp) && apuTemp > 0 ? apuTemp : Math.Round(gfxTemp, 3)) + "C/" +
                                  (!double.IsNaN(apuTempLimit) && apuTempLimit > 0 ? apuTempLimit : maxTemp) + "C";
-                tbDGPUMaxL.Text = Math.Round(RyzenADJWrapper.Get_dgpu_skin_temp_value(_ryzenAccess), 3) + "C/" +
-                                  Math.Round(RyzenADJWrapper.Get_dgpu_skin_temp_limit(_ryzenAccess), 3) + "C";
-                var coreCpuUsage = Math.Round(RyzenADJWrapper.Get_cclk_busy_value(_ryzenAccess), 3);
+                tbDGPUMaxL.Text = Math.Round(RyzenAdjWrapper.Get_dgpu_skin_temp_value(_ryzenAccess), 3) + "C/" +
+                                  Math.Round(RyzenAdjWrapper.Get_dgpu_skin_temp_limit(_ryzenAccess), 3) + "C";
+                var coreCpuUsage = Math.Round(RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess), 3);
                 tbCPUUsage.Text = coreCpuUsage + "%";
                 infoACPUUsageBannerPolygonText.Text = Math.Round(coreCpuUsage, 0) + "%";
                 infoICPUUsageBanner.Text = Math.Round(coreCpuUsage, 0) + "%  " + tbCPUFreq.Text + "\n" +
@@ -1515,20 +1515,20 @@ public sealed partial class ИнформацияPage
                 _vrmPointer.Add(new InfoPageCPUPoints
                 {
                     X = 60,
-                    Y = 48 - (int)(RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess) /
-                        RyzenADJWrapper.Get_vrmmax_current(_ryzenAccess) * 48)
+                    Y = 48 - (int)(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess) /
+                        RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess) * 48)
                 });
                 if (VRMFlyout.IsOpen)
                 {
                     InfoAVRMBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
                     InfoAVRMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(60,
-                        48 - (int)(RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess) /
-                            RyzenADJWrapper.Get_vrmmax_current(_ryzenAccess) * 48)));
+                        48 - (int)(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess) /
+                            RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess) * 48)));
                 }
 
                 InfoAVRMBannerPolygon.Points.Add(new Windows.Foundation.Point(60,
-                    48 - (int)(RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess) /
-                        RyzenADJWrapper.Get_vrmmax_current(_ryzenAccess) * 48)));
+                    48 - (int)(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess) /
+                        RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess) * 48)));
                 foreach (var element in _vrmPointer.ToList())
                 {
                     if (element.X < 0)
@@ -1751,7 +1751,7 @@ public sealed partial class ИнформацияPage
 
             if (infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 0 && _ryzenAccess == 0x0)
             {
-                await RyzenADJWrapper.CpuFrequencyManager.AsyncWMIGetCoreFreq(_numberOfCores);
+                await RyzenAdjWrapper.CpuFrequencyManager.AsyncWmiGetCoreFreq(_numberOfCores);
             }
 
             var avgCoreClk = 0d;
@@ -1763,8 +1763,8 @@ public sealed partial class ИнформацияPage
             {
                 if (f < 8)
                 {
-                    var clk = Math.Round(RyzenADJWrapper.Get_core_clk(_ryzenAccess, f), 3);
-                    var volt = Math.Round(RyzenADJWrapper.Get_core_volt(_ryzenAccess, f), 3);
+                    var clk = Math.Round(RyzenAdjWrapper.Get_core_clk(_ryzenAccess, f), 3);
+                    var volt = Math.Round(RyzenAdjWrapper.Get_core_volt(_ryzenAccess, f), 3);
                     avgCoreClk += clk;
                     avgCoreVolt += volt;
                     if (_rtssset.AdvancedCodeEditor == "")
@@ -1790,46 +1790,46 @@ public sealed partial class ИнформацияPage
                                         .Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c')
                                         .Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' '))
                                 .Replace("$stapm_value$",
-                                    Math.Round(RyzenADJWrapper.Get_stapm_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_stapm_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$stapm_limit$",
-                                    Math.Round(RyzenADJWrapper.Get_stapm_limit(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_stapm_limit(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$fast_value$",
-                                    Math.Round(RyzenADJWrapper.Get_fast_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_fast_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$fast_limit$",
-                                    Math.Round(RyzenADJWrapper.Get_fast_limit(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_fast_limit(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$slow_value$",
-                                    Math.Round(RyzenADJWrapper.Get_slow_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_slow_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$slow_limit$",
-                                    Math.Round(RyzenADJWrapper.Get_slow_limit(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_slow_limit(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$vrmedc_value$",
-                                    Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$vrmedc_max$",
-                                    Math.Round(RyzenADJWrapper.Get_vrmmax_current(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$cpu_temp_value$",
-                                    Math.Round(RyzenADJWrapper.Get_tctl_temp_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$cpu_temp_max$",
-                                    Math.Round(RyzenADJWrapper.Get_tctl_temp(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_tctl_temp(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$cpu_usage$",
-                                    Math.Round(RyzenADJWrapper.Get_cclk_busy_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$gfx_clock$",
-                                    Math.Round(RyzenADJWrapper.Get_gfx_clk(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$gfx_volt$",
-                                    Math.Round(RyzenADJWrapper.Get_gfx_volt(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$gfx_temp$",
-                                    Math.Round(RyzenADJWrapper.Get_gfx_temp(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$average_cpu_clock$",
                                     Math.Round(avgCoreClk / _numberOfCores, 3).ToString(CultureInfo.InvariantCulture))
@@ -1842,46 +1842,46 @@ public sealed partial class ИнформацияPage
                                         .Replace('о', 'o').Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c')
                                         .Replace('С', 'C').Replace('р', 'r').Replace('т', 't').Replace('ь', ' '))
                                 .Replace("$stapm_value$",
-                                    Math.Round(RyzenADJWrapper.Get_stapm_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_stapm_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$stapm_limit$",
-                                    Math.Round(RyzenADJWrapper.Get_stapm_limit(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_stapm_limit(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$fast_value$",
-                                    Math.Round(RyzenADJWrapper.Get_fast_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_fast_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$fast_limit$",
-                                    Math.Round(RyzenADJWrapper.Get_fast_limit(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_fast_limit(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$slow_value$",
-                                    Math.Round(RyzenADJWrapper.Get_slow_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_slow_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$slow_limit$",
-                                    Math.Round(RyzenADJWrapper.Get_slow_limit(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_slow_limit(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$vrmedc_value$",
-                                    Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$vrmedc_max$",
-                                    Math.Round(RyzenADJWrapper.Get_vrmmax_current(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$cpu_temp_value$",
-                                    Math.Round(RyzenADJWrapper.Get_tctl_temp_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$cpu_temp_max$",
-                                    Math.Round(RyzenADJWrapper.Get_tctl_temp(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_tctl_temp(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$cpu_usage$",
-                                    Math.Round(RyzenADJWrapper.Get_cclk_busy_value(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$gfx_clock$",
-                                    Math.Round(RyzenADJWrapper.Get_gfx_clk(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$gfx_volt$",
-                                    Math.Round(RyzenADJWrapper.Get_gfx_volt(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$gfx_temp$",
-                                    Math.Round(RyzenADJWrapper.Get_gfx_temp(_ryzenAccess), 3)
+                                    Math.Round(RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess), 3)
                                         .ToString(CultureInfo.InvariantCulture))
                                 .Replace("$average_cpu_clock$",
                                     Math.Round(avgCoreClk / _numberOfCores, 3).ToString(CultureInfo.InvariantCulture))
@@ -1896,45 +1896,45 @@ public sealed partial class ИнформацияPage
                             .Replace('Б', 'B').Replace('л', 'l').Replace('с', 'c').Replace('С', 'C').Replace('р', 'r')
                             .Replace('т', 't').Replace('ь', ' '))
                     .Replace("$stapm_value$",
-                        Math.Round(RyzenADJWrapper.Get_stapm_value(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_stapm_value(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$stapm_limit$",
-                        Math.Round(RyzenADJWrapper.Get_stapm_limit(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_stapm_limit(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$fast_value$",
-                        Math.Round(RyzenADJWrapper.Get_fast_value(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_fast_value(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$fast_limit$",
-                        Math.Round(RyzenADJWrapper.Get_fast_limit(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_fast_limit(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$slow_value$",
-                        Math.Round(RyzenADJWrapper.Get_slow_value(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_slow_value(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$slow_limit$",
-                        Math.Round(RyzenADJWrapper.Get_slow_limit(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_slow_limit(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$vrmedc_value$",
-                        Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$vrmedc_max$",
-                        Math.Round(RyzenADJWrapper.Get_vrmmax_current(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$cpu_temp_value$",
-                        Math.Round(RyzenADJWrapper.Get_tctl_temp_value(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$cpu_temp_max$",
-                        Math.Round(RyzenADJWrapper.Get_tctl_temp(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_tctl_temp(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$cpu_usage$",
-                        Math.Round(RyzenADJWrapper.Get_cclk_busy_value(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$gfx_clock$",
-                        Math.Round(RyzenADJWrapper.Get_gfx_clk(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture))
+                        Math.Round(RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture))
                     .Replace("$gfx_volt$",
-                        Math.Round(RyzenADJWrapper.Get_gfx_volt(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$gfx_temp$",
-                        Math.Round(RyzenADJWrapper.Get_gfx_temp(_ryzenAccess), 3)
+                        Math.Round(RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess), 3)
                             .ToString(CultureInfo.InvariantCulture))
                     .Replace("$average_cpu_clock$",
                         Math.Round(avgCoreClk / _numberOfCores, 3).ToString(CultureInfo.InvariantCulture))
@@ -1945,32 +1945,32 @@ public sealed partial class ИнформацияPage
 
             if (_niiconsMinMaxValues[0].Min == 0.0f)
             {
-                _niiconsMinMaxValues[0].Min = RyzenADJWrapper.Get_stapm_value(_ryzenAccess);
+                _niiconsMinMaxValues[0].Min = RyzenAdjWrapper.Get_stapm_value(_ryzenAccess);
             }
 
             if (_niiconsMinMaxValues[1].Min == 0.0f)
             {
-                _niiconsMinMaxValues[1].Min = RyzenADJWrapper.Get_fast_value(_ryzenAccess);
+                _niiconsMinMaxValues[1].Min = RyzenAdjWrapper.Get_fast_value(_ryzenAccess);
             }
 
             if (_niiconsMinMaxValues[2].Min == 0.0f)
             {
-                _niiconsMinMaxValues[2].Min = RyzenADJWrapper.Get_slow_value(_ryzenAccess);
+                _niiconsMinMaxValues[2].Min = RyzenAdjWrapper.Get_slow_value(_ryzenAccess);
             }
 
             if (_niiconsMinMaxValues[3].Min == 0.0f)
             {
-                _niiconsMinMaxValues[3].Min = RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess);
+                _niiconsMinMaxValues[3].Min = RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess);
             }
 
             if (_niiconsMinMaxValues[4].Min == 0.0f)
             {
-                _niiconsMinMaxValues[4].Min = RyzenADJWrapper.Get_tctl_temp_value(_ryzenAccess);
+                _niiconsMinMaxValues[4].Min = RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess);
             }
 
             if (_niiconsMinMaxValues[5].Min == 0.0f)
             {
-                _niiconsMinMaxValues[5].Min = RyzenADJWrapper.Get_cclk_busy_value(_ryzenAccess);
+                _niiconsMinMaxValues[5].Min = RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess);
             }
 
             if (_niiconsMinMaxValues[6].Min == 0.0f)
@@ -1985,60 +1985,60 @@ public sealed partial class ИнформацияPage
 
             if (_niiconsMinMaxValues[8].Min == 0.0f)
             {
-                _niiconsMinMaxValues[8].Min = RyzenADJWrapper.Get_gfx_clk(_ryzenAccess);
+                _niiconsMinMaxValues[8].Min = RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess);
             }
 
             if (_niiconsMinMaxValues[9].Min == 0.0f)
             {
-                _niiconsMinMaxValues[9].Min = RyzenADJWrapper.Get_gfx_temp(_ryzenAccess);
+                _niiconsMinMaxValues[9].Min = RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess);
             }
 
             if (_niiconsMinMaxValues[10].Min == 0.0f)
             {
-                _niiconsMinMaxValues[10].Min = RyzenADJWrapper.Get_gfx_volt(_ryzenAccess);
+                _niiconsMinMaxValues[10].Min = RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess);
             }
 
-            _niiconsMinMaxValues[0].Max = RyzenADJWrapper.Get_stapm_value(_ryzenAccess) > _niiconsMinMaxValues[0].Max
-                ? RyzenADJWrapper.Get_stapm_value(_ryzenAccess)
+            _niiconsMinMaxValues[0].Max = RyzenAdjWrapper.Get_stapm_value(_ryzenAccess) > _niiconsMinMaxValues[0].Max
+                ? RyzenAdjWrapper.Get_stapm_value(_ryzenAccess)
                 : _niiconsMinMaxValues[0].Max;
-            _niiconsMinMaxValues[0].Min = RyzenADJWrapper.Get_stapm_value(_ryzenAccess) < _niiconsMinMaxValues[0].Min
-                ? RyzenADJWrapper.Get_stapm_value(_ryzenAccess)
+            _niiconsMinMaxValues[0].Min = RyzenAdjWrapper.Get_stapm_value(_ryzenAccess) < _niiconsMinMaxValues[0].Min
+                ? RyzenAdjWrapper.Get_stapm_value(_ryzenAccess)
                 : _niiconsMinMaxValues[0].Min;
-            _niiconsMinMaxValues[1].Max = RyzenADJWrapper.Get_fast_value(_ryzenAccess) > _niiconsMinMaxValues[1].Max
-                ? RyzenADJWrapper.Get_fast_value(_ryzenAccess)
+            _niiconsMinMaxValues[1].Max = RyzenAdjWrapper.Get_fast_value(_ryzenAccess) > _niiconsMinMaxValues[1].Max
+                ? RyzenAdjWrapper.Get_fast_value(_ryzenAccess)
                 : _niiconsMinMaxValues[1].Max;
-            _niiconsMinMaxValues[1].Min = RyzenADJWrapper.Get_fast_value(_ryzenAccess) < _niiconsMinMaxValues[1].Min
-                ? RyzenADJWrapper.Get_fast_value(_ryzenAccess)
+            _niiconsMinMaxValues[1].Min = RyzenAdjWrapper.Get_fast_value(_ryzenAccess) < _niiconsMinMaxValues[1].Min
+                ? RyzenAdjWrapper.Get_fast_value(_ryzenAccess)
                 : _niiconsMinMaxValues[1].Min;
-            _niiconsMinMaxValues[2].Max = RyzenADJWrapper.Get_slow_value(_ryzenAccess) > _niiconsMinMaxValues[2].Max
-                ? RyzenADJWrapper.Get_slow_value(_ryzenAccess)
+            _niiconsMinMaxValues[2].Max = RyzenAdjWrapper.Get_slow_value(_ryzenAccess) > _niiconsMinMaxValues[2].Max
+                ? RyzenAdjWrapper.Get_slow_value(_ryzenAccess)
                 : _niiconsMinMaxValues[2].Max;
-            _niiconsMinMaxValues[2].Min = RyzenADJWrapper.Get_slow_value(_ryzenAccess) < _niiconsMinMaxValues[2].Min
-                ? RyzenADJWrapper.Get_slow_value(_ryzenAccess)
+            _niiconsMinMaxValues[2].Min = RyzenAdjWrapper.Get_slow_value(_ryzenAccess) < _niiconsMinMaxValues[2].Min
+                ? RyzenAdjWrapper.Get_slow_value(_ryzenAccess)
                 : _niiconsMinMaxValues[2].Min;
             _niiconsMinMaxValues[3].Max =
-                RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess) > _niiconsMinMaxValues[3].Max
-                    ? RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess)
+                RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess) > _niiconsMinMaxValues[3].Max
+                    ? RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess)
                     : _niiconsMinMaxValues[3].Max;
             _niiconsMinMaxValues[3].Min =
-                RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess) < _niiconsMinMaxValues[3].Min
-                    ? RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess)
+                RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess) < _niiconsMinMaxValues[3].Min
+                    ? RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess)
                     : _niiconsMinMaxValues[3].Min;
             _niiconsMinMaxValues[4].Max =
-                RyzenADJWrapper.Get_tctl_temp_value(_ryzenAccess) > _niiconsMinMaxValues[4].Max
-                    ? RyzenADJWrapper.Get_tctl_temp_value(_ryzenAccess)
+                RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess) > _niiconsMinMaxValues[4].Max
+                    ? RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess)
                     : _niiconsMinMaxValues[4].Max;
             _niiconsMinMaxValues[4].Min =
-                RyzenADJWrapper.Get_tctl_temp_value(_ryzenAccess) < _niiconsMinMaxValues[4].Min
-                    ? RyzenADJWrapper.Get_tctl_temp_value(_ryzenAccess)
+                RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess) < _niiconsMinMaxValues[4].Min
+                    ? RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess)
                     : _niiconsMinMaxValues[4].Min;
             _niiconsMinMaxValues[5].Max =
-                RyzenADJWrapper.Get_cclk_busy_value(_ryzenAccess) > _niiconsMinMaxValues[5].Max
-                    ? RyzenADJWrapper.Get_cclk_busy_value(_ryzenAccess)
+                RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess) > _niiconsMinMaxValues[5].Max
+                    ? RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess)
                     : _niiconsMinMaxValues[5].Max;
             _niiconsMinMaxValues[5].Min =
-                RyzenADJWrapper.Get_cclk_busy_value(_ryzenAccess) < _niiconsMinMaxValues[5].Min
-                    ? RyzenADJWrapper.Get_cclk_busy_value(_ryzenAccess)
+                RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess) < _niiconsMinMaxValues[5].Min
+                    ? RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess)
                     : _niiconsMinMaxValues[5].Min;
             _niiconsMinMaxValues[6].Max =
                 ConvertFromTextToFloat(tbCPUFreq.Text.Replace("infoAGHZ".GetLocalized(), string.Empty)) >
@@ -2058,62 +2058,62 @@ public sealed partial class ИнформацияPage
                 ConvertFromTextToFloat(tbCPUVolt.Text.Replace("V", string.Empty)) < _niiconsMinMaxValues[7].Min
                     ? ConvertFromTextToFloat(tbCPUVolt.Text.Replace("V", string.Empty))
                     : _niiconsMinMaxValues[7].Min;
-            _niiconsMinMaxValues[8].Max = RyzenADJWrapper.Get_gfx_clk(_ryzenAccess) > _niiconsMinMaxValues[8].Max
-                ? RyzenADJWrapper.Get_gfx_clk(_ryzenAccess)
+            _niiconsMinMaxValues[8].Max = RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess) > _niiconsMinMaxValues[8].Max
+                ? RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess)
                 : _niiconsMinMaxValues[8].Max;
-            _niiconsMinMaxValues[8].Min = RyzenADJWrapper.Get_gfx_clk(_ryzenAccess) < _niiconsMinMaxValues[8].Min
-                ? RyzenADJWrapper.Get_gfx_clk(_ryzenAccess)
+            _niiconsMinMaxValues[8].Min = RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess) < _niiconsMinMaxValues[8].Min
+                ? RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess)
                 : _niiconsMinMaxValues[8].Min;
-            _niiconsMinMaxValues[9].Max = RyzenADJWrapper.Get_gfx_temp(_ryzenAccess) > _niiconsMinMaxValues[9].Max
-                ? RyzenADJWrapper.Get_gfx_temp(_ryzenAccess)
+            _niiconsMinMaxValues[9].Max = RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess) > _niiconsMinMaxValues[9].Max
+                ? RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess)
                 : _niiconsMinMaxValues[9].Max;
-            _niiconsMinMaxValues[9].Min = RyzenADJWrapper.Get_gfx_temp(_ryzenAccess) < _niiconsMinMaxValues[9].Min
-                ? RyzenADJWrapper.Get_gfx_temp(_ryzenAccess)
+            _niiconsMinMaxValues[9].Min = RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess) < _niiconsMinMaxValues[9].Min
+                ? RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess)
                 : _niiconsMinMaxValues[9].Min;
-            _niiconsMinMaxValues[10].Max = RyzenADJWrapper.Get_gfx_volt(_ryzenAccess) > _niiconsMinMaxValues[10].Max
-                ? RyzenADJWrapper.Get_gfx_volt(_ryzenAccess)
+            _niiconsMinMaxValues[10].Max = RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess) > _niiconsMinMaxValues[10].Max
+                ? RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess)
                 : _niiconsMinMaxValues[10].Max;
-            _niiconsMinMaxValues[10].Min = RyzenADJWrapper.Get_gfx_volt(_ryzenAccess) < _niiconsMinMaxValues[10].Min
-                ? RyzenADJWrapper.Get_gfx_volt(_ryzenAccess)
+            _niiconsMinMaxValues[10].Min = RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess) < _niiconsMinMaxValues[10].Min
+                ? RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess)
                 : _niiconsMinMaxValues[10].Min;
 
             Change_Ni_Icons_Text("Settings_ni_Values_STAPM",
-                Math.Round(RyzenADJWrapper.Get_stapm_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
+                Math.Round(RyzenAdjWrapper.Get_stapm_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
                 "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_STAPM".GetLocalized() +
-                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_stapm_value(_ryzenAccess) + "W",
+                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenAdjWrapper.Get_stapm_value(_ryzenAccess) + "W",
                 "Settings_ni_Values_MinValue".GetLocalized() + _niiconsMinMaxValues[0].Min + "W" +
                 "Settings_ni_Values_MaxValue".GetLocalized() + _niiconsMinMaxValues[0].Max + "W");
             Change_Ni_Icons_Text("Settings_ni_Values_Fast",
-                Math.Round(RyzenADJWrapper.Get_fast_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
+                Math.Round(RyzenAdjWrapper.Get_fast_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
                 "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_Fast".GetLocalized() +
-                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_fast_value(_ryzenAccess) + "W",
+                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenAdjWrapper.Get_fast_value(_ryzenAccess) + "W",
                 "Settings_ni_Values_MinValue".GetLocalized() + _niiconsMinMaxValues[1].Min + "W" +
                 "Settings_ni_Values_MaxValue".GetLocalized() + _niiconsMinMaxValues[1].Max + "W");
             Change_Ni_Icons_Text("Settings_ni_Values_Slow",
-                Math.Round(RyzenADJWrapper.Get_slow_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
+                Math.Round(RyzenAdjWrapper.Get_slow_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
                 "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_Slow".GetLocalized() +
-                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_slow_value(_ryzenAccess) + "W",
+                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenAdjWrapper.Get_slow_value(_ryzenAccess) + "W",
                 "Settings_ni_Values_MinValue".GetLocalized() + _niiconsMinMaxValues[2].Min + "W" +
                 "Settings_ni_Values_MaxValue".GetLocalized() + _niiconsMinMaxValues[2].Max + "W");
             Change_Ni_Icons_Text("Settings_ni_Values_VRMEDC",
-                Math.Round(RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)
+                Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)
                     .ToString(CultureInfo.InvariantCulture),
                 "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_VRMEDC".GetLocalized() +
                 "Settings_ni_Values_CurrentValue".GetLocalized() +
-                RyzenADJWrapper.Get_vrmmax_current_value(_ryzenAccess) + "A",
+                RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess) + "A",
                 "Settings_ni_Values_MinValue".GetLocalized() + _niiconsMinMaxValues[3].Min + "A" +
                 "Settings_ni_Values_MaxValue".GetLocalized() + _niiconsMinMaxValues[3].Max + "A");
             Change_Ni_Icons_Text("Settings_ni_Values_CPUTEMP",
-                Math.Round(RyzenADJWrapper.Get_tctl_temp_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
+                Math.Round(RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
                 "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_CPUTEMP".GetLocalized() +
-                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_tctl_temp_value(_ryzenAccess) +
+                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess) +
                 "C",
                 "Settings_ni_Values_MinValue".GetLocalized() + _niiconsMinMaxValues[4].Min + "C" +
                 "Settings_ni_Values_MaxValue".GetLocalized() + _niiconsMinMaxValues[4].Max + "C");
             Change_Ni_Icons_Text("Settings_ni_Values_CPUUsage",
-                Math.Round(RyzenADJWrapper.Get_cclk_busy_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
+                Math.Round(RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
                 "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_CPUUsage".GetLocalized() +
-                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_cclk_busy_value(_ryzenAccess) +
+                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess) +
                 "%",
                 "Settings_ni_Values_MinValue".GetLocalized() + _niiconsMinMaxValues[5].Min + "%" +
                 "Settings_ni_Values_MaxValue".GetLocalized() + _niiconsMinMaxValues[5].Max + "%");
@@ -2134,21 +2134,21 @@ public sealed partial class ИнформацияPage
                 "Settings_ni_Values_MinValue".GetLocalized() + _niiconsMinMaxValues[7].Min + "V" +
                 "Settings_ni_Values_MaxValue".GetLocalized() + _niiconsMinMaxValues[7].Max + "V");
             Change_Ni_Icons_Text("Settings_ni_Values_GFXCLK",
-                Math.Round(RyzenADJWrapper.Get_gfx_clk(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
+                Math.Round(RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
                 "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXCLK".GetLocalized() +
-                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_clk(_ryzenAccess) + "MHz",
+                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess) + "MHz",
                 "Settings_ni_Values_MinValue".GetLocalized() + _niiconsMinMaxValues[8].Min + "MHz" +
                 "Settings_ni_Values_MaxValue".GetLocalized() + _niiconsMinMaxValues[8].Max + "MHz");
             Change_Ni_Icons_Text("Settings_ni_Values_GFXTEMP",
-                Math.Round(RyzenADJWrapper.Get_gfx_temp(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
+                Math.Round(RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
                 "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXTEMP".GetLocalized() +
-                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_temp(_ryzenAccess) + "C",
+                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess) + "C",
                 "Settings_ni_Values_MinValue".GetLocalized() + _niiconsMinMaxValues[9].Min + "C" +
                 "Settings_ni_Values_MaxValue".GetLocalized() + _niiconsMinMaxValues[9].Max + "C");
             Change_Ni_Icons_Text("Settings_ni_Values_GFXVOLT",
-                Math.Round(RyzenADJWrapper.Get_gfx_volt(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
+                Math.Round(RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture),
                 "Saku Overclock© -\nTrayMon\n" + "Settings_ni_Values_GFXVOLT".GetLocalized() +
-                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenADJWrapper.Get_gfx_volt(_ryzenAccess) + "V",
+                "Settings_ni_Values_CurrentValue".GetLocalized() + RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess) + "V",
                 "Settings_ni_Values_MinValue".GetLocalized() + _niiconsMinMaxValues[10].Min + "V" +
                 "Settings_ni_Values_MaxValue".GetLocalized() + _niiconsMinMaxValues[10].Max + "V");
             if (infoRTSSButton.IsChecked == true)
@@ -2205,8 +2205,8 @@ public sealed partial class ИнформацияPage
             InfoAPSTBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
             InfoAPSTBigBannerPolygon.Points.Clear();
             InfoAPSTBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-            _ryzenAccess = RyzenADJWrapper.Init_ryzenadj();
-            _ = RyzenADJWrapper.Init_Table(_ryzenAccess);
+            _ryzenAccess = RyzenAdjWrapper.Init_ryzenadj();
+            _ = RyzenAdjWrapper.Init_Table(_ryzenAccess);
             _dispatcherTimer = new DispatcherTimer();
             _dispatcherTimer.Tick += (_, _) => UpdateInfoAsync();
             _dispatcherTimer.Interval = TimeSpan.FromMilliseconds(300);
