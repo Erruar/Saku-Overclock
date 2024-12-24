@@ -62,13 +62,19 @@ internal partial class PowerWindow : IDisposable
 
     private void NoteLoad()
     {
-        try
+        var filePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\powercfg.json";
+        if (File.Exists(filePath))
         {
-            _notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                @"\SakuOverclock\PowerMon\powercfg.json"))!;
+            try
+            {
+                _notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(filePath))!;
+            }
+            catch
+            {
+                JsonRepair('n');
+            }
         }
-        catch
+        else
         {
             JsonRepair('n');
         }
@@ -94,13 +100,19 @@ internal partial class PowerWindow : IDisposable
 
     private void RtssLoad()
     {
-        try
+        var filePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\rtsscfg.json";
+        if (File.Exists(filePath))
         {
-            _rtssTable = JsonConvert.DeserializeObject<PowerMonRtss>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                @"\SakuOverclock\PowerMon\rtsscfg.json"))!;
+            try
+            {
+                _rtssTable = JsonConvert.DeserializeObject<PowerMonRtss>(File.ReadAllText(filePath))!;
+            }
+            catch
+            {
+                JsonRepair('r');
+            }
         }
-        catch
+        else
         {
             JsonRepair('r');
         }
@@ -139,7 +151,6 @@ internal partial class PowerWindow : IDisposable
                             @"\SakuOverclock\PowerMon\powercfg.json", JsonConvert.SerializeObject(_notes));
                         App.GetService<IAppNotificationService>()
                             .Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                        App.MainWindow.Close();
                     }
                 }
                 else //Всё же если за 5 раз пересканирования файл пуст
@@ -157,13 +168,11 @@ internal partial class PowerWindow : IDisposable
                         File.WriteAllText(
                             Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                             @"\SakuOverclock\PowerMon\powercfg.json", JsonConvert.SerializeObject(_notes));
-                        App.MainWindow.Close();
                     }
                     catch
                     {
                         App.GetService<IAppNotificationService>()
                             .Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-                        App.MainWindow.Close();
                     }
                 }
 
@@ -184,7 +193,6 @@ internal partial class PowerWindow : IDisposable
                 {
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
                         AppContext.BaseDirectory));
-                    App.MainWindow.Close();
                 }
 
                 break;
@@ -216,7 +224,6 @@ internal partial class PowerWindow : IDisposable
                         @"\SakuOverclock\PowerMon\rtsscfg.json", JsonConvert.SerializeObject(_rtssTable));
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
                         AppContext.BaseDirectory));
-                    App.MainWindow.Close();
                 }
 
                 try
@@ -229,7 +236,6 @@ internal partial class PowerWindow : IDisposable
                 {
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
                         AppContext.BaseDirectory));
-                    App.MainWindow.Close();
                 }
 
                 break;
