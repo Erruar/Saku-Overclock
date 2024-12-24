@@ -366,8 +366,8 @@ public sealed partial class КулерPage
         try
         {
             _isPageLoaded = true;
-            _ry = RyzenADJWrapper.Init_ryzenadj();
-            RyzenADJWrapper.Init_Table(_ry);
+            _ry = RyzenAdjWrapper.Init_ryzenadj();
+            RyzenAdjWrapper.Init_Table(_ry);
             if (_isNbfcNotLoaded)
             {
                 await ShowNbfcDialogAsync();
@@ -870,7 +870,7 @@ public sealed partial class КулерPage
 
     private void UpdateTemperatureAsync()
     {
-        _ry = RyzenADJWrapper.Init_ryzenadj();
+        _ry = RyzenAdjWrapper.Init_ryzenadj();
         if (_ry == 0x0 || _doNotUseRyzenAdj)
         {
             _doNotUseRyzenAdj = true;
@@ -878,16 +878,16 @@ public sealed partial class КулерPage
             return;
         }
 
-        _ = RyzenADJWrapper.Init_Table(_ry);
-        _ = RyzenADJWrapper.Refresh_table(_ry);
-        Temp.Text = Math.Round(RyzenADJWrapper.Get_tctl_temp_value(_ry), 3) + "℃";
+        _ = RyzenAdjWrapper.Init_Table(_ry);
+        _ = RyzenAdjWrapper.Refresh_table(_ry);
+        Temp.Text = Math.Round(RyzenAdjWrapper.Get_tctl_temp_value(_ry), 3) + "℃";
     }
 
     private void StopTempUpdate(bool exit)
     {
         if (exit)
         {
-            RyzenADJWrapper.Cleanup_ryzenadj(_ry);
+            RyzenAdjWrapper.Cleanup_ryzenadj(_ry);
         }
 
         _tempUpdateTimer?.Stop();
