@@ -15,8 +15,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers;
-using Saku_Overclock.Services;
+using Saku_Overclock.Helpers; 
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Button = Microsoft.UI.Xaml.Controls.Button;
@@ -37,7 +36,7 @@ public sealed partial class ShellPage
     private bool _loaded = true; // Запустился ли UI поток приложения
     private bool _isNotificationPanelShow; // Флаг: Открыта ли панель уведомлений
     private int? _compareList; // Нет новых уведомлений - пока
-    private JsonContainers.Notifications _notify = new(); // Класс с уведомлениями
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
     private Profile[] _profile = new Profile[1]; // Класс с профилями параметров разгона пользователя
 
@@ -993,9 +992,8 @@ public sealed partial class ShellPage
         {
             return Task.CompletedTask;
         }
-
-        NotifyLoad();
-        if (_notify.Notifies == null)
+ 
+        if (NotificationsService.Notifies == null)
         {
             return Task.CompletedTask;
         }
@@ -1003,14 +1001,14 @@ public sealed partial class ShellPage
         DispatcherQueue?.TryEnqueue(() =>
         {
             var contains = false;
-            if (_compareList == _notify.Notifies.Count && NotificationContainer.Children.Count != 0)
+            if (_compareList == NotificationsService.Notifies.Count && NotificationContainer.Children.Count != 0)
             {
                 return;
             } //нет новых уведомлений - пока
 
             ClearAllNotification(null, null);
             var index = 0;
-            foreach (var notify1 in _notify.Notifies!)
+            foreach (var notify1 in NotificationsService.Notifies!)
             {
                 Grid? subcontent = null;
                 switch (notify1.Title)
@@ -1366,8 +1364,7 @@ public sealed partial class ShellPage
 
                 if (SettingsViewModel.VersionId != 5 &&
                     index > 8) //Если 9 уведомлений - очистить для оптимизации производительности
-                {
-                    index = 0; //Сброс счётчика циклов
+                { 
                     ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
                     return;
                 }
@@ -1378,9 +1375,9 @@ public sealed partial class ShellPage
             if (contains)
             {
                 GetProfileInit();
-            } //Чтобы обновить всего раз, а не много раз, чтобы не сбить конфиг
+            } 
 
-            _compareList = _notify.Notifies.Count;
+            _compareList = NotificationsService.Notifies.Count;
         });
         return Task.CompletedTask;
     }
@@ -1456,89 +1453,7 @@ public sealed partial class ShellPage
         {
             JsonRepair('p');
         }
-    }
-
-    private void NotifySave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
-                JsonConvert.SerializeObject(_notify, Formatting.Indented));
-        }
-        catch (Exception ex)
-        {
-            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
-        }
-    }
-
-    private async void NotifyLoad()
-    {
-        try
-        {
-            var success = false;
-            var retryCount = 1;
-            while (!success && retryCount < 3)
-            {
-                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\notify.json"))
-                {
-                    try
-                    {
-                        _notify = JsonConvert.DeserializeObject<JsonContainers.Notifications>(
-                            await File.ReadAllTextAsync(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                                        @"\SakuOverclock\notify.json"))!;
-                        success = true;
-                    }
-                    catch
-                    {
-                        JsonRepair('n');
-                    }
-                }
-                else
-                {
-                    JsonRepair('n');
-                }
-
-                if (!success)
-                {
-                    // Сделайте задержку перед следующей попыткой
-                    await Task.Delay(30);
-                    retryCount++;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
-        }
-    }
-
-    /*private void ThemeLoad()
-    {
-        try
-        {
-            _themeSelectorService.Themes = JsonConvert.DeserializeObject<Themer>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\theme.json"))!;
-            if (_themeSelectorService.Themes.Themes.Count > 8)
-            {
-                _themeSelectorService.Themes.Themes.RemoveRange(0, 8);
-            }
-
-            if (_themeSelectorService.Themes.Themes.Count == 0)
-            {
-                JsonRepair('t');
-            }
-        }
-        catch
-        {
-            JsonRepair('t');
-        }
-    }
-    */
-
+    } 
     private void JsonRepair(char file)
     {
         switch (file)
@@ -1568,33 +1483,7 @@ public sealed partial class ShellPage
                 }
 
                 break;
-            }
-            case 'n':
-            {
-                _notify = new JsonContainers.Notifications();
-                try
-                {
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
-                        JsonConvert.SerializeObject(_notify));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\notify.json");
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\notify.json",
-                        JsonConvert.SerializeObject(_notify));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                }
-
-                break;
-            }
+            } 
         }
     }
 
@@ -1937,15 +1826,14 @@ public sealed partial class ShellPage
     {
         var container = new Grid { Tag = sender.Name };
         sender.IsOpen = false;
-        var list = _notify.Notifies!;
+        var list = NotificationsService.Notifies!;
         for (var i = 0; i < list.Count; i++)
         {
             var notify1 = list[i];
             if (sender.Title == notify1.Title && sender.Message == notify1.Msg && sender.Severity == notify1.Type)
-            {
-                NotifyLoad();
-                _notify.Notifies?.RemoveAt(i);
-                NotifySave();
+            { 
+                NotificationsService.Notifies?.RemoveAt(i);
+                NotificationsService.SaveNotificationsSettings();
                 return;
             }
         }
@@ -2002,10 +1890,9 @@ public sealed partial class ShellPage
 
             if (button != null)
             {
-                button.IsEnabled = true;
-                NotifyLoad();
-                _notify.Notifies = [];
-                NotifySave();
+                button.IsEnabled = true; 
+                NotificationsService.Notifies = [];
+                NotificationsService.SaveNotificationsSettings();
             }
         }
         catch (Exception ex)
