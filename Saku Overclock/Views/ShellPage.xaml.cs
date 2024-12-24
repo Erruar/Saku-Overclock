@@ -101,6 +101,7 @@ public sealed partial class ShellPage
         _loaded = true;
         StartInfoUpdate();
         GetProfileInit();
+        Theme_Loader(); //Загрузить тему
     }
 
     #region App TitleBar Initialization
@@ -110,7 +111,6 @@ public sealed partial class ShellPage
         App.AppTitlebar = VersionNumberIndicator;
         AppTitleBar.Loaded += AppTitleBar_Loaded;
         AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
-        Theme_Loader(); //Загрузить тему
     }
 
     private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
@@ -980,10 +980,13 @@ public sealed partial class ShellPage
 
     private Task GetNotify()
     {
-        if (SelectedProfile != ((ComboBoxItem)ProfileSetComboBox.SelectedItem).Content.ToString() &&
-            !ProfileSetButton.IsEnabled)
+        if (ProfileSetComboBox.SelectedIndex != -1 && ((ComboBoxItem?)ProfileSetComboBox.SelectedItem)?.Content != null)
         {
-            SelectedProfile = ((ComboBoxItem)ProfileSetComboBox.SelectedItem).Content.ToString()!;
+            if (SelectedProfile != ((ComboBoxItem?)ProfileSetComboBox.SelectedItem)?.Content.ToString() &&
+           !ProfileSetButton.IsEnabled)
+            {
+                SelectedProfile = ((ComboBoxItem?)ProfileSetComboBox.SelectedItem)?.Content.ToString()!;
+            }
         }
 
         if (_isNotificationPanelShow)
@@ -1353,7 +1356,7 @@ public sealed partial class ShellPage
                     notify1.Msg = notify1.Msg.Replace("DELETEUNAVAILABLE", "");
                 }
 
-                MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.isClosable, subcontent);
+                MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.IsClosable, subcontent);
                 if (notify1.Title.Contains("SaveSuccessTitle".GetLocalized()) ||
                     notify1.Title.Contains("DeleteSuccessTitle".GetLocalized()) ||
                     notify1.Title.Contains("Edit_TargetTitle".GetLocalized()))
@@ -1390,8 +1393,6 @@ public sealed partial class ShellPage
     { 
         try
         {
-            ThemeOpacity.Opacity = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity;
-            ThemeMaskOpacity.Opacity = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
             var themeMobil = App.GetService<SettingsViewModel>();
             var themeLight = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight ? ElementTheme.Light : ElementTheme.Dark;
             themeMobil.SwitchThemeCommand.Execute(themeLight);
@@ -1399,36 +1400,26 @@ public sealed partial class ShellPage
 
             if (SettingsService.ThemeType > 2 &&
                 !string.IsNullOrEmpty(themeBackground) &&
-                (themeBackground.Contains("http") || File.Exists(themeBackground)))
+                (themeBackground.Contains("http") || themeBackground.Contains("appx") || File.Exists(themeBackground)))
             {
                 ThemeBackground.ImageSource = new BitmapImage(new Uri(themeBackground));
             }
-
+            ThemeOpacity.Opacity = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity;
+            ThemeMaskOpacity.Opacity = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
+            var backupWidth = TitleIcon.Width;
+            TitleIcon.Width = 0;
+            TitleIcon.Width = backupWidth;
         }
         catch
         {
-            NotifyLoad();
-            _notify.Notifies ??= [];
-            try
-            {
-                _notify.Notifies.Add(new Notify
-                {
-                    Title =
-                        "ThemeError".GetLocalized() + "\"" + $"{_themeSelectorService.Themes[SettingsService.ThemeType].ThemeName}" + "\"",
-                    Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error
-                });
-            }
-            catch
-            {
-                _notify.Notifies.Add(new Notify
-                {
-                    Title = "ThemeError".GetLocalized() + "\"" + ">> " + SettingsService.ThemeType + "\"",
-                    Msg = "ThemeNotFoundBg".GetLocalized(), Type = InfoBarSeverity.Error
-                });
-            }
+            MandarinAddNotification(
+    "ThemeError".GetLocalized() + "\"" + (SettingsService.ThemeType < _themeSelectorService.Themes.Count
+        ? _themeSelectorService.Themes[SettingsService.ThemeType].ThemeName
+        : $"Error in theme type = {SettingsService.ThemeType}") + "\"",
+    "ThemeNotFoundBg".GetLocalized(),
+    InfoBarSeverity.Error
+);
 
-            NotifySave();
-            SettingsService.SaveSettings(); 
         }
     } 
     private void ProfileSave()
@@ -1449,12 +1440,19 @@ public sealed partial class ShellPage
 
     private void ProfileLoad()
     {
-        try
+        var filePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json";
+        if (File.Exists(filePath))
         {
-            _profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json"))!;
+            try
+            {
+                _profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(filePath))!;
+            }
+            catch
+            {
+                JsonRepair('p');
+            }
         }
-        catch
+        else
         {
             JsonRepair('p');
         }
@@ -1567,7 +1565,6 @@ public sealed partial class ShellPage
                         JsonConvert.SerializeObject(_profile));
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
                         AppContext.BaseDirectory));
-                    App.MainWindow.Close();
                 }
 
                 break;
@@ -1594,7 +1591,6 @@ public sealed partial class ShellPage
                         JsonConvert.SerializeObject(_notify));
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
                         AppContext.BaseDirectory));
-                    App.MainWindow.Close();
                 }
 
                 break;
