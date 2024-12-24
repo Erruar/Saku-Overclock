@@ -1358,9 +1358,9 @@ internal class SendSmuCommand
 
     private static void Socket_AM5_V1()
     {
-        Mp1Cmd = 0x3010508;
-        Mp1Rsp = 0x3010988;
-        Mp1Arg = 0x3010984;
+        Mp1Cmd = 0x3B10530;
+        Mp1Rsp = 0x3B1057C;
+        Mp1Arg = 0x3B109C4;
 
         RsmuCmd = 0x3B10524;
         RsmuRsp = 0x3B10570;
