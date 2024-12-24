@@ -73,8 +73,8 @@ public sealed partial class AsusКулерPage
 
         _isPageLoaded = true;
         UpdateSystemInformation();
-        _ry = RyzenADJWrapper.Init_ryzenadj();
-        RyzenADJWrapper.Init_Table(_ry);
+        _ry = RyzenAdjWrapper.Init_ryzenadj();
+        RyzenAdjWrapper.Init_Table(_ry);
         StartTempUpdate();
     }
 
@@ -94,15 +94,15 @@ public sealed partial class AsusКулерPage
             var fanSpeeds = GetFanSpeeds();
             tempLine = fanSpeeds.Count > 0 ? fanSpeeds[0].ToString() : "-.-";
         });
-        _ry = RyzenADJWrapper.Init_ryzenadj();
+        _ry = RyzenAdjWrapper.Init_ryzenadj();
         if (_ry == IntPtr.Zero)
         {
             CPUFanRPM.Text = tempLine;
             return;
         }
 
-        RyzenADJWrapper.Init_Table(_ry);
-        _ = RyzenADJWrapper.Refresh_table(_ry);
+        RyzenAdjWrapper.Init_Table(_ry);
+        _ = RyzenAdjWrapper.Refresh_table(_ry);
         var avgCoreClk = 0d;
         var avgCoreVolt = 0d;
         var countClk = 0;
@@ -117,8 +117,8 @@ public sealed partial class AsusКулерPage
         {
             if (f < 8)
             {
-                var clk = Math.Round(RyzenADJWrapper.Get_core_clk(_ry, f), 3);
-                var volt = Math.Round(RyzenADJWrapper.Get_core_volt(_ry, f), 3);
+                var clk = Math.Round(RyzenAdjWrapper.Get_core_clk(_ry, f), 3);
+                var volt = Math.Round(RyzenAdjWrapper.Get_core_volt(_ry, f), 3);
                 if (clk != 0)
                 {
                     avgCoreClk += clk;
@@ -143,7 +143,7 @@ public sealed partial class AsusКулерPage
             countVolt = 1;
         }
 
-        UpdateValues(Math.Round(RyzenADJWrapper.Get_tctl_temp_value(_ry), 3) + "℃",
+        UpdateValues(Math.Round(RyzenAdjWrapper.Get_tctl_temp_value(_ry), 3) + "℃",
             Math.Round(avgCoreClk / countClk, 3) + "GHz", Math.Round(avgCoreVolt / countVolt, 3) + "V", tempLine);
     }
 
@@ -158,7 +158,7 @@ public sealed partial class AsusКулерPage
 
     private void StopTempUpdate()
     {
-        RyzenADJWrapper.Cleanup_ryzenadj(_ry);
+        RyzenAdjWrapper.Cleanup_ryzenadj(_ry);
         _tempUpdateTimer?.Stop();
     }
 
