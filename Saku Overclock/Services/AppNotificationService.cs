@@ -3,20 +3,36 @@ using System.Diagnostics;
 using System.Web;
 
 using Microsoft.Windows.AppNotifications;
-
 using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Core.Contracts.Services;
+using Saku_Overclock.Core.Services;
+using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 
-namespace Saku_Overclock.Notifications;
+namespace Saku_Overclock.Services;
 
 public class AppNotificationService : IAppNotificationService
 {
     private readonly INavigationService _navigationService;
+    private readonly IFileService _fileService;
 
-    public AppNotificationService(INavigationService navigationService)
+    private const string FolderPath = "Saku Overclock/Notifications";
+    private const string FileName = "AppNotifications.json";
+
+    private readonly string _localApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    private readonly string _applicationDataFolder;
+
+    public AppNotificationService(IFileService fileService, INavigationService navigationService)
     {
         _navigationService = navigationService;
+        _applicationDataFolder = Path.Combine(_localApplicationData, FolderPath);
+        _fileService = fileService;
     }
+
+    public List<Notify>? Notifies
+    {
+        get; set;
+    } = [];
 
     ~AppNotificationService()
     {
@@ -28,6 +44,8 @@ public class AppNotificationService : IAppNotificationService
         AppNotificationManager.Default.NotificationInvoked += OnNotificationInvoked;
 
         AppNotificationManager.Default.Register();
+
+        LoadNotificationsSettings();
     }
 
     public void OnNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
@@ -43,11 +61,11 @@ public class AppNotificationService : IAppNotificationService
                 _navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
                 App.MainWindow.Show();
             });
-            Task.Delay(2 * 1000).ContinueWith(_ =>
+            Task.Delay(2000).ContinueWith(_ =>
             {
                 App.MainWindow.ShowMessageDialogAsync("Здесь вы сможете настроить ваш процессор как вам надо", "Настройки применены!");
             });
-            
+
         }
         if (ParseArguments(args.Argument)["action"] == "Message")
         {
@@ -75,5 +93,17 @@ public class AppNotificationService : IAppNotificationService
     public void Unregister()
     {
         AppNotificationManager.Default.Unregister();
+    }
+
+    // Загрузка настроек
+    public void LoadNotificationsSettings()
+    {
+        Notifies = _fileService.Read<List<Notify>>(_applicationDataFolder, FileName) ?? []; 
+    }
+
+    // Сохранение настроек
+    public void SaveNotificationsSettings()
+    {
+        _fileService.Save(_applicationDataFolder, FileName, Notifies);
     }
 }
