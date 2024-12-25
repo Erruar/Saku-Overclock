@@ -146,7 +146,7 @@
                         <Button.ContentTransitions>
                             <RepositionThemeTransition />
                         </Button.ContentTransitions>
-                        <StackPanel Margin="0,0,0,0"
+                        <StackPanel Margin="-5,-5,-5,-5"
         HorizontalAlignment="Left"
         VerticalAlignment="Center"
         Orientation="Horizontal"
@@ -154,8 +154,8 @@
                             <Image x:Name="IconImg"
                    PointerEntered="TitleIcon_PointerEntered"
        Width="24"
-       Height="24"
-       Margin="0,-1,0,0"
+       Height="21"
+       Margin="0,1,0,0"
        Opacity="0.8"
        Source="ms-appx:///Assets/WindowIcon.ico">
                                 <Image.OpacityTransition>
