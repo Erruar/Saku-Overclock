@@ -449,14 +449,13 @@ If you don't want to control the coolers through my app, you can skip this step.
 
 ### Installation
 
-Let's install my app!
+Let's install my app! It's easier than you think
 
-1. Get a `Saku Overclock.exe` from releases: [Releases link](https://github.com/Erruar/Saku-Overclock/releases)
+1. Get a `.exe file` from releases: [Releases link](https://github.com/Erruar/Saku-Overclock/releases)
 2. Double-click on downloaded `.exe`
-3. Install it 
-4. Create desktop link: Go to `C:\Program Files (x86)\Saku Overclock` find a `Saku Overclock.exe` and right click on it. Select **Share** then select **Desktop (Create link)**
-5. Open new link from your Desktop
-6. Now you have installed my app!
+3. Install it as usual application
+4. Open Saku Overclock link from your Desktop
+5. Welcome to overclock world!
 
 ### If you have any troubles 
 <a href="https://github.com/Erruar/Saku-Overclock/issues/new"><strong>Seems like app isn't working for me »</strong></a>
