@@ -425,7 +425,7 @@ Use the `README.md` to get started.
 
 ### Built With
 
-My program was built using Win UI 3 .NET interface with UWP framework and is based on C#. The app uses RyzenAdj for viewing information on information page which is written on C++ programming language, Zen States Core and Collapse launcher elements.
+My program was built using Win UI 3 .NET 9.0 interface with UWP framework and is based on C#. Application uses custom version of **RyzenAdj**, created by me only for Saku Overclock for viewing information on information page. RyzenAdj is written on C++ programming language. Also program contains **Zen States Core**, **inpoutx64**, **winring0** and **Collapse launcher** elements.
 * [![Dotnet][Dotnet.com]][Dotnet-url]
 * [![Json][Json.org]][Json-url]
 * [![Csharp][Csharp.org]][Csharp-url]
@@ -470,18 +470,19 @@ Let's install my app! It's easier than you think
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Using my program is pretty simple! Go to the presets tab and apply the desired one. 
-Or if you have a special case (for example, 0.4 GHz issue) or you want to get the most out of your laptop, then the Parameters tab is for you. 
+Using my program is pretty simple! Go to the premaded profiles page tab and apply the desired one. 
+Or if you have a special case (for example, 0.4 GHz issue) or you want to get the most out of your laptop, then the Overclock page is for you. 
 On it, you can set the values that you want, and if you don't know what to do, there are tips and recommendations for balance and performance
 
-If you have found the perfect settings for yourself, just click on the apply button at the bottom right, it looks like a Play Music icon. But before that, I RECOMMEND going to the settings page and making sure that you have enabled "Reapply latest settings every (S)", after which, applying your settings, they will be updated every time, depending on what time you set, because some laptop manufacturers add a Power Limits self-healing protocol to the BIOS so that the laptop does not burn down in case of something. 
+If you have found the perfect settings for yourself, just click on the apply button at the bottom right, it looks like a Play Music icon. But before that, I **RECOMMEND** going to the settings page and making sure that you have enabled "Reapply latest settings every (S)", after which, applying your settings, they will be updated every time, depending on what time you set, because some laptop manufacturers add a Power Limits self-healing protocol to the BIOS so that the laptop does not burn down in case of something. 
+
 ### About burning
-My program CANNOT cause you to burn down the processor if you do not: 
-- Set the maximum temperature above 90 degrees,
-- Set extremely high Power Limits and at the same time very low Time of fast and Time of slow frequency rise(S),
-- Use SMU parameters without proper knowledge, manuals, warnings or by accident
-- If you are trying to create an NBFC configuration file for yourself to control the speed of the cooler, it MAY well STOP Spinning! Take this into account! Create such configurations ONLY when you have set the Fan Service Control Status to Disabled or Read Only,
-- If you are trying to increase the frequency above the maximum, I DO NOT GUARANTEE the safety of such actions. All potentially dangerous parameters are marked with a special icon, hover over it and **READ** what it changes before changing it
+My program **CANNOT** cause you to burn down the processor if you **do not**: 
+- Set the maximum temperature **above** 90 degrees,
+- Set extremely **high Power Limits** and at the same time **very low Time** of fast and Time of slow frequency rise(S),
+- Use SMU parameters **without proper knowledge**, manuals, warnings or by accident
+- If you are trying to create an NBFC configuration file for yourself to control the speed of the cooler, it MAY well STOP Spinning! Take this into account! Create such configurations **ONLY** when you have set the Fan Service Control Status to Disabled or Read Only,
+- If you are trying to **increase the frequency above the maximum**, I DO NOT GUARANTEE the safety of such actions. All potentially dangerous parameters are marked with a special icon, hover over it and **READ** what it changes before changing it
 
 <a href="https://github.com/Erruar/Saku-Overclock/issues/2"><strong>Seems like app isn't working for me »</strong></a>
 <!--_For more examples, please refer to the [Documentation](https://example.com)_-->
@@ -531,8 +532,9 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the GPL-3.0 License. See `LICENSE.md` for more information. The application contains elements of [Collapse Launcher](https://github.com/CollapseLauncher/Collapse), which is licensed by [MIT license](https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE), such elements are marked in the code as [Collapse Launcher](https://github.com/CollapseLauncher/Collapse), also, get acquainted with the [MIT license](https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE) if you want to use their elements too. The GPL and MIT licenses have similar concepts, as a result of which I did not copy their license into my project
+Distributed under the GPL-3.0 License. See `LICENSE.md` for more information.
 
+This application contains elements of [Collapse Launcher](https://github.com/CollapseLauncher/Collapse), which is licensed by [MIT license](https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE), such elements **are marked** in the code as [Collapse Launcher](https://github.com/CollapseLauncher/Collapse) and **according to MIT license** contains full **MIT license** and code fragment authors and links.
 > [!IMPORTANT]
 > ## Copyright policy
 > **I allow the placement of releases of my application on external sources, external servers, but I am AGAINST completely copying the source code anywhere other than the forks of my application, and I am also against completely copying my Readme and placing it somewhere. I allow copying of my product to other sites ONLY WITH THE INDICATION OF ME AS THE AUTHOR IN THE TEXT. Everything else will be required to delete or resolve this issue.**
