@@ -535,9 +535,11 @@ Don't forget to give the project a star! Thanks again!
 Distributed under the GPL-3.0 License. See `LICENSE.md` for more information.
 
 This application contains elements of [Collapse Launcher](https://github.com/CollapseLauncher/Collapse), which is licensed by [MIT license](https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE), such elements **are marked** in the code as [Collapse Launcher](https://github.com/CollapseLauncher/Collapse) and **according to MIT license** contains full **MIT license** and code fragment authors and links.
+
 > [!IMPORTANT]
-> ## Copyright policy
-> **I allow the placement of releases of my application on external sources, external servers, but I am AGAINST completely copying the source code anywhere other than the forks of my application, and I am also against completely copying my Readme and placing it somewhere. I allow copying of my product to other sites ONLY WITH THE INDICATION OF ME AS THE AUTHOR IN THE TEXT. Everything else will be required to delete or resolve this issue.**
+> ## Copyright Policy
+> 
+> You are permitted to distribute releases of my application on external platforms and servers. However, I do not permit the complete copying of the source code to any location other than forks of my application on GitHub. Similarly, the README should not be fully copied and placed elsewhere without my consent. If you choose to share my product on other sites, please ensure that I am credited as the original author in the text. Any other use that does not comply with these guidelines may require removal or further action to resolve the issue.
 
 > [!NOTE]
 > ### What is the best way to copy my app to your site?
