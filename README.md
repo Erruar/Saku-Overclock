@@ -22,6 +22,7 @@
 [![Donalerts][donalerts-shield]][donalerts-url]
 [![GPL License][license-shield]][license-url]
 [![DMCA PROTECTED][dmca-shield]][dmca-url]
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Erruar/Saku-Overclock/total?style=for-the-badge&label=Our%20downloads)
 
 
 
