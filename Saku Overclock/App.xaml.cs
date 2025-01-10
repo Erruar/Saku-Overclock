@@ -118,6 +118,8 @@ public partial class App
                 services.AddTransient<ShellViewModel>();
                 services.AddTransient<ОбновлениеPage>();
                 services.AddTransient<ОбновлениеViewModel>();
+                services.AddTransient<ОбучениеPage>();
+                services.AddTransient<ОбучениеViewModel>();
                 services.AddTransient<MainWindow.Applyer>();
                 services.AddTransient<SendSmuCommand>();
                 // Configuration
