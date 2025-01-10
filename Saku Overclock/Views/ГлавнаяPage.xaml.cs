@@ -150,14 +150,15 @@ public sealed partial class ГлавнаяPage
         return string.Join(Environment.NewLine, cleanedLines);
     }
 
-    private static UIElement[] ApplyMarkdownStyles(string cleanedNotes)
+    public static UIElement[] ApplyMarkdownStyles(string cleanedNotes)
     {
-        var lines = cleanedNotes.Split([Environment.NewLine], StringSplitOptions.None);
+        //var lines = cleanedNotes.Split([Environment.NewLine], StringSplitOptions.None);
+        var lines = cleanedNotes.Split(["\r\n", "\n"], StringSplitOptions.None);
         var elements = new List<UIElement>();
 
         for (var i = 0; i < lines.Length; i++)
         {
-            var line = lines[i];
+            var line = lines[i].TrimStart(); // Убираем пробелы в начале строки 
 
             if (line.StartsWith("### "))
             {
@@ -165,9 +166,10 @@ public sealed partial class ГлавнаяPage
                 var textBlock = new TextBlock
                 {
                     Text = text,
-                    FontWeight = new FontWeight(500),
+                    FontWeight = new FontWeight(600),
                     TextWrapping = TextWrapping.Wrap,
-                    HorizontalAlignment = HorizontalAlignment.Stretch
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Width = double.NaN // Убедитесь, что ширина адаптивная
                 };
                 elements.Add(textBlock);
             }
@@ -177,9 +179,10 @@ public sealed partial class ГлавнаяPage
                 var textBlock = new TextBlock
                 {
                     Text = text,
-                    FontWeight = new FontWeight(600),
+                    FontWeight = new FontWeight(700),
                     TextWrapping = TextWrapping.Wrap,
-                    HorizontalAlignment = HorizontalAlignment.Stretch
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Width = double.NaN // Убедитесь, что ширина адаптивная
                 };
                 elements.Add(textBlock);
             }
@@ -189,9 +192,10 @@ public sealed partial class ГлавнаяPage
                 var textBlock = new TextBlock
                 {
                     Text = text,
-                    FontWeight = new FontWeight(700),
+                    FontWeight = new FontWeight(800),
                     TextWrapping = TextWrapping.Wrap,
-                    HorizontalAlignment = HorizontalAlignment.Stretch
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Width = double.NaN // Убедитесь, что ширина адаптивная
                 };
                 elements.Add(textBlock);
             }
