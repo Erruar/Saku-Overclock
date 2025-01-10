@@ -11,7 +11,7 @@
 
     <Grid x:Name="ContentArea">
         <TextBlock x:Uid="Info_Name" Text="Информация" FontSize="30" Margin="-48,-65,0,0"></TextBlock>
-        <InfoBar x:Uid="Info_RyzenADJNotLoaded" Title="Не поддерживается на вашем устройстве" IsOpen="False" IsClosable="False" x:Name="Info_RyzenADJLoadError_InfoBar" Margin="0,-75,-27,0" HorizontalAlignment="Right"></InfoBar>
+        <InfoBar x:Uid="Info_RyzenADJNotLoaded" Title="Информация здесь не является точной! Не удалось получить точную информацию" IsOpen="False" IsClosable="False" x:Name="Info_RyzenADJLoadError_InfoBar" Margin="0,-75,-27,0" HorizontalAlignment="Right"></InfoBar>
         <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="InfoRTSSButton_Click" x:Name="infoRTSSButton" x:Uid="InfoARTSSTooltip" ToolTipService.ToolTip="Enable RTSS updater" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Top"  Margin="0,-57,20,0" HorizontalAlignment="Right">
             <StackPanel Orientation="Horizontal">
                 <FontIcon Glyph="&#xE7AC;"/>
@@ -19,7 +19,7 @@
             </StackPanel>
         </ToggleButton>
         <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="InfoNiIconsButton_Click"  x:Name="infoNiIconsButton" x:Uid="InfoANiIcons" ToolTipService.ToolTip="Enable RTSS updater" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Top"  Margin="0,-57,-29,0" HorizontalAlignment="Right">
-            <FontIcon Glyph="&#xF6B8;"/>
+            <FontIcon Glyph="&#xE735;"/>
         </ToggleButton>
         <TeachingTip x:Name="Info_RTSSTeacherTip" Target="{x:Bind infoRTSSButton}" Title="You have enabled RTSS metrics!" Subtitle="Now you can easily minimize Saku Overclock to tray menu and all information will be updated automatically. Saku Overclock will switch to the mode of reduced consumption of laptop resources">
             <TeachingTip.IconSource>
