@@ -24,6 +24,7 @@ public class PageService : IPageService
         Configure<AsusКулерViewModel, AsusКулерPage>();
         Configure<SettingsViewModel, SettingsPage>();
         Configure<ОбновлениеViewModel, ОбновлениеPage>();
+        Configure<ОбучениеViewModel, ОбучениеPage>();
     }
 
     public Type GetPageType(string key)
