@@ -1016,22 +1016,27 @@ public sealed partial class ShellPage
                     //Если уведомление о изменении темы
                     case "Theme applied!":
                         Theme_Loader();
-                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
-                        return; //Удалить и не показывать
+                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+                        return; //Удалить и не показывать 
                     case "UpdateNAVBAR":
                     {
-                        NavigationViewControl.Margin = new Thickness(-40, 0, 0, 0);
-                        NavigationViewControl.IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
-                        NavigationViewControl.IsSettingsVisible = false;
-                        NavigationViewControl.IsPaneOpen = false;
-                        foreach (var element in NavigationViewControl.MenuItems)
-                        {
-                            ((NavigationViewItem)element).Visibility = Visibility.Collapsed;
-                        }
-
-                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                        HideNavBar();
                         return; //Удалить и не показывать
                     }
+                    case "FirstLaunch":
+                        HideNavBar();
+                        Icon.Visibility = Visibility.Collapsed;
+                        ProfileSetup.Visibility = Visibility.Collapsed;
+                        RingerNotifGrid.Visibility = Visibility.Collapsed; 
+                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+                        return;
+                    case "ExitFirstLaunch":
+                        ShowNavBar();
+                        Icon.Visibility = Visibility.Visible;
+                        ProfileSetup.Visibility = Visibility.Visible;
+                        RingerNotifGrid.Visibility = Visibility.Visible;
+                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+                        return;
                 }
 
                 if (notify1.Msg.Contains("DELETEUNAVAILABLE"))
@@ -1213,7 +1218,7 @@ public sealed partial class ShellPage
                             }
 
                             ProfileSave();
-                            ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                            ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                             await Task.Delay(2000);
                             but2.IsEnabled = true;
                             await sw.WriteLineAsync(@"//------OK------\\");
@@ -1365,7 +1370,7 @@ public sealed partial class ShellPage
                 if (SettingsViewModel.VersionId != 5 &&
                     index > 8) //Если 9 уведомлений - очистить для оптимизации производительности
                 { 
-                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить всё
+                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                     return;
                 }
 
@@ -1381,7 +1386,31 @@ public sealed partial class ShellPage
         });
         return Task.CompletedTask;
     }
+    private void HideNavBar() // Скрыть навигационную панель
+    {
+        NavigationViewControl.Margin = new Thickness(-49, -48, 0, 0);
+        NavigationViewControl.IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
+        NavigationViewControl.IsSettingsVisible = false;
+        NavigationViewControl.IsPaneOpen = false;
+        foreach (var element in NavigationViewControl.MenuItems)
+        {
+            ((NavigationViewItem)element).Visibility = Visibility.Collapsed;
+        }
 
+        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+    }
+    private void ShowNavBar() // Показать навигационную панель
+    {
+        NavigationViewControl.Margin = new Thickness(0, 0, 0, 0);
+        NavigationViewControl.IsBackButtonVisible = NavigationViewBackButtonVisible.Visible;
+        NavigationViewControl.IsSettingsVisible = true;
+        foreach (var element in NavigationViewControl.MenuItems)
+        {
+            ((NavigationViewItem)element).Visibility = Visibility.Visible;
+        } 
+
+        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+    }
     #endregion
 
     #endregion
