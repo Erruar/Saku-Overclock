@@ -80,6 +80,7 @@
     <None Remove="Views\PowerWindow.xaml" />
     <None Remove="Views\КулерPage.xaml" />
     <None Remove="Views\ОбновлениеPage.xaml" />
+    <None Remove="Views\ОбучениеPage.xaml" />
     <None Remove="WindowIcon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -895,6 +896,9 @@
     <None Update="SakuRTSSCLI.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\ОбучениеPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <None Update="ZenStates-Core.deps.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

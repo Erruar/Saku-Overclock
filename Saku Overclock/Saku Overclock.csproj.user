@@ -23,6 +23,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Views\ОбучениеPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Styles\TrayIconResources.xaml">
       <SubType>Designer</SubType>
     </Page>
