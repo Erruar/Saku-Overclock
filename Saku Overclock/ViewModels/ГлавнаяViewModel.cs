@@ -41,6 +41,11 @@ public partial class ГлавнаяViewModel : ObservableRecipient
         }
         return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
     }
+
+    public static string GetPublicVersionDescription()
+    {
+        return GetVersionDescription();
+    }
     public static string GetVersion()
     {
         return Versioning;
