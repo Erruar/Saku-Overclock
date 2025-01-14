@@ -101,7 +101,7 @@ internal class Profile
     public double advncd6value = 50.0;
     public double advncd7value = 100.0;
     public double advncd8value = 25.0;
-    public double advncd9value = 10.0;
+    public double advncd9value = 45.0;
     public double advncd10value = 2000.0;
     public double advncd11value = 2500.0;
     public double advncd12value = 1200.0;
