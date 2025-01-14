@@ -34,7 +34,7 @@ public sealed partial class ПараметрыPage
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private int _indexprofile; // Выбранный профиль
-    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>(); 
+    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); 
 
     private string
         _smuSymbol =
@@ -66,10 +66,10 @@ public sealed partial class ПараметрыPage
         App.GetService<ПараметрыViewModel>();
         InitializeComponent(); 
         ProfileLoad();
-        _indexprofile = SettingsService.Preset;
-        SettingsService.NBFCFlagConsoleCheckSpeedRunning = false;
-        SettingsService.FlagRyzenADJConsoleTemperatureCheckRunning = false;
-        SettingsService.SaveSettings();
+        _indexprofile = AppSettings.Preset;
+        AppSettings.NBFCFlagConsoleCheckSpeedRunning = false;
+        AppSettings.FlagRyzenADJConsoleTemperatureCheckRunning = false;
+        AppSettings.SaveSettings();
         try
         {
             _cpu ??= CpuSingleton.GetInstance();
@@ -91,6 +91,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
+            await LogHelper.Log("Opened Overclock page. Start loading.");
             _isLoaded = true;
             try
             {
@@ -98,12 +99,12 @@ public sealed partial class ПараметрыPage
                 SlidersInit();
             }
             catch (Exception ex)
-            {
+            { 
                 TraceIt_TraceError(ex.ToString());
                 try
                 { 
-                    SettingsService.Preset = -1;
-                    SettingsService.SaveSettings();
+                    AppSettings.Preset = -1;
+                    AppSettings.SaveSettings();
                     _indexprofile = -1;
                     SlidersInit();
                 }
@@ -187,7 +188,7 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    public static void JsonRepair(char file)
+    private static void JsonRepair(char file)
     {
         switch (file)
         { 
@@ -247,7 +248,8 @@ public sealed partial class ПараметрыPage
     }
 
     private void SlidersInit()
-    {
+    { 
+        LogHelper.Log("SakuOverclock SlidersInit");
         if (_isLoaded == false)
         {
             return;
@@ -271,23 +273,76 @@ public sealed partial class ПараметрыPage
             {
                 ProfileCOM.Items.Add(currProfile.profilename);
             }
-        }
+        } 
+        
+         
+        /*new ComboBoxItem
+                {
+                    Content = new Grid 
+                    { 
+                        Margin = new Thickness(0, -10, 0, -10),
+                        Children = 
+                        { 
+                            new TextBlock
+                            {
+                                Margin = new Thickness(0, -3, 0, 0),
+                                HorizontalAlignment = HorizontalAlignment.Left,
+                                VerticalAlignment = VerticalAlignment.Center,
+                                Text = currProfile.profilename
+                            },
+                            new StackPanel
+                            {
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Bottom,
+                                Margin = new Thickness(25, 20, 0, 0),
+                                RenderTransform = new ScaleTransform {ScaleX = 0.9,ScaleY = 0.9},
+                                Orientation = Orientation.Horizontal,
+                                Children =
+                                {
+                                    new TextBlock
+                                    {
+                                        Text = " " + currProfile.cpu2value.ToString(CultureInfo.InvariantCulture) + "W",
+                                        Foreground = new SolidColorBrush(new Color { A = 255, B = 154, G = 143, R = 178})
+                                    },
+                                    new TextBlock
+                                    {
+                                        Text = "-" 
+                                    },
+                                    new TextBlock
+                                    {
+                                        Text = currProfile.cpu3value.ToString(CultureInfo.InvariantCulture) + "W",
+                                        Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 112, R = 194})
+                                    },
+                                    new TextBlock
+                                    {
+                                        Text = "-" 
+                                    },
+                                    new TextBlock
+                                    {
+                                        Text = currProfile.vrm1value.ToString(CultureInfo.InvariantCulture) + "A",
+                                        Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 23, R = 162})
+                                    }
+                                }
+                            }
+                        },
+                    } 
+                }*/
 
-        if (SettingsService.Preset > _profile.Length)
+        if (AppSettings.Preset > _profile.Length)
         {
-            SettingsService.Preset = 0;
-            SettingsService.SaveSettings();
+            AppSettings.Preset = 0;
+            AppSettings.SaveSettings();
         }
         else
         {
-            if (SettingsService.Preset == -1)
+            if (AppSettings.Preset == -1)
             {
                 _indexprofile = 0;
                 ProfileCOM.SelectedIndex = 0;
             }
             else
             {
-                _indexprofile = SettingsService.Preset;
+                _indexprofile = AppSettings.Preset;
                 if (ProfileCOM.Items.Count >= _indexprofile + 1)
                 {
                     ProfileCOM.SelectedIndex = _indexprofile + 1;
@@ -295,7 +350,7 @@ public sealed partial class ПараметрыPage
             }
         }
 
-        MainInit(_indexprofile);
+        //MainInit(_indexprofile);
         _waitforload = false;
     }
 
@@ -375,6 +430,8 @@ public sealed partial class ПараметрыPage
     {
         try
         {
+            await LogHelper.Log("MainInit started");
+            await LogHelper.Log((_cpu?.info.codeName.ToString() ?? "Unknown") + " Codename");
             if (SettingsViewModel.VersionId != 5) // Если не дебаг. В дебаг версии отображаются все параметры
             {
                 if (_cpu?.info.codeName.ToString().Contains("VanGogh") == false)
@@ -462,6 +519,7 @@ public sealed partial class ПараметрыPage
                 if (_cpu != null) 
                 { 
                     cores = _cpu.info.topology.physicalCores; 
+                    await LogHelper.Log("CPU Cores: " + cores); 
                 }
 
                 for (var i = 0; i < cores; i++)
@@ -506,115 +564,145 @@ public sealed partial class ПараметрыPage
                             TraceIt_TraceError(e.ToString());
                         }
                     }
-                } 
-                /*using (RegistryKey key = Registry.CurrentUser.OpenSubKey
-                    ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
-                {
-                    if (key != null)
-                    {
-                        checkBoxApplyCOStartup.Checked = key.GetValue("RyzenSDT") != null;
-                    }
-                }*/
-                if (cores > 8)
-                {
-                    /*if (cores <= 15)
-                    {
-                        CCD2_Grid7_2.Visibility = Visibility.Collapsed;
-                        CCD2_Grid7_1.Visibility = Visibility.Collapsed;
-                    }
-
-                    if (cores <= 14)
-                    {
-                        CCD2_Grid6_2.Visibility = Visibility.Collapsed;
-                        CCD2_Grid6_1.Visibility = Visibility.Collapsed;
-                    }
-
-                    if (cores <= 13)
-                    {
-                        CCD2_Grid5_2.Visibility = Visibility.Collapsed;
-                        CCD2_Grid5_1.Visibility = Visibility.Collapsed;
-                    }
-
-                    if (cores <= 12)
-                    {
-                        CCD2_Grid4_2.Visibility = Visibility.Collapsed;
-                        CCD2_Grid4_1.Visibility = Visibility.Collapsed;
-                    }
-
-                    if (cores <= 11)
-                    {
-                        CCD2_Grid3_2.Visibility = Visibility.Collapsed;
-                        CCD2_Grid3_1.Visibility = Visibility.Collapsed;
-                    }
-
-                    if (cores <= 10)
-                    {
-                        CCD2_Grid2_2.Visibility = Visibility.Collapsed;
-                        CCD2_Grid2_1.Visibility = Visibility.Collapsed;
-                    }
-
-                    if (cores <= 9)
-                    {
-                        CCD2_Grid1_2.Visibility = Visibility.Collapsed;
-                        CCD2_Grid1_1.Visibility = Visibility.Collapsed;
-                    }*/
                 }
-                else
+
+                if (CCD1_Grid1_1.Visibility == Visibility.Collapsed &&
+                    CCD1_Grid2_1.Visibility == Visibility.Collapsed &&
+                    CCD1_Grid3_1.Visibility == Visibility.Collapsed &&
+                    CCD1_Grid4_1.Visibility == Visibility.Collapsed &&
+                    CCD1_Grid5_1.Visibility == Visibility.Collapsed &&
+                    CCD1_Grid6_1.Visibility == Visibility.Collapsed &&
+                    CCD1_Grid7_1.Visibility == Visibility.Collapsed &&
+                    CCD1_Grid8_1.Visibility == Visibility.Collapsed &&
+                    CCD2_Grid0_1.Visibility == Visibility.Collapsed &&
+                    CCD2_Grid1_1.Visibility == Visibility.Collapsed &&
+                    CCD2_Grid2_1.Visibility == Visibility.Collapsed &&
+                    CCD2_Grid3_1.Visibility == Visibility.Collapsed &&
+                    CCD2_Grid4_1.Visibility == Visibility.Collapsed &&
+                    CCD2_Grid5_1.Visibility == Visibility.Collapsed &&
+                    CCD2_Grid6_1.Visibility == Visibility.Collapsed &&
+                    CCD2_Grid7_1.Visibility == Visibility.Collapsed)
                 {
-                    CO_Cores_Text.Text = CO_Cores_Text.Text.Replace("7", $"{cores - 1}");
-                    CCD2_Expander.Visibility = Visibility.Collapsed;
-                    if (cores <= 7)
+                    await LogHelper.LogWarn("Curve Optimizer Disabled cores detection incorrect on that CPU. Using standart disabled cores detection method."); 
+                    CCD1_Grid1_1.Visibility = Visibility.Visible;
+                    CCD1_Grid2_1.Visibility = Visibility.Visible;
+                    CCD1_Grid3_1.Visibility = Visibility.Visible;
+                    CCD1_Grid4_1.Visibility = Visibility.Visible;
+                    CCD1_Grid5_1.Visibility = Visibility.Visible;
+                    CCD1_Grid6_1.Visibility = Visibility.Visible;
+                    CCD1_Grid7_1.Visibility = Visibility.Visible;
+                    CCD1_Grid8_1.Visibility = Visibility.Visible;
+                    CCD2_Grid0_1.Visibility = Visibility.Visible;
+                    CCD2_Grid1_1.Visibility = Visibility.Visible;
+                    CCD2_Grid2_1.Visibility = Visibility.Visible;
+                    CCD2_Grid3_1.Visibility = Visibility.Visible;
+                    CCD2_Grid4_1.Visibility = Visibility.Visible;
+                    CCD2_Grid5_1.Visibility = Visibility.Visible;
+                    CCD2_Grid6_1.Visibility = Visibility.Visible;
+                    CCD2_Grid7_1.Visibility = Visibility.Visible;
+                    if (cores > 8)
                     {
-                        CCD1_Grid8_2.Visibility = Visibility.Collapsed;
-                        CCD1_Grid8_1.Visibility = Visibility.Collapsed;
-                    }
+                        if (cores <= 15)
+                        {
+                            CCD2_Grid7_2.Visibility = Visibility.Collapsed;
+                            CCD2_Grid7_1.Visibility = Visibility.Collapsed;
+                        }
 
-                    if (cores <= 6)
-                    {
-                        CCD1_Grid7_2.Visibility = Visibility.Collapsed;
-                        CCD1_Grid7_1.Visibility = Visibility.Collapsed;
-                    }
+                        if (cores <= 14)
+                        {
+                            CCD2_Grid6_2.Visibility = Visibility.Collapsed;
+                            CCD2_Grid6_1.Visibility = Visibility.Collapsed;
+                        }
 
-                    if (cores <= 5)
-                    {
-                        CCD1_Grid6_2.Visibility = Visibility.Collapsed;
-                        CCD1_Grid6_1.Visibility = Visibility.Collapsed;
-                    }
+                        if (cores <= 13)
+                        {
+                            CCD2_Grid5_2.Visibility = Visibility.Collapsed;
+                            CCD2_Grid5_1.Visibility = Visibility.Collapsed;
+                        }
 
-                    if (cores <= 4)
-                    {
-                        CCD1_Grid5_2.Visibility = Visibility.Collapsed;
-                        CCD1_Grid5_1.Visibility = Visibility.Collapsed;
-                    }
+                        if (cores <= 12)
+                        {
+                            CCD2_Grid4_2.Visibility = Visibility.Collapsed;
+                            CCD2_Grid4_1.Visibility = Visibility.Collapsed;
+                        }
 
-                    if (cores <= 3)
-                    {
-                        CCD1_Grid4_2.Visibility = Visibility.Collapsed;
-                        CCD1_Grid4_1.Visibility = Visibility.Collapsed;
-                    }
+                        if (cores <= 11)
+                        {
+                            CCD2_Grid3_2.Visibility = Visibility.Collapsed;
+                            CCD2_Grid3_1.Visibility = Visibility.Collapsed;
+                        }
 
-                    if (cores <= 2)
-                    {
-                        CCD1_Grid3_2.Visibility = Visibility.Collapsed;
-                        CCD1_Grid3_1.Visibility = Visibility.Collapsed;
-                    }
+                        if (cores <= 10)
+                        {
+                            CCD2_Grid2_2.Visibility = Visibility.Collapsed;
+                            CCD2_Grid2_1.Visibility = Visibility.Collapsed;
+                        }
 
-                    if (cores <= 1)
-                    {
-                        CCD1_Grid2_2.Visibility = Visibility.Collapsed;
-                        CCD1_Grid2_1.Visibility = Visibility.Collapsed;
+                        if (cores <= 9)
+                        {
+                            CCD2_Grid1_2.Visibility = Visibility.Collapsed;
+                            CCD2_Grid1_1.Visibility = Visibility.Collapsed;
+                        }
                     }
-
-                    if (cores == 0)
+                    else
                     {
-                        CCD1_Expander.Visibility = Visibility.Collapsed;
+                        CO_Cores_Text.Text = CO_Cores_Text.Text.Replace("7", $"{cores - 1}");
+                        CCD2_Expander.Visibility = Visibility.Collapsed;
+                        if (cores <= 7)
+                        {
+                            CCD1_Grid8_2.Visibility = Visibility.Collapsed;
+                            CCD1_Grid8_1.Visibility = Visibility.Collapsed;
+                        }
+
+                        if (cores <= 6)
+                        {
+                            CCD1_Grid7_2.Visibility = Visibility.Collapsed;
+                            CCD1_Grid7_1.Visibility = Visibility.Collapsed;
+                        }
+
+                        if (cores <= 5)
+                        {
+                            CCD1_Grid6_2.Visibility = Visibility.Collapsed;
+                            CCD1_Grid6_1.Visibility = Visibility.Collapsed;
+                        }
+
+                        if (cores <= 4)
+                        {
+                            CCD1_Grid5_2.Visibility = Visibility.Collapsed;
+                            CCD1_Grid5_1.Visibility = Visibility.Collapsed;
+                        }
+
+                        if (cores <= 3)
+                        {
+                            CCD1_Grid4_2.Visibility = Visibility.Collapsed;
+                            CCD1_Grid4_1.Visibility = Visibility.Collapsed;
+                        }
+
+                        if (cores <= 2)
+                        {
+                            CCD1_Grid3_2.Visibility = Visibility.Collapsed;
+                            CCD1_Grid3_1.Visibility = Visibility.Collapsed;
+                        }
+
+                        if (cores <= 1)
+                        {
+                            CCD1_Grid2_2.Visibility = Visibility.Collapsed;
+                            CCD1_Grid2_1.Visibility = Visibility.Collapsed;
+                        }
+
+                        if (cores == 0)
+                        {
+                            CCD1_Expander.Visibility = Visibility.Collapsed;
+                        }
                     }
                 }
             }
 
             _waitforload = true; 
-            if (SettingsService.Preset == -1 || index == -1) //Load from unsaved
+            if (AppSettings.Preset == -1 || index == -1) //Load from unsaved
             {
+                await LogHelper.LogWarn("Unable to find or set last saved profile. Setting unsaved profile.");
+
                 MainScroll.IsEnabled = false;
                 ActionButton_Apply.IsEnabled = false;
                 ActionButton_Delete.IsEnabled = false;
@@ -629,6 +717,7 @@ public sealed partial class ПараметрыPage
             }
             else
             {
+                await LogHelper.Log($"Loading profile... {_profile[index].profilename}"); 
                 ActionButton_Save.BorderBrush = ActionButton_Delete.BorderBrush;
                 ActionButton_Save.BorderThickness = ActionButton_Delete.BorderThickness;
                 MainScroll.IsEnabled = true;
@@ -997,6 +1086,8 @@ public sealed partial class ПараметрыPage
                 }
                 catch
                 {
+                    await LogHelper.LogError("Profile contains error. Creating new profile.");
+
                     _profile = new Profile[1];
                     _profile[0] = new Profile();
                     ProfileSave();
@@ -1005,6 +1096,7 @@ public sealed partial class ПараметрыPage
 
             try
             {
+                await LogHelper.Log("Trying to load P-States settings."); 
                 Mult_0.SelectedIndex = (int)(FID_0.Value * 25 / (DID_0.Value * 12.5)) - 4;
                 P0_Freq.Content = FID_0.Value * 25 / (DID_0.Value * 12.5) * 100;
                 Mult_1.SelectedIndex = (int)(FID_1.Value * 25 / (DID_1.Value * 12.5)) - 4;
@@ -1014,13 +1106,14 @@ public sealed partial class ПараметрыPage
             }
             catch (Exception ex)
             {
-                if (SettingsService.Preset != -1)
+                if (AppSettings.Preset != -1)
                 {
                     TraceIt_TraceError(ex.ToString());
                 }
             }
 
             _waitforload = false;
+            await LogHelper.Log("Loading user SMU settings."); 
             SmuSettingsLoad();
             if (_smusettings.Note != string.Empty)
             {
@@ -1065,20 +1158,25 @@ public sealed partial class ПараметрыPage
 
     private uint GetCoreMask(int coreIndex)
     {
+        Task.Run(async () => await LogHelper.Log("Getting Core Mask...")); 
         var ccxInCcd = _cpu?.info.family >= Cpu.Family.FAMILY_19H ? 1U : 2U;
         var coresInCcx = 8 / ccxInCcd;
 
         var ccd = Convert.ToUInt32(coreIndex / 8);
         var ccx = Convert.ToUInt32(coreIndex / coresInCcx - ccxInCcd * ccd);
         var core = Convert.ToUInt32(coreIndex % coresInCcx);
-        return _cpu!.MakeCoreMask(core, ccd, ccx);
+        var coreMask = _cpu!.MakeCoreMask(core, ccd, ccx);
+        Task.Run(async () => await LogHelper.Log($"Core Mask detected: {coreMask}\nCCD: {ccd}\nCCX: {ccx}\nCore: {core}\nCCX in Index: {ccxInCcd}")); 
+        return coreMask;
     }
 
     private void Init_QuickSMU()
-    {
+    { 
+        Task.Run(async () => await LogHelper.Log("Initing Quick SMU options...")); 
         SmuSettingsLoad();
         if (_smusettings.QuickSmuCommands == null)
         {
+            Task.Run(async () => await LogHelper.Log("Quick SMU options not found... Exiting initialization.")); 
             return;
         }
 
@@ -1242,6 +1340,7 @@ public sealed partial class ПараметрыPage
     {
         if (error != string.Empty)
         { 
+            Task.Run(async () => await LogHelper.LogError(error)); 
             NotificationsService.Notifies ??= [];
             NotificationsService.Notifies.Add(new Notify
             {
@@ -1253,6 +1352,174 @@ public sealed partial class ПараметрыPage
         }
     }
 
+    #region Suggestion Engine
+
+    // Collecting Search Items
+    private List<SettingItem> CollectSearchItems()
+    {
+        var searchItems = new List<SettingItem>();
+        var stackPanels = FindVisualChildren<StackPanel>(MainScroll);
+
+        foreach (var stackPanel in stackPanels)
+        {
+            var textBlocks = FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15).ToList();
+            foreach (var textBlock in textBlocks)
+            {
+                var adjacentGrid = FindAdjacentGrid(stackPanel);
+                searchItems.Add(new SettingItem
+                {
+                    Text = textBlock.Text,
+                    StackPanel = stackPanel,
+                    AdjacentGrid = adjacentGrid
+                });
+            }
+        }
+
+        return searchItems;
+    }
+
+
+    public class SettingItem
+    {
+        public string Text
+        {
+            get;
+            set;
+        }
+
+        public StackPanel StackPanel
+        {
+            get;
+            set;
+        }
+
+        public Grid AdjacentGrid
+        {
+            get;
+            set;
+        }
+    }
+
+    private static IEnumerable<T> FindVisualChildren<T>(DependencyObject parent) where T : DependencyObject
+    { 
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            if (child is T t)
+            {
+                yield return t;
+            }
+
+            foreach (var childOfChild in FindVisualChildren<T>(child))
+            {
+                yield return childOfChild;
+            }
+        }
+    }
+
+    private static Grid? FindRecommendationsGrid(StackPanel settingsStackPanel)
+    {
+        var parentGrid = VisualTreeHelper.GetParent(settingsStackPanel) as Grid;
+        if (parentGrid != null)
+        {
+            var row = Grid.GetRow(settingsStackPanel);
+            return parentGrid.Children.OfType<Grid>()
+                .FirstOrDefault(child => Grid.GetRow(child) == row && Grid.GetColumn(child) == 1);
+        }
+
+        return null;
+    }
+
+    private void ResetVisibility()
+    {
+        var expanders = FindVisualChildren<Expander>(MainScroll);
+        foreach (var expander in expanders)
+        {
+            expander.IsExpanded = true;
+            var stackPanels = FindVisualChildren<StackPanel>(expander);
+            foreach (var stackPanel in stackPanels)
+            {
+                stackPanel.Visibility = Visibility.Visible;
+                var adjacentGrid = FindAdjacentGrid(stackPanel);
+                if (adjacentGrid != null)
+                    adjacentGrid.Visibility = Visibility.Visible;
+            }
+        }
+    }
+
+// Find Adjacent Grid
+    private Grid FindAdjacentGrid(StackPanel stackPanel)
+    {
+        var parent = VisualTreeHelper.GetParent(stackPanel) as Panel;
+        if (parent == null) return null;
+
+        var index = parent.Children.IndexOf(stackPanel);
+        if (index < 0 || index >= parent.Children.Count - 1) return null;
+
+        return parent.Children[index + 1] as Grid;
+    }
+
+    private void SuggestBox_OnTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        var searchText = sender.Text.ToLower();
+
+        // Reset visibility
+        ResetVisibility();
+
+        var expanders = FindVisualChildren<Expander>(MainScroll);
+        foreach (var expander in expanders)
+        {
+            var stackPanels = FindVisualChildren<StackPanel>(expander);
+            var anyVisible = false;
+            foreach (var stackPanel in stackPanels)
+            {
+                /*var ownstackpanels = FindVisualChildren<StackPanel>(stackPanel);
+                var containsOne = false;
+                foreach (var ownstackpanel in ownstackpanels)
+                {*/
+                    var textBlocks = FindVisualChildren<TextBlock>(/*ownstackpanel*/stackPanel).Where(tb => tb.FontSize == 15).ToList();
+                    var checkBoxes = FindVisualChildren<CheckBox>(/*ownstackpanel*/stackPanel).Where(cb => cb.IsEnabled).ToList();
+                    var containsText = textBlocks.Any(tb => tb.Text.ToLower().Contains(searchText));
+                    /*if (textBlocks.Count != 0 && containsText)
+                    {
+                        containsOne = true;
+                        ownstackpanel.Visibility = Visibility.Visible;
+                        stackPanel.Visibility = Visibility.Visible;
+                    }
+
+                    if (checkBoxes.Count != 0 && containsOne)
+                    {
+                        containsOne = false;
+                        ownstackpanel.Visibility = Visibility.Visible;
+                        stackPanel.Visibility = Visibility.Visible;
+                    }*/
+                    stackPanel.Visibility = containsText ? Visibility.Visible : Visibility.Collapsed;
+                    var adjacentGrid = FindAdjacentGrid(stackPanel);
+                    if (adjacentGrid != null)
+                    {
+                        adjacentGrid.Visibility = containsText ? Visibility.Visible : Visibility.Collapsed;
+                    }
+                    if (containsText)
+                    {
+                        anyVisible = true;
+                    }
+                /*}*/
+                
+            }
+
+            // Collapse Expander if no StackPanels are visible
+            if (!anyVisible)
+                expander.IsExpanded = false;
+        }
+    }
+
+    private void SuggestBox_OnSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+    {
+         
+    }
+
+    #endregion
+
     #endregion
 
     #region SMU Related voids and Quick SMU Commands
@@ -1261,6 +1528,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
+            Task.Run(async () => await LogHelper.Log("Starting background task")); 
             var backgroundWorker1 = new BackgroundWorker();
             backgroundWorker1.DoWork += task;
             backgroundWorker1.RunWorkerCompleted += completedHandler;
@@ -1301,6 +1569,7 @@ public sealed partial class ПараметрыPage
 
             comboBoxMailboxSelect.SelectedIndex = index;
             QuickCommand.IsEnabled = true;
+            await LogHelper.Log("SMU Scan Completed"); 
             await Send_Message("SMUScanText".GetLocalized(), "SMUScanDesc".GetLocalized(), Symbol.Message);
         }
         catch (Exception exception)
@@ -1314,6 +1583,7 @@ public sealed partial class ПараметрыPage
         try
         {
             _cpu ??= new Cpu(CpuInitSettings.defaultSetttings);
+            Task.Run(async () => await LogHelper.Log("Starting scanning SMU addresses task")); 
             switch (_cpu.info.codeName)
             {
                 case Cpu.CodeName.BristolRidge:
@@ -1356,7 +1626,7 @@ public sealed partial class ПараметрыPage
     private void ScanSmuRange(uint start, uint end, uint step, uint offset)
     {
         _matches = [];
-
+        Task.Run(async () => await LogHelper.Log("Starting scanning SMU range task")); 
         var keyPairs = new List<KeyValuePair<uint, uint>>();
 
         while (start <= end)
@@ -1399,8 +1669,8 @@ public sealed partial class ПараметрыPage
             foreach (var keyPair in keyPairs)
             {
                 Console.WriteLine($"{keyPair.Key:X8}: {keyPair.Value:X8}");
-            }
-
+                Task.Run(async () => await LogHelper.Log($"Found keypair: {keyPair.Key:X8}: {keyPair.Value:X8}")); 
+            } 
             Console.WriteLine();
         }
 
@@ -1409,7 +1679,7 @@ public sealed partial class ПараметрыPage
         foreach (var pair in keyPairs)
         {
             Console.WriteLine($"Testing {pair.Key:X8}: {pair.Value:X8}");
-
+            Task.Run(async () => await LogHelper.Log($"Testing keypair: {pair.Key:X8}: {pair.Value:X8}")); 
             if (TrySettings(pair.Key, pair.Value, 0xFFFFFFAF, 0x2, 0xFF) == SMU.Status.OK) //ЗДЕСЬ БЫЛО FFFFFFFF
             {
                 var smuArgAddress = pair.Value + 4;
@@ -1452,6 +1722,7 @@ public sealed partial class ПараметрыPage
                 }
             }
         }
+        Task.Run(async () => await LogHelper.Log("Scanning SMU range task completed.")); 
     }
 
     private SMU.Status? TrySettings(uint msgAddr, uint rspAddr, uint argAddr, uint cmd, uint value)
@@ -1492,6 +1763,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
+            Task.Run(async () => await LogHelper.Log("Applying user SMU settings task started.")); 
             uint[]? args;
             string[]? userArgs;
             uint addrMsg;
@@ -1535,6 +1807,13 @@ public sealed partial class ПараметрыPage
                 args[i] = temp;
             }
 
+            Task.Run(async () =>
+                await LogHelper.Log(
+                    $"Sending SMU Command: {_smusettings.QuickSmuCommands?[commandIndex].Command}\n" +
+                    $"Args: {_smusettings.QuickSmuCommands?[commandIndex].Argument}\n" +
+                    $"Address MSG: {_testMailbox.SMU_ADDR_MSG}\n" +
+                    $"Address RSP: {_testMailbox.SMU_ADDR_RSP}\n" +
+                    $"Address ARG: {_testMailbox.SMU_ADDR_ARG}"));
             var status = _cpu?.smu.SendSmuCommand(_testMailbox, command, ref args);
             if (status != SMU.Status.OK)
             {
@@ -1553,9 +1832,11 @@ public sealed partial class ПараметрыPage
                     ApplyInfo += "\n" + "SMUErrorNoCMD".GetLocalized();
                 }
             }
+            Task.Run(async () => await LogHelper.Log($"Get status: {status}")); 
         }
-        catch
+        catch (Exception ex)
         {
+            Task.Run(async () => await LogHelper.LogError($"Applying user SMU settings error: {ex.Message}")); 
             ApplyInfo += "\n" + "SMUErrorDesc".GetLocalized();
         }
     }
@@ -1595,6 +1876,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
+            await LogHelper.Log("Saku PowerMon Clicked to open. Showing dialog");
             var monDialog = new ContentDialog
             {
                 Title = "PowerMonText".GetLocalized(),
@@ -1614,6 +1896,7 @@ public sealed partial class ПараметрыPage
             var result = await monDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
+                await LogHelper.Log("Saku PowerMon starting...");
                 var newWindow = new PowerWindow(_cpu);
                 var micaBackdrop = new MicaBackdrop
                 {
@@ -1621,6 +1904,10 @@ public sealed partial class ПараметрыPage
                 };
                 newWindow.SystemBackdrop = micaBackdrop;
                 newWindow.Activate();
+            }
+            else
+            {
+                await LogHelper.Log("Saku PowerMon dialog closed");
             }
         }
         catch (Exception exception)
@@ -1658,6 +1945,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
+            await LogHelper.Log("Showing Quick SMU Commands dialog");
             _smuSymbol1 = new FontIcon
             {
                 FontFamily = new FontFamily("Segoe Fluent Icons"),
@@ -1805,6 +2093,7 @@ public sealed partial class ПараметрыPage
                     // Создать ContentDialog 
                     if (result == ContentDialogResult.Primary)
                     {
+                        await LogHelper.Log("Adding new Quick SMU Command");
                         SmuSettingsLoad();
                         var saveIndex = comboSelSmu.SelectedIndex;
                         for (var i = 0; i < comboSelSmu.Items.Count; i++)
@@ -1901,8 +2190,10 @@ public sealed partial class ПараметрыPage
                     }
                     else
                     {
+                        
                         if (result == ContentDialogResult.Secondary)
                         {
+                            await LogHelper.Log("Removing Quick SMU Command");
                             SmuSettingsLoad();
                             _smusettings.QuickSmuCommands!.RemoveAt(rowindex);
                             SmuSettingsSave();
@@ -1910,6 +2201,7 @@ public sealed partial class ПараметрыPage
                         }
                         else
                         {
+                            await LogHelper.Log("Exiting Quick SMU Commands dialog");
                             newQuickCommand?.Hide();
                             newQuickCommand = null;
                         }
@@ -1936,6 +2228,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
+            await LogHelper.Log("SMU Apply Range Dialog opened");
             var comboSelSmu = new ComboBox
             {
                 Margin = new Thickness(0, 20, 0, 0),
@@ -2027,6 +2320,7 @@ public sealed partial class ПараметрыPage
                     // Создать ContentDialog 
                     if (result == ContentDialogResult.Primary)
                     {
+                        await LogHelper.Log("SMU Apply Range: applying range... Log will be saved to another file");
                         SmuSettingsLoad();
                         var saveIndex = comboSelSmu.SelectedIndex;
                         for (var i = 0; i < comboSelSmu.Items.Count; i++)
@@ -2093,6 +2387,7 @@ public sealed partial class ПараметрыPage
                     }
                     else
                     {
+                        await LogHelper.Log("SMU Apply Range Dialog closed");
                         newQuickCommand?.Hide();
                         newQuickCommand = null;
                     }
@@ -2280,8 +2575,8 @@ public sealed partial class ПараметрыPage
 
             if (ProfileCOM.SelectedIndex != -1)
             {
-                SettingsService.Preset = ProfileCOM.SelectedIndex - 1;
-                SettingsService.SaveSettings();
+                AppSettings.Preset = ProfileCOM.SelectedIndex - 1;
+                AppSettings.SaveSettings();
             }
 
             _indexprofile = ProfileCOM.SelectedIndex - 1;
@@ -4340,6 +4635,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
+            await LogHelper.Log("Applying user settings.");
             if (c1.IsChecked == true)
             {
                 _adjline += " --tctl-temp=" + c1v.Value;
@@ -4978,13 +5274,14 @@ public sealed partial class ПараметрыPage
                 }
             }
  
-            SettingsService.RyzenADJline = _adjline + " ";
+            AppSettings.RyzenADJline = _adjline + " ";
             _adjline = "";
             ApplyInfo = "";
-            SettingsService.SaveSettings();
+            AppSettings.SaveSettings();
             SendSmuCommand.Codename = _cpu!.info.codeName;
-            MainWindow.Applyer.Apply(SettingsService.RyzenADJline, true, SettingsService.ReapplyOverclock,
-                SettingsService.ReapplyOverclockTimer);
+            await LogHelper.Log($"Sending commandline: {_adjline}");
+            MainWindow.Applyer.Apply(AppSettings.RyzenADJline, true, AppSettings.ReapplyOverclock,
+                AppSettings.ReapplyOverclockTimer);
             if (EnablePstates.IsOn)
             {
                 BtnPstateWrite_Click();
@@ -5017,7 +5314,7 @@ public sealed partial class ПараметрыPage
             // ReSharper disable once HeuristicUnreachableCode
             {
                 Apply_tooltip.Title = "Apply_Success".GetLocalized();
-                Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + SettingsService.RyzenADJline;
+                Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + AppSettings.RyzenADJline;
             }
 #pragma warning restore CS0162 // Unreachable code detected
             Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
@@ -5025,6 +5322,7 @@ public sealed partial class ПараметрыPage
             var infoSet = InfoBarSeverity.Success;
             if (ApplyInfo != string.Empty)
             {
+                await LogHelper.Log(ApplyInfo);
                 Apply_tooltip.Title = "Apply_Warn".GetLocalized();
                 Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + ApplyInfo;
                 Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
@@ -5034,6 +5332,7 @@ public sealed partial class ПараметрыPage
             }
             else
             {
+                await LogHelper.Log("Apply_Success".GetLocalized());
                 await Task.Delay(3000);
                 Apply_tooltip.IsOpen = false;
             }
@@ -5061,14 +5360,53 @@ public sealed partial class ПараметрыPage
         {
             if (SaveProfileN.Text != "")
             { 
+                await LogHelper.Log($"Adding new profile: \"{SaveProfileN.Text}\"");
                 ProfileLoad();
                 try
                 {
-                    SettingsService.Preset += 1;
+                    ActionButton_Save.Flyout.Hide();
+                    var newElement = new ComboBoxItem
+                    {
+                        Content = new StackPanel
+                        {
+                            Orientation = Orientation.Horizontal,
+                            Children =
+                            {
+                                new TextBlock
+                                {
+                                    Text = SaveProfileN.Text
+                                },
+                                new TextBlock
+                                {
+                                    Text = " " + new Profile().cpu2value.ToString(CultureInfo.InvariantCulture) + "W",
+                                    Foreground = new SolidColorBrush(new Color { A = 255, B = 154, G = 143, R = 178 })
+                                },
+                                new TextBlock
+                                {
+                                    Text = "-"
+                                },
+                                new TextBlock
+                                {
+                                    Text = new Profile().cpu3value.ToString(CultureInfo.InvariantCulture) + "W",
+                                    Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 112, R = 194 })
+                                },
+                                new TextBlock
+                                {
+                                    Text = "-"
+                                },
+                                new TextBlock
+                                {
+                                    Text = new Profile().vrm1value.ToString(CultureInfo.InvariantCulture) + "A",
+                                    Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 23, R = 162 })
+                                }
+                            },
+                        }
+                    };
+                    AppSettings.Preset += 1;
                     _indexprofile += 1;
                     _waitforload = true;
-                    ProfileCOM.Items.Add(SaveProfileN.Text);
-                    ProfileCOM.SelectedItem = SaveProfileN.Text;
+                    ProfileCOM.Items.Add(/*newElement*/SaveProfileN.Text);
+                    ProfileCOM.SelectedItem = /*newElement*/SaveProfileN.Text;
                     if (_profile.Length == 0)
                     {
                         _profile = new Profile[1];
@@ -5118,7 +5456,7 @@ public sealed partial class ПараметрыPage
                 Add_tooltip_Error.IsOpen = false;
             }
 
-            SettingsService.SaveSettings();
+            AppSettings.SaveSettings();
             ProfileSave();
         }
         catch (Exception exception)
@@ -5131,9 +5469,11 @@ public sealed partial class ПараметрыPage
     {
         try
         {
+            await LogHelper.Log($"Editing profile name: From \"{_profile[_indexprofile].profilename}\" To \"{EditProfileN.Text}\"");
             EditProfileButton.Flyout.Hide();
             if (EditProfileN.Text != "")
             {
+                var backupIndex = ProfileCOM.SelectedIndex;
                 if (ProfileCOM.SelectedIndex == 0 || _indexprofile + 1 == 0)
                 {
                     Unsaved_tooltip.IsOpen = true;
@@ -5160,13 +5500,49 @@ public sealed partial class ПараметрыPage
                     {
                         if (currProfile.profilename != string.Empty || currProfile.profilename != "Unsigned profile")
                         {
-                            ProfileCOM.Items.Add(currProfile.profilename);
+                            ProfileCOM.Items.Add(currProfile.profilename/*new ComboBoxItem
+                            {
+                                Content = new StackPanel
+                                {
+                                    Orientation = Orientation.Horizontal,
+                                    Children = 
+                                    { 
+                                        new TextBlock
+                                        {
+                                            Text = currProfile.profilename
+                                        },
+                                        new TextBlock
+                                        {
+                                            Text = " " + currProfile.cpu2value.ToString(CultureInfo.InvariantCulture) + "W",
+                                            Foreground = new SolidColorBrush(new Color { A = 255, B = 154, G = 143, R = 178})
+                                        },
+                                        new TextBlock
+                                        {
+                                            Text = "-" 
+                                        },
+                                        new TextBlock
+                                        {
+                                            Text = currProfile.cpu3value.ToString(CultureInfo.InvariantCulture) + "W",
+                                            Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 112, R = 194})
+                                        },
+                                        new TextBlock
+                                        {
+                                            Text = "-" 
+                                        },
+                                        new TextBlock
+                                        {
+                                            Text = currProfile.vrm1value.ToString(CultureInfo.InvariantCulture) + "A",
+                                            Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 23, R = 162})
+                                        }
+                                    },
+                                } 
+                            }*/);
                         }
                     }
 
                     ProfileCOM.SelectedIndex = 0;
                     _waitforload = false;
-                    ProfileCOM.SelectedItem = EditProfileN.Text; 
+                    ProfileCOM.SelectedIndex = backupIndex; 
                     NotificationsService.Notifies ??= [];
                     NotificationsService.Notifies.Add(new Notify
                     {
@@ -5204,6 +5580,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
+            await LogHelper.Log("Showing delete profile dialog");
             var delDialog = new ContentDialog
             {
                 Title = "Param_DelPreset_Text".GetLocalized(),
@@ -5222,6 +5599,7 @@ public sealed partial class ПараметрыPage
             var result = await delDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
+                await LogHelper.Log($"Showing delete profile dialog: deleting profile \"{_profile[_indexprofile].profilename}\"");
                 if (ProfileCOM.SelectedIndex == 0)
                 {
                     NotificationsService.Notifies ??= [];
@@ -5240,13 +5618,14 @@ public sealed partial class ПараметрыPage
                 {
                     ProfileLoad();
                     _waitforload = true;
-                    ProfileCOM.Items.Remove(_profile[_indexprofile].profilename);
+                    ProfileCOM.Items.Remove(ProfileCOM.SelectedItem);
                     var profileList = new List<Profile>(_profile);
                     profileList.RemoveAt(_indexprofile);
                     _profile = [.. profileList];
                     _indexprofile = 0;
                     _waitforload = false;
-                    ProfileCOM.SelectedIndex = 0; 
+                    
+                    ProfileCOM.SelectedIndex = ProfileCOM.Items.Count - 1; 
                     NotificationsService.Notifies ??= [];
                     NotificationsService.Notifies.Add(new Notify
                     {
@@ -5631,8 +6010,7 @@ public sealed partial class ПараметрыPage
                 }
             }
         }
-    }
-
+    } 
     #endregion
 
     #region PState Section related voids
@@ -5641,17 +6019,18 @@ public sealed partial class ПараметрыPage
     {
         try
         { 
-            _profile[SettingsService.Preset].did0 = DID_0.Value;
-            _profile[SettingsService.Preset].did1 = DID_1.Value;
-            _profile[SettingsService.Preset].did2 = DID_2.Value;
-            _profile[SettingsService.Preset].fid0 = FID_0.Value;
-            _profile[SettingsService.Preset].fid1 = FID_1.Value;
-            _profile[SettingsService.Preset].fid2 = FID_2.Value;
-            _profile[SettingsService.Preset].vid0 = VID_0.Value;
-            _profile[SettingsService.Preset].vid1 = VID_1.Value;
-            _profile[SettingsService.Preset].vid2 = VID_2.Value;
+            await LogHelper.Log("P-States writing...");
+            _profile[AppSettings.Preset].did0 = DID_0.Value;
+            _profile[AppSettings.Preset].did1 = DID_1.Value;
+            _profile[AppSettings.Preset].did2 = DID_2.Value;
+            _profile[AppSettings.Preset].fid0 = FID_0.Value;
+            _profile[AppSettings.Preset].fid1 = FID_1.Value;
+            _profile[AppSettings.Preset].fid2 = FID_2.Value;
+            _profile[AppSettings.Preset].vid0 = VID_0.Value;
+            _profile[AppSettings.Preset].vid1 = VID_1.Value;
+            _profile[AppSettings.Preset].vid2 = VID_2.Value;
             ProfileSave();
-            if (_profile[SettingsService.Preset].autoPstate)
+            if (_profile[AppSettings.Preset].autoPstate)
             {
                 if (Without_P0.IsOn)
                 {
@@ -5753,30 +6132,32 @@ public sealed partial class ПараметрыPage
         {
             var cpu = CpuSingleton.GetInstance(); 
             ProfileLoad();
-            PstatesDid[0] = _profile[SettingsService.Preset].did0;
-            PstatesDid[1] = _profile[SettingsService.Preset].did1;
-            PstatesDid[2] = _profile[SettingsService.Preset].did2;
-            PstatesFid[0] = _profile[SettingsService.Preset].fid0;
-            PstatesFid[1] = _profile[SettingsService.Preset].fid1;
-            PstatesFid[2] = _profile[SettingsService.Preset].fid2;
-            PstatesVid[0] = _profile[SettingsService.Preset].vid0;
-            PstatesVid[1] = _profile[SettingsService.Preset].vid1;
-            PstatesVid[2] = _profile[SettingsService.Preset].vid2;
+            PstatesDid[0] = _profile[AppSettings.Preset].did0;
+            PstatesDid[1] = _profile[AppSettings.Preset].did1;
+            PstatesDid[2] = _profile[AppSettings.Preset].did2;
+            PstatesFid[0] = _profile[AppSettings.Preset].fid0;
+            PstatesFid[1] = _profile[AppSettings.Preset].fid1;
+            PstatesFid[2] = _profile[AppSettings.Preset].fid2;
+            PstatesVid[0] = _profile[AppSettings.Preset].vid0;
+            PstatesVid[1] = _profile[AppSettings.Preset].vid1;
+            PstatesVid[2] = _profile[AppSettings.Preset].vid2;
             for (var p = 0; p < 3; p++)
             {
                 if (PstatesFid[p] == 0 || PstatesDid[p] == 0 || PstatesVid[p] == 0)
                 {
                     ReadPstate();
+                    LogHelper.LogError("Corrupted P-States in config");
                     App.GetService<IAppNotificationService>().Show(
-                        "<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Corrupted Pstates in config</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
+                        "<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Corrupted P-States in config</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                 }
 
                 // Установка стандартных значений
                 uint eax = 0, edx = 0;
                 if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), ref eax, ref edx) == false)
                 {
+                    LogHelper.LogError("Error reading P-States");
                     App.GetService<IAppNotificationService>().Show(
-                        $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error reading PState! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
+                        $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error reading P-State! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                     return;
                 }
 
@@ -5811,6 +6192,7 @@ public sealed partial class ПараметрыPage
 
                 if (cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), eax, edx) == false)
                 {
+                    LogHelper.LogError($"Error writing P-State: {p}");
                     App.GetService<IAppNotificationService>().Show(
                         $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error writing PState! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                 }
@@ -5857,6 +6239,7 @@ public sealed partial class ПараметрыPage
                 var fidtext = "102";
                 if (_cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), ref eax, ref edx) == false)
                 {
+                    LogHelper.LogError("Error reading P-States"); 
                     App.GetService<IAppNotificationService>().Show(
                         $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error reading PState! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                     return;
@@ -5903,6 +6286,7 @@ public sealed partial class ПараметрыPage
 
                 if (_cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), eax, edx) == false)
                 {
+                    LogHelper.LogError($"Error writing P-State: {p}"); 
                     App.GetService<IAppNotificationService>().Show(
                         $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error writing PState! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                 }
@@ -5939,7 +6323,7 @@ public sealed partial class ПараметрыPage
                 eax |= 0x200000;
                 return cpu.WriteMsr(0xC0010015, eax, edx);
             }
-
+            LogHelper.LogError("Error applying TSC workaround");
             App.GetService<IAppNotificationService>().Show(
                 "<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error applying TSC CPU P-States fix</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
             return false;
@@ -5968,6 +6352,7 @@ public sealed partial class ПараметрыPage
 
             if (cpu.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false)
             {
+                LogHelper.LogError($"Error writing P-State: {pstateId}");
                 App.GetService<IAppNotificationService>().Show(
                     $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error writing PState! ID = {pstateId}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                 return false;
@@ -5994,6 +6379,8 @@ public sealed partial class ПараметрыPage
                 {
                     if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + i), ref eax, ref edx) == false)
                     {
+                        LogHelper.LogError("Error reading P-States");
+
                         App.MainWindow.ShowMessageDialogAsync("Error while reading CPU Pstate", "Critical Error");
                         return;
                     }
@@ -6038,6 +6425,7 @@ public sealed partial class ПараметрыPage
                 {
                     if (_cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + i), ref eax, ref edx) == false)
                     {
+                        LogHelper.LogError("Error reading P-States"); 
                         App.MainWindow.ShowMessageDialogAsync("Error while reading CPU Pstate", "Critical Error");
                         return;
                     }
@@ -6059,6 +6447,7 @@ public sealed partial class ПараметрыPage
                         if (mult0V <= 0)
                         {
                             mult0V = 0;
+                            LogHelper.LogError("Error reading CPU multiply"); 
                             App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
@@ -6073,6 +6462,7 @@ public sealed partial class ПараметрыPage
                         if (mult1V <= 0)
                         {
                             mult1V = 0;
+                            LogHelper.LogError("Error reading CPU multiply"); 
                             App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
@@ -6087,6 +6477,7 @@ public sealed partial class ПараметрыPage
                         if (mult2V <= 0)
                         {
                             mult2V = 0;
+                            LogHelper.LogError("Error reading CPU multiply"); 
                             App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
@@ -6178,11 +6569,13 @@ public sealed partial class ПараметрыPage
         // Маска для 25-го бита (CpbDis)
         if (enable)
         {
+            LogHelper.Log("Settings Core Performance Boost: Enabling");
             // Устанавливаем 25-й бит в 0 (включаем Core Performance Boost)
             eax &= ~mask;
         }
         else
         {
+            LogHelper.Log("Settings Core Performance Boost: Disabling");
             // Устанавливаем 25-й бит в 1 (выключаем Core Performance Boost)
             eax |= mask;
         }
@@ -6667,4 +7060,5 @@ public sealed partial class ПараметрыPage
     private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID2();
 
     #endregion
+
 }

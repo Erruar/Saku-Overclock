@@ -62,11 +62,131 @@
             </Grid.RowDefinitions>
             <!-- Начало -->
             <TextBlock x:Uid="Param_Name" Text="Параметры процессора" FontSize="30" Margin="0,-65,0,0"></TextBlock>
-            <TextBlock HorizontalAlignment="Right" x:Uid="Param_Preset" Text="Сохранённые пресеты:" FontSize="20" Margin="0,-56,220,0"></TextBlock>
-            <Border CornerRadius="4" VerticalAlignment="Top" Height="30" Width="200" Margin="0,-55,-11,0" HorizontalAlignment="Right" Shadow="{StaticResource SharedShadow}" Translation="0,0,20"/>
-            <ComboBox CornerRadius="4" HorizontalAlignment="Right" Style="{ThemeResource AcrylicComboBoxStyle}" Height="30" Width="200" Margin="0,-55,-11,0" x:Name="ProfileCOM" SelectionChanged="ProfileCOM_SelectionChanged">
-                <ComboBox x:Uid="Param_PremadedCombo" IsEnabled="False"></ComboBox> 
-            </ComboBox>
+            <!--<TextBlock HorizontalAlignment="Right" x:Uid="Param_Preset" Text="Сохранённые пресеты:" FontSize="20" Margin="0,-56,220,0"></TextBlock>-->
+            <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal" Grid.Row="0" Margin="0,-60,-11,0">
+                <Grid Margin="0,0,0,0">
+                    <Border CornerRadius="4" VerticalAlignment="Top" Height="40" Width="200" HorizontalAlignment="Right" Shadow="{StaticResource SharedShadow}" Translation="0,0,20"/>
+                    <ComboBox CornerRadius="4" HorizontalAlignment="Right" Style="{ThemeResource AcrylicComboBoxStyle}" Height="40" Width="200" x:Name="ProfileCOM" SelectionChanged="ProfileCOM_SelectionChanged">
+                        <ComboBox x:Uid="Param_PremadedCombo" IsEnabled="False"></ComboBox> 
+                    </ComboBox>
+                </Grid> 
+                <AutoSuggestBox DisplayMemberPath="Text" x:Name="SuggestBox" SuggestionChosen="SuggestBox_OnSuggestionChosen" TextChanged="SuggestBox_OnTextChanged" Margin="10,-2,0,0" Width="150" QueryIcon="Find" Height="38" PlaceholderText="Поиск...">
+                    <AutoSuggestBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Text}" Margin="5"/>
+                        </DataTemplate>
+                    </AutoSuggestBox.ItemTemplate>
+                </AutoSuggestBox>
+                <Button Margin="10,0,0,0" Height="40" Width="40">
+                    <FontIcon Margin="-5,0,-5,0" Glyph="&#xE71C;"></FontIcon>
+                    <Button.Flyout>
+                        <Flyout>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Сортировка по:" FontWeight="SemiBold"/>
+                                <ToggleButton Margin="0,5,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Height="20" Width="20" CornerRadius="15">
+                                            <FontIcon Glyph="&#xE9CA;" FontSize="15"/>
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                    <GradientStop Color="#AAADD8E6" Offset="0.0" />
+                                                    <GradientStop Color="#AAFFC0CB" Offset="0.10" />
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                        </Border>
+                                        <TextBlock Margin="5,0,0,0" Text="Температура"/>
+                                    </StackPanel>
+                                </ToggleButton>
+                                <ToggleButton Margin="0,5,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Height="20" Width="20" CornerRadius="15">
+                                            <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                    <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                    <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                        </Border>
+                                        <TextBlock Margin="5,0,0,0" Text="Мощность и напряжение"/>
+                                    </StackPanel>
+                                </ToggleButton>
+                                <ToggleButton Margin="0,5,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Height="20" Width="20" CornerRadius="15">
+                                            <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                    <GradientStop Color="#AAb3100c" Offset="0.0" />
+                                                    <GradientStop Color="#AAbf80ff" Offset="0.10" />
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                        </Border>
+                                        <TextBlock Margin="5,0,0,0" Text="Ток"/>
+                                    </StackPanel>
+                                </ToggleButton>
+                                <ToggleButton Margin="0,5,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Height="20" Width="20" CornerRadius="15">
+                                            <FontIcon Glyph="&#xEC4A;" FontSize="15"/>
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                    <GradientStop Color="#AA4de2d1" Offset="0.0" />
+                                                    <GradientStop Color="#AA09a22b" Offset="0.10" />
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                        </Border>
+                                        <TextBlock Margin="5,0,0,0" Text="Частота"/>
+                                    </StackPanel>
+                                </ToggleButton>
+                                <ToggleButton Margin="0,5,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Height="20" Width="20" CornerRadius="15">
+                                            <FontIcon Glyph="&#xE916;" FontSize="15"/>
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                    <GradientStop Color="#AAa217e3" Offset="0.0" />
+                                                    <GradientStop Color="#AA2f2f70" Offset="0.10" />
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                        </Border>
+                                        <TextBlock Margin="5,0,0,0" Text="Время"/>
+                                    </StackPanel>
+                                </ToggleButton>
+                                <ToggleButton Margin="0,5,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Height="20" Width="20" CornerRadius="15">
+                                            <FontIcon Glyph="&#xE712;" FontSize="15"/>
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                    <GradientStop Color="#AAb41a7d" Offset="0.0" />
+                                                    <GradientStop Color="#AAe7cb35" Offset="0.10" />
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                        </Border>
+                                        <TextBlock Margin="5,0,0,0" Text="Другие функции"/>
+                                    </StackPanel>
+                                </ToggleButton>
+                                <ToggleButton Margin="0,5,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Height="20" Width="20" CornerRadius="15">
+                                            <FontIcon Glyph="&#xE7B3;" FontSize="15"/>
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                    <GradientStop Color="#AAABC36F" Offset="0.0" />
+                                                    <GradientStop Color="#AAC2F855" Offset="0.10" />
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                        </Border>
+                                        <TextBlock Margin="5,0,0,0" Text="Скрытые параметры"/>
+                                    </StackPanel>
+                                </ToggleButton>
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
+            
 
             <!-- Середина -->
             
@@ -74,7 +194,7 @@
          UseSystemFocusVisuals="False" x:Name="MainScroll"
          VerticalScrollBarVisibility="Auto" 
          VerticalScrollMode="Auto" Margin="0,-10,-22,0">
-                <Grid VerticalAlignment="Top" x:Name="Param_Func_Grid">
+                <Grid VerticalAlignment="Top">
                     <Grid.RowDefinitions>
                         <!-- От 0 до 6 -->
                         <RowDefinition></RowDefinition>
@@ -203,7 +323,36 @@
                             <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock FontWeight="SemiBold" Text="                                    20(W)                        30(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
-                            <StackPanel Padding="0,0,0,10" Grid.Row="3" x:Name="Laptops_Real_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                            <StackPanel Padding="0,0,0,10" Grid.Row="3" Grid.Column="0" x:Name="ADV_Laptop_AplusA_Limit" Width="2000">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Height="20" Width="20" CornerRadius="15">
+                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_ADV_a9" Text="Общий лимит потребления (W)" FontSize="15"></TextBlock>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a9_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                        <FontIcon.RenderTransform>
+                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                        </FontIcon.RenderTransform>
+                                    </FontIcon>
+                                </StackPanel>
+                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                    <Grid>
+                                        <CheckBox Checked="A9_Checked" Unchecked="A9_Checked" x:Name="a9"/>
+                                        <Slider x:Name="a9v" ValueChanged="A9v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="45"/>
+                                    </Grid>
+                                    <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a9t" Margin="10,0,0,0" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a9v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                </StackPanel>
+                            </StackPanel>
+                            <Grid Grid.Row="3" Grid.Column="1" x:Name="ADV_Laptop_AplusA_Limit_Desc" HorizontalAlignment="Left" Margin="-600,0,0,0"> 
+                                <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
+                            </Grid>
+                            <StackPanel Padding="0,0,0,10" Grid.Row="4" x:Name="Laptops_Real_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <StackPanel Orientation="Horizontal">
                                     <Border Height="20" Width="20" CornerRadius="15">
                                         <FontIcon Glyph="&#xE945;" FontSize="15"/>
@@ -229,10 +378,10 @@
                                     <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c3t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c3v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 </StackPanel> 
                             </StackPanel>
-                            <Grid Grid.Row="3" x:Name="Laptops_Real_Wattage_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
+                            <Grid Grid.Row="4" x:Name="Laptops_Real_Wattage_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock FontWeight="SemiBold" Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
-                            <StackPanel Padding="0,0,0,10" Grid.Row="4" x:Name="Laptops_Avg_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                            <StackPanel Padding="0,0,0,10" Grid.Row="5" x:Name="Laptops_Avg_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <StackPanel Orientation="Horizontal">
                                     <Border Height="20" Width="20" CornerRadius="15">
                                         <FontIcon Glyph="&#xE945;" FontSize="15"/>
@@ -258,11 +407,11 @@
                                     <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c4t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c4v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 </StackPanel> 
                             </StackPanel>
-                            <Grid Grid.Row="4" x:Name="Laptops_Avg_Wattage_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
+                            <Grid Grid.Row="5" x:Name="Laptops_Avg_Wattage_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock FontWeight="SemiBold" Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
                             
-                            <StackPanel Padding="0,0,0,10" Grid.Row="5" x:Name="Laptops_Fast_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                            <StackPanel Padding="0,0,0,10" Grid.Row="6" x:Name="Laptops_Fast_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <StackPanel Orientation="Horizontal">
                                     <Border Height="20" Width="20" CornerRadius="15">
                                         <FontIcon Glyph="&#xE916;" FontSize="15"/>
@@ -288,11 +437,11 @@
                                     <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c5t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c5v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 </StackPanel> 
                             </StackPanel>
-                            <Grid Grid.Row="5" x:Name="Laptops_Fast_Speed_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
+                            <Grid Grid.Row="6" x:Name="Laptops_Fast_Speed_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock FontWeight="SemiBold" Text="                                     64(S)                         48(S)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
                             
-                            <StackPanel Padding="0,0,0,10" Grid.Row="6" x:Name="Laptops_slow_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
+                            <StackPanel Padding="0,0,0,10" Grid.Row="7" x:Name="Laptops_slow_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <StackPanel Orientation="Horizontal">
                                     <Border Height="20" Width="20" CornerRadius="15">
                                         <FontIcon Glyph="&#xE916;" FontSize="15"/>
@@ -318,7 +467,7 @@
                                     <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c6t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c6v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 </StackPanel> 
                             </StackPanel>
-                            <Grid Grid.Row="6" x:Name="Laptops_slow_Speed_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
+                            <Grid Grid.Row="7" x:Name="Laptops_slow_Speed_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock FontWeight="SemiBold" Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid> 
                         </Grid>
@@ -1357,36 +1506,8 @@
                             <Grid Grid.Row="9" Grid.Column="1" x:Name="ADV_Laptop_iGPU_Limit_Desc" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <StackPanel Padding="0,0,0,10" Grid.Row="10" Grid.Column="0" x:Name="ADV_Laptop_AplusA_Limit" Width="2000">
-                                <StackPanel Orientation="Horizontal">
-                                    <Border Height="20" Width="20" CornerRadius="15">
-                                        <FontIcon Glyph="&#xE945;" FontSize="15"/>
-                                        <Border.Background>
-                                            <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                <GradientStop Color="#AAfdb640" Offset="0.0" />
-                                                <GradientStop Color="#AAbc7838" Offset="0.10" />
-                                            </LinearGradientBrush>
-                                        </Border.Background>
-                                    </Border>
-                                    <TextBlock Margin="5,0,0,0" x:Uid="Param_ADV_a9" Text="Общий лимит потребления (W)" FontSize="15"></TextBlock>
-                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_a9_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                        <FontIcon.RenderTransform>
-                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                        </FontIcon.RenderTransform>
-                                    </FontIcon>
-                                </StackPanel>
-                                <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                    <Grid>
-                                        <CheckBox Checked="A9_Checked" Unchecked="A9_Checked" x:Name="a9"/>
-                                        <Slider x:Name="a9v" ValueChanged="A9v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="200" Value="45"/>
-                                    </Grid>
-                                    <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a9t" Margin="10,0,0,0" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a9v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                </StackPanel>
-                            </StackPanel>
-                            <Grid Grid.Row="10" Grid.Column="1" x:Name="ADV_Laptop_AplusA_Limit_Desc" HorizontalAlignment="Left" Margin="-600,0,0,0"> 
-                                <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
-                            </Grid>
-                            <StackPanel Padding="0,0,0,10" Grid.Row="11" Grid.Column="0" x:Name="ADV_Laptop_iGPU_Freq" Width="2000">
+                            
+                            <StackPanel Padding="0,0,0,10" Grid.Row="10" Grid.Column="0" x:Name="ADV_Laptop_iGPU_Freq" Width="2000">
                                 <StackPanel Orientation="Horizontal">
                                     <Border Height="20" Width="20" CornerRadius="15">
                                         <FontIcon Glyph="&#xEC4A;" FontSize="15"/>
@@ -1412,10 +1533,10 @@
                                     <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a10t" Margin="10,0,0,0" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a10v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 </StackPanel>
                             </StackPanel>
-                            <Grid Grid.Row="11" Grid.Column="1" x:Name="ADV_Laptop_iGPU_Freq_Desc" HorizontalAlignment="Left" Margin="-600,0,0,0">
+                            <Grid Grid.Row="10" Grid.Column="1" x:Name="ADV_Laptop_iGPU_Freq_Desc" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <StackPanel Padding="0,0,0,10" Grid.Row="12" Grid.Column="0" Width="2000">
+                            <StackPanel Padding="0,0,0,10" Grid.Row="11" Grid.Column="0" Width="2000">
                                 <StackPanel Orientation="Horizontal">
                                     <Border Height="20" Width="20" CornerRadius="15">
                                         <FontIcon Glyph="&#xEC4A;" FontSize="15"/>
@@ -1441,10 +1562,10 @@
                                     <NumberBox Minimum="400" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a11t" Margin="10,0,0,0" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a11v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 </StackPanel> 
                             </StackPanel>
-                            <Grid Grid.Row="12" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
+                            <Grid Grid.Row="11" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <StackPanel Padding="0,0,0,10" Grid.Row="13" x:Name="ADV_Laptop_OCVOLT" Grid.Column="0" Width="2000">
+                            <StackPanel Padding="0,0,0,10" Grid.Row="12" x:Name="ADV_Laptop_OCVOLT" Grid.Column="0" Width="2000">
                                 <StackPanel Orientation="Horizontal">
                                     <Border Height="20" Width="20" CornerRadius="15">
                                         <FontIcon Glyph="&#xE945;" FontSize="15"/>
@@ -1470,10 +1591,10 @@
                                     <NumberBox Height="33" Minimum="750" Maximum="1500" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a12t" Margin="10,0,0,0" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a12v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 </StackPanel> 
                             </StackPanel>
-                            <Grid Grid.Row="13" x:Name="ADV_Laptop_OCVOLT_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
+                            <Grid Grid.Row="12" x:Name="ADV_Laptop_OCVOLT_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
-                            <StackPanel Padding="0,0,0,10" Grid.Row="14" Grid.Column="0" x:Name="ADV_Laptop_Pref_Mode" Width="2000">
+                            <StackPanel Padding="0,0,0,10" Grid.Row="13" Grid.Column="0" x:Name="ADV_Laptop_Pref_Mode" Width="2000">
                                 <StackPanel Orientation="Horizontal">
                                     <Border Height="20" Width="20" CornerRadius="15">
                                         <FontIcon Glyph="&#xE712;" FontSize="15"/>
@@ -1502,7 +1623,7 @@
                                     </Grid>
                                 </StackPanel>
                             </StackPanel>
-                            <Grid Grid.Row="14" Grid.Column="1" x:Name="ADV_Laptop_Pref_Mode_Desc" HorizontalAlignment="Left" Margin="-600,0,0,0">
+                            <Grid Grid.Row="13" Grid.Column="1" x:Name="ADV_Laptop_Pref_Mode_Desc" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="ADV_Auto" Text="                                              Keep auto " FontWeight="SemiBold" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid> 
                         </Grid>
