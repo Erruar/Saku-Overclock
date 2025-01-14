@@ -748,6 +748,7 @@ internal class SendSmuCommand
 
     public static void TraceIt_TraceError(string error) //Система TraceIt! позволит логгировать все ошибки
     {
+        LogHelper.LogError(error);
         if (error != string.Empty)
         { 
             NotificationsService.Notifies ??= [];
