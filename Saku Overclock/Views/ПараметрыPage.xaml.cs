@@ -121,7 +121,9 @@ public sealed partial class ПараметрыPage
             TraceIt_TraceError(exception.ToString());
         }
     }
-  
+
+    #region JSON only voids
+
     private static void SmuSettingsSave()
     {
         try
@@ -246,6 +248,9 @@ public sealed partial class ПараметрыPage
                 break; 
         }
     }
+    #endregion
+
+    #region Initialization
 
     private void SlidersInit()
     { 
@@ -390,7 +395,7 @@ public sealed partial class ПараметрыPage
         ADV_Laptop_Pref_Mode_Desc.Visibility = Visibility.Collapsed;
     }
 
-    private void HideUnavailableOnThisPlatformParameters(bool locks)
+    private void HideDisabledCurveOptimizedParameters(bool locks)
     {
         CCD1_1.IsEnabled = locks;
         CCD1_1v.IsEnabled = locks;
@@ -1136,40 +1141,6 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private static Color GetColorFromBrush(Brush brush)
-    {
-        if (brush is SolidColorBrush solidColorBrush)
-        {
-            return solidColorBrush.Color;
-        }
-
-        return Colors.White;
-    }
-
-    private static void ChangeRichEditBoxTextColor(RichEditBox richEditBox, Color color)
-    {
-        richEditBox.Document.ApplyDisplayUpdates();
-        var documentRange = richEditBox.Document.GetRange(0, TextConstants.MaxUnitCount);
-        documentRange.CharacterFormat.ForegroundColor = color;
-        richEditBox.Document.ApplyDisplayUpdates();
-    }
-
-    private static int FromValueToUpperFive(double value) => (int)Math.Ceiling(value / 5) * 5;
-
-    private uint GetCoreMask(int coreIndex)
-    {
-        Task.Run(async () => await LogHelper.Log("Getting Core Mask...")); 
-        var ccxInCcd = _cpu?.info.family >= Cpu.Family.FAMILY_19H ? 1U : 2U;
-        var coresInCcx = 8 / ccxInCcd;
-
-        var ccd = Convert.ToUInt32(coreIndex / 8);
-        var ccx = Convert.ToUInt32(coreIndex / coresInCcx - ccxInCcd * ccd);
-        var core = Convert.ToUInt32(coreIndex % coresInCcx);
-        var coreMask = _cpu!.MakeCoreMask(core, ccd, ccx);
-        Task.Run(async () => await LogHelper.Log($"Core Mask detected: {coreMask}\nCCD: {ccd}\nCCX: {ccx}\nCore: {core}\nCCX in Index: {ccxInCcd}")); 
-        return coreMask;
-    }
-
     private void Init_QuickSMU()
     { 
         Task.Run(async () => await LogHelper.Log("Initing Quick SMU options...")); 
@@ -1336,11 +1307,48 @@ public sealed partial class ПараметрыPage
         }
     }
 
+    #endregion
+
+    #region Helpers
+    private static Color GetColorFromBrush(Brush brush)
+    {
+        if (brush is SolidColorBrush solidColorBrush)
+        {
+            return solidColorBrush.Color;
+        }
+
+        return Colors.White;
+    }
+
+    private static void ChangeRichEditBoxTextColor(RichEditBox richEditBox, Color color)
+    {
+        richEditBox.Document.ApplyDisplayUpdates();
+        var documentRange = richEditBox.Document.GetRange(0, TextConstants.MaxUnitCount);
+        documentRange.CharacterFormat.ForegroundColor = color;
+        richEditBox.Document.ApplyDisplayUpdates();
+    }
+
+    private static int FromValueToUpperFive(double value) => (int)Math.Ceiling(value / 5) * 5;
+
+    private uint GetCoreMask(int coreIndex)
+    {
+        Task.Run(async () => await LogHelper.Log("Getting Core Mask..."));
+        var ccxInCcd = _cpu?.info.family >= Cpu.Family.FAMILY_19H ? 1U : 2U;
+        var coresInCcx = 8 / ccxInCcd;
+
+        var ccd = Convert.ToUInt32(coreIndex / 8);
+        var ccx = Convert.ToUInt32(coreIndex / coresInCcx - ccxInCcd * ccd);
+        var core = Convert.ToUInt32(coreIndex % coresInCcx);
+        var coreMask = _cpu!.MakeCoreMask(core, ccd, ccx);
+        Task.Run(async () => await LogHelper.Log($"Core Mask detected: {coreMask}\nCCD: {ccd}\nCCX: {ccx}\nCore: {core}\nCCX in Index: {ccxInCcd}"));
+        return coreMask;
+    }
+
     private static void TraceIt_TraceError(string error) // Система TraceIt! позволит логгировать все ошибки
     {
         if (error != string.Empty)
-        { 
-            Task.Run(async () => await LogHelper.LogError(error)); 
+        {
+            Task.Run(async () => await LogHelper.LogError(error));
             NotificationsService.Notifies ??= [];
             NotificationsService.Notifies.Add(new Notify
             {
@@ -1351,6 +1359,7 @@ public sealed partial class ПараметрыPage
             NotificationsService.SaveNotificationsSettings();
         }
     }
+    #endregion
 
     #region Suggestion Engine
 
@@ -1378,30 +1387,38 @@ public sealed partial class ПараметрыPage
         return searchItems;
     }
 
+    private static Grid? FindRecommendationsGrid(StackPanel settingsStackPanel)
+    {
+        var parentGrid = VisualTreeHelper.GetParent(settingsStackPanel) as Grid;
+        if (parentGrid != null)
+        {
+            var row = Grid.GetRow(settingsStackPanel);
+            return parentGrid.Children.OfType<Grid>()
+                .FirstOrDefault(child => Grid.GetRow(child) == row && Grid.GetColumn(child) == 1);
+        }
+
+        return null;
+    }
+
 
     public class SettingItem
     {
-        public string Text
+        public string? Text
         {
-            get;
-            set;
+            get; set;
         }
-
-        public StackPanel StackPanel
+        public StackPanel? StackPanel
         {
-            get;
-            set;
+            get; set;
         }
-
-        public Grid AdjacentGrid
+        public Grid? AdjacentGrid
         {
-            get;
-            set;
+            get; set;
         }
     }
 
     private static IEnumerable<T> FindVisualChildren<T>(DependencyObject parent) where T : DependencyObject
-    { 
+    {
         for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
         {
             var child = VisualTreeHelper.GetChild(parent, i);
@@ -1417,19 +1434,6 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private static Grid? FindRecommendationsGrid(StackPanel settingsStackPanel)
-    {
-        var parentGrid = VisualTreeHelper.GetParent(settingsStackPanel) as Grid;
-        if (parentGrid != null)
-        {
-            var row = Grid.GetRow(settingsStackPanel);
-            return parentGrid.Children.OfType<Grid>()
-                .FirstOrDefault(child => Grid.GetRow(child) == row && Grid.GetColumn(child) == 1);
-        }
-
-        return null;
-    }
-
     private void ResetVisibility()
     {
         var expanders = FindVisualChildren<Expander>(MainScroll);
@@ -1442,21 +1446,23 @@ public sealed partial class ПараметрыPage
                 stackPanel.Visibility = Visibility.Visible;
                 var adjacentGrid = FindAdjacentGrid(stackPanel);
                 if (adjacentGrid != null)
+                {
                     adjacentGrid.Visibility = Visibility.Visible;
+                }
             }
         }
     }
 
-// Find Adjacent Grid
-    private Grid FindAdjacentGrid(StackPanel stackPanel)
+    private static Grid? FindAdjacentGrid(StackPanel stackPanel)
     {
         var parent = VisualTreeHelper.GetParent(stackPanel) as Panel;
-        if (parent == null) return null;
+        if (parent == null)
+        {
+            return null;
+        }
 
         var index = parent.Children.IndexOf(stackPanel);
-        if (index < 0 || index >= parent.Children.Count - 1) return null;
-
-        return parent.Children[index + 1] as Grid;
+        return index < 0 || index >= parent.Children.Count - 1 ? null : parent.Children[index + 1] as Grid;
     }
 
     private void SuggestBox_OnTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -1471,47 +1477,58 @@ public sealed partial class ПараметрыPage
         {
             var stackPanels = FindVisualChildren<StackPanel>(expander);
             var anyVisible = false;
+
             foreach (var stackPanel in stackPanels)
             {
-                /*var ownstackpanels = FindVisualChildren<StackPanel>(stackPanel);
-                var containsOne = false;
-                foreach (var ownstackpanel in ownstackpanels)
-                {*/
-                    var textBlocks = FindVisualChildren<TextBlock>(/*ownstackpanel*/stackPanel).Where(tb => tb.FontSize == 15).ToList();
-                    var checkBoxes = FindVisualChildren<CheckBox>(/*ownstackpanel*/stackPanel).Where(cb => cb.IsEnabled).ToList();
-                    var containsText = textBlocks.Any(tb => tb.Text.ToLower().Contains(searchText));
-                    /*if (textBlocks.Count != 0 && containsText)
-                    {
-                        containsOne = true;
-                        ownstackpanel.Visibility = Visibility.Visible;
-                        stackPanel.Visibility = Visibility.Visible;
-                    }
+                var textBlocks = FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15);
+                var containsText = textBlocks.Any(tb => tb.Text.ToLower().Contains(searchText));
 
-                    if (checkBoxes.Count != 0 && containsOne)
-                    {
-                        containsOne = false;
-                        ownstackpanel.Visibility = Visibility.Visible;
-                        stackPanel.Visibility = Visibility.Visible;
-                    }*/
-                    stackPanel.Visibility = containsText ? Visibility.Visible : Visibility.Collapsed;
-                    var adjacentGrid = FindAdjacentGrid(stackPanel);
-                    if (adjacentGrid != null)
-                    {
-                        adjacentGrid.Visibility = containsText ? Visibility.Visible : Visibility.Collapsed;
-                    }
-                    if (containsText)
-                    {
-                        anyVisible = true;
-                    }
-                /*}*/
-                
+                var containsControl = FindVisualChildren<CheckBox>(stackPanel).Any();
+
+                // Если текст и элементы управления найдены, делаем StackPanel видимой
+                if (containsText && containsControl)
+                {
+                    stackPanel.Visibility = Visibility.Visible;
+                    anyVisible = true;
+
+                    // Второй проход: делаем видимыми все дочерние элементы
+                    SetAllChildrenVisibility(stackPanel, Visibility.Visible);
+                }
+                else
+                {
+                    stackPanel.Visibility = Visibility.Collapsed;
+                }
+
+                var adjacentGrid = FindAdjacentGrid(stackPanel);
+                if (adjacentGrid != null)
+                {
+                    adjacentGrid.Visibility = stackPanel.Visibility;
+                }
+            }
+            foreach (var stackPanel1 in stackPanels) // Второй проход
+            {
+                if (stackPanel1.Visibility == Visibility.Visible)
+                {
+                    SetAllChildrenVisibility(stackPanel1, Visibility.Visible);
+                }
             }
 
             // Collapse Expander if no StackPanels are visible
             if (!anyVisible)
+            {
                 expander.IsExpanded = false;
+            }
         }
     }
+
+    private void SetAllChildrenVisibility(StackPanel parent, Visibility visibility)
+    {
+        var stackPanels = FindVisualChildren<StackPanel>(parent); 
+        foreach (var stackPanel in stackPanels) 
+        {
+            stackPanel.Visibility = Visibility.Visible;
+        }
+    } 
 
     private void SuggestBox_OnSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
     {
@@ -1853,8 +1870,8 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private void DevEnv_Expanding(Expander sender, ExpanderExpandingEventArgs args) =>
-        RunBackgroundTask(BackgroundWorkerTrySettings_DoWork!, SmuScan_WorkerCompleted!);
+    private void DevEnv_Expanding(Expander sender, ExpanderExpandingEventArgs args) {}
+       /* RunBackgroundTask(BackgroundWorkerTrySettings_DoWork!, SmuScan_WorkerCompleted!)*/
 
     private void ComboBoxMailboxSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -3543,11 +3560,11 @@ public sealed partial class ПараметрыPage
 
         if (CCD_CO_Mode.SelectedIndex > 0 && CCD_CO_Mode_Sel.IsChecked == true)
         {
-            HideUnavailableOnThisPlatformParameters(true); //Оставить параметры изменения кривой
+            HideDisabledCurveOptimizedParameters(true); //Оставить параметры изменения кривой
         }
         else
         {
-            HideUnavailableOnThisPlatformParameters(false); //Убрать параметры
+            HideDisabledCurveOptimizedParameters(false); //Убрать параметры
         }
 
         ProfileLoad();
@@ -4615,11 +4632,11 @@ public sealed partial class ПараметрыPage
 
         if (CCD_CO_Mode.SelectedIndex > 0 && CCD_CO_Mode_Sel.IsChecked == true)
         {
-            HideUnavailableOnThisPlatformParameters(true); //Оставить параметры изменения кривой
+            HideDisabledCurveOptimizedParameters(true); //Оставить параметры изменения кривой
         }
         else
         {
-            HideUnavailableOnThisPlatformParameters(false); //Убрать параметры
+            HideDisabledCurveOptimizedParameters(false); //Убрать параметры
         }
 
         ProfileLoad();
