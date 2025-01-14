@@ -484,7 +484,7 @@ My program **will not** cause your processor to overheat if you **avoid** the fo
 - Creating an NBFC configuration file to control the cooler speed, as this **may stop the fan**. Be cautious! Only create such configurations when the Fan Service Control Status is set to Disabled or Read Only,
 - **Increasing the frequency beyond the maximum**. I do not guarantee the safety of such actions. All potentially dangerous parameters are marked with a special icon; hover over it and **read** what changes before making any adjustments.
 
-<a href="https://github.com/Erruar/Saku-Overclock/issues/2"><strong>Seems like app isn't working for me »</strong></a>
+<a href="https://github.com/Erruar/Saku-Overclock/issues/new"><strong>Seems like app isn't working for me »</strong></a>
 <!--_For more examples, please refer to the [Documentation](https://example.com)_-->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
