@@ -83,7 +83,7 @@
                         <Flyout>
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="Сортировка по:" FontWeight="SemiBold"/>
-                                <ToggleButton Margin="0,5,0,0">
+                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xE9CA;" FontSize="15"/>
@@ -97,7 +97,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Температура"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Margin="0,5,0,0">
+                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xE945;" FontSize="15"/>
@@ -111,7 +111,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Мощность и напряжение"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Margin="0,5,0,0">
+                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
@@ -125,7 +125,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Ток"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Margin="0,5,0,0">
+                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xEC4A;" FontSize="15"/>
@@ -139,7 +139,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Частота"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Margin="0,5,0,0">
+                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xE916;" FontSize="15"/>
@@ -153,7 +153,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Время"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Margin="0,5,0,0">
+                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xE712;" FontSize="15"/>
@@ -167,7 +167,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Другие функции"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Margin="0,5,0,0">
+                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xE7B3;" FontSize="15"/>
