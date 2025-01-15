@@ -1469,7 +1469,7 @@ public sealed partial class ПараметрыPage
     {
         var searchText = sender.Text.ToLower();
 
-        // Reset visibility
+        // Сбросить скрытое
         ResetVisibility();
 
         var expanders = FindVisualChildren<Expander>(MainScroll);
@@ -1513,12 +1513,12 @@ public sealed partial class ПараметрыPage
                 }
             }
 
-            // Collapse Expander if no StackPanels are visible
+            // Скрыть Expander если нет видимых StackPanels
             if (!anyVisible)
             {
-                expander.IsExpanded = false;
+                expander.IsExpanded = false; 
             }
-        }
+        } 
     }
 
     private void SetAllChildrenVisibility(StackPanel parent, Visibility visibility)
@@ -1530,9 +1530,86 @@ public sealed partial class ПараметрыPage
         }
     } 
 
+    private static string FindGlyph(ToggleButton parent)
+    {
+        var icons = FindVisualChildren<FontIcon>(parent); 
+        foreach (var seachIcon in icons) 
+        {
+            return seachIcon.Glyph;
+        }
+        return string.Empty;
+    } 
+
     private void SuggestBox_OnSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
     {
          
+    }
+
+    private void FilterButton_Checked(object sender, RoutedEventArgs e)
+    {
+        if (!_isLoaded) { return; }
+        if (sender is ToggleButton button)
+        {
+            if (button.IsChecked == true)
+            {
+                var glyph = FindGlyph(button);
+                if (glyph != string.Empty) 
+                {
+                    ResetVisibility();
+                    var expanders = FindVisualChildren<Expander>(MainScroll);
+                    foreach (var expander in expanders)
+                    {
+                        var stackPanels = FindVisualChildren<StackPanel>(expander);
+                        var anyVisible = false;
+
+                        foreach (var stackPanel in stackPanels)
+                        {
+                            var textBlocks = FindVisualChildren<FontIcon>(stackPanel).Where(tb => tb.FontSize == 15);
+                            var containsText = textBlocks.Any(tb => tb.Glyph.Contains(glyph));
+
+                            var containsControl = FindVisualChildren<CheckBox>(stackPanel).Any();
+
+                            // Если текст и элементы управления найдены, делаем StackPanel видимой
+                            if (containsText && containsControl)
+                            {
+                                stackPanel.Visibility = Visibility.Visible;
+                                anyVisible = true;
+
+                                // Второй проход: делаем видимыми все дочерние элементы
+                                SetAllChildrenVisibility(stackPanel, Visibility.Visible);
+                            }
+                            else
+                            {
+                                stackPanel.Visibility = Visibility.Collapsed;
+                            }
+
+                            var adjacentGrid = FindAdjacentGrid(stackPanel);
+                            if (adjacentGrid != null)
+                            {
+                                adjacentGrid.Visibility = stackPanel.Visibility;
+                            }
+                        }
+                        foreach (var stackPanel1 in stackPanels) // Второй проход
+                        {
+                            if (stackPanel1.Visibility == Visibility.Visible)
+                            {
+                                SetAllChildrenVisibility(stackPanel1, Visibility.Visible);
+                            }
+                        }
+
+                        // Скрыть Expander если нет видимых StackPanels
+                        if (!anyVisible)
+                        {
+                            expander.IsExpanded = false;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                ResetVisibility();
+            }
+        }
     }
 
     #endregion
@@ -7077,5 +7154,4 @@ public sealed partial class ПараметрыPage
     private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID2();
 
     #endregion
-
 }
