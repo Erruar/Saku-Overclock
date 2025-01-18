@@ -2986,4 +2986,34 @@ Asus. Может не поддерживаться на
 
 Если вы не согласны с любым из условий настоящего Соглашения, прекратите использование Программы и удалите её с вашего устройства.</value>
   </data>
+  <data name="Param_Filters_By.Text" xml:space="preserve">
+    <value>Сортировка по:</value>
+  </data>
+  <data name="Param_Filters_By_Current.Text" xml:space="preserve">
+    <value>Ток</value>
+  </data>
+  <data name="Param_Filters_By_Freq.Text" xml:space="preserve">
+    <value>Частота</value>
+  </data>
+  <data name="Param_Filters_By_Hide.Text" xml:space="preserve">
+    <value>Скрытые параметры</value>
+  </data>
+  <data name="Param_Filters_By_Others.Text" xml:space="preserve">
+    <value>Другие функции</value>
+  </data>
+  <data name="Param_Filters_By_Power.Text" xml:space="preserve">
+    <value>Мощность и напряжение</value>
+  </data>
+  <data name="Param_Filters_By_Reset.Text" xml:space="preserve">
+    <value>Сбросить фильтры</value>
+  </data>
+  <data name="Param_Filters_By_Temp.Text" xml:space="preserve">
+    <value>Температура</value>
+  </data>
+  <data name="Param_Filters_By_Time.Text" xml:space="preserve">
+    <value>Время</value>
+  </data>
+  <data name="Param_SuggestBox.PlaceholderText" xml:space="preserve">
+    <value>Поиск...</value>
+  </data>
 </root>

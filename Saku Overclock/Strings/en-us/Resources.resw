@@ -2916,4 +2916,34 @@ methods are available.</value>
 
 Если вы не согласны с любым из условий настоящего Соглашения, прекратите использование Программы и удалите её с вашего устройства.</value>
   </data>
+  <data name="Param_Filters_By.Text" xml:space="preserve">
+    <value>Sort by factors:</value>
+  </data>
+  <data name="Param_Filters_By_Current.Text" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="Param_Filters_By_Freq.Text" xml:space="preserve">
+    <value>Frequency</value>
+  </data>
+  <data name="Param_Filters_By_Hide.Text" xml:space="preserve">
+    <value>Hidden parameters</value>
+  </data>
+  <data name="Param_Filters_By_Others.Text" xml:space="preserve">
+    <value>Other functions</value>
+  </data>
+  <data name="Param_Filters_By_Power.Text" xml:space="preserve">
+    <value>Power and voltage</value>
+  </data>
+  <data name="Param_Filters_By_Reset.Text" xml:space="preserve">
+    <value>Reset filters</value>
+  </data>
+  <data name="Param_Filters_By_Temp.Text" xml:space="preserve">
+    <value>Temperature</value>
+  </data>
+  <data name="Param_Filters_By_Time.Text" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Param_SuggestBox.PlaceholderText" xml:space="preserve">
+    <value>Search...</value>
+  </data>
 </root>
