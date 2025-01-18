@@ -37,7 +37,7 @@ internal partial class PowerWindow : IDisposable
         _notes = new Powercfg();
         FillInData(cpu?.powerTable.Table!);
         _cpu = cpu; // Добавим инициализацию CPU здесь
-        Closed += PowerWindow_Closed;
+        Closed += PowerWindow_Closed; 
     }
 
     #region JSON containers
@@ -246,16 +246,18 @@ internal partial class PowerWindow : IDisposable
     #endregion
 
     #region Event Handlers
-
     public void Dispose() => GC.SuppressFinalize(this);
 
     private void PowerWindow_Closed(object sender, WindowEventArgs args)
     {
         //CPU?.powerTable.Dispose();
-        _ = Garbage.Garbage_Collect();
-        _cpu = null;
-        Dispose();
+        _powerGridItems = null;
         _notes = null;
+        _cpu = null;
+        PowerGridView.ItemsSource = null;
+        PowerGridView.Items.Clear();
+        _ = Garbage.Garbage_Collect();
+        Dispose();
     }
 
     private void PowerWindow_Activated(object sender, WindowActivatedEventArgs args)
@@ -473,6 +475,7 @@ internal partial class PowerWindow : IDisposable
     {
         try
         {
+            PowerGridView.ItemsSource = _powerGridItems;
             await Task.Run(() =>
             {
                 NoteLoad();
@@ -515,8 +518,7 @@ internal partial class PowerWindow : IDisposable
                 }*/
                     _powerGridItems.Add(subItem);
                 }
-            });
-            PowerGridView.ItemsSource = _powerGridItems;
+            }); 
             _powerCfgTimer.Start();
         }
         catch (Exception e)
@@ -625,9 +627,8 @@ internal partial class PowerWindow : IDisposable
             PowerGridView.ItemsSource = _powerGridItems;
         }
         catch
-        {
-            App.MainWindow.Close();
-            Close();
+        { 
+            // Ignored
         }
     }
 
