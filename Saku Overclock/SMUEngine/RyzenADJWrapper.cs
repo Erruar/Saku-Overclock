@@ -512,10 +512,12 @@ public static class RyzenAdjWrapper
         private static float[]? _cachedTable;
         // Флаг для проверки готовности таблицы
         private static bool _isInitialized; 
+        private static bool _isInitializing; 
         public static async Task InitializeCoreIndexMapAsync(int coreCounter)
         {
             _globalCpuDetectionMethod = 1;
-            if (_isInitialized) { return; }
+            if (_isInitialized || _isInitializing) { return; } 
+            _isInitializing = true;
             CoreIndexMap.Clear();
             // Асинхронная загрузка WMI
             await Task.Run(() => 
@@ -668,7 +670,7 @@ public static class RyzenAdjWrapper
 
             if (!_isInitialized)
             {
-                return (float)_currentCpuClocks[(int)core];
+                return _currentCpuClocks.Count - 1 > (int)core ? (float)_currentCpuClocks[(int)core] : -1f;
             }
             if (!CoreIndexMap.TryGetValue((int)core, out var value))
             {
