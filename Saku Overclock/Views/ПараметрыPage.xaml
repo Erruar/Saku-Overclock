@@ -70,13 +70,13 @@
                         <ComboBox x:Uid="Param_PremadedCombo" IsEnabled="False"></ComboBox> 
                     </ComboBox>
                 </Grid>
-                <AutoSuggestBox Shadow="{StaticResource SharedShadow}" Translation="0,0,20" DisplayMemberPath="Text" x:Name="SuggestBox" TextChanged="SuggestBox_OnTextChanged" Margin="10,-2,0,0" Width="150" QueryIcon="Find" Height="38" PlaceholderText="Поиск..."/>
+                <AutoSuggestBox Shadow="{StaticResource SharedShadow}" Translation="0,0,20" DisplayMemberPath="Text" x:Uid="Param_SuggestBox" x:Name="SuggestBox" TextChanged="SuggestBox_OnTextChanged" Margin="10,-2,0,0" Width="150" QueryIcon="Find" Height="38" PlaceholderText="Поиск..."/>
                 <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" x:Name="FiltersButton" Margin="10,0,0,0" Height="40" Width="40">
                     <FontIcon Margin="-5,0,-5,0" Glyph="&#xE71C;"></FontIcon>
                     <Button.Flyout>
                         <Flyout>
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Text="Сортировка по:" FontWeight="SemiBold"/>
+                                <TextBlock x:Uid="Param_Filters_By" Text="Сортировка по:" FontWeight="SemiBold"/>
                                 <ToggleButton x:Name="FilterButtons_Temp" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
@@ -88,7 +88,7 @@
                                                 </LinearGradientBrush>
                                             </Border.Background>
                                         </Border>
-                                        <TextBlock Margin="5,0,0,0" Text="Температура"/>
+                                        <TextBlock Margin="5,0,0,0" x:Uid="Param_Filters_By_Temp" Text="Температура"/>
                                     </StackPanel>
                                 </ToggleButton>
                                 <ToggleButton x:Name="FilterButtons_Power" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
@@ -102,7 +102,7 @@
                                                 </LinearGradientBrush>
                                             </Border.Background>
                                         </Border>
-                                        <TextBlock Margin="5,0,0,0" Text="Мощность и напряжение"/>
+                                        <TextBlock Margin="5,0,0,0" x:Uid="Param_Filters_By_Power" Text="Мощность и напряжение"/>
                                     </StackPanel>
                                 </ToggleButton>
                                 <ToggleButton x:Name="FilterButtons_Current" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
@@ -116,7 +116,7 @@
                                                 </LinearGradientBrush>
                                             </Border.Background>
                                         </Border>
-                                        <TextBlock Margin="5,0,0,0" Text="Ток"/>
+                                        <TextBlock Margin="5,0,0,0" x:Uid="Param_Filters_By_Current" Text="Ток"/>
                                     </StackPanel>
                                 </ToggleButton>
                                 <ToggleButton x:Name="FilterButtons_Freq" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
@@ -130,7 +130,7 @@
                                                 </LinearGradientBrush>
                                             </Border.Background>
                                         </Border>
-                                        <TextBlock Margin="5,0,0,0" Text="Частота"/>
+                                        <TextBlock Margin="5,0,0,0" x:Uid="Param_Filters_By_Freq" Text="Частота"/>
                                     </StackPanel>
                                 </ToggleButton>
                                 <ToggleButton x:Name="FilterButtons_Time" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
@@ -144,7 +144,7 @@
                                                 </LinearGradientBrush>
                                             </Border.Background>
                                         </Border>
-                                        <TextBlock Margin="5,0,0,0" Text="Время"/>
+                                        <TextBlock Margin="5,0,0,0" x:Uid="Param_Filters_By_Time" Text="Время"/>
                                     </StackPanel>
                                 </ToggleButton>
                                 <ToggleButton x:Name="FilterButtons_Other" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
@@ -158,7 +158,7 @@
                                                 </LinearGradientBrush>
                                             </Border.Background>
                                         </Border>
-                                        <TextBlock Margin="5,0,0,0" Text="Другие функции"/>
+                                        <TextBlock Margin="5,0,0,0" x:Uid="Param_Filters_By_Others" Text="Другие функции"/>
                                     </StackPanel>
                                 </ToggleButton>
                                 <ToggleButton Visibility="Collapsed" x:Name="FilterButtons_Hide" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
@@ -172,13 +172,13 @@
                                                 </LinearGradientBrush>
                                             </Border.Background>
                                         </Border>
-                                        <TextBlock Margin="5,0,0,0" Text="Скрытые параметры"/>
+                                        <TextBlock Margin="5,0,0,0" x:Uid="Param_Filters_By_Hide" Text="Скрытые параметры"/>
                                     </StackPanel>
                                 </ToggleButton>
                                 <Button Margin="0,5,0,0" Width="200" x:Name="FilterButtons_ResetButton" Click="FilterButtons_ResetButton_Click" Style="{StaticResource AccentButtonStyle}" CornerRadius="15">
                                     <StackPanel Orientation="Horizontal">
                                         <FontIcon Margin="-5,0,-5,0" Glyph="&#xE72C;"/>
-                                        <TextBlock Margin="10,0,0,0" Text="Сбросить фильтры" FontWeight="Bold"/>
+                                        <TextBlock Margin="10,0,0,0" x:Uid="Param_Filters_By_Reset" Text="Сбросить фильтры" FontWeight="Bold"/>
                                     </StackPanel> 
                                 </Button>
                             </StackPanel>

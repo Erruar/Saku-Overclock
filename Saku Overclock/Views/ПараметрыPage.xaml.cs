@@ -1461,7 +1461,7 @@ public sealed partial class ПараметрыPage
                 });
                 if (found)
                 {
-                    var textBlock = new TextBlock { Text = searchItem, Foreground = Param_Name.Foreground };
+                    var textBlock = new TextBlock { Text = searchItem, Margin = new Thickness(-10,0,-10,0), Foreground = Param_Name.Foreground };
                     ToolTipService.SetToolTip(textBlock, searchItem);
                     suitableItems.Add(textBlock);
                 }
