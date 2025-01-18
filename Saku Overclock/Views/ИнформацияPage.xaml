@@ -74,8 +74,7 @@ StrokeThickness="1.5" >
                                     <Flyout x:Name="CPUFlyout" Closing="CPUFlyout_Opening" Opening="CPUFlyout_Opening" Placement="Right">
                                         <Grid Width="420" Height="246">
                                             <Grid>
-                                                <Polygon VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,-2,0,0" x:Name="InfoACPUBigBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
-StrokeThickness="1.5" Shadow="{StaticResource SharedShadow}" Translation="0,0,32">
+                                                <Polygon VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,-2,0,0" x:Name="InfoACPUBigBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100" StrokeThickness="1.5">
                                                     <Polygon.RenderTransform>
                                                         <ScaleTransform ScaleX="5" ScaleY="5"/>
                                                     </Polygon.RenderTransform>
