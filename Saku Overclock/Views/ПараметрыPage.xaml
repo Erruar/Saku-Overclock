@@ -61,7 +61,7 @@
                 <RowDefinition Height="70"></RowDefinition>
             </Grid.RowDefinitions>
             <!-- Начало -->
-            <TextBlock x:Uid="Param_Name" Text="Параметры процессора" FontSize="30" Margin="0,-65,0,0"></TextBlock>
+            <TextBlock x:Uid="Param_Name" x:Name="Param_Name" Text="Параметры процессора" FontSize="30" Margin="0,-65,0,0"></TextBlock>
             <!--<TextBlock HorizontalAlignment="Right" x:Uid="Param_Preset" Text="Сохранённые пресеты:" FontSize="20" Margin="0,-56,220,0"></TextBlock>-->
             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal" Grid.Row="0" Margin="0,-60,-11,0">
                 <Grid Margin="0,0,0,0">
@@ -69,21 +69,15 @@
                     <ComboBox CornerRadius="4" HorizontalAlignment="Right" Style="{ThemeResource AcrylicComboBoxStyle}" Height="40" Width="200" x:Name="ProfileCOM" SelectionChanged="ProfileCOM_SelectionChanged">
                         <ComboBox x:Uid="Param_PremadedCombo" IsEnabled="False"></ComboBox> 
                     </ComboBox>
-                </Grid> 
-                <AutoSuggestBox DisplayMemberPath="Text" x:Name="SuggestBox" SuggestionChosen="SuggestBox_OnSuggestionChosen" TextChanged="SuggestBox_OnTextChanged" Margin="10,-2,0,0" Width="150" QueryIcon="Find" Height="38" PlaceholderText="Поиск...">
-                    <AutoSuggestBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Text}" Margin="5"/>
-                        </DataTemplate>
-                    </AutoSuggestBox.ItemTemplate>
-                </AutoSuggestBox>
-                <Button Margin="10,0,0,0" Height="40" Width="40">
+                </Grid>
+                <AutoSuggestBox Shadow="{StaticResource SharedShadow}" Translation="0,0,20" DisplayMemberPath="Text" x:Name="SuggestBox" TextChanged="SuggestBox_OnTextChanged" Margin="10,-2,0,0" Width="150" QueryIcon="Find" Height="38" PlaceholderText="Поиск..."/>
+                <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" x:Name="FiltersButton" Margin="10,0,0,0" Height="40" Width="40">
                     <FontIcon Margin="-5,0,-5,0" Glyph="&#xE71C;"></FontIcon>
                     <Button.Flyout>
                         <Flyout>
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="Сортировка по:" FontWeight="SemiBold"/>
-                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
+                                <ToggleButton x:Name="FilterButtons_Temp" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xE9CA;" FontSize="15"/>
@@ -97,7 +91,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Температура"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
+                                <ToggleButton x:Name="FilterButtons_Power" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xE945;" FontSize="15"/>
@@ -111,7 +105,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Мощность и напряжение"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
+                                <ToggleButton x:Name="FilterButtons_Current" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
@@ -125,7 +119,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Ток"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
+                                <ToggleButton x:Name="FilterButtons_Freq" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xEC4A;" FontSize="15"/>
@@ -139,7 +133,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Частота"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
+                                <ToggleButton x:Name="FilterButtons_Time" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xE916;" FontSize="15"/>
@@ -153,7 +147,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Время"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
+                                <ToggleButton x:Name="FilterButtons_Other" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xE712;" FontSize="15"/>
@@ -167,7 +161,7 @@
                                         <TextBlock Margin="5,0,0,0" Text="Другие функции"/>
                                     </StackPanel>
                                 </ToggleButton>
-                                <ToggleButton Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
+                                <ToggleButton Visibility="Collapsed" x:Name="FilterButtons_Hide" Checked="FilterButton_Checked" Unchecked="FilterButton_Checked" Margin="0,5,0,0">
                                     <StackPanel Orientation="Horizontal">
                                         <Border Height="20" Width="20" CornerRadius="15">
                                             <FontIcon Glyph="&#xE7B3;" FontSize="15"/>
@@ -181,6 +175,12 @@
                                         <TextBlock Margin="5,0,0,0" Text="Скрытые параметры"/>
                                     </StackPanel>
                                 </ToggleButton>
+                                <Button Margin="0,5,0,0" Width="200" x:Name="FilterButtons_ResetButton" Click="FilterButtons_ResetButton_Click" Style="{StaticResource AccentButtonStyle}" CornerRadius="15">
+                                    <StackPanel Orientation="Horizontal">
+                                        <FontIcon Margin="-5,0,-5,0" Glyph="&#xE72C;"/>
+                                        <TextBlock Margin="10,0,0,0" Text="Сбросить фильтры" FontWeight="Bold"/>
+                                    </StackPanel> 
+                                </Button>
                             </StackPanel>
                         </Flyout>
                     </Button.Flyout>
@@ -1627,475 +1627,9 @@
                                 <TextBlock x:Uid="ADV_Auto" Text="                                              Keep auto " FontWeight="SemiBold" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid> 
                         </Grid>
-                    </Expander>
-
-                    <Expander  Grid.Row="4" VerticalAlignment="Top">
-                        <Expander.Header>
-                            <Grid Height="65" Width="2000">
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xf8a6;"/>
-                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_States_Text" Text="Состояния CPU"></TextBlock>
-                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_States_Pdesc"  Text="Производительные состояния процессора"></TextBlock>
-                            </Grid>
-                        </Expander.Header>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <!-- От 0 до 6 -->
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,10,2,0">
-                                <Button Height="50" HorizontalContentAlignment="Stretch" Click="EnablePstates_Click" HorizontalAlignment="Stretch">
-                                    <Grid Height="50">
-                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xebd2;"/>
-                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_enableps" Text="Настройки состояний CPU"></TextBlock>
-                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_enableps_desc" Text="Включить эти настройки изменения PState состояний"></TextBlock>
-                                    </Grid>
-                                </Button>
-                                <Grid HorizontalAlignment="Right">
-                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" x:Name="EnablePstates" Toggled="EnablePstates_Toggled" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
-                                </Grid>
-                            </Grid>
-                            <Grid Grid.Row="1" HorizontalAlignment="Left" Margin=" 30,20,0,0">
-                                <!-- Монтируем секции -->
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <!-- От 0 до 6 -->
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <!-- Первая секция -->
-                                <Grid Grid.Row="0" Margin="0,0,0,0"  Width="2000">
-                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="15" Text="State"/>
-                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="51,0,0,0" FontSize="15" Text="CPU Freq"/>
-                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="146,0,0,0" FontSize="15" Text="FID"/>
-                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="205,0,0,0" FontSize="15" Text="Multiplier"/>
-                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="303,0,0,0" FontSize="15" Text="DID"/>
-                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="367,0,0,0" FontSize="15" Text="mVolt"/>
-                                </Grid>
-                                <Grid Grid.Row="1"  Margin="-7,10,0,0" Width="2000">
-                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P0"/>
-                                    <Button Height="33" Width="60" Margin="55,1,0,0" x:Name="P0_Freq" Content="1700"></Button>
-                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="130,-1,0,0">
-                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="16" ValueChanged="FID_0_ValueChanged" Maximum="400" x:Name="FID_0" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
-                                    </Border>
-                                    <ComboBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" x:Name="Mult_0" SelectionChanged="Mult_0_SelectionChanged" SelectedIndex="0" Width="73" Height="33" Margin="205,1,0,0">
-                                        <ComboBoxItem Content="4"/>
-                                        <ComboBoxItem Content="5"/>
-                                        <ComboBoxItem Content="6"/>
-                                        <ComboBoxItem Content="7"/>
-                                        <ComboBoxItem Content="8"/>
-                                        <ComboBoxItem Content="9"/>
-                                        <ComboBoxItem Content="10"/>
-                                        <ComboBoxItem Content="11"/>
-                                        <ComboBoxItem Content="12"/>
-                                        <ComboBoxItem Content="13"/>
-                                        <ComboBoxItem Content="14"/>
-                                        <ComboBoxItem Content="15"/>
-                                        <ComboBoxItem Content="16"/>
-                                        <ComboBoxItem Content="17"/>
-                                        <ComboBoxItem Content="18"/>
-                                        <ComboBoxItem Content="19"/>
-                                        <ComboBoxItem Content="20"/>
-                                        <ComboBoxItem Content="21"/>
-                                        <ComboBoxItem Content="22"/>
-                                        <ComboBoxItem Content="23"/>
-                                        <ComboBoxItem Content="24"/>
-                                        <ComboBoxItem Content="25"/>
-                                        <ComboBoxItem Content="26"/>
-                                        <ComboBoxItem Content="27"/>
-                                        <ComboBoxItem Content="28"/>
-                                        <ComboBoxItem Content="29"/>
-                                        <ComboBoxItem Content="30"/>
-                                        <ComboBoxItem Content="31"/>
-                                        <ComboBoxItem Content="32"/>
-                                        <ComboBoxItem Content="33"/>
-                                        <ComboBoxItem Content="34"/>
-                                        <ComboBoxItem Content="35"/>
-                                        <ComboBoxItem Content="36"/>
-                                        <ComboBoxItem Content="37"/>
-                                        <ComboBoxItem Content="38"/>
-                                        <ComboBoxItem Content="39"/>
-                                        <ComboBoxItem Content="40"/>
-                                        <ComboBoxItem Content="41"/>
-                                        <ComboBoxItem Content="42"/>
-                                        <ComboBoxItem Content="43"/>
-                                        <ComboBoxItem Content="44"/>
-                                        <ComboBoxItem Content="45"/>
-                                    </ComboBox>
-                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="290,-1,0,0">
-                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="1" ValueChanged="DID_0_ValueChanged" Maximum="45" x:Name="DID_0" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
-                                    </Border>
-                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="360,-1,0,0">
-                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="725" x:Name="VID_0" ValueChanged="VID_0_ValueChanged" Maximum="1500" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
-                                    </Border>
-                                </Grid>
-                                <Grid Grid.Row="2" Margin="-7,10,0,0" Width="2000">
-                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P1"/>
-                                    <Button Height="33" Width="60" Margin="55,1,0,0" x:Name="P1_Freq" Content="1700"></Button>
-                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="130,-1,0,0">
-                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="16" ValueChanged="FID_1_ValueChanged" Maximum="400" x:Name="FID_1" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
-                                    </Border>
-                                    <ComboBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" x:Name="Mult_1" SelectedIndex="0" SelectionChanged="Mult_1_SelectionChanged" Width="73" Height="33" Margin="205,1,0,0">
-                                        <ComboBoxItem Content="4"/>
-                                        <ComboBoxItem Content="5"/>
-                                        <ComboBoxItem Content="6"/>
-                                        <ComboBoxItem Content="7"/>
-                                        <ComboBoxItem Content="8"/>
-                                        <ComboBoxItem Content="9"/>
-                                        <ComboBoxItem Content="10"/>
-                                        <ComboBoxItem Content="11"/>
-                                        <ComboBoxItem Content="12"/>
-                                        <ComboBoxItem Content="13"/>
-                                        <ComboBoxItem Content="14"/>
-                                        <ComboBoxItem Content="15"/>
-                                        <ComboBoxItem Content="16"/>
-                                        <ComboBoxItem Content="17"/>
-                                        <ComboBoxItem Content="18"/>
-                                        <ComboBoxItem Content="19"/>
-                                        <ComboBoxItem Content="20"/>
-                                        <ComboBoxItem Content="21"/>
-                                        <ComboBoxItem Content="22"/>
-                                        <ComboBoxItem Content="23"/>
-                                        <ComboBoxItem Content="24"/>
-                                        <ComboBoxItem Content="25"/>
-                                        <ComboBoxItem Content="26"/>
-                                        <ComboBoxItem Content="27"/>
-                                        <ComboBoxItem Content="28"/>
-                                        <ComboBoxItem Content="29"/>
-                                        <ComboBoxItem Content="30"/>
-                                        <ComboBoxItem Content="31"/>
-                                        <ComboBoxItem Content="32"/>
-                                        <ComboBoxItem Content="33"/>
-                                        <ComboBoxItem Content="34"/>
-                                        <ComboBoxItem Content="35"/>
-                                        <ComboBoxItem Content="36"/>
-                                        <ComboBoxItem Content="37"/>
-                                        <ComboBoxItem Content="38"/>
-                                        <ComboBoxItem Content="39"/>
-                                        <ComboBoxItem Content="40"/>
-                                        <ComboBoxItem Content="41"/>
-                                        <ComboBoxItem Content="42"/>
-                                        <ComboBoxItem Content="43"/>
-                                        <ComboBoxItem Content="44"/>
-                                        <ComboBoxItem Content="45"/>
-                                    </ComboBox>
-                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="290,-1,0,0">
-                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="1" ValueChanged="DID_1_ValueChanged" Maximum="45" x:Name="DID_1"  HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
-                                    </Border>
-                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="360,-1,0,0">
-                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="725" x:Name="VID_1" ValueChanged="VID_1_ValueChanged" Maximum="1500"  HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
-                                    </Border>
-                                </Grid>
-                                <Grid Grid.Row="3"  Margin="-7,10,0,0" Width="2000">
-                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P2"/>
-                                    <Button Height="33" Width="60" Margin="55,1,0,0" x:Name="P2_Freq" Content="1700"></Button>
-                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="130,-1,0,0">
-                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="16" ValueChanged="FID_2_ValueChanged" Maximum="400" x:Name="FID_2" HorizontalAlignment="Left" Width="60" Height="32" Text=""></NumberBox>
-                                    </Border>
-                                    <ComboBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" x:Name="Mult_2" SelectionChanged="Mult_2_SelectionChanged" SelectedIndex="0" Width="73" Height="33" Margin="205,1,0,0">
-                                        <ComboBoxItem Content="4"/>
-                                        <ComboBoxItem Content="5"/>
-                                        <ComboBoxItem Content="6"/>
-                                        <ComboBoxItem Content="7"/>
-                                        <ComboBoxItem Content="8"/>
-                                        <ComboBoxItem Content="9"/>
-                                        <ComboBoxItem Content="10"/>
-                                        <ComboBoxItem Content="11"/>
-                                        <ComboBoxItem Content="12"/>
-                                        <ComboBoxItem Content="13"/>
-                                        <ComboBoxItem Content="14"/>
-                                        <ComboBoxItem Content="15"/>
-                                        <ComboBoxItem Content="16"/>
-                                        <ComboBoxItem Content="17"/>
-                                        <ComboBoxItem Content="18"/>
-                                        <ComboBoxItem Content="19"/>
-                                        <ComboBoxItem Content="20"/>
-                                        <ComboBoxItem Content="21"/>
-                                        <ComboBoxItem Content="22"/>
-                                        <ComboBoxItem Content="23"/>
-                                        <ComboBoxItem Content="24"/>
-                                        <ComboBoxItem Content="25"/>
-                                        <ComboBoxItem Content="26"/>
-                                        <ComboBoxItem Content="27"/>
-                                        <ComboBoxItem Content="28"/>
-                                        <ComboBoxItem Content="29"/>
-                                        <ComboBoxItem Content="30"/>
-                                        <ComboBoxItem Content="31"/>
-                                        <ComboBoxItem Content="32"/>
-                                        <ComboBoxItem Content="33"/>
-                                        <ComboBoxItem Content="34"/>
-                                        <ComboBoxItem Content="35"/>
-                                        <ComboBoxItem Content="36"/>
-                                        <ComboBoxItem Content="37"/>
-                                        <ComboBoxItem Content="38"/>
-                                        <ComboBoxItem Content="39"/>
-                                        <ComboBoxItem Content="40"/>
-                                        <ComboBoxItem Content="41"/>
-                                        <ComboBoxItem Content="42"/>
-                                        <ComboBoxItem Content="43"/>
-                                        <ComboBoxItem Content="44"/>
-                                        <ComboBoxItem Content="45"/>
-                                    </ComboBox>
-                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="290,-1,0,0">
-                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="1" Maximum="45" ValueChanged="DID_2_ValueChanged" x:Name="DID_2" HorizontalAlignment="Left" Width="60" Height="32" Text=""></NumberBox>
-                                    </Border>
-                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="360,-1,0,0">
-                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="725" Maximum="1500" x:Name="VID_2" ValueChanged="VID_2_ValueChanged" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
-                                    </Border>
-                                </Grid>
-
-                            </Grid>
-                            <Grid Grid.Row="4" HorizontalAlignment="Stretch" Margin="0,20,2,0">
-                                <Button Height="50" IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" HorizontalContentAlignment="Stretch" Click="TurboBoost_Click" HorizontalAlignment="Stretch">
-                                    <Grid Height="50">
-                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe8be;"/>
-                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_turbo" Text="Состояние Turbo Boost"></TextBlock>
-                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_turbo_desc" Text="Позволяет вашему процессору разгоняться сильнее, но вызывает проблемы"></TextBlock>
-                                    </Grid>
-                                </Button>
-                                <Grid HorizontalAlignment="Right">
-                                    <ToggleSwitch IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" x:Name="Turbo_boost"  OffContent="" OnContent="" Toggled="Turbo_boost_Toggled"  Margin="0,0,-100,0" VerticalAlignment="Center" ></ToggleSwitch>
-                                </Grid>
-                            </Grid>
-                            <Grid Grid.Row="5" HorizontalAlignment="Stretch" Margin="0,10,2,0">
-                                <Button Height="50" IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" HorizontalContentAlignment="Stretch" Click="Autoapply_Click" HorizontalAlignment="Stretch">
-                                    <Grid Height="50">
-                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe792;"/>
-                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_reapplyps" Text="Автоприменять параметры"></TextBlock>
-                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_reapplyps_desc" Text="При запуске программа будет применять эти параметры, при включенном автоприменении"></TextBlock>
-                                    </Grid>
-                                </Button>
-                                <Grid HorizontalAlignment="Right">
-                                    <ToggleSwitch IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" OffContent="" OnContent="" Margin="0,0,-100,0" Toggled="Autoapply_1_Toggled" x:Name="Autoapply_1" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
-                                </Grid>
-                            </Grid>
-                            <Grid Grid.Row="6" HorizontalAlignment="Stretch" Margin="0,10,2,0">
-                                <Button Height="50" IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" HorizontalContentAlignment="Stretch" Click="WithoutP0_Click" HorizontalAlignment="Stretch">
-                                    <Grid Height="50">
-                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe835;"/>
-                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_Ignorep0" Text="Игнорировать предупреждение P0"></TextBlock>
-                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_Ignorep0_desc" Text="Всегда применять параметры с состоянием P0, может привести к крашу системы!"></TextBlock>
-                                    </Grid>
-                                </Button>
-                                <Grid HorizontalAlignment="Right">
-                                    <ToggleSwitch IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" OffContent="" OnContent="" Margin="0,0,-100,0" x:Name="Without_P0" Toggled="Without_P0_Toggled" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
-                                </Grid>
-                            </Grid>
-                            <Grid Grid.Row="7" HorizontalAlignment="Stretch" Margin="0,10,2,0">
-                                <Button Height="50" IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" HorizontalContentAlignment="Stretch" Click="IgnoreWarn_Click" HorizontalAlignment="Stretch">
-                                    <Grid Height="50">
-                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xeb9d;"/>
-                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  x:Uid="Param_Ignore" Text="Игнорировать предупреждение изменения"></TextBlock>
-                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_Ignore_desc" Text="Всегда применять параметры без предупреждений"></TextBlock>
-                                    </Grid>
-                                </Button>
-                                <Grid HorizontalAlignment="Right">
-                                    <ToggleSwitch IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" OffContent="" OnContent="" Margin="0,0,-100,0" x:Name="IgnoreWarn" Toggled="Ignore_Toggled" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </Expander>
+                    </Expander> 
                     
-                    <Expander  Grid.Row="6" Visibility="Collapsed" IsEnabled="True">
-                        <Expander.Header>
-                            <Grid Height="65" Width="2000">
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xee92;"/>
-                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Параметры GPU"></TextBlock>
-                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Расширенные настройки GPU"></TextBlock>
-                            </Grid>
-                        </Expander.Header>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <!-- От 0 до 6 -->
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,10,2,0">
-                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
-                                    <Grid Height="50">
-                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xeba1;"/>
-                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  Text="Включить ULPS"></TextBlock>
-                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Включить состояние отключения видеокарты при ненадобности"></TextBlock>
-                                    </Grid>
-                                </Button>
-                                <Grid HorizontalAlignment="Right">
-                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
-                                </Grid>
-                            </Grid>
-                            <Grid Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,10,2,0">
-                                <Button Height="50" HorizontalContentAlignment="Stretch"  HorizontalAlignment="Stretch">
-                                    <Grid Height="50">
-                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xec46;"/>
-                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Состояние сна"></TextBlock>
-                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Включить состояния сна"></TextBlock>
-                                    </Grid>
-                                </Button>
-                                <Grid HorizontalAlignment="Right">
-                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
-                                </Grid>
-                            </Grid>
-                            <Grid Grid.Row="2" HorizontalAlignment="Stretch" Margin="0,10,2,0">
-                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
-                                    <Grid Height="50">
-                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xee6f;"/>
-                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  Text="Троттлинг"></TextBlock>
-                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"   Text="При высоких температурах будет происходить программный троттлинг"></TextBlock>
-                                    </Grid>
-                                </Button>
-                                <Grid HorizontalAlignment="Right">
-                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
-                                </Grid>
-                            </Grid>
-                            <Grid Grid.Row="3" HorizontalAlignment="Stretch" Margin="0,10,2,0">
-                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
-                                    <Grid Height="50">
-                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xec4a;"/>
-                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Управление напряжением"></TextBlock>
-                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Программное управление напряжением (в том числе и от троттлинга)"></TextBlock>
-                                    </Grid>
-                                </Button>
-                                <Grid HorizontalAlignment="Right">
-                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
-                                </Grid>
-                            </Grid>
-                            <Grid Grid.Row="4" HorizontalAlignment="Stretch" Margin="0,10,2,0">
-                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
-                                    <Grid Height="50">
-                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xef1f;"/>
-                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  Text="Дизеринг экрана"></TextBlock>
-                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="На экранах с высокой герцовкой выключение спасает от мерцания"></TextBlock>
-                                    </Grid>
-                                </Button>
-                                <Grid HorizontalAlignment="Right">
-                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0"  VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
-                                </Grid>
-                            </Grid>
-                            <!-- Эта секция нужна только для фикса automargin. Тут не будет ничего. Это для растягивания элементов -->
-                            <Grid Grid.Row="5" HorizontalAlignment="Left" Margin=" 30,20,0,0">
-                                <!-- Монтируем секции -->
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <!-- От 0 до 6 -->
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <!-- Первая секция -->
-                                <Grid Grid.Row="1"  Margin="-7,10,0,0" Width="2000">
-                                </Grid>
-                                <Grid Grid.Row="2" Margin="-7,10,0,0" Width="2000">
-                                </Grid>
-                                <Grid Grid.Row="3"  Margin="-7,10,0,0" Width="2000">
-                                </Grid>
-                            </Grid>
-                            <!--   Expander content  -->
-                            <StackPanel Grid.Row="6">
-                                <StackPanel Margin="0,-8,0,0">
-                                    <Grid Margin="0,8,0,0">
-                                        <Grid.ColumnDefinitions>
-
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal">
-                                            <CheckBox Name="cbVSync"  FontSize="13" FontWeight="SemiBold" Content="Enable VSync"/>
-                                            <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-4" ToolTipService.ToolTip="Synchronises capture frame rate to display refresh rate." VerticalAlignment="Center" />
-                                        </StackPanel>
-                                    </Grid>
-                                </StackPanel>
-                                <StackPanel Margin="0,-8,0,0">
-                                    <Grid Margin="0,8,0,0">
-                                        <Grid.ColumnDefinitions>
-
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal">
-                                            <CheckBox Width="130" Name="cbAutoCap"  FontSize="13" FontWeight="SemiBold" Content="Auto Recapture"/>
-                                            <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-4" ToolTipService.ToolTip="Auto recaptures the previous capture window after focus was lost and restored." VerticalAlignment="Center" />
-                                        </StackPanel>
-                                    </Grid>
-                                </StackPanel>
-
-                                <StackPanel Margin="0,8,0,0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontWeight="SemiBold" FontSize="13">Capture Sharpness (%)</TextBlock>
-                                        <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-2"  ToolTipService.ToolTip="Controls Saku Fidelity Super Resolution capture image sharpness." VerticalAlignment="Bottom" />
-                                    </StackPanel>
-
-                                    <Grid Margin="0,8,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="150" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <NumberBox Name="nudSharp" Text="{Binding ElementName=sdSharp, Path=Value}" Value="{Binding ElementName=sdSharp, Path=Value}" Maximum="100" Minimum="5" Grid.Column="0" SmallChange="1" LargeChange="10" SpinButtonPlacementMode="Inline" />
-                                        <Slider Name="sdSharp" Value="{Binding ElementName=nudSharp, Path=Value}" Maximum="100" Minimum="5" Grid.Column="1" Margin="12,0,0,0" TickFrequency="1" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </StackPanel>
-
-                                <StackPanel Margin="0,8,0,0">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontWeight="SemiBold" FontSize="13">Resolution Scale</TextBlock>
-                                        <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-2" ToolTipService.ToolTip="Controls the resolution of the window being captured. Use application controlled if you do not want Saku Fidelity to override the window resolution. Not all applications will be compatible with this mode!" VerticalAlignment="Bottom" />
-                                    </StackPanel>
-
-                                    <Grid Margin="0,8,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="208" />
-                                        </Grid.ColumnDefinitions>
-                                        <ComboBox
-Grid.Column="1"
-VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" Height="37">
-                                            <ComboBoxItem>Application Controlled</ComboBoxItem>
-                                            <ComboBoxItem>Ultra Quality (77%)</ComboBoxItem>
-                                            <ComboBoxItem>Quality (67%)</ComboBoxItem>
-                                            <ComboBoxItem>Balanced (59%)</ComboBoxItem>
-                                            <ComboBoxItem>Performance (50%)</ComboBoxItem>
-                                            <ComboBoxItem>Ultra Performance (33%)</ComboBoxItem>
-                                        </ComboBox>
-                                    </Grid>
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </Expander>
-                    <Expander Grid.Row="5" x:Name="CO_Expander">
+                    <Expander Grid.Row="4" x:Name="CO_Expander">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xEAFC;"/>
@@ -2176,7 +1710,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                             </Grid> 
                         </Grid>
                     </Expander>
-                    <Expander Grid.Row="6" x:Name="CCD1_Expander">
+                    <Expander Grid.Row="5" x:Name="CCD1_Expander">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xE8BC;"/>
@@ -2469,7 +2003,7 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                             </Grid>
                         </Grid>
                     </Expander>
-                    <Expander Grid.Row="7" x:Name="CCD2_Expander">
+                    <Expander Grid.Row="6" x:Name="CCD2_Expander">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xE8A4;"/>
@@ -2728,15 +2262,483 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                             </Grid>
                         </Grid>
                     </Expander>
-                    <Expander  Grid.Row="8" x:Name="DevEnv" HorizontalContentAlignment="Stretch" Expanding="DevEnv_Expanding">
+
+                    <Expander Grid.Row="6" Visibility="Collapsed" IsEnabled="True">
                         <Expander.Header>
                             <Grid Height="65" Width="2000">
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xef58;"/>
-                                <TextBlock Margin="35,12,0,0" x:Uid="SMUText" FontWeight="SemiBold" VerticalAlignment="Top" Text="Developer overclock"></TextBlock>
-                                <TextBlock Margin="35,30,0,0" x:Uid="SMUDesc" FontWeight="Light" VerticalAlignment="Top"  Text="Advanced CPU developer overclock"></TextBlock>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xee92;"/>
+                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Параметры GPU"></TextBlock>
+                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Расширенные настройки GPU"></TextBlock>
                             </Grid>
                         </Expander.Header>
-                        <Grid >
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xeba1;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  Text="Включить ULPS"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Включить состояние отключения видеокарты при ненадобности"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" HorizontalContentAlignment="Stretch"  HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xec46;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Состояние сна"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Включить состояния сна"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="True"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="2" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xee6f;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  Text="Троттлинг"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"   Text="При высоких температурах будет происходить программный троттлинг"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="3" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xec4a;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Управление напряжением"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="Программное управление напряжением (в том числе и от троттлинга)"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="4" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xef1f;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  Text="Дизеринг экрана"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  Text="На экранах с высокой герцовкой выключение спасает от мерцания"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0"  VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <!-- Эта секция нужна только для фикса automargin. Тут не будет ничего. Это для растягивания элементов -->
+                            <Grid Grid.Row="5" HorizontalAlignment="Left" Margin=" 30,20,0,0">
+                                <!-- Монтируем секции -->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <!-- От 0 до 6 -->
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <!-- Первая секция -->
+                                <Grid Grid.Row="1"  Margin="-7,10,0,0" Width="2000">
+                                </Grid>
+                                <Grid Grid.Row="2" Margin="-7,10,0,0" Width="2000">
+                                </Grid>
+                                <Grid Grid.Row="3"  Margin="-7,10,0,0" Width="2000">
+                                </Grid>
+                            </Grid>
+                            <!--   Expander content  -->
+                            <StackPanel Grid.Row="6">
+                                <StackPanel Margin="0,-8,0,0">
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal">
+                                            <CheckBox Name="cbVSync"  FontSize="13" FontWeight="SemiBold" Content="Enable VSync"/>
+                                            <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-4" ToolTipService.ToolTip="Synchronises capture frame rate to display refresh rate." VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                                <StackPanel Margin="0,-8,0,0">
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal">
+                                            <CheckBox Width="130" Name="cbAutoCap"  FontSize="13" FontWeight="SemiBold" Content="Auto Recapture"/>
+                                            <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-4" ToolTipService.ToolTip="Auto recaptures the previous capture window after focus was lost and restored." VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,8,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontWeight="SemiBold" FontSize="13">Capture Sharpness (%)</TextBlock>
+                                        <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-2"  ToolTipService.ToolTip="Controls Saku Fidelity Super Resolution capture image sharpness." VerticalAlignment="Bottom" />
+                                    </StackPanel>
+
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="150" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <NumberBox Name="nudSharp" Text="{Binding ElementName=sdSharp, Path=Value}" Value="{Binding ElementName=sdSharp, Path=Value}" Maximum="100" Minimum="5" Grid.Column="0" SmallChange="1" LargeChange="10" SpinButtonPlacementMode="Inline" />
+                                        <Slider Name="sdSharp" Value="{Binding ElementName=nudSharp, Path=Value}" Maximum="100" Minimum="5" Grid.Column="1" Margin="12,0,0,0" TickFrequency="1" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,8,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontWeight="SemiBold" FontSize="13">Resolution Scale</TextBlock>
+                                        <SymbolIcon Symbol="ContactInfo" Margin="6,0,0,-2" ToolTipService.ToolTip="Controls the resolution of the window being captured. Use application controlled if you do not want Saku Fidelity to override the window resolution. Not all applications will be compatible with this mode!" VerticalAlignment="Bottom" />
+                                    </StackPanel>
+
+                                    <Grid Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="208" />
+                                        </Grid.ColumnDefinitions>
+                                        <ComboBox
+Grid.Column="1"
+VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" Height="37">
+                                            <ComboBoxItem>Application Controlled</ComboBoxItem>
+                                            <ComboBoxItem>Ultra Quality (77%)</ComboBoxItem>
+                                            <ComboBoxItem>Quality (67%)</ComboBoxItem>
+                                            <ComboBoxItem>Balanced (59%)</ComboBoxItem>
+                                            <ComboBoxItem>Performance (50%)</ComboBoxItem>
+                                            <ComboBoxItem>Ultra Performance (33%)</ComboBoxItem>
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Expander>
+
+                    <Expander Grid.Row="7" VerticalAlignment="Top">
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xf8a6;"/>
+                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_States_Text" Text="Состояния CPU"></TextBlock>
+                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_States_Pdesc"  Text="Производительные состояния процессора"></TextBlock>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <!-- От 0 до 6 -->
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" HorizontalContentAlignment="Stretch" Click="EnablePstates_Click" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xebd2;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_enableps" Text="Настройки состояний CPU"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_enableps_desc" Text="Включить эти настройки изменения PState состояний"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch  OffContent="" OnContent="" Margin="0,0,-100,0" x:Name="EnablePstates" Toggled="EnablePstates_Toggled" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="1" HorizontalAlignment="Left" Margin=" 30,20,0,0">
+                                <!-- Монтируем секции -->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <!-- От 0 до 6 -->
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <!-- Первая секция -->
+                                <Grid Grid.Row="0" Margin="0,0,0,0"  Width="2000">
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="15" Text="State"/>
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="51,0,0,0" FontSize="15" Text="CPU Freq"/>
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="146,0,0,0" FontSize="15" Text="FID"/>
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="205,0,0,0" FontSize="15" Text="Multiplier"/>
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="303,0,0,0" FontSize="15" Text="DID"/>
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="367,0,0,0" FontSize="15" Text="mVolt"/>
+                                </Grid>
+                                <Grid Grid.Row="1"  Margin="-7,10,0,0" Width="2000">
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P0"/>
+                                    <Button Height="33" Width="60" Margin="55,1,0,0" x:Name="P0_Freq" Content="1700"></Button>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="130,-1,0,0">
+                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="16" ValueChanged="FID_0_ValueChanged" Maximum="400" x:Name="FID_0" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                    <ComboBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" x:Name="Mult_0" SelectionChanged="Mult_0_SelectionChanged" SelectedIndex="0" Width="73" Height="33" Margin="205,1,0,0">
+                                        <ComboBoxItem Content="4"/>
+                                        <ComboBoxItem Content="5"/>
+                                        <ComboBoxItem Content="6"/>
+                                        <ComboBoxItem Content="7"/>
+                                        <ComboBoxItem Content="8"/>
+                                        <ComboBoxItem Content="9"/>
+                                        <ComboBoxItem Content="10"/>
+                                        <ComboBoxItem Content="11"/>
+                                        <ComboBoxItem Content="12"/>
+                                        <ComboBoxItem Content="13"/>
+                                        <ComboBoxItem Content="14"/>
+                                        <ComboBoxItem Content="15"/>
+                                        <ComboBoxItem Content="16"/>
+                                        <ComboBoxItem Content="17"/>
+                                        <ComboBoxItem Content="18"/>
+                                        <ComboBoxItem Content="19"/>
+                                        <ComboBoxItem Content="20"/>
+                                        <ComboBoxItem Content="21"/>
+                                        <ComboBoxItem Content="22"/>
+                                        <ComboBoxItem Content="23"/>
+                                        <ComboBoxItem Content="24"/>
+                                        <ComboBoxItem Content="25"/>
+                                        <ComboBoxItem Content="26"/>
+                                        <ComboBoxItem Content="27"/>
+                                        <ComboBoxItem Content="28"/>
+                                        <ComboBoxItem Content="29"/>
+                                        <ComboBoxItem Content="30"/>
+                                        <ComboBoxItem Content="31"/>
+                                        <ComboBoxItem Content="32"/>
+                                        <ComboBoxItem Content="33"/>
+                                        <ComboBoxItem Content="34"/>
+                                        <ComboBoxItem Content="35"/>
+                                        <ComboBoxItem Content="36"/>
+                                        <ComboBoxItem Content="37"/>
+                                        <ComboBoxItem Content="38"/>
+                                        <ComboBoxItem Content="39"/>
+                                        <ComboBoxItem Content="40"/>
+                                        <ComboBoxItem Content="41"/>
+                                        <ComboBoxItem Content="42"/>
+                                        <ComboBoxItem Content="43"/>
+                                        <ComboBoxItem Content="44"/>
+                                        <ComboBoxItem Content="45"/>
+                                    </ComboBox>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="290,-1,0,0">
+                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="1" ValueChanged="DID_0_ValueChanged" Maximum="45" x:Name="DID_0" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="360,-1,0,0">
+                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="725" x:Name="VID_0" ValueChanged="VID_0_ValueChanged" Maximum="1500" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                </Grid>
+                                <Grid Grid.Row="2" Margin="-7,10,0,0" Width="2000">
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P1"/>
+                                    <Button Height="33" Width="60" Margin="55,1,0,0" x:Name="P1_Freq" Content="1700"></Button>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="130,-1,0,0">
+                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="16" ValueChanged="FID_1_ValueChanged" Maximum="400" x:Name="FID_1" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                    <ComboBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" x:Name="Mult_1" SelectedIndex="0" SelectionChanged="Mult_1_SelectionChanged" Width="73" Height="33" Margin="205,1,0,0">
+                                        <ComboBoxItem Content="4"/>
+                                        <ComboBoxItem Content="5"/>
+                                        <ComboBoxItem Content="6"/>
+                                        <ComboBoxItem Content="7"/>
+                                        <ComboBoxItem Content="8"/>
+                                        <ComboBoxItem Content="9"/>
+                                        <ComboBoxItem Content="10"/>
+                                        <ComboBoxItem Content="11"/>
+                                        <ComboBoxItem Content="12"/>
+                                        <ComboBoxItem Content="13"/>
+                                        <ComboBoxItem Content="14"/>
+                                        <ComboBoxItem Content="15"/>
+                                        <ComboBoxItem Content="16"/>
+                                        <ComboBoxItem Content="17"/>
+                                        <ComboBoxItem Content="18"/>
+                                        <ComboBoxItem Content="19"/>
+                                        <ComboBoxItem Content="20"/>
+                                        <ComboBoxItem Content="21"/>
+                                        <ComboBoxItem Content="22"/>
+                                        <ComboBoxItem Content="23"/>
+                                        <ComboBoxItem Content="24"/>
+                                        <ComboBoxItem Content="25"/>
+                                        <ComboBoxItem Content="26"/>
+                                        <ComboBoxItem Content="27"/>
+                                        <ComboBoxItem Content="28"/>
+                                        <ComboBoxItem Content="29"/>
+                                        <ComboBoxItem Content="30"/>
+                                        <ComboBoxItem Content="31"/>
+                                        <ComboBoxItem Content="32"/>
+                                        <ComboBoxItem Content="33"/>
+                                        <ComboBoxItem Content="34"/>
+                                        <ComboBoxItem Content="35"/>
+                                        <ComboBoxItem Content="36"/>
+                                        <ComboBoxItem Content="37"/>
+                                        <ComboBoxItem Content="38"/>
+                                        <ComboBoxItem Content="39"/>
+                                        <ComboBoxItem Content="40"/>
+                                        <ComboBoxItem Content="41"/>
+                                        <ComboBoxItem Content="42"/>
+                                        <ComboBoxItem Content="43"/>
+                                        <ComboBoxItem Content="44"/>
+                                        <ComboBoxItem Content="45"/>
+                                    </ComboBox>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="290,-1,0,0">
+                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="1" ValueChanged="DID_1_ValueChanged" Maximum="45" x:Name="DID_1"  HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="360,-1,0,0">
+                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="725" x:Name="VID_1" ValueChanged="VID_1_ValueChanged" Maximum="1500"  HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                </Grid>
+                                <Grid Grid.Row="3"  Margin="-7,10,0,0" Width="2000">
+                                    <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,4,0,0" FontSize="15" Text="P2"/>
+                                    <Button Height="33" Width="60" Margin="55,1,0,0" x:Name="P2_Freq" Content="1700"></Button>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="130,-1,0,0">
+                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="16" ValueChanged="FID_2_ValueChanged" Maximum="400" x:Name="FID_2" HorizontalAlignment="Left" Width="60" Height="32" Text=""></NumberBox>
+                                    </Border>
+                                    <ComboBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" x:Name="Mult_2" SelectionChanged="Mult_2_SelectionChanged" SelectedIndex="0" Width="73" Height="33" Margin="205,1,0,0">
+                                        <ComboBoxItem Content="4"/>
+                                        <ComboBoxItem Content="5"/>
+                                        <ComboBoxItem Content="6"/>
+                                        <ComboBoxItem Content="7"/>
+                                        <ComboBoxItem Content="8"/>
+                                        <ComboBoxItem Content="9"/>
+                                        <ComboBoxItem Content="10"/>
+                                        <ComboBoxItem Content="11"/>
+                                        <ComboBoxItem Content="12"/>
+                                        <ComboBoxItem Content="13"/>
+                                        <ComboBoxItem Content="14"/>
+                                        <ComboBoxItem Content="15"/>
+                                        <ComboBoxItem Content="16"/>
+                                        <ComboBoxItem Content="17"/>
+                                        <ComboBoxItem Content="18"/>
+                                        <ComboBoxItem Content="19"/>
+                                        <ComboBoxItem Content="20"/>
+                                        <ComboBoxItem Content="21"/>
+                                        <ComboBoxItem Content="22"/>
+                                        <ComboBoxItem Content="23"/>
+                                        <ComboBoxItem Content="24"/>
+                                        <ComboBoxItem Content="25"/>
+                                        <ComboBoxItem Content="26"/>
+                                        <ComboBoxItem Content="27"/>
+                                        <ComboBoxItem Content="28"/>
+                                        <ComboBoxItem Content="29"/>
+                                        <ComboBoxItem Content="30"/>
+                                        <ComboBoxItem Content="31"/>
+                                        <ComboBoxItem Content="32"/>
+                                        <ComboBoxItem Content="33"/>
+                                        <ComboBoxItem Content="34"/>
+                                        <ComboBoxItem Content="35"/>
+                                        <ComboBoxItem Content="36"/>
+                                        <ComboBoxItem Content="37"/>
+                                        <ComboBoxItem Content="38"/>
+                                        <ComboBoxItem Content="39"/>
+                                        <ComboBoxItem Content="40"/>
+                                        <ComboBoxItem Content="41"/>
+                                        <ComboBoxItem Content="42"/>
+                                        <ComboBoxItem Content="43"/>
+                                        <ComboBoxItem Content="44"/>
+                                        <ComboBoxItem Content="45"/>
+                                    </ComboBox>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33" Margin="290,-1,0,0">
+                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="1" Maximum="45" ValueChanged="DID_2_ValueChanged" x:Name="DID_2" HorizontalAlignment="Left" Width="60" Height="32" Text=""></NumberBox>
+                                    </Border>
+                                    <Border CornerRadius="5" HorizontalAlignment="Left" Width="60" Height="33"  Margin="360,-1,0,0">
+                                        <NumberBox IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" Minimum="725" Maximum="1500" x:Name="VID_2" ValueChanged="VID_2_ValueChanged" HorizontalAlignment="Left" Width="60" Height="32" Text=""/>
+                                    </Border>
+                                </Grid>
+
+                            </Grid>
+                            <Grid Grid.Row="4" HorizontalAlignment="Stretch" Margin="0,20,2,0">
+                                <Button Height="50" IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" HorizontalContentAlignment="Stretch" Click="TurboBoost_Click" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe8be;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_turbo" Text="Состояние Turbo Boost"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_turbo_desc" Text="Позволяет вашему процессору разгоняться сильнее, но вызывает проблемы"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" x:Name="Turbo_boost"  OffContent="" OnContent="" Toggled="Turbo_boost_Toggled"  Margin="0,0,-100,0" VerticalAlignment="Center" ></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="5" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" HorizontalContentAlignment="Stretch" Click="Autoapply_Click" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe792;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_reapplyps" Text="Автоприменять параметры"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_reapplyps_desc" Text="При запуске программа будет применять эти параметры, при включенном автоприменении"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" OffContent="" OnContent="" Margin="0,0,-100,0" Toggled="Autoapply_1_Toggled" x:Name="Autoapply_1" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="6" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" HorizontalContentAlignment="Stretch" Click="WithoutP0_Click" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe835;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_Ignorep0" Text="Игнорировать предупреждение P0"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_Ignorep0_desc" Text="Всегда применять параметры с состоянием P0, может привести к крашу системы!"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" OffContent="" OnContent="" Margin="0,0,-100,0" x:Name="Without_P0" Toggled="Without_P0_Toggled" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="7" HorizontalAlignment="Stretch" Margin="0,10,2,0">
+                                <Button Height="50" IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" HorizontalContentAlignment="Stretch" Click="IgnoreWarn_Click" HorizontalAlignment="Stretch">
+                                    <Grid Height="50">
+                                        <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xeb9d;"/>
+                                        <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"  x:Uid="Param_Ignore" Text="Игнорировать предупреждение изменения"></TextBlock>
+                                        <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"  x:Uid="Param_Ignore_desc" Text="Всегда применять параметры без предупреждений"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Grid HorizontalAlignment="Right">
+                                    <ToggleSwitch IsEnabled="{Binding ElementName=EnablePstates, Path=IsOn}" OffContent="" OnContent="" Margin="0,0,-100,0" x:Name="IgnoreWarn" Toggled="Ignore_Toggled" VerticalAlignment="Center" IsOn="False"></ToggleSwitch>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Expander>
+
+                    <Expander Grid.Row="8" x:Name="SMUOptions_Expander" Expanding="SMUOptions_Expander_Expanding" HorizontalContentAlignment="Stretch">
+                        <Expander.Header>
+                            <Grid Height="65" Width="2000">
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Glyph="&#xef58;"/>
+                                <TextBlock Margin="35,12,0,0" x:Uid="SMUText" FontWeight="SemiBold" VerticalAlignment="Top" Text="Developer overclock"/>
+                                <TextBlock Margin="35,30,0,0" x:Uid="SMUDesc" FontWeight="Light" VerticalAlignment="Top" Text="Advanced CPU developer overclock"/>
+                            </Grid>
+                        </Expander.Header>
+                        <Grid>
                             <ScrollViewer Margin="200,60,0,0"  HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Height="217">
                                 <RichEditBox IsColorFontEnabled="True" HorizontalAlignment="Stretch" x:Name="SMUNotes" x:Uid="SMURichEdit" TextChanged="SMUNotes_TextChanged" VerticalAlignment="Stretch"/>
                             </ScrollViewer>
@@ -2824,34 +2826,35 @@ VerticalAlignment="Center" SelectedIndex="0" MinWidth="138" Name="cbxResScale" H
                                             </MenuFlyout>
                                         </TextBox.ContextFlyout>
                                     </TextBox>
-                                </Grid>
+                                </Grid> 
+                                <!-- Добавить новую команду -->
                                 <Grid Grid.Row="7" Margin="0,10,0,0" HorizontalAlignment="Stretch">
                                     <Button Height="50" HorizontalContentAlignment="Stretch" x:Name="QuickCommand" IsEnabled="False" Click="CreateQuickCommandSMU_Click" HorizontalAlignment="Stretch">
                                         <Grid Height="50">
-                                            <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe948;"/>
-                                            <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_QSMU_Text"  Text="Быстрые команды SMU"></TextBlock>
-                                            <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_QSMU_Desc"  Text="Добавить новую команду"></TextBlock>
+                                            <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Glyph="&#xe948;"/>
+                                            <TextBlock Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" x:Uid="Param_QSMU_Text" Text="Быстрые команды SMU"></TextBlock>
+                                            <TextBlock Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" x:Uid="Param_QSMU_Desc" Text="Добавить новую команду"></TextBlock>
                                         </Grid>
                                     </Button>
                                     <Grid HorizontalAlignment="Right">
-                                        <FontIcon VerticalAlignment="Center" Margin="-40,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe974;">
+                                        <FontIcon VerticalAlignment="Center" Margin="-40,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Glyph="&#xe974;">
                                             <FontIcon.RenderTransform>
                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
                                             </FontIcon.RenderTransform>
                                         </FontIcon>
                                     </Grid>
                                 </Grid>
-                                <!-- Тест SMU Range cmd -->
+                                <!-- Применить диапазон команд SMU -->
                                 <Grid Grid.Row="8" Margin="0,10,0,0" HorizontalAlignment="Stretch">
                                     <Button Height="50" HorizontalContentAlignment="Stretch" x:Name="QuickCommand1" IsEnabled="True" Click="CreateQuickCommandSMU1_Click" HorizontalAlignment="Stretch">
                                         <Grid Height="50">
-                                            <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe724;"/>
-                                            <TextBlock x:Uid="Param_SMURange" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top"   Text="Применить диапазон команд SMU"></TextBlock>
-                                            <TextBlock x:Uid="Param_SMURangeDesc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top"    Text="Применяет диапазон значений в определённыый адрес SMU"></TextBlock>
+                                            <FontIcon VerticalAlignment="Center" Margin="0,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Glyph="&#xe724;"/>
+                                            <TextBlock x:Uid="Param_SMURange" Margin="35,0.5,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Применить диапазон команд SMU"></TextBlock>
+                                            <TextBlock x:Uid="Param_SMURangeDesc" Margin="35,17.5,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Применяет диапазон значений в определённыый адрес SMU"></TextBlock>
                                         </Grid>
                                     </Button>
                                     <Grid HorizontalAlignment="Right">
-                                        <FontIcon VerticalAlignment="Center" Margin="-40,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left"     Glyph="&#xe974;">
+                                        <FontIcon VerticalAlignment="Center" Margin="-40,-10,0,0" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Glyph="&#xe974;">
                                             <FontIcon.RenderTransform>
                                                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
                                             </FontIcon.RenderTransform>
