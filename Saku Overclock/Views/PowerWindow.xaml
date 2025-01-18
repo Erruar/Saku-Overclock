@@ -75,12 +75,19 @@
                 </GridView>
             </Grid>
         </ScrollViewer>
-        <NumberBox VerticalAlignment="Bottom" Minimum="200" HorizontalAlignment="Left" Value="500" Height="33" SpinButtonPlacementMode="Inline" SmallChange="200"  LargeChange="400" Width="150" x:Name="NumericUpDownInterval" ></NumberBox>
-        <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="173" Height="33" Click="Button_Click">
-            Reapply every
-        </Button>
-        <ToggleButton VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="33" Height="33" Click="Settings_Click">
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="200"/>
+                <ColumnDefinition MinWidth="40"/>
+            </Grid.ColumnDefinitions>
+            <NumberBox Grid.Column="0" Minimum="200" HorizontalAlignment="Stretch" Value="500" Height="33" SpinButtonPlacementMode="Inline" SmallChange="200" MaxWidth="200" LargeChange="400" x:Name="NumericUpDownInterval" ></NumberBox>
+            <Button Grid.Column="1" HorizontalAlignment="Stretch" Height="33" Click="Button_Click">
+                Reapply every
+            </Button>
+        </Grid>
+        
+        <!--<ToggleButton VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="33" Height="33" Click="Settings_Click">
             <FontIcon Glyph="&#xE713;" Margin="-10,0,-10,0"></FontIcon>
-        </ToggleButton>
+        </ToggleButton>-->
     </Grid>
 </Window>
