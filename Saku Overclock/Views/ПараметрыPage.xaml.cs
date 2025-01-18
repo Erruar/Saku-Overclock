@@ -15,7 +15,7 @@ using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
-using Windows.UI; 
+using Windows.UI;
 using ZenStates.Core;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using CheckBox = Microsoft.UI.Xaml.Controls.CheckBox;
@@ -34,8 +34,9 @@ public sealed partial class ПараметрыPage
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private int _indexprofile; // Выбранный профиль
-    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); 
-
+    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Все настройки приложения
+    private bool _isSearching = false; // Флаг, выполняется ли поиск, чтобы не сканировать адреса SMU
+    private readonly List<string> _searchItems = [];
     private string
         _smuSymbol =
             "\uE8C8"; // Изначальный символ копирования, для секции Редактор параметров SMU. Используется для быстрых команд SMU
@@ -64,7 +65,7 @@ public sealed partial class ПараметрыPage
     public ПараметрыPage()
     {
         App.GetService<ПараметрыViewModel>();
-        InitializeComponent(); 
+        InitializeComponent();
         ProfileLoad();
         _indexprofile = AppSettings.Preset;
         AppSettings.NBFCFlagConsoleCheckSpeedRunning = false;
@@ -96,13 +97,14 @@ public sealed partial class ПараметрыPage
             try
             {
                 ProfileLoad();
+                CollectSearchItems();
                 SlidersInit();
             }
             catch (Exception ex)
-            { 
+            {
                 TraceIt_TraceError(ex.ToString());
                 try
-                { 
+                {
                     AppSettings.Preset = -1;
                     AppSettings.SaveSettings();
                     _indexprofile = -1;
@@ -193,7 +195,7 @@ public sealed partial class ПараметрыPage
     private static void JsonRepair(char file)
     {
         switch (file)
-        { 
+        {
             case 's':
                 _smusettings = new Smusettings();
                 try
@@ -245,7 +247,7 @@ public sealed partial class ПараметрыPage
                     App.MainWindow.Close();
                 }
 
-                break; 
+                break;
         }
     }
     #endregion
@@ -253,7 +255,7 @@ public sealed partial class ПараметрыPage
     #region Initialization
 
     private void SlidersInit()
-    { 
+    {
         LogHelper.Log("SakuOverclock SlidersInit");
         if (_isLoaded == false)
         {
@@ -261,7 +263,7 @@ public sealed partial class ПараметрыPage
         }
 
         _waitforload = true;
-        ProfileLoad(); 
+        ProfileLoad();
         ProfileCOM.Items.Clear();
         ProfileCOM.Items.Add(new ComboBoxItem
         {
@@ -278,9 +280,7 @@ public sealed partial class ПараметрыPage
             {
                 ProfileCOM.Items.Add(currProfile.profilename);
             }
-        } 
-        
-         
+        }
         /*new ComboBoxItem
                 {
                     Content = new Grid 
@@ -521,10 +521,10 @@ public sealed partial class ПараметрыPage
                     cores = (uint)await ИнформацияPage.GetCpuCoresAsync();
                 }
 
-                if (_cpu != null) 
-                { 
-                    cores = _cpu.info.topology.physicalCores; 
-                    await LogHelper.Log("CPU Cores: " + cores); 
+                if (_cpu != null)
+                {
+                    cores = _cpu.info.topology.physicalCores;
+                    await LogHelper.Log("CPU Cores: " + cores);
                 }
 
                 for (var i = 0; i < cores; i++)
@@ -535,29 +535,29 @@ public sealed partial class ПараметрыPage
                         try
                         {
                             var checkbox = i < 8
-                        ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i+1}")
-                        : (CheckBox)CCD2_Grid.FindName($"CCD2_{i-8}");
+                        ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i + 1}")
+                        : (CheckBox)CCD2_Grid.FindName($"CCD2_{i - 8}");
                             if (checkbox != null && checkbox.IsChecked == true)
                             {
                                 var setVal = i < 8
-                                    ? (Slider)CCD1_Grid.FindName($"CCD1_{i+1}v")
-                                    : (Slider)CCD2_Grid.FindName($"CCD2_{i-8}v");
+                                    ? (Slider)CCD1_Grid.FindName($"CCD1_{i + 1}v")
+                                    : (Slider)CCD2_Grid.FindName($"CCD2_{i - 8}v");
                                 setVal.IsEnabled = false;
                                 setVal.Opacity = 0.4;
                                 checkbox.IsEnabled = false;
                                 checkbox.IsChecked = false;
                             }
                             var setGrid1 = i < 8
-                        ? (StackPanel)CCD1_Grid.FindName($"CCD1_Grid{i+1}_1")
-                        : (StackPanel)CCD2_Grid.FindName($"CCD2_Grid{i-8}_1");
+                        ? (StackPanel)CCD1_Grid.FindName($"CCD1_Grid{i + 1}_1")
+                        : (StackPanel)CCD2_Grid.FindName($"CCD2_Grid{i - 8}_1");
                             var setGrid2 = i < 8
-                        ? (Grid)CCD1_Grid.FindName($"CCD1_Grid{i+1}_2")
-                        : (Grid)CCD2_Grid.FindName($"CCD2_Grid{i-8}_2");
+                        ? (Grid)CCD1_Grid.FindName($"CCD1_Grid{i + 1}_2")
+                        : (Grid)CCD2_Grid.FindName($"CCD2_Grid{i - 8}_2");
                             if (setGrid1 != null)
                             {
                                 setGrid1.Visibility = Visibility.Collapsed;
                                 setGrid1.Opacity = 0.4;
-                            } 
+                            }
                             if (setGrid2 != null)
                             {
                                 setGrid2.Visibility = Visibility.Collapsed;
@@ -588,7 +588,7 @@ public sealed partial class ПараметрыPage
                     CCD2_Grid6_1.Visibility == Visibility.Collapsed &&
                     CCD2_Grid7_1.Visibility == Visibility.Collapsed)
                 {
-                    await LogHelper.LogWarn("Curve Optimizer Disabled cores detection incorrect on that CPU. Using standart disabled cores detection method."); 
+                    await LogHelper.LogWarn("Curve Optimizer Disabled cores detection incorrect on that CPU. Using standart disabled cores detection method.");
                     CCD1_Grid1_1.Visibility = Visibility.Visible;
                     CCD1_Grid2_1.Visibility = Visibility.Visible;
                     CCD1_Grid3_1.Visibility = Visibility.Visible;
@@ -703,7 +703,7 @@ public sealed partial class ПараметрыPage
                 }
             }
 
-            _waitforload = true; 
+            _waitforload = true;
             if (AppSettings.Preset == -1 || index == -1) //Load from unsaved
             {
                 await LogHelper.LogWarn("Unable to find or set last saved profile. Setting unsaved profile.");
@@ -722,7 +722,7 @@ public sealed partial class ПараметрыPage
             }
             else
             {
-                await LogHelper.Log($"Loading profile... {_profile[index].profilename}"); 
+                await LogHelper.Log($"Loading profile... {_profile[index].profilename}");
                 ActionButton_Save.BorderBrush = ActionButton_Delete.BorderBrush;
                 ActionButton_Save.BorderThickness = ActionButton_Delete.BorderThickness;
                 MainScroll.IsEnabled = true;
@@ -1101,7 +1101,7 @@ public sealed partial class ПараметрыPage
 
             try
             {
-                await LogHelper.Log("Trying to load P-States settings."); 
+                await LogHelper.Log("Trying to load P-States settings.");
                 Mult_0.SelectedIndex = (int)(FID_0.Value * 25 / (DID_0.Value * 12.5)) - 4;
                 P0_Freq.Content = FID_0.Value * 25 / (DID_0.Value * 12.5) * 100;
                 Mult_1.SelectedIndex = (int)(FID_1.Value * 25 / (DID_1.Value * 12.5)) - 4;
@@ -1118,7 +1118,7 @@ public sealed partial class ПараметрыPage
             }
 
             _waitforload = false;
-            await LogHelper.Log("Loading user SMU settings."); 
+            await LogHelper.Log("Loading user SMU settings.");
             SmuSettingsLoad();
             if (_smusettings.Note != string.Empty)
             {
@@ -1142,12 +1142,12 @@ public sealed partial class ПараметрыPage
     }
 
     private void Init_QuickSMU()
-    { 
-        Task.Run(async () => await LogHelper.Log("Initing Quick SMU options...")); 
+    {
+        Task.Run(async () => await LogHelper.Log("Initing Quick SMU options..."));
         SmuSettingsLoad();
         if (_smusettings.QuickSmuCommands == null)
         {
-            Task.Run(async () => await LogHelper.Log("Quick SMU options not found... Exiting initialization.")); 
+            Task.Run(async () => await LogHelper.Log("Quick SMU options not found... Exiting initialization."));
             return;
         }
 
@@ -1364,58 +1364,34 @@ public sealed partial class ПараметрыPage
     #region Suggestion Engine
 
     // Collecting Search Items
-    private List<SettingItem> CollectSearchItems()
+    private void CollectSearchItems()
     {
-        var searchItems = new List<SettingItem>();
-        var stackPanels = FindVisualChildren<StackPanel>(MainScroll);
-
-        foreach (var stackPanel in stackPanels)
+        _searchItems.Clear();
+        var expanders = FindVisualChildren<Expander>(MainScroll);
+        foreach (var expander in expanders)
         {
-            var textBlocks = FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15).ToList();
-            foreach (var textBlock in textBlocks)
+            var stackPanels = FindVisualChildren<StackPanel>(expander);
+            foreach (var stackPanel in stackPanels)
             {
-                var adjacentGrid = FindAdjacentGrid(stackPanel);
-                searchItems.Add(new SettingItem
+                var textBlocks = FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15);
+                foreach (var textBlock in textBlocks)
                 {
-                    Text = textBlock.Text,
-                    StackPanel = stackPanel,
-                    AdjacentGrid = adjacentGrid
-                });
+                    if (!string.IsNullOrWhiteSpace(textBlock.Text) &&
+                        !_searchItems.Contains(textBlock.Text)
+                        && !(textBlock.Text.Contains('') || 
+                             textBlock.Text.Contains('') ||
+                             textBlock.Text.Contains('') ||
+                             textBlock.Text.Contains('') ||
+                             textBlock.Text.Contains('') ||
+                             textBlock.Text.Contains('')))
+                    {
+                        _searchItems.Add(textBlock.Text);
+                    } 
+                }
             }
         }
-
-        return searchItems;
     }
 
-    private static Grid? FindRecommendationsGrid(StackPanel settingsStackPanel)
-    {
-        var parentGrid = VisualTreeHelper.GetParent(settingsStackPanel) as Grid;
-        if (parentGrid != null)
-        {
-            var row = Grid.GetRow(settingsStackPanel);
-            return parentGrid.Children.OfType<Grid>()
-                .FirstOrDefault(child => Grid.GetRow(child) == row && Grid.GetColumn(child) == 1);
-        }
-
-        return null;
-    }
-
-
-    public class SettingItem
-    {
-        public string? Text
-        {
-            get; set;
-        }
-        public StackPanel? StackPanel
-        {
-            get; set;
-        }
-        public Grid? AdjacentGrid
-        {
-            get; set;
-        }
-    }
 
     private static IEnumerable<T> FindVisualChildren<T>(DependencyObject parent) where T : DependencyObject
     {
@@ -1439,6 +1415,7 @@ public sealed partial class ПараметрыPage
         var expanders = FindVisualChildren<Expander>(MainScroll);
         foreach (var expander in expanders)
         {
+            _isSearching = true;
             expander.IsExpanded = true;
             var stackPanels = FindVisualChildren<StackPanel>(expander);
             foreach (var stackPanel in stackPanels)
@@ -1465,13 +1442,150 @@ public sealed partial class ПараметрыPage
         return index < 0 || index >= parent.Children.Count - 1 ? null : parent.Children[index + 1] as Grid;
     }
 
-    private void SuggestBox_OnTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    private void SuggestBox_OnTextChanged(AutoSuggestBox? sender, AutoSuggestBoxTextChangedEventArgs? args)
     {
-        var searchText = sender.Text.ToLower();
+        if (!_isLoaded) { return; }
+        _isSearching = true;
+        if (args?.Reason == AutoSuggestionBoxTextChangeReason.UserInput ||
+            args?.Reason == AutoSuggestionBoxTextChangeReason.SuggestionChosen ||
+            args == null)
+        {
+            var suitableItems = new List<TextBlock>();
+            var splitText = SuggestBox.Text.ToLower().Split(" ");
+            if (_searchItems.Count == 0) { CollectSearchItems(); }
+            foreach (var searchItem in _searchItems)
+            {
+                var found = splitText!.All((key) =>
+                {
+                    return searchItem.Contains(key, StringComparison.CurrentCultureIgnoreCase);
+                });
+                if (found)
+                {
+                    var textBlock = new TextBlock { Text = searchItem, Foreground = Param_Name.Foreground };
+                    ToolTipService.SetToolTip(textBlock, searchItem);
+                    suitableItems.Add(textBlock);
+                }
+            }
+            if (suitableItems.Count == 0)
+            {
+                suitableItems.Add(new TextBlock { Text = "No results found", Foreground = Param_Name.Foreground });
+            }
+            SuggestBox.ItemsSource = suitableItems;
 
-        // Сбросить скрытое
-        ResetVisibility();
 
+            var searchText = SuggestBox.Text.ToLower();
+            if (SuggestBox.Text == string.Empty)
+            {
+                FilterButtons_ResetButton_Click(null, null);
+            }
+            // Сбросить скрытое
+            ResetVisibility();
+
+            var expanders = FindVisualChildren<Expander>(MainScroll);
+            foreach (var expander in expanders)
+            {
+                var stackPanels = FindVisualChildren<StackPanel>(expander);
+                var anyVisible = false;
+
+                foreach (var stackPanel in stackPanels)
+                {
+                    var textBlocks = FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15);
+                    var containsText = textBlocks.Any(tb => tb.Text.Contains(searchText, StringComparison.CurrentCultureIgnoreCase));
+
+                    var containsControl = FindVisualChildren<CheckBox>(stackPanel).Any();
+
+                    // Если текст и элементы управления найдены, делаем StackPanel видимой
+                    if (containsText && containsControl)
+                    {
+                        stackPanel.Visibility = Visibility.Visible;
+                        anyVisible = true;
+
+                        // Второй проход: делаем видимыми все дочерние элементы
+                        SetAllChildrenVisibility(stackPanel, Visibility.Visible);
+                    }
+                    else
+                    {
+                        stackPanel.Visibility = Visibility.Collapsed;
+                    }
+
+                    var adjacentGrid = FindAdjacentGrid(stackPanel);
+                    if (adjacentGrid != null)
+                    {
+                        adjacentGrid.Visibility = stackPanel.Visibility;
+                    }
+                }
+                foreach (var stackPanel1 in stackPanels) // Второй проход
+                {
+                    if (stackPanel1.Visibility == Visibility.Visible)
+                    {
+                        SetAllChildrenVisibility(stackPanel1, Visibility.Visible);
+                    }
+                }
+
+                // Скрыть Expander если нет видимых StackPanels
+                if (!anyVisible)
+                {
+                    expander.IsExpanded = false;
+                }
+            }
+        }
+        _isSearching = false;
+    }
+
+    private static void SetAllChildrenVisibility(StackPanel parent, Visibility visibility)
+    {
+        var stackPanels = FindVisualChildren<StackPanel>(parent);
+        foreach (var stackPanel in stackPanels)
+        {
+            stackPanel.Visibility = visibility;
+        }
+    }
+
+    private void FilterButton_Checked(object sender, RoutedEventArgs e)
+    {
+        if (!_isLoaded) { return; }
+        _isSearching = true;
+        List<(string, ToggleButton)> buttons = [
+            ("", FilterButtons_Freq),
+            ("", FilterButtons_Current),
+            ("", FilterButtons_Power),
+            ("", FilterButtons_Temp),
+            ("", FilterButtons_Other),
+            ("", FilterButtons_Time),
+            ("\uE7B3",FilterButtons_Hide)];
+        List<string> glyphs = [];
+        foreach (var button in buttons) // Первый проход
+        {
+            if (button.Item2.IsChecked == true)
+            {
+                if (FiltersButton.Style != (Style)Application.Current.Resources["AccentButtonStyle"])
+                {
+                    FiltersButton.Style = (Style)Application.Current.Resources["AccentButtonStyle"];
+                }
+                glyphs.Add(button.Item1);
+            }
+        }
+        if (glyphs.Count == 0)
+        {
+            if (FiltersButton.Style != ActionButton_Apply.Style)
+            {
+                FiltersButton.Style = ActionButton_Apply.Style;
+                FiltersButton.Translation = new System.Numerics.Vector3(0, 0, 20);
+                FiltersButton.CornerRadius = new CornerRadius(4);
+                FiltersButton.Shadow = SharedShadow;
+            }
+            foreach (var button in buttons) // Добавить все, так как мы не скрываем параметры
+            {
+                if (button.Item2 != FilterButtons_Hide)
+                {
+                    glyphs.Add(button.Item1);
+                }
+            }
+        }
+        if (SuggestBox.Text == string.Empty)
+        {
+            ResetVisibility();
+        }
         var expanders = FindVisualChildren<Expander>(MainScroll);
         foreach (var expander in expanders)
         {
@@ -1480,8 +1594,8 @@ public sealed partial class ПараметрыPage
 
             foreach (var stackPanel in stackPanels)
             {
-                var textBlocks = FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15);
-                var containsText = textBlocks.Any(tb => tb.Text.ToLower().Contains(searchText));
+                var textBlocks = FindVisualChildren<FontIcon>(stackPanel).Where(tb => tb.FontSize == 15);
+                var containsText = textBlocks.Any(tb => FindAjantedFontIcons(tb, glyphs));
 
                 var containsControl = FindVisualChildren<CheckBox>(stackPanel).Any();
 
@@ -1516,100 +1630,40 @@ public sealed partial class ПараметрыPage
             // Скрыть Expander если нет видимых StackPanels
             if (!anyVisible)
             {
-                expander.IsExpanded = false; 
+                expander.IsExpanded = false;
             }
-        } 
+        }
+        _isSearching = false;
     }
 
-    private void SetAllChildrenVisibility(StackPanel parent, Visibility visibility)
+    private static bool FindAjantedFontIcons(FontIcon fontIcon, List<string> glyphs)
     {
-        var stackPanels = FindVisualChildren<StackPanel>(parent); 
-        foreach (var stackPanel in stackPanels) 
+        foreach (var glyph in glyphs)
         {
-            stackPanel.Visibility = Visibility.Visible;
+            if (fontIcon.Glyph.Contains(glyph))
+            {
+                return true;
+            }
         }
-    } 
-
-    private static string FindGlyph(ToggleButton parent)
-    {
-        var icons = FindVisualChildren<FontIcon>(parent); 
-        foreach (var seachIcon in icons) 
-        {
-            return seachIcon.Glyph;
-        }
-        return string.Empty;
-    } 
-
-    private void SuggestBox_OnSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
-    {
-         
+        return false;
     }
 
-    private void FilterButton_Checked(object sender, RoutedEventArgs e)
+    private void FilterButtons_ResetButton_Click(object? sender, RoutedEventArgs? e)
     {
-        if (!_isLoaded) { return; }
-        if (sender is ToggleButton button)
+        _isSearching = true;
+        FilterButtons_Freq.IsChecked = false;
+        FilterButtons_Current.IsChecked = false;
+        FilterButtons_Power.IsChecked = false;
+        FilterButtons_Temp.IsChecked = false;
+        FilterButtons_Other.IsChecked = false;
+        FilterButtons_Time.IsChecked = false;
+        FilterButtons_Hide.IsChecked = false;
+        if (SuggestBox.Text != string.Empty)
         {
-            if (button.IsChecked == true)
-            {
-                var glyph = FindGlyph(button);
-                if (glyph != string.Empty) 
-                {
-                    ResetVisibility();
-                    var expanders = FindVisualChildren<Expander>(MainScroll);
-                    foreach (var expander in expanders)
-                    {
-                        var stackPanels = FindVisualChildren<StackPanel>(expander);
-                        var anyVisible = false;
-
-                        foreach (var stackPanel in stackPanels)
-                        {
-                            var textBlocks = FindVisualChildren<FontIcon>(stackPanel).Where(tb => tb.FontSize == 15);
-                            var containsText = textBlocks.Any(tb => tb.Glyph.Contains(glyph));
-
-                            var containsControl = FindVisualChildren<CheckBox>(stackPanel).Any();
-
-                            // Если текст и элементы управления найдены, делаем StackPanel видимой
-                            if (containsText && containsControl)
-                            {
-                                stackPanel.Visibility = Visibility.Visible;
-                                anyVisible = true;
-
-                                // Второй проход: делаем видимыми все дочерние элементы
-                                SetAllChildrenVisibility(stackPanel, Visibility.Visible);
-                            }
-                            else
-                            {
-                                stackPanel.Visibility = Visibility.Collapsed;
-                            }
-
-                            var adjacentGrid = FindAdjacentGrid(stackPanel);
-                            if (adjacentGrid != null)
-                            {
-                                adjacentGrid.Visibility = stackPanel.Visibility;
-                            }
-                        }
-                        foreach (var stackPanel1 in stackPanels) // Второй проход
-                        {
-                            if (stackPanel1.Visibility == Visibility.Visible)
-                            {
-                                SetAllChildrenVisibility(stackPanel1, Visibility.Visible);
-                            }
-                        }
-
-                        // Скрыть Expander если нет видимых StackPanels
-                        if (!anyVisible)
-                        {
-                            expander.IsExpanded = false;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                ResetVisibility();
-            }
+            ResetVisibility();
+            SuggestBox_OnTextChanged(null, null);
         }
+        _isSearching = false;
     }
 
     #endregion
@@ -1622,7 +1676,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            Task.Run(async () => await LogHelper.Log("Starting background task")); 
+            Task.Run(async () => await LogHelper.Log("Starting background task"));
             var backgroundWorker1 = new BackgroundWorker();
             backgroundWorker1.DoWork += task;
             backgroundWorker1.RunWorkerCompleted += completedHandler;
@@ -1663,7 +1717,7 @@ public sealed partial class ПараметрыPage
 
             comboBoxMailboxSelect.SelectedIndex = index;
             QuickCommand.IsEnabled = true;
-            await LogHelper.Log("SMU Scan Completed"); 
+            await LogHelper.Log("SMU Scan Completed");
             await Send_Message("SMUScanText".GetLocalized(), "SMUScanDesc".GetLocalized(), Symbol.Message);
         }
         catch (Exception exception)
@@ -1677,7 +1731,7 @@ public sealed partial class ПараметрыPage
         try
         {
             _cpu ??= new Cpu(CpuInitSettings.defaultSetttings);
-            Task.Run(async () => await LogHelper.Log("Starting scanning SMU addresses task")); 
+            Task.Run(async () => await LogHelper.Log("Starting scanning SMU addresses task"));
             switch (_cpu.info.codeName)
             {
                 case Cpu.CodeName.BristolRidge:
@@ -1720,7 +1774,7 @@ public sealed partial class ПараметрыPage
     private void ScanSmuRange(uint start, uint end, uint step, uint offset)
     {
         _matches = [];
-        Task.Run(async () => await LogHelper.Log("Starting scanning SMU range task")); 
+        Task.Run(async () => await LogHelper.Log("Starting scanning SMU range task"));
         var keyPairs = new List<KeyValuePair<uint, uint>>();
 
         while (start <= end)
@@ -1730,7 +1784,7 @@ public sealed partial class ПараметрыPage
             if (_cpu?.ReadDword(start) != 0xFFFFFFFF)
             {
                 // Send unknown command 0xFF to each pair of this start and possible response addresses
-                if (_cpu?.WriteDwordEx(start, 0xFF) == true) // ЗДЕСЬ БЫЛО FF
+                if (_cpu?.WriteDwordEx(start, 0xFF) == true)
                 {
                     Thread.Sleep(10);
 
@@ -1763,8 +1817,8 @@ public sealed partial class ПараметрыPage
             foreach (var keyPair in keyPairs)
             {
                 Console.WriteLine($"{keyPair.Key:X8}: {keyPair.Value:X8}");
-                Task.Run(async () => await LogHelper.Log($"Found keypair: {keyPair.Key:X8}: {keyPair.Value:X8}")); 
-            } 
+                Task.Run(async () => await LogHelper.Log($"Found keypair: {keyPair.Key:X8}: {keyPair.Value:X8}"));
+            }
             Console.WriteLine();
         }
 
@@ -1773,7 +1827,7 @@ public sealed partial class ПараметрыPage
         foreach (var pair in keyPairs)
         {
             Console.WriteLine($"Testing {pair.Key:X8}: {pair.Value:X8}");
-            Task.Run(async () => await LogHelper.Log($"Testing keypair: {pair.Key:X8}: {pair.Value:X8}")); 
+            Task.Run(async () => await LogHelper.Log($"Testing keypair: {pair.Key:X8}: {pair.Value:X8}"));
             if (TrySettings(pair.Key, pair.Value, 0xFFFFFFAF, 0x2, 0xFF) == SMU.Status.OK) //ЗДЕСЬ БЫЛО FFFFFFFF
             {
                 var smuArgAddress = pair.Value + 4;
@@ -1816,7 +1870,7 @@ public sealed partial class ПараметрыPage
                 }
             }
         }
-        Task.Run(async () => await LogHelper.Log("Scanning SMU range task completed.")); 
+        Task.Run(async () => await LogHelper.Log("Scanning SMU range task completed."));
     }
 
     private SMU.Status? TrySettings(uint msgAddr, uint rspAddr, uint argAddr, uint cmd, uint value)
@@ -1840,16 +1894,14 @@ public sealed partial class ПараметрыPage
 
     private void PlayButton_Click(object sender, RoutedEventArgs e)
     {
-        var button = sender as Button;
         SmuSettingsLoad();
-        ApplySettings(1, int.Parse(button!.Name.Replace("Play_", "")));
+        ApplySettings(1, int.Parse((sender as Button)!.Name.Replace("Play_", "")));
     }
 
     private void EditButton_Click(object sender, RoutedEventArgs e)
     {
-        var button = sender as Button;
         SmuSettingsLoad();
-        QuickDialog(1, int.Parse(button!.Name.Replace("Edit_", "")));
+        QuickDialog(1, int.Parse((sender as Button)!.Name.Replace("Edit_", "")));
     }
 
     //SMU КОМАНДЫ
@@ -1857,7 +1909,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            Task.Run(async () => await LogHelper.Log("Applying user SMU settings task started.")); 
+            Task.Run(async () => await LogHelper.Log("Applying user SMU settings task started."));
             uint[]? args;
             string[]? userArgs;
             uint addrMsg;
@@ -1926,11 +1978,11 @@ public sealed partial class ПараметрыPage
                     ApplyInfo += "\n" + "SMUErrorNoCMD".GetLocalized();
                 }
             }
-            Task.Run(async () => await LogHelper.Log($"Get status: {status}")); 
+            Task.Run(async () => await LogHelper.Log($"Get status: {status}"));
         }
         catch (Exception ex)
         {
-            Task.Run(async () => await LogHelper.LogError($"Applying user SMU settings error: {ex.Message}")); 
+            Task.Run(async () => await LogHelper.LogError($"Applying user SMU settings error: {ex.Message}"));
             ApplyInfo += "\n" + "SMUErrorDesc".GetLocalized();
         }
     }
@@ -1946,9 +1998,11 @@ public sealed partial class ПараметрыPage
             throw new ApplicationException("Invalid hexadecimal value.");
         }
     }
-
-    private void DevEnv_Expanding(Expander sender, ExpanderExpandingEventArgs args) {}
-       /* RunBackgroundTask(BackgroundWorkerTrySettings_DoWork!, SmuScan_WorkerCompleted!)*/
+    private void SMUOptions_Expander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
+    {
+        if (_isSearching) { return; }
+        RunBackgroundTask(BackgroundWorkerTrySettings_DoWork!, SmuScan_WorkerCompleted!);
+    }
 
     private void ComboBoxMailboxSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -2284,7 +2338,7 @@ public sealed partial class ПараметрыPage
                     }
                     else
                     {
-                        
+
                         if (result == ContentDialogResult.Secondary)
                         {
                             await LogHelper.Log("Removing Quick SMU Command");
@@ -2661,7 +2715,7 @@ public sealed partial class ПараметрыPage
     private async void ProfileCOM_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         try
-        { 
+        {
             while (_isLoaded == false || _waitforload)
             {
                 await Task.Delay(100);
@@ -4997,7 +5051,7 @@ public sealed partial class ПараметрыPage
                 //Using Irusanov method
                 for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
                 {
-                    var mapIndex = i < 8 ? 0 : 1; 
+                    var mapIndex = i < 8 ? 0 : 1;
                     if (((~_cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1)
                     {
                         if (_cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
@@ -5246,13 +5300,13 @@ public sealed partial class ПараметрыPage
                     for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
                     {
                         var checkbox = i < 8
-                            ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i+1}")
-                            : (CheckBox)CCD2_Grid.FindName($"CCD2_{i-7}");
+                            ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i + 1}")
+                            : (CheckBox)CCD2_Grid.FindName($"CCD2_{i - 7}");
                         if (checkbox != null && checkbox.IsChecked == true)
                         {
                             var setVal = i < 8
-                                ? (Slider)CCD1_Grid.FindName($"CCD1_{i+1}v")
-                                : (Slider)CCD2_Grid.FindName($"CCD2_{i-7}v");
+                                ? (Slider)CCD1_Grid.FindName($"CCD1_{i + 1}v")
+                                : (Slider)CCD2_Grid.FindName($"CCD2_{i - 7}v");
                             var mapIndex = i < 8 ? 0 : 1;
                             if (((~_cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1) // Если ядро включено
                             {
@@ -5367,7 +5421,7 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=0,1024";
                 }
             }
- 
+
             AppSettings.RyzenADJline = _adjline + " ";
             _adjline = "";
             ApplyInfo = "";
@@ -5430,7 +5484,7 @@ public sealed partial class ПараметрыPage
                 await Task.Delay(3000);
                 Apply_tooltip.IsOpen = false;
             }
- 
+
             NotificationsService.Notifies ??= [];
             NotificationsService.Notifies.Add(new Notify
             {
@@ -5453,7 +5507,7 @@ public sealed partial class ПараметрыPage
         try
         {
             if (SaveProfileN.Text != "")
-            { 
+            {
                 await LogHelper.Log($"Adding new profile: \"{SaveProfileN.Text}\"");
                 ProfileLoad();
                 try
@@ -5518,7 +5572,7 @@ public sealed partial class ПараметрыPage
                         _profile = [.. profileList];
                     }
 
-                    _waitforload = false; 
+                    _waitforload = false;
                     NotificationsService.Notifies ??= [];
                     NotificationsService.Notifies.Add(new Notify
                     {
@@ -5536,7 +5590,7 @@ public sealed partial class ПараметрыPage
                 }
             }
             else
-            { 
+            {
                 NotificationsService.Notifies ??= [];
                 NotificationsService.Notifies.Add(new Notify
                 {
@@ -5636,21 +5690,21 @@ public sealed partial class ПараметрыPage
 
                     ProfileCOM.SelectedIndex = 0;
                     _waitforload = false;
-                    ProfileCOM.SelectedIndex = backupIndex; 
+                    ProfileCOM.SelectedIndex = backupIndex;
                     NotificationsService.Notifies ??= [];
                     NotificationsService.Notifies.Add(new Notify
                     {
                         Title = Edit_tooltip.Title,
                         Msg = Edit_tooltip.Subtitle + " " + SaveProfileN.Text,
                         Type = InfoBarSeverity.Success
-                    }); 
+                    });
                     Edit_tooltip.IsOpen = true;
                     await Task.Delay(3000);
                     Edit_tooltip.IsOpen = false;
                 }
             }
             else
-            { 
+            {
                 NotificationsService.Notifies ??= [];
                 NotificationsService.Notifies.Add(new Notify
                 {
@@ -5718,8 +5772,8 @@ public sealed partial class ПараметрыPage
                     _profile = [.. profileList];
                     _indexprofile = 0;
                     _waitforload = false;
-                    
-                    ProfileCOM.SelectedIndex = ProfileCOM.Items.Count - 1; 
+
+                    ProfileCOM.SelectedIndex = ProfileCOM.Items.Count - 1;
                     NotificationsService.Notifies ??= [];
                     NotificationsService.Notifies.Add(new Notify
                     {
@@ -6104,7 +6158,7 @@ public sealed partial class ПараметрыPage
                 }
             }
         }
-    } 
+    }
     #endregion
 
     #region PState Section related voids
@@ -6112,7 +6166,7 @@ public sealed partial class ПараметрыPage
     private async void BtnPstateWrite_Click()
     {
         try
-        { 
+        {
             await LogHelper.Log("P-States writing...");
             _profile[AppSettings.Preset].did0 = DID_0.Value;
             _profile[AppSettings.Preset].did1 = DID_1.Value;
@@ -6224,7 +6278,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            var cpu = CpuSingleton.GetInstance(); 
+            var cpu = CpuSingleton.GetInstance();
             ProfileLoad();
             PstatesDid[0] = _profile[AppSettings.Preset].did0;
             PstatesDid[1] = _profile[AppSettings.Preset].did1;
@@ -6333,7 +6387,7 @@ public sealed partial class ПараметрыPage
                 var fidtext = "102";
                 if (_cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), ref eax, ref edx) == false)
                 {
-                    LogHelper.LogError("Error reading P-States"); 
+                    LogHelper.LogError("Error reading P-States");
                     App.GetService<IAppNotificationService>().Show(
                         $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error reading PState! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                     return;
@@ -6380,7 +6434,7 @@ public sealed partial class ПараметрыPage
 
                 if (_cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), eax, edx) == false)
                 {
-                    LogHelper.LogError($"Error writing P-State: {p}"); 
+                    LogHelper.LogError($"Error writing P-State: {p}");
                     App.GetService<IAppNotificationService>().Show(
                         $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error writing PState! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                 }
@@ -6519,7 +6573,7 @@ public sealed partial class ПараметрыPage
                 {
                     if (_cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + i), ref eax, ref edx) == false)
                     {
-                        LogHelper.LogError("Error reading P-States"); 
+                        LogHelper.LogError("Error reading P-States");
                         App.MainWindow.ShowMessageDialogAsync("Error while reading CPU Pstate", "Critical Error");
                         return;
                     }
@@ -6541,7 +6595,7 @@ public sealed partial class ПараметрыPage
                         if (mult0V <= 0)
                         {
                             mult0V = 0;
-                            LogHelper.LogError("Error reading CPU multiply"); 
+                            LogHelper.LogError("Error reading CPU multiply");
                             App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
@@ -6556,7 +6610,7 @@ public sealed partial class ПараметрыPage
                         if (mult1V <= 0)
                         {
                             mult1V = 0;
-                            LogHelper.LogError("Error reading CPU multiply"); 
+                            LogHelper.LogError("Error reading CPU multiply");
                             App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
@@ -6571,7 +6625,7 @@ public sealed partial class ПараметрыPage
                         if (mult2V <= 0)
                         {
                             mult2V = 0;
-                            LogHelper.LogError("Error reading CPU multiply"); 
+                            LogHelper.LogError("Error reading CPU multiply");
                             App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
@@ -7153,5 +7207,5 @@ public sealed partial class ПараметрыPage
     private void VID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID1();
     private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID2();
 
-    #endregion
+    #endregion 
 }
