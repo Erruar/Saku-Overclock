@@ -132,9 +132,9 @@
                                 <ComboBoxItem x:Uid="Settings_ni_Shape_Saku" Content="Saku Overclock"/>-->
                             </ComboBox>
                         </Grid>
-                        <NumberBox Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_Fontsize" ValueChanged="Settings_ni_Fontsize_ValueChanged"  x:Name="Settings_ni_Fontsize" HorizontalAlignment="Left" Width="151" CornerRadius="15" Header="Fontsize" Minimum="5" Maximum="30" Value="9"></NumberBox>
-                        <NumberBox Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_Opacity" ValueChanged="Settings_ni_Opacity_ValueChanged"  x:Name="Settings_ni_Opacity" HorizontalAlignment="Left" Width="151" CornerRadius="15" Header="Background opacity" Minimum="0.0" Maximum="1.0" Value="1.0" ></NumberBox>
-                        <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" x:Name="Settings_ni_Delete" Click="Settings_ni_Delete_Click"  Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
+                        <NumberBox Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_Fontsize" ValueChanged="Settings_ni_Fontsize_ValueChanged" x:Name="Settings_ni_Fontsize" HorizontalAlignment="Left" Width="151" CornerRadius="15" Header="Fontsize" Minimum="8" Maximum="16" Value="10"></NumberBox>
+                        <NumberBox Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_ni_Opacity" ValueChanged="Settings_ni_Opacity_ValueChanged" x:Name="Settings_ni_Opacity" HorizontalAlignment="Left" Width="151" CornerRadius="15" Header="Background opacity" Minimum="0.0" Maximum="1.0" Value="1.0" ></NumberBox>
+                        <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" x:Name="Settings_ni_Delete" Click="Settings_ni_Delete_Click" Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
                             <TextBlock FontWeight="SemiBold"  x:Uid="Settings_ni_Delete"  Text="Delete element"/>
                         </Button>
                         <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" x:Name="Settings_ni_ResetDef" Click="Settings_ni_ResetDef_Click"  Width="151" Style="{StaticResource AccentButtonStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15">
