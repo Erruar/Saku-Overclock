@@ -5,24 +5,27 @@ using System.Management;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using Windows.UI.Text;
 using H.NotifyIcon;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.UI.Xaml.Shapes;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers; 
+using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
+using Windows.UI.Text;
 using ZenStates.Core;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using FontFamily = System.Drawing.FontFamily;
 using Icon = System.Drawing.Icon;
 using LinearGradientBrush = System.Drawing.Drawing2D.LinearGradientBrush;
+using Path = System.IO.Path;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace Saku_Overclock.Views;
 
@@ -30,7 +33,8 @@ public sealed partial class ИнформацияPage
 {
     private RTSSsettings _rtssset = new(); // Конфиг с настройками модуля RTSS
     private NiIconsSettings _niicons = new(); // Конфиг с настройками Ni-Icons
-    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
+    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
+    private List<ManagementObject>? cachedGPUList = null; // Кешированный лист GPU
 
     private readonly Dictionary<string, TaskbarIcon>
         _trayIcons = []; // Хранилище включенных в данный момент иконок Ni-Icons
@@ -55,7 +59,7 @@ public sealed partial class ИнформацияPage
     ]; // Лист для хранения минимальных и максимальных значений Ni-Icons
 
     private bool _loaded; // Страница загружена
-    private bool _doNotTrackBattery;
+    private bool _doNotTrackBattery; // Флаг не использования батареи
     private string? _rtssLine; // Строка для вывода в модуль RTSS
     private string? _cachedSelectedProfileReplacement; // Кешированная замена имени профиля
     private readonly List<InfoPageCPUPoints> _cpuPointer = []; // Лист графика использования процессора
@@ -267,7 +271,7 @@ public sealed partial class ИнформацияPage
         {
             var font = new Font(new FontFamily("Arial"), element.FontSize * 2, System.Drawing.FontStyle.Regular,
                 GraphicsUnit.Pixel);
-            var textBrush = new SolidBrush(InvertColor(element.Color));
+            var textBrush = new SolidBrush(GetContrastColor(element.Color, element.IsGradient ? element.SecondColor : null));
             // Центруем текст
             var textSize = g.MeasureString("Text", font);
             var textPosition = new PointF(
@@ -420,18 +424,13 @@ public sealed partial class ИнформацияPage
         }
 
         // Определение позиции текста
-        var font = new Font(new FontFamily("Segoe UI"), fontSize * 2f, System.Drawing.FontStyle.Bold,
-            GraphicsUnit.Pixel);
-        var textBrush = new SolidBrush(InvertColor(newColor));
-        // Центрируем текст
-        var textSize = g.MeasureString(newText, font);
-        var textPosition = new PointF(
-            (bitmap.Width - textSize.Width) / 10,
-            (bitmap.Height - textSize.Height) / 2
-        );
+       
+        var textBrush = new SolidBrush(GetContrastColor(newColor, secondColor != string.Empty ? secondColor : null));
+        var textPosition = GetTextPosition(newText, fontSize, out var fontSizeT, out var newTextT);
+        var font = new Font(new FontFamily("Segoe UI"), fontSizeT * 2f, System.Drawing.FontStyle.Bold,
+           GraphicsUnit.Pixel);
         // Рисуем текст
-        g.DrawString(newText, font, textBrush, textPosition);
-        // Создание иконки из Bitmap
+        g.DrawString(newTextT, font, textBrush, textPosition);
         // Создание иконки из Bitmap и освобождение ресурсов
         try
         {
@@ -443,80 +442,92 @@ public sealed partial class ИнформацияPage
         }
     }
 
-    // Метод для освобождения ресурсов, используемый после GetHicon()
+    ///<summary> Метод для освобождения ресурсов, используемый после GetHicon()
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool DestroyIcon(IntPtr hIcon);
 
-    // Метод для вычисления позиции текста в зависимости от условий
-    // ReSharper disable once UnusedMember.Local
-    private static Point GetTextPosition(string? newText, int fontSize, out int newFontSize)
+    ///<summary> Получить позицию текста и доработанный текст, на основе предугадывания позиции и готовых функций на основе датасета всех возможных вариантов размера шрифта</summary>
+    private static PointF GetTextPosition(string? newText, float fontSize, out float newFontSize, out string? newText_T) 
     {
-        // По умолчанию позиция текста для трех символов
-        var position = new Point(-5, 6);
-
-        // Определение масштаба шрифта
-        var scale = fontSize / 9.0f;
-
-        if (newText != null)
+        var yPosition = -1.475f * fontSize + 16.2f; // Готовая "скомпилированная" функция, основанная на массиве данных, собранные на всех возможных размерах шрифта
+        newText_T = newText;
+        var X = 20f;
+        if (!newText!.Contains('.')) { newText += '.'; }
+        if (!string.IsNullOrEmpty(newText) && newText.Contains('.'))
         {
-            // Если текст состоит из одного символа
-            if (newText.Contains(',') && newText.Split(',')[0].Length == 1 && newText.Split(',')[1].Length >= 2)
+            var parts = newText.Split('.');
+            var wholePartLength = parts[0].Length; 
+            switch (wholePartLength)
             {
-                position = new Point(-5, 6);
-            }
-
-            if (newText.Contains(',') && newText.Split(',')[0].Length == 2 || newText.Contains(',') &&
-                newText.Split(',')[0].Length == 1 && newText.Split(',')[1].Length <= 1)
-            {
-                position = new Point(2, 6);
-            }
-            // Если текст состоит из четырёх символов
-            else if (newText.Contains(',') && newText.Split(',')[0].Length == 4)
-            {
-                position = new Point(-6, 8);
-                fontSize -= 2; // уменьшение размера шрифта на 2
+                case 1: 
+                    var offset1 = fontSize == 14 ? 3.3f : fontSize == 13 ? -3.3f : 0f;
+                    X = - 0.0715488215f * fontSize * fontSize * fontSize
+                        + 2.83311688f * fontSize * fontSize
+                        - 35.2581049f * fontSize + 135.071284f
+                        + offset1; 
+                    newText_T = fontSize > 13 ? parts[0] : newText;
+                    break;
+                case 2:
+                    var offset2 = fontSize == 10 ? 2.17329f : fontSize == 9 ? -2.17329f : 0f;
+                    X =  0.0614478114f * fontSize * fontSize * fontSize
+                       - 2.48160173f * fontSize * fontSize
+                       + 31.8379028f * fontSize - 132.756133f
+                       + offset2; 
+                    newText_T = fontSize > 9 ? parts[0] : newText;
+                    break;
+                case 3:
+                    fontSize = fontSize > 12 ? 12 : fontSize;
+                    X =  0.33333333f * fontSize * fontSize * fontSize
+                       - 10.07142857f * fontSize * fontSize
+                       + 98.5952381f * fontSize - 316.8f;
+                    yPosition = -1.475f * fontSize + 16.2f; 
+                    break;
+                case >3: 
+                    fontSize = fontSize > 12 ? 12 : fontSize - 2; 
+                    X =  0.00378787879f * fontSize * fontSize * fontSize
+                       - 0.00487012987f * fontSize * fontSize
+                       - 2.32251082f * fontSize + 14.982684f; 
+                    yPosition = -1.475f * fontSize + 16.2f;
+                    break;
+                default:
+                    X = 0f;
+                    break;
             }
         }
 
-        // Корректируем позицию текста на основе масштаба
-        position.X = (int)Math.Floor(position.X * scale);
-        position.Y = (int)Math.Floor(position.Y * scale);
         newFontSize = fontSize;
+        var position = new PointF(X, yPosition); 
         return position;
     }
 
-    private static Color InvertColor(string color)
+    ///<summary> Функция для определения яркости цвета</summary> 
+    private static double GetBrightness(string color)  
     {
-        var r = 0;
-        var g = 0;
-        var b = 0;
-        if (!string.IsNullOrEmpty(color))
+        var valuestring = color.TrimStart('#');
+        var r = Convert.ToInt32(valuestring[..2], 16);
+        var g = Convert.ToInt32(valuestring.Substring(2, 2), 16);
+        var b = Convert.ToInt32(valuestring.Substring(4, 2), 16);
+        return (0.299 * r) + (0.587 * g) + (0.114 * b);
+    }
+
+    ///<summary> Функция для определения контрастного цвета текста по фону текста</summary> 
+    private static Color GetContrastColor(string color1, string? color2 = null)
+    {
+        var brightness1 = GetBrightness(color1);
+
+        double? brightness2 = null;
+        if (!string.IsNullOrEmpty(color2))
         {
-            // Убираем символ #, если он присутствует
-            var valuestring = color.TrimStart('#');
-            // Парсим цветовые компоненты
-            r = Convert.ToInt32(valuestring[..2], 16);
-            g = Convert.ToInt32(valuestring.Substring(2, 2), 16);
-            b = Convert.ToInt32(valuestring.Substring(4, 2), 16);
+            brightness2 = GetBrightness(color2);
         }
 
-        if (r + g + b > 325)
-        {
-            r = 0;
-            b = 0;
-            g = 0;
-        }
-        else
-        {
-            r = 255;
-            b = 255;
-            g = 255;
-        }
+        // Определяем среднюю яркость
+        var averageBrightness = brightness2 == null
+            ? brightness1
+            : (brightness1 + brightness2.Value) / 2;
 
-        /*r = 255 - r;
-        g = 255 - g;
-        b = 255 - b;*/
-        return Color.FromArgb(r, g, b);
+        // Возвращаем цвет текста на основе средней яркости
+        return averageBrightness < 128 ? Color.White : Color.Black;
     }
 
     #endregion
@@ -597,6 +608,13 @@ public sealed partial class ИнформацияPage
                 _numberOfLogicalProcessors = (int)_cpu.info.topology.logicalCores;
             }
 
+            // Обновление UI в основном потоке
+            await InfoCpuSectionGridBuilder();
+
+            _cpuName = _cpu == null ? name : _cpu.info.cpuName;
+            tbProcessor.Text = _cpuName;
+            tbCaption.Text = description;
+
             var gpuNameTask = Task.Run(() =>
             {
                 var gpuName = GetSystemInfo.GetGPUName(0) ?? "";
@@ -618,12 +636,6 @@ public sealed partial class ИнформацияPage
             var l1Cache = l1CacheTask.Result;
             var l2Cache = l2CacheTask.Result;
             var codeName = codeNameTask.Result;
-
-            // Обновление UI в основном потоке
-            await InfoCpuSectionGridBuilder();
-            _cpuName = _cpu == null ? name : _cpu.info.cpuName;
-            tbProcessor.Text = _cpuName;
-            tbCaption.Text = description;
 
             if (!string.IsNullOrEmpty(codeName))
             {
@@ -937,7 +949,7 @@ public sealed partial class ИнформацияPage
             }
 
             try
-            { 
+            {
                 infoRTSSButton.IsChecked = AppSettings.RTSSMetricsEnabled;
                 infoNiIconsButton.IsChecked = AppSettings.NiIconsEnabled;
                 if (AppSettings.NiIconsEnabled)
@@ -1091,7 +1103,7 @@ public sealed partial class ИнформацияPage
                     tbProcessor.Text = _cpuName;
                 }
 
-               
+
 
                 if (_ryzenAccess == 0x0)
                 {
@@ -1102,7 +1114,7 @@ public sealed partial class ИнформацияPage
                         {
                             await RyzenAdjWrapper.CpuFrequencyManager.InitializeCoreIndexMapAsync(_numberOfCores);
                         }
-                    } 
+                    }
 
                     if (infoCPUSectionGetInfoTypeComboBox.Visibility == Visibility.Collapsed)
                     {
@@ -1671,7 +1683,10 @@ public sealed partial class ИнформацияPage
                         {
                             InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
                             _ramPointer.Add(new InfoPageCPUPoints
-                                { X = 60, Y = 48 - (int)(busyRam * 100 / usageResult * 0.48) });
+                            {
+                                X = 60,
+                                Y = 48 - (int)(busyRam * 100 / usageResult * 0.48)
+                            });
                             InfoARAMBannerPolygon.Points.Add(new Windows.Foundation.Point(60,
                                 48 - (int)(busyRam * 100 / usageResult * 0.48)));
                             if (RAMFlyout.IsOpen)
@@ -1751,7 +1766,10 @@ public sealed partial class ИнформацияPage
                 //InfoARAMBanner График
                 _ramUsageHelper.Clear();
                 _ramUsageHelper.Add(new TotalBusyRam
-                    { BusyRam = ramUsageResult.BusyRam, TotalRam = ramUsageResult.TotalRam });
+                {
+                    BusyRam = ramUsageResult.BusyRam,
+                    TotalRam = ramUsageResult.TotalRam
+                });
             }
 
             if (infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 0 && _ryzenAccess == 0x0)
@@ -1831,7 +1849,7 @@ public sealed partial class ИнформацияPage
         minMaxValues[index].Max = Math.Max(minMaxValues[index].Max, currentValue);
         minMaxValues[index].Min = Math.Min(minMaxValues[index].Min, currentValue);
     }
-    
+
     private void UpdateNiIconText(string key, float currentValue, string unit, MinMax minMaxValue, string description) // Обновляет текущее значение показателей на трей иконках
     {
         // Ограничение и округление текущего, минимального и максимального значений
@@ -1839,11 +1857,11 @@ public sealed partial class ИнформацияPage
         var minValueText = Math.Round(minMaxValue.Min, 3).ToString(CultureInfo.InvariantCulture);
         var maxValueText = Math.Round(minMaxValue.Max, 3).ToString(CultureInfo.InvariantCulture);
 
-        
+
         var tooltip = $"Saku Overclock© -\nTrayMon\n{description}" +
                       "Settings_ni_Values_CurrentValue".GetLocalized() + currentValueText + unit; // Сам тултип
 
-        
+
         var extendedTooltip = "Settings_ni_Values_MinValue".GetLocalized() + minValueText + unit +
                                    "Settings_ni_Values_MaxValue".GetLocalized() + maxValueText + unit; // Расширенная часть тултипа (минимум и максимум)
 
@@ -1874,9 +1892,9 @@ public sealed partial class ИнформацияPage
 
         return new Dictionary<string, string>
         {
-            { 
-                "$SelectedProfile$", 
-                _cachedSelectedProfileReplacement 
+            {
+                "$SelectedProfile$",
+                _cachedSelectedProfileReplacement
             },
             {
                 "$stapm_value$",
@@ -1944,7 +1962,7 @@ public sealed partial class ИнформацияPage
             }
         };
     }
-    
+
     private (double avgCoreClk, double avgCoreVolt, string endClkString) CalculateCoreMetrics() // Считает средние значения напряжения и частоты процессора
     {
         var avgCoreClk = 0d;
@@ -1978,7 +1996,7 @@ public sealed partial class ИнформацияPage
 
         return (avgCoreClk, avgCoreVolt, endClkString);
     }
-    
+
     private static float ConvertFromTextToFloat(string input) // Конвертирует из текста в числа с плавающей запятой
     {
         try
@@ -1994,7 +2012,7 @@ public sealed partial class ИнформацияPage
     }
 
     #endregion
-    
+
 
     // Автообновление информации 
     private void StartInfoUpdate() // Начать обновление информации
@@ -2058,23 +2076,23 @@ public sealed partial class ИнформацияPage
             InfoMainCPUFreqGrid.ColumnDefinitions.Clear();
 
             // Получаем список видеокарт с помощью WMI
-            var predictedGpuCount = await Task.Run(() =>
-            {
-                return new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
-                    .Get()
-                    .Cast<ManagementObject>()
-                    .Where(element =>
-                    {
-                        var name = element["Name"]?.ToString() ?? string.Empty;
-                        // Исключаем виртуальные видеокарты (например, Parsec)
-                        return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
-                               !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
-                    })
-                    .ToList(); // Преобразуем в список для удобства работы
-            });
+            cachedGPUList ??= await Task.Run(() =>
+                {
+                    return new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
+                        .Get()
+                        .Cast<ManagementObject>()
+                        .Where(element =>
+                        {
+                            var name = element["Name"]?.ToString() ?? string.Empty;
+                            // Исключаем виртуальные видеокарты (например, Parsec)
+                            return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
+                                   !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
+                        })
+                        .ToList(); // Преобразуем в список для удобства работы
+                });
 
             // Количество видеокарт
-            var gpuCounter = predictedGpuCount.Count;
+            var gpuCounter = cachedGPUList.Count;
 
             // Сохраняем текущее значение _numberOfLogicalProcessors для восстановления позже
             var backupNumberLogical = _numberOfLogicalProcessors;
@@ -2171,7 +2189,7 @@ public sealed partial class ИнформацияPage
             SendSmuCommand.TraceIt_TraceError(e.ToString());
         }
     }
-    private Grid CreateElementButton(int currCore, int selectedGroup, int numberOfCores, string ramModelText) // Создать кнопки отображающие текущие показатели
+    private static Grid CreateElementButton(int currCore, int selectedGroup, int numberOfCores, string ramModelText) // Создать кнопки отображающие текущие показатели
     {
         var elementButton = new Grid
         {
@@ -2248,7 +2266,7 @@ public sealed partial class ИнформацияPage
 
         return elementButton;
     }
-    
+
     #endregion
 
     #endregion
@@ -2265,205 +2283,6 @@ public sealed partial class ИнформацияPage
 
         InfoMainCPUFreqGrid.Children.Clear();
         _ = InfoCpuSectionGridBuilder();
-    }
-
-    private void CPUBannerButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_selectedGroup != 0)
-        {
-            if (CPUBannerButton.Shadow != new ThemeShadow())
-            {
-                CPUBannerButton.Shadow ??= new ThemeShadow();
-                GPUBannerButton.Shadow = null;
-                RAMBannerButton.Shadow = null;
-                BATBannerButton.Shadow = null;
-                PSTBannerButton.Shadow = null;
-                VRMBannerButton.Shadow = null;
-            }
-
-            _selectedGroup = 0;
-            CPUBannerButton.Background = _selectedBrush;
-            CPUBannerButton.BorderBrush = _selectedBorderBrush;
-            GPUBannerButton.Background = _transparentBrush;
-            GPUBannerButton.BorderBrush = _transparentBrush;
-            RAMBannerButton.Background = _transparentBrush;
-            RAMBannerButton.BorderBrush = _transparentBrush;
-            VRMBannerButton.Background = _transparentBrush;
-            VRMBannerButton.BorderBrush = _transparentBrush;
-            BATBannerButton.Background = _transparentBrush;
-            BATBannerButton.BorderBrush = _transparentBrush;
-            PSTBannerButton.Background = _transparentBrush;
-            PSTBannerButton.BorderBrush = _transparentBrush;
-            InfoMainCPUFreqGrid.Children.Clear();
-            _ = InfoCpuSectionGridBuilder();
-        }
-    }
-
-    private void GPUBannerButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_selectedGroup != 1)
-        {
-            if (GPUBannerButton.Shadow != new ThemeShadow())
-            {
-                CPUBannerButton.Shadow = null;
-                GPUBannerButton.Shadow ??= new ThemeShadow();
-                RAMBannerButton.Shadow = null;
-                BATBannerButton.Shadow = null;
-                PSTBannerButton.Shadow = null;
-                VRMBannerButton.Shadow = null;
-            }
-
-            _selectedGroup = 1;
-            CPUBannerButton.Background = _transparentBrush;
-            CPUBannerButton.BorderBrush = _transparentBrush;
-            GPUBannerButton.Background = _selectedBrush;
-            GPUBannerButton.BorderBrush = _selectedBorderBrush;
-            RAMBannerButton.Background = _transparentBrush;
-            RAMBannerButton.BorderBrush = _transparentBrush;
-            VRMBannerButton.Background = _transparentBrush;
-            VRMBannerButton.BorderBrush = _transparentBrush;
-            BATBannerButton.Background = _transparentBrush;
-            BATBannerButton.BorderBrush = _transparentBrush;
-            PSTBannerButton.Background = _transparentBrush;
-            PSTBannerButton.BorderBrush = _transparentBrush;
-            InfoMainCPUFreqGrid.Children.Clear();
-            _ = InfoCpuSectionGridBuilder();
-        }
-    }
-
-    private void RAMBannerButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_selectedGroup != 2)
-        {
-            if (RAMBannerButton.Shadow != new ThemeShadow())
-            {
-                CPUBannerButton.Shadow = null;
-                GPUBannerButton.Shadow = null;
-                RAMBannerButton.Shadow ??= new ThemeShadow();
-                BATBannerButton.Shadow = null;
-                PSTBannerButton.Shadow = null;
-                VRMBannerButton.Shadow = null;
-            }
-
-            _selectedGroup = 2;
-            CPUBannerButton.Background = _transparentBrush;
-            CPUBannerButton.BorderBrush = _transparentBrush;
-            GPUBannerButton.Background = _transparentBrush;
-            GPUBannerButton.BorderBrush = _transparentBrush;
-            RAMBannerButton.Background = _selectedBrush;
-            RAMBannerButton.BorderBrush = _selectedBorderBrush;
-            VRMBannerButton.Background = _transparentBrush;
-            VRMBannerButton.BorderBrush = _transparentBrush;
-            BATBannerButton.Background = _transparentBrush;
-            BATBannerButton.BorderBrush = _transparentBrush;
-            PSTBannerButton.Background = _transparentBrush;
-            PSTBannerButton.BorderBrush = _transparentBrush;
-            InfoMainCPUFreqGrid.Children.Clear();
-            _ = InfoCpuSectionGridBuilder();
-        }
-    }
-
-    private void VRMBannerButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_selectedGroup != 3)
-        {
-            if (VRMBannerButton.Shadow != new ThemeShadow())
-            {
-                CPUBannerButton.Shadow = null;
-                GPUBannerButton.Shadow = null;
-                RAMBannerButton.Shadow = null;
-                BATBannerButton.Shadow = null;
-                PSTBannerButton.Shadow = null;
-                VRMBannerButton.Shadow ??= new ThemeShadow();
-            }
-
-            _selectedGroup = 3;
-            CPUBannerButton.Background = _transparentBrush;
-            CPUBannerButton.BorderBrush = _transparentBrush;
-            GPUBannerButton.Background = _transparentBrush;
-            GPUBannerButton.BorderBrush = _transparentBrush;
-            RAMBannerButton.Background = _transparentBrush;
-            RAMBannerButton.BorderBrush = _transparentBrush;
-            VRMBannerButton.Background = _selectedBrush;
-            VRMBannerButton.BorderBrush = _selectedBorderBrush;
-            BATBannerButton.Background = _transparentBrush;
-            BATBannerButton.BorderBrush = _transparentBrush;
-            PSTBannerButton.Background = _transparentBrush;
-            PSTBannerButton.BorderBrush = _transparentBrush;
-            InfoMainCPUFreqGrid.Children.Clear();
-            _ = InfoCpuSectionGridBuilder();
-        }
-    }
-
-    private void BATBannerButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_selectedGroup != 4)
-        {
-            if (BATBannerButton.Shadow != new ThemeShadow())
-            {
-                CPUBannerButton.Shadow = null;
-                GPUBannerButton.Shadow = null;
-                RAMBannerButton.Shadow = null;
-                BATBannerButton.Shadow ??= new ThemeShadow();
-                PSTBannerButton.Shadow = null;
-                VRMBannerButton.Shadow = null;
-            }
-
-            _selectedGroup = 4;
-            CPUBannerButton.Background = _transparentBrush;
-            CPUBannerButton.BorderBrush = _transparentBrush;
-            GPUBannerButton.Background = _transparentBrush;
-            GPUBannerButton.BorderBrush = _transparentBrush;
-            RAMBannerButton.Background = _transparentBrush;
-            RAMBannerButton.BorderBrush = _transparentBrush;
-            VRMBannerButton.Background = _transparentBrush;
-            VRMBannerButton.BorderBrush = _transparentBrush;
-            BATBannerButton.Background = _selectedBrush;
-            BATBannerButton.BorderBrush = _selectedBorderBrush;
-            PSTBannerButton.Background = _transparentBrush;
-            PSTBannerButton.BorderBrush = _transparentBrush;
-            InfoMainCPUFreqGrid.Children.Clear();
-            _ = InfoCpuSectionGridBuilder();
-        }
-    }
-
-    private void PSTBannerButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_selectedGroup != 5)
-        {
-            if (PSTBannerButton.Shadow != new ThemeShadow())
-            {
-                CPUBannerButton.Shadow = null;
-                GPUBannerButton.Shadow = null;
-                RAMBannerButton.Shadow = null;
-                BATBannerButton.Shadow = null;
-                PSTBannerButton.Shadow ??= new ThemeShadow();
-                VRMBannerButton.Shadow = null;
-            }
-
-            _selectedGroup = 5;
-            CPUBannerButton.Background = _transparentBrush;
-            CPUBannerButton.BorderBrush = _transparentBrush;
-            GPUBannerButton.Background = _transparentBrush;
-            GPUBannerButton.BorderBrush = _transparentBrush;
-            RAMBannerButton.Background = _transparentBrush;
-            RAMBannerButton.BorderBrush = _transparentBrush;
-            VRMBannerButton.Background = _transparentBrush;
-            VRMBannerButton.BorderBrush = _transparentBrush;
-            BATBannerButton.Background = _transparentBrush;
-            BATBannerButton.BorderBrush = _transparentBrush;
-            PSTBannerButton.Background = _selectedBrush;
-            PSTBannerButton.BorderBrush = _selectedBorderBrush;
-            InfoMainCPUFreqGrid.Children.Clear();
-            if (infoCPUSectionComboBox.SelectedIndex != 0)
-            {
-                infoCPUSectionComboBox.SelectedIndex = 0;
-            }
-            else
-            {
-                _ = InfoCpuSectionGridBuilder();
-            }
-        }
     }
 
     private async void InfoRTSSButton_Click(object sender, RoutedEventArgs e)
@@ -2485,11 +2304,11 @@ public sealed partial class ИнформацияPage
             {
                 return;
             }
- 
+
             AppSettings.RTSSMetricsEnabled = infoRTSSButton.IsChecked == true;
             AppSettings.SaveSettings();
         }
-        catch  
+        catch
         {
             //
         }
@@ -2510,274 +2329,136 @@ public sealed partial class ИнформацияPage
         {
             DisposeAllNotifyIcons();
         }
- 
+
         AppSettings.NiIconsEnabled = infoNiIconsButton.IsChecked == true;
         AppSettings.SaveSettings();
     }
 
-    private void CPUFlyout_Opening(object sender, object e)
-    {
-        InfoACPUBigBannerPolygon.Points.Clear();
-        InfoACPUBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-        if (CPUFlyout.IsOpen)
-        {
-            InfoACPUBigBannerPolygon.Points.Clear();
-            InfoACPUBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-            CPU_Expand_FontIcon.Glyph = "\uF0D7";
-            CPU_Expand_Button.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            CPU_Expand_Button.Visibility = Visibility.Collapsed;
-            CPU_Expand_FontIcon.Glyph = "\uF0D8";
-        }
-    }
+    #region Banner Buttons Click Handlers
 
-    private void CPUBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e)
+    private void HandleBannerButtonClick(Button clickedButton, int selectedGroup)
     {
-        if (CPUBannerButton.IsPointerOver)
+        if (_selectedGroup != selectedGroup)
         {
-            CPU_Expand_FontIcon.Glyph = "\uF0D8";
-            CPU_Expand_Button.Visibility = Visibility.Visible;
-            VRM_Expand_Button.Visibility = Visibility.Collapsed;
-            GPU_Expand_Button.Visibility = Visibility.Collapsed;
-            RAM_Expand_Button.Visibility = Visibility.Collapsed;
-            BAT_Expand_Button.Visibility = Visibility.Collapsed;
-            PST_Expand_Button.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            if (CPUFlyout.IsOpen)
+            SetShadow(clickedButton);
+            _selectedGroup = selectedGroup;
+            UpdateButtonAppearance(clickedButton);
+            InfoMainCPUFreqGrid.Children.Clear();
+            if (selectedGroup == 5 && infoCPUSectionComboBox.SelectedIndex != 0)
             {
-                CPU_Expand_Button.Visibility = Visibility.Visible;
-                CPU_Expand_FontIcon.Glyph = "\uF0D7";
+                infoCPUSectionComboBox.SelectedIndex = 0;
             }
             else
             {
-                CPU_Expand_Button.Visibility = Visibility.Collapsed;
+                _ = InfoCpuSectionGridBuilder();
             }
         }
     }
 
-    private void VRMFlyout_Opening(object sender, object e)
+    private void SetShadow(Button clickedButton)
     {
-        InfoAVRMBigBannerPolygon.Points.Clear();
-        InfoAVRMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-        if (VRMFlyout.IsOpen)
+        var allButtons = new[] { CPUBannerButton, GPUBannerButton, RAMBannerButton, VRMBannerButton, BATBannerButton, PSTBannerButton };
+        foreach (var button in allButtons)
         {
-            InfoAVRMBigBannerPolygon.Points.Clear();
-            InfoAVRMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-            VRM_Expand_FontIcon.Glyph = "\uF0D7";
-            VRM_Expand_Button.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            VRM_Expand_Button.Visibility = Visibility.Collapsed;
-            VRM_Expand_FontIcon.Glyph = "\uF0D8";
+            button.Shadow = button == clickedButton ? new ThemeShadow() : null;
         }
     }
 
-    private void VRMBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e)
+    private void UpdateButtonAppearance(Button clickedButton)
     {
-        if (VRMBannerButton.IsPointerOver)
+        var allButtons = new[] { CPUBannerButton, GPUBannerButton, RAMBannerButton, VRMBannerButton, BATBannerButton, PSTBannerButton };
+        foreach (var button in allButtons)
         {
-            VRM_Expand_FontIcon.Glyph = "\uF0D8";
-            CPU_Expand_Button.Visibility = Visibility.Collapsed;
-            VRM_Expand_Button.Visibility = Visibility.Visible;
-            GPU_Expand_Button.Visibility = Visibility.Collapsed;
-            RAM_Expand_Button.Visibility = Visibility.Collapsed;
-            BAT_Expand_Button.Visibility = Visibility.Collapsed;
-            PST_Expand_Button.Visibility = Visibility.Collapsed;
+            button.Background = button == clickedButton ? _selectedBrush : _transparentBrush;
+            button.BorderBrush = button == clickedButton ? _selectedBorderBrush : _transparentBrush;
+        }
+    }
+
+    // Обработчики событий для каждой кнопки
+    private void CPUBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(CPUBannerButton, 0);
+    private void GPUBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(GPUBannerButton, 1);
+    private void RAMBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(RAMBannerButton, 2);
+    private void VRMBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(VRMBannerButton, 3);
+    private void BATBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(BATBannerButton, 4);
+    private void PSTBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(PSTBannerButton, 5);
+
+    #endregion
+
+    #region Flyouts and Banner Buttons handlers
+
+    private static void HandleFlyoutOpening(Flyout flyout, Polygon polygon, FontIcon expandIcon, Button expandButton)
+    {
+        polygon.Points.Clear();
+        polygon.Points.Add(new Windows.Foundation.Point(0, 49));
+
+        if (flyout.IsOpen)
+        {
+            expandIcon.Glyph = "\uF0D7";
+            expandButton.Visibility = Visibility.Visible;
         }
         else
         {
-            if (VRMFlyout.IsOpen)
+            expandButton.Visibility = Visibility.Collapsed;
+            expandIcon.Glyph = "\uF0D8";
+        }
+    }
+
+    private void HandleBannerButtonPointerEntered(Button bannerButton, Flyout flyout, FontIcon expandIcon, Button expandButton)
+    {
+        if (bannerButton.IsPointerOver)
+        {
+            expandIcon.Glyph = "\uF0D8";
+            expandButton.Visibility = Visibility.Visible;
+
+            // Скрываем все остальные кнопки
+            CollapseAllExpandButtons(expandButton);
+        }
+        else
+        {
+            if (flyout.IsOpen)
             {
-                VRM_Expand_Button.Visibility = Visibility.Visible;
-                VRM_Expand_FontIcon.Glyph = "\uF0D7";
+                expandButton.Visibility = Visibility.Visible;
+                expandIcon.Glyph = "\uF0D7";
             }
             else
             {
-                VRM_Expand_Button.Visibility = Visibility.Collapsed;
+                expandButton.Visibility = Visibility.Collapsed;
             }
         }
     }
 
-    private void GPUFlyout_Opening(object sender, object e)
+    private void CollapseAllExpandButtons(Button exceptButton)
     {
-        InfoAGPUBigBannerPolygon.Points.Clear();
-        InfoAGPUBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-        if (GPUFlyout.IsOpen)
+        var allButtons = new[] { CPU_Expand_Button, VRM_Expand_Button, GPU_Expand_Button, RAM_Expand_Button, BAT_Expand_Button, PST_Expand_Button };
+        foreach (var button in allButtons)
         {
-            InfoAGPUBigBannerPolygon.Points.Clear();
-            InfoAGPUBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-            GPU_Expand_FontIcon.Glyph = "\uF0D7";
-            GPU_Expand_Button.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            GPU_Expand_Button.Visibility = Visibility.Collapsed;
-            GPU_Expand_FontIcon.Glyph = "\uF0D8";
-        }
-    }
-
-    private void GPUBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e)
-    {
-        if (GPUBannerButton.IsPointerOver)
-        {
-            GPU_Expand_FontIcon.Glyph = "\uF0D8";
-            CPU_Expand_Button.Visibility = Visibility.Collapsed;
-            VRM_Expand_Button.Visibility = Visibility.Collapsed;
-            GPU_Expand_Button.Visibility = Visibility.Visible;
-            RAM_Expand_Button.Visibility = Visibility.Collapsed;
-            BAT_Expand_Button.Visibility = Visibility.Collapsed;
-            PST_Expand_Button.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            if (GPUFlyout.IsOpen)
+            if (button != exceptButton)
             {
-                GPU_Expand_Button.Visibility = Visibility.Visible;
-                GPU_Expand_FontIcon.Glyph = "\uF0D7";
-            }
-            else
-            {
-                GPU_Expand_Button.Visibility = Visibility.Collapsed;
+                button.Visibility = Visibility.Collapsed;
             }
         }
     }
 
-    private void RAMFlyout_Opening(object sender, object e)
-    {
-        InfoARAMBigBannerPolygon.Points.Clear();
-        InfoARAMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-        if (RAMFlyout.IsOpen)
-        {
-            InfoARAMBigBannerPolygon.Points.Clear();
-            InfoARAMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-            RAM_Expand_FontIcon.Glyph = "\uF0D7";
-            RAM_Expand_Button.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            RAM_Expand_Button.Visibility = Visibility.Collapsed;
-            RAM_Expand_FontIcon.Glyph = "\uF0D8";
-        }
-    }
+    // Обработчики событий для каждого Flyout и BannerButton
+    private void CPUFlyout_Opening(object sender, object e) => HandleFlyoutOpening(CPUFlyout, InfoACPUBigBannerPolygon, CPU_Expand_FontIcon, CPU_Expand_Button);
+    private void CPUBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) => HandleBannerButtonPointerEntered(CPUBannerButton, CPUFlyout, CPU_Expand_FontIcon, CPU_Expand_Button);
 
-    private void RAMBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e)
-    {
-        if (RAMBannerButton.IsPointerOver)
-        {
-            RAM_Expand_FontIcon.Glyph = "\uF0D8";
-            CPU_Expand_Button.Visibility = Visibility.Collapsed;
-            VRM_Expand_Button.Visibility = Visibility.Collapsed;
-            GPU_Expand_Button.Visibility = Visibility.Collapsed;
-            RAM_Expand_Button.Visibility = Visibility.Visible;
-            BAT_Expand_Button.Visibility = Visibility.Collapsed;
-            PST_Expand_Button.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            if (RAMFlyout.IsOpen)
-            {
-                RAM_Expand_Button.Visibility = Visibility.Visible;
-                RAM_Expand_FontIcon.Glyph = "\uF0D7";
-            }
-            else
-            {
-                RAM_Expand_Button.Visibility = Visibility.Collapsed;
-            }
-        }
-    }
+    private void VRMFlyout_Opening(object sender, object e) => HandleFlyoutOpening(VRMFlyout, InfoAVRMBigBannerPolygon, VRM_Expand_FontIcon, VRM_Expand_Button);
+    private void VRMBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) => HandleBannerButtonPointerEntered(VRMBannerButton, VRMFlyout, VRM_Expand_FontIcon, VRM_Expand_Button);
 
-    private void BATFlyout_Opening(object sender, object e)
-    {
-        InfoABATBigBannerPolygon.Points.Clear();
-        InfoABATBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-        if (BATFlyout.IsOpen)
-        {
-            InfoABATBigBannerPolygon.Points.Clear();
-            InfoABATBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-            BAT_Expand_FontIcon.Glyph = "\uF0D7";
-            BAT_Expand_Button.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            BAT_Expand_Button.Visibility = Visibility.Collapsed;
-            BAT_Expand_FontIcon.Glyph = "\uF0D8";
-        }
-    }
+    private void GPUFlyout_Opening(object sender, object e) => HandleFlyoutOpening(GPUFlyout, InfoAGPUBigBannerPolygon, GPU_Expand_FontIcon, GPU_Expand_Button);
+    private void GPUBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) => HandleBannerButtonPointerEntered(GPUBannerButton, GPUFlyout, GPU_Expand_FontIcon, GPU_Expand_Button);
 
-    private void BATBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e)
-    {
-        if (BATBannerButton.IsPointerOver)
-        {
-            BAT_Expand_FontIcon.Glyph = "\uF0D8";
-            CPU_Expand_Button.Visibility = Visibility.Collapsed;
-            VRM_Expand_Button.Visibility = Visibility.Collapsed;
-            GPU_Expand_Button.Visibility = Visibility.Collapsed;
-            RAM_Expand_Button.Visibility = Visibility.Collapsed;
-            BAT_Expand_Button.Visibility = Visibility.Visible;
-            PST_Expand_Button.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            if (BATFlyout.IsOpen)
-            {
-                BAT_Expand_Button.Visibility = Visibility.Visible;
-                BAT_Expand_FontIcon.Glyph = "\uF0D7";
-            }
-            else
-            {
-                BAT_Expand_Button.Visibility = Visibility.Collapsed;
-            }
-        }
-    }
+    private void RAMFlyout_Opening(object sender, object e) => HandleFlyoutOpening(RAMFlyout, InfoARAMBigBannerPolygon, RAM_Expand_FontIcon, RAM_Expand_Button);
+    private void RAMBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) => HandleBannerButtonPointerEntered(RAMBannerButton, RAMFlyout, RAM_Expand_FontIcon, RAM_Expand_Button);
 
-    private void PSTFlyout_Opening(object sender, object e)
-    {
-        InfoAPSTBigBannerPolygon.Points.Clear();
-        InfoAPSTBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-        if (PSTFlyout.IsOpen)
-        {
-            InfoAPSTBigBannerPolygon.Points.Clear();
-            InfoAPSTBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-            PST_Expand_FontIcon.Glyph = "\uF0D7";
-            PST_Expand_Button.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            PST_Expand_Button.Visibility = Visibility.Collapsed;
-            PST_Expand_FontIcon.Glyph = "\uF0D8";
-        }
-    }
+    private void BATFlyout_Opening(object sender, object e) => HandleFlyoutOpening(BATFlyout, InfoABATBigBannerPolygon, BAT_Expand_FontIcon, BAT_Expand_Button);
+    private void BATBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) => HandleBannerButtonPointerEntered(BATBannerButton, BATFlyout, BAT_Expand_FontIcon, BAT_Expand_Button);
 
-    private void PSTBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e)
-    {
-        if (PSTBannerButton.IsPointerOver)
-        {
-            PST_Expand_FontIcon.Glyph = "\uF0D8";
-            CPU_Expand_Button.Visibility = Visibility.Collapsed;
-            VRM_Expand_Button.Visibility = Visibility.Collapsed;
-            GPU_Expand_Button.Visibility = Visibility.Collapsed;
-            RAM_Expand_Button.Visibility = Visibility.Collapsed;
-            BAT_Expand_Button.Visibility = Visibility.Collapsed;
-            PST_Expand_Button.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            if (PSTFlyout.IsOpen)
-            {
-                PST_Expand_Button.Visibility = Visibility.Visible;
-                PST_Expand_FontIcon.Glyph = "\uF0D7";
-            }
-            else
-            {
-                PST_Expand_Button.Visibility = Visibility.Collapsed;
-            }
-        }
-    }
+    private void PSTFlyout_Opening(object sender, object e) => HandleFlyoutOpening(PSTFlyout, InfoAPSTBigBannerPolygon, PST_Expand_FontIcon, PST_Expand_Button);
+    private void PSTBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) => HandleBannerButtonPointerEntered(PSTBannerButton, PSTFlyout, PST_Expand_FontIcon, PST_Expand_Button);
+
+    #endregion
 
     #endregion
 }
