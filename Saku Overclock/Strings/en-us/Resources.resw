@@ -2958,4 +2958,16 @@ methods are available.</value>
   <data name="Update_New_UpdateButton_Cancel.Content" xml:space="preserve">
     <value>Decline</value>
   </data>
+  <data name="Settings_Pivot_About.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Settings_Pivot_Behaviour.Text" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="Settings_Pivot_Keybinds.Text" xml:space="preserve">
+    <value>Keybinds</value>
+  </data>
+  <data name="Settings_Pivot_Theme.Text" xml:space="preserve">
+    <value>Theme</value>
+  </data>
 </root>

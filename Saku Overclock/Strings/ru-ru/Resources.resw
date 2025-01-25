@@ -3028,4 +3028,16 @@ Asus. Может не поддерживаться на
   <data name="Update_New_UpdateButton_Cancel.Content" xml:space="preserve">
     <value>Отказаться</value>
   </data>
+  <data name="Settings_Pivot_About.Text" xml:space="preserve">
+    <value>О нас</value>
+  </data>
+  <data name="Settings_Pivot_Behaviour.Text" xml:space="preserve">
+    <value>Поведение</value>
+  </data>
+  <data name="Settings_Pivot_Keybinds.Text" xml:space="preserve">
+    <value>Клавиши</value>
+  </data>
+  <data name="Settings_Pivot_Theme.Text" xml:space="preserve">
+    <value>Темы</value>
+  </data>
 </root>
