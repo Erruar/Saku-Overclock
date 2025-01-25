@@ -1,10 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Windows.Foundation;
-using Windows.Graphics;
-using Windows.System;
-using Windows.UI.Text;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -15,9 +11,13 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers; 
+using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
+using Windows.Foundation;
+using Windows.Graphics;
+using Windows.System;
+using Windows.UI.Text;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using WindowActivatedEventArgs = Microsoft.UI.Xaml.WindowActivatedEventArgs;
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
@@ -60,8 +60,8 @@ public sealed partial class ShellPage
     }
 
     public ShellPage(ShellViewModel viewModel)
-    { 
-        
+    {
+
         if (SettingsService.HotkeysEnabled)
         {
             _proc = HookCallbackAsync;
@@ -437,7 +437,7 @@ public sealed partial class ShellPage
     private string NextCustomProfile_Switch()
     {
         var nextProfile = string.Empty;
-        ProfileLoad(); 
+        ProfileLoad();
         if (SettingsService.Preset == -1) // У нас был готовый пресет
         {
             if (_profile.Length > 0 &&
@@ -521,7 +521,7 @@ public sealed partial class ShellPage
             }
         }
 
-        SettingsService.SaveSettings(); 
+        SettingsService.SaveSettings();
         SelectedProfile = nextProfile;
         return nextProfile;
     }
@@ -529,13 +529,13 @@ public sealed partial class ShellPage
     private void MandarinSparseUnit()
     {
         int indexRequired;
-        var element = ProfileSetComboBox.SelectedItem as ComboBoxItem; 
+        var element = ProfileSetComboBox.SelectedItem as ComboBoxItem;
         //Required index
         if (!element!.Name.Contains("PremadeSsA"))
         {
             indexRequired = ProfileSetComboBox.SelectedIndex - 1;
             SettingsService.Preset = ProfileSetComboBox.SelectedIndex - 1;
-            SettingsService.SaveSettings(); 
+            SettingsService.SaveSettings();
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 var navigationService = App.GetService<INavigationService>();
@@ -618,7 +618,7 @@ public sealed partial class ShellPage
                     SettingsService.ReapplyOverclockTimer);
             }
 
-            SettingsService.SaveSettings(); 
+            SettingsService.SaveSettings();
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 var navigationService = App.GetService<INavigationService>();
@@ -913,7 +913,7 @@ public sealed partial class ShellPage
         }
 
         SettingsService.RyzenADJline = adjline + " ";
-        SettingsService.SaveSettings(); 
+        SettingsService.SaveSettings();
         MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
             SettingsService.ReapplyOverclockTimer); //false - logging disabled 
         /*   if (profile[indexRequired].enablePstateEditor) { cpu.BtnPstateWrite_Click(); }*/
@@ -992,7 +992,7 @@ public sealed partial class ShellPage
         {
             return Task.CompletedTask;
         }
- 
+
         if (NotificationsService.Notifies == null)
         {
             return Task.CompletedTask;
@@ -1019,15 +1019,15 @@ public sealed partial class ShellPage
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return; //Удалить и не показывать 
                     case "UpdateNAVBAR":
-                    {
-                        HideNavBar();
-                        return; //Удалить и не показывать
-                    }
+                        {
+                            HideNavBar();
+                            return; //Удалить и не показывать
+                        }
                     case "FirstLaunch":
                         HideNavBar();
                         Icon.Visibility = Visibility.Collapsed;
                         ProfileSetup.Visibility = Visibility.Collapsed;
-                        RingerNotifGrid.Visibility = Visibility.Collapsed; 
+                        RingerNotifGrid.Visibility = Visibility.Collapsed;
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return;
                     case "ExitFirstLaunch":
@@ -1037,6 +1037,47 @@ public sealed partial class ShellPage
                         RingerNotifGrid.Visibility = Visibility.Visible;
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return;
+                    case "UPDATE_REQUIRED":
+                        var _newVersion = UpdateChecker.GetNewVersion();
+
+                        notify1.Title = "Shell_Update_App_Title".GetLocalized();
+                        notify1.Msg = "Shell_Update_App_Message".GetLocalized() + " " + UpdateChecker.ParseVersion(_newVersion!.TagName).ToString();
+                        var updateButton = new Button()
+                        {
+                            CornerRadius = new CornerRadius(15),
+                            Content = new Grid
+                            {
+                                Children =
+                                    {
+                                        new FontIcon
+                                        {
+                                            Glyph = "\uE777",
+                                            HorizontalAlignment = HorizontalAlignment.Left
+                                        },
+                                        new TextBlock
+                                        {
+                                            Margin = new Thickness(30, 0, 0, 0),
+                                            Text = "Shell_Update_App_Button".GetLocalized(),
+                                            HorizontalAlignment = HorizontalAlignment.Center
+                                        }
+                                    }
+                            }
+                        };
+                        updateButton.Click += (_,_) => 
+                        {
+                            HideNavBar();
+                            Icon.Visibility = Visibility.Collapsed;
+                            ProfileSetup.Visibility = Visibility.Collapsed;
+                            RingerNotifGrid.Visibility = Visibility.Collapsed; 
+                            var navigationService = App.GetService<INavigationService>();
+                            navigationService.NavigateTo(typeof(ОбновлениеViewModel).FullName!, null, true);
+                            ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления 
+                        };
+                        subcontent = new Grid()
+                        {
+                            Children = { updateButton },
+                        }; 
+                        break;
                 }
 
                 if (notify1.Msg.Contains("DELETEUNAVAILABLE"))
@@ -1089,7 +1130,9 @@ public sealed partial class ShellPage
                     {
                         Process.Start(
                             new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/wiki/FAQ#error-handling")
-                                { UseShellExecute = true });
+                            {
+                                UseShellExecute = true
+                            });
                     };
                     but2.Click += async (_, _) =>
                     {
@@ -1116,7 +1159,7 @@ public sealed partial class ShellPage
                                     }
                                 }
                             });
-                        var string1 = but2.Tag.ToString(); // some content
+                        var string1 = but2.Tag.ToString();
                         var stringFrom = string1?.Split('\"');
                         if (stringFrom != null)
                         {
@@ -1369,7 +1412,7 @@ public sealed partial class ShellPage
 
                 if (SettingsViewModel.VersionId != 5 &&
                     index > 8) //Если 9 уведомлений - очистить для оптимизации производительности
-                { 
+                {
                     ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                     return;
                 }
@@ -1380,7 +1423,7 @@ public sealed partial class ShellPage
             if (contains)
             {
                 GetProfileInit();
-            } 
+            }
 
             _compareList = NotificationsService.Notifies.Count;
         });
@@ -1407,7 +1450,7 @@ public sealed partial class ShellPage
         foreach (var element in NavigationViewControl.MenuItems)
         {
             ((NavigationViewItem)element).Visibility = Visibility.Visible;
-        } 
+        }
 
         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
     }
@@ -1416,7 +1459,7 @@ public sealed partial class ShellPage
     #endregion
 
     private void Theme_Loader()
-    { 
+    {
         try
         {
             var themeMobil = App.GetService<SettingsViewModel>();
@@ -1447,7 +1490,7 @@ public sealed partial class ShellPage
 );
 
         }
-    } 
+    }
     private void ProfileSave()
     {
         try
@@ -1482,37 +1525,37 @@ public sealed partial class ShellPage
         {
             JsonRepair('p');
         }
-    } 
+    }
     private void JsonRepair(char file)
     {
         switch (file)
-        { 
+        {
             case 'p':
-            {
-                _profile = [];
-                try
                 {
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                        JsonConvert.SerializeObject(_profile));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\profile.json");
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                        JsonConvert.SerializeObject(_profile));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                }
+                    _profile = [];
+                    try
+                    {
+                        Directory.CreateDirectory(
+                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                        File.WriteAllText(
+                            Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                            JsonConvert.SerializeObject(_profile));
+                    }
+                    catch
+                    {
+                        File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                    @"\SakuOverclock\profile.json");
+                        Directory.CreateDirectory(
+                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                        File.WriteAllText(
+                            Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                            JsonConvert.SerializeObject(_profile));
+                        App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
+                            AppContext.BaseDirectory));
+                    }
 
-                break;
-            } 
+                    break;
+                }
         }
     }
 
@@ -1554,16 +1597,16 @@ public sealed partial class ShellPage
                 {
                     // Переключить между своими пресетами
                     case VirtualKey.W:
-                    {
-                        //Создать уведомление
-                        var nextCustomProfile = NextCustomProfile_Switch();
-                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextCustomProfile);
-                        MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
-                            "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
-                            InfoBarSeverity.Informational);
-                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
-                        break;
-                    }
+                        {
+                            //Создать уведомление
+                            var nextCustomProfile = NextCustomProfile_Switch();
+                            ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextCustomProfile);
+                            MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
+                                "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
+                                InfoBarSeverity.Informational);
+                            MainWindow.Applyer.ApplyWithoutAdjLine(false);
+                            break;
+                        }
                     // Переключить между готовыми пресетами
                     case VirtualKey.P:
                         var nextPremadeProfile = NextPremadeProfile_Switch();
@@ -1574,7 +1617,7 @@ public sealed partial class ShellPage
                         MainWindow.Applyer.ApplyWithoutAdjLine(false);
                         break;
                     // Переключить состояние RTSS
-                    case VirtualKey.R: 
+                    case VirtualKey.R:
                         if (SettingsService.RTSSMetricsEnabled)
                         {
                             var iconGrid = new Grid
@@ -1603,7 +1646,7 @@ public sealed partial class ShellPage
                             var navigationService = App.GetService<INavigationService>();
                             navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
                             SettingsService.RTSSMetricsEnabled = false;
-                            SettingsService.SaveSettings(); 
+                            SettingsService.SaveSettings();
                         }
                         else
                         {
@@ -1622,7 +1665,7 @@ public sealed partial class ShellPage
                             };
                             ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS " + "Cooler_Service_Enabled/Content".GetLocalized(), null, iconGrid);
                             SettingsService.RTSSMetricsEnabled = true;
-                            SettingsService.SaveSettings(); 
+                            SettingsService.SaveSettings();
                             var navigationService = App.GetService<INavigationService>();
                             navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!, null, true);
                         }
@@ -1834,7 +1877,7 @@ public sealed partial class ShellPage
             return;
         }
 
-        SettingsService.SaveSettings(); 
+        SettingsService.SaveSettings();
         ProfileSetButton.IsEnabled = ProfileSetComboBox.SelectedIndex != SettingsService.Preset + 1;
     }
 
@@ -1860,7 +1903,7 @@ public sealed partial class ShellPage
         {
             var notify1 = list[i];
             if (sender.Title == notify1.Title && sender.Message == notify1.Msg && sender.Severity == notify1.Type)
-            { 
+            {
                 NotificationsService.Notifies?.RemoveAt(i);
                 NotificationsService.SaveNotificationsSettings();
                 return;
@@ -1919,7 +1962,7 @@ public sealed partial class ShellPage
 
             if (button != null)
             {
-                button.IsEnabled = true; 
+                button.IsEnabled = true;
                 NotificationsService.Notifies = [];
                 NotificationsService.SaveNotificationsSettings();
             }
