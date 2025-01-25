@@ -18,6 +18,7 @@ public sealed partial class MainWindow
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue;
     private readonly UISettings _settings; 
     private static TaskbarIcon? _ni;
+    private static TaskbarIcon? _ni_backup;
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
     public MainWindow()
     {
@@ -83,16 +84,20 @@ public sealed partial class MainWindow
     #region Tray utils 
     public static void Set_ContextMenu_Tray()
     {
-        _ni = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
+        _ni_backup?.Dispose();
+        _ni!.Visibility = Visibility.Visible; 
+        _ni.ForceCreate();
     }
     public static void Remove_ContextMenu_Tray()
     { 
         if (_ni == null) { return; }
-        _ni.Dispose();
-        _ni = new TaskbarIcon
+        _ni.Visibility = Visibility.Collapsed;
+        _ni_backup?.Dispose();
+        _ni_backup = new TaskbarIcon
         {
             ToolTipText = "Saku Overclock©\nContext menu is disabled",
-            Icon = new System.Drawing.Icon("Assets/WindowIcon.ico")
+            Icon = new System.Drawing.Icon("Assets/WindowIcon.ico"),
+            Id = Guid.NewGuid()
         };
         XamlUICommand xamlUiCommand = new();
         xamlUiCommand.ExecuteRequested += static (_, _) =>
@@ -106,8 +111,8 @@ public sealed partial class MainWindow
                 App.MainWindow.Show(); App.MainWindow.BringToFront(); App.MainWindow.WindowState = WindowState.Normal;
             }
         };
-        _ni.LeftClickCommand = xamlUiCommand;
-        _ni.ForceCreate();
+        _ni_backup.LeftClickCommand = xamlUiCommand;
+        _ni_backup.ForceCreate();
     }
     private void Dispose_Tray(object sender, WindowEventArgs args)
     {
