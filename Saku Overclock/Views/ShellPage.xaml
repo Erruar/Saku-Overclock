@@ -74,9 +74,9 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ca;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem x:Uid="Shell_Кулер" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ОбучениеViewModel">
+                    <NavigationViewItem x:Uid="Shell_Главная" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ОбучениеViewModel">
                         <NavigationViewItem.Icon>
-                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ca;"/>
+                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82F;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
                 </NavigationView.MenuItems>
