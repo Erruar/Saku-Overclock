@@ -94,5 +94,11 @@ public sealed partial class ОбновлениеPage
         {
             SendSmuCommand.TraceIt_TraceError(exception.ToString());
         }
+    } 
+    private void Cancel_Click(object sender, RoutedEventArgs e)
+    {
+        ОбучениеPage.ShowNavbarAndControls();
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
     }
 }

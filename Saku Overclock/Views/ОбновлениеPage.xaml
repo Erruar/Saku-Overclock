@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local1="using:Saku_Overclock.ViewModels"
     mc:Ignorable="d">
 
-    <Grid Margin="-48,-60,-40,0" x:Name="ContentArea">
+    <Grid Margin="-48,-55,-40,0" x:Name="ContentArea">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -70,6 +70,7 @@ CornerRadius="8" HorizontalAlignment="Stretch" Height="300" VerticalAlignment="T
                 <TextBlock FontWeight="Bold" x:Uid="Update_New_Title" Margin="0,0,0,-10" TextWrapping="Wrap" Text="Every update of the app makes it better. You should update it!"/>
                 <TextBlock Padding="0,9,0,0" x:Uid="Update_New_SubTitle" FontWeight="Light" Margin="0,0,0,-10" TextWrapping="Wrap" Text="If you don't want to update the app - disable the internet and reopen Saku Overclock©. Then disable auto-updates and enable internet back."/>
             </StackPanel>
+            <Button x:Uid="Update_New_UpdateButton_Cancel" Grid.Column="1" Click="Cancel_Click" HorizontalAlignment="Right" Width="170" CornerRadius="8" Background="Transparent" BorderBrush="Transparent" Margin="0,0,10,-63" Content="Отказаться"/>
             <Button Click="Update_Click" Grid.Column="1" HorizontalAlignment="Right" Width="200" CornerRadius="25,25,25,25" Height="50" Style="{StaticResource AccentButtonStyle}" >
                 <Grid HorizontalAlignment="Stretch" Width="190">
                     <FontIcon HorizontalAlignment="Left" FontWeight="Bold" Glyph="&#xE896;" />
