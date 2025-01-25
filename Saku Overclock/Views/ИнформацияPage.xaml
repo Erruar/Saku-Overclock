@@ -60,7 +60,7 @@ StrokeThickness="1.5" >
                                         </LinearGradientBrush>
                                     </Polygon.Fill>
                                 </Polygon>
-                                <TextBlock x:Name="infoACPUUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="13" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="infoACPUUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
                             </Grid> 
                             <StackPanel Width="90" HorizontalAlignment="Left" Margin="60,0,0,0" Orientation="Vertical">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" x:Uid="InfoCPU" Text="ЦП"/>
