@@ -1,10 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Text;
+using Microsoft.UI.Xaml.Controls;
 using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using Application = Microsoft.UI.Xaml.Application;
 using FileMode = System.IO.FileMode;
 using Package = Windows.ApplicationModel.Package;
@@ -12,6 +15,8 @@ using Package = Windows.ApplicationModel.Package;
 namespace Saku_Overclock.SMUEngine;
 public abstract class UpdateChecker
 {
+    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private static readonly Version CurrentVersion = RuntimeHelper.IsMSIX ?
         new Version(Package.Current.Id.Version.Major,
             Package.Current.Id.Version.Minor,
@@ -56,8 +61,22 @@ public abstract class UpdateChecker
         _updateNewVersion = latestRelease.Release;
         if (latestRelease.Version > CurrentVersion)
         {
-            var navigationService = App.GetService<INavigationService>();
-            navigationService.NavigateTo(typeof(ОбновлениеViewModel).FullName!, null, true);
+            if (AppSettings.CheckForUpdates)
+            {
+                var navigationService = App.GetService<INavigationService>();
+                navigationService.NavigateTo(typeof(ОбновлениеViewModel).FullName!, null, true);
+            }
+            else 
+            {
+                NotificationsService.Notifies ??= [];
+                NotificationsService.Notifies.Add(new Notify
+                {
+                    Title = "UPDATE_REQUIRED",
+                    Msg = "DEBUG MESSAGE",
+                    Type = InfoBarSeverity.Informational
+                });
+                NotificationsService.SaveNotificationsSettings();
+            }
         }
     }
     public static Release? GetNewVersion()
