@@ -243,11 +243,11 @@ public sealed partial class ИнформацияPage
         var g = Graphics.FromImage(bitmap);
         // Задаём цвет фона и форму
         var bgColor = ColorTranslator.FromHtml("#" + element.Color);
-        //System.Drawing.Brush bgBrush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb((int)(element.BgOpacity * 255), bgColor));
+        var bgSecColor = ColorTranslator.FromHtml("#" + element.SecondColor);
         var bgBrush = new LinearGradientBrush(
             new Rectangle(0, 0, 32, 32),
             Color.FromArgb((int)(element.BgOpacity * 255), bgColor),
-            Color.FromArgb((int)(element.BgOpacity * 255), Color.Blue),
+            Color.FromArgb((int)(element.BgOpacity * 255), bgSecColor),
             LinearGradientMode.Horizontal);
         switch (element.IconShape)
         {
@@ -457,10 +457,10 @@ public sealed partial class ИнформацияPage
         {
             var parts = newText.Split('.');
             var wholePartLength = parts[0].Length; 
-            switch (wholePartLength)
+            switch (wholePartLength) // TrayMon© - Разработка от Erruar, поэтому вам не стоит разбираться в том, как она работает. Все значения были скомпилированы в функции при помощи NumPy
             {
                 case 1: 
-                    var offset1 = fontSize == 14 ? 3.3f : fontSize == 13 ? -3.3f : 0f;
+                    var offset1 = (int)fontSize == 14 ? 3.3f : (int)fontSize == 13 ? -3.3f : 0f;
                     X = - 0.0715488215f * fontSize * fontSize * fontSize
                         + 2.83311688f * fontSize * fontSize
                         - 35.2581049f * fontSize + 135.071284f
@@ -468,7 +468,7 @@ public sealed partial class ИнформацияPage
                     newText_T = fontSize > 13 ? parts[0] : newText;
                     break;
                 case 2:
-                    var offset2 = fontSize == 10 ? 2.17329f : fontSize == 9 ? -2.17329f : 0f;
+                    var offset2 = (int)fontSize == 10 ? 2.17329f : (int)fontSize == 9 ? -2.17329f : 0f;
                     X =  0.0614478114f * fontSize * fontSize * fontSize
                        - 2.48160173f * fontSize * fontSize
                        + 31.8379028f * fontSize - 132.756133f
@@ -545,6 +545,28 @@ public sealed partial class ИнформацияPage
             SendSmuCommand.TraceIt_TraceError(ex.ToString());
             App.GetService<IAppNotificationService>()
                 .Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory)); // Вывести ошибку
+        }
+    }
+
+    private void SetThemeAccentTextForeground()
+    {
+        if (tbCPUFreq.Foreground is SolidColorBrush brush)
+        {
+            if (brush.Color == Windows.UI.Color.FromArgb(228, 0, 0, 0))
+            {
+                infoACPUUsageBannerPolygonText.Foreground = brush;
+                infoACPUUsageBigBannerPolygonText.Foreground = brush;
+                infoAGPUUsageBannerPolygonText.Foreground = brush;
+                infoAGPUUsageBigBannerPolygonText.Foreground = brush;
+                infoAVRMUsageBannerPolygonText.Foreground = brush;
+                infoAVRMUsageBigBannerPolygonText.Foreground = brush;
+                infoARAMUsageBannerPolygonText.Foreground = brush;
+                infoARAMUsageBigBannerPolygonText.Foreground = brush;
+                infoABATUsageBannerPolygonText.Foreground = brush;
+                infoABATUsageBigBannerPolygonText.Foreground = brush;
+                infoAPSTUsageBannerPolygonText.Foreground = brush;
+                infoAPSTUsageBigBannerPolygonText.Foreground = brush;
+            }
         }
     }
     public static async Task<int> GetCpuCoresAsync()
@@ -934,6 +956,7 @@ public sealed partial class ИнформацияPage
             _selectedBrush = CPUBannerButton.Background;
             _selectedBorderBrush = CPUBannerButton.BorderBrush;
             _transparentBrush = GPUBannerButton.Background;
+            SetThemeAccentTextForeground();
             await GetCpuInfo();
             await GetRamInfo();
             ReadPstate();
