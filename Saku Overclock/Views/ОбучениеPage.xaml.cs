@@ -30,7 +30,7 @@ public sealed partial class ОбучениеPage : Page
         NotificationsService.SaveNotificationsSettings();
         MainWindow.Remove_ContextMenu_Tray();
     }
-    private static void ShowNavbarAndControls()
+    public static void ShowNavbarAndControls()
     {
         NotificationsService.Notifies ??= [];
         NotificationsService.Notifies.Add(new()
