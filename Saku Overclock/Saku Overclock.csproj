@@ -257,6 +257,15 @@
     <None Update="AWinIo64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="CrashHandler.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CrashHandler.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CrashHandler.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="inpoutx64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
