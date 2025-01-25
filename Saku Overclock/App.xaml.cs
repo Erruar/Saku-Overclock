@@ -134,6 +134,12 @@ public partial class App
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "CrashHandler.exe",
+            Arguments = $"-message {e} -theme dark -appName \"Saku Overclock\" -iconPath WindowIcon.ico",
+            Verb = "runas" // Запуск от имени администратора
+        });
         var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                           @"\SakuOverclock\ERRORlog.txt";
         var sw = new StreamWriter(logFilePath, true);
