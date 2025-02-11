@@ -209,7 +209,7 @@ public sealed partial class MainWindow
         {
             if (SettingsService.ReapplyLatestSettingsOnAppLaunch)
             {
-                /*var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock, SettingsService.ReapplyOverclockTimer);
+                /*var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock, AppSettings.ReapplyOverclockTimer);
                 /*cpu.Play_Invernate_QuickSMU(1);#1#*/
                 var profileFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                                              "\\SakuOverclock\\profile.json";
