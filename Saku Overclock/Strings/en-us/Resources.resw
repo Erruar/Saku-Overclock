@@ -413,10 +413,7 @@ All presets have autosaving</value>
     <value>Balance</value>
   </data>
   <data name="Preset_Balance_Desc" xml:space="preserve">
-    <value>This preset will allow your
-processor to be powerful without
-wasting many percent of the
-battery</value>
+    <value>This preset will allow your processor to be powerful without wasting many percent of the battery</value>
   </data>
   <data name="Preset_Balance_Name.Text" xml:space="preserve">
     <value>Balance</value>
@@ -425,9 +422,7 @@ battery</value>
     <value>Eco</value>
   </data>
   <data name="Preset_Eco_Desc" xml:space="preserve">
-    <value>This preset will save you battery
-percentage, without significant
-loss of performance.</value>
+    <value>This preset will save you battery percentage, without significant loss of performance.</value>
   </data>
   <data name="Preset_Eco_Name.Text" xml:space="preserve">
     <value>Eco</value>
@@ -436,9 +431,7 @@ loss of performance.</value>
     <value>Maximum</value>
   </data>
   <data name="Preset_Max_Desc" xml:space="preserve">
-    <value>This preset will unlock the maximum
-of your processor and remove all it`s
-limitations!</value>
+    <value>This preset will unlock the maximum of your processor and remove all it`s limitations!</value>
   </data>
   <data name="Preset_Max_Name.Text" xml:space="preserve">
     <value>Maximum</value>
@@ -447,8 +440,7 @@ limitations!</value>
     <value>Minimum</value>
   </data>
   <data name="Preset_Min_Desc" xml:space="preserve">
-    <value>This preset will allow your
-processor to be really cold!</value>
+    <value>This preset will allow your processor to be really cold!</value>
   </data>
   <data name="Preset_Min_Name.Text" xml:space="preserve">
     <value>Minimum</value>
@@ -460,9 +452,7 @@ processor to be really cold!</value>
     <value>Speed</value>
   </data>
   <data name="Preset_Speed_Desc" xml:space="preserve">
-    <value>This preset will allow you to be
-more productive due to improved
-performance</value>
+    <value>This preset will allow you to be more productive due to improved performance</value>
   </data>
   <data name="Preset_Speed_Name.Text" xml:space="preserve">
     <value>Speed</value>
