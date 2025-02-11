@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
@@ -7,7 +8,7 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts.Services;
 using Saku_Overclock.Core.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Models; 
+using Saku_Overclock.Models;
 using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
@@ -41,6 +42,13 @@ public partial class App
 
         return service;
     }
+
+    // Глобальный экземпляр фонового обновлятора, зарегистрированный как синглтон через DI.
+    public static IBackgroundDataUpdater BackgroundUpdater
+    {
+        get; private set;
+    }
+    private static readonly CancellationTokenSource GlobalCts = new();
 
     public static IntPtr Hwnd => WindowNative.GetWindowHandle(MainWindow);
 
@@ -97,6 +105,15 @@ public partial class App
                 services.AddSingleton<IActivationService, ActivationService>();
                 services.AddSingleton<IPageService, PageService>();
                 services.AddSingleton<INavigationService, NavigationService>();
+                services.AddSingleton<RyzenadjProvider>();
+                services.AddSingleton<ZenstatesCoreProvider>();
+                services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
+                services.AddSingleton<IDataProvider, CompositeDataProvider>(provider =>
+                {
+                    var ryzen = provider.GetRequiredService<RyzenadjProvider>();
+                    var zen = provider.GetRequiredService<ZenstatesCoreProvider>();
+                    return new CompositeDataProvider(ryzen, zen);
+                });
                 // Views and ViewModels
                 services.AddTransient<SettingsViewModel>();
                 services.AddTransient<SettingsPage>();
@@ -134,34 +151,26 @@ public partial class App
 
     private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
+        var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
+        var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
+        var sakuLogo = Path.Combine(pathToProgramDirectory!, "WindowIcon.ico");
         Process.Start(new ProcessStartInfo
         {
             FileName = "CrashHandler.exe",
-            Arguments = $"-message {e} -theme dark -appName \"Saku Overclock\" -iconPath WindowIcon.ico",
-            Verb = "runas" // Запуск от имени администратора
+            Arguments = $"{e} -theme dark -appName \"Saku Overclock\" -iconPath \"{sakuLogo}\"",
+            Verb = "runas" 
         });
-        var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                          @"\SakuOverclock\ERRORlog.txt";
-        var sw = new StreamWriter(logFilePath, true);
-        sw.WriteLine(e.ToString());
     }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        try
-        {
-            base.OnLaunched(args);
-            GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(),
-                AppContext.BaseDirectory));
+        BackgroundUpdater = GetService<IBackgroundDataUpdater>();
+        _ = BackgroundUpdater.StartAsync(GlobalCts.Token);
+        base.OnLaunched(args);
+        GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(),
+            AppContext.BaseDirectory));
 
-           await GetService<IActivationService>().ActivateAsync(args);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.ToString());
-            Current.Exit();
-        }
+        await GetService<IActivationService>().ActivateAsync(args);
     }
-
     #endregion
 }
