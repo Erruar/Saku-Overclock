@@ -23,6 +23,26 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Styles\OptionsVisualizer.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\BatteryControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\NavigationSelector.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\ProfileSelector.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Views\ОбучениеPage.xaml">
       <SubType>Designer</SubType>
     </Page>
