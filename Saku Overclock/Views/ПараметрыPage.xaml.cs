@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
-using Saku_Overclock.SMUEngine;
+using Saku_Overclock.SMUEngine; 
 using Saku_Overclock.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
@@ -280,58 +280,7 @@ public sealed partial class ПараметрыPage
             {
                 ProfileCOM.Items.Add(currProfile.profilename);
             }
-        }
-        /*new ComboBoxItem
-                {
-                    Content = new Grid 
-                    { 
-                        Margin = new Thickness(0, -10, 0, -10),
-                        Children = 
-                        { 
-                            new TextBlock
-                            {
-                                Margin = new Thickness(0, -3, 0, 0),
-                                HorizontalAlignment = HorizontalAlignment.Left,
-                                VerticalAlignment = VerticalAlignment.Center,
-                                Text = currProfile.profilename
-                            },
-                            new StackPanel
-                            {
-                                HorizontalAlignment = HorizontalAlignment.Center,
-                                VerticalAlignment = VerticalAlignment.Bottom,
-                                Margin = new Thickness(25, 20, 0, 0),
-                                RenderTransform = new ScaleTransform {ScaleX = 0.9,ScaleY = 0.9},
-                                Orientation = Orientation.Horizontal,
-                                Children =
-                                {
-                                    new TextBlock
-                                    {
-                                        Text = " " + currProfile.cpu2value.ToString(CultureInfo.InvariantCulture) + "W",
-                                        Foreground = new SolidColorBrush(new Color { A = 255, B = 154, G = 143, R = 178})
-                                    },
-                                    new TextBlock
-                                    {
-                                        Text = "-" 
-                                    },
-                                    new TextBlock
-                                    {
-                                        Text = currProfile.cpu3value.ToString(CultureInfo.InvariantCulture) + "W",
-                                        Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 112, R = 194})
-                                    },
-                                    new TextBlock
-                                    {
-                                        Text = "-" 
-                                    },
-                                    new TextBlock
-                                    {
-                                        Text = currProfile.vrm1value.ToString(CultureInfo.InvariantCulture) + "A",
-                                        Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 23, R = 162})
-                                    }
-                                }
-                            }
-                        },
-                    } 
-                }*/
+        } 
 
         if (AppSettings.Preset > _profile.Length)
         {
@@ -353,9 +302,7 @@ public sealed partial class ПараметрыPage
                     ProfileCOM.SelectedIndex = _indexprofile + 1;
                 }
             }
-        }
-
-        //MainInit(_indexprofile);
+        } 
         _waitforload = false;
     }
 
@@ -1328,7 +1275,7 @@ public sealed partial class ПараметрыPage
         richEditBox.Document.ApplyDisplayUpdates();
     }
 
-    private static int FromValueToUpperFive(double value) => (int)Math.Ceiling(value / 5) * 5;
+    public static int FromValueToUpperFive(double value) => (int)Math.Ceiling(value / 5) * 5;
 
     private uint GetCoreMask(int coreIndex)
     {
@@ -1367,13 +1314,13 @@ public sealed partial class ПараметрыPage
     private void CollectSearchItems()
     {
         _searchItems.Clear();
-        var expanders = FindVisualChildren<Expander>(MainScroll);
+        var expanders = Helpers.VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
         foreach (var expander in expanders)
         {
-            var stackPanels = FindVisualChildren<StackPanel>(expander);
+            var stackPanels = Helpers.VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
             foreach (var stackPanel in stackPanels)
             {
-                var textBlocks = FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15);
+                var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15);
                 foreach (var textBlock in textBlocks)
                 {
                     if (!string.IsNullOrWhiteSpace(textBlock.Text) &&
@@ -1390,57 +1337,27 @@ public sealed partial class ПараметрыPage
                 }
             }
         }
-    }
-
-
-    private static IEnumerable<T> FindVisualChildren<T>(DependencyObject parent) where T : DependencyObject
-    {
-        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
-        {
-            var child = VisualTreeHelper.GetChild(parent, i);
-            if (child is T t)
-            {
-                yield return t;
-            }
-
-            foreach (var childOfChild in FindVisualChildren<T>(child))
-            {
-                yield return childOfChild;
-            }
-        }
-    }
+    } 
 
     private void ResetVisibility()
     {
-        var expanders = FindVisualChildren<Expander>(MainScroll);
+        var expanders = Helpers.VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
         foreach (var expander in expanders)
         {
             _isSearching = true;
             expander.IsExpanded = true;
-            var stackPanels = FindVisualChildren<StackPanel>(expander);
+            var stackPanels = Helpers.VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
             foreach (var stackPanel in stackPanels)
             {
                 stackPanel.Visibility = Visibility.Visible;
-                var adjacentGrid = FindAdjacentGrid(stackPanel);
+                var adjacentGrid = Helpers.VisualTreeHelper.FindAdjacentGrid(stackPanel);
                 if (adjacentGrid != null)
                 {
                     adjacentGrid.Visibility = Visibility.Visible;
                 }
             }
         }
-    }
-
-    private static Grid? FindAdjacentGrid(StackPanel stackPanel)
-    {
-        var parent = VisualTreeHelper.GetParent(stackPanel) as Panel;
-        if (parent == null)
-        {
-            return null;
-        }
-
-        var index = parent.Children.IndexOf(stackPanel);
-        return index < 0 || index >= parent.Children.Count - 1 ? null : parent.Children[index + 1] as Grid;
-    }
+    } 
 
     private void SuggestBox_OnTextChanged(AutoSuggestBox? sender, AutoSuggestBoxTextChangedEventArgs? args)
     {
@@ -1481,18 +1398,18 @@ public sealed partial class ПараметрыPage
             // Сбросить скрытое
             ResetVisibility();
 
-            var expanders = FindVisualChildren<Expander>(MainScroll);
+            var expanders = Helpers.VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
             foreach (var expander in expanders)
             {
-                var stackPanels = FindVisualChildren<StackPanel>(expander);
+                var stackPanels = Helpers.VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
                 var anyVisible = false;
 
                 foreach (var stackPanel in stackPanels)
                 {
-                    var textBlocks = FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15);
+                    var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15);
                     var containsText = textBlocks.Any(tb => tb.Text.Contains(searchText, StringComparison.CurrentCultureIgnoreCase));
 
-                    var containsControl = FindVisualChildren<CheckBox>(stackPanel).Any();
+                    var containsControl = Helpers.VisualTreeHelper.FindVisualChildren<CheckBox>(stackPanel).Any();
 
                     // Если текст и элементы управления найдены, делаем StackPanel видимой
                     if (containsText && containsControl)
@@ -1501,14 +1418,14 @@ public sealed partial class ПараметрыPage
                         anyVisible = true;
 
                         // Второй проход: делаем видимыми все дочерние элементы
-                        SetAllChildrenVisibility(stackPanel, Visibility.Visible);
+                        Helpers.VisualTreeHelper.SetAllChildrenVisibility(stackPanel, Visibility.Visible);
                     }
                     else
                     {
                         stackPanel.Visibility = Visibility.Collapsed;
                     }
 
-                    var adjacentGrid = FindAdjacentGrid(stackPanel);
+                    var adjacentGrid = Helpers.VisualTreeHelper.FindAdjacentGrid(stackPanel);
                     if (adjacentGrid != null)
                     {
                         adjacentGrid.Visibility = stackPanel.Visibility;
@@ -1518,7 +1435,7 @@ public sealed partial class ПараметрыPage
                 {
                     if (stackPanel1.Visibility == Visibility.Visible)
                     {
-                        SetAllChildrenVisibility(stackPanel1, Visibility.Visible);
+                        Helpers.VisualTreeHelper.SetAllChildrenVisibility(stackPanel1, Visibility.Visible);
                     }
                 }
 
@@ -1530,15 +1447,6 @@ public sealed partial class ПараметрыPage
             }
         }
         _isSearching = false;
-    }
-
-    private static void SetAllChildrenVisibility(StackPanel parent, Visibility visibility)
-    {
-        var stackPanels = FindVisualChildren<StackPanel>(parent);
-        foreach (var stackPanel in stackPanels)
-        {
-            stackPanel.Visibility = visibility;
-        }
     }
 
     private void FilterButton_Checked(object sender, RoutedEventArgs e)
@@ -1586,18 +1494,18 @@ public sealed partial class ПараметрыPage
         {
             ResetVisibility();
         }
-        var expanders = FindVisualChildren<Expander>(MainScroll);
+        var expanders = Helpers.VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
         foreach (var expander in expanders)
         {
-            var stackPanels = FindVisualChildren<StackPanel>(expander);
+            var stackPanels = Helpers.VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
             var anyVisible = false;
 
             foreach (var stackPanel in stackPanels)
             {
-                var textBlocks = FindVisualChildren<FontIcon>(stackPanel).Where(tb => tb.FontSize == 15);
-                var containsText = textBlocks.Any(tb => FindAjantedFontIcons(tb, glyphs));
+                var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<FontIcon>(stackPanel).Where(tb => tb.FontSize == 15);
+                var containsText = textBlocks.Any(tb => Helpers.VisualTreeHelper.FindAjantedFontIcons(tb, glyphs));
 
-                var containsControl = FindVisualChildren<CheckBox>(stackPanel).Any();
+                var containsControl = Helpers.VisualTreeHelper.FindVisualChildren<CheckBox>(stackPanel).Any();
 
                 // Если текст и элементы управления найдены, делаем StackPanel видимой
                 if (containsText && containsControl)
@@ -1606,14 +1514,14 @@ public sealed partial class ПараметрыPage
                     anyVisible = true;
 
                     // Второй проход: делаем видимыми все дочерние элементы
-                    SetAllChildrenVisibility(stackPanel, Visibility.Visible);
+                    Helpers.VisualTreeHelper.SetAllChildrenVisibility(stackPanel, Visibility.Visible);
                 }
                 else
                 {
                     stackPanel.Visibility = Visibility.Collapsed;
                 }
 
-                var adjacentGrid = FindAdjacentGrid(stackPanel);
+                var adjacentGrid = Helpers.VisualTreeHelper.FindAdjacentGrid(stackPanel);
                 if (adjacentGrid != null)
                 {
                     adjacentGrid.Visibility = stackPanel.Visibility;
@@ -1623,7 +1531,7 @@ public sealed partial class ПараметрыPage
             {
                 if (stackPanel1.Visibility == Visibility.Visible)
                 {
-                    SetAllChildrenVisibility(stackPanel1, Visibility.Visible);
+                    Helpers.VisualTreeHelper.SetAllChildrenVisibility(stackPanel1, Visibility.Visible);
                 }
             }
 
@@ -1634,18 +1542,6 @@ public sealed partial class ПараметрыPage
             }
         }
         _isSearching = false;
-    }
-
-    private static bool FindAjantedFontIcons(FontIcon fontIcon, List<string> glyphs)
-    {
-        foreach (var glyph in glyphs)
-        {
-            if (fontIcon.Glyph.Contains(glyph))
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void FilterButtons_ResetButton_Click(object? sender, RoutedEventArgs? e)
