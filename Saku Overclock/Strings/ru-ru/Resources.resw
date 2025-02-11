@@ -417,9 +417,7 @@
     <value>Баланс мощности</value>
   </data>
   <data name="Preset_Balance_Desc" xml:space="preserve">
-    <value>Этот пресет позволит вашему
-процессору быть максимально 
-сбалансированным</value>
+    <value>Этот пресет позволит вашему процессору быть максимально сбалансированным</value>
   </data>
   <data name="Preset_Balance_Name.Text" xml:space="preserve">
     <value>Баланс</value>
@@ -428,9 +426,7 @@
     <value>Экономия энергии</value>
   </data>
   <data name="Preset_Eco_Desc" xml:space="preserve">
-    <value>Этот пресет позволит сэкономить 
-вам проценты аккумулятора, без 
-существенной потери производительности</value>
+    <value>Этот пресет позволит сэкономить вам проценты аккумулятора, без существенной потери производительности</value>
   </data>
   <data name="Preset_Eco_Name.Text" xml:space="preserve">
     <value>Эко</value>
@@ -439,9 +435,7 @@
     <value>Максимум</value>
   </data>
   <data name="Preset_Max_Desc" xml:space="preserve">
-    <value>Этот пресет раскроет максимум 
-вашего процессора и снимет с него
-ограничения!</value>
+    <value>Этот пресет раскроет максимум вашего процессора и снимет с него ограничения!</value>
   </data>
   <data name="Preset_Max_Name.Text" xml:space="preserve">
     <value>Максимум</value>
@@ -450,9 +444,7 @@
     <value>Минимальная мощность</value>
   </data>
   <data name="Preset_Min_Desc" xml:space="preserve">
-    <value>Этот пресет позволит вашему 
-процессору быть по настоящему
-холодным!</value>
+    <value>Этот пресет позволит вашему процессору быть по настоящему холодным!</value>
   </data>
   <data name="Preset_Min_Name.Text" xml:space="preserve">
     <value>Минимум</value>
@@ -464,9 +456,7 @@
     <value>Скорость</value>
   </data>
   <data name="Preset_Speed_Desc" xml:space="preserve">
-    <value>Этот пресет позволит быть
-продуктивнее благодаря
-улучшенной производительности</value>
+    <value>Этот пресет позволит быть продуктивнее благодаря улучшенной производительности</value>
   </data>
   <data name="Preset_Speed_Name.Text" xml:space="preserve">
     <value>Скорость</value>
