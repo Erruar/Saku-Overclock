@@ -45,7 +45,7 @@ public sealed partial class ОбучениеPage : Page
     private void StartButton_Click(object sender, RoutedEventArgs e)
     {
         // Create animations for both circles
-        Storyboard storyboard = new Storyboard();
+        var storyboard = new Storyboard();
 
         // Scale animation for Circle1
         var scaleX = new DoubleAnimation

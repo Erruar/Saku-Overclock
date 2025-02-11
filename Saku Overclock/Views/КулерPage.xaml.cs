@@ -21,11 +21,12 @@ public sealed partial class КулерPage
 { 
     private bool _isPageLoaded;
     private bool _isNbfcNotLoaded;
-    private bool _doNotUseRyzenAdj;
-    private IntPtr _ry = IntPtr.Zero;
+    private double _cpuTemp = 0d;
     private DispatcherTimer? _tempUpdateTimer;
     private readonly DispatcherTimer? _fanUpdateTimer;
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
+    private readonly IBackgroundDataUpdater? _dataUpdater;
+
 
     public КулерPage()
     {
@@ -40,6 +41,8 @@ public sealed partial class КулерPage
         _fanUpdateTimer = new DispatcherTimer();
         _fanUpdateTimer.Tick += async (_, _) => await CheckFan();
         _fanUpdateTimer.Interval = TimeSpan.FromMilliseconds(6000);
+        _dataUpdater = App.BackgroundUpdater;
+        _dataUpdater.DataUpdated += OnDataUpdated; 
         Unloaded += Page_Unloaded;
     }
 
@@ -366,8 +369,6 @@ public sealed partial class КулерPage
         try
         {
             _isPageLoaded = true;
-            _ry = RyzenAdjWrapper.Init_ryzenadj();
-            RyzenAdjWrapper.Init_Table(_ry);
             if (_isNbfcNotLoaded)
             {
                 await ShowNbfcDialogAsync();
@@ -870,26 +871,16 @@ public sealed partial class КулерPage
 
     private void UpdateTemperatureAsync()
     {
-        _ry = RyzenAdjWrapper.Init_ryzenadj();
-        if (_ry == 0x0 || _doNotUseRyzenAdj)
-        {
-            _doNotUseRyzenAdj = true;
-            Temp.Text = "?℃";
-            return;
-        }
-
-        _ = RyzenAdjWrapper.Init_Table(_ry);
-        _ = RyzenAdjWrapper.Refresh_table(_ry);
-        Temp.Text = Math.Round(RyzenAdjWrapper.Get_tctl_temp_value(_ry), 3) + "℃";
+        Temp.Text = Math.Round(_cpuTemp, 3) + "℃";
+    }
+    private void OnDataUpdated(object? sender, SensorsInformation info)
+    {
+        _cpuTemp = info.CpuTempValue;
     }
 
     private void StopTempUpdate(bool exit)
     {
-        if (exit)
-        {
-            RyzenAdjWrapper.Cleanup_ryzenadj(_ry);
-        }
-
+        _dataUpdater.DataUpdated -= OnDataUpdated;
         _tempUpdateTimer?.Stop();
     }
 
