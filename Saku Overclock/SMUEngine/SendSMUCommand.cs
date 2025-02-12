@@ -76,7 +76,7 @@ internal class SendSmuCommand
     private bool _saveinfo;
     private Cpu? _cpu;
     public static Cpu.CodeName Codename;
-    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
+    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
     private static string _cpuCodenameString = string.Empty;
     private Smusettings _smusettings = new(); 
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); 
@@ -84,8 +84,8 @@ internal class SendSmuCommand
     private Profile[] _profile = new Profile[1];
     private bool _cancelrange;
     private bool _dangersettingsapplied;
-    private string _checkAdjLine = "nothing to show. Hehe";
-
+    private string _checkAdjLine = string.Empty;
+    private readonly IBackgroundDataUpdater? _dataUpdater;
     public static bool SafeReapply
     {
         get;
@@ -94,6 +94,9 @@ internal class SendSmuCommand
 
     public SendSmuCommand()
     {
+        _dataUpdater = App.BackgroundUpdater;
+        _dataUpdater.DataUpdated += OnDataUpdated;
+
         try
         {
             _cpu ??= CpuSingleton.GetInstance();
@@ -108,13 +111,15 @@ internal class SendSmuCommand
 
         try
         {
-            SafeReapply = SettingsService.ReapplySafeOverclock;
+            SafeReapply = AppSettings.ReapplySafeOverclock;
         }
         catch (Exception ex)
         {
             TraceIt_TraceError(ex.ToString());
         }
     }
+
+    private void OnDataUpdated(object? sender, SensorsInformation info) => _cpuCodenameString = _cpuCodenameString == (info.CpuFamily == null ? "Unsupported" : info.CpuFamily) ? _cpuCodenameString : (info.CpuFamily == null ? "Unsupported" : info.CpuFamily);
 
     // JSON
     private void SmuSettingsLoad()
@@ -172,9 +177,7 @@ internal class SendSmuCommand
                         JsonConvert.SerializeObject(_smusettings, Formatting.Indented));
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
                         AppContext.BaseDirectory));
-                    App.MainWindow.Close();
                 }
-
                 break;
             }
             case 'p':
@@ -199,9 +202,7 @@ internal class SendSmuCommand
                         JsonConvert.SerializeObject(_profile));
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
                         AppContext.BaseDirectory));
-                    App.MainWindow.Close();
                 }
-
                 break;
         }
     }
@@ -228,9 +229,9 @@ internal class SendSmuCommand
             return;
         }
 
-        if (SettingsService.Preset != -1)
+        if (AppSettings.Preset != -1)
         {
-            if (_profile[SettingsService.Preset].smuEnabled == false)
+            if (_profile[AppSettings.Preset].smuEnabled == false)
             {
                 return;
             }
@@ -347,10 +348,7 @@ internal class SendSmuCommand
                 {
                     Codename = _cpu.info.codeName;
                     _cpuCodenameString = Codename.ToString();
-                    if (_cpuCodenameString == string.Empty)
-                    {
-                        _cpuCodenameString = RyzenAdjWrapper.GetCpuCodename();
-                    }
+                   
                 }
 
                 if (_cpu?.info.codeName == Cpu.CodeName.SummitRidge || Codename == Cpu.CodeName.SummitRidge ||
@@ -559,10 +557,6 @@ internal class SendSmuCommand
             {
                 Codename = _cpu.info.codeName;
                 _cpuCodenameString = Codename.ToString();
-                if (_cpuCodenameString == string.Empty)
-                {
-                    _cpuCodenameString = RyzenAdjWrapper.GetCpuCodename();
-                }
             }
 
             if (_cpu?.info.codeName == Cpu.CodeName.SummitRidge || Codename == Cpu.CodeName.SummitRidge ||
@@ -832,7 +826,7 @@ internal class SendSmuCommand
                         }
                     }
 
-                    // SettingsServiceLoad(); SettingsService.RangeApplied = true; SettingsServiceSave(); 
+                    // SettingsServiceLoad(); AppSettings.RangeApplied = true; SettingsServiceSave(); 
                     if (log)
                     {
                         sw.WriteLine(@"//------OK------\\");
