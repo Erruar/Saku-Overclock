@@ -1,67 +1,36 @@
-﻿using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Globalization;
-using System.Management;
+﻿using System.Management;
 using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using H.NotifyIcon;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
-using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
+using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.UI.Text;
 using ZenStates.Core;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
-using FontFamily = System.Drawing.FontFamily;
-using Icon = System.Drawing.Icon;
-using LinearGradientBrush = System.Drawing.Drawing2D.LinearGradientBrush;
-using Path = System.IO.Path;
-using Rectangle = System.Drawing.Rectangle;
 
 namespace Saku_Overclock.Views;
 
 public sealed partial class ИнформацияPage
 {
-    private RTSSsettings _rtssset = new(); // Конфиг с настройками модуля RTSS
-    private NiIconsSettings _niicons = new(); // Конфиг с настройками Ni-Icons
-    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
-    private List<ManagementObject>? cachedGPUList = null; // Кешированный лист GPU
-
-    private readonly Dictionary<string, TaskbarIcon>
-        _trayIcons = []; // Хранилище включенных в данный момент иконок Ni-Icons
-
-    private class MinMax // Класс для хранения минимальных и максимальных значений Ni-Icons
+    private readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
+    private List<ManagementObject>? cachedGPUList = null; // Кешированный лист GPU 
+    public class MinMax // Класс для хранения минимальных и максимальных значений Ni-Icons
     {
-        public float Min;
-        public float Max;
+        public double Min;
+        public double Max;
     }
 
-    private class TotalBusyRam // Класс для хранения текущего использования ОЗУ и всего ОЗУ
-    {
-        public double BusyRam;
-        public double TotalRam;
-    }
-
-    private readonly List<TotalBusyRam> _ramUsageHelper = []; // Лист текущего использования ОЗУ и всего ОЗУ
-
-    private readonly List<MinMax> _niiconsMinMaxValues =
-    [
-        new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()
-    ]; // Лист для хранения минимальных и максимальных значений Ni-Icons
-
+    public double BusyRam; // Текущее использование ОЗУ и всего ОЗУ
+    public double TotalRam;
     private bool _loaded; // Страница загружена
-    private bool _doNotTrackBattery; // Флаг не использования батареи
-    private string? _rtssLine; // Строка для вывода в модуль RTSS
-    private string? _cachedSelectedProfileReplacement; // Кешированная замена имени профиля
+    private bool _doNotTrackBattery; // Флаг не использования батареи 
     private readonly List<InfoPageCPUPoints> _cpuPointer = []; // Лист графика использования процессора
     private readonly List<InfoPageCPUPoints> _gpuPointer = []; // Лист графика частоты графического процессора
     private readonly List<InfoPageCPUPoints> _ramPointer = []; // Лист графика занятой ОЗУ
@@ -74,7 +43,7 @@ public sealed partial class ИнформацияPage
         _maxGfxClock =
             0.1; // Максимальная частота графического процессора, используется для графика частоты графического процессора
 
-    private decimal _maxBatRate = 0.1m; // Максимальная мощность зарядки, используется для графика зарядки батареи
+    private double _maxBatRate = 0.1d; // Максимальная мощность зарядки, используется для графика зарядки батареи
     private Brush? _transparentBrush; // Прозрачная кисть, используется для кнопок выбора баннера
     private Brush? _selectedBrush; // Кисть цвета выделенной кнопки, используется для кнопок выбора баннера
 
@@ -83,7 +52,6 @@ public sealed partial class ИнформацияPage
 
     private int _selectedGroup; // Текущий выбранный баннер, используется для кнопок выбора баннера
     private bool _isAppInTray; // Флаг приложения в трее, чтобы не обновлять значения и не тратить ресурсы ноутбука
-    private IntPtr _ryzenAccess; // Указатель на библиотеку RyzenADJ
     private string _cpuName = "Unknown"; // Название процессора в системе
     private string _gpuName = "Unknown"; // Название графического процессора в системе
     private string _ramName = "Unknown"; // Название ОЗУ в системе
@@ -91,6 +59,8 @@ public sealed partial class ИнформацияPage
     private int _numberOfCores; // Количество ядер
     private int _numberOfLogicalProcessors; // Количество потоков
     private DispatcherTimer? _dispatcherTimer; // Таймер для автообновления информации
+    private readonly IBackgroundDataUpdater _dataUpdater; // Фоновое обновление информации
+    private SensorsInformation? sensorsInformation; // Информация с датчиков
     private Cpu? _cpu; // Инициализация ZenStates Core
 
     public ИнформацияPage()
@@ -99,440 +69,18 @@ public sealed partial class ИнформацияPage
         App.GetService<ИнформацияViewModel>();
         InitializeComponent();
         InitializeZenStates();
-        RtssLoad();
+        _dataUpdater = App.BackgroundUpdater;
+        _dataUpdater.DataUpdated += OnDataUpdated;
         Loaded += ИнформацияPage_Loaded;
         Unloaded += ИнформацияPage_Unloaded;
     }
 
-    #region JSON and Initialization
-
-    #region JSON only voids
-
-    //JSON форматирование 
-
-    private void RtssSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json",
-                JsonConvert.SerializeObject(_rtssset, Formatting.Indented));
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private void RtssLoad()
-    {
-        try
-        {
-            _rtssset = JsonConvert.DeserializeObject<RTSSsettings>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json"))!;
-            _rtssset.RTSS_Elements.RemoveRange(0, 9);
-            //if (rtssset == null) { rtssset = new JsonContainers.RTSSsettings(); RtssSave(); }
-        }
-        catch
-        {
-            _rtssset = new RTSSsettings();
-            RtssSave();
-        }
-    }
-
-    private void NiSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json",
-                JsonConvert.SerializeObject(_niicons, Formatting.Indented));
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private void NiLoad()
-    {
-        try
-        {
-            _niicons = JsonConvert.DeserializeObject<NiIconsSettings>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json"))!;
-        }
-        catch
-        {
-            _niicons = new NiIconsSettings();
-            NiSave();
-        }
-    }
-
-    #endregion
-
-    #region Ni-Icons
-
-    private void DisposeAllNotifyIcons()
-    {
-        // Перебираем все иконки и вызываем Dispose для каждой из них
-        foreach (var icon in _trayIcons.Values)
-        {
-            icon.Dispose();
-        }
-
-        // Очищаем коллекцию иконок
-        _trayIcons.Clear();
-    }
-
-    private void CreateNotifyIcons()
-    {
-        DisposeAllNotifyIcons(); // Уничтожаем старые иконки перед созданием новых
-
-        NiLoad();
-        // Если нет элементов, не создаём иконки
-        if (_niicons.Elements.Count == 0)
-        {
-            return;
-        }
-
-        foreach (var element in _niicons.Elements)
-        {
-            if (!element.IsEnabled)
-            {
-                continue;
-            }
-
-            if (element.Guid == string.Empty)
-            {
-                element.Guid = Guid.NewGuid().ToString();
-                NiSave();
-            }
-
-            // Создаём NotifyIcon
-            var notifyIcon = new TaskbarIcon
-            {
-                // Генерация иконки
-                Icon = CreateIconFromElement(element)!,
-                Id = Guid.Parse(element
-                    .Guid) // Уникальный ID иконки ЕСЛИ ЕГО НЕТ - ПЕРЕЗАПИШЕТ ОСНОВНОЕ ТРЕЙ МЕНЮ
-            };
-            notifyIcon.ForceCreate();
-            if (element.ContextMenuType != 0)
-            {
-                notifyIcon.ToolTipText = element.Name;
-            }
-
-            _trayIcons[element.Name] = notifyIcon;
-        }
-    }
-
-    private static Icon? CreateIconFromElement(NiIconsElements element)
-    {
-        // Создаём Grid виртуально и растрируем в Bitmap
-        // Пример создания иконки будет зависеть от элемента:
-        // 1. Создание формы (круг, квадрат, логотип и т.д.)
-        // 2. Заливка цвета с заданной прозрачностью
-        // 3. Наложение текста с указанным размером шрифта
-
-        // Для простоты примера создадим пустую иконку
-        var bitmap = new Bitmap(32, 32);
-        var g = Graphics.FromImage(bitmap);
-        // Задаём цвет фона и форму
-        var bgColor = ColorTranslator.FromHtml("#" + element.Color);
-        var bgSecColor = ColorTranslator.FromHtml("#" + element.SecondColor);
-        var bgBrush = new LinearGradientBrush(
-            new Rectangle(0, 0, 32, 32),
-            Color.FromArgb((int)(element.BgOpacity * 255), bgColor),
-            Color.FromArgb((int)(element.BgOpacity * 255), bgSecColor),
-            LinearGradientMode.Horizontal);
-        switch (element.IconShape)
-        {
-            case 0: // Куб
-                g.FillRectangle(bgBrush, 0, 0, 32, 32);
-                break;
-            case 1: // Скруглённый куб
-                var path = CreateRoundedRectanglePath(new Rectangle(0, 0, 32, 32), 7);
-                g.FillPath(bgBrush, path!);
-                break;
-            case 2: // Круг
-                g.FillEllipse(bgBrush, 0, 0, 32, 32);
-                break;
-            default:
-                g.FillRectangle(bgBrush, 0, 0, 32, 32);
-                break;
-        }
-
-        // Добавляем текст
-        try
-        {
-            var font = new Font(new FontFamily("Arial"), element.FontSize * 2, System.Drawing.FontStyle.Regular,
-                GraphicsUnit.Pixel);
-            var textBrush = new SolidBrush(GetContrastColor(element.Color, element.IsGradient ? element.SecondColor : null));
-            // Центруем текст
-            var textSize = g.MeasureString("Text", font);
-            var textPosition = new PointF(
-                (bitmap.Width - textSize.Width) / 2,
-                (bitmap.Height - textSize.Height) / 2
-            );
-            // Рисуем текст
-            g.DrawString("Text", font, textBrush, textPosition);
-        }
-        catch
-        {
-            // Игнорируем ошибки
-        }
-
-        try
-        {
-            return Icon.FromHandle(bitmap.GetHicon());
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    private static GraphicsPath? CreateRoundedRectanglePath(Rectangle rect, int radius)
-    {
-        // Проверка корректности значений
-        if (radius <= 0 || rect.Width <= 0 || rect.Height <= 0)
-        {
-            return null;
-        }
-
-        try
-        {
-            var path = new GraphicsPath();
-            var diameter = radius * 2;
-            var size = new Size(diameter, diameter);
-            var arc = new Rectangle(rect.Location, size);
-
-            // Верхний левый угол
-            path.AddArc(arc, 180, 90);
-
-            // Верхний правый угол
-            arc.X = rect.Right - diameter;
-            path.AddArc(arc, 270, 90);
-
-            // Нижний правый угол
-            arc.Y = rect.Bottom - diameter;
-            path.AddArc(arc, 0, 90);
-
-            // Нижний левый угол
-            arc.X = rect.Left;
-            path.AddArc(arc, 90, 90);
-
-            path.CloseFigure();
-            return path;
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    private void Change_Ni_Icons_Text(string iconName, string? newText, string? tooltipText = null,
-        string? advancedTooltip = null)
-    {
-        try
-        {
-            if (_trayIcons.TryGetValue(iconName, out var notifyIcon))
-            {
-                foreach (var element in _niicons.Elements)
-                {
-                    if (element.Name == iconName)
-                    {
-                        // Изменяем текст на иконке (слой 2)
-                        notifyIcon.Icon = UpdateIconText(newText, element.Color,
-                            element.IsGradient ? element.SecondColor : string.Empty, element.FontSize,
-                            element.IconShape, element.BgOpacity, notifyIcon.Icon);
-
-                        // Обновляем TooltipText, если он задан
-                        if (tooltipText != null && notifyIcon.ToolTipText != null)
-                        {
-                            notifyIcon.ToolTipText = element.ContextMenuType == 2
-                                ? tooltipText + "\n" + advancedTooltip
-                                : tooltipText;
-                        }
-                    }
-                }
-            }
-        }
-        catch
-        {
-            CreateNotifyIcons();
-        }
-    }
-
-    private static Icon? UpdateIconText(string? newText, string newColor, string secondColor, int fontSize,
-        int iconShape, double opacity, Icon? oldIcon = null)
-    {
-        // Уничтожаем старую иконку, если она существует
-        if (oldIcon != null)
-        {
-            DestroyIcon(oldIcon.Handle); // Освобождение старой иконки
-            oldIcon.Dispose(); // Освобождаем ресурсы иконки
-        }
-
-        // Создаём новую иконку на основе существующей с новым текстом
-        var bitmap = new Bitmap(32, 32);
-        var g = Graphics.FromImage(bitmap);
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-
-        // Цвет фона и кисть
-        var bgColor = ColorTranslator.FromHtml("#" + newColor);
-        object bgBrush = new SolidBrush(Color.FromArgb((int)(opacity * 255), bgColor));
-        if (secondColor != string.Empty)
-        {
-            var scColor = ColorTranslator.FromHtml("#" + secondColor);
-            bgBrush = new LinearGradientBrush(
-                new Rectangle(0, 0, 32, 32),
-                Color.FromArgb((int)(opacity * 255), bgColor),
-                Color.FromArgb((int)(opacity * 255), scColor),
-                LinearGradientMode.Horizontal);
-        }
-
-        // Рисуем фон иконки в зависимости от формы
-        switch (iconShape)
-        {
-            case 0: // Куб
-                g.FillRectangle((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
-                break;
-            case 1: // Скруглённый куб
-                var path = CreateRoundedRectanglePath(new Rectangle(0, 0, 32, 32), 7);
-                if (path != null)
-                {
-                    g.FillPath((System.Drawing.Brush)bgBrush, path);
-                }
-                else
-                {
-                    g.FillRectangle((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
-                }
-
-                break;
-            case 2: // Круг
-                g.FillEllipse((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
-                break;
-            // Добавьте остальные фигуры и обработку ico при необходимости
-            default:
-                g.FillRectangle((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
-                break;
-        }
-
-        // Определение позиции текста
-       
-        var textBrush = new SolidBrush(GetContrastColor(newColor, secondColor != string.Empty ? secondColor : null));
-        var textPosition = GetTextPosition(newText, fontSize, out var fontSizeT, out var newTextT);
-        var font = new Font(new FontFamily("Segoe UI"), fontSizeT * 2f, System.Drawing.FontStyle.Bold,
-           GraphicsUnit.Pixel);
-        // Рисуем текст
-        g.DrawString(newTextT, font, textBrush, textPosition);
-        // Создание иконки из Bitmap и освобождение ресурсов
-        try
-        {
-            return Icon.FromHandle(bitmap.GetHicon());
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    ///<summary> Метод для освобождения ресурсов, используемый после GetHicon()
-    [DllImport("user32.dll", SetLastError = true)]
-    private static extern bool DestroyIcon(IntPtr hIcon);
-
-    ///<summary> Получить позицию текста и доработанный текст, на основе предугадывания позиции и готовых функций на основе датасета всех возможных вариантов размера шрифта</summary>
-    private static PointF GetTextPosition(string? newText, float fontSize, out float newFontSize, out string? newText_T) 
-    {
-        var yPosition = -1.475f * fontSize + 16.2f; // Готовая "скомпилированная" функция, основанная на массиве данных, собранные на всех возможных размерах шрифта
-        newText_T = newText;
-        var X = 20f;
-        if (!newText!.Contains('.')) { newText += '.'; }
-        if (!string.IsNullOrEmpty(newText) && newText.Contains('.'))
-        {
-            var parts = newText.Split('.');
-            var wholePartLength = parts[0].Length; 
-            switch (wholePartLength) // TrayMon© - Разработка от Erruar, поэтому вам не стоит разбираться в том, как она работает. Все значения были скомпилированы в функции при помощи NumPy
-            {
-                case 1: 
-                    var offset1 = (int)fontSize == 14 ? 3.3f : (int)fontSize == 13 ? -3.3f : 0f;
-                    X = - 0.0715488215f * fontSize * fontSize * fontSize
-                        + 2.83311688f * fontSize * fontSize
-                        - 35.2581049f * fontSize + 135.071284f
-                        + offset1; 
-                    newText_T = fontSize > 13 ? parts[0] : newText;
-                    break;
-                case 2:
-                    var offset2 = (int)fontSize == 10 ? 2.17329f : (int)fontSize == 9 ? -2.17329f : 0f;
-                    X =  0.0614478114f * fontSize * fontSize * fontSize
-                       - 2.48160173f * fontSize * fontSize
-                       + 31.8379028f * fontSize - 132.756133f
-                       + offset2; 
-                    newText_T = fontSize > 9 ? parts[0] : newText;
-                    break;
-                case 3:
-                    fontSize = fontSize > 12 ? 12 : fontSize;
-                    X =  0.33333333f * fontSize * fontSize * fontSize
-                       - 10.07142857f * fontSize * fontSize
-                       + 98.5952381f * fontSize - 316.8f;
-                    yPosition = -1.475f * fontSize + 16.2f; 
-                    break;
-                case >3: 
-                    fontSize = fontSize > 12 ? 12 : fontSize - 2; 
-                    X =  0.00378787879f * fontSize * fontSize * fontSize
-                       - 0.00487012987f * fontSize * fontSize
-                       - 2.32251082f * fontSize + 14.982684f; 
-                    yPosition = -1.475f * fontSize + 16.2f;
-                    break;
-                default:
-                    X = 0f;
-                    break;
-            }
-        }
-
-        newFontSize = fontSize;
-        var position = new PointF(X, yPosition); 
-        return position;
-    }
-
-    ///<summary> Функция для определения яркости цвета</summary> 
-    private static double GetBrightness(string color)  
-    {
-        var valuestring = color.TrimStart('#');
-        var r = Convert.ToInt32(valuestring[..2], 16);
-        var g = Convert.ToInt32(valuestring.Substring(2, 2), 16);
-        var b = Convert.ToInt32(valuestring.Substring(4, 2), 16);
-        return (0.299 * r) + (0.587 * g) + (0.114 * b);
-    }
-
-    ///<summary> Функция для определения контрастного цвета текста по фону текста</summary> 
-    private static Color GetContrastColor(string color1, string? color2 = null)
-    {
-        var brightness1 = GetBrightness(color1);
-
-        double? brightness2 = null;
-        if (!string.IsNullOrEmpty(color2))
-        {
-            brightness2 = GetBrightness(color2);
-        }
-
-        // Определяем среднюю яркость
-        var averageBrightness = brightness2 == null
-            ? brightness1
-            : (brightness1 + brightness2.Value) / 2;
-
-        // Возвращаем цвет текста на основе средней яркости
-        return averageBrightness < 128 ? Color.White : Color.Black;
-    }
-
-    #endregion
-
+    #region Initialization 
     #region Get-Info voids
+    private void OnDataUpdated(object? sender, SensorsInformation info)
+    {
+        sensorsInformation = info;
+    }
 
     private void InitializeZenStates()
     {
@@ -635,7 +183,6 @@ public sealed partial class ИнформацияPage
 
             _cpuName = _cpu == null ? name : _cpu.info.cpuName;
             tbProcessor.Text = _cpuName;
-            tbCaption.Text = description;
 
             var gpuNameTask = Task.Run(() =>
             {
@@ -658,6 +205,7 @@ public sealed partial class ИнформацияPage
             var l1Cache = l1CacheTask.Result;
             var l2Cache = l2CacheTask.Result;
             var codeName = codeNameTask.Result;
+            tbCaption.Text = description;
 
             if (!string.IsNullOrEmpty(codeName))
             {
@@ -723,57 +271,33 @@ public sealed partial class ИнформацияPage
         });
     }
 
-    private async Task GetBatInfoAsync()
+    private async void GetBatInfoAsync()
     {
         if (BATBannerButton.Visibility == Visibility.Collapsed)
         {
             return;
         }
-
+        if (sensorsInformation == null)
+        {
+            await Task.Delay(100);
+            GetBatInfoAsync();
+            return;
+        }
+        if (sensorsInformation!.BatteryUnavailable)
+        {
+            BATBannerButton.Visibility = Visibility.Collapsed;
+            _doNotTrackBattery = true;
+        }
         try
         {
-            // Асинхронное выполнение операций
-            var batteryInfoTask = Task.Run(() =>
-            {
-                var batteryPercent = GetSystemInfo.GetBatteryPercent() + "W";
-                var batteryState = GetSystemInfo.GetBatteryStatus().ToString();
-                var batteryHealth = $"{100 - GetSystemInfo.GetBatteryHealth() * 100:0.##}%";
-                var batteryCycles = $"{GetSystemInfo.GetBatteryCycle()}";
-                var fullChargeCapacity = GetSystemInfo.ReadFullChargeCapacity();
-                var designCapacity = GetSystemInfo.ReadDesignCapacity(out var notTrack);
-                var chargeRate = $"{GetSystemInfo.GetBatteryRate() / 1000:0.##}W";
-                var batteryName = GetSystemInfo.GetBatteryName();
-
-                return new
-                {
-                    batteryPercent,
-                    batteryState,
-                    batteryHealth,
-                    batteryCycles,
-                    fullChargeCapacity,
-                    designCapacity,
-                    chargeRate,
-                    batteryName,
-                    notTrack
-                };
-            });
-
-            var batteryInfo = await batteryInfoTask;
-
             // Обновление UI
-            tbBAT.Text = batteryInfo.batteryPercent;
-            tbBATState.Text = batteryInfo.batteryState;
-            tbBATHealth.Text = batteryInfo.batteryHealth;
-            tbBATCycles.Text = batteryInfo.batteryCycles;
-            tbBATCapacity.Text = $"{batteryInfo.fullChargeCapacity}mAh/{batteryInfo.designCapacity}mAh";
-            tbBATChargeRate.Text = batteryInfo.chargeRate;
-            _batName = batteryInfo.batteryName;
-
-            if (batteryInfo.notTrack)
-            {
-                BATBannerButton.Visibility = Visibility.Collapsed;
-                _doNotTrackBattery = true;
-            }
+            tbBAT.Text = sensorsInformation!.BatteryPercent;
+            tbBATState.Text = sensorsInformation!.BatteryState;
+            tbBATHealth.Text = sensorsInformation!.BatteryHealth;
+            tbBATCycles.Text = sensorsInformation!.BatteryCycles;
+            tbBATCapacity.Text = sensorsInformation!.BatteryCapacity;
+            tbBATChargeRate.Text = sensorsInformation!.BatteryChargeRate;
+            _batName = sensorsInformation!.BatteryName;
         }
         catch
         {
@@ -957,10 +481,10 @@ public sealed partial class ИнформацияPage
             _selectedBorderBrush = CPUBannerButton.BorderBrush;
             _transparentBrush = GPUBannerButton.Background;
             SetThemeAccentTextForeground();
+            GetBatInfoAsync();
             await GetCpuInfo();
             await GetRamInfo();
             ReadPstate();
-            await GetBatInfoAsync();
             if (CPUBannerButton.Shadow != new ThemeShadow())
             {
                 CPUBannerButton.Shadow ??= new ThemeShadow();
@@ -975,10 +499,6 @@ public sealed partial class ИнформацияPage
             {
                 infoRTSSButton.IsChecked = AppSettings.RTSSMetricsEnabled;
                 infoNiIconsButton.IsChecked = AppSettings.NiIconsEnabled;
-                if (AppSettings.NiIconsEnabled)
-                {
-                    CreateNotifyIcons();
-                }
             }
             catch (Exception exception)
             {
@@ -993,14 +513,7 @@ public sealed partial class ИнформацияPage
 
     private void ИнформацияPage_Unloaded(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            DisposeAllNotifyIcons();
-        }
-        catch (Exception ex)
-        {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
-        }
+        _dataUpdater.DataUpdated -= OnDataUpdated;
 
         try
         {
@@ -1018,7 +531,7 @@ public sealed partial class ИнформацияPage
 
     #region Info Update voids
 
-    private async void UpdateInfoAsync()
+    private void UpdateInfo()
     {
         try
         {
@@ -1032,7 +545,7 @@ public sealed partial class ИнформацияPage
                 if (_selectedGroup != 0)
                 {
                     infoCPUSectionComboBox.Visibility = Visibility.Collapsed;
-                    InfoCPUComboBoxBorderSharedShadow_Element.Visibility = _ryzenAccess == 0x0 ? Visibility.Visible : Visibility.Collapsed;
+                    InfoCPUComboBoxBorderSharedShadow_Element.Visibility = RyzenadjProvider.IsPhysicallyUnavailable ? Visibility.Visible : Visibility.Collapsed;
                     if (_selectedGroup == 1)
                     {
                         //Показать свойства видеокарты
@@ -1113,7 +626,7 @@ public sealed partial class ИнформацияPage
                 {
                     infoCPUMAINSection.Visibility = Visibility.Visible;
                     infoRAMMAINSection.Visibility = Visibility.Collapsed;
-                    infoCPUSectionComboBox.Visibility = _ryzenAccess != 0x0 ? Visibility.Visible : Visibility.Collapsed;
+                    infoCPUSectionComboBox.Visibility = !RyzenadjProvider.IsPhysicallyUnavailable ? Visibility.Visible : Visibility.Collapsed;
                     InfoCPUComboBoxBorderSharedShadow_Element.Visibility = Visibility.Visible;
                     InfoCPUSectionMetrics.Visibility = Visibility.Visible;
                     InfoVRMSectionMetrics.Visibility = Visibility.Collapsed;
@@ -1128,16 +641,8 @@ public sealed partial class ИнформацияPage
 
 
 
-                if (_ryzenAccess == 0x0)
+                if (RyzenadjProvider.IsPhysicallyUnavailable)
                 {
-                    if (_cpu != null)
-                    {
-                        await RyzenAdjWrapper.CpuFrequencyManager.RefreshPowerTable(_cpu);
-                        if (infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 1)
-                        {
-                            await RyzenAdjWrapper.CpuFrequencyManager.InitializeCoreIndexMapAsync(_numberOfCores);
-                        }
-                    }
 
                     if (infoCPUSectionGetInfoTypeComboBox.Visibility == Visibility.Collapsed)
                     {
@@ -1159,10 +664,6 @@ public sealed partial class ИнформацияPage
                             ? Visibility.Visible
                             : Visibility.Collapsed;
                 }
-                else
-                {
-                    RyzenAdjWrapper.Refresh_table(_ryzenAccess);
-                }
 
                 InfoACPUBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoACPUBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
@@ -1177,97 +678,136 @@ public sealed partial class ИнформацияPage
                 InfoAPSTBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
                 InfoAPSTBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(60, 49));
 
-                decimal batteryRate = 0;
-                if (BATBannerButton.Visibility == Visibility.Visible && !_doNotTrackBattery)
+                var currBatRate = 0d;
+                var beforeMaxBatRate = 0;
+                if (!_doNotTrackBattery)
                 {
-                    batteryRate = GetSystemInfo.GetBatteryRate() / 1000;
+                    var batteryRate = 0d;
+                    try
+                    {
+                        if (sensorsInformation?.BatteryChargeRate?.Replace("W", string.Empty) != "")
+                        {
+                            batteryRate = Convert.ToDouble(sensorsInformation?.BatteryChargeRate?.Replace("W", string.Empty));
+                        }
+                        else
+                        {
+                            _doNotTrackBattery = true;
+                        }
+                    }
+                    catch
+                    {
+                        _doNotTrackBattery = true;
+                    }
+                    tbBATChargeRate.Text = sensorsInformation?.BatteryChargeRate;
+                    tbBAT.Text = sensorsInformation?.BatteryPercent;
+                    var trueBatLifeTime = 0d;
+                    if (sensorsInformation?.BatteryLifeTime != null)
+                    {
+                        trueBatLifeTime = sensorsInformation.BatteryLifeTime;
+                    }
+                    if (trueBatLifeTime < 0)
+                    {
+                        tbBATTime.Text = "InfoBatteryAC".GetLocalized(); // Считаем, что устройство питается от сети
+                    }
+                    else
+                    {
+                        var ts = TimeSpan.FromSeconds(trueBatLifeTime); // Преобразуем секунды в TimeSpan
+                        var parts = new List<string>();
+                        if ((int)ts.TotalHours > 0)
+                        {
+                            parts.Add($"{(int)ts.TotalHours}h"); // Добавляем часы, если они есть
+                        }
+                        if (ts.Minutes > 0)
+                        {
+                            parts.Add($"{ts.Minutes}m"); // Добавляем минуты, если они есть
+                        }
+                        if (ts.Seconds > 0 || parts.Count == 0)
+                        {
+                            parts.Add($"{ts.Seconds}s"); // Добавляем секунды – если других компонент нет, или если секунды ненулевые
+                        }
+                        tbBATTime.Text = string.Join(" ", parts);
+                    }
+                    InfoBATUsage.Text = tbBAT.Text + " " + tbBATChargeRate.Text + "\n" + tbBATTime.Text;
+                    infoIBATUsageBigBanner.Text = InfoBATUsage.Text;
+                    infoABATUsageBannerPolygonText.Text = tbBATChargeRate.Text;
+                    infoABATUsageBigBannerPolygonText.Text = tbBATChargeRate.Text;
+                    tbBATState.Text = sensorsInformation?.BatteryState;
+                    currBatRate = batteryRate >= 0 ? batteryRate : -1 * batteryRate;
+                    beforeMaxBatRate = (int)_maxBatRate;
+                    if (_maxBatRate < currBatRate)
+                    {
+                        _maxBatRate = currBatRate;
+                    }
                 }
 
-                tbBATChargeRate.Text = $"{batteryRate}W";
-                tbBAT.Text = GetSystemInfo.GetBatteryPercent() + "%";
-                var batLifeTime = GetSystemInfo.GetBatteryLifeTime() + 0d;
-                tbBATTime.Text = batLifeTime - -1.0f == 0.0f
-                    ? "InfoBatteryAC".GetLocalized()
-                    : $"{Math.Round(batLifeTime / 60 / 60, 0)}h {Math.Round((batLifeTime / 60 / 60 - Math.Round(batLifeTime / 60 / 60, 0)) * 60, 0)}m {Math.Round(((batLifeTime / 60 / 60 - (int)(batLifeTime / 60 / 60)) * 60 - Math.Round((batLifeTime / 60 / 60 - Math.Round(batLifeTime / 60 / 60, 0)) * 60, 0)) * 60, 0)}s"
-                        .Replace('-', char.MinValue);
-                InfoBATUsage.Text = tbBAT.Text + " " + tbBATChargeRate.Text + "\n" + tbBATTime.Text;
-                infoIBATUsageBigBanner.Text = InfoBATUsage.Text;
-                infoABATUsageBannerPolygonText.Text = tbBATChargeRate.Text;
-                infoABATUsageBigBannerPolygonText.Text = tbBATChargeRate.Text;
-                tbBATState.Text = GetSystemInfo.GetBatteryStatus().ToString();
-                var currBatRate = batteryRate >= 0 ? batteryRate : -1 * batteryRate;
-                var beforeMaxBatRate = _maxBatRate;
-                if (_maxBatRate < currBatRate)
-                {
-                    _maxBatRate = currBatRate;
-                }
-
-                if (RyzenAdjWrapper.Get_stapm_limit(_ryzenAccess) == 0)
+                if (sensorsInformation == null) { return; }
+                if (sensorsInformation.CpuStapmLimit == 0)
                 {
                     tbStapmL.Text = "Info_PowerSumInfo_Disabled".GetLocalized();
                 }
                 else
                 {
-                    tbStapmL.Text = Math.Round(RyzenAdjWrapper.Get_stapm_value(_ryzenAccess), 3) + "W/" +
-                                    Math.Round(RyzenAdjWrapper.Get_stapm_limit(_ryzenAccess), 3) + "W";
+                    tbStapmL.Text = Math.Round(sensorsInformation.CpuStapmValue, 3) + "W/" +
+                                    Math.Round(sensorsInformation.CpuStapmLimit, 3) + "W";
                 }
 
-                tbActualL.Text = Math.Round(RyzenAdjWrapper.Get_fast_value(_ryzenAccess), 3) + "W/" +
-                                 Math.Round(RyzenAdjWrapper.Get_fast_limit(_ryzenAccess), 3) + "W";
+                tbActualL.Text = Math.Round(sensorsInformation.CpuFastValue, 3) + "W/" +
+                                 Math.Round(sensorsInformation.CpuFastLimit, 3) + "W";
                 tbAclualPowerL.Text = tbActualL.Text;
-                if (RyzenAdjWrapper.Get_slow_limit(_ryzenAccess) == 0)
+                if (sensorsInformation.CpuSlowLimit == 0)
                 {
                     tbAVGL.Text = "Info_PowerSumInfo_Disabled".GetLocalized();
                 }
                 else
                 {
-                    tbAVGL.Text = Math.Round(RyzenAdjWrapper.Get_slow_value(_ryzenAccess), 3) + "W/" +
-                                  Math.Round(RyzenAdjWrapper.Get_slow_limit(_ryzenAccess), 3) + "W";
+                    tbAVGL.Text = Math.Round(sensorsInformation.CpuSlowValue, 3) + "W/" +
+                                  Math.Round(sensorsInformation.CpuSlowLimit, 3) + "W";
                 }
 
-                tbFast.Text = Math.Round(RyzenAdjWrapper.Get_stapm_time(_ryzenAccess), 3) + "S";
-                tbSlow.Text = Math.Round(RyzenAdjWrapper.Get_slow_time(_ryzenAccess), 3) + "S";
+                tbFast.Text = Math.Round(sensorsInformation.CpuStapmTimeValue, 3) + "S";
+                tbSlow.Text = Math.Round(sensorsInformation.CpuSlowTimeValue, 3) + "S";
 
-                tbAPUL.Text = Math.Round(RyzenAdjWrapper.Get_apu_slow_value(_ryzenAccess), 3) + "W/" +
-                              Math.Round(RyzenAdjWrapper.Get_apu_slow_limit(_ryzenAccess), 3) + "W";
+                tbAPUL.Text = Math.Round(sensorsInformation.ApuSlowValue, 3) + "W/" +
+                              Math.Round(sensorsInformation.ApuSlowLimit, 3) + "W";
 
-                tbVRMTDCL.Text = Math.Round(RyzenAdjWrapper.Get_vrm_current_value(_ryzenAccess), 3) + "A/" +
-                                 Math.Round(RyzenAdjWrapper.Get_vrm_current(_ryzenAccess), 3) + "A";
-                tbSOCTDCL.Text = Math.Round(RyzenAdjWrapper.Get_vrmsoc_current_value(_ryzenAccess), 3) + "A/" +
-                                 Math.Round(RyzenAdjWrapper.Get_vrmsoc_current(_ryzenAccess), 3) + "A";
-                tbVRMEDCL.Text = Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3) + "A/" +
-                                 Math.Round(RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess), 3) + "A";
+                tbVRMTDCL.Text = Math.Round(sensorsInformation.VrmTdcValue, 3) + "A/" +
+                                 Math.Round(sensorsInformation.VrmTdcLimit, 3) + "A";
+                tbSOCTDCL.Text = Math.Round(sensorsInformation.SocTdcValue, 3) + "A/" +
+                                 Math.Round(sensorsInformation.SocTdcLimit, 3) + "A";
+                tbVRMEDCL.Text = Math.Round(sensorsInformation.VrmEdcValue, 3) + "A/" +
+                                 Math.Round(sensorsInformation.VrmEdcLimit, 3) + "A";
                 tbVRMEDCVRML.Text = tbVRMEDCL.Text;
-                infoVRMUsageBanner.Text = Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3) +
-                                          "A\n" + Math.Round(RyzenAdjWrapper.Get_fast_value(_ryzenAccess), 3) + "W";
+                infoVRMUsageBanner.Text = Math.Round(sensorsInformation.VrmEdcValue, 3) +
+                                          "A\n" + Math.Round(sensorsInformation.CpuFastValue, 3) + "W";
                 infoIVRMUsageBigBanner.Text = infoVRMUsageBanner.Text;
                 infoAVRMUsageBannerPolygonText.Text =
-                    Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3) + "A";
+                    Math.Round(sensorsInformation.VrmEdcValue, 3) + "A";
                 infoAVRMUsageBigBannerPolygonText.Text = infoAVRMUsageBannerPolygonText.Text;
-                tbSOCEDCL.Text = Math.Round(RyzenAdjWrapper.Get_vrmsocmax_current_value(_ryzenAccess), 3) + "A/" +
-                                 Math.Round(RyzenAdjWrapper.Get_vrmsocmax_current(_ryzenAccess), 3) + "A";
-                tbSOCVOLT.Text = Math.Round(RyzenAdjWrapper.Get_soc_volt(_ryzenAccess), 3) == 0
+                tbSOCEDCL.Text = Math.Round(sensorsInformation.SocEdcValue, 3) + "A/" +
+                                 Math.Round(sensorsInformation.SocEdcLimit, 3) + "A";
+                tbSOCVOLT.Text = Math.Round(sensorsInformation.SocVoltage, 3) == 0
                     ? Math.Round(_cpu!.powerTable.VDDCR_SOC, 3) + "V"
-                    : Math.Round(RyzenAdjWrapper.Get_soc_volt(_ryzenAccess), 3) + "V";
-                tbSOCPOWER.Text = Math.Round(RyzenAdjWrapper.Get_soc_power(_ryzenAccess), 3) == 0
+                    : Math.Round(sensorsInformation.SocVoltage, 3) + "V";
+                tbSOCPOWER.Text = Math.Round(sensorsInformation.SocPower, 3) == 0
                     ? Math.Round(_cpu!.powerTable.VDDCR_SOC * 10, 3) + "W"
-                    : Math.Round(RyzenAdjWrapper.Get_soc_power(_ryzenAccess), 3) + "W";
-                tbMEMCLOCK.Text = Math.Round(RyzenAdjWrapper.Get_mem_clk(_ryzenAccess), 3) == 0
+                    : Math.Round(sensorsInformation.SocPower, 3) + "W";
+                tbMEMCLOCK.Text = Math.Round(sensorsInformation.MemFrequency, 3) == 0
                     ? Math.Round(_cpu!.powerTable.MCLK, 3) + "InfoFreqBoundsMHZ".GetLocalized()
-                    : Math.Round(RyzenAdjWrapper.Get_mem_clk(_ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
-                tbFabricClock.Text = Math.Round(RyzenAdjWrapper.Get_fclk(_ryzenAccess), 3) == 0
+                    : Math.Round(sensorsInformation.MemFrequency, 3) + "InfoFreqBoundsMHZ".GetLocalized();
+                tbFabricClock.Text = Math.Round(sensorsInformation.FabricFrequency, 3) == 0
                     ? Math.Round(_cpu!.powerTable.FCLK, 3) + "InfoFreqBoundsMHZ".GetLocalized()
-                    : Math.Round(RyzenAdjWrapper.Get_fclk(_ryzenAccess), 3) + "InfoFreqBoundsMHZ".GetLocalized();
-                var coreClk = 0f;
+                    : Math.Round(sensorsInformation.FabricFrequency, 3) + "InfoFreqBoundsMHZ".GetLocalized();
+                var coreClk = 0d;
                 var endtrace = 0;
-                var coreVolt = 0f;
+                var coreVolt = 0d;
                 var endtraced = 0;
                 var maxFreq = 0.0d;
                 var currentPstate = 4;
                 for (uint f = 0; f < 16; f++)
                 {
-                    var getCurrFreq = RyzenAdjWrapper.Get_core_clk(_ryzenAccess, f);
-                    if (!float.IsNaN(getCurrFreq) && getCurrFreq > maxFreq)
+                    var getCurrFreq = sensorsInformation.CpuFrequencyPerCore != null ?
+                        (sensorsInformation.CpuFrequencyPerCore.Length > f ? sensorsInformation.CpuFrequencyPerCore[f] : 0f) : 0f;
+                    if (!double.IsNaN(getCurrFreq) && getCurrFreq > maxFreq)
                     {
                         maxFreq = getCurrFreq;
                     }
@@ -1275,12 +815,15 @@ public sealed partial class ИнформацияPage
                     var currCore = infoCPUSectionComboBox.SelectedIndex switch
                     {
                         0 => getCurrFreq,
-                        1 => RyzenAdjWrapper.Get_core_volt(_ryzenAccess, f),
-                        2 => RyzenAdjWrapper.Get_core_power(_ryzenAccess, f),
-                        3 => RyzenAdjWrapper.Get_core_temp(_ryzenAccess, f),
+                        1 => sensorsInformation.CpuVoltagePerCore != null ?
+                        (sensorsInformation.CpuVoltagePerCore.Length > f ? sensorsInformation.CpuVoltagePerCore[f] : 0f) : 0f,
+                        2 => sensorsInformation.CpuPowerPerCore != null ?
+                        (sensorsInformation.CpuPowerPerCore.Length > f ? sensorsInformation.CpuPowerPerCore[f] : 0f) : 0f,
+                        3 => sensorsInformation.CpuTemperaturePerCore != null ?
+                        (sensorsInformation.CpuTemperaturePerCore.Length > f ? sensorsInformation.CpuTemperaturePerCore[f] : 0f) : 0f,
                         _ => getCurrFreq
                     };
-                    if (!float.IsNaN(currCore))
+                    if (!double.IsNaN(currCore))
                     {
                         if (!InfoMainCPUFreqGrid.IsLoaded)
                         {
@@ -1327,13 +870,13 @@ public sealed partial class ИнформацияPage
                                     currText.Text = f switch
                                     {
                                         0 =>
-                                            $"{Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess), 3)}A",
+                                            $"{Math.Round(sensorsInformation.VrmEdcValue, 3)}A/{Math.Round(sensorsInformation.VrmEdcLimit, 3)}A",
                                         1 =>
-                                            $"{Math.Round(RyzenAdjWrapper.Get_vrm_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenAdjWrapper.Get_vrm_current(_ryzenAccess), 3)}A",
+                                            $"{Math.Round(sensorsInformation.VrmTdcValue, 3)}A/{Math.Round(sensorsInformation.VrmTdcLimit, 3)}A",
                                         2 =>
-                                            $"{Math.Round(RyzenAdjWrapper.Get_vrmsocmax_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenAdjWrapper.Get_vrmsocmax_current(_ryzenAccess), 3)}A",
+                                            $"{Math.Round(sensorsInformation.SocEdcValue, 3)}A/{Math.Round(sensorsInformation.SocEdcLimit, 3)}A",
                                         3 =>
-                                            $"{Math.Round(RyzenAdjWrapper.Get_vrmsoc_current_value(_ryzenAccess), 3)}A/{Math.Round(RyzenAdjWrapper.Get_vrmsoc_current(_ryzenAccess), 3)}A",
+                                            $"{Math.Round(sensorsInformation.SocTdcValue, 3)}A/{Math.Round(sensorsInformation.SocTdcValue, 3)}A",
                                         _ => "0A"
                                     };
                                 }
@@ -1347,7 +890,7 @@ public sealed partial class ИнформацияPage
 
                         if (f < _numberOfCores)
                         {
-                            if (getCurrFreq - -1.0f > 0 && getCurrFreq != 0 && getCurrFreq < 7)
+                            if (getCurrFreq + 1.0f > 0 && getCurrFreq != 0 && getCurrFreq < 7)
                             {
                                 coreClk += getCurrFreq;
                                 endtrace += 1;
@@ -1355,8 +898,9 @@ public sealed partial class ИнформацияPage
                         }
                     }
 
-                    var currVolt = RyzenAdjWrapper.Get_core_volt(_ryzenAccess, f);
-                    if (!float.IsNaN(currVolt) && currVolt != 0 && currVolt - -1.0f > 0 && currVolt < 1.7)
+                    var currVolt = sensorsInformation.CpuVoltagePerCore != null ?
+                        (sensorsInformation.CpuVoltagePerCore.Length > f ? sensorsInformation.CpuVoltagePerCore[f] : 0f) : 0f;
+                    if (!double.IsNaN(currVolt) && currVolt != 0 && currVolt - -1.0f > 0 && currVolt < 1.7)
                     {
                         coreVolt += currVolt;
                         endtraced += 1;
@@ -1418,9 +962,9 @@ public sealed partial class ИнформацияPage
                 }
 
                 tbPSTFREQ.Text = tbCPUFreq.Text;
-                var gfxClk = Math.Round(RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess) / 1000, 3);
-                var gfxVolt = Math.Round(RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess), 3);
-                var gfxTemp = RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess);
+                var gfxClk = Math.Round(sensorsInformation.ApuFrequency / 1000, 3);
+                var gfxVolt = Math.Round(sensorsInformation.ApuVoltage, 3);
+                var gfxTemp = sensorsInformation.ApuTemperature;
                 var beforeMaxGfx = _maxGfxClock;
                 if (_maxGfxClock < gfxClk)
                 {
@@ -1434,18 +978,18 @@ public sealed partial class ИнформацияPage
                 infoAGPUUsageBigBannerPolygonText.Text = infoAGPUUsageBannerPolygonText.Text;
                 infoIGPUUsageBigBanner.Text = infoGPUUsageBanner.Text;
                 tbGPUVolt.Text = gfxVolt + "V";
-                var maxTemp = Math.Round(RyzenAdjWrapper.Get_tctl_temp(_ryzenAccess), 3);
-                tbCPUMaxL.Text = Math.Round(RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess), 3) + "C/" + maxTemp +
+                var maxTemp = Math.Round(sensorsInformation.CpuTempLimit, 3);
+                tbCPUMaxL.Text = Math.Round(sensorsInformation.CpuTempValue, 3) + "C/" + maxTemp +
                                  "C";
                 tbCPUMaxTempL.Text = tbCPUMaxL.Text;
                 tbCPUMaxTempVRML.Text = tbCPUMaxL.Text;
-                var apuTemp = Math.Round(RyzenAdjWrapper.Get_apu_skin_temp_value(_ryzenAccess), 3);
-                var apuTempLimit = Math.Round(RyzenAdjWrapper.Get_apu_skin_temp_limit(_ryzenAccess), 3);
+                var apuTemp = Math.Round(sensorsInformation.ApuTempValue, 3);
+                var apuTempLimit = Math.Round(sensorsInformation.ApuTempLimit, 3);
                 tbAPUMaxL.Text = (!double.IsNaN(apuTemp) && apuTemp > 0 ? apuTemp : Math.Round(gfxTemp, 3)) + "C/" +
                                  (!double.IsNaN(apuTempLimit) && apuTempLimit > 0 ? apuTempLimit : maxTemp) + "C";
-                tbDGPUMaxL.Text = Math.Round(RyzenAdjWrapper.Get_dgpu_skin_temp_value(_ryzenAccess), 3) + "C/" +
-                                  Math.Round(RyzenAdjWrapper.Get_dgpu_skin_temp_limit(_ryzenAccess), 3) + "C";
-                var coreCpuUsage = Math.Round(RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess), 3);
+                tbDGPUMaxL.Text = Math.Round(sensorsInformation.DgpuTempValue, 3) + "C/" +
+                                  Math.Round(sensorsInformation.DgpuTempLimit, 3) + "C";
+                var coreCpuUsage = Math.Round(sensorsInformation.CpuUsage, 3);
                 tbCPUUsage.Text = coreCpuUsage + "%";
                 infoACPUUsageBannerPolygonText.Text = Math.Round(coreCpuUsage, 0) + "%";
                 infoICPUUsageBanner.Text = Math.Round(coreCpuUsage, 0) + "%  " + tbCPUFreq.Text + "\n" +
@@ -1555,20 +1099,20 @@ public sealed partial class ИнформацияPage
                 _vrmPointer.Add(new InfoPageCPUPoints
                 {
                     X = 60,
-                    Y = 48 - (int)(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess) /
-                        RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess) * 48)
+                    Y = 48 - (int)(sensorsInformation.VrmEdcValue /
+                        sensorsInformation.VrmEdcLimit * 48)
                 });
                 if (VRMFlyout.IsOpen)
                 {
                     InfoAVRMBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
                     InfoAVRMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(60,
-                        48 - (int)(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess) /
-                            RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess) * 48)));
+                        48 - (int)(sensorsInformation.VrmEdcValue /
+                            sensorsInformation.VrmEdcLimit * 48)));
                 }
 
                 InfoAVRMBannerPolygon.Points.Add(new Windows.Foundation.Point(60,
-                    48 - (int)(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess) /
-                        RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess) * 48)));
+                    48 - (int)(sensorsInformation.VrmEdcValue /
+                        sensorsInformation.VrmEdcLimit * 48)));
                 foreach (var element in _vrmPointer.ToList())
                 {
                     if (element.X < 0)
@@ -1698,26 +1242,23 @@ public sealed partial class ИнформацияPage
                 InfoABATBannerPolygon.Points.Add(new Windows.Foundation.Point(60, 49));
                 try
                 {
-                    if (_ramUsageHelper.Count != 0)
+                    var busyRam = BusyRam;
+                    var usageResult = TotalRam;
+                    if (busyRam != 0 && usageResult != 0)
                     {
-                        var busyRam = _ramUsageHelper[0].BusyRam;
-                        var usageResult = _ramUsageHelper[0].TotalRam;
-                        if (busyRam != 0 && usageResult != 0)
+                        InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
+                        _ramPointer.Add(new InfoPageCPUPoints
                         {
-                            InfoARAMBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
-                            _ramPointer.Add(new InfoPageCPUPoints
-                            {
-                                X = 60,
-                                Y = 48 - (int)(busyRam * 100 / usageResult * 0.48)
-                            });
-                            InfoARAMBannerPolygon.Points.Add(new Windows.Foundation.Point(60,
+                            X = 60,
+                            Y = 48 - (int)(busyRam * 100 / usageResult * 0.48)
+                        });
+                        InfoARAMBannerPolygon.Points.Add(new Windows.Foundation.Point(60,
+                            48 - (int)(busyRam * 100 / usageResult * 0.48)));
+                        if (RAMFlyout.IsOpen)
+                        {
+                            InfoARAMBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
+                            InfoARAMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(60,
                                 48 - (int)(busyRam * 100 / usageResult * 0.48)));
-                            if (RAMFlyout.IsOpen)
-                            {
-                                InfoARAMBigBannerPolygon.Points.Remove(new Windows.Foundation.Point(0, 0));
-                                InfoARAMBigBannerPolygon.Points.Add(new Windows.Foundation.Point(60,
-                                    48 - (int)(busyRam * 100 / usageResult * 0.48)));
-                            }
                         }
                     }
 
@@ -1763,95 +1304,31 @@ public sealed partial class ИнформацияPage
                     SendSmuCommand.TraceIt_TraceError(ex.ToString());
                 }
 
-                //Раз в шесть секунд обновляет состояние памяти 
-                var ramUsage = await Task.Run(() =>
-                {
-                    var ramMonitor =
-                        new ManagementObjectSearcher(
-                            "SELECT TotalVisibleMemorySize,FreePhysicalMemory FROM Win32_OperatingSystem");
-                    foreach (var objram in ramMonitor.Get().Cast<ManagementObject>())
-                    {
-                        var totalRam = Convert.ToDouble(objram["TotalVisibleMemorySize"]);
-                        var busyRam = totalRam - Convert.ToDouble(objram["FreePhysicalMemory"]);
-                        var usage = Math.Round(busyRam * 100 / totalRam, 0) + "%";
-
-                        return new { Usage = usage, BusyRam = busyRam, TotalRam = totalRam }; // Анонимный тип
-                    }
-
-                    return new { Usage = "Unknown", BusyRam = 0.0, TotalRam = 0.0 }; // Значения по умолчанию
-                });
-                dynamic ramUsageResult = ramUsage;
-                InfoRAMUsage.Text = ramUsageResult.Usage + "\n" + Math.Round(ramUsageResult.BusyRam / 1024 / 1024, 2) +
-                                    "GB/" + Math.Round(ramUsageResult.TotalRam / 1024 / 1024, 1) + "GB";
-                infoARAMUsageBannerPolygonText.Text = ramUsageResult.Usage;
+                InfoRAMUsage.Text = sensorsInformation.RamUsage;
+                infoARAMUsageBannerPolygonText.Text = sensorsInformation.RamUsagePercent + "%";
                 infoARAMUsageBigBannerPolygonText.Text = infoARAMUsageBannerPolygonText.Text;
                 infoIRAMUsageBigBanner.Text = InfoRAMUsage.Text;
                 //InfoARAMBanner График
-                _ramUsageHelper.Clear();
-                _ramUsageHelper.Add(new TotalBusyRam
+                try
                 {
-                    BusyRam = ramUsageResult.BusyRam,
-                    TotalRam = ramUsageResult.TotalRam
-                });
+                    BusyRam = Convert.ToDouble(sensorsInformation?.RamBusy?.Replace("GB", string.Empty));
+                    TotalRam = Convert.ToDouble(sensorsInformation?.RamTotal?.Replace("GB", string.Empty));
+                }
+                catch 
+                {
+                    BusyRam = 0;
+                    TotalRam = 0;
+                }
+
             }
 
-            if (infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 0 && _ryzenAccess == 0x0)
+            if (infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 0 && RyzenadjProvider.IsPhysicallyUnavailable)
             {
-                await RyzenAdjWrapper.CpuFrequencyManager.AsyncWmiGetCoreFreq(_numberOfCores);
+                ZenstatesCoreProvider.GlobalCpuDetectionMethod = 2;
             }
-
-            if (AppSettings.RTSSMetricsEnabled || AppSettings.NiIconsEnabled)
+            if (infoCPUSectionGetInfoTypeComboBox.SelectedIndex == 1)
             {
-                var (avgCoreClk, avgCoreVolt, endClkString) = CalculateCoreMetrics();
-                if (AppSettings.RTSSMetricsEnabled)
-                {
-                    var replacements = GetReplacements(avgCoreClk, avgCoreVolt);
-
-                    if (_rtssset.AdvancedCodeEditor.Contains("$cpu_clock_cycle$") &&
-                        _rtssset.AdvancedCodeEditor.Contains("$cpu_clock_cycle_end$"))
-                    {
-                        var prefix = _rtssset.AdvancedCodeEditor.Split("$cpu_clock_cycle$")[0];
-                        var suffix = _rtssset.AdvancedCodeEditor.Split("$cpu_clock_cycle_end$")[1];
-
-                        _rtssLine = ReplacePlaceholders(prefix, replacements)
-                                    + endClkString
-                                    + ReplacePlaceholders(suffix, replacements);
-                    }
-                    else
-                    {
-                        _rtssLine = ReplacePlaceholders(_rtssset.AdvancedCodeEditor, replacements);
-                    }
-
-                    RtssHandler.ChangeOsdText(_rtssLine);
-                }
-                if (AppSettings.NiIconsEnabled)
-                {
-                    // Обновляем минимальные и максимальные значения
-                    UpdateMinMaxValues(_niiconsMinMaxValues, 0, RyzenAdjWrapper.Get_stapm_value(_ryzenAccess));
-                    UpdateMinMaxValues(_niiconsMinMaxValues, 1, RyzenAdjWrapper.Get_fast_value(_ryzenAccess));
-                    UpdateMinMaxValues(_niiconsMinMaxValues, 2, RyzenAdjWrapper.Get_slow_value(_ryzenAccess));
-                    UpdateMinMaxValues(_niiconsMinMaxValues, 3, RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess));
-                    UpdateMinMaxValues(_niiconsMinMaxValues, 4, RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess));
-                    UpdateMinMaxValues(_niiconsMinMaxValues, 5, RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess));
-                    UpdateMinMaxValues(_niiconsMinMaxValues, 6, ConvertFromTextToFloat(tbCPUFreq.Text.Replace("infoAGHZ".GetLocalized(), string.Empty)));
-                    UpdateMinMaxValues(_niiconsMinMaxValues, 7, ConvertFromTextToFloat(tbCPUVolt.Text.Replace("V", string.Empty)));
-                    UpdateMinMaxValues(_niiconsMinMaxValues, 8, RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess));
-                    UpdateMinMaxValues(_niiconsMinMaxValues, 9, RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess));
-                    UpdateMinMaxValues(_niiconsMinMaxValues, 10, RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess));
-
-                    // Обновляем текст иконок
-                    UpdateNiIconText("Settings_ni_Values_STAPM", RyzenAdjWrapper.Get_stapm_value(_ryzenAccess), "W", _niiconsMinMaxValues[0], "Settings_ni_Values_STAPM".GetLocalized());
-                    UpdateNiIconText("Settings_ni_Values_Fast", RyzenAdjWrapper.Get_fast_value(_ryzenAccess), "W", _niiconsMinMaxValues[1], "Settings_ni_Values_Fast".GetLocalized());
-                    UpdateNiIconText("Settings_ni_Values_Slow", RyzenAdjWrapper.Get_slow_value(_ryzenAccess), "W", _niiconsMinMaxValues[2], "Settings_ni_Values_Slow".GetLocalized());
-                    UpdateNiIconText("Settings_ni_Values_VRMEDC", RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), "A", _niiconsMinMaxValues[3], "Settings_ni_Values_VRMEDC".GetLocalized());
-                    UpdateNiIconText("Settings_ni_Values_CPUTEMP", RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess), "C", _niiconsMinMaxValues[4], "Settings_ni_Values_CPUTEMP".GetLocalized());
-                    UpdateNiIconText("Settings_ni_Values_CPUUsage", RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess), "%", _niiconsMinMaxValues[5], "Settings_ni_Values_CPUUsage".GetLocalized());
-                    UpdateNiIconText("Settings_ni_Values_AVGCPUCLK", ConvertFromTextToFloat(tbCPUFreq.Text.Replace("infoAGHZ".GetLocalized(), string.Empty)), "GHz", _niiconsMinMaxValues[6], "Settings_ni_Values_AVGCPUCLK".GetLocalized());
-                    UpdateNiIconText("Settings_ni_Values_AVGCPUVOLT", ConvertFromTextToFloat(tbCPUVolt.Text.Replace("V", string.Empty)), "V", _niiconsMinMaxValues[7], "Settings_ni_Values_AVGCPUVOLT".GetLocalized());
-                    UpdateNiIconText("Settings_ni_Values_GFXCLK", RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess), "MHz", _niiconsMinMaxValues[8], "Settings_ni_Values_GFXCLK".GetLocalized());
-                    UpdateNiIconText("Settings_ni_Values_GFXTEMP", RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess), "C", _niiconsMinMaxValues[9], "Settings_ni_Values_GFXTEMP".GetLocalized());
-                    UpdateNiIconText("Settings_ni_Values_GFXVOLT", RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess), "V", _niiconsMinMaxValues[10], "Settings_ni_Values_GFXVOLT".GetLocalized());
-                }
+                ZenstatesCoreProvider.GlobalCpuDetectionMethod = 1;
             }
         }
         catch (Exception ex)
@@ -1859,184 +1336,6 @@ public sealed partial class ИнформацияPage
             SendSmuCommand.TraceIt_TraceError(ex.ToString());
         }
     }
-
-    #region Update Ni-Icons information voids
-
-    private static void UpdateMinMaxValues(List<MinMax> minMaxValues, int index, float currentValue) // Сохраняет минимальные и максимальные значение в словарь
-    {
-        if (minMaxValues[index].Min == 0.0f)
-        {
-            minMaxValues[index].Min = currentValue;
-        }
-
-        minMaxValues[index].Max = Math.Max(minMaxValues[index].Max, currentValue);
-        minMaxValues[index].Min = Math.Min(minMaxValues[index].Min, currentValue);
-    }
-
-    private void UpdateNiIconText(string key, float currentValue, string unit, MinMax minMaxValue, string description) // Обновляет текущее значение показателей на трей иконках
-    {
-        // Ограничение и округление текущего, минимального и максимального значений
-        var currentValueText = Math.Round(currentValue, 3).ToString(CultureInfo.InvariantCulture);
-        var minValueText = Math.Round(minMaxValue.Min, 3).ToString(CultureInfo.InvariantCulture);
-        var maxValueText = Math.Round(minMaxValue.Max, 3).ToString(CultureInfo.InvariantCulture);
-
-
-        var tooltip = $"Saku Overclock© -\nTrayMon\n{description}" +
-                      "Settings_ni_Values_CurrentValue".GetLocalized() + currentValueText + unit; // Сам тултип
-
-
-        var extendedTooltip = "Settings_ni_Values_MinValue".GetLocalized() + minValueText + unit +
-                                   "Settings_ni_Values_MaxValue".GetLocalized() + maxValueText + unit; // Расширенная часть тултипа (минимум и максимум)
-
-        Change_Ni_Icons_Text(key, currentValueText, tooltip, extendedTooltip);
-    }
-
-    #endregion
-
-    #region Update RTSS Line information voids
-
-    private static string ReplacePlaceholders(string input, Dictionary<string, string> replacements) // Меняет заголовки в соответствии со словарём
-    {
-        return replacements.Aggregate(input, (current, replacement) => current.Replace(replacement.Key, replacement.Value));
-    }
-
-    private Dictionary<string, string> GetReplacements(double avgCoreClk, double avgCoreVolt) // Словарь с элементами, которые нужно заменить
-    {
-        // Если кэшированное значение отсутствует, вычислить его
-        _cachedSelectedProfileReplacement ??= ShellPage.SelectedProfile
-            .Replace('а', 'a').Replace('м', 'm')
-            .Replace('и', 'i').Replace('н', 'n')
-            .Replace('М', 'M').Replace('у', 'u')
-            .Replace('Э', 'E').Replace('о', 'o')
-            .Replace('Б', 'B').Replace('л', 'l')
-            .Replace('с', 'c').Replace('С', 'C')
-            .Replace('р', 'r').Replace('т', 't')
-            .Replace('ь', ' ');
-
-        return new Dictionary<string, string>
-        {
-            {
-                "$SelectedProfile$",
-                _cachedSelectedProfileReplacement
-            },
-            {
-                "$stapm_value$",
-                Math.Round(RyzenAdjWrapper.Get_stapm_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$stapm_limit$",
-                Math.Round(RyzenAdjWrapper.Get_stapm_limit(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$fast_value$",
-                Math.Round(RyzenAdjWrapper.Get_fast_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$fast_limit$",
-                Math.Round(RyzenAdjWrapper.Get_fast_limit(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$slow_value$",
-                Math.Round(RyzenAdjWrapper.Get_slow_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$slow_limit$",
-                Math.Round(RyzenAdjWrapper.Get_slow_limit(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$vrmedc_value$",
-                Math.Round(RyzenAdjWrapper.Get_vrmmax_current_value(_ryzenAccess), 3)
-                    .ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$vrmedc_max$",
-                Math.Round(RyzenAdjWrapper.Get_vrmmax_current(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$cpu_temp_value$",
-                Math.Round(RyzenAdjWrapper.Get_tctl_temp_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$cpu_temp_max$",
-                Math.Round(RyzenAdjWrapper.Get_tctl_temp(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$cpu_usage$",
-                Math.Round(RyzenAdjWrapper.Get_cclk_busy_value(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$gfx_clock$",
-                Math.Round(RyzenAdjWrapper.Get_gfx_clk(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$gfx_volt$",
-                Math.Round(RyzenAdjWrapper.Get_gfx_volt(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$gfx_temp$",
-                Math.Round(RyzenAdjWrapper.Get_gfx_temp(_ryzenAccess), 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$average_cpu_clock$", Math.Round(avgCoreClk / _numberOfCores, 3).ToString(CultureInfo.InvariantCulture)
-            },
-            {
-                "$average_cpu_voltage$",
-                Math.Round(avgCoreVolt / _numberOfCores, 3).ToString(CultureInfo.InvariantCulture)
-            }
-        };
-    }
-
-    private (double avgCoreClk, double avgCoreVolt, string endClkString) CalculateCoreMetrics() // Считает средние значения напряжения и частоты процессора
-    {
-        var avgCoreClk = 0d;
-        var avgCoreVolt = 0d;
-        var endClkString = string.Empty;
-        var pattern = @"\$cpu_clock_cycle\$(.*?)\$cpu_clock_cycle_end\$";
-        var match = Regex.Match(_rtssset.AdvancedCodeEditor, pattern);
-
-        for (var f = 0u; f < _numberOfCores; f++)
-        {
-            if (f < 8)
-            {
-                var clk = Math.Round(RyzenAdjWrapper.Get_core_clk(_ryzenAccess, f), 3);
-                var volt = Math.Round(RyzenAdjWrapper.Get_core_volt(_ryzenAccess, f), 3);
-                avgCoreClk += clk;
-                avgCoreVolt += volt;
-
-                if (_rtssset.AdvancedCodeEditor == "")
-                {
-                    RtssLoad();
-                }
-
-                endClkString += f > 3
-                    ? "<Br>        "
-                    : "" + match.Groups[1].Value
-                        .Replace("$currCore$", f.ToString())
-                        .Replace("$cpu_core_clock$", clk.ToString(CultureInfo.InvariantCulture))
-                        .Replace("$cpu_core_voltage$", volt.ToString(CultureInfo.InvariantCulture));
-            }
-        }
-
-        return (avgCoreClk, avgCoreVolt, endClkString);
-    }
-
-    private static float ConvertFromTextToFloat(string input) // Конвертирует из текста в числа с плавающей запятой
-    {
-        try
-        {
-            // Попробуем преобразовать строку в float
-            _ = float.TryParse(input, out var result);
-            return result;
-        }
-        catch
-        {
-            return 0f;
-        }
-    }
-
-    #endregion
-
-
     // Автообновление информации 
     private void StartInfoUpdate() // Начать обновление информации
     {
@@ -2066,10 +1365,8 @@ public sealed partial class ИнформацияPage
             InfoAPSTBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
             InfoAPSTBigBannerPolygon.Points.Clear();
             InfoAPSTBigBannerPolygon.Points.Add(new Windows.Foundation.Point(0, 49));
-            _ryzenAccess = RyzenAdjWrapper.Init_ryzenadj();
-            _ = RyzenAdjWrapper.Init_Table(_ryzenAccess);
             _dispatcherTimer = new DispatcherTimer();
-            _dispatcherTimer.Tick += (_, _) => UpdateInfoAsync();
+            _dispatcherTimer.Tick += (_, _) => UpdateInfo();
             _dispatcherTimer.Interval = TimeSpan.FromMilliseconds(300);
             App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
             _dispatcherTimer.Start();
@@ -2342,15 +1639,6 @@ public sealed partial class ИнформацияPage
         if (!_loaded)
         {
             return;
-        }
-
-        if (infoNiIconsButton.IsChecked == true)
-        {
-            CreateNotifyIcons();
-        }
-        else
-        {
-            DisposeAllNotifyIcons();
         }
 
         AppSettings.NiIconsEnabled = infoNiIconsButton.IsChecked == true;
