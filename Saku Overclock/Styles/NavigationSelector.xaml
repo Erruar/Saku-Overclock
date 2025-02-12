@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Saku_Overclock.Styles.NavigationSelector"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Saku_Overclock.Styles"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ThemeShadow x:Name="SharedShadow" />
+    </UserControl.Resources> 
+    <Grid>
+        <!-- Переключение страниц -->
+        <FlipView x:Name="FlipViewContainer" 
+              Background="Transparent">
+            <FlipView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <ItemsControl ItemsSource="{Binding}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Padding="5"
+                                            Margin="0,5,5,5" 
+                                            CornerRadius="10" 
+                                            Shadow="{ThemeResource SharedShadow}" 
+                                            Translation="0,0,20" 
+                                            VerticalAlignment="Stretch" 
+                                            HorizontalAlignment="Stretch" 
+                                            HorizontalContentAlignment="Stretch"
+                                            Click="Button_Click">
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Border Margin="20" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                                <BitmapIcon MaxHeight="50" HorizontalAlignment="Center" VerticalAlignment="Center" ShowAsMonochrome="True" UriSource="{Binding IconSource}"/>
+                                            </Border>
+                                            <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="14" FontWeight="SemiBold" Text="{Binding Text}"/>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </DataTemplate>
+            </FlipView.ItemTemplate>
+        </FlipView>
+    </Grid>
+</UserControl>
