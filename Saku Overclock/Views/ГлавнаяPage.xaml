@@ -3,42 +3,515 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ui="using:ABI.Microsoft.UI.Xaml.Controls" xmlns:emit="using:System.Reflection.Emit" xmlns:viewmodels="using:Saku_Overclock.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:ГлавнаяViewModel}"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ui="using:ABI.Microsoft.UI.Xaml.Controls" xmlns:emit="using:System.Reflection.Emit" xmlns:viewmodels="using:Saku_Overclock.ViewModels" xmlns:local="using:Saku_Overclock.Styles" d:DataContext="{d:DesignInstance Type=viewmodels:ГлавнаяViewModel}"
     mc:Ignorable="d">
     <Page.Resources>
-        <ThemeShadow x:Name="SharedShadow" />  
+        <ThemeShadow x:Name="SharedShadow" />
+        <Button x:Name="HiddenButton" Visibility="Collapsed"/>
     </Page.Resources>
     <Grid x:Name="ContentArea" Margin="-48,-65,-50,0">
-        <Border MinHeight="325" CornerRadius="8" Margin="0,-115,0,0">
-            <Border.Background>
-                <ImageBrush
-                           ImageSource="/Assets/home.png"
-                           Stretch="UniformToFill" />
-            </Border.Background>
-        </Border>
-        
-        <StackPanel CornerRadius="8,8,0,0" Width="300" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,90">
-            <FlipView Height="150" Background="Transparent">
-                <FlipViewItem>
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top">
-                        <TextBlock x:Uid="Main_Welcome"  FontSize="17" FontWeight="SemiBold" Text="Добро пожаловать в" />
-                        <StackPanel Orientation="Horizontal" Padding="0,3,0,0">
-                            <TextBlock FontSize="27" Text="Saku Overclock" FontWeight="ExtraBold" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                            <StackPanel HorizontalAlignment="Right" Margin="0,0,14,0" VerticalAlignment="Top" Background="{ThemeResource AccentColor}" CornerRadius="3">
-                                <TextBlock FontSize="10" Padding="3,0,3,0"
-               FontWeight="Bold"
-               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-               Text="{Binding Version}">
-                                    <TextBlock.DataContext>
-                                        <viewmodels:ГлавнаяViewModel/>
-                                    </TextBlock.DataContext>
-                                </TextBlock>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <StackPanel Orientation="Horizontal" Padding="0,3,0,0">
+                <TextBlock FontSize="27" Text="Saku Overclock" FontWeight="ExtraBold" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <StackPanel HorizontalAlignment="Right" Margin="0,0,14,0" VerticalAlignment="Top" Background="{ThemeResource AccentColor}" CornerRadius="3">
+                    <TextBlock FontSize="10" Padding="3,0,3,0"
+FontWeight="Bold"
+Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+Text="{Binding Version}">
+                        <TextBlock.DataContext>
+                            <viewmodels:ГлавнаяViewModel/>
+                        </TextBlock.DataContext>
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+            <TextBlock FontSize="27" Text="—"/>
+            <TextBlock Margin="10,5,0,0" x:Uid="Main_Welcome_1" FontSize="20" FontWeight="SemiBold" Text="Для тех, кто желает максимум!" Padding="0,2,0,0"/>
+        </StackPanel>
+        <Grid HorizontalAlignment="Stretch" Margin="0,40,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" MinWidth="525"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" Margin="0,0,5,5" CornerRadius="8" Background="{ThemeResource PostAcrylicBrush}">
+                <StackPanel Margin="10,4,0,0" Orientation="Vertical">
+                    <TextBlock FontWeight="SemiBold" FontSize="17" Text="Информация об устройстве"/>
+                </StackPanel>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*" MaxHeight="270"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="0,33,0,27">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition MaxWidth="260"/>
+                            <ColumnDefinition MaxWidth="227"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" Margin="10,0,0,0" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                            <Border>
+                                <Border.Background>
+                                    <ImageBrush ImageSource="ms-appx:///Assets/Ryzen-Logo.png" Stretch="Fill"/>
+                                </Border.Background>
+                            </Border>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0" Margin="10,-20,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                    <TextBlock FontWeight="SemiBold" Text="Ryzen 9 8945HS \w Radeon 890M" x:Name="Info_CpuName" TextWrapping="Wrap"/>
+                                    <TextBlock FontWeight="Bold" FontSize="20" Text="8С/16T" x:Name="Info_CpuCores"/>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                        <Grid Grid.Column="1" Margin="10,0,0,0" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Margin="10,-20,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                <TextBlock FontWeight="SemiBold" Text="Температура процессора" TextWrapping="Wrap"/>
+                                <TextBlock FontWeight="Bold" FontSize="20" x:Name="Indicators_Temp" Text="43С"/>
                             </StackPanel>
-                        </StackPanel>
-                        <TextBlock x:Uid="Main_Welcome_1" FontSize="17" FontWeight="SemiBold" Text="Для тех, кто желает максимум!" Padding="0,2,0,0"/>
-                        <TextBlock FontSize="17" Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" FontWeight="Bold" Padding="0,3,0,0"/>
-                    </StackPanel>
-                </FlipViewItem>
+                            <Grid Grid.Row="1">
+                                <!-- Canvas для размещения кривой и точки -->
+                                <Canvas Background="Transparent">
+                                    <!-- Кривая с градиентной заливкой и обводкой -->
+                                    <Path x:Name="CurvePath" StrokeThickness="10" Grid.Row="1">
+                                        <Path.Data>
+                                            <PathGeometry>
+                                                <PathFigure StartPoint="0,50">
+                                                    <BezierSegment Point1="20,30" Point2="50,30" Point3="70,40"/>
+                                                    <BezierSegment Point1="90,50" Point2="100,50" Point3="120,43"/>
+                                                    <BezierSegment Point1="160,13" Point2="160,10" Point3="220,5"/>
+                                                    <LineSegment Point="230,5" />
+                                                    <PolyLineSegment Points="230,5 230,150 0,150" />
+                                                </PathFigure>
+                                            </PathGeometry>
+                                        </Path.Data>
+
+                                        <!-- Градиентная заливка (сверху вниз) -->
+                                        <Path.Fill>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Color="#366FC2" Offset="0" />
+                                                <GradientStop Color="#19366FC2" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Path.Fill>
+
+                                        <!-- Градиентная обводка (слева направо) -->
+                                        <Path.Stroke>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#AA1B7CFE" Offset="0" />
+                                                <GradientStop Color="#1B7CFE" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Path.Stroke>
+                                    </Path>
+
+                                    <!-- Точка, которая движется по кривой -->
+                                    <Ellipse Width="14" Height="14" Fill="White" Stroke="#AA000000" StrokeThickness="0.5">
+                                        <Ellipse.RenderTransform>
+                                            <TranslateTransform x:Name="PointTransform" X="160" Y="4" />
+                                        </Ellipse.RenderTransform>
+                                    </Ellipse>
+                                </Canvas>
+                            </Grid>
+                        </Grid>
+                        <Grid Grid.Column="2">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" Margin="10,0,10,5" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="70"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                        <TextBlock FontWeight="SemiBold" Text="Загрузка процессора" TextWrapping="Wrap"/>
+                                        <TextBlock FontWeight="Bold" FontSize="20" x:Name="Indicators_Busy" Text="70%"/>
+                                    </StackPanel>
+                                    <Grid Grid.Column="1" Margin="-10,0,0,0">
+                                        <ProgressRing x:Name="Indicators_Busy_Ring" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                        <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE94C;"/>
+                                    </Grid>
+                                </Grid>
+                                <Grid Grid.Row="1" Margin="10,5,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="70"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                        <TextBlock FontWeight="SemiBold" Text="Частота процессора" TextWrapping="Wrap"/>
+                                        <TextBlock FontWeight="Bold" FontSize="20" x:Name="Indicators_Freq" Text="5.7 ГГц"/>
+                                    </StackPanel>
+                                    <Grid Grid.Column="1" Margin="-10,0,0,0">
+                                        <ProgressRing Value="70" Maximum="100" Minimum="0" x:Name="Indicators_Freq_Ring" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                        <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xECAD;"/>
+                                    </Grid>
+                                </Grid> 
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid Grid.Row="1" Margin="0,-23,0,5">
+                        <ScrollViewer Margin="10,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition MaxHeight="75"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition MaxHeight="75"/> 
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0" VerticalAlignment="Stretch" Margin="-10,5,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition MaxHeight="75"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Row="0" Grid.Column="0" Margin="10,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="70"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                            <TextBlock FontWeight="SemiBold" Text="RAM Usage" TextWrapping="Wrap"/>
+                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_Ram" Text="7.8Gb"/>
+                                        </StackPanel>
+                                        <Grid Grid.Column="1" Margin="-10,0,0,0">
+                                            <ProgressRing x:Name="Indicators_Ram_Ring" Value="20" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                            <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE81E;"/>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="70"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                            <TextBlock FontWeight="SemiBold" Text="Real power" TextWrapping="Wrap"/>
+                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_Fast" Text="0"/>
+                                        </StackPanel>
+                                        <Grid Grid.Column="1" Margin="-10,0,0,0">
+                                            <ProgressRing x:Name="Indicators_Fast_Ring" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                            <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xEC4A;"/>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="70"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                            <TextBlock FontWeight="SemiBold" Text="Battery" TextWrapping="Wrap"/>
+                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_BatteryPercent" Text="N/A"/>
+                                        </StackPanel>
+                                        <Grid Grid.Column="1" Margin="-10,0,0,0">
+                                            <ProgressRing x:Name="Indicators_BatteryPercent_Ring" Value="0" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                            <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE83F;"/>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid Grid.Row="0" Grid.Column="3" Margin="5,0,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="70"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                            <TextBlock FontWeight="SemiBold" Text="VRM EDC" TextWrapping="Wrap"/>
+                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_VrmEdc" Text="0"/>
+                                        </StackPanel>
+                                        <Grid Grid.Column="1" Margin="-10,0,0,0">
+                                            <ProgressRing x:Name="Indicators_VrmEdc_Ring" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                            <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xF7B0;"/>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <TextBlock Grid.Row="1" VerticalAlignment="Top" Margin="0,1,0,0" FontWeight="SemiBold" FontSize="17" Text="Часто используемое"/>
+                                <Grid Grid.Row="2" VerticalAlignment="Stretch" Margin="-10,5,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition MaxHeight="75"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Row="0" Grid.Column="0" Margin="10,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8"
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                        <Grid Margin="-10,-5,-5,-5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="70"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" Text="Пресеты" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                            <Grid Grid.Column="1" Margin="20,0,0,0">
+                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xeadf;"/>
+                                            </Grid>
+                                        </Grid> 
+                                    </Button>
+                                    <Button Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8"
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                        <Grid Margin="-10,-5,-5,-5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="70"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" Text="Разгон" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                            <Grid Grid.Column="1" Margin="20,0,0,0">
+                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE945;"/>
+                                            </Grid>
+                                        </Grid>
+                                    </Button>
+                                    <Button Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8"
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                        <Grid Margin="-10,-5,-5,-5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="70"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                                <TextBlock Margin="0,0,-25,0" FontWeight="SemiBold" Text="Настройки" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                            <Grid Grid.Column="1" Margin="20,0,0,0">
+                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE713;"/>
+                                            </Grid>
+                                        </Grid>
+                                    </Button>
+                                    <Button Grid.Row="0" Grid.Column="3" Margin="5,0,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8"
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                        <Grid Margin="-10,-5,-5,-5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="70"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
+                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" Text="Страница FAQ" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                            <Grid Grid.Column="1" Margin="20,0,0,0">
+                                                <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE736;"/>
+                                            </Grid>
+                                        </Grid>
+                                    </Button>
+                                </Grid>
+                            </Grid> 
+                        </ScrollViewer> 
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid HorizontalAlignment="Stretch" Grid.Column="1" CornerRadius="8">
+                <Grid CornerRadius="8" VerticalAlignment="Stretch" Grid.Row="0" Margin="0,0,0,5 " HorizontalAlignment="Stretch" Background="{ThemeResource PostAcrylicBrush}">
+                    <Pivot Margin="0,-15,0,-5" CornerRadius="8,8,8,8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <PivotItem Margin="12,0,12,-10">
+                            <PivotItem.Header>
+                                <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" Text="Пресеты"/>
+                            </PivotItem.Header>
+                            <Grid Margin="-12,0,-12,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="45"/>
+                                </Grid.RowDefinitions>
+                                <Pivot Grid.Row="0" Loaded="PivotProfiles_Loaded" Margin="-10,-20,-10,15" HorizontalAlignment="Center" HorizontalContentAlignment="Stretch">
+                                    <PivotItem>
+                                        <PivotItem.Header>
+                                            <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" Text="Свои"/>
+                                        </PivotItem.Header> 
+                                        <ScrollViewer Grid.Row="0">
+                                            <StackPanel Margin="10,0,10,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
+                                                <Button Style="{StaticResource AccentButtonStyle}" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                        <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xE718;"/>
+                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                            <TextBlock FontWeight="Bold" Text="11"/>
+                                                            <TextBlock TextWrapping="Wrap" Text="Кажется этот пресет без описания. Но вы можете это исправить"/>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Button>
+                                            </StackPanel>
+                                        </ScrollViewer> 
+                                    </PivotItem>
+                                    <PivotItem>
+                                        <PivotItem.Header>
+                                            <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" Text="Готовые"/>
+                                        </PivotItem.Header>
+                                        <ScrollViewer Margin="-10,0,-10,0">
+                                            <StackPanel Margin="10,0,10,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
+                                                <Button Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Height="32">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <FontIcon FontSize="19" Glyph="&#xEcad;"/>
+                                                        <TextBlock Margin="5,0,0,0" Text="Maximum" x:Uid="Preset_Max_Name"/>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Height="32">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <FontIcon Glyph="&#xe945;"/>
+                                                        <TextBlock Margin="5,0,0,0" Text="Speed" x:Uid="Preset_Speed_Name"/>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Height="32">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <FontIcon Glyph="&#xec49;"/>
+                                                        <TextBlock Margin="5,0,0,0" Text="Balance" x:Uid="Preset_Balance_Name"/>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Height="32">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <FontIcon Glyph="&#xec0a;"/>
+                                                        <TextBlock Margin="5,0,0,0" Text="Eco" x:Uid="Preset_Eco_Name"/>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Height="32">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <FontIcon Glyph="&#xebc0;"/>
+                                                        <TextBlock Margin="5,0,0,0" Text="Minimum" x:Uid="Preset_Min_Name"/>
+                                                    </StackPanel>
+                                                </Button>
+                                            </StackPanel>
+                                        </ScrollViewer>
+                                    </PivotItem>
+                                </Pivot>
+                                <Button Grid.Row="1" Margin="10,-20,10,20" CornerRadius="16" MinHeight="20" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
+                                    <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <FontIcon Glyph="&#xE768;" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Применить" FontWeight="SemiBold" FontSize="16" Margin="0,-1,0,0"/>
+                                        <FontIcon Glyph="&#xE76C;" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                    </Grid>
+                                </Button>
+                            </Grid>
+                        </PivotItem>
+                        <PivotItem>
+                            <PivotItem.Header>
+                                <TextBlock Margin="0,0,0,-8"
+FontSize="16"
+FontWeight="Bold" x:Uid="Shell_Changelog" Text="Changelog"/>
+                            </PivotItem.Header>
+                            <ScrollViewer Margin="-10,0,-10,0">
+                                <StackPanel Margin="10,0,10,0" Orientation="Vertical" x:Name="MainChangelogStackPanel" HorizontalAlignment="Stretch" IsHitTestVisible="True">
+                                    <TextBlock Text="◆ Now you have better information page"/>
+                                    <TextBlock Text="◆ Safe reapply feature"/>
+                                    <TextBlock Text="◆ 5x Times faster information page"/>
+                                    <TextBlock Text="◆ RTSS Support for information page"/>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </PivotItem>
+                        <PivotItem>
+                            <PivotItem.Header>
+                                <TextBlock Margin="0,0,0,-8"
+FontSize="16"
+FontWeight="Bold" x:Uid="Main_Guide" Text="Guide"/>
+                            </PivotItem.Header>
+                            <ScrollViewer Margin="-10,0,-10,0">
+                                <StackPanel Margin="10,0,10,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
+                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Title">Fixes &amp; Explanations:</TextBlock>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_OCTips">Overclocking/Undervolting tips</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#undervolting-support"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowTo04">How to apply the 0.4 GHz fix</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#explanation-how-to-apply-04-ghz-ryzen-mobile-fix"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowWork04">How actually works 0.4 GHz fix</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#how-did-it-actually-works"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Apply04">Applying fix 0.4 to certain cores</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#can-i-apply-this-fix-to-one-core-or-several-but-not-all-cores"/>
+                                    </Grid>
+                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Perf_Title">Performance mode:</TextBlock>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_MaxPerf">Max performance mode explanation</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#can-i-use-max-performance-option-while-on-ac-cable-power-supply"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Energy">Energy efficiency mode explanation</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#does-energy-efficiency-option-improve-battery-runtime"/>
+                                    </Grid>
+                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_CommonIssues_Title">Common Issues &amp; Solutions:</TextBlock>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowBoost">How to fix boost delay issues</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#how-to-fix-the-boost-delay-issue"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_WhyLose">Why I losing my values even without restart</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#why-do-i-lose-my-values-even-without-restart"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_TempErr">Temperature or power limit does not work</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#temperature-or-power-limit-does-not-work"/>
+                                    </Grid>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </PivotItem>
+                        <PivotItem>
+                            <PivotItem.Header>
+                                <TextBlock Margin="0,0,0,-8"
+FontSize="16"
+FontWeight="Bold" x:Uid="Main_Actions" Text="Actions"/>
+                            </PivotItem.Header>
+                            <ScrollViewer Margin="-10,0,-10,0">
+                                <StackPanel Margin="10,0,10,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
+                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Contrib_Title">Contributing &amp; Development:</TextBlock>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Support">Support the project author</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://www.donationalerts.com/r/RubyTrack"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HelpDev">Help with development</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock?tab=readme-ov-file#contributing"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_NewFunctions">Adding new functions for CPUs</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#adding-functions"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_DMCA">DMCA/Copyright policy</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#dmca---what-is-that-can-i-copy-this-program"/>
+                                    </Grid>
+                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Advanced_Title">Advanced Features:</TextBlock>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Fan">Adding fan control functionality</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#would-it-be-possible-to-add-fan-control-functionality"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ResetRest">Resetting values without restarting</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#would-it-be-possible-to-reset-values-without-restart"/>
+                                    </Grid>
+                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Supported_Title">Supported CPU Models:</TextBlock>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_CPUFamily">CPU family support and functions table</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#overclocking-page"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ProcSpec">Processor-specific details</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#details-for-"/>
+                                    </Grid>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ProcContr">Processors of contributors</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#processors-of-contributors"/>
+                                    </Grid>
+                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Errors_Title">Error Handling:</TextBlock>
+                                    <Grid Height="20">
+                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_FAQ">FAQs related to error messages</TextBlock>
+                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#error-handling"/>
+                                    </Grid>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </PivotItem>
+                    </Pivot>
+                </Grid>
+            </Grid>
+        </Grid>
+        
+        <StackPanel Visibility="Collapsed" CornerRadius="8,8,0,0" Width="300" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,90">
+            <FlipView Height="150" Background="Transparent"> 
                 <FlipViewItem>
                     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                         <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Source="ms-appx:///Assets/InfoBadge/Saku-Overclock-Github-Readme.png"/>
@@ -51,171 +524,7 @@
                         <Button Click="MainGithubIssuesButton_Click"  x:Name="MainGithubIssuesButton" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.0"/>
                     </Grid>
                 </FlipViewItem>
-            </FlipView>
-            <Grid CornerRadius="8" Background="{ThemeResource PostAcrylicBrush}">
-                <Pivot Margin="0,-15,0,0" Height="125">
-                    <PivotItem>
-                        <PivotItem.Header>
-                            <TextBlock Margin="0,0,0,-8"
-                       FontSize="16"
-                       FontWeight="Bold" x:Uid="Shell_Changelog" Text="Changelog"/>
-                        </PivotItem.Header>
-                        <ScrollViewer Margin="-10,0,-10,0">
-                            <StackPanel Width="274" Orientation="Vertical" x:Name="MainChangelogStackPanel" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                <TextBlock Text="◆ Now you have better information page"/>
-                                <TextBlock Text="◆ Safe reapply feature"/>
-                                <TextBlock Text="◆ 5x Times faster information page"/>
-                                <TextBlock Text="◆ RTSS Support for information page"/>
-                            </StackPanel> 
-                        </ScrollViewer>
-                    </PivotItem>
-                    <PivotItem>
-                        <PivotItem.Header>
-                            <TextBlock Margin="0,0,0,-8"
-                       FontSize="16"
-                       FontWeight="Bold" x:Uid="Main_Guide" Text="Guide"/>
-                        </PivotItem.Header>
-                        <ScrollViewer Margin="-10,0,-10,0">
-                            <StackPanel Width="274" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Title">Fixes &amp; Explanations:</TextBlock>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_OCTips">Overclocking/Undervolting tips</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#undervolting-support"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowTo04">How to apply the 0.4 GHz fix</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#explanation-how-to-apply-04-ghz-ryzen-mobile-fix"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowWork04">How actually works 0.4 GHz fix</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#how-did-it-actually-works"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Apply04">Applying fix 0.4 to certain cores</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#can-i-apply-this-fix-to-one-core-or-several-but-not-all-cores"/>
-                                </Grid>
-                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Perf_Title">Performance mode:</TextBlock>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_MaxPerf">Max performance mode explanation</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#can-i-use-max-performance-option-while-on-ac-cable-power-supply"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Energy">Energy efficiency mode explanation</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#does-energy-efficiency-option-improve-battery-runtime"/>
-                                </Grid>
-                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_CommonIssues_Title">Common Issues &amp; Solutions:</TextBlock>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowBoost">How to fix boost delay issues</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#how-to-fix-the-boost-delay-issue"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_WhyLose">Why I losing my values even without restart</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#why-do-i-lose-my-values-even-without-restart"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_TempErr">Temperature or power limit does not work</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#temperature-or-power-limit-does-not-work"/>
-                                </Grid> 
-                            </StackPanel> 
-                        </ScrollViewer>
-                    </PivotItem>
-                    <PivotItem>
-                        <PivotItem.Header>
-                            <TextBlock Margin="0,0,0,-8"
-                       FontSize="16"
-                       FontWeight="Bold" x:Uid="Main_Actions" Text="Actions"/>
-                        </PivotItem.Header>
-                        <ScrollViewer Margin="-10,0,-10,0">
-                            <StackPanel Width="274" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Contrib_Title">Contributing &amp; Development:</TextBlock>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Support">Support the project author</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://www.donationalerts.com/r/RubyTrack"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HelpDev">Help with development</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock?tab=readme-ov-file#contributing"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_NewFunctions">Adding new functions for CPUs</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#adding-functions"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_DMCA">DMCA/Copyright policy</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#dmca---what-is-that-can-i-copy-this-program"/>
-                                </Grid>
-                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Advanced_Title">Advanced Features:</TextBlock>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Fan">Adding fan control functionality</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#would-it-be-possible-to-add-fan-control-functionality"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ResetRest">Resetting values without restarting</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#would-it-be-possible-to-reset-values-without-restart"/>
-                                </Grid>
-                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Supported_Title">Supported CPU Models:</TextBlock>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_CPUFamily">CPU family support and functions table</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#overclocking-page"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ProcSpec">Processor-specific details</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#details-for-"/>
-                                </Grid>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ProcContr">Processors of contributors</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#processors-of-contributors"/>
-                                </Grid>
-                                <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Errors_Title">Error Handling:</TextBlock>
-                                <Grid Height="20">
-                                    <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_FAQ">FAQs related to error messages</TextBlock>
-                                    <Button Background="Transparent" BorderBrush="Transparent" Width="274" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#error-handling"/>
-                                </Grid>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </PivotItem>
-                </Pivot>
-            </Grid>
+            </FlipView> 
         </StackPanel>
-        <Grid VerticalAlignment="Bottom" Margin="0,0,0,10">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="20"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300"/>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="20"/>
-            </Grid.ColumnDefinitions> 
-            <Button Grid.Column="4" CornerRadius="20" Shadow="{ThemeResource SharedShadow}" Translation="0,0,62" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Height="40" x:Name="Discrd" Click="Discrd_Click">
-                <Grid HorizontalAlignment="Stretch">
-                    <Border Margin="0,2.3,-54,0" VerticalAlignment="Center" HorizontalAlignment="Right">
-                        <Border.RenderTransform>
-                            <ScaleTransform ScaleX="0.30" ScaleY="0.30"/>
-                        </Border.RenderTransform>
-                        <BitmapIcon  Margin="3,0,-3,-44" UriSource="/Assets/discord.png" Height="84"/>
-                    </Border> 
-                    <TextBlock VerticalAlignment="Center" x:Uid="Main_Disc" Padding="0,0,7,0" HorizontalAlignment="Left" FontSize="14" FontWeight="SemiBold" Text="Дискордик"/>
-                </Grid> 
-            </Button>
-            <Button CornerRadius="20" Shadow="{ThemeResource SharedShadow}" Translation="0,0,62" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Grid.Column="6" Height="40" Click="Info_Click">
-                <Grid HorizontalAlignment="Stretch">
-                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Right"     Glyph="&#xe950;"/>
-                    <TextBlock VerticalAlignment="Center" x:Uid="Main_Info" Padding="0,0,7,0" HorizontalAlignment="Left" FontSize="14" FontWeight="SemiBold" Text="Информация"/>
-                </Grid>
-            </Button>
-            <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Grid.Column="0" Translation="0,0,62" Height="40" Style="{StaticResource AccentButtonStyle}" CornerRadius="20" Shadow="{ThemeResource SharedShadow}" Click="Param_Click">
-                <Grid HorizontalAlignment="Stretch">
-                    <FontIcon HorizontalAlignment="Left" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe945;"/>
-                    <TextBlock x:Uid="Main_Param" HorizontalAlignment="Center" FontSize="16" FontWeight="SemiBold" Text="Разгон"/>
-                    <TextBlock Text=">>" FontSize="20" FontFamily="Consolas" HorizontalAlignment="Right"/>
-                </Grid>
-            </Button>
-        </Grid> 
     </Grid>
 </Page>
