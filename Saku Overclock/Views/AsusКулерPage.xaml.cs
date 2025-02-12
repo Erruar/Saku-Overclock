@@ -11,15 +11,18 @@ public sealed partial class AsusКулерPage
     private static int _fanCount = -1;
     private static bool _unavailableFlag;
     private static int _setFanIndex = -1;
-    private static int _availableCpuCores; 
+    private List<double> _systemInfo = [];
     private bool _isPageLoaded;
-    private IntPtr _ry = IntPtr.Zero;
+    private readonly IBackgroundDataUpdater _dataUpdater;
     private DispatcherTimer? _tempUpdateTimer;
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
 
     public AsusКулерPage()
     {
-        InitializeComponent();
+        InitializeComponent(); 
+        _dataUpdater = App.BackgroundUpdater;
+        _dataUpdater.DataUpdated += OnDataUpdated;
+
         Loaded += AsusКулерPage_Loaded;
         Unloaded += AsusКулерPage_Unloaded;
     }
@@ -31,6 +34,7 @@ public sealed partial class AsusКулерPage
         AsusWinIOWrapper.Cleanup_WinIo();
         _isPageLoaded = false;
         StopTempUpdate();
+       _dataUpdater.DataUpdated -= OnDataUpdated;  
     }
 
     private void AsusКулерPage_Loaded(object sender, RoutedEventArgs e)
@@ -72,9 +76,7 @@ public sealed partial class AsusКулерPage
         }
 
         _isPageLoaded = true;
-        UpdateSystemInformation();
-        _ry = RyzenAdjWrapper.Init_ryzenadj();
-        RyzenAdjWrapper.Init_Table(_ry);
+        UpdateSystemInformation(); 
         StartTempUpdate();
     }
 
@@ -86,6 +88,17 @@ public sealed partial class AsusКулерPage
         _tempUpdateTimer.Start();
     }
 
+    private void OnDataUpdated(object? sender, SensorsInformation info)
+    {
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            _systemInfo = [];
+            _systemInfo.Add(info.CpuTempValue);
+            _systemInfo.Add(info.CpuFrequency);
+            _systemInfo.Add(info.CpuVoltage);
+        });
+    }
+
     private async Task UpdateTemperatureAsync()
     {
         var tempLine = string.Empty;
@@ -94,57 +107,12 @@ public sealed partial class AsusКулерPage
             var fanSpeeds = GetFanSpeeds();
             tempLine = fanSpeeds.Count > 0 ? fanSpeeds[0].ToString() : "-.-";
         });
-        _ry = RyzenAdjWrapper.Init_ryzenadj();
-        if (_ry == IntPtr.Zero)
-        {
-            CPUFanRPM.Text = tempLine;
-            return;
-        }
 
-        RyzenAdjWrapper.Init_Table(_ry);
-        _ = RyzenAdjWrapper.Refresh_table(_ry);
-        var avgCoreClk = 0d;
-        var avgCoreVolt = 0d;
-        var countClk = 0;
-        var countVolt = 0;
-        if (_availableCpuCores == 0)
-        {
-            _availableCpuCores =
-                await ИнформацияPage.GetCpuCoresAsync(); // Оптимизация приложения, лишний раз не обновлять это значение
-        }
-
-        for (var f = 0u; f < _availableCpuCores; f++)
-        {
-            if (f < 8)
-            {
-                var clk = Math.Round(RyzenAdjWrapper.Get_core_clk(_ry, f), 3);
-                var volt = Math.Round(RyzenAdjWrapper.Get_core_volt(_ry, f), 3);
-                if (clk != 0)
-                {
-                    avgCoreClk += clk;
-                    countClk += 1;
-                }
-
-                if (volt != 0)
-                {
-                    avgCoreVolt += volt;
-                    countVolt += 1;
-                }
-            }
-        }
-
-        if (countClk == 0)
-        {
-            countClk = 1;
-        }
-
-        if (countVolt == 0)
-        {
-            countVolt = 1;
-        }
-
-        UpdateValues(Math.Round(RyzenAdjWrapper.Get_tctl_temp_value(_ry), 3) + "℃",
-            Math.Round(avgCoreClk / countClk, 3) + "GHz", Math.Round(avgCoreVolt / countVolt, 3) + "V", tempLine);
+        UpdateValues(
+           _systemInfo.Count > 0 ? _systemInfo[0].ToString() : "?" + "℃",
+           _systemInfo.Count > 1 ? _systemInfo[1].ToString() : "?" + "GHz", 
+           _systemInfo.Count > 2 ? _systemInfo[2].ToString() : "?" + "V", 
+           tempLine);
     }
 
     private void
@@ -158,7 +126,6 @@ public sealed partial class AsusКулерPage
 
     private void StopTempUpdate()
     {
-        RyzenAdjWrapper.Cleanup_ryzenadj(_ry);
         _tempUpdateTimer?.Stop();
     }
 
