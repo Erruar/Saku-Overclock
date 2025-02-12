@@ -9,6 +9,14 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
+using Saku_Overclock.Helpers;
+using Windows.UI.Core;
+using Saku_Overclock.Services;
+using System.Drawing;
+using Color = Windows.UI.Color;
+using Image = Microsoft.UI.Xaml.Controls.Image;
+using Brush = Microsoft.UI.Xaml.Media.Brush;
+using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace Saku_Overclock.Views;
 
@@ -18,22 +26,218 @@ public sealed partial class ГлавнаяPage
     {
         get;
     }
+    private readonly IBackgroundDataUpdater? _dataUpdater;
+    private double _maxCpuFreq = 1d;
+    private List<double>? segmentLengths; // Хранит длины всех сегментов
+    private double totalLength;         // Общая длина кривой
 
     public ГлавнаяPage()
     {
         ViewModel = App.GetService<ГлавнаяViewModel>();
         InitializeComponent();
         GetUpdates();
+        CalculateSegmentLengths();
+        _dataUpdater = App.BackgroundUpdater;
+        _dataUpdater.DataUpdated += OnDataUpdated;
+        Unloaded += (_, _) => { _dataUpdater.DataUpdated -= OnDataUpdated; };
+        Loaded += ГлавнаяPage_Loaded;
     }
 
-    #region Updater
+    private void ГлавнаяPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        Info_CpuName.Text = CpuSingleton.GetInstance().systemInfo.CpuName;
+        Info_CpuCores.Text = CpuSingleton.GetInstance().info.topology.cores + "C/" + CpuSingleton.GetInstance().info.topology.logicalCores + "T";
+    }
 
+    private void OnDataUpdated(object? sender, SensorsInformation info)
+    { 
+        if (_maxCpuFreq < info.CpuFrequency) { _maxCpuFreq = info.CpuFrequency; }
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            Indicators_Temp.Text = Math.Round(info.CpuTempValue, 1).ToString() + "C";
+            Indicators_Busy.Text = Math.Round(info.CpuUsage, 0).ToString() + "%";
+            Indicators_Freq.Text = Math.Round(info.CpuFrequency, 1).ToString() + " ГГц";
+            Indicators_Busy_Ring.Value = info.CpuUsage;
+            Indicators_Freq_Ring.Value = info.CpuFrequency / _maxCpuFreq * 100;
+            UpdatePointPosition(info.CpuTempValue);
+            Indicators_Fast.Text = info.CpuFastValue == 0 ? "Disabled" : Math.Round(info.CpuFastValue, 1).ToString() + "W";
+            Indicators_VrmEdc.Text = Math.Round(info.VrmEdcValue, 1).ToString() + "A";
+
+            Indicators_Fast_Ring.Value = info.CpuFastValue / info.CpuFastLimit * 100;
+            Indicators_VrmEdc_Ring.Value = info.VrmEdcValue / info.VrmEdcLimit * 100;
+
+            if (info.BatteryUnavailable)
+            {
+                if (Indicators_BatteryPercent.Text != "N/A") { Indicators_BatteryPercent.Text = "N/A"; }
+                if (Indicators_BatteryPercent_Ring.Value != 0) { Indicators_BatteryPercent_Ring.Value = 0; }
+            }
+            else
+            {
+                Indicators_BatteryPercent.Text = info.BatteryPercent;
+                Indicators_BatteryPercent_Ring.Value = Convert.ToInt32(info.BatteryPercent);
+            }
+            Indicators_Ram.Text = info.RamBusy;
+            Indicators_Ram_Ring.Value = info.RamUsagePercent;
+        });
+    }
+    #region Updater
+    // Функция для вычисления точки на кубической кривой Безье
+    private static PointF GetBezierPoint(PointF start, Point p1, Point p2, Point end, double t)
+    {
+        var x = Math.Pow(1 - t, 3) * start.X +
+                   3 * Math.Pow(1 - t, 2) * t * p1.X +
+                   3 * (1 - t) * Math.Pow(t, 2) * p2.X +
+                   Math.Pow(t, 3) * end.X;
+
+        var y = Math.Pow(1 - t, 3) * start.Y +
+                   3 * Math.Pow(1 - t, 2) * t * p1.Y +
+                   3 * (1 - t) * Math.Pow(t, 2) * p2.Y +
+                   Math.Pow(t, 3) * end.Y;
+
+        return new PointF((float)x, (float)y);
+    }
+
+    // Функция для линейной интерполяции между двумя точками
+    private static PointF InterpolatePoint(Point start, Point end, double t)
+    {
+        var x = start.X + t * (end.X - start.X);
+        var y = start.Y + t * (end.Y - start.Y);
+        return new PointF((float)x, (float)y);
+    }
+
+    // Предварительный расчет длин сегментов
+    private void CalculateSegmentLengths()
+    {
+        segmentLengths = [];
+
+        // Определяем контрольные точки кривой
+        var startPoint = new Point(0, 50);
+        var controlPoints = new List<(Point p1, Point p2, Point p3)>
+    {
+        (new Point(20, 30), new Point(50, 30), new Point(70, 40)),
+        (new Point(90, 50), new Point(100, 50), new Point(120, 43)),
+        (new Point(160, 13), new Point(160, 10), new Point(220, 5))
+    };
+
+        // Вычисляем длины Bezier-сегментов
+        foreach (var (p1, p2, p3) in controlPoints)
+        {
+            var length = ApproximateBezierLength(startPoint, p1, p2, p3);
+            segmentLengths.Add(length);
+            startPoint = p3; // Обновляем начальную точку для следующего сегмента
+        }
+
+        // Добавляем длину последнего Line-сегмента
+        var endPoint = new Point(230, 5);
+        var lineLength = Distance(startPoint, endPoint);
+        segmentLengths.Add(lineLength);
+
+        // Вычисляем общую длину кривой
+        totalLength = segmentLengths.Sum();
+    }
+
+    // Функция для приближенного вычисления длины кривой Безье
+    private double ApproximateBezierLength(PointF start, Point p1, Point p2, Point end)
+    {
+        const int steps = 100; // Количество шагов для аппроксимации
+        double length = 0;
+        var previousPoint = start;
+
+        for (var i = 1; i <= steps; i++)
+        {
+            var t = i / (double)steps;
+            var currentPoint = GetBezierPoint(start, p1, p2, end, t);
+            length += Distance(previousPoint, currentPoint);
+            previousPoint = currentPoint;
+        }
+
+        return length;
+    }
+
+    // Функция для вычисления расстояния между двумя точками
+    private static double Distance(PointF p1, PointF p2)
+    {
+        double dx = p2.X - p1.X;
+        double dy = p2.Y - p1.Y;
+        return Math.Sqrt(dx * dx + dy * dy);
+    }
+
+    // Обновление положения точки
+    private void UpdatePointPosition(double temperature)
+    {
+        if (temperature <= 0 || temperature > 97) { temperature = 97; }
+        // Предполагаем, что температура изменяется от 0 до 100
+        var fraction = temperature / 100.0;
+
+        // Вычисляем расстояние, которое соответствует текущей температуре
+        var targetLength = fraction * totalLength;
+
+        // Находим сегмент, на котором находится точка
+        double accumulatedLength = 0;
+        for (var i = 0; i < segmentLengths!.Count; i++)
+        {
+            var segmentLength = segmentLengths[i];
+            if (accumulatedLength + segmentLength >= targetLength)
+            {
+                // Точка находится на этом сегменте
+                var segmentFraction = (targetLength - accumulatedLength) / segmentLength;
+
+                // Определяем тип сегмента и вычисляем точку
+                PointF point;
+                if (i < segmentLengths.Count - 1)
+                {
+                    // Bezier-сегмент
+                    var (p1, p2, p3) = GetControlPointsForSegment(i);
+                    var startPoint = GetStartPointForSegment(i);
+                    point = GetBezierPoint(startPoint, p1, p2, p3, segmentFraction);
+                }
+                else
+                {
+                    // Line-сегмент
+                    var startPoint = GetStartPointForSegment(i);
+                    var endPoint = new Point(230, 5);
+                    point = InterpolatePoint(startPoint, endPoint, segmentFraction);
+                }
+
+                // Обновляем положение точки
+                PointTransform.X = point.X - 7; // Центрируем точку по ширине
+                PointTransform.Y = point.Y - 7; // Центрируем точку по высоте
+                return;
+            }
+
+            accumulatedLength += segmentLength;
+        }
+    }
+
+    // Вспомогательные функции для получения контрольных точек и начальной точки сегмента
+    private static (Point p1, Point p2, Point p3) GetControlPointsForSegment(int index)
+    {
+        var controlPoints = new List<(Point p1, Point p2, Point p3)>
+    {
+        (new Point(20, 30), new Point(50, 30), new Point(70, 40)),
+        (new Point(90, 50), new Point(100, 50), new Point(120, 43)),
+        (new Point(160, 13), new Point(160, 10), new Point(220, 5))
+    };
+        return controlPoints[index];
+    }
+
+    private static Point GetStartPointForSegment(int index)
+    {
+        var points = new List<Point>
+    {
+        new(0, 50),
+        new(70, 40),
+        new(120, 43),
+        new(220, 5)
+    };
+        return points[index];
+    }
     private async void GetUpdates()
     {
         try
         {
             MainChangelogStackPanel.Children.Clear();
-            if (UpdateChecker.GitHubInfoString == string.Empty)
+            if (UpdateChecker.GitHubInfoString == string.Empty || UpdateChecker.GitHubInfoString == null)
             {
                 await UpdateChecker.GenerateReleaseInfoString();
             }
@@ -50,7 +254,6 @@ public sealed partial class ГлавнаяPage
     #endregion
 
     #region Event Handlers
-
     private void HyperLink_Click(object sender, RoutedEventArgs e)
     {
         var link = "https://github.com/Erruar/Saku-Overclock/wiki/FAQ";
@@ -61,19 +264,35 @@ public sealed partial class ГлавнаяPage
 
         Process.Start(new ProcessStartInfo(link) { UseShellExecute = true });
     }
-
-    private void Discrd_Click(object sender, RoutedEventArgs e)
+    private void NavigationSelector_ItemClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo("https://discord.com/invite/yVsKxqAaa7") { UseShellExecute = true });
+        var stringer = (sender as Styles.NavigationSelector)!.SelectedString;
+        switch (stringer)
+        {
+            case "Main_Disc":
+                Discrd_Click();
+                break;
+            case "Main_Param":
+                Param_Click();
+                break;
+            case "Main_Info":
+                Info_Click();
+                break;
+            default:
+                Discrd_Click();
+                break;
+        };
     }
 
-    private void Param_Click(object sender, RoutedEventArgs e)
+    private static void Discrd_Click() => Process.Start(new ProcessStartInfo("https://discord.com/invite/yVsKxqAaa7") { UseShellExecute = true });
+
+    public static void Param_Click()
     {
         var navigationService = App.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true);
+        navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, false);
     }
 
-    private void Info_Click(object sender, RoutedEventArgs e)
+    private static void Info_Click()
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!);
@@ -90,6 +309,20 @@ public sealed partial class ГлавнаяPage
             new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/issues") { UseShellExecute = true });
     }
 
+    private void PivotProfiles_Loaded(object sender, RoutedEventArgs e)
+    {
+        var pivot = sender as Pivot;
+        var headers = Saku_Overclock.Helpers.VisualTreeHelper.FindVisualChildren<ContentPresenter>(pivot!);
+        foreach ( var header in headers)
+        {
+            var contentPresenters = Saku_Overclock.Helpers.VisualTreeHelper.FindVisualChildren <PivotHeaderPanel>(header!);
+            foreach (var content in contentPresenters)
+            {
+                content.HorizontalAlignment = HorizontalAlignment.Center;
+                content.Opacity = 0.8;
+            } 
+        }
+    }
     #endregion
 
     #region NotesWriter
@@ -97,7 +330,10 @@ public sealed partial class ГлавнаяPage
     public static async Task GenerateFormattedReleaseNotes(StackPanel stackPanel)
     {
         stackPanel.Children.Clear();
-        await UpdateChecker.GenerateReleaseInfoString();
+        if (UpdateChecker.GitHubInfoString == string.Empty || UpdateChecker.GitHubInfoString == null)
+        {
+            await UpdateChecker.GenerateReleaseInfoString();
+        }
         var formattedText = FormatReleaseNotes(UpdateChecker.GitHubInfoString);
         foreach (var paragraph in formattedText)
         {
@@ -289,5 +525,5 @@ public sealed partial class ГлавнаяPage
     [GeneratedRegex(@"\*\*(.*?)\*\*")]
     private static partial Regex UnmanagementWords();
 
-    #endregion
+    #endregion 
 }
