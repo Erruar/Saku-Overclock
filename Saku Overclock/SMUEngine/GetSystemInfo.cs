@@ -15,21 +15,31 @@ internal class GetSystemInfo
     private static readonly ManagementObjectSearcher ComputerSsystemInfo = new("root\\CIMV2", "SELECT * FROM Win32_ComputerSystemProduct");
     private static List<ManagementObject>? CachedGPUList;
     private static long maxClockSpeedMHz = -1;
+    private static bool DoNotTrackBattery;
+    private static decimal DesignCapacity = 0;
+    private static decimal FullCapacity = 0;
     #region Battery Information
     public static string? GetBatteryName()
     {
-        var wmi = new ManagementClass("Win32_Battery");
-        var allBatteries = wmi.GetInstances();
-        var batteryName = "Battery not found";
-        foreach (var battery in allBatteries)
+        try
         {
-            if (battery["Name"] != null)
+            var wmi = new ManagementClass("Win32_Battery");
+            var allBatteries = wmi.GetInstances();
+            var batteryName = "Battery not found";
+            foreach (var battery in allBatteries)
             {
-                batteryName = battery["Name"].ToString();
-                break;
+                if (battery["Name"] != null)
+                {
+                    batteryName = battery["Name"].ToString();
+                    break;
+                }
             }
+            return batteryName;
         }
-        return batteryName;
+        catch
+        {
+            return string.Empty;
+        } 
     }
     public enum BatteryStatus : ushort
     {
@@ -47,21 +57,27 @@ internal class GetSystemInfo
     }
     public static BatteryStatus GetBatteryStatus()
     {
-        var wmi = new ManagementClass("Win32_Battery");
-        var allBatteries = wmi.GetInstances();
-        var status = BatteryStatus.Undefined;
-
-        foreach (var battery in allBatteries)
+        try
         {
-            var pData = battery.Properties["BatteryStatus"];
+            var wmi = new ManagementClass("Win32_Battery");
+            var allBatteries = wmi.GetInstances();
+            var status = BatteryStatus.Undefined;
 
-            if (pData != null && pData.Value != null && Enum.IsDefined(typeof(BatteryStatus), pData.Value))
+            foreach (var battery in allBatteries)
             {
-                status = (BatteryStatus)pData.Value;
-            }
-        }
+                var pData = battery.Properties["BatteryStatus"];
 
-        return status;
+                if (pData != null && pData.Value != null && Enum.IsDefined(typeof(BatteryStatus), pData.Value))
+                {
+                    status = (BatteryStatus)pData.Value;
+                }
+            }
+            return status;
+        }
+        catch
+        {
+            return BatteryStatus.Undefined;
+        } 
     }
     public static decimal GetBatteryHealth()
     {
@@ -147,44 +163,65 @@ internal class GetSystemInfo
 
     public static decimal ReadFullChargeCapacity()
     {
-        try
+        if (DoNotTrackBattery) { return 0; }
+        if (FullCapacity == 0)
         {
-            var scope = new ManagementScope("root\\WMI");
-            var query = new ObjectQuery("SELECT * FROM BatteryFullChargedCapacity");
-
-            using var searcher = new ManagementObjectSearcher(scope, query);
-            foreach (var obj in searcher.Get().Cast<ManagementObject>())
+            try
             {
-                return Convert.ToDecimal(obj["FullChargedCapacity"]);
+                var scope = new ManagementScope("root\\WMI");
+                var query = new ObjectQuery("SELECT * FROM BatteryFullChargedCapacity");
+
+                using var searcher = new ManagementObjectSearcher(scope, query);
+                foreach (var obj in searcher.Get().Cast<ManagementObject>())
+                {
+                    var fullCharged = Convert.ToDecimal(obj["FullChargedCapacity"]);
+                    FullCapacity = fullCharged;
+                    return fullCharged;
+                }
+                return 0;
             }
-            return 0;
+            catch
+            {
+                return 0;
+            }
         }
-        catch
+        else
         {
-            return 0;
+            return FullCapacity;
         }
     }
     public static decimal ReadDesignCapacity(out bool doNotTrack)
     {
-        try
+        if (DoNotTrackBattery) { doNotTrack = true; return 0; }
+        if (DesignCapacity == 0)
         {
-            var scope = new ManagementScope("root\\WMI");
-            var query = new ObjectQuery("SELECT * FROM BatteryStaticData");
-            var searcher = new ManagementObjectSearcher(scope, query);
-            if (searcher == null) { doNotTrack = true; return 0; }
-            foreach (var obj in searcher.Get().Cast<ManagementObject>())
+            try
             {
-                doNotTrack = false;
-                return Convert.ToDecimal(obj["DesignedCapacity"]);
+                var scope = new ManagementScope("root\\WMI");
+                var query = new ObjectQuery("SELECT * FROM BatteryStaticData");
+                var searcher = new ManagementObjectSearcher(scope, query);
+                if (searcher == null) { doNotTrack = true; DoNotTrackBattery = true; return 0; }
+                foreach (var obj in searcher.Get().Cast<ManagementObject>())
+                {
+                    doNotTrack = false; DoNotTrackBattery = false;
+                    var returnCapacity = Convert.ToDecimal(obj["DesignedCapacity"]);
+                    DesignCapacity = returnCapacity;
+                    return returnCapacity;
+                }
+                doNotTrack = true; DoNotTrackBattery = true;
+                return 0;
             }
-            doNotTrack = true;
-            return 0;
+            catch
+            {
+                doNotTrack = true; DoNotTrackBattery = true;
+                return 0;
+            }
         }
-        catch
+        else
         {
-            doNotTrack = true;
-            return 0;
-        }
+            doNotTrack = false; DoNotTrackBattery = false;
+            return DesignCapacity;
+        } 
     }
     public static int GetBatteryCycle()
     {
@@ -221,27 +258,39 @@ internal class GetSystemInfo
     }
     public static decimal GetBatteryPercent()
     {
-        if (GetSystemPowerStatus(out var sps))
+        try
         {
-            return sps.BatteryLifePercent != 100 ? sps.BatteryLifePercent + 0.1m : sps.BatteryLifePercent; // Примерно добавляет 0.1 для иллюстрации, если Windows Power Management даст не точное значение
+            if (GetSystemPowerStatus(out var sps))
+            {
+                return sps.BatteryLifePercent != 100 ? sps.BatteryLifePercent + 0.1m : sps.BatteryLifePercent; // Примерно добавляет 0.1 для иллюстрации, если Windows Power Management даст не точное значение
+            }
+            return 0;
         }
-
-        throw new InvalidOperationException("Unable to get power status.");
+        catch
+        {
+            return 0;
+        } 
     }
     public static int GetBatteryLifeTime()
     {
-        if (GetSystemPowerStatus(out var sps))
+        try
         {
-            // Проверяем, подключено ли устройство к сети
-            if (sps.ACLineStatus == 1)
+            if (GetSystemPowerStatus(out var sps))
             {
-                return -1; // От сети
+                // Проверяем, подключено ли устройство к сети
+                if (sps.ACLineStatus == 1)
+                {
+                    return -1; // От сети
+                }
+
+                return sps.BatteryLifeTime; // Возвращаем оставшееся время работы от батареи в секундах
             }
-
-            return sps.BatteryLifeTime; // Возвращаем оставшееся время работы от батареи в секундах
+            return 0;
         }
-
-        throw new InvalidOperationException("Unable to get power status.");
+        catch
+        {
+            return 0;
+        }
     }
     #endregion
     #region OS Info
