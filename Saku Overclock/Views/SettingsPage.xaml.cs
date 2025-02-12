@@ -2,9 +2,6 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text;
-using Windows.Foundation.Metadata; 
-using Windows.UI;
-using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -14,27 +11,30 @@ using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers; 
+using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Styles;
-using Saku_Overclock.ViewModels; 
+using Saku_Overclock.ViewModels;
+using Windows.Foundation.Metadata;
+using Windows.UI;
+using Windows.UI.Text;
 using Task = System.Threading.Tasks.Task;
 using TextGetOptions = Microsoft.UI.Text.TextGetOptions;
 using TextSetOptions = Microsoft.UI.Text.TextSetOptions;
 
 namespace Saku_Overclock.Views;
 
-public sealed partial class SettingsPage 
+public sealed partial class SettingsPage
 {
     public SettingsViewModel ViewModel
     {
         get;
     }
-    private readonly IThemeSelectorService _themeSelectorService = App.GetService<IThemeSelectorService>(); 
+    private readonly IThemeSelectorService _themeSelectorService = App.GetService<IThemeSelectorService>();
     private RTSSsettings _rtssset = new();
     private NiIconsSettings _niicons = new();
     private bool _isLoaded;
-    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); 
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>();
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
 
     public SettingsPage()
@@ -81,7 +81,7 @@ public sealed partial class SettingsPage
     }
 
     private void UpdateTheme_ComboBox()
-    { 
+    {
         ThemeCombobox.Items.Clear();
         try
         {
@@ -635,7 +635,7 @@ public sealed partial class SettingsPage
             _niicons = new NiIconsSettings();
             NiSave();
         }
-    }    
+    }
     #endregion
 
     #region Event Handlers
@@ -758,7 +758,7 @@ public sealed partial class SettingsPage
             SettingsService.ReapplyOverclockTimer = nudAutoReapply.Value;
             SettingsService.SaveSettings();
         }
-        catch  
+        catch
         {
             //
         }
@@ -778,7 +778,7 @@ public sealed partial class SettingsPage
             SendSmuCommand.SafeReapply = ReapplySafe.IsOn;
             SettingsService.SaveSettings();
         }
-        catch 
+        catch
         {
             //
         }
@@ -790,9 +790,9 @@ public sealed partial class SettingsPage
         {
             return;
         }
- 
+
         SettingsService.ThemeType = ThemeCombobox.SelectedIndex != -1 ? ThemeCombobox.SelectedIndex : 0;
-        SettingsService.SaveSettings(); 
+        SettingsService.SaveSettings();
         if (_themeSelectorService.Themes.Count != 0)
         {
             try
@@ -802,7 +802,7 @@ public sealed partial class SettingsPage
                     : ElementTheme.Dark);
             }
             catch
-            { 
+            {
                 SettingsService.ThemeType = 0;
                 SettingsService.SaveSettings();
             }
@@ -820,11 +820,13 @@ public sealed partial class SettingsPage
             ThemeLight.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight;
             ThemeLight.Visibility = ThemeCombobox.SelectedIndex > 7 ? Visibility.Visible : Visibility.Collapsed;
             ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
-            Theme_Custom(); 
+            Theme_Custom();
             NotificationsService.Notifies ??= [];
             NotificationsService.Notifies.Add(new Notify
             {
-                Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success
+                Title = "Theme applied!",
+                Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS",
+                Type = InfoBarSeverity.Success
             });
             NotificationsService.SaveNotificationsSettings();
         }
@@ -837,7 +839,7 @@ public sealed partial class SettingsPage
             return;
         }
 
-        Theme_Custom(); 
+        Theme_Custom();
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustom = ThemeCustom.IsOn;
         _themeSelectorService.SaveThemeInSettings();
     }
@@ -848,13 +850,15 @@ public sealed partial class SettingsPage
         {
             return;
         }
- 
+
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity = ThemeOpacity.Value;
-        _themeSelectorService.SaveThemeInSettings(); 
+        _themeSelectorService.SaveThemeInSettings();
         NotificationsService.Notifies ??= [];
         NotificationsService.Notifies.Add(new Notify
         {
-            Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success
+            Title = "Theme applied!",
+            Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS",
+            Type = InfoBarSeverity.Success
         });
         NotificationsService.SaveNotificationsSettings();
     }
@@ -865,13 +869,15 @@ public sealed partial class SettingsPage
         {
             return;
         }
- 
+
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity = ThemeMaskOpacity.Value;
-        _themeSelectorService.SaveThemeInSettings(); 
+        _themeSelectorService.SaveThemeInSettings();
         NotificationsService.Notifies ??= [];
         NotificationsService.Notifies.Add(new Notify
         {
-            Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success
+            Title = "Theme applied!",
+            Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS",
+            Type = InfoBarSeverity.Success
         });
         NotificationsService.SaveNotificationsSettings();
     }
@@ -882,7 +888,7 @@ public sealed partial class SettingsPage
         {
             return;
         }
- 
+
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustomBg = ThemeCustomBg.IsOn;
         _themeSelectorService.SaveThemeInSettings();
         ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
@@ -912,7 +918,7 @@ public sealed partial class SettingsPage
             {
                 Height = 90,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                IsEnabled = false,
+                //IsEnabled = false,
                 Content = new Grid
                 {
                     HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -936,7 +942,7 @@ public sealed partial class SettingsPage
                             {
                                 new TextBlock
                                 {
-                                    Text = "ThemeBgFromFile".GetLocalized() + "\nCURRENTRLY UNAVAILABLE",
+                                    Text = "ThemeBgFromFile".GetLocalized(),
                                     Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)),
                                     FontWeight = new FontWeight(600)
                                 },
@@ -1026,51 +1032,73 @@ public sealed partial class SettingsPage
                 DefaultButton = ContentDialogButton.Close
             };
             fromFile.Click += (_, _) =>
-            { 
-                /*fromFilePickedFile.Text = "";
+            {
+                fromFilePickedFile.Text = "";
+                var ofn = new OpenFileDialog.OpenFileName
+                {
+                    lpstrFile = new string(new char[256])
+                };
+                ofn.nMaxFile = ofn.lpstrFile.Length;
+                ofn.lpstrFilter = "Images (*.BMP;*.JPG;*.GIF;*.png;*.jpg)";
+                ofn.lpstrTitle = "Select an image file";
+                ofn.Flags = 0x00080000 | 0x00001000 | 0x00000800 | 0x00000200 | 0x00020000; // OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_READONLY | OFN_NOCHANGEDIR
 
-            // Создаём FileOpenPicker
-            var filePicker = new FileOpenPicker
-            {
-                SuggestedStartLocation = PickerLocationId.PicturesLibrary
-            };
-            //var hwnd = WindowNative.GetWindowHandle(App.MainWindow); // App.MainWindow — Главный Window
-            //var hwnd = ActivationInvokeHandler.FindMainWindowHWND(null, "Saku Overclock");
-            var hwnd = App.MainWindow.GetWindowHandle();
-            InitializeWithWindow.Initialize(filePicker, hwnd);
+                // Get the current window's HWND
+                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+                ofn.hwndOwner = hwnd;
 
-            // Устанавливаем фильтры для поддерживаемых форматов
-            filePicker.FileTypeFilter.Add(".gif");
-            filePicker.FileTypeFilter.Add(".png");
-            filePicker.FileTypeFilter.Add(".jpg");
-            filePicker.FileTypeFilter.Add(".jpeg");
-            filePicker.FileTypeFilter.Add(".bmp");
-            filePicker.ViewMode = PickerViewMode.Thumbnail;
+                if (OpenFileDialog.GetOpenFileName(ofn))
+                {                    fromFilePickedFile.Text = ofn.lpstrFile;
+                    // Do something with the file path
+                }
+                else
+                {
+                    // User cancelled
+                }
+                /* // Создаём FileOpenPicker 
+                 var filePicker = new FileOpenPicker
+                 {
+                     SuggestedStartLocation = PickerLocationId.PicturesLibrary,
+                     ViewMode = PickerViewMode.List 
+                 };
+                 //var hwnd = WindowNative.GetWindowHandle(App.MainWindow); // App.MainWindow — Главный Window
+                 //var hwnd = ActivationInvokeHandler.FindMainWindowHWND(null, "Saku Overclock");
+                 //InitializeWithWindow.Initialize(filePicker, App.Hwnd);
+                 //filePicker.SetOwnerWindow(App.MainWindow);
+                 // Устанавливаем фильтры для поддерживаемых форматов
+                 Windows.Storage.Pickers.WindowsStoragePickersExtensions.SetOwnerWindow(filePicker, App.MainWindow);
+                 filePicker.FileTypeFilter.Add(".gif");
+                 filePicker.FileTypeFilter.Add(".png");
+                 filePicker.FileTypeFilter.Add(".jpg");
+                 filePicker.FileTypeFilter.Add(".jpeg");
+                 filePicker.FileTypeFilter.Add(".bmp");
+                 filePicker.ViewMode = PickerViewMode.Thumbnail;
 
-            // Открываем диалог выбора файла 
-            var file = await filePicker.PickSingleFileAsync();
-            if (file != null)
-            {
-                // Проверяем, является ли файл поддерживаемым изображением
-                fromFilePickedFile.Text = "ThemePickedFile".GetLocalized() + file.Path;
-                endStringPath = file.Path;
-            }
-            else
-            {
-                fromFilePickedFile.Text = "ThemeOpCancel".GetLocalized();
-            }
+                 // Открываем диалог выбора файла 
+                 var file = await filePicker.PickSingleFileAsync();
+                 if (file != null)
+                 {
+                     // Проверяем, является ли файл поддерживаемым изображением
+                     fromFilePickedFile.Text = "ThemePickedFile".GetLocalized() + file.Path;
+                     endStringPath = file.Path;
+                 }
+                 else
+                 {
+                     fromFilePickedFile.Text = "ThemeOpCancel".GetLocalized();
+                 }
 
-            // Переключение видимости элементов
-            if (fromFilePickedFile.Visibility == Visibility.Collapsed)
-            {
-                fromFileWhy.Visibility = Visibility.Collapsed;
-                fromFilePickedFile.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                fromFileWhy.Visibility = Visibility.Visible;
-                fromFilePickedFile.Visibility = Visibility.Collapsed;
-            }*/
+                 // Переключение видимости элементов
+                 if (fromFilePickedFile.Visibility == Visibility.Collapsed)
+                 {
+                     fromFileWhy.Visibility = Visibility.Collapsed;
+                     fromFilePickedFile.Visibility = Visibility.Visible;
+                 }
+                 else
+                 {
+                     fromFileWhy.Visibility = Visibility.Visible;
+                     fromFilePickedFile.Visibility = Visibility.Collapsed;
+                 }*/
+
             };
 
             fromLink.Click += (_, _) =>
@@ -1102,13 +1130,14 @@ public sealed partial class SettingsPage
             {
                 if (endStringPath != "")
                 {
-                    var backupIndex = ThemeCombobox.SelectedIndex; 
+                    var backupIndex = ThemeCombobox.SelectedIndex;
                     _themeSelectorService.Themes[backupIndex].ThemeBackground = endStringPath;
-                    _themeSelectorService.SaveThemeInSettings(); 
+                    _themeSelectorService.SaveThemeInSettings();
                     NotificationsService.Notifies ??= [];
                     NotificationsService.Notifies.Add(new Notify
                     {
-                        Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS",
+                        Title = "Theme applied!",
+                        Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS",
                         Type = InfoBarSeverity.Success
                     });
                     NotificationsService.SaveNotificationsSettings();
@@ -1153,7 +1182,7 @@ public sealed partial class SettingsPage
                 },
                 CloseButtonText = "ThemeDone".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
-            }; 
+            };
             try
             {
                 if (_themeSelectorService.Themes.Count != 0)
@@ -1438,7 +1467,7 @@ public sealed partial class SettingsPage
 
             _ = await themerDialog.ShowAsync();
         }
-        catch 
+        catch
         {
             //
         }
@@ -1451,13 +1480,15 @@ public sealed partial class SettingsPage
         {
             return;
         }
- 
+
         _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight = ThemeLight.IsOn;
-        _themeSelectorService.SaveThemeInSettings(); 
+        _themeSelectorService.SaveThemeInSettings();
         NotificationsService.Notifies ??= [];
         NotificationsService.Notifies.Add(new Notify
         {
-            Title = "Theme applied!", Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS", Type = InfoBarSeverity.Success
+            Title = "Theme applied!",
+            Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS",
+            Type = InfoBarSeverity.Success
         });
         NotificationsService.SaveNotificationsSettings();
     }
@@ -1483,7 +1514,7 @@ public sealed partial class SettingsPage
     #region Ni Icons (tray icons) Related Section
 
     private void NiIcon_LoadValues()
-    { 
+    {
         NiLoad();
         try
         {
@@ -1570,8 +1601,8 @@ public sealed partial class SettingsPage
         if (!_isLoaded)
         {
             return;
-        } 
-        
+        }
+
         SettingsService.NiIconsType = NiIconComboboxElements.SelectedIndex;
         SettingsService.SaveSettings();
         NiLoad();
@@ -1619,8 +1650,8 @@ public sealed partial class SettingsPage
         if (!_isLoaded)
         {
             return;
-        } 
-        
+        }
+
         SettingsService.NiIconsEnabled = Settings_ni_Icons.IsOn;
         SettingsService.SaveSettings();
         if (Settings_ni_Icons.IsOn)
@@ -2020,7 +2051,9 @@ public sealed partial class SettingsPage
                             try
                             {
                                 _niicons.Elements.Add(new NiIconsElements
-                                    { Name = ((ComboBoxItem)niIconSelectedComboBox.SelectedItem).Name! });
+                                {
+                                    Name = ((ComboBoxItem)niIconSelectedComboBox.SelectedItem).Name!
+                                });
                                 newNiIcon.Flyout.Hide();
                                 niAddIconDialog.Hide();
                                 NiSave();
@@ -2125,7 +2158,7 @@ public sealed partial class SettingsPage
         {
             NiLoad();
             _niicons.Elements.RemoveAt(SettingsService.ThemeType);
-            NiSave(); 
+            NiSave();
             SettingsService.ThemeType = -1;
             SettingsService.SaveSettings();
             NiIcon_LoadValues();
@@ -2676,7 +2709,7 @@ public sealed partial class SettingsPage
         {
             return;
         }
-        
+
         SettingsService.RTSSMetricsEnabled = Settings_RTSS_Enable.IsOn;
         SettingsService.SaveSettings();
         Settings_RTSS_Enable_Name.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
