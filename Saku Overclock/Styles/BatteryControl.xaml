@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Saku_Overclock.Styles.BatteryControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Saku_Overclock.Styles"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Button x:Name="HiddenButton" Visibility="Collapsed"/>
+        <ThemeShadow x:Name="SharedShadow"/>
+    </UserControl.Resources>
+    <Grid HorizontalAlignment="Stretch">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <Grid BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
+              BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}" 
+              HorizontalAlignment="Left" 
+              Height="20" 
+              Width="10" 
+              CornerRadius="0,8,8,0" 
+              Margin="0,0,0,0" 
+              Grid.Column="1"
+              VerticalAlignment="Center"
+              Background="{Binding ElementName=HiddenButton, Path=Background}"/>
+        <Grid BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" 
+              BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+              CornerRadius="8" 
+              Background="{Binding ElementName=HiddenButton, Path=Background}" 
+              Shadow="{StaticResource SharedShadow}" 
+              Translation="0,0,10"
+              Grid.Column="0"
+              HorizontalAlignment="Stretch"
+              x:Name="BatteryPercentGrid">
+            <Border HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="90" Background="#32D25F" x:Name="BatteryPercentBorder"/>
+            <TextBlock Text="80%" x:Name="BatteryText" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="27"/> 
+        </Grid>
+    </Grid>
+</UserControl>
