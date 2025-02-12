@@ -74,7 +74,7 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ca;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem x:Uid="Shell_Главная" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ОбучениеViewModel">
+                    <NavigationViewItem ToolTipService.ToolTip="DEBUG @ Enter first setup mode page" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ОбучениеViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82F;"/>
                         </NavigationViewItem.Icon>
