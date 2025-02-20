@@ -5,14 +5,45 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Saku_Overclock.ProfileSwitcher"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    mc:Ignorable="d"> 
-    <Grid x:Name="dpWindow" Opacity="0.7">
-        <Border Background="Transparent" Padding="20"> 
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Image Source="/Assets/StoreLogo.png" x:Name="ProfileImage" Width="100" Height="100" Margin="10"/>
-                <Grid x:Name="SourceGrid" Width="100" Height="100" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Grid>
-                <TextBlock x:Name="ProfileText" FontWeight="ExtraBlack" HorizontalAlignment="Center" FontSize="16" Text="{x:Bind ProfileText.Text}" />
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:winuiex="using:WinUIEx"
+    mc:Ignorable="d" >
+    <Window.SystemBackdrop>
+        <winuiex:TransparentTintBackdrop />
+    </Window.SystemBackdrop>
+    <Grid x:Name="dpWindow" Background="Transparent" Padding="0" Margin="0">
+        <!-- Прозрачный фон для контента -->
+        <Border Background="{ThemeResource PostAcrylicBrush}" CornerRadius="28" Padding="0" Margin="0,0,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <!-- Кнопка с иконкой -->
+                <ToggleButton 
+                    FocusVisualPrimaryThickness="0" 
+                    FocusVisualSecondaryThickness="0" 
+                    AllowFocusOnInteraction="False" 
+                    IsChecked="True" 
+                    CornerRadius="50" 
+                    Width="50" 
+                    Height="50"
+                    Background="#FF2D2D2D"
+                    BorderBrush="Transparent"
+                    BorderThickness="0">
+                    <FontIcon FontSize="20" x:Name="ProfileIcon" Glyph="&#xE718;" Foreground="White" Margin="3,0,3,0"/>
+                </ToggleButton>
+
+                <!-- Дополнительный контент -->
+                <Grid x:Name="SourceGrid" Width="0" Height="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+                <!-- Текстовые элементы -->
+                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Vertical">
+                    <TextBlock 
+                        x:Name="ProfileText" 
+                        FontWeight="ExtraBlack" 
+                        FontSize="16" 
+                        Text="{x:Bind ProfileText.Text}"/>
+                    <TextBlock 
+                        x:Name="ProfileDesc" 
+                        FontWeight="SemiBold" 
+                        Text="Premade profile" />
+                </StackPanel>
             </StackPanel>
         </Border>
     </Grid>
