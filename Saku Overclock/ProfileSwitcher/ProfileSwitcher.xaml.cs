@@ -32,16 +32,16 @@ public sealed partial class ProfileSwitcher : Window
     public ProfileSwitcher()
     {
         InitializeComponent();
-        // Элемент для анимации - окно
+        // Р­Р»РµРјРµРЅС‚ РґР»СЏ Р°РЅРёРјР°С†РёРё - РѕРєРЅРѕ
         _windowVisual = ElementCompositionPreview.GetElementVisual(Content);
 
-        // Таймер отображения анимации
+        // РўР°Р№РјРµСЂ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ Р°РЅРёРјР°С†РёРё
         _timer = new DispatcherTimer
         {
             Interval = new TimeSpan(0, 0, 0, 1, 500)
         };
 
-        // Настройка окна
+        // РќР°СЃС‚СЂРѕР№РєР° РѕРєРЅР°
         this.SetWindowSize(300, 50); 
         this.CenterOnScreen();
         this.SetWindowOpacity(120);
@@ -52,19 +52,19 @@ public sealed partial class ProfileSwitcher : Window
         this.ToggleWindowStyle(true, WindowStyle.SysMenu);
         var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
 
-        // Устанавливаем стиль окна как POPUP (убираем заголовок)
+        // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃС‚РёР»СЊ РѕРєРЅР° РєР°Рє POPUP (СѓР±РёСЂР°РµРј Р·Р°РіРѕР»РѕРІРѕРє)
         SetWindowStyle(hwnd);
 
-        // Применяем прозрачность фона
+        // РџСЂРёРјРµРЅСЏРµРј РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ С„РѕРЅР°
         SetTransparentBackground(hwnd); 
 
-        // Сделать окно чуть ниже верха экрана
+        // РЎРґРµР»Р°С‚СЊ РѕРєРЅРѕ С‡СѓС‚СЊ РЅРёР¶Рµ РІРµСЂС…Р° СЌРєСЂР°РЅР°
         var pos = AppWindow.Position;
         this.Move(pos.X, 40);
     }
 
 
-    // Устанавливаем стиль окна как POPUP
+    // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃС‚РёР»СЊ РѕРєРЅР° РєР°Рє POPUP
     private static void SetWindowStyle(IntPtr hwnd)
     {
         const int GWL_STYLE = -16;
@@ -74,7 +74,7 @@ public sealed partial class ProfileSwitcher : Window
         SetWindowLong(hwnd, GWL_STYLE, (int)(style & ~(WS_POPUP | WS_VISIBLE)));
     }
 
-    // Устанавливаем прозрачный фон окна
+    // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїСЂРѕР·СЂР°С‡РЅС‹Р№ С„РѕРЅ РѕРєРЅР°
     private void SetTransparentBackground(IntPtr hwnd)
     {
         var extendedStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
@@ -113,7 +113,7 @@ public sealed partial class ProfileSwitcher : Window
             _instance.InitializeComponent();
         }
 
-        // Подготовить контент до показа окна
+        // РџРѕРґРіРѕС‚РѕРІРёС‚СЊ РєРѕРЅС‚РµРЅС‚ РґРѕ РїРѕРєР°Р·Р° РѕРєРЅР°
         _instance.ProfileText.Text = profileName;
         if (profileIcon != null)
         {
@@ -139,17 +139,17 @@ public sealed partial class ProfileSwitcher : Window
             _instance.SourceGrid.Visibility = Visibility.Collapsed;
         }
 
-        // Убедиться, что контент загружен (например, если используются ресурсы, которые требуют времени)
-        await Task.Delay(50); // Небольшая задержка для полной прогрузки контента
+        // РЈР±РµРґРёС‚СЊСЃСЏ, С‡С‚Рѕ РєРѕРЅС‚РµРЅС‚ Р·Р°РіСЂСѓР¶РµРЅ (РЅР°РїСЂРёРјРµСЂ, РµСЃР»Рё РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ СЂРµСЃСѓСЂСЃС‹, РєРѕС‚РѕСЂС‹Рµ С‚СЂРµР±СѓСЋС‚ РІСЂРµРјРµРЅРё)
+        await Task.Delay(50); // РќРµР±РѕР»СЊС€Р°СЏ Р·Р°РґРµСЂР¶РєР° РґР»СЏ РїРѕР»РЅРѕР№ РїСЂРѕРіСЂСѓР·РєРё РєРѕРЅС‚РµРЅС‚Р°
 
-        // Теперь показываем окно с контентом
+        // РўРµРїРµСЂСЊ РїРѕРєР°Р·С‹РІР°РµРј РѕРєРЅРѕ СЃ РєРѕРЅС‚РµРЅС‚РѕРј
         _instance.Show();
         _instance.SetWindowOpacity(155);
         _instance._windowVisual.Opacity = 1;
         _instance._timer?.Stop();
 
 
-        // Первый таймер на 1,5 секунды
+        // РџРµСЂРІС‹Р№ С‚Р°Р№РјРµСЂ РЅР° 1,5 СЃРµРєСѓРЅРґС‹
         var displayTimer = new DispatcherTimer()
         {
             Interval = new TimeSpan(0, 0, 0, 3, 500)
@@ -159,23 +159,23 @@ public sealed partial class ProfileSwitcher : Window
         {
             displayTimer.Stop();
 
-            // Анимация плавного уменьшения прозрачности
+            // РђРЅРёРјР°С†РёСЏ РїР»Р°РІРЅРѕРіРѕ СѓРјРµРЅСЊС€РµРЅРёСЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚Рё
             _instance.DispatcherQueue.TryEnqueue(() =>
             {
                 var compositor = _instance._windowVisual.Compositor;
                 var fadeOutAnimation = compositor.CreateScalarKeyFrameAnimation();
-                fadeOutAnimation.InsertKeyFrame(1f, 0f); // Уменьшить прозрачность до 0
-                fadeOutAnimation.Duration = TimeSpan.FromSeconds(1); // За 1 секунду
+                fadeOutAnimation.InsertKeyFrame(1f, 0f); // РЈРјРµРЅСЊС€РёС‚СЊ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РґРѕ 0
+                fadeOutAnimation.Duration = TimeSpan.FromSeconds(1); // Р—Р° 1 СЃРµРєСѓРЅРґСѓ
                 _instance._windowVisual.StartAnimation(nameof(_instance._windowVisual.Opacity), fadeOutAnimation);
-                // Таймер для ожидания завершения анимации перед скрытием фона
+                // РўР°Р№РјРµСЂ РґР»СЏ РѕР¶РёРґР°РЅРёСЏ Р·Р°РІРµСЂС€РµРЅРёСЏ Р°РЅРёРјР°С†РёРё РїРµСЂРµРґ СЃРєСЂС‹С‚РёРµРј С„РѕРЅР°
                 var hideTimer = new DispatcherTimer
                 {
-                    Interval = new TimeSpan(0, 0, 0, 1) // 1 секунда, совпадает с длительностью анимации
+                    Interval = new TimeSpan(0, 0, 0, 1) // 1 СЃРµРєСѓРЅРґР°, СЃРѕРІРїР°РґР°РµС‚ СЃ РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊСЋ Р°РЅРёРјР°С†РёРё
                 };
                 hideTimer.Tick += (sender, args) =>
                 {
                     hideTimer.Stop();
-                    _instance.SetWindowOpacity(0); // Скрыть фон
+                    _instance.SetWindowOpacity(0); // РЎРєСЂС‹С‚СЊ С„РѕРЅ
                 };
                 hideTimer.Start();
             });
