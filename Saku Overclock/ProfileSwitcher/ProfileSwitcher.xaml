@@ -27,11 +27,7 @@
                     BorderBrush="Transparent"
                     BorderThickness="0">
                     <FontIcon FontSize="20" x:Name="ProfileIcon" Glyph="&#xE718;" Foreground="White" Margin="3,0,3,0"/>
-                </ToggleButton>
-
-                <!-- Дополнительный контент -->
-                <Grid x:Name="SourceGrid" Width="0" Height="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-
+                </ToggleButton> 
                 <!-- Текстовые элементы -->
                 <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Vertical">
                     <TextBlock 
