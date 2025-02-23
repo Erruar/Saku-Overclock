@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -943,7 +944,6 @@ public sealed partial class SettingsPage
                                 new TextBlock
                                 {
                                     Text = "ThemeBgFromFile".GetLocalized(),
-                                    Foreground = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)),
                                     FontWeight = new FontWeight(600)
                                 },
                                 fromFileWhy,
@@ -1033,28 +1033,46 @@ public sealed partial class SettingsPage
             };
             fromFile.Click += (_, _) =>
             {
+                // Сброс отображаемого текста (если используется для уведомлений)
                 fromFilePickedFile.Text = "";
-                var ofn = new OpenFileDialog.OpenFileName
-                {
-                    lpstrFile = new string(new char[256])
-                };
-                ofn.nMaxFile = ofn.lpstrFile.Length;
-                ofn.lpstrFilter = "Images (*.BMP;*.JPG;*.GIF;*.png;*.jpg)";
-                ofn.lpstrTitle = "Select an image file";
-                ofn.Flags = 0x00080000 | 0x00001000 | 0x00000800 | 0x00000200 | 0x00020000; // OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_READONLY | OFN_NOCHANGEDIR
 
-                // Get the current window's HWND
+                // Получаем дескриптор главного окна
                 var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
-                ofn.hwndOwner = hwnd;
 
-                if (OpenFileDialog.GetOpenFileName(ofn))
-                {                    fromFilePickedFile.Text = ofn.lpstrFile;
-                    // Do something with the file path
+                // Инициализируем структуру диалога
+                var ofn = new OpenFileName
+                {
+                    lStructSize = Marshal.SizeOf<OpenFileName>(),
+                    hwndOwner = hwnd,
+                    lpstrFile = new string(new char[256]),
+                    nMaxFile = new string(new char[256]).Length,
+                    lpstrFileTitle = "Select an image file",
+                    //nMaxFileTitle = 256,
+
+                    // Формат фильтра: описание и шаблон отделяются нулевым символом, окончание — двойной нулевой символ
+                    lpstrFilter = "Images (*.BMP;*.JPG;*.GIF;*.png;*.jpg)\0*.BMP;*.JPG;*.GIF;*.png;*.jpg\0\0",
+
+                    lpstrTitle = "Select an image file",
+
+                    // Флаги: OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_READONLY | OFN_NOCHANGEDIR
+                    Flags = 0x00080000 | 0x00001000 | 0x00000800 | 0x00000200 | 0x00020000
+                };
+
+                // Вызываем диалог выбора файла
+                if (OpenFileDialog.GetOpenFileName(ref ofn))
+                {
+                    // Удаляем завершающие нулевые символы и получаем путь к выбранному файлу
+                    var selectedFile = ofn.lpstrFile.TrimEnd('\0');
+                    fromFilePickedFile.Text = "ThemePickedFile".GetLocalized() + selectedFile;
+                    endStringPath = selectedFile;
                 }
                 else
                 {
-                    // User cancelled
+                    // Если диалог не открылся, можно получить код ошибки для диагностики:
+                    var error = Marshal.GetLastWin32Error();
+                    fromFilePickedFile.Text = "ThemeOpCancel".GetLocalized() + " (Error: " + error + ")";
                 }
+
                 /* // Создаём FileOpenPicker 
                  var filePicker = new FileOpenPicker
                  {
