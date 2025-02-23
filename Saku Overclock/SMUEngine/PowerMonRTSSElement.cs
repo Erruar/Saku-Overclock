@@ -2,7 +2,7 @@
 
 internal class PowerMonRtssElement
 {
-    public bool IsShown;
+    public bool IsShown = false;
     public string Name = "New Element";
     public string Abbreviation = "A";
     public string Offset = "0x0000";
