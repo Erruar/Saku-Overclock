@@ -292,7 +292,7 @@
                                 </StackPanel> 
                             </StackPanel>
                             <Grid Grid.Row="1" x:Name="Laptops_HTC_Temp_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock FontWeight="SemiBold" Text="                                    45(С)                         90(С)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" Text="                                    45(С)                         90(С)" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
                             <StackPanel Padding="0,0,0,10" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <StackPanel Orientation="Horizontal">

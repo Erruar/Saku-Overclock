@@ -35,7 +35,7 @@ public sealed partial class ПараметрыPage
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private int _indexprofile; // Выбранный профиль
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Все настройки приложения
-    private bool _isSearching = false; // Флаг, выполняется ли поиск, чтобы не сканировать адреса SMU
+    private bool _isSearching; // Флаг, выполняется ли поиск, чтобы не сканировать адреса SMU
     private readonly List<string> _searchItems = [];
     private string
         _smuSymbol =
@@ -1320,7 +1320,7 @@ public sealed partial class ПараметрыPage
             var stackPanels = Helpers.VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
             foreach (var stackPanel in stackPanels)
             {
-                var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15);
+                var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize - 15 == 0);
                 foreach (var textBlock in textBlocks)
                 {
                     if (!string.IsNullOrWhiteSpace(textBlock.Text) &&
@@ -1372,10 +1372,7 @@ public sealed partial class ПараметрыPage
             if (_searchItems.Count == 0) { CollectSearchItems(); }
             foreach (var searchItem in _searchItems)
             {
-                var found = splitText!.All((key) =>
-                {
-                    return searchItem.Contains(key, StringComparison.CurrentCultureIgnoreCase);
-                });
+                var found = splitText.All(key => searchItem.Contains(key, StringComparison.CurrentCultureIgnoreCase));
                 if (found)
                 {
                     var textBlock = new TextBlock { Text = searchItem, Margin = new Thickness(-10,0,-10,0), Foreground = Param_Name.Foreground };
@@ -1402,11 +1399,12 @@ public sealed partial class ПараметрыPage
             foreach (var expander in expanders)
             {
                 var stackPanels = Helpers.VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
+                var arrayStackPanels = stackPanels as StackPanel[] ?? stackPanels.ToArray(); 
                 var anyVisible = false;
 
-                foreach (var stackPanel in stackPanels)
+                foreach (var stackPanel in arrayStackPanels)
                 {
-                    var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize == 15);
+                    var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize - 15 == 0);
                     var containsText = textBlocks.Any(tb => tb.Text.Contains(searchText, StringComparison.CurrentCultureIgnoreCase));
 
                     var containsControl = Helpers.VisualTreeHelper.FindVisualChildren<CheckBox>(stackPanel).Any();
@@ -1431,7 +1429,7 @@ public sealed partial class ПараметрыPage
                         adjacentGrid.Visibility = stackPanel.Visibility;
                     }
                 }
-                foreach (var stackPanel1 in stackPanels) // Второй проход
+                foreach (var stackPanel1 in arrayStackPanels) // Второй проход
                 {
                     if (stackPanel1.Visibility == Visibility.Visible)
                     {
@@ -1498,11 +1496,12 @@ public sealed partial class ПараметрыPage
         foreach (var expander in expanders)
         {
             var stackPanels = Helpers.VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
+            var arrayStackPanels = stackPanels as StackPanel[] ?? stackPanels.ToArray(); 
             var anyVisible = false;
 
-            foreach (var stackPanel in stackPanels)
+            foreach (var stackPanel in arrayStackPanels)
             {
-                var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<FontIcon>(stackPanel).Where(tb => tb.FontSize == 15);
+                var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<FontIcon>(stackPanel).Where(tb => tb.FontSize - 15 == 0);
                 var containsText = textBlocks.Any(tb => Helpers.VisualTreeHelper.FindAjantedFontIcons(tb, glyphs));
 
                 var containsControl = Helpers.VisualTreeHelper.FindVisualChildren<CheckBox>(stackPanel).Any();
@@ -1527,11 +1526,11 @@ public sealed partial class ПараметрыPage
                     adjacentGrid.Visibility = stackPanel.Visibility;
                 }
             }
-            foreach (var stackPanel1 in stackPanels) // Второй проход
+            foreach (var secondStackPanel in arrayStackPanels) // Второй проход
             {
-                if (stackPanel1.Visibility == Visibility.Visible)
+                if (secondStackPanel.Visibility == Visibility.Visible)
                 {
-                    Helpers.VisualTreeHelper.SetAllChildrenVisibility(stackPanel1, Visibility.Visible);
+                    Helpers.VisualTreeHelper.SetAllChildrenVisibility(secondStackPanel, Visibility.Visible);
                 }
             }
 
@@ -5409,48 +5408,11 @@ public sealed partial class ПараметрыPage
                 try
                 {
                     ActionButton_Save.Flyout.Hide();
-                    var newElement = new ComboBoxItem
-                    {
-                        Content = new StackPanel
-                        {
-                            Orientation = Orientation.Horizontal,
-                            Children =
-                            {
-                                new TextBlock
-                                {
-                                    Text = SaveProfileN.Text
-                                },
-                                new TextBlock
-                                {
-                                    Text = " " + new Profile().cpu2value.ToString(CultureInfo.InvariantCulture) + "W",
-                                    Foreground = new SolidColorBrush(new Color { A = 255, B = 154, G = 143, R = 178 })
-                                },
-                                new TextBlock
-                                {
-                                    Text = "-"
-                                },
-                                new TextBlock
-                                {
-                                    Text = new Profile().cpu3value.ToString(CultureInfo.InvariantCulture) + "W",
-                                    Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 112, R = 194 })
-                                },
-                                new TextBlock
-                                {
-                                    Text = "-"
-                                },
-                                new TextBlock
-                                {
-                                    Text = new Profile().vrm1value.ToString(CultureInfo.InvariantCulture) + "A",
-                                    Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 23, R = 162 })
-                                }
-                            },
-                        }
-                    };
                     AppSettings.Preset += 1;
                     _indexprofile += 1;
                     _waitforload = true;
-                    ProfileCOM.Items.Add(/*newElement*/SaveProfileN.Text);
-                    ProfileCOM.SelectedItem = /*newElement*/SaveProfileN.Text;
+                    ProfileCOM.Items.Add(SaveProfileN.Text);
+                    ProfileCOM.SelectedItem = SaveProfileN.Text;
                     if (_profile.Length == 0)
                     {
                         _profile = new Profile[1];
