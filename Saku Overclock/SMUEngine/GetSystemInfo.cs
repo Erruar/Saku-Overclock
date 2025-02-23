@@ -81,12 +81,19 @@ internal class GetSystemInfo
     }
     public static decimal GetBatteryHealth()
     {
-        var designCap = ReadDesignCapacity(out _);
-        var fullCap = ReadFullChargeCapacity();
-        if (designCap == 0) { return 0; }
-        var health = fullCap / designCap;
+        try
+        {
+            var designCap = ReadDesignCapacity(out _);
+            var fullCap = ReadFullChargeCapacity();
+            if (designCap == 0) { return 0; }
+            var health = fullCap / designCap;
 
-        return health;
+            return health;
+        }
+        catch
+        {
+            return 100;
+        } 
     }
     private static string GetAvailability(int availability)
     {
@@ -262,7 +269,7 @@ internal class GetSystemInfo
         {
             if (GetSystemPowerStatus(out var sps))
             {
-                return sps.BatteryLifePercent != 100 ? sps.BatteryLifePercent + 0.1m : sps.BatteryLifePercent; // Примерно добавляет 0.1 для иллюстрации, если Windows Power Management даст не точное значение
+                return sps.BatteryLifePercent; // Примерно добавляет 0.1 для иллюстрации, если Windows Power Management даст не точное значение
             }
             return 0;
         }
