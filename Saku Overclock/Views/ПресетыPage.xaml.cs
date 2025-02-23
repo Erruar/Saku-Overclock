@@ -5,18 +5,21 @@ using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
+using Saku_Overclock.ViewModels;
+
 namespace Saku_Overclock.Views;
+
 public sealed partial class ПресетыPage
 {
-    private bool _relay;
-    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
+    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений 
     private bool _waitforload = true; // Ожидание окончательной смены профиля на другой. Активируется при смене профиля 
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
-    private readonly int _indexprofile; // Выбранный профиль
+    private readonly int _indexprofile = 0; // Выбранный профиль
     private PeriodicTimer? _flipTimer;
     private readonly Random _random = new();
-    public List<string> Tips
+
+    private List<string> Tips
     {
         get;
     } =
@@ -49,26 +52,28 @@ public sealed partial class ПресетыPage
     public ПресетыPage()
     {
         InitializeComponent();
-        SettingsService.NBFCFlagConsoleCheckSpeedRunning = false;
-        SettingsService.FlagRyzenADJConsoleTemperatureCheckRunning = false;
-        SettingsService.SaveSettings();
+        AppSettings.NBFCFlagConsoleCheckSpeedRunning = false;
+        AppSettings.FlagRyzenADJConsoleTemperatureCheckRunning = false;
+        AppSettings.SaveSettings();
         Loaded += ПресетыPage_Loaded;
-    } 
+    }
+
     private async void ПресетыPage_Loaded(object sender, RoutedEventArgs e)
     {
         _isLoaded = true;
         _waitforload = false;
-        SelectedProfile_Description.Text = "Preset_Min_Desc".GetLocalized();
+        SelectedProfile_Description.Text = "Preset_Min_Desc/Text".GetLocalized();
         TipsFlipView.ItemsSource = Tips;
         // Таймер для смены страниц раз в 10 секунд
-        _flipTimer = new PeriodicTimer(TimeSpan.FromSeconds(15)); 
+        _flipTimer = new PeriodicTimer(TimeSpan.FromSeconds(15));
         while (await _flipTimer.WaitForNextTickAsync())
         {
             SwitchRandomPage();
-        } 
+        }
     }
 
     #region JSON and Initialization
+
     private static void ProfileSave()
     {
         try
@@ -81,9 +86,10 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            SMUEngine.SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            SendSmuCommand.TraceIt_TraceError(ex.ToString());
         }
     }
+
     private static void ProfileLoad()
     {
         try
@@ -94,7 +100,7 @@ public sealed partial class ПресетыPage
         catch (Exception ex)
         {
             JsonRepair('p');
-            SMUEngine.SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            SendSmuCommand.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -129,9 +135,11 @@ public sealed partial class ПресетыPage
                 break;
         }
     }
+
     #endregion
 
     #region Event Handlers
+
     private void SwitchRandomPage()
     {
         if (TipsFlipView.Items.Count > 1)
@@ -140,16 +148,15 @@ public sealed partial class ПресетыPage
             TipsFlipView.SelectedIndex = randomIndex;
         }
     }
-    private void Min_btn_Checked(object sender, RoutedEventArgs e)
-    {
-        _relay = true;
 
-        SettingsService.PremadeMinActivated = true;
-        SettingsService.PremadeEcoActivated = false;
-        SettingsService.PremadeBalanceActivated = false;
-        SettingsService.PremadeSpeedActivated = false;
-        SettingsService.PremadeMaxActivated = false;
-        SettingsService.RyzenADJline =
+    private void Min_btn_Checked()
+    {
+        AppSettings.PremadeMinActivated = true;
+        AppSettings.PremadeEcoActivated = false;
+        AppSettings.PremadeBalanceActivated = false;
+        AppSettings.PremadeSpeedActivated = false;
+        AppSettings.PremadeMaxActivated = false;
+        AppSettings.RyzenADJline =
             " --tctl-temp=60 " + //
             "--stapm-limit=9000 " + //
             "--fast-limit=9000 " + //
@@ -162,119 +169,79 @@ public sealed partial class ПресетыPage
             "--vrmsocmax-current=120000 " + //
             "--vrmgfx-current=120000 " +
             "--prochot-deassertion-ramp=2 ";
-        SettingsService.SaveSettings();
-        MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock, SettingsService.ReapplyOverclockTimer);
+        AppSettings.SaveSettings();
+        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+            AppSettings.ReapplyOverclockTimer);
     }
 
-    private void Eco_Checked(object sender, RoutedEventArgs e)
+    private void Eco_Checked()
     {
-        _relay = true;
-        SettingsService.PremadeMinActivated = false;
-        SettingsService.PremadeEcoActivated = true;
-        SettingsService.PremadeBalanceActivated = false;
-        SettingsService.PremadeSpeedActivated = false;
-        SettingsService.PremadeMaxActivated = false;
-        SettingsService.RyzenADJline =
+        AppSettings.PremadeMinActivated = false;
+        AppSettings.PremadeEcoActivated = true;
+        AppSettings.PremadeBalanceActivated = false;
+        AppSettings.PremadeSpeedActivated = false;
+        AppSettings.PremadeMaxActivated = false;
+        AppSettings.RyzenADJline =
             " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
-        SettingsService.SaveSettings();
-        MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock, SettingsService.ReapplyOverclockTimer);
+        AppSettings.SaveSettings();
+        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+            AppSettings.ReapplyOverclockTimer);
     }
 
-    private void Balance_Checked(object sender, RoutedEventArgs e)
+    private void Balance_Checked()
     {
-        _relay = true;
-        SettingsService.PremadeMinActivated = false;
-        SettingsService.PremadeEcoActivated = false;
-        SettingsService.PremadeBalanceActivated = true;
-        SettingsService.PremadeSpeedActivated = false;
-        SettingsService.PremadeMaxActivated = false;
-        SettingsService.RyzenADJline =
+        AppSettings.PremadeMinActivated = false;
+        AppSettings.PremadeEcoActivated = false;
+        AppSettings.PremadeBalanceActivated = true;
+        AppSettings.PremadeSpeedActivated = false;
+        AppSettings.PremadeMaxActivated = false;
+        AppSettings.RyzenADJline =
             " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2";
-        SettingsService.SaveSettings();
-        MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock, SettingsService.ReapplyOverclockTimer);
+        AppSettings.SaveSettings();
+        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+            AppSettings.ReapplyOverclockTimer);
     }
 
-    private void Speed_Checked(object sender, RoutedEventArgs e)
+    private void Speed_Checked()
     {
-        _relay = true;
-        SettingsService.PremadeMinActivated = false;
-        SettingsService.PremadeEcoActivated = false;
-        SettingsService.PremadeBalanceActivated = false;
-        SettingsService.PremadeSpeedActivated = true;
-        SettingsService.PremadeMaxActivated = false;
-        SettingsService.RyzenADJline =
+        AppSettings.PremadeMinActivated = false;
+        AppSettings.PremadeEcoActivated = false;
+        AppSettings.PremadeBalanceActivated = false;
+        AppSettings.PremadeSpeedActivated = true;
+        AppSettings.PremadeMaxActivated = false;
+        AppSettings.RyzenADJline =
             " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2";
-        SettingsService.SaveSettings();
-        MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock, SettingsService.ReapplyOverclockTimer);
+        AppSettings.SaveSettings();
+        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+            AppSettings.ReapplyOverclockTimer);
     }
 
-    private void Max_btn_Checked(object sender, RoutedEventArgs e)
+    private void Max_btn_Checked()
     {
-        _relay = true;
-        SettingsService.PremadeMinActivated = false;
-        SettingsService.PremadeEcoActivated = false;
-        SettingsService.PremadeBalanceActivated = false;
-        SettingsService.PremadeSpeedActivated = false;
-        SettingsService.PremadeMaxActivated = true;
-        SettingsService.RyzenADJline =
+        AppSettings.PremadeMinActivated = false;
+        AppSettings.PremadeEcoActivated = false;
+        AppSettings.PremadeBalanceActivated = false;
+        AppSettings.PremadeSpeedActivated = false;
+        AppSettings.PremadeMaxActivated = true;
+        AppSettings.RyzenADJline =
             " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2";
-        SettingsService.SaveSettings();
-        MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock, SettingsService.ReapplyOverclockTimer);
-    }
-
-    private void Min_btn_Unchecked_1(object sender, RoutedEventArgs e)
-    {
-        if (_relay)
-        {
-            return;
-        }
-
-    }
-
-    private void Eco_Unchecked(object sender, RoutedEventArgs e)
-    {
-        if (_relay)
-        {
-            return;
-        }
-
-    }
-
-    private void Balance_Unchecked(object sender, RoutedEventArgs e)
-    {
-        if (_relay)
-        {
-            return;
-        }
-
-    }
-
-    private void Speed_Unchecked(object sender, RoutedEventArgs e)
-    {
-        if (_relay)
-        {
-            return;
-        }
-
-    }
-
-    private void Max_btn_Unchecked(object sender, RoutedEventArgs e)
-    {
-        if (_relay)
-        {
-            return;
-        }
-
+        AppSettings.SaveSettings();
+        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+            AppSettings.ReapplyOverclockTimer);
     }
 
     #endregion
 
-    private void ProfilesControl_SelectionChanged(object sender, Microsoft.UI.Xaml.Controls.SelectionChangedEventArgs e)
+    private void ProfilesControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         //await App.MainWindow.ShowMessageDialogAsync((sender as Saku_Overclock.Styles.ProfileSelector).SelectedItem.Text, "Selected:");
     }
 
-    private void TryAdvancedButton_Click(object sender, RoutedEventArgs e) => ГлавнаяPage.Param_Click();
+    private void TryAdvancedButton_Click(object sender, RoutedEventArgs e)
+    {
+        var navigationService = App.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!);
+    }
 
     //Параметры процессора, при изменении слайдеров
     //Максимальная температура CPU (C)
@@ -433,6 +400,7 @@ public sealed partial class ПресетыPage
             ProfileSave();
         }
     }
+
     private void G9v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (_isLoaded == false || _waitforload)
