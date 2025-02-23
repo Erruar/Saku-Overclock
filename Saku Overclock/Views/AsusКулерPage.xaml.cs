@@ -1,6 +1,7 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls.Primitives; 
-using Saku_Overclock.Contracts.Services; 
+﻿using System.Globalization;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 
@@ -19,8 +20,8 @@ public sealed partial class AsusКулерPage
 
     public AsusКулерPage()
     {
-        InitializeComponent(); 
-        _dataUpdater = App.BackgroundUpdater;
+        InitializeComponent();
+        _dataUpdater = App.BackgroundUpdater!;
         _dataUpdater.DataUpdated += OnDataUpdated;
 
         Loaded += AsusКулерPage_Loaded;
@@ -34,12 +35,12 @@ public sealed partial class AsusКулерPage
         AsusWinIOWrapper.Cleanup_WinIo();
         _isPageLoaded = false;
         StopTempUpdate();
-       _dataUpdater.DataUpdated -= OnDataUpdated;  
+        _dataUpdater.DataUpdated -= OnDataUpdated;
     }
 
     private void AsusКулерPage_Loaded(object sender, RoutedEventArgs e)
     {
-        AsusWinIOWrapper.Init_WinIo(); 
+        AsusWinIOWrapper.Init_WinIo();
         Fan1.Value = SettingsService.AsusModeFan1UserFanSpeedRPM;
         switch (SettingsService.AsusModeSelectedMode)
         {
@@ -76,7 +77,7 @@ public sealed partial class AsusКулерPage
         }
 
         _isPageLoaded = true;
-        UpdateSystemInformation(); 
+        UpdateSystemInformation();
         StartTempUpdate();
     }
 
@@ -92,10 +93,12 @@ public sealed partial class AsusКулерPage
     {
         DispatcherQueue.TryEnqueue(() =>
         {
-            _systemInfo = [];
-            _systemInfo.Add(info.CpuTempValue);
-            _systemInfo.Add(info.CpuFrequency);
-            _systemInfo.Add(info.CpuVoltage);
+            _systemInfo =
+            [
+                info.CpuTempValue,
+                info.CpuFrequency,
+                info.CpuVoltage
+            ];
         });
     }
 
@@ -109,10 +112,10 @@ public sealed partial class AsusКулерPage
         });
 
         UpdateValues(
-           _systemInfo.Count > 0 ? _systemInfo[0].ToString() : "?" + "℃",
-           _systemInfo.Count > 1 ? _systemInfo[1].ToString() : "?" + "GHz", 
-           _systemInfo.Count > 2 ? _systemInfo[2].ToString() : "?" + "V", 
-           tempLine);
+            _systemInfo.Count > 0 ? _systemInfo[0].ToString(CultureInfo.InvariantCulture) : "?" + "℃",
+            _systemInfo.Count > 1 ? _systemInfo[1].ToString(CultureInfo.InvariantCulture) : "?" + "GHz",
+            _systemInfo.Count > 2 ? _systemInfo[2].ToString(CultureInfo.InvariantCulture) : "?" + "V",
+            tempLine);
     }
 
     private void
@@ -124,16 +127,13 @@ public sealed partial class AsusКулерPage
         CPUFanRPM.Text = rpm;
     }
 
-    private void StopTempUpdate()
-    {
-        _tempUpdateTimer?.Stop();
-    }
+    private void StopTempUpdate() => _tempUpdateTimer?.Stop();
 
     private void UpdateSystemInformation()
     {
         var prod = GetSystemInfo.Product;
         LaptopName.Text =
-            (prod?.Contains("Asus") == true || prod?.Contains("ASUS") == true || prod?.Contains("asus") == true)
+            prod?.Contains("Asus") == true || prod?.Contains("ASUS") == true || prod?.Contains("asus") == true
                 ? "Asus " + prod.Replace("ASUS", "").Replace("Asus", "").Replace("asus", "").Replace('_', ' ')
                     .Replace("  ", " ")
                 : prod?.Replace('_', ' ').Replace("  ", " ");
@@ -145,7 +145,7 @@ public sealed partial class AsusКулерPage
             UnavailableLabel.IsOpen = true;
             _unavailableFlag = true;
         }
-    } 
+    }
 
     #endregion
 
@@ -163,7 +163,7 @@ public sealed partial class AsusКулерPage
         {
             return;
         }
- 
+
         SettingsService.AsusModeSelectedMode = 0;
         SettingsService.AsusModeFan1UserFanSpeedRPM = Fan1.Value;
         SettingsService.SaveSettings();
@@ -188,45 +188,45 @@ public sealed partial class AsusКулерPage
             AsusWinIOWrapper.Init_WinIo();
             switch (toggleButton.Name)
             {
-                case "AsusFans_ManualToggle": 
+                case "AsusFans_ManualToggle":
                     SettingsService.AsusModeSelectedMode = 0;
-                    SettingsService.AsusModeFan1UserFanSpeedRPM = Fan1.Value; 
+                    SettingsService.AsusModeFan1UserFanSpeedRPM = Fan1.Value;
                     AsusFans_BalanceToggle.IsChecked = false;
                     AsusFans_TurboToggle.IsChecked = false;
                     AsusFans_QuietToggle.IsChecked = false;
                     SetFanSpeeds((int)Fan1.Value);
                     break;
-                case "AsusFans_TurboToggle": 
-                    SettingsService.AsusModeSelectedMode = 1; 
+                case "AsusFans_TurboToggle":
+                    SettingsService.AsusModeSelectedMode = 1;
                     AsusFans_BalanceToggle.IsChecked = false;
                     AsusFans_ManualToggle.IsChecked = false;
                     AsusFans_QuietToggle.IsChecked = false;
                     SetFanSpeeds(90);
                     break;
-                case "AsusFans_BalanceToggle": 
-                    SettingsService.AsusModeSelectedMode = 2; 
+                case "AsusFans_BalanceToggle":
+                    SettingsService.AsusModeSelectedMode = 2;
                     AsusFans_ManualToggle.IsChecked = false;
                     AsusFans_TurboToggle.IsChecked = false;
                     AsusFans_QuietToggle.IsChecked = false;
                     SetFanSpeeds(57);
                     break;
-                case "AsusFans_QuietToggle": 
-                    SettingsService.AsusModeSelectedMode = 3; 
+                case "AsusFans_QuietToggle":
+                    SettingsService.AsusModeSelectedMode = 3;
                     AsusFans_BalanceToggle.IsChecked = false;
                     AsusFans_TurboToggle.IsChecked = false;
                     AsusFans_ManualToggle.IsChecked = false;
                     SetFanSpeeds(37);
                     break;
             }
-            SettingsService.SaveSettings();
 
+            SettingsService.SaveSettings();
         }
 
         if (AsusFans_BalanceToggle.IsChecked == false && AsusFans_ManualToggle.IsChecked == false &&
             AsusFans_QuietToggle.IsChecked == false && AsusFans_TurboToggle.IsChecked == false)
-        { 
+        {
             SettingsService.AsusModeSelectedMode = -1;
-            SettingsService.SaveSettings(); 
+            SettingsService.SaveSettings();
             SetFanSpeeds(0);
         }
     }
@@ -300,10 +300,7 @@ public sealed partial class AsusКулерPage
         return fanSpeeds;
     }
 
-    private static int HealthyTable_FanCounts()
-    {
-        return AsusWinIOWrapper.HealthyTable_FanCounts();
-    }
+    private static int HealthyTable_FanCounts() => AsusWinIOWrapper.HealthyTable_FanCounts();
 
     #endregion
 }
