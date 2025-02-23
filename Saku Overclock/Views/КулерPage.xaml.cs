@@ -5,7 +5,7 @@ using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Navigation; 
+using Microsoft.UI.Xaml.Navigation;
 using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -18,20 +18,20 @@ using FileMode = System.IO.FileMode;
 namespace Saku_Overclock.Views;
 
 public sealed partial class КулерPage
-{ 
+{
     private bool _isPageLoaded;
     private bool _isNbfcNotLoaded;
-    private double _cpuTemp = 0d;
+    private double _cpuTemp;
     private DispatcherTimer? _tempUpdateTimer;
     private readonly DispatcherTimer? _fanUpdateTimer;
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
-    private readonly IBackgroundDataUpdater? _dataUpdater;
+    private readonly IBackgroundDataUpdater _dataUpdater;
 
 
     public КулерPage()
     {
         App.GetService<КулерViewModel>();
-        InitializeComponent(); 
+        InitializeComponent();
         FanInit();
         Update();
         SettingsService.FlagRyzenADJConsoleTemperatureCheckRunning =
@@ -41,8 +41,8 @@ public sealed partial class КулерPage
         _fanUpdateTimer = new DispatcherTimer();
         _fanUpdateTimer.Tick += async (_, _) => await CheckFan();
         _fanUpdateTimer.Interval = TimeSpan.FromMilliseconds(6000);
-        _dataUpdater = App.BackgroundUpdater;
-        _dataUpdater.DataUpdated += OnDataUpdated; 
+        _dataUpdater = App.BackgroundUpdater!;
+        _dataUpdater.DataUpdated += OnDataUpdated;
         Unloaded += Page_Unloaded;
     }
 
@@ -92,7 +92,7 @@ public sealed partial class КулерPage
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
         base.OnNavigatedFrom(e);
-        StopTempUpdate(false);
+        StopTempUpdate();
     }
 
     private void AdvancedCooler_Click(object sender, RoutedEventArgs e)
@@ -109,11 +109,12 @@ public sealed partial class КулерPage
 
     #endregion
 
-    #region Initialization 
+    #region Initialization
+
     private async void FanInit()
     {
         try
-        { 
+        {
             try
             {
                 const string
@@ -153,7 +154,7 @@ public sealed partial class КулерPage
             }
 
             if (SettingsService.NBFCServiceStatusEnabled)
-            { 
+            {
                 Fan1.Value = SettingsService.NBFCFan1UserFanSpeedRPM;
                 Fan2.Value = SettingsService.NBFCFan2UserFanSpeedRPM;
                 Enabl.IsChecked = true;
@@ -380,7 +381,7 @@ public sealed partial class КулерPage
         }
     }
 
-    private void Page_Unloaded(object sender, RoutedEventArgs e) => StopTempUpdate(true);
+    private void Page_Unloaded(object sender, RoutedEventArgs e) => StopTempUpdate();
 
     #endregion
 
@@ -468,7 +469,7 @@ public sealed partial class КулерPage
                 {
                     Fan2Val.Text = "Auto";
                     Update();
-                    SettingsService.NBFCFan2UserFanSpeedRPM = 110.0; 
+                    SettingsService.NBFCFan2UserFanSpeedRPM = 110.0;
                     if (Fan1Pr.Value - 10.0d == 0.0d)
                     {
                         Fan1Pr.Value = 100;
@@ -478,7 +479,7 @@ public sealed partial class КулерPage
                 {
                     Fan2Pr.Value = Fan2.Value;
                     Fan2Cur.Text = "Cooler_Current_Fan_Val".GetLocalized() + "   " + Fan2.Value;
-                    SettingsService.NBFCFlagConsoleCheckSpeedRunning = false; 
+                    SettingsService.NBFCFlagConsoleCheckSpeedRunning = false;
                 }
 
                 SettingsService.SaveSettings();
@@ -542,23 +543,24 @@ public sealed partial class КулерPage
                     var result = await autoDialog.ShowAsync();
                     if (result == ContentDialogResult.Primary)
                     {
-                        SettingsService.NBFCAutoUpdateInformation = true; 
+                        SettingsService.NBFCAutoUpdateInformation = true;
                     }
                     else
                     {
                         Fanauto.IsChecked = false;
-                        SettingsService.NBFCAutoUpdateInformation = false; 
+                        SettingsService.NBFCAutoUpdateInformation = false;
                     }
                 }
 
-                SettingsService.NBFCFlagConsoleCheckSpeedRunning = false; 
+                SettingsService.NBFCFlagConsoleCheckSpeedRunning = false;
                 GetInfo0(true);
             }
             else
             {
-                SettingsService.NBFCAutoUpdateInformation = false; 
+                SettingsService.NBFCAutoUpdateInformation = false;
                 GetInfo0(false);
             }
+
             SettingsService.SaveSettings();
         }
         catch (Exception exception)
@@ -602,7 +604,7 @@ public sealed partial class КулерPage
     {
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
-        p.StartInfo.FileName = "nbfc/nbfc.exe"; 
+        p.StartInfo.FileName = "nbfc/nbfc.exe";
         if (SettingsService.NBFCServiceStatusDisabled)
         {
             p.StartInfo.Arguments = " stop";
@@ -629,7 +631,7 @@ public sealed partial class КулерPage
     {
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
-        p.StartInfo.FileName = @"nbfc/nbfc.exe"; 
+        p.StartInfo.FileName = @"nbfc/nbfc.exe";
         if (SettingsService.NBFCServiceStatusEnabled)
         {
             if (Fan1.Value < 100)
@@ -653,7 +655,7 @@ public sealed partial class КулерPage
     {
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
-        p.StartInfo.FileName = @"nbfc/nbfc.exe"; 
+        p.StartInfo.FileName = @"nbfc/nbfc.exe";
         if (SettingsService.NBFCServiceStatusEnabled)
         {
             if (Fan2.Value < 100)
@@ -678,7 +680,7 @@ public sealed partial class КулерPage
         const string quote = "\"";
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
-        p.StartInfo.FileName = @"nbfc/nbfc.exe"; 
+        p.StartInfo.FileName = @"nbfc/nbfc.exe";
         p.StartInfo.Arguments = " config --apply " + quote + SettingsService.NBFCConfigXMLName + quote;
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
@@ -772,7 +774,7 @@ public sealed partial class КулерPage
     }
 
     private void Update()
-    { 
+    {
         if (SettingsService.NBFCAnswerSpeedFan1 == string.Empty)
         {
             return;
@@ -780,7 +782,8 @@ public sealed partial class КулерPage
 
         try
         {
-            Fan1Pr.Value = Convert.ToInt32(double.Parse(SettingsService.NBFCAnswerSpeedFan1, CultureInfo.InvariantCulture));
+            Fan1Pr.Value =
+                Convert.ToInt32(double.Parse(SettingsService.NBFCAnswerSpeedFan1, CultureInfo.InvariantCulture));
             if (Fan1Pr.Value > 100)
             {
                 Fan1Pr.Value = 100;
@@ -804,7 +807,8 @@ public sealed partial class КулерPage
 
         try
         {
-            Fan2Pr.Value = Convert.ToInt32(double.Parse(SettingsService.NBFCAnswerSpeedFan2, CultureInfo.InvariantCulture));
+            Fan2Pr.Value =
+                Convert.ToInt32(double.Parse(SettingsService.NBFCAnswerSpeedFan2, CultureInfo.InvariantCulture));
             if (Fan2Pr.Value > 100)
             {
                 Fan2Pr.Value = 100;
@@ -869,16 +873,11 @@ public sealed partial class КулерPage
         _tempUpdateTimer.Start();
     }
 
-    private void UpdateTemperatureAsync()
-    {
-        Temp.Text = Math.Round(_cpuTemp, 3) + "℃";
-    }
-    private void OnDataUpdated(object? sender, SensorsInformation info)
-    {
-        _cpuTemp = info.CpuTempValue;
-    }
+    private void UpdateTemperatureAsync() => Temp.Text = Math.Round(_cpuTemp, 3) + "℃";
 
-    private void StopTempUpdate(bool exit)
+    private void OnDataUpdated(object? sender, SensorsInformation info) => _cpuTemp = info.CpuTempValue;
+
+    private void StopTempUpdate()
     {
         _dataUpdater.DataUpdated -= OnDataUpdated;
         _tempUpdateTimer?.Stop();
