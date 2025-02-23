@@ -6,6 +6,7 @@ using System.Management;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using H.NotifyIcon;
+using Microsoft.UI.Dispatching;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -16,7 +17,7 @@ using Icon = System.Drawing.Icon;
 
 namespace Saku_Overclock.Services;
 
-public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundDataUpdater
+public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundDataUpdater
 {
     private readonly IDataProvider? _dataProvider = dataProvider;
     private CancellationTokenSource? _cts;
@@ -25,18 +26,23 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
     private string? _rtssLine; // Строка для вывода в модуль RTSS
     private string? _cachedSelectedProfileReplacement; // Кешированная замена имени профиля
     private bool _isIconsCreated;
+
     private readonly List<ИнформацияPage.MinMax> _niiconsMinMaxValues =
     [
         new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()
     ]; // Лист для хранения минимальных и максимальных значений Ni-Icons
+
     private readonly Dictionary<string, TaskbarIcon>
-       _trayIcons = []; // Хранилище включенных в данный момент иконок Ni-Icons
-    private readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
+        _trayIcons = []; // Хранилище включенных в данный момент иконок Ni-Icons
+
+    // ReSharper disable once InconsistentNaming
+    private readonly IAppSettingsService
+        AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
     public event EventHandler<SensorsInformation>? DataUpdated;
     private NiIconsSettings _niicons = new(); // Конфиг с настройками Ni-Icons
 
-    private bool _batteryCached = false;
+    private bool _batteryCached;
     private string? _cachedBatteryName;
     private string? _cachedBatteryCapacity;
     private string? _cachedBatteryCycles;
@@ -52,13 +58,14 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
             {
                 CreateNotifyIcons();
             }
+
             RtssLoad();
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
-            LogHelper.LogError("BackgroundDataUpdater - UNABLE TO CREATE NOTIFY ICONS! " + ex.ToString());
+            LogHelper.LogError($"BackgroundDataUpdater - UNABLE TO CREATE NOTIFY ICONS! {ex}");
         }
-        
+
         _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         _updateTask = Task.Run(async () =>
         {
@@ -70,7 +77,8 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
                     try
                     {
                         var batteryInfo = GetBatInfoAsync().Result;
-                        var (batteryName, batteryPercent, batteryState, batteryHealth, batteryCycles, batteryCapacity, chargeRate, notTrack, batteryLifeTime) = batteryInfo;
+                        var (batteryName, batteryPercent, batteryState, batteryHealth, batteryCycles, batteryCapacity,
+                            chargeRate, notTrack, batteryLifeTime) = batteryInfo;
                         info.BatteryName = batteryName;
                         info.BatteryUnavailable = notTrack;
                         info.BatteryPercent = batteryPercent;
@@ -84,22 +92,24 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
                     catch
                     {
                         info.BatteryUnavailable = true;
-                    } 
+                    }
+
                     try
                     {
                         var ramInfo = GetRamInfoAsync().Result;
-                        var (totalRamGB, busyRamGB, usagePercent, usageString) = ramInfo;
-                        info.RamTotal = totalRamGB;
-                        info.RamBusy = busyRamGB;
+                        var (totalRamGb, busyRamGb, usagePercent, usageString) = ramInfo;
+                        info.RamTotal = totalRamGb;
+                        info.RamBusy = busyRamGb;
                         info.RamUsagePercent = usagePercent;
                         info.RamUsage = usageString;
                     }
                     catch
                     {
-
+                        // ignored
                     }
+
                     DataUpdated?.Invoke(this, info);
-                    UpdateTrayMonAndRTSS(info); 
+                    UpdateTrayMonAndRtss(info);
                 }
                 catch (Exception ex)
                 {
@@ -122,7 +132,7 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
 
     public void Stop()
     {
-        if (_cts != null && !_cts.IsCancellationRequested)
+        if (_cts is { IsCancellationRequested: false })
         {
             _cts.Cancel();
             DisposeAllNotifyIcons();
@@ -130,26 +140,29 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
     }
 
     #region Update Battery information voids
+
     private async Task<(
-    string BatteryName,
-    string BatteryPercent,
-    string BatteryState,
-    string BatteryHealth,
-    string BatteryCycles,
-    string BatteryCapacity,
-    string BatteryChargeRate,
-    bool BatteryUnavailable,
-    int BatteryLifeTime
-    )> GetBatInfoAsync()
+        string BatteryName,
+        string BatteryPercent,
+        string BatteryState,
+        string BatteryHealth,
+        string BatteryCycles,
+        string BatteryCapacity,
+        string BatteryChargeRate,
+        bool BatteryUnavailable,
+        int BatteryLifeTime
+        )> GetBatInfoAsync()
     {
         // Если данные о батарее помечены как недоступные, сразу возвращаем флаг и пустые строки
         if (_cachedBatteryUnavailable)
         {
-            return (string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, true, 0);
+            return (string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
+                true, 0);
         }
 
         try
         {
+            bool notTrack;
             var batteryInfo = await Task.Run(() =>
             {
                 // Получаем динамические (часто меняющиеся) параметры
@@ -161,11 +174,10 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
                 var batteryLifeTime = GetSystemInfo.GetBatteryLifeTime();
 
                 // Переменные для кэшируемых значений
-                string? batteryName;
+                string batteryName;
                 string batteryCapacity;
                 string batteryCycles;
                 string batteryHealth;
-                bool notTrack;
 
                 if (!_batteryCached)
                 {
@@ -177,7 +189,7 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
                     var designCapacity = GetSystemInfo.ReadDesignCapacity(out notTrack);
                     batteryCapacity = $"{fullChargeCapacity}mAh/{designCapacity}mAh";
 
-                    batteryName = GetSystemInfo.GetBatteryName();
+                    batteryName = GetSystemInfo.GetBatteryName() ?? "Unknown";
 
                     // Сохраняем результаты для будущих вызовов
                     _cachedBatteryName = batteryName;
@@ -190,14 +202,15 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
                 else
                 {
                     // Используем ранее сохранённые данные
-                    batteryName = _cachedBatteryName;
+                    batteryName = _cachedBatteryName ?? "Unknown";
                     batteryHealth = _cachedBatteryHealth!;
                     batteryCycles = _cachedBatteryCycles!;
                     batteryCapacity = _cachedBatteryCapacity!;
                     notTrack = _cachedBatteryUnavailable;
                 }
 
-                return (batteryName, batteryPercent, batteryState, batteryHealth, batteryCycles, batteryCapacity, chargeRate, notTrack, batteryLifeTime);
+                return (batteryName, batteryPercent, batteryState, batteryHealth, batteryCycles, batteryCapacity,
+                    chargeRate, notTrack, batteryLifeTime);
             });
 
             return batteryInfo;
@@ -205,20 +218,21 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
         catch
         {
             // В случае ошибки возвращаем пустые строки и флаг недоступности true
-            return (string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, true, 0);
+            return (string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
+                true, 0);
         }
     }
-
 
     #endregion
 
     #region Update RAM information voids
+
     private async Task<(
-    string RamTotal,
-    string RamBusy,
-    int RamUsagePercent,
-    string RamUsage
-    )> GetRamInfoAsync()
+        string RamTotal,
+        string RamBusy,
+        int RamUsagePercent,
+        string RamUsage
+        )> GetRamInfoAsync()
     {
         try
         {
@@ -231,12 +245,13 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
                     var totalRam = Convert.ToDouble(objram["TotalVisibleMemorySize"]);
                     var busyRam = totalRam - Convert.ToDouble(objram["FreePhysicalMemory"]);
                     var usagePercent = (int)Math.Round(busyRam * 100 / totalRam, 0);
-                    var totalRamGB = Math.Round(totalRam / 1024 / 1024, 1) + "GB"; // Преобразуем в GB
-                    var busyRamGB = Math.Round(busyRam / 1024 / 1024, 2) + "GB";
-                    var usageString = $"{usagePercent}%\n{busyRamGB}/{totalRamGB}";
+                    var totalRamGb = Math.Round(totalRam / 1024 / 1024, 1) + "GB"; // Преобразуем в GB
+                    var busyRamGb = Math.Round(busyRam / 1024 / 1024, 2) + "GB";
+                    var usageString = $"{usagePercent}%\n{busyRamGb}/{totalRamGb}";
 
-                    return (totalRamGB, busyRamGB, usagePercent, usageString);
+                    return (totalRamGb, busyRamGb, usagePercent, usageString);
                 }
+
                 return ("Unknown", "Unknown", 0, "Unknown"); // Значения по умолчанию в случае ошибки
             });
 
@@ -247,10 +262,13 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
             return ("Error", "Error", 0, "Error");
         }
     }
+
     #endregion
 
     #region Update Ni-Icons information voids
-    #region JSON 
+
+    #region JSON
+
     private void NiSave()
     {
         try
@@ -280,6 +298,7 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
             NiSave();
         }
     }
+
     private void RtssSave()
     {
         try
@@ -310,8 +329,10 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
             RtssSave();
         }
     }
+
     #endregion
-    public void UpdateTrayMonAndRTSS(SensorsInformation sensorsInformation)
+
+    private void UpdateTrayMonAndRtss(SensorsInformation sensorsInformation)
     {
         try
         {
@@ -339,13 +360,14 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
 
                     RtssHandler.ChangeOsdText(_rtssLine);
                 }
+
                 if (AppSettings.NiIconsEnabled)
                 {
                     if (!_isIconsCreated)
                     {
                         CreateNotifyIcons();
                     }
-                    if (sensorsInformation == null) { return; }
+
                     // Обновляем минимальные и максимальные значения
                     UpdateMinMaxValues(_niiconsMinMaxValues, 0, sensorsInformation.CpuStapmValue);
                     UpdateMinMaxValues(_niiconsMinMaxValues, 1, sensorsInformation.CpuFastValue);
@@ -358,32 +380,45 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
                     UpdateMinMaxValues(_niiconsMinMaxValues, 8, sensorsInformation.ApuFrequency);
                     UpdateMinMaxValues(_niiconsMinMaxValues, 9, sensorsInformation.ApuTemperature);
                     UpdateMinMaxValues(_niiconsMinMaxValues, 10, sensorsInformation.ApuVoltage);
-                    var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+                    DispatcherQueue.GetForCurrentThread();
                     App.MainWindow.DispatcherQueue.TryEnqueue(() =>
                     {
                         // Обновляем текст иконок
-                        UpdateNiIconText("Settings_ni_Values_STAPM", sensorsInformation.CpuStapmValue, "W", _niiconsMinMaxValues[0], "Settings_ni_Values_STAPM".GetLocalized());
-                        UpdateNiIconText("Settings_ni_Values_Fast", sensorsInformation.CpuFastValue, "W", _niiconsMinMaxValues[1], "Settings_ni_Values_Fast".GetLocalized());
-                        UpdateNiIconText("Settings_ni_Values_Slow", sensorsInformation.CpuSlowValue, "W", _niiconsMinMaxValues[2], "Settings_ni_Values_Slow".GetLocalized());
-                        UpdateNiIconText("Settings_ni_Values_VRMEDC", sensorsInformation.VrmEdcValue, "A", _niiconsMinMaxValues[3], "Settings_ni_Values_VRMEDC".GetLocalized());
-                        UpdateNiIconText("Settings_ni_Values_CPUTEMP", sensorsInformation.CpuTempValue, "C", _niiconsMinMaxValues[4], "Settings_ni_Values_CPUTEMP".GetLocalized());
-                        UpdateNiIconText("Settings_ni_Values_CPUUsage", sensorsInformation.CpuUsage, "%", _niiconsMinMaxValues[5], "Settings_ni_Values_CPUUsage".GetLocalized());
-                        UpdateNiIconText("Settings_ni_Values_AVGCPUCLK", sensorsInformation.CpuFrequency, "GHz", _niiconsMinMaxValues[6], "Settings_ni_Values_AVGCPUCLK".GetLocalized());
-                        UpdateNiIconText("Settings_ni_Values_AVGCPUVOLT", sensorsInformation.CpuVoltage, "V", _niiconsMinMaxValues[7], "Settings_ni_Values_AVGCPUVOLT".GetLocalized());
-                        UpdateNiIconText("Settings_ni_Values_GFXCLK", sensorsInformation.ApuFrequency, "MHz", _niiconsMinMaxValues[8], "Settings_ni_Values_GFXCLK".GetLocalized());
-                        UpdateNiIconText("Settings_ni_Values_GFXTEMP", sensorsInformation.ApuTemperature, "C", _niiconsMinMaxValues[9], "Settings_ni_Values_GFXTEMP".GetLocalized());
-                        UpdateNiIconText("Settings_ni_Values_GFXVOLT", sensorsInformation.ApuVoltage, "V", _niiconsMinMaxValues[10], "Settings_ni_Values_GFXVOLT".GetLocalized());
+                        UpdateNiIconText("Settings_ni_Values_STAPM", sensorsInformation.CpuStapmValue, "W",
+                            _niiconsMinMaxValues[0], "Settings_ni_Values_STAPM".GetLocalized());
+                        UpdateNiIconText("Settings_ni_Values_Fast", sensorsInformation.CpuFastValue, "W",
+                            _niiconsMinMaxValues[1], "Settings_ni_Values_Fast".GetLocalized());
+                        UpdateNiIconText("Settings_ni_Values_Slow", sensorsInformation.CpuSlowValue, "W",
+                            _niiconsMinMaxValues[2], "Settings_ni_Values_Slow".GetLocalized());
+                        UpdateNiIconText("Settings_ni_Values_VRMEDC", sensorsInformation.VrmEdcValue, "A",
+                            _niiconsMinMaxValues[3], "Settings_ni_Values_VRMEDC".GetLocalized());
+                        UpdateNiIconText("Settings_ni_Values_CPUTEMP", sensorsInformation.CpuTempValue, "C",
+                            _niiconsMinMaxValues[4], "Settings_ni_Values_CPUTEMP".GetLocalized());
+                        UpdateNiIconText("Settings_ni_Values_CPUUsage", sensorsInformation.CpuUsage, "%",
+                            _niiconsMinMaxValues[5], "Settings_ni_Values_CPUUsage".GetLocalized());
+                        UpdateNiIconText("Settings_ni_Values_AVGCPUCLK", sensorsInformation.CpuFrequency, "GHz",
+                            _niiconsMinMaxValues[6], "Settings_ni_Values_AVGCPUCLK".GetLocalized());
+                        UpdateNiIconText("Settings_ni_Values_AVGCPUVOLT", sensorsInformation.CpuVoltage, "V",
+                            _niiconsMinMaxValues[7], "Settings_ni_Values_AVGCPUVOLT".GetLocalized());
+                        UpdateNiIconText("Settings_ni_Values_GFXCLK", sensorsInformation.ApuFrequency, "MHz",
+                            _niiconsMinMaxValues[8], "Settings_ni_Values_GFXCLK".GetLocalized());
+                        UpdateNiIconText("Settings_ni_Values_GFXTEMP", sensorsInformation.ApuTemperature, "C",
+                            _niiconsMinMaxValues[9], "Settings_ni_Values_GFXTEMP".GetLocalized());
+                        UpdateNiIconText("Settings_ni_Values_GFXVOLT", sensorsInformation.ApuVoltage, "V",
+                            _niiconsMinMaxValues[10], "Settings_ni_Values_GFXVOLT".GetLocalized());
                     });
                 }
             }
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
-            LogHelper.LogError("Unable to update RTSS or TrayMon©: " + ex.ToString());
+            LogHelper.LogError($"Unable to update RTSS or TrayMon\u00a9: {ex}");
         }
     }
 
-    private static void UpdateMinMaxValues(List<ИнформацияPage.MinMax> minMaxValues, int index, double currentValue) // Сохраняет минимальные и максимальные значение в словарь
+    private static void
+        UpdateMinMaxValues(List<ИнформацияPage.MinMax> minMaxValues, int index,
+            double currentValue) // Сохраняет минимальные и максимальные значение в словарь
     {
         if (minMaxValues[index].Min == 0.0d)
         {
@@ -394,7 +429,8 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
         minMaxValues[index].Min = Math.Min(minMaxValues[index].Min, currentValue);
     }
 
-    private void UpdateNiIconText(string key, double currentValue, string unit, ИнформацияPage.MinMax minMaxValue, string description) // Обновляет текущее значение показателей на трей иконках
+    private void UpdateNiIconText(string key, double currentValue, string unit, ИнформацияPage.MinMax minMaxValue,
+        string description) // Обновляет текущее значение показателей на трей иконках
     {
         // Ограничение и округление текущего, минимального и максимального значений
         var currentValueText = Math.Round(currentValue, 3).ToString(CultureInfo.InvariantCulture);
@@ -407,7 +443,8 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
 
 
         var extendedTooltip = "Settings_ni_Values_MinValue".GetLocalized() + minValueText + unit +
-                                   "Settings_ni_Values_MaxValue".GetLocalized() + maxValueText + unit; // Расширенная часть тултипа (минимум и максимум)
+                              "Settings_ni_Values_MaxValue".GetLocalized() + maxValueText +
+                              unit; // Расширенная часть тултипа (минимум и максимум)
 
         Change_Ni_Icons_Text(key, currentValueText, tooltip, extendedTooltip);
     }
@@ -416,12 +453,15 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
 
     #region Update RTSS Line information voids
 
-    private static string ReplacePlaceholders(string input, Dictionary<string, string> replacements) // Меняет заголовки в соответствии со словарём
-    {
-        return replacements.Aggregate(input, (current, replacement) => current.Replace(replacement.Key, replacement.Value));
-    }
+    private static string
+        ReplacePlaceholders(string input,
+            Dictionary<string, string> replacements) // Меняет заголовки в соответствии со словарём
+        =>
+            replacements.Aggregate(input,
+                (current, replacement) => current.Replace(replacement.Key, replacement.Value));
 
-    private Dictionary<string, string> GetReplacements(double avgCoreClk, double avgCoreVolt, SensorsInformation sensorsInformation) // Словарь с элементами, которые нужно заменить
+    private Dictionary<string, string> GetReplacements(double avgCoreClk, double avgCoreVolt,
+        SensorsInformation sensorsInformation) // Словарь с элементами, которые нужно заменить
     {
         var profileName = ShellPage.SelectedProfile
             .Replace('а', 'a').Replace('м', 'm')
@@ -433,8 +473,9 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
             .Replace('р', 'r').Replace('т', 't')
             .Replace('ь', ' ');
         // Если кэшированное значение отсутствует, вычислить его
-        _cachedSelectedProfileReplacement = _cachedSelectedProfileReplacement != profileName ? profileName : _cachedSelectedProfileReplacement;
-        sensorsInformation ??= new SensorsInformation();
+        _cachedSelectedProfileReplacement = _cachedSelectedProfileReplacement != profileName
+            ? profileName
+            : _cachedSelectedProfileReplacement;
 
         return new Dictionary<string, string>
         {
@@ -509,9 +550,9 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
         };
     }
 
-    private (double avgCoreClk, double avgCoreVolt, string endClkString) CalculateCoreMetrics(SensorsInformation sensorsInformation)
+    private (double avgCoreClk, double avgCoreVolt, string endClkString) CalculateCoreMetrics(
+        SensorsInformation sensorsInformation)
     {
-        sensorsInformation ??= new SensorsInformation();
         double sumCoreClk = 0;
         double sumCoreVolt = 0;
         var validCoreCount = 0;
@@ -522,8 +563,7 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
             RtssLoad();
         }
 
-        var pattern = @"\$cpu_clock_cycle\$(.*?)\$cpu_clock_cycle_end\$";
-        var match = Regex.Match(_rtssset.AdvancedCodeEditor, pattern);
+        var match = ClockCycleRegex().Match(_rtssset.AdvancedCodeEditor);
 
         for (uint f = 0; f < CpuSingleton.GetInstance().info.topology.cores; f++)
         {
@@ -532,10 +572,14 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
                 break;
             }
 
-            var clk = Math.Round(sensorsInformation.CpuFrequencyPerCore != null ?
-                        (sensorsInformation.CpuFrequencyPerCore.Length > f ? sensorsInformation.CpuFrequencyPerCore[f] : 0f) : 0f, 3);
-            var volt = Math.Round(sensorsInformation.CpuVoltagePerCore != null ?
-                        (sensorsInformation.CpuVoltagePerCore.Length > f ? sensorsInformation.CpuVoltagePerCore[f] : 0f) : 0f, 3);
+            var clk = Math.Round(
+                sensorsInformation.CpuFrequencyPerCore != null
+                    ? sensorsInformation.CpuFrequencyPerCore.Length > f ? sensorsInformation.CpuFrequencyPerCore[f] : 0f
+                    : 0f, 3);
+            var volt = Math.Round(
+                sensorsInformation.CpuVoltagePerCore != null
+                    ? sensorsInformation.CpuVoltagePerCore.Length > f ? sensorsInformation.CpuVoltagePerCore[f] : 0f
+                    : 0f, 3);
 
             if (clk > 0 && volt > 0) // Исключаем нули и -1
             {
@@ -547,10 +591,10 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
             if (match.Success)
             {
                 endClkString += (f > 3 ? "<Br>        " : "") +
-                    match.Groups[1].Value
-                        .Replace("$currCore$", f.ToString())
-                        .Replace("$cpu_core_clock$", clk.ToString(CultureInfo.InvariantCulture))
-                        .Replace("$cpu_core_voltage$", volt.ToString(CultureInfo.InvariantCulture));
+                                match.Groups[1].Value
+                                    .Replace("$currCore$", f.ToString())
+                                    .Replace("$cpu_core_clock$", clk.ToString(CultureInfo.InvariantCulture))
+                                    .Replace("$cpu_core_voltage$", volt.ToString(CultureInfo.InvariantCulture));
             }
         }
 
@@ -560,6 +604,8 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
         return (avgCoreClk, avgCoreVolt, endClkString);
     }
 
+    [GeneratedRegex(@"\$cpu_clock_cycle\$(.*?)\$cpu_clock_cycle_end\$")]
+    private static partial Regex ClockCycleRegex();
 
     #region Ni-Icons
 
@@ -660,9 +706,10 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
         // Добавляем текст
         try
         {
-            var font = new Font(new FontFamily("Arial"), element.FontSize * 2, System.Drawing.FontStyle.Regular,
+            var font = new Font(new FontFamily("Arial"), element.FontSize * 2, FontStyle.Regular,
                 GraphicsUnit.Pixel);
-            var textBrush = new SolidBrush(GetContrastColor(element.Color, element.IsGradient ? element.SecondColor : null));
+            var textBrush =
+                new SolidBrush(GetContrastColor(element.Color, element.IsGradient ? element.SecondColor : null));
             // Центруем текст
             var textSize = g.MeasureString("Text", font);
             var textPosition = new PointF(
@@ -791,26 +838,26 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
         switch (iconShape)
         {
             case 0: // Куб
-                g.FillRectangle((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
+                g.FillRectangle((Brush)bgBrush, 0, 0, 32, 32);
                 break;
             case 1: // Скруглённый куб
                 var path = CreateRoundedRectanglePath(new Rectangle(0, 0, 32, 32), 7);
                 if (path != null)
                 {
-                    g.FillPath((System.Drawing.Brush)bgBrush, path);
+                    g.FillPath((Brush)bgBrush, path);
                 }
                 else
                 {
-                    g.FillRectangle((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
+                    g.FillRectangle((Brush)bgBrush, 0, 0, 32, 32);
                 }
 
                 break;
             case 2: // Круг
-                g.FillEllipse((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
+                g.FillEllipse((Brush)bgBrush, 0, 0, 32, 32);
                 break;
             // Добавьте остальные фигуры и обработку ico при необходимости
             default:
-                g.FillRectangle((System.Drawing.Brush)bgBrush, 0, 0, 32, 32);
+                g.FillRectangle((Brush)bgBrush, 0, 0, 32, 32);
                 break;
         }
 
@@ -818,8 +865,8 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
 
         var textBrush = new SolidBrush(GetContrastColor(newColor, secondColor != string.Empty ? secondColor : null));
         var textPosition = GetTextPosition(newText, fontSize, out var fontSizeT, out var newTextT);
-        var font = new Font(new FontFamily("Segoe UI"), fontSizeT * 2f, System.Drawing.FontStyle.Bold,
-           GraphicsUnit.Pixel);
+        var font = new Font(new FontFamily("Segoe UI"), fontSizeT * 2f, FontStyle.Bold,
+            GraphicsUnit.Pixel);
         // Рисуем текст
         g.DrawString(newTextT, font, textBrush, textPosition);
         // Создание иконки из Bitmap и освобождение ресурсов
@@ -833,75 +880,86 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
         }
     }
 
-    ///<summary> Метод для освобождения ресурсов, используемый после GetHicon()
+    ///<summary> Метод для освобождения ресурсов, используемый после GetHicon() </summary>
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool DestroyIcon(IntPtr hIcon);
 
-    ///<summary> Получить позицию текста и доработанный текст, на основе предугадывания позиции и готовых функций на основе датасета всех возможных вариантов размера шрифта</summary>
-    private static PointF GetTextPosition(string? newText, float fontSize, out float newFontSize, out string? newText_T)
+    /// <summary>
+    ///     Получить позицию текста и доработанный текст, на основе предугадывания позиции и готовых функций на основе
+    ///     датасета всех возможных вариантов размера шрифта
+    /// </summary>
+    private static PointF GetTextPosition(string? newText, float fontSize, out float newFontSize,
+        out string? newFixedText)
     {
-        var yPosition = -1.475f * fontSize + 16.2f; // Готовая "скомпилированная" функция, основанная на массиве данных, собранные на всех возможных размерах шрифта
-        newText_T = newText;
-        var X = 20f;
-        if (!newText!.Contains('.')) { newText += ".0"; }
+        var yPosition =
+            -1.475f * fontSize +
+            16.2f; // Готовая "скомпилированная" функция, основанная на массиве данных, собранные на всех возможных размерах шрифта
+        newFixedText = newText;
+        var xPos = 20f;
+        if (!newText!.Contains('.'))
+        {
+            newText += ".0";
+        }
+
         if (!string.IsNullOrEmpty(newText) && newText.Contains('.'))
         {
             var parts = newText.Split('.');
             var wholePartLength = parts[0].Length;
-            switch (wholePartLength) // TrayMon© - Разработка от Erruar, поэтому вам не стоит разбираться в том, как она работает. Все значения были скомпилированы в функции при помощи NumPy
+            switch
+                (wholePartLength) // TrayMon© - Разработка от Erruar, поэтому вам не стоит разбираться в том, как она работает. Все значения были скомпилированы в функции при помощи NumPy
             {
                 case 1:
                     var offset1 = (int)fontSize == 14 ? 3.3f : (int)fontSize == 13 ? -3.3f : 0f;
-                    X = -0.0715488215f * fontSize * fontSize * fontSize
+                    xPos = -0.0715488215f * fontSize * fontSize * fontSize
                         + 2.83311688f * fontSize * fontSize
                         - 35.2581049f * fontSize + 135.071284f
-                        + offset1;
-                    newText_T = fontSize > 13 ? parts[0] : newText;
+                                                 + offset1;
+                    newFixedText = fontSize > 13 ? parts[0] : newText;
                     break;
                 case 2:
                     var offset2 = (int)fontSize == 10 ? 2.17329f : (int)fontSize == 9 ? -2.17329f : 0f;
-                    X = 0.0614478114f * fontSize * fontSize * fontSize
-                       - 2.48160173f * fontSize * fontSize
-                       + 31.8379028f * fontSize - 132.756133f
-                       + offset2;
-                    newText_T = fontSize > 9 ? parts[0] : newText;
+                    xPos = 0.0614478114f * fontSize * fontSize * fontSize
+                           - 2.48160173f * fontSize * fontSize
+                           + 31.8379028f * fontSize - 132.756133f
+                           + offset2;
+                    newFixedText = fontSize > 9 ? parts[0] : newText;
                     break;
                 case 3:
                     fontSize = fontSize > 12 ? 12 : fontSize;
-                    X = 0.33333333f * fontSize * fontSize * fontSize
-                       - 10.07142857f * fontSize * fontSize
-                       + 98.5952381f * fontSize - 316.8f;
+                    xPos = 0.33333333f * fontSize * fontSize * fontSize
+                        - 10.07142857f * fontSize * fontSize
+                        + 98.5952381f * fontSize - 316.8f;
                     yPosition = -1.475f * fontSize + 16.2f;
                     break;
                 case > 3:
                     fontSize = fontSize > 12 ? 12 : fontSize - 2;
-                    X = 0.00378787879f * fontSize * fontSize * fontSize
-                       - 0.00487012987f * fontSize * fontSize
-                       - 2.32251082f * fontSize + 14.982684f;
+                    xPos = 0.00378787879f * fontSize * fontSize * fontSize
+                        - 0.00487012987f * fontSize * fontSize
+                        - 2.32251082f * fontSize + 14.982684f;
                     yPosition = -1.475f * fontSize + 16.2f;
                     break;
                 default:
-                    X = 0f;
+                    xPos = 0f;
                     break;
             }
         }
 
         newFontSize = fontSize;
-        var position = new PointF(X, yPosition);
+        var position = new PointF(xPos, yPosition);
         return position;
     }
 
-    ///<summary> Функция для определения яркости цвета</summary> 
+    /// <summary> Функция для определения яркости цвета</summary>
     private static double GetBrightness(string color)
     {
         var valuestring = color.TrimStart('#');
         var r = Convert.ToInt32(valuestring[..2], 16);
         var g = Convert.ToInt32(valuestring.Substring(2, 2), 16);
         var b = Convert.ToInt32(valuestring.Substring(4, 2), 16);
-        return (0.299 * r) + (0.587 * g) + (0.114 * b);
+        return 0.299 * r + 0.587 * g + 0.114 * b;
     }
 
-    ///<summary> Функция для определения контрастного цвета текста по фону текста</summary> 
+    /// <summary> Функция для определения контрастного цвета текста по фону текста</summary>
     private static Color GetContrastColor(string color1, string? color2 = null)
     {
         var brightness1 = GetBrightness(color1);
@@ -922,7 +980,6 @@ public class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundData
     }
 
     #endregion
-
 
     #endregion
 }
