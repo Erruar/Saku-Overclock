@@ -44,7 +44,7 @@ public partial class App
     }
 
     // Глобальный экземпляр фонового обновлятора, зарегистрированный как синглтон через DI.
-    public static IBackgroundDataUpdater BackgroundUpdater
+    public static IBackgroundDataUpdater? BackgroundUpdater
     {
         get; private set;
     }
