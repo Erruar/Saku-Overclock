@@ -1,14 +1,15 @@
-﻿using Accord.Math.Geometry;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
+using Saku_Overclock.SMUEngine;
+
 namespace Saku_Overclock.Views;
 
+// ReSharper disable once RedundantExtendsListEntry
 public sealed partial class ОбучениеPage : Page
 {
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
@@ -21,7 +22,7 @@ public sealed partial class ОбучениеPage : Page
     private static void HideNavbarAndControls()
     {
         NotificationsService.Notifies ??= [];
-        NotificationsService.Notifies.Add(new()
+        NotificationsService.Notifies.Add(new Notify
         {
             Title = "FirstLaunch",
             Msg = "DEBUG MESSAGE",
@@ -116,7 +117,7 @@ public sealed partial class ОбучениеPage : Page
         Storyboard.SetTarget(fadeOut1, Circle2);
         Storyboard.SetTargetProperty(fadeOut1, "Opacity");
 
-        Storyboard.SetTarget(fadeOut2, StartAnimation);
+        Storyboard.SetTarget(fadeOut2, StartAnimationPanel);
         Storyboard.SetTargetProperty(fadeOut2, "Opacity");
 
         Storyboard.SetTarget(fadeOut3, LogoAnimation);

@@ -45,7 +45,7 @@
         </Grid>
 
         <!-- Button to Start Animation -->
-        <StackPanel x:Name="StartAnimation" Margin="30" Orientation="Vertical"  HorizontalAlignment="Left" VerticalAlignment="Center">
+        <StackPanel x:Name="StartAnimationPanel" Margin="30" Orientation="Vertical"  HorizontalAlignment="Left" VerticalAlignment="Center">
             <TextBlock Text="Saku Overclock" FontWeight="ExtraBlack" Foreground="White" FontSize="48"/>
             <TextBlock Text="Welcome to the world of optimized things!" FontWeight="Bold" Foreground="White" FontSize="25"/>
             <Line Margin="3,20,0,0" X1="0" X2="50" Y1="0" Y2="0" Stroke="White" StrokeThickness="6"></Line>
