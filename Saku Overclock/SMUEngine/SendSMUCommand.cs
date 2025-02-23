@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers; 
+using Saku_Overclock.JsonContainers;
 using Saku_Overclock.Views;
 using ZenStates.Core;
 
@@ -13,17 +13,16 @@ namespace Saku_Overclock.SMUEngine;
 
 Приватные статические поля:
 
-RSMU_RSP, RSMU_ARG, RSMU_CMD: содержат адреса для отправки команд SMU на системы AMD.
-MP1_RSP, MP1_ARG, MP1_CMD: содержат адреса для отправки команд SMU на системы с другой архитектурой.
+RsmuRsp, RsmuArg, RsmuCmd: содержат адреса для отправки команд SMU на системы AMD.
+Mp1Rsp, Mp1Arg, Mp1Cmd: содержат адреса для отправки команд SMU на системы с другой архитектурой.
 Публичные свойства и поля:
 
-commands: список кортежей, хранящих информацию о командах (название, флаг применения, адрес).
-cancelrange: флаг для отмены диапазона команд.
+Commands: список кортежей, хранящих информацию о командах (название, флаг применения, адрес).
+_cancelrange: флаг для отмены диапазона команд.
 Методы:
 
-OC_Detect: пытается определить, поддерживает ли процессор возможность разгона.
-Init_OC_Mode: запускает процесс установки режима разгона.
-SmuSettingsSave, SmuSettingsLoad, ProfileLoad, SettingsServiceLoad, SettingsServiceSave: методы для сохранения и загрузки настроек из JSON-файлов.
+
+SmuSettingsLoad, ProfileLoad: методы для сохранения и загрузки настроек из JSON-файлов.
 Play_Invernate_QuickSMU, ApplySettings, ApplyThis, SendRange: устаревшие методы, отвечающие за отправку команд SMU на процессор.
 JsonRepair: метод для восстановления JSON-файлов в случае их повреждения.
 CancelRange: устанавливает флаг отмены диапазона команд.
@@ -78,14 +77,14 @@ internal class SendSmuCommand
     public static Cpu.CodeName Codename;
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
     private static string _cpuCodenameString = string.Empty;
-    private Smusettings _smusettings = new(); 
-    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); 
+    private Smusettings _smusettings = new();
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>();
     private readonly Mailbox _testMailbox = new();
     private Profile[] _profile = new Profile[1];
     private bool _cancelrange;
     private bool _dangersettingsapplied;
     private string _checkAdjLine = string.Empty;
-    private readonly IBackgroundDataUpdater? _dataUpdater;
+
     public static bool SafeReapply
     {
         get;
@@ -94,8 +93,8 @@ internal class SendSmuCommand
 
     public SendSmuCommand()
     {
-        _dataUpdater = App.BackgroundUpdater;
-        _dataUpdater.DataUpdated += OnDataUpdated;
+        var dataUpdater = App.BackgroundUpdater;
+        dataUpdater!.DataUpdated += OnDataUpdated;
 
         try
         {
@@ -119,7 +118,8 @@ internal class SendSmuCommand
         }
     }
 
-    private void OnDataUpdated(object? sender, SensorsInformation info) => _cpuCodenameString = _cpuCodenameString == (info.CpuFamily == null ? "Unsupported" : info.CpuFamily) ? _cpuCodenameString : (info.CpuFamily == null ? "Unsupported" : info.CpuFamily);
+    private static void OnDataUpdated(object? sender, SensorsInformation info) => _cpuCodenameString =
+        _cpuCodenameString == (info.CpuFamily ?? "Unsupported") ? _cpuCodenameString : info.CpuFamily ?? "Unsupported";
 
     // JSON
     private void SmuSettingsLoad()
@@ -127,7 +127,9 @@ internal class SendSmuCommand
         try
         {
             _smusettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\smusettings.json")) ?? new Smusettings();
+                               Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                               @"\SakuOverclock\smusettings.json")) ??
+                           new Smusettings();
         }
         catch (Exception ex)
         {
@@ -148,11 +150,12 @@ internal class SendSmuCommand
             JsonRepair('p');
             TraceIt_TraceError(ex.ToString());
         }
-    }   
+    }
+
     private void JsonRepair(char file)
     {
         switch (file)
-        { 
+        {
             case 's':
             {
                 _smusettings = new Smusettings();
@@ -178,6 +181,7 @@ internal class SendSmuCommand
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
                         AppContext.BaseDirectory));
                 }
+
                 break;
             }
             case 'p':
@@ -203,6 +207,7 @@ internal class SendSmuCommand
                     App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
                         AppContext.BaseDirectory));
                 }
+
                 break;
         }
     }
@@ -343,12 +348,11 @@ internal class SendSmuCommand
             try
             {
                 _cpu ??= CpuSingleton.GetInstance();
-                if (_cpu != null && Codename != _cpu.info.codeName ||
+                if ((_cpu != null && Codename != _cpu.info.codeName) ||
                     !_cpuCodenameString.Contains(_cpu!.info.codeName.ToString()))
                 {
                     Codename = _cpu.info.codeName;
                     _cpuCodenameString = Codename.ToString();
-                   
                 }
 
                 if (_cpu?.info.codeName == Cpu.CodeName.SummitRidge || Codename == Cpu.CodeName.SummitRidge ||
@@ -389,10 +393,10 @@ internal class SendSmuCommand
                     Socket_FT6_FP7_FP8();
                 }
                 else if (_cpu?.info.codeName == Cpu.CodeName.Raphael ||
-                 _cpu?.info.codeName == Cpu.CodeName.GraniteRidge || 
-                 _cpu?.info.codeName == Cpu.CodeName.Genoa || 
-                 _cpu?.info.codeName == Cpu.CodeName.StormPeak || 
-                 _cpu?.info.codeName == Cpu.CodeName.Bergamo)
+                         _cpu?.info.codeName == Cpu.CodeName.GraniteRidge ||
+                         _cpu?.info.codeName == Cpu.CodeName.Genoa ||
+                         _cpu?.info.codeName == Cpu.CodeName.StormPeak ||
+                         _cpu?.info.codeName == Cpu.CodeName.Bergamo)
                 {
                     Socket_AM5_V1();
                 } //Не всё поддерживается, но это будет в будущем исправлено
@@ -516,8 +520,8 @@ internal class SendSmuCommand
 
             //Найти код команды по имени
             var matchingCommands = Commands?.Where(c => c.Item1 == commandName);
-            var commands = matchingCommands!.ToList();
-            if (commands.Count != 0)
+            var commands = matchingCommands?.ToList();
+            if (commands != null && commands.Count != 0)
             {
                 var tasks = commands.Select(command => Task.Run(() =>
                     {
@@ -552,7 +556,7 @@ internal class SendSmuCommand
         try
         {
             _cpu ??= CpuSingleton.GetInstance();
-            if (_cpu != null && Codename != _cpu.info.codeName ||
+            if ((_cpu != null && Codename != _cpu.info.codeName) ||
                 !_cpuCodenameString.Contains(_cpu!.info.codeName.ToString()))
             {
                 Codename = _cpu.info.codeName;
@@ -598,10 +602,10 @@ internal class SendSmuCommand
                 Socket_FT6_FP7_FP8();
             }
             else if (_cpu?.info.codeName == Cpu.CodeName.Raphael ||
-                 _cpu?.info.codeName == Cpu.CodeName.GraniteRidge ||
-                 _cpu?.info.codeName == Cpu.CodeName.Genoa ||
-                 _cpu?.info.codeName == Cpu.CodeName.StormPeak ||
-                 _cpu?.info.codeName == Cpu.CodeName.Bergamo)
+                     _cpu?.info.codeName == Cpu.CodeName.GraniteRidge ||
+                     _cpu?.info.codeName == Cpu.CodeName.Genoa ||
+                     _cpu?.info.codeName == Cpu.CodeName.StormPeak ||
+                     _cpu?.info.codeName == Cpu.CodeName.Bergamo)
             {
                 Socket_AM5_V1();
             } //Не всё поддерживается, но это будет в будущем исправлено
@@ -744,7 +748,7 @@ internal class SendSmuCommand
     {
         LogHelper.LogError(error);
         if (error != string.Empty)
-        { 
+        {
             NotificationsService.Notifies ??= [];
             NotificationsService.Notifies.Add(new Notify
                 { Title = "TraceIt_Error".GetLocalized(), Msg = error, Type = InfoBarSeverity.Error });
@@ -752,10 +756,7 @@ internal class SendSmuCommand
         }
     }
 
-    public void CancelRange()
-    {
-        _cancelrange = true;
-    }
+    public void CancelRange() => _cancelrange = true;
 
     public async void SendRange(string commandIndex, string startIndex, string endIndex, int mailbox, bool log)
     {
@@ -825,8 +826,7 @@ internal class SendSmuCommand
                             }
                         }
                     }
-
-                    // SettingsServiceLoad(); AppSettings.RangeApplied = true; SettingsServiceSave(); 
+                    
                     if (log)
                     {
                         sw.WriteLine(@"//------OK------\\");
@@ -878,7 +878,7 @@ internal class SendSmuCommand
             case Cpu.CodeName.DragonRange:
             case Cpu.CodeName.HawkPoint:
                 Socket_FT6_FP7_FP8();
-                break; 
+                break;
             case Cpu.CodeName.GraniteRidge:
             case Cpu.CodeName.Genoa:
             case Cpu.CodeName.Bergamo:
@@ -1074,7 +1074,7 @@ internal class SendSmuCommand
             ("oc-volt", true, 0x33),
             ("dgpu-skin-temp", true, 0x37),
             ("apu-skin-temp", true, 0x39),
-            ("skin-temp-limit", true, 0x53), 
+            ("skin-temp-limit", true, 0x53),
             ("enable-oc", false, 0x17), // Use RSMU address
             ("disable-oc", false, 0x18),
             ("oc-clk", false, 0x19),
@@ -1090,7 +1090,7 @@ internal class SendSmuCommand
             ("set-coall", true, 0x55),
             ("set-cogfx", true, 0x64),
             ("set-coall", false, 0xB1),
-            ("gfx-clk", false, 0x89),
+            ("gfx-clk", false, 0x89)
         ];
     }
 
@@ -1225,7 +1225,7 @@ internal class SendSmuCommand
             ("oc-volt", false, 0x6e), //
             ("enable-oc", true, 0x23), //
             ("enable-oc", false, 0x6b), //
-            ("disable-oc", true, 0x24), //
+            ("disable-oc", true, 0x24) //
         ];
     }
 
@@ -1262,11 +1262,11 @@ internal class SendSmuCommand
             ("set-coall", true, 0x36),
             ("set-coper", true, 0x35),
             ("set-coall", false, 0xB),
-            ("set-coper", false, 0xA), 
+            ("set-coper", false, 0xA),
             ("enable-oc", true, 0x24),
             ("enable-oc", false, 0x5A),
             ("disable-oc", true, 0x25),
-            ("disable-oc", false, 0x5B),
+            ("disable-oc", false, 0x5B)
         ];
     }
 
@@ -1301,7 +1301,7 @@ internal class SendSmuCommand
             ("set-cogfx", false, 0x7),
             ("set-coper", false, 0x6),
             ("enable-oc", false, 0x5d),
-            ("disable-oc", false, 0x5e),
+            ("disable-oc", false, 0x5e)
         ];
     }
 }
