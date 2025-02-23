@@ -412,7 +412,7 @@ All presets have autosaving</value>
   <data name="Preset_Balance" xml:space="preserve">
     <value>Balance</value>
   </data>
-  <data name="Preset_Balance_Desc" xml:space="preserve">
+  <data name="Preset_Balance_Desc.Text" xml:space="preserve">
     <value>This preset will allow your processor to be powerful without wasting many percent of the battery</value>
   </data>
   <data name="Preset_Balance_Name.Text" xml:space="preserve">
@@ -421,7 +421,7 @@ All presets have autosaving</value>
   <data name="Preset_Eco" xml:space="preserve">
     <value>Eco</value>
   </data>
-  <data name="Preset_Eco_Desc" xml:space="preserve">
+  <data name="Preset_Eco_Desc.Text" xml:space="preserve">
     <value>This preset will save you battery percentage, without significant loss of performance.</value>
   </data>
   <data name="Preset_Eco_Name.Text" xml:space="preserve">
@@ -430,7 +430,7 @@ All presets have autosaving</value>
   <data name="Preset_Max" xml:space="preserve">
     <value>Maximum</value>
   </data>
-  <data name="Preset_Max_Desc" xml:space="preserve">
+  <data name="Preset_Max_Desc.Text" xml:space="preserve">
     <value>This preset will unlock the maximum of your processor and remove all it`s limitations!</value>
   </data>
   <data name="Preset_Max_Name.Text" xml:space="preserve">
@@ -439,7 +439,7 @@ All presets have autosaving</value>
   <data name="Preset_Min" xml:space="preserve">
     <value>Minimum</value>
   </data>
-  <data name="Preset_Min_Desc" xml:space="preserve">
+  <data name="Preset_Min_Desc.Text" xml:space="preserve">
     <value>This preset will allow your processor to be really cold!</value>
   </data>
   <data name="Preset_Min_Name.Text" xml:space="preserve">
@@ -451,7 +451,7 @@ All presets have autosaving</value>
   <data name="Preset_Speed" xml:space="preserve">
     <value>Speed</value>
   </data>
-  <data name="Preset_Speed_Desc" xml:space="preserve">
+  <data name="Preset_Speed_Desc.Text" xml:space="preserve">
     <value>This preset will allow you to be more productive due to improved performance</value>
   </data>
   <data name="Preset_Speed_Name.Text" xml:space="preserve">
@@ -2959,5 +2959,20 @@ methods are available.</value>
   </data>
   <data name="Settings_Pivot_Theme.Text" xml:space="preserve">
     <value>Theme</value>
+  </data>
+  <data name="Preset_Balance_OverlayDesc" xml:space="preserve">
+    <value>Optimized speed</value>
+  </data>
+  <data name="Preset_Eco_OverlayDesc" xml:space="preserve">
+    <value>Longer battery life</value>
+  </data>
+  <data name="Preset_Max_OverlayDesc" xml:space="preserve">
+    <value>Maximum power</value>
+  </data>
+  <data name="Preset_Min_OverlayDesc" xml:space="preserve">
+    <value>Ultimate energy saving</value>
+  </data>
+  <data name="Preset_Speed_OverlayDesc" xml:space="preserve">
+    <value>Superior performance</value>
   </data>
 </root>

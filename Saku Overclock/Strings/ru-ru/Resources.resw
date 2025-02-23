@@ -416,8 +416,8 @@
   <data name="Preset_Balance" xml:space="preserve">
     <value>Баланс мощности</value>
   </data>
-  <data name="Preset_Balance_Desc" xml:space="preserve">
-    <value>Этот пресет позволит вашему процессору быть максимально сбалансированным</value>
+  <data name="Preset_Balance_Desc.Text" xml:space="preserve">
+    <value>Работа ноутбука никогда ранее не была настолько сбалансированной</value>
   </data>
   <data name="Preset_Balance_Name.Text" xml:space="preserve">
     <value>Баланс</value>
@@ -425,8 +425,8 @@
   <data name="Preset_Eco" xml:space="preserve">
     <value>Экономия энергии</value>
   </data>
-  <data name="Preset_Eco_Desc" xml:space="preserve">
-    <value>Этот пресет позволит сэкономить вам проценты аккумулятора, без существенной потери производительности</value>
+  <data name="Preset_Eco_Desc.Text" xml:space="preserve">
+    <value>Экономит вам проценты аккумулятора, без существенной потери производительности</value>
   </data>
   <data name="Preset_Eco_Name.Text" xml:space="preserve">
     <value>Эко</value>
@@ -434,8 +434,8 @@
   <data name="Preset_Max" xml:space="preserve">
     <value>Максимум</value>
   </data>
-  <data name="Preset_Max_Desc" xml:space="preserve">
-    <value>Этот пресет раскроет максимум вашего процессора и снимет с него ограничения!</value>
+  <data name="Preset_Max_Desc.Text" xml:space="preserve">
+    <value>Раскрывает максимум вашего процессора и снимает с него ограничения</value>
   </data>
   <data name="Preset_Max_Name.Text" xml:space="preserve">
     <value>Максимум</value>
@@ -443,8 +443,8 @@
   <data name="Preset_Min" xml:space="preserve">
     <value>Минимальная мощность</value>
   </data>
-  <data name="Preset_Min_Desc" xml:space="preserve">
-    <value>Этот пресет позволит вашему процессору быть по настоящему холодным!</value>
+  <data name="Preset_Min_Desc.Text" xml:space="preserve">
+    <value>С ним ваш процессор сможет быть по настоящему холодным</value>
   </data>
   <data name="Preset_Min_Name.Text" xml:space="preserve">
     <value>Минимум</value>
@@ -455,8 +455,8 @@
   <data name="Preset_Speed" xml:space="preserve">
     <value>Скорость</value>
   </data>
-  <data name="Preset_Speed_Desc" xml:space="preserve">
-    <value>Этот пресет позволит быть продуктивнее благодаря улучшенной производительности</value>
+  <data name="Preset_Speed_Desc.Text" xml:space="preserve">
+    <value>Позволит быть продуктивнее благодаря улучшенной производительности</value>
   </data>
   <data name="Preset_Speed_Name.Text" xml:space="preserve">
     <value>Скорость</value>
@@ -3029,5 +3029,20 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Settings_Pivot_Theme.Text" xml:space="preserve">
     <value>Темы</value>
+  </data>
+  <data name="Preset_Balance_OverlayDesc" xml:space="preserve">
+    <value>Оптимальная скорость</value>
+  </data>
+  <data name="Preset_Eco_OverlayDesc" xml:space="preserve">
+    <value>Долгая работа от батареи</value>
+  </data>
+  <data name="Preset_Max_OverlayDesc" xml:space="preserve">
+    <value>Максимальная мощность</value>
+  </data>
+  <data name="Preset_Min_OverlayDesc" xml:space="preserve">
+    <value>Ультраэкономия энергии</value>
+  </data>
+  <data name="Preset_Speed_OverlayDesc" xml:space="preserve">
+    <value>Лучшая производительность</value>
   </data>
 </root>
