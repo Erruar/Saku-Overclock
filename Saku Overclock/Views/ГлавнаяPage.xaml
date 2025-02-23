@@ -10,6 +10,23 @@
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
     </Page.Resources>
     <Grid x:Name="ContentArea" Margin="-48,-65,-50,0">
+        <TeachingTip x:Name="Main_Teach" IsOpen="False">
+            <StackPanel Orientation="Vertical">
+                <TextBlock FontWeight="Bold" FontSize="16" TextWrapping="Wrap" x:Name="Main_AdditionalInfoDesc" Text="Информация об устройстве"/>
+                <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
+                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" x:Name="Main_AdditionalInfo1Desc" Text="Модель:"/>
+                    <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" x:Name="Main_AdditionalInfo1Name"/>
+                </StackPanel>
+                <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
+                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" x:Name="Main_AdditionalInfo2Desc" Text="Производитель:"/>
+                    <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" x:Name="Main_AdditionalInfo2Name"/>
+                </StackPanel>
+                <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
+                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" x:Name="Main_AdditionalInfo3Desc" Text="Версия BIOS:"/>
+                    <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" x:Name="Main_AdditionalInfo3Name"/>
+                </StackPanel>
+            </StackPanel>
+        </TeachingTip>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
             <StackPanel Orientation="Horizontal" Padding="0,3,0,0">
                 <TextBlock FontSize="27" Text="Saku Overclock" FontWeight="ExtraBold" VerticalAlignment="Top" HorizontalAlignment="Left"/>
@@ -47,7 +64,8 @@ Text="{Binding Version}">
                             <ColumnDefinition MaxWidth="227"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0" Margin="10,0,0,0" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                        <Grid Grid.Column="0" Margin="10,0,0,0" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                              x:Name="LogoPlacer" PointerEntered="LogoPlacer_PointerEntered" PointerExited="LogoPlacer_PointerExited">
                             <Border>
                                 <Border.Background>
                                     <ImageBrush ImageSource="ms-appx:///Assets/Ryzen-Logo.png" Stretch="Fill"/>
@@ -64,7 +82,8 @@ Text="{Binding Version}">
                                 </StackPanel>
                             </Grid>
                         </Grid>
-                        <Grid Grid.Column="1" Margin="10,0,0,0" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                        <Grid Grid.Column="1" Margin="10,0,0,0" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                              x:Name="TemperaturePlacer" PointerEntered="TemperaturePlacer_PointerEntered" PointerExited="TemperaturePlacer_PointerExited">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
@@ -122,7 +141,8 @@ Text="{Binding Version}">
                                     <RowDefinition/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
-                                <Grid Grid.Row="0" Margin="10,0,10,5" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                <Grid Grid.Row="0" Margin="10,0,10,5" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                      x:Name="UsabilityPlacer" PointerEntered="UsabilityPlacer_PointerEntered" PointerExited="UsabilityPlacer_PointerExited">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="70"/>
@@ -136,7 +156,8 @@ Text="{Binding Version}">
                                         <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE94C;"/>
                                     </Grid>
                                 </Grid>
-                                <Grid Grid.Row="1" Margin="10,5,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                <Grid Grid.Row="1" Margin="10,5,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                      x:Name="FrequencyPlacer" PointerEntered="FrequencyPlacer_PointerEntered" PointerExited="FrequencyPlacer_PointerExited">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="70"/>
@@ -171,7 +192,8 @@ Text="{Binding Version}">
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <Grid Grid.Row="0" Grid.Column="0" Margin="10,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                    <Grid Grid.Row="0" Grid.Column="0" Margin="10,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                          x:Name="RamPlacer" PointerEntered="RamPlacer_PointerEntered" PointerExited="RamPlacer_PointerExited">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
@@ -185,7 +207,8 @@ Text="{Binding Version}">
                                             <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE81E;"/>
                                         </Grid>
                                     </Grid>
-                                    <Grid Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                    <Grid Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                          x:Name="PowerPlacer" PointerEntered="PowerPlacer_PointerEntered" PointerExited="PowerPlacer_PointerExited">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
@@ -199,7 +222,8 @@ Text="{Binding Version}">
                                             <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xEC4A;"/>
                                         </Grid>
                                     </Grid>
-                                    <Grid Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                    <Grid Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                          x:Name="BatteryPlacer" PointerEntered="BatteryPlacer_PointerEntered" PointerExited="BatteryPlacer_PointerExited">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
@@ -213,7 +237,8 @@ Text="{Binding Version}">
                                             <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE83F;"/>
                                         </Grid>
                                     </Grid>
-                                    <Grid Grid.Row="0" Grid.Column="3" Margin="5,0,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                                    <Grid Grid.Row="0" Grid.Column="3" Margin="5,0,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                          x:Name="VrmPlacer" PointerEntered="VrmPlacer_PointerEntered" PointerExited="VrmPlacer_PointerExited">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
@@ -240,7 +265,8 @@ Text="{Binding Version}">
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <Button Grid.Row="0" Grid.Column="0" Margin="10,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8"
-                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                            Click="PresetsPage_Click">
                                         <Grid Margin="-10,-5,-5,-5">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition/>
@@ -255,7 +281,8 @@ Text="{Binding Version}">
                                         </Grid> 
                                     </Button>
                                     <Button Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8"
-                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                            Click="OverclockPage_Click">
                                         <Grid Margin="-10,-5,-5,-5">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition/>
@@ -270,7 +297,8 @@ Text="{Binding Version}">
                                         </Grid>
                                     </Button>
                                     <Button Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8"
-                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                            Click="SettingsPage_Click">
                                         <Grid Margin="-10,-5,-5,-5">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition/>
@@ -285,7 +313,8 @@ Text="{Binding Version}">
                                         </Grid>
                                     </Button>
                                     <Button Grid.Row="0" Grid.Column="3" Margin="5,0,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8"
-                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                            Click="FaqLink_Click">
                                         <Grid Margin="-10,-5,-5,-5">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition/>
@@ -317,14 +346,18 @@ Text="{Binding Version}">
                                     <RowDefinition/>
                                     <RowDefinition Height="45"/>
                                 </Grid.RowDefinitions>
-                                <Pivot Grid.Row="0" Loaded="PivotProfiles_Loaded" Margin="-10,-20,-10,15" HorizontalAlignment="Center" HorizontalContentAlignment="Stretch">
-                                    <PivotItem>
+                                <Pivot Grid.Row="0" Loaded="PivotProfiles_Loaded" Margin="-10,-20,-10,15" 
+                                       HorizontalAlignment="Center" HorizontalContentAlignment="Stretch"
+                                       x:Name="Preset_Pivot">
+                                    <PivotItem Margin="0,0,0,7">
                                         <PivotItem.Header>
                                             <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" Text="Свои"/>
                                         </PivotItem.Header> 
                                         <ScrollViewer Grid.Row="0">
-                                            <StackPanel Margin="10,0,10,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                                <Button Style="{StaticResource AccentButtonStyle}" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                            <StackPanel Margin="20,0,20,0" Orientation="Vertical" 
+                                                        HorizontalAlignment="Stretch" IsHitTestVisible="True"
+                                                        x:Name="Preset_Custom">
+                                                <ToggleButton Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                                     <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                         <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xE718;"/>
                                                         <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
@@ -332,51 +365,66 @@ Text="{Binding Version}">
                                                             <TextBlock TextWrapping="Wrap" Text="Кажется этот пресет без описания. Но вы можете это исправить"/>
                                                         </StackPanel>
                                                     </Grid>
-                                                </Button>
+                                                </ToggleButton>
                                             </StackPanel>
                                         </ScrollViewer> 
                                     </PivotItem>
-                                    <PivotItem>
+                                    <PivotItem Margin="0,0,0,7">
                                         <PivotItem.Header>
                                             <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" Text="Готовые"/>
                                         </PivotItem.Header>
-                                        <ScrollViewer Margin="-10,0,-10,0">
-                                            <StackPanel Margin="10,0,10,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                                <Button Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Height="32">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <FontIcon FontSize="19" Glyph="&#xEcad;"/>
-                                                        <TextBlock Margin="5,0,0,0" Text="Maximum" x:Uid="Preset_Max_Name"/>
-                                                    </StackPanel>
-                                                </Button>
-                                                <Button Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Height="32">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <FontIcon Glyph="&#xe945;"/>
-                                                        <TextBlock Margin="5,0,0,0" Text="Speed" x:Uid="Preset_Speed_Name"/>
-                                                    </StackPanel>
-                                                </Button>
-                                                <Button Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Height="32">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <FontIcon Glyph="&#xec49;"/>
-                                                        <TextBlock Margin="5,0,0,0" Text="Balance" x:Uid="Preset_Balance_Name"/>
-                                                    </StackPanel>
-                                                </Button>
-                                                <Button Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Height="32">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <FontIcon Glyph="&#xec0a;"/>
-                                                        <TextBlock Margin="5,0,0,0" Text="Eco" x:Uid="Preset_Eco_Name"/>
-                                                    </StackPanel>
-                                                </Button>
-                                                <Button Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Height="32">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <FontIcon Glyph="&#xebc0;"/>
-                                                        <TextBlock Margin="5,0,0,0" Text="Minimum" x:Uid="Preset_Min_Name"/>
-                                                    </StackPanel>
-                                                </Button>
+                                        <ScrollViewer>
+                                            <StackPanel Margin="20,0,20,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
+                                                <ToggleButton x:Name="Preset_Max" Tag="Preset_Max" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                        <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xEcad;"/>
+                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                            <TextBlock FontWeight="Bold" Text="Maximum" x:Uid="Preset_Max_Name"/>
+                                                            <TextBlock TextWrapping="Wrap" Text="Maximum" x:Uid="Preset_Max_Desc"/>
+                                                        </StackPanel>
+                                                    </Grid> 
+                                                </ToggleButton>
+                                                <ToggleButton x:Name="Preset_Speed" Tag="Preset_Speed" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                        <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xe945;"/>
+                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                            <TextBlock FontWeight="Bold" Text="Speed" x:Uid="Preset_Speed_Name"/>
+                                                            <TextBlock TextWrapping="Wrap" Text="Speed" x:Uid="Preset_Speed_Desc"/>
+                                                        </StackPanel>
+                                                    </Grid> 
+                                                </ToggleButton>
+                                                <ToggleButton x:Name="Preset_Balance" Tag="Preset_Balance" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                        <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec49;"/>
+                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                            <TextBlock FontWeight="Bold" Text="Balance" x:Uid="Preset_Balance_Name"/>
+                                                            <TextBlock TextWrapping="Wrap" Text="Balance" x:Uid="Preset_Balance_Desc"/>
+                                                        </StackPanel>
+                                                    </Grid> 
+                                                </ToggleButton>
+                                                <ToggleButton x:Name="Preset_Eco" Tag="Preset_Eco" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                        <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec0a;"/>
+                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                            <TextBlock FontWeight="Bold" Text="Eco" x:Uid="Preset_Eco_Name"/>
+                                                            <TextBlock TextWrapping="Wrap" Text="Eco" x:Uid="Preset_Eco_Desc"/>
+                                                        </StackPanel>
+                                                    </Grid> 
+                                                </ToggleButton>
+                                                <ToggleButton x:Name="Preset_Min" Tag="Preset_Min" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,7" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                        <FontIcon HorizontalAlignment="Left" Margin="6,0,0,0" Glyph="&#xebc0;"/>
+                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                            <TextBlock FontWeight="Bold" Text="Minimum" x:Uid="Preset_Min_Name"/>
+                                                            <TextBlock TextWrapping="Wrap" Text="Minimum" x:Uid="Preset_Min_Desc"/>
+                                                        </StackPanel>
+                                                    </Grid> 
+                                                </ToggleButton>
                                             </StackPanel>
                                         </ScrollViewer>
                                     </PivotItem>
                                 </Pivot>
-                                <Button Grid.Row="1" Margin="10,-20,10,20" CornerRadius="16" MinHeight="20" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
+                                <Button Click="Apply_Click"  Grid.Row="1" Margin="10,-20,10,20" CornerRadius="16" MinHeight="20" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
                                     <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                         <FontIcon Glyph="&#xE768;" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
                                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Применить" FontWeight="SemiBold" FontSize="16" Margin="0,-1,0,0"/>
