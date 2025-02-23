@@ -169,10 +169,10 @@
                             </Image>
                             <StackPanel Name="IconTitle"
                         PointerEntered="TitleIcon_PointerEntered"
-            Width="0"
-            Margin="8,-8,0,0"
-            VerticalAlignment="Center"
-            Opacity="0">
+                        Width="0"
+                        Margin="8,-8,0,0"
+                        VerticalAlignment="Center"
+                        Opacity="0">
                                 <StackPanel.OpacityTransition>
                                     <ScalarTransition />
                                 </StackPanel.OpacityTransition>
