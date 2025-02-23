@@ -1,6 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Windows.Foundation;
+using Windows.Graphics;
+using Windows.System;
+using Windows.UI.Text;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -14,12 +18,10 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
-using Windows.Foundation;
-using Windows.Graphics;
-using Windows.System;
-using Windows.UI.Text;
+using ZenStates.Core;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using WindowActivatedEventArgs = Microsoft.UI.Xaml.WindowActivatedEventArgs;
+
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
 
 namespace Saku_Overclock.Views;
@@ -36,8 +38,13 @@ public sealed partial class ShellPage
     private bool _loaded = true; // Запустился ли UI поток приложения
     private bool _isNotificationPanelShow; // Флаг: Открыта ли панель уведомлений
     private int? _compareList; // Нет новых уведомлений - пока
-    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
-    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
+
+    private static readonly IAppNotificationService
+        NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
+
+    private static readonly IAppSettingsService
+        SettingsService = App.GetService<IAppSettingsService>(); // Настройки приложения
+
     private Profile[] _profile = new Profile[1]; // Класс с профилями параметров разгона пользователя
 
     private AppWindow MAppWindow
@@ -61,7 +68,6 @@ public sealed partial class ShellPage
 
     public ShellPage(ShellViewModel viewModel)
     {
-
         if (SettingsService.HotkeysEnabled)
         {
             _proc = HookCallbackAsync;
@@ -244,195 +250,100 @@ public sealed partial class ShellPage
         }
     }
 
-    private string NextPremadeProfile_Switch()
+    private string NextPremadeProfile_Switch(out string icon, out string desc)
     {
-        var nextProfile = string.Empty;
-        if (SettingsService.Preset != -1) // У нас был готовый пресет
+        icon = "\uE783";
+        desc = "Unable to read description";
+        string nextProfile;
+
+        var profiles = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
+        var activeProfile = profiles.FirstOrDefault(p =>
+                                (bool)typeof(IAppSettingsService).GetProperty($"Premade{p}Activated")
+                                    ?.GetValue(SettingsService)!) ??
+                            "Balance";
+        string comboName;
+        if (SettingsService.Preset == -1)
         {
-            if (SettingsService.PremadeMinActivated)
+            NextPremadeProfile_Activate(NextProfiles[activeProfile]);
+            (nextProfile, desc, icon, SettingsService.RyzenADJline, comboName) =
+                PremadedProfiles[NextProfiles[activeProfile]];
+        }
+        else
+        {
+            SettingsService.Preset = -1;
+            NextPremadeProfile_Activate(activeProfile);
+            (nextProfile, desc, icon, SettingsService.RyzenADJline, comboName) = PremadedProfiles[activeProfile];
+        }
+
+        desc = desc.GetLocalized();
+        foreach (var element in ProfileSetComboBox.Items.OfType<ComboBoxItem>())
+        {
+            if (element.Name == comboName)
             {
-                SettingsService.Preset = -1;
-                nextProfile = "Shell_Preset_Min".GetLocalized();
-                SettingsService.RyzenADJline =
-                    " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
-                foreach (var element in ProfileSetComboBox.Items)
-                {
-                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMin")
-                    {
-                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
-                        ProfileSetButton.IsEnabled = false;
-                    }
-                }
-            }
-            else if (SettingsService.PremadeEcoActivated)
-            {
-                SettingsService.Preset = -1;
-                nextProfile = "Shell_Preset_Eco".GetLocalized();
-                SettingsService.RyzenADJline =
-                    " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
-                foreach (var element in ProfileSetComboBox.Items)
-                {
-                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAEco")
-                    {
-                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
-                        ProfileSetButton.IsEnabled = false;
-                    }
-                }
-            }
-            else if (SettingsService.PremadeBalanceActivated)
-            {
-                SettingsService.Preset = -1;
-                nextProfile = "Shell_Preset_Balance".GetLocalized();
-                SettingsService.RyzenADJline =
-                    " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
-                foreach (var element in ProfileSetComboBox.Items)
-                {
-                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsABal")
-                    {
-                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
-                        ProfileSetButton.IsEnabled = false;
-                    }
-                }
-            }
-            else if (SettingsService.PremadeSpeedActivated)
-            {
-                SettingsService.Preset = -1;
-                nextProfile = "Shell_Preset_Speed".GetLocalized();
-                SettingsService.RyzenADJline =
-                    " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
-                foreach (var element in ProfileSetComboBox.Items)
-                {
-                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsASpd")
-                    {
-                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
-                        ProfileSetButton.IsEnabled = false;
-                    }
-                }
-            }
-            else if (SettingsService.PremadeMaxActivated)
-            {
-                SettingsService.Preset = -1;
-                nextProfile = "Shell_Preset_Max".GetLocalized();
-                SettingsService.RyzenADJline =
-                    " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
-                foreach (var element in ProfileSetComboBox.Items)
-                {
-                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMax")
-                    {
-                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
-                        ProfileSetButton.IsEnabled = false;
-                    }
-                }
+                ProfileSetComboBox.SelectedItem = element;
+                ProfileSetButton.IsEnabled = false;
+                break;
             }
         }
-        else // У нас уже был выставлен какой-то профиль
+
+        return nextProfile.GetLocalized();
+    }
+
+    public static void NextPremadeProfile_Activate(string nextProfile)
+    {
+        var profiles = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
+        foreach (var profile in profiles)
         {
-            if (SettingsService.PremadeMinActivated)
-            {
-                SettingsService.Preset = -1;
-                nextProfile = "Shell_Preset_Eco".GetLocalized();
-                SettingsService.PremadeMinActivated = false;
-                SettingsService.PremadeEcoActivated = true;
-                SettingsService.PremadeBalanceActivated = false;
-                SettingsService.PremadeSpeedActivated = false;
-                SettingsService.PremadeMaxActivated = false;
-                SettingsService.RyzenADJline =
-                    " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
-                foreach (var element in ProfileSetComboBox.Items)
-                {
-                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAEco")
-                    {
-                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
-                        ProfileSetButton.IsEnabled = false;
-                    }
-                }
-            } // Эко
-            else if (SettingsService.PremadeEcoActivated)
-            {
-                SettingsService.Preset = -1;
-                nextProfile = "Shell_Preset_Balance".GetLocalized();
-                SettingsService.PremadeMinActivated = false;
-                SettingsService.PremadeEcoActivated = false;
-                SettingsService.PremadeBalanceActivated = true;
-                SettingsService.PremadeSpeedActivated = false;
-                SettingsService.PremadeMaxActivated = false;
-                SettingsService.RyzenADJline =
-                    " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
-                foreach (var element in ProfileSetComboBox.Items)
-                {
-                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsABal")
-                    {
-                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
-                        ProfileSetButton.IsEnabled = false;
-                    }
-                }
-            } // Баланс
-            else if (SettingsService.PremadeBalanceActivated)
-            {
-                SettingsService.Preset = -1;
-                nextProfile = "Shell_Preset_Speed".GetLocalized();
-                SettingsService.PremadeMinActivated = false;
-                SettingsService.PremadeEcoActivated = false;
-                SettingsService.PremadeBalanceActivated = false;
-                SettingsService.PremadeSpeedActivated = true;
-                SettingsService.PremadeMaxActivated = false;
-                SettingsService.RyzenADJline =
-                    " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
-                foreach (var element in ProfileSetComboBox.Items)
-                {
-                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsASpd")
-                    {
-                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
-                        ProfileSetButton.IsEnabled = false;
-                    }
-                }
-            } // Скорость
-            else if (SettingsService.PremadeSpeedActivated)
-            {
-                SettingsService.Preset = -1;
-                nextProfile = "Shell_Preset_Max".GetLocalized();
-                SettingsService.PremadeMinActivated = false;
-                SettingsService.PremadeEcoActivated = false;
-                SettingsService.PremadeBalanceActivated = false;
-                SettingsService.PremadeSpeedActivated = false;
-                SettingsService.PremadeMaxActivated = true;
-                SettingsService.RyzenADJline =
-                    " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
-                foreach (var element in ProfileSetComboBox.Items)
-                {
-                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMax")
-                    {
-                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
-                        ProfileSetButton.IsEnabled = false;
-                    }
-                }
-            } // Максимум
-            else if (SettingsService.PremadeMaxActivated)
-            {
-                SettingsService.Preset = -1;
-                nextProfile = "Shell_Preset_Min".GetLocalized();
-                SettingsService.PremadeMinActivated = true;
-                SettingsService.PremadeEcoActivated = false;
-                SettingsService.PremadeBalanceActivated = false;
-                SettingsService.PremadeSpeedActivated = false;
-                SettingsService.PremadeMaxActivated = false;
-                SettingsService.RyzenADJline =
-                    " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
-                foreach (var element in ProfileSetComboBox.Items)
-                {
-                    if (element != null && (element as ComboBoxItem)!.Name == "PremadeSsAMin")
-                    {
-                        ProfileSetComboBox.SelectedItem = (element as ComboBoxItem)!;
-                        ProfileSetButton.IsEnabled = false;
-                    }
-                }
-            } // Минимум
+            typeof(IAppSettingsService).GetProperty($"Premade{profile}Activated")
+                ?.SetValue(SettingsService, profile == nextProfile);
         }
 
         SettingsService.SaveSettings();
-        SelectedProfile = nextProfile;
-        return nextProfile;
     }
+
+    private static Dictionary<string, string> NextProfiles => new()
+    {
+        { "Min", "Eco" },
+        { "Eco", "Balance" },
+        { "Balance", "Speed" },
+        { "Speed", "Max" },
+        { "Max", "Min" }
+    };
+
+    private static Dictionary<string, (string name, string desc, string icon, string settings, string comboName)>
+        PremadedProfiles => new()
+    {
+        {
+            "Min",
+            ("Shell_Preset_Min", "Preset_Min_OverlayDesc", "\uEBC0",
+                " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ",
+                "PremadeSsAMin")
+        },
+        {
+            "Eco",
+            ("Shell_Preset_Eco", "Preset_Eco_OverlayDesc", "\uEC0A",
+                " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ",
+                "PremadeSsAEco")
+        },
+        {
+            "Balance",
+            ("Shell_Preset_Balance", "Preset_Balance_OverlayDesc", "\uEC49",
+                " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ",
+                "PremadeSsABal")
+        },
+        {
+            "Speed",
+            ("Shell_Preset_Speed", "Preset_Speed_OverlayDesc", "\uE945",
+                " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ",
+                "PremadeSsASpd")
+        },
+        {
+            "Max",
+            ("Shell_Preset_Max", "Preset_Max_OverlayDesc", "\uECAD",
+                " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ",
+                "PremadeSsAMax")
+        }
+    };
 
     private string NextCustomProfile_Switch()
     {
@@ -528,14 +439,15 @@ public sealed partial class ShellPage
 
     private void MandarinSparseUnit()
     {
-        int indexRequired;
         var element = ProfileSetComboBox.SelectedItem as ComboBoxItem;
         //Required index
         if (!element!.Name.Contains("PremadeSsA"))
         {
-            indexRequired = ProfileSetComboBox.SelectedIndex - 1;
+            var indexRequired = ProfileSetComboBox.SelectedIndex - 1;
             SettingsService.Preset = ProfileSetComboBox.SelectedIndex - 1;
             SettingsService.SaveSettings();
+            ProfileLoad();
+            MandarinSparseUnitProfile(_profile[indexRequired]);
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 var navigationService = App.GetService<INavigationService>();
@@ -633,173 +545,164 @@ public sealed partial class ShellPage
                     navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true);
                 }
             });
-            return;
         }
+    }
 
-        ProfileLoad();
+    public static void MandarinSparseUnitProfile(Profile profile)
+    {
         var adjline = "";
-        if (_profile[indexRequired].cpu1)
+        if (profile.cpu1)
         {
-            adjline += " --tctl-temp=" + _profile[indexRequired].cpu1value;
+            adjline += " --tctl-temp=" + profile.cpu1value;
         }
 
-        if (_profile[indexRequired].cpu2)
+        if (profile.cpu2)
         {
-            adjline += " --stapm-limit=" + _profile[indexRequired].cpu2value + "000";
+            adjline += " --stapm-limit=" + profile.cpu2value + "000";
         }
 
-        if (_profile[indexRequired].cpu3)
+        if (profile.cpu3)
         {
-            adjline += " --fast-limit=" + _profile[indexRequired].cpu3value + "000";
+            adjline += " --fast-limit=" + profile.cpu3value + "000";
         }
 
-        if (_profile[indexRequired].cpu4)
+        if (profile.cpu4)
         {
-            adjline += " --slow-limit=" + _profile[indexRequired].cpu4value + "000";
+            adjline += " --slow-limit=" + profile.cpu4value + "000";
         }
 
-        if (_profile[indexRequired].cpu5)
+        if (profile.cpu5)
         {
-            adjline += " --stapm-time=" + _profile[indexRequired].cpu5value;
+            adjline += " --stapm-time=" + profile.cpu5value;
         }
 
-        if (_profile[indexRequired].cpu6)
+        if (profile.cpu6)
         {
-            adjline += " --slow-time=" + _profile[indexRequired].cpu6value;
+            adjline += " --slow-time=" + profile.cpu6value;
         }
 
-        if (_profile[indexRequired].cpu7)
+        if (profile.cpu7)
         {
-            adjline += " --cHTC-temp=" + _profile[indexRequired].cpu7value;
+            adjline += " --cHTC-temp=" + profile.cpu7value;
         }
 
         //vrm
-        if (_profile[indexRequired].vrm1)
+        if (profile.vrm1)
         {
-            adjline += " --vrmmax-current=" + _profile[indexRequired].vrm1value + "000";
+            adjline += " --vrmmax-current=" + profile.vrm1value + "000";
         }
 
-        if (_profile[indexRequired].vrm2)
+        if (profile.vrm2)
         {
-            adjline += " --vrm-current=" + _profile[indexRequired].vrm2value + "000";
+            adjline += " --vrm-current=" + profile.vrm2value + "000";
         }
 
-        if (_profile[indexRequired].vrm3)
+        if (profile.vrm3)
         {
-            adjline += " --vrmsocmax-current=" + _profile[indexRequired].vrm3value + "000";
+            adjline += " --vrmsocmax-current=" + profile.vrm3value + "000";
         }
 
-        if (_profile[indexRequired].vrm4)
+        if (profile.vrm4)
         {
-            adjline += " --vrmsoc-current=" + _profile[indexRequired].vrm4value + "000";
+            adjline += " --vrmsoc-current=" + profile.vrm4value + "000";
         }
 
-        if (_profile[indexRequired].vrm5)
+        if (profile.vrm5)
         {
-            adjline += " --psi0-current=" + _profile[indexRequired].vrm5value + "000";
+            adjline += " --psi0-current=" + profile.vrm5value + "000";
         }
 
-        if (_profile[indexRequired].vrm6)
+        if (profile.vrm6)
         {
-            adjline += " --psi0soc-current=" + _profile[indexRequired].vrm6value + "000";
+            adjline += " --psi0soc-current=" + profile.vrm6value + "000";
         }
 
-        if (_profile[indexRequired].vrm7)
+        if (profile.vrm7)
         {
-            adjline += " --prochot-deassertion-ramp=" + _profile[indexRequired].vrm7value;
+            adjline += " --prochot-deassertion-ramp=" + profile.vrm7value;
         }
 
-        if (_profile[indexRequired].vrm8)
+        if (profile.vrm8)
         {
-            adjline += " --oc-volt-scalar=" + _profile[indexRequired].vrm8value;
+            adjline += " --oc-volt-scalar=" + profile.vrm8value;
         }
 
-        if (_profile[indexRequired].vrm9)
+        if (profile.vrm9)
         {
-            adjline += " --oc-volt-modular=" + _profile[indexRequired].vrm9value;
+            adjline += " --oc-volt-modular=" + profile.vrm9value;
         }
 
-        if (_profile[indexRequired].vrm10)
+        if (profile.vrm10)
         {
-            adjline += " --oc-volt-variable=" + _profile[indexRequired].vrm10value;
+            adjline += " --oc-volt-variable=" + profile.vrm10value;
         }
 
         //gpu
-        if (_profile[indexRequired].gpu1)
+        if (profile.gpu1)
         {
-            adjline += " --min-socclk-frequency=" + _profile[indexRequired].gpu1value;
+            adjline += " --min-socclk-frequency=" + profile.gpu1value;
         }
 
-        if (_profile[indexRequired].gpu2)
+        if (profile.gpu2)
         {
-            adjline += " --max-socclk-frequency=" + _profile[indexRequired].gpu2value;
+            adjline += " --max-socclk-frequency=" + profile.gpu2value;
         }
 
-        if (_profile[indexRequired].gpu3)
+        if (profile.gpu3)
         {
-            adjline += " --min-fclk-frequency=" + _profile[indexRequired].gpu3value;
+            adjline += " --min-fclk-frequency=" + profile.gpu3value;
         }
 
-        if (_profile[indexRequired].gpu4)
+        if (profile.gpu4)
         {
-            adjline += " --max-fclk-frequency=" + _profile[indexRequired].gpu4value;
+            adjline += " --max-fclk-frequency=" + profile.gpu4value;
         }
 
-        if (_profile[indexRequired].gpu5)
+        if (profile.gpu5)
         {
-            adjline += " --min-vcn=" + _profile[indexRequired].gpu5value;
+            adjline += " --min-vcn=" + profile.gpu5value;
         }
 
-        if (_profile[indexRequired].gpu6)
+        if (profile.gpu6)
         {
-            adjline += " --max-vcn=" + _profile[indexRequired].gpu6value;
+            adjline += " --max-vcn=" + profile.gpu6value;
         }
 
-        if (_profile[indexRequired].gpu7)
+        if (profile.gpu7)
         {
-            adjline += " --min-lclk=" + _profile[indexRequired].gpu7value;
+            adjline += " --min-lclk=" + profile.gpu7value;
         }
 
-        if (_profile[indexRequired].gpu8)
+        if (profile.gpu8)
         {
-            adjline += " --max-lclk=" + _profile[indexRequired].gpu8value;
+            adjline += " --max-lclk=" + profile.gpu8value;
         }
 
-        if (_profile[indexRequired].gpu9)
+        if (profile.gpu9)
         {
-            adjline += " --min-gfxclk=" + _profile[indexRequired].gpu9value;
+            adjline += " --min-gfxclk=" + profile.gpu9value;
         }
 
-        if (_profile[indexRequired].gpu10)
+        if (profile.gpu10)
         {
-            adjline += " --max-gfxclk=" + _profile[indexRequired].gpu10value;
+            adjline += " --max-gfxclk=" + profile.gpu10value;
         }
 
-        if (_profile[indexRequired].gpu11)
+        if (profile.gpu11)
         {
-            adjline += " --min-cpuclk=" + _profile[indexRequired].gpu11value;
+            adjline += " --min-cpuclk=" + profile.gpu11value;
         }
 
-        if (_profile[indexRequired].gpu12)
+        if (profile.gpu12)
         {
-            adjline += " --max-cpuclk=" + _profile[indexRequired].gpu12value;
+            adjline += " --max-cpuclk=" + profile.gpu12value;
         }
 
-        if (_profile[indexRequired].gpu13)
+        if (profile.gpu15)
         {
-            adjline += " --setgpu-arerture-low=" + _profile[indexRequired].gpu13value;
-        }
-
-        if (_profile[indexRequired].gpu14)
-        {
-            adjline += " --setgpu-arerture-high=" + _profile[indexRequired].gpu14value;
-        }
-
-        if (_profile[indexRequired].gpu15)
-        {
-            if (_profile[indexRequired].gpu15value != 0)
+            if (profile.gpu15value != 0)
             {
-                adjline += " --start-gpu-link=" + (_profile[indexRequired].gpu15value - 1);
+                adjline += " --start-gpu-link=" + (profile.gpu15value - 1);
             }
             else
             {
@@ -807,11 +710,11 @@ public sealed partial class ShellPage
             }
         }
 
-        if (_profile[indexRequired].gpu16)
+        if (profile.gpu16)
         {
-            if (_profile[indexRequired].gpu16value != 0)
+            if (profile.gpu16value != 0)
             {
-                adjline += " --setcpu-freqto-ramstate=" + (_profile[indexRequired].gpu16value - 1);
+                adjline += " --setcpu-freqto-ramstate=" + (profile.gpu16value - 1);
             }
             else
             {
@@ -820,103 +723,551 @@ public sealed partial class ShellPage
         }
 
         //advanced
-        if (_profile[indexRequired].advncd1)
+        if (profile.advncd1)
         {
-            adjline += " --vrmgfx-current=" + _profile[indexRequired].advncd1value + "000";
+            adjline += " --vrmgfx-current=" + profile.advncd1value + "000";
         }
 
-        if (_profile[indexRequired].advncd2)
+        if (profile.advncd2)
         {
-            adjline += " --vrmcvip-current=" + _profile[indexRequired].advncd2value + "000";
+            adjline += " --vrmcvip-current=" + profile.advncd2value + "000";
         }
 
-        if (_profile[indexRequired].advncd3)
+        if (profile.advncd3)
         {
-            adjline += " --vrmgfxmax_current=" + _profile[indexRequired].advncd3value + "000";
+            adjline += " --vrmgfxmax_current=" + profile.advncd3value + "000";
         }
 
-        if (_profile[indexRequired].advncd4)
+        if (profile.advncd4)
         {
-            adjline += " --psi3cpu_current=" + _profile[indexRequired].advncd4value + "000";
+            adjline += " --psi3cpu_current=" + profile.advncd4value + "000";
         }
 
-        if (_profile[indexRequired].advncd5)
+        if (profile.advncd5)
         {
-            adjline += " --psi3gfx_current=" + _profile[indexRequired].advncd5value + "000";
+            adjline += " --psi3gfx_current=" + profile.advncd5value + "000";
         }
 
-        if (_profile[indexRequired].advncd6)
+        if (profile.advncd6)
         {
-            adjline += " --apu-skin-temp=" + _profile[indexRequired].advncd6value;
+            adjline += " --apu-skin-temp=" + profile.advncd6value;
         }
 
-        if (_profile[indexRequired].advncd7)
+        if (profile.advncd7)
         {
-            adjline += " --dgpu-skin-temp=" + _profile[indexRequired].advncd7value;
+            adjline += " --dgpu-skin-temp=" + profile.advncd7value;
         }
 
-        if (_profile[indexRequired].advncd8)
+        if (profile.advncd8)
         {
-            adjline += " --apu-slow-limit=" + _profile[indexRequired].advncd8value + "000";
+            adjline += " --apu-slow-limit=" + profile.advncd8value + "000";
         }
 
-        if (_profile[indexRequired].advncd9)
+        if (profile.advncd9)
         {
-            adjline += " --skin-temp-limit=" + _profile[indexRequired].advncd9value + "000";
+            adjline += " --skin-temp-limit=" + profile.advncd9value + "000";
         }
 
-        if (_profile[indexRequired].advncd10)
+        if (profile.advncd10)
         {
-            adjline += " --gfx-clk=" + _profile[indexRequired].advncd10value;
+            adjline += " --gfx-clk=" + profile.advncd10value;
         }
 
-        if (_profile[indexRequired].advncd11)
+        if (profile.advncd11)
         {
-            adjline += " --oc-clk=" + _profile[indexRequired].advncd11value;
+            adjline += " --oc-clk=" + profile.advncd11value;
         }
 
-        if (_profile[indexRequired].advncd12)
+        if (profile.advncd12)
         {
-            adjline += " --oc-volt=" + Math.Round((1.55 - _profile[indexRequired].advncd12value / 1000) / 0.00625);
+            adjline += " --oc-volt=" + Math.Round((1.55 - profile.advncd12value / 1000) / 0.00625);
         }
 
 
-        if (_profile[indexRequired].advncd13)
+        if (profile.advncd13)
         {
-            if (_profile[indexRequired].advncd13value == 1)
+            if (profile.advncd13value == 1)
             {
                 adjline += " --max-performance=1";
             }
 
-            if (_profile[indexRequired].advncd13value == 2)
+            if (profile.advncd13value == 2)
             {
                 adjline += " --power-saving=1";
             }
         }
 
-        if (_profile[indexRequired].advncd14)
+        if (profile.advncd14)
         {
-            if (_profile[indexRequired].advncd14value == 0)
+            switch (profile.advncd14value)
             {
-                adjline += " --disable-oc=1";
-            }
-
-            if (_profile[indexRequired].advncd14value == 1)
-            {
-                adjline += " --enable-oc=1";
+                case 0:
+                    adjline += " --disable-oc=1";
+                    break;
+                case 1:
+                    adjline += " --enable-oc=1";
+                    break;
             }
         }
 
-        if (_profile[indexRequired].advncd15)
+        if (profile.advncd15)
         {
-            adjline += " --pbo-scalar=" + _profile[indexRequired].advncd15value * 100;
+            adjline += " --pbo-scalar=" + profile.advncd15value * 100;
+        }
+
+        if (profile.coall)
+        {
+            if (profile.coallvalue >= 0.0)
+            {
+                adjline += $" --set-coall={profile.coallvalue} ";
+            }
+            else
+            {
+                adjline += $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)profile.coallvalue))} ";
+            }
+        }
+
+        var cpu = CpuSingleton.GetInstance();
+        if (profile.cogfx)
+        {
+            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(cpu.info.codeName);
+            //Using Irusanov method
+            for (var i = 0; i < cpu.info.topology.physicalCores; i++)
+            {
+                var mapIndex = i < 8 ? 0 : 1;
+                if (((~cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1)
+                {
+                    if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
+                    {
+                        cpu.SetPsmMarginSingleCore(GetCoreMask(cpu, i), Convert.ToInt32(profile.cogfxvalue));
+                    }
+                }
+            }
+
+            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName);
+        }
+
+        if (profile.comode && profile.coprefmode != 0) // Если пользователь выбрал хотя-бы один режим и ...
+        {
+            switch (profile.coprefmode)
+            {
+                // Если выбран режим ноутбук
+                // Так как там как у компьютеров
+                case 1 when cpu.info.codeName == Cpu.CodeName.DragonRange:
+                {
+                    if (profile.coper0)
+                    {
+                        adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper1)
+                    {
+                        adjline += $" --set-coper={1048576 | ((int)profile.coper1value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper2)
+                    {
+                        adjline += $" --set-coper={2097152 | ((int)profile.coper2value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper3)
+                    {
+                        adjline += $" --set-coper={3145728 | ((int)profile.coper3value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper4)
+                    {
+                        adjline += $" --set-coper={4194304 | ((int)profile.coper4value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper5)
+                    {
+                        adjline += $" --set-coper={5242880 | ((int)profile.coper5value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper6)
+                    {
+                        adjline += $" --set-coper={6291456 | ((int)profile.coper6value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper7)
+                    {
+                        adjline += $" --set-coper={7340032 | ((int)profile.coper7value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper8)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.coper8value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper9)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.coper9value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper10)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.coper10value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper11)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.coper11value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper12)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.coper12value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper13)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.coper13value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper14)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.coper14value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper15)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.coper15value & 0xFFFF)} ";
+                    }
+
+                    break;
+                }
+                case 1:
+                {
+                    if (profile.coper0)
+                    {
+                        adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper1)
+                    {
+                        adjline += $" --set-coper={(1 << 20) | ((int)profile.coper1value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper2)
+                    {
+                        adjline += $" --set-coper={(2 << 20) | ((int)profile.coper2value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper3)
+                    {
+                        adjline += $" --set-coper={(3 << 20) | ((int)profile.coper3value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper4)
+                    {
+                        adjline += $" --set-coper={(4 << 20) | ((int)profile.coper4value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper5)
+                    {
+                        adjline += $" --set-coper={(5 << 20) | ((int)profile.coper5value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper6)
+                    {
+                        adjline += $" --set-coper={(6 << 20) | ((int)profile.coper6value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper7)
+                    {
+                        adjline += $" --set-coper={(7 << 20) | ((int)profile.coper7value & 0xFFFF)} ";
+                    }
+
+                    break;
+                }
+                //Если выбран режим компьютер
+                case 2:
+                {
+                    if (profile.coper0)
+                    {
+                        adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper1)
+                    {
+                        adjline += $" --set-coper={1048576 | ((int)profile.coper1value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper2)
+                    {
+                        adjline += $" --set-coper={2097152 | ((int)profile.coper2value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper3)
+                    {
+                        adjline += $" --set-coper={3145728 | ((int)profile.coper3value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper4)
+                    {
+                        adjline += $" --set-coper={4194304 | ((int)profile.coper4value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper5)
+                    {
+                        adjline += $" --set-coper={5242880 | ((int)profile.coper5value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper6)
+                    {
+                        adjline += $" --set-coper={6291456 | ((int)profile.coper6value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper7)
+                    {
+                        adjline += $" --set-coper={7340032 | ((int)profile.coper7value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper8)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.coper8value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper9)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.coper9value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper10)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.coper10value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper11)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.coper11value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper12)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.coper12value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper13)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.coper13value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper14)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.coper14value & 0xFFFF)} ";
+                    }
+
+                    if (profile.coper15)
+                    {
+                        adjline +=
+                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.coper15value & 0xFFFF)} ";
+                    }
+
+                    break;
+                }
+                // Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
+                case 3:
+                {
+                    cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName);
+                    var options = new Dictionary<int, double>
+                    {
+                        { 0, profile.coper0value },
+                        { 1, profile.coper1value },
+                        { 2, profile.coper2value },
+                        { 3, profile.coper3value },
+                        { 4, profile.coper4value },
+                        { 5, profile.coper5value },
+                        { 6, profile.coper6value },
+                        { 7, profile.coper7value },
+                        { 8, profile.coper8value },
+                        { 9, profile.coper9value },
+                        { 10, profile.coper10value },
+                        { 11, profile.coper11value },
+                        { 12, profile.coper12value },
+                        { 13, profile.coper13value },
+                        { 14, profile.coper14value },
+                        { 15, profile.coper15value }
+                    };
+                    var checks = new Dictionary<int, bool>
+                    {
+                        { 0, profile.coper0 },
+                        { 1, profile.coper1 },
+                        { 2, profile.coper2 },
+                        { 3, profile.coper3 },
+                        { 4, profile.coper4 },
+                        { 5, profile.coper5 },
+                        { 6, profile.coper6 },
+                        { 7, profile.coper7 },
+                        { 8, profile.coper8 },
+                        { 9, profile.coper9 },
+                        { 10, profile.coper10 },
+                        { 11, profile.coper11 },
+                        { 12, profile.coper12 },
+                        { 13, profile.coper13 },
+                        { 14, profile.coper14 },
+                        { 15, profile.coper15 }
+                    };
+                    for (var i = 0; i < cpu.info.topology.physicalCores; i++)
+                    {
+                        var checkbox = i < 16 && checks[i];
+                        if (checkbox)
+                        {
+                            var setVal = options[i];
+                            var mapIndex = i < 8 ? 0 : 1;
+                            if (((~cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1) // Если ядро включено
+                            {
+                                if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U) // Если команда существует
+                                {
+                                    cpu.SetPsmMarginSingleCore(GetCoreMask(cpu, i), Convert.ToInt32(setVal));
+                                }
+                            }
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        if (profile.smuFunctionsEnabl)
+        {
+            if (profile.smuFeatureCCLK)
+            {
+                adjline += " --enable-feature=1";
+            }
+            else
+            {
+                adjline += " --disable-feature=1";
+            }
+
+            if (profile.smuFeatureData)
+            {
+                adjline += " --enable-feature=4";
+            }
+            else
+            {
+                adjline += " --disable-feature=4";
+            }
+
+            if (profile.smuFeaturePPT)
+            {
+                adjline += " --enable-feature=8";
+            }
+            else
+            {
+                adjline += " --disable-feature=8";
+            }
+
+            if (profile.smuFeatureTDC)
+            {
+                adjline += " --enable-feature=16";
+            }
+            else
+            {
+                adjline += " --disable-feature=16";
+            }
+
+            if (profile.smuFeatureThermal)
+            {
+                adjline += " --enable-feature=32";
+            }
+            else
+            {
+                adjline += " --disable-feature=32";
+            }
+
+            if (profile.smuFeaturePowerDown)
+            {
+                adjline += " --enable-feature=256";
+            }
+            else
+            {
+                adjline += " --disable-feature=256";
+            }
+
+            if (profile.smuFeatureProchot)
+            {
+                adjline += " --enable-feature=0,32";
+            }
+            else
+            {
+                adjline += " --disable-feature=0,32";
+            }
+
+            if (profile.smuFeatureSTAPM)
+            {
+                adjline += " --enable-feature=0,128";
+            }
+            else
+            {
+                adjline += " --disable-feature=0,128";
+            }
+
+            if (profile.smuFeatureCStates)
+            {
+                adjline += " --enable-feature=0,256";
+            }
+            else
+            {
+                adjline += " --disable-feature=0,256";
+            }
+
+            if (profile.smuFeatureGfxDutyCycle)
+            {
+                adjline += " --enable-feature=0,512";
+            }
+            else
+            {
+                adjline += " --disable-feature=0,512";
+            }
+
+            if (profile.smuFeatureAplusA)
+            {
+                adjline += " --enable-feature=0,1024";
+            }
+            else
+            {
+                adjline += " --disable-feature=0,1024";
+            }
         }
 
         SettingsService.RyzenADJline = adjline + " ";
         SettingsService.SaveSettings();
         MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
-            SettingsService.ReapplyOverclockTimer); //false - logging disabled 
-        /*   if (profile[indexRequired].enablePstateEditor) { cpu.BtnPstateWrite_Click(); }*/
+            SettingsService.ReapplyOverclockTimer);
+    }
+
+    private static uint GetCoreMask(Cpu cpu, int coreIndex)
+    {
+        Task.Run(async () => await LogHelper.Log("Getting Core Mask..."));
+        var ccxInCcd = cpu.info.family >= Cpu.Family.FAMILY_19H ? 1U : 2U;
+        var coresInCcx = 8 / ccxInCcd;
+
+        var ccd = Convert.ToUInt32(coreIndex / 8);
+        var ccx = Convert.ToUInt32(coreIndex / coresInCcx - ccxInCcd * ccd);
+        var core = Convert.ToUInt32(coreIndex % coresInCcx);
+        var coreMask = cpu.MakeCoreMask(core, ccd, ccx);
+        Task.Run(async () =>
+            await LogHelper.Log(
+                $"Core Mask detected: {coreMask}\nCCD: {ccd}\nCCX: {ccx}\nCore: {core}\nCCX in Index: {ccxInCcd}"));
+        return coreMask;
     }
 
     #endregion
@@ -960,10 +1311,7 @@ public sealed partial class ShellPage
         _dispatcherTimer.Start();
     }
 
-    private void StopInfoUpdate()
-    {
-        _dispatcherTimer?.Stop();
-    }
+    private void StopInfoUpdate() => _dispatcherTimer?.Stop();
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
@@ -982,7 +1330,7 @@ public sealed partial class ShellPage
         if (ProfileSetComboBox.SelectedIndex != -1 && ((ComboBoxItem?)ProfileSetComboBox.SelectedItem)?.Content != null)
         {
             if (SelectedProfile != ((ComboBoxItem?)ProfileSetComboBox.SelectedItem)?.Content.ToString() &&
-           !ProfileSetButton.IsEnabled)
+                !ProfileSetButton.IsEnabled)
             {
                 SelectedProfile = ((ComboBoxItem?)ProfileSetComboBox.SelectedItem)?.Content.ToString()!;
             }
@@ -1019,10 +1367,10 @@ public sealed partial class ShellPage
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return; //Удалить и не показывать 
                     case "UpdateNAVBAR":
-                        {
-                            HideNavBar();
-                            return; //Удалить и не показывать
-                        }
+                    {
+                        HideNavBar();
+                        return; //Удалить и не показывать
+                    }
                     case "FirstLaunch":
                         HideNavBar();
                         Icon.Visibility = Visibility.Collapsed;
@@ -1038,45 +1386,46 @@ public sealed partial class ShellPage
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return;
                     case "UPDATE_REQUIRED":
-                        var _newVersion = UpdateChecker.GetNewVersion();
+                        var newVersion = UpdateChecker.GetNewVersion();
 
                         notify1.Title = "Shell_Update_App_Title".GetLocalized();
-                        notify1.Msg = "Shell_Update_App_Message".GetLocalized() + " " + UpdateChecker.ParseVersion(_newVersion!.TagName).ToString();
-                        var updateButton = new Button()
+                        notify1.Msg = "Shell_Update_App_Message".GetLocalized() + " " +
+                                      UpdateChecker.ParseVersion(newVersion!.TagName);
+                        var updateButton = new Button
                         {
                             CornerRadius = new CornerRadius(15),
                             Content = new Grid
                             {
                                 Children =
+                                {
+                                    new FontIcon
                                     {
-                                        new FontIcon
-                                        {
-                                            Glyph = "\uE777",
-                                            HorizontalAlignment = HorizontalAlignment.Left
-                                        },
-                                        new TextBlock
-                                        {
-                                            Margin = new Thickness(30, 0, 0, 0),
-                                            Text = "Shell_Update_App_Button".GetLocalized(),
-                                            HorizontalAlignment = HorizontalAlignment.Center
-                                        }
+                                        Glyph = "\uE777",
+                                        HorizontalAlignment = HorizontalAlignment.Left
+                                    },
+                                    new TextBlock
+                                    {
+                                        Margin = new Thickness(30, 0, 0, 0),
+                                        Text = "Shell_Update_App_Button".GetLocalized(),
+                                        HorizontalAlignment = HorizontalAlignment.Center
                                     }
+                                }
                             }
                         };
-                        updateButton.Click += (_,_) => 
+                        updateButton.Click += (_, _) =>
                         {
                             HideNavBar();
                             Icon.Visibility = Visibility.Collapsed;
                             ProfileSetup.Visibility = Visibility.Collapsed;
-                            RingerNotifGrid.Visibility = Visibility.Collapsed; 
+                            RingerNotifGrid.Visibility = Visibility.Collapsed;
                             var navigationService = App.GetService<INavigationService>();
                             navigationService.NavigateTo(typeof(ОбновлениеViewModel).FullName!, null, true);
                             ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления 
                         };
-                        subcontent = new Grid()
+                        subcontent = new Grid
                         {
-                            Children = { updateButton },
-                        }; 
+                            Children = { updateButton }
+                        };
                         break;
                 }
 
@@ -1170,21 +1519,42 @@ public sealed partial class ShellPage
                                     "Param_SMU_Func_Text/Text".GetLocalized(),
                                     () => _profile[SettingsService.Preset].smuFunctionsEnabl = false
                                 },
-                                { "Param_CPU_c2/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu2 = false },
-                                { "Param_VRM_v2/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm2 = false },
-                                { "Param_VRM_v1/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm1 = false },
-                                { "Param_CPU_c1/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu1 = false },
                                 {
-                                    "Param_ADV_a15/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd15 = false
+                                    "Param_CPU_c2/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].cpu2 = false
                                 },
                                 {
-                                    "Param_ADV_a11/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd11 = false
+                                    "Param_VRM_v2/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].vrm2 = false
                                 },
                                 {
-                                    "Param_ADV_a12/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd12 = false
+                                    "Param_VRM_v1/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].vrm1 = false
                                 },
-                                { "Param_CO_O1/Text".GetLocalized(), () => _profile[SettingsService.Preset].coall = false },
-                                { "Param_CO_O2/Text".GetLocalized(), () => _profile[SettingsService.Preset].cogfx = false },
+                                {
+                                    "Param_CPU_c1/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].cpu1 = false
+                                },
+                                {
+                                    "Param_ADV_a15/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd15 = false
+                                },
+                                {
+                                    "Param_ADV_a11/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd11 = false
+                                },
+                                {
+                                    "Param_ADV_a12/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd12 = false
+                                },
+                                {
+                                    "Param_CO_O1/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].coall = false
+                                },
+                                {
+                                    "Param_CO_O2/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].cogfx = false
+                                },
                                 {
                                     "Param_CCD1_CO_Section/Text".GetLocalized(),
                                     () => _profile[SettingsService.Preset].coprefmode = 0
@@ -1193,22 +1563,65 @@ public sealed partial class ShellPage
                                     "Param_ADV_a14_E/Content".GetLocalized(),
                                     () => _profile[SettingsService.Preset].advncd14 = false
                                 },
-                                { "Param_CPU_c5/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu5 = false },
-                                { "Param_CPU_c3/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu3 = false },
-                                { "Param_CPU_c4/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu4 = false },
-                                { "Param_CPU_c6/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu6 = false },
-                                { "Param_CPU_c7/Text".GetLocalized(), () => _profile[SettingsService.Preset].cpu7 = false },
-                                { "Param_ADV_a6/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd6 = false },
-                                { "Param_VRM_v4/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm4 = false },
-                                { "Param_VRM_v3/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm3 = false },
-                                { "Param_ADV_a2/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd2 = false },
-                                { "Param_ADV_a1/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd1 = false },
-                                { "Param_ADV_a3/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd3 = false },
-                                { "Param_VRM_v7/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm7 = false },
-                                { "Param_ADV_a4/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd4 = false },
-                                { "Param_ADV_a5/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd5 = false },
                                 {
-                                    "Param_ADV_a10/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd10 = false
+                                    "Param_CPU_c5/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].cpu5 = false
+                                },
+                                {
+                                    "Param_CPU_c3/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].cpu3 = false
+                                },
+                                {
+                                    "Param_CPU_c4/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].cpu4 = false
+                                },
+                                {
+                                    "Param_CPU_c6/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].cpu6 = false
+                                },
+                                {
+                                    "Param_CPU_c7/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].cpu7 = false
+                                },
+                                {
+                                    "Param_ADV_a6/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd6 = false
+                                },
+                                {
+                                    "Param_VRM_v4/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].vrm4 = false
+                                },
+                                {
+                                    "Param_VRM_v3/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].vrm3 = false
+                                },
+                                {
+                                    "Param_ADV_a2/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd2 = false
+                                },
+                                {
+                                    "Param_ADV_a1/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd1 = false
+                                },
+                                {
+                                    "Param_ADV_a3/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd3 = false
+                                },
+                                {
+                                    "Param_VRM_v7/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].vrm7 = false
+                                },
+                                {
+                                    "Param_ADV_a4/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd4 = false
+                                },
+                                {
+                                    "Param_ADV_a5/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd5 = false
+                                },
+                                {
+                                    "Param_ADV_a10/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd10 = false
                                 },
                                 {
                                     "Param_ADV_a13_E/Content".GetLocalized(),
@@ -1218,28 +1631,94 @@ public sealed partial class ShellPage
                                     "Param_ADV_a13_U/Content".GetLocalized(),
                                     () => _profile[SettingsService.Preset].advncd13 = false
                                 },
-                                { "Param_ADV_a8/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd8 = false },
-                                { "Param_ADV_a7/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd7 = false },
-                                { "Param_VRM_v5/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm5 = false },
-                                { "Param_VRM_v6/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm6 = false },
-                                { "Param_ADV_a9/Text".GetLocalized(), () => _profile[SettingsService.Preset].advncd9 = false },
-                                { "Param_GPU_g12/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu12 = false },
-                                { "Param_GPU_g11/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu11 = false },
-                                { "Param_GPU_g10/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu10 = false },
-                                { "Param_GPU_g9/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu9 = false },
-                                { "Param_GPU_g2/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu2 = false },
-                                { "Param_GPU_g1/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu1 = false },
-                                { "Param_GPU_g4/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu4 = false },
-                                { "Param_GPU_g3/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu3 = false },
-                                { "Param_GPU_g6/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu6 = false },
-                                { "Param_GPU_g5/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu5 = false },
-                                { "Param_GPU_g8/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu8 = false },
-                                { "Param_GPU_g7/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu7 = false },
-                                { "Param_VRM_v8/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm8 = false },
-                                { "Param_GPU_g13/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm9 = false },
-                                { "Param_GPU_g14/Text".GetLocalized(), () => _profile[SettingsService.Preset].vrm9 = false },
-                                { "Param_GPU_g15/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu15 = false },
-                                { "Param_GPU_g16/Text".GetLocalized(), () => _profile[SettingsService.Preset].gpu16 = false },
+                                {
+                                    "Param_ADV_a8/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd8 = false
+                                },
+                                {
+                                    "Param_ADV_a7/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd7 = false
+                                },
+                                {
+                                    "Param_VRM_v5/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].vrm5 = false
+                                },
+                                {
+                                    "Param_VRM_v6/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].vrm6 = false
+                                },
+                                {
+                                    "Param_ADV_a9/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].advncd9 = false
+                                },
+                                {
+                                    "Param_GPU_g12/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu12 = false
+                                },
+                                {
+                                    "Param_GPU_g11/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu11 = false
+                                },
+                                {
+                                    "Param_GPU_g10/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu10 = false
+                                },
+                                {
+                                    "Param_GPU_g9/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu9 = false
+                                },
+                                {
+                                    "Param_GPU_g2/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu2 = false
+                                },
+                                {
+                                    "Param_GPU_g1/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu1 = false
+                                },
+                                {
+                                    "Param_GPU_g4/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu4 = false
+                                },
+                                {
+                                    "Param_GPU_g3/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu3 = false
+                                },
+                                {
+                                    "Param_GPU_g6/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu6 = false
+                                },
+                                {
+                                    "Param_GPU_g5/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu5 = false
+                                },
+                                {
+                                    "Param_GPU_g8/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu8 = false
+                                },
+                                {
+                                    "Param_GPU_g7/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu7 = false
+                                },
+                                {
+                                    "Param_VRM_v8/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].vrm8 = false
+                                },
+                                {
+                                    "Param_GPU_g13/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].vrm9 = false
+                                },
+                                {
+                                    "Param_GPU_g14/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].vrm9 = false
+                                },
+                                {
+                                    "Param_GPU_g15/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu15 = false
+                                },
+                                {
+                                    "Param_GPU_g16/Text".GetLocalized(),
+                                    () => _profile[SettingsService.Preset].gpu16 = false
+                                }
                             };
                             var loggingList = string.Empty;
                             var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
@@ -1376,8 +1855,7 @@ public sealed partial class ShellPage
                                             Orientation = Orientation.Horizontal,
                                             Children =
                                             {
-                                                butLogs //,
-                                                //but2
+                                                butLogs
                                             }
                                         }
                                     }
@@ -1429,6 +1907,7 @@ public sealed partial class ShellPage
         });
         return Task.CompletedTask;
     }
+
     private void HideNavBar() // Скрыть навигационную панель
     {
         NavigationViewControl.Margin = new Thickness(-49, -48, 0, 0);
@@ -1442,6 +1921,7 @@ public sealed partial class ShellPage
 
         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
     }
+
     private void ShowNavBar() // Показать навигационную панель
     {
         NavigationViewControl.Margin = new Thickness(0, 0, 0, 0);
@@ -1454,6 +1934,7 @@ public sealed partial class ShellPage
 
         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
     }
+
     #endregion
 
     #endregion
@@ -1463,7 +1944,9 @@ public sealed partial class ShellPage
         try
         {
             var themeMobil = App.GetService<SettingsViewModel>();
-            var themeLight = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight ? ElementTheme.Light : ElementTheme.Dark;
+            var themeLight = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight
+                ? ElementTheme.Light
+                : ElementTheme.Dark;
             themeMobil.SwitchThemeCommand.Execute(themeLight);
             var themeBackground = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeBackground;
 
@@ -1473,6 +1956,7 @@ public sealed partial class ShellPage
             {
                 ThemeBackground.ImageSource = new BitmapImage(new Uri(themeBackground));
             }
+
             ThemeOpacity.Opacity = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity;
             ThemeMaskOpacity.Opacity = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
             var backupWidth = TitleIcon.Width;
@@ -1482,15 +1966,15 @@ public sealed partial class ShellPage
         catch
         {
             MandarinAddNotification(
-    "ThemeError".GetLocalized() + "\"" + (SettingsService.ThemeType < _themeSelectorService.Themes.Count
-        ? _themeSelectorService.Themes[SettingsService.ThemeType].ThemeName
-        : $"Error in theme type = {SettingsService.ThemeType}") + "\"",
-    "ThemeNotFoundBg".GetLocalized(),
-    InfoBarSeverity.Error
-);
-
+                "ThemeError".GetLocalized() + "\"" + (SettingsService.ThemeType < _themeSelectorService.Themes.Count
+                    ? _themeSelectorService.Themes[SettingsService.ThemeType].ThemeName
+                    : $"Error in theme type = {SettingsService.ThemeType}") + "\"",
+                "ThemeNotFoundBg".GetLocalized(),
+                InfoBarSeverity.Error
+            );
         }
     }
+
     private void ProfileSave()
     {
         try
@@ -1526,36 +2010,37 @@ public sealed partial class ShellPage
             JsonRepair('p');
         }
     }
+
     private void JsonRepair(char file)
     {
         switch (file)
         {
             case 'p':
+            {
+                _profile = [];
+                try
                 {
-                    _profile = [];
-                    try
-                    {
-                        Directory.CreateDirectory(
-                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                        File.WriteAllText(
-                            Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                            JsonConvert.SerializeObject(_profile));
-                    }
-                    catch
-                    {
-                        File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                    @"\SakuOverclock\profile.json");
-                        Directory.CreateDirectory(
-                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                        File.WriteAllText(
-                            Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                            JsonConvert.SerializeObject(_profile));
-                        App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                            AppContext.BaseDirectory));
-                    }
-
-                    break;
+                    Directory.CreateDirectory(
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                        JsonConvert.SerializeObject(_profile));
                 }
+                catch
+                {
+                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                @"\SakuOverclock\profile.json");
+                    Directory.CreateDirectory(
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                    File.WriteAllText(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                        JsonConvert.SerializeObject(_profile));
+                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
+                        AppContext.BaseDirectory));
+                }
+
+                break;
+            }
         }
     }
 
@@ -1576,10 +2061,7 @@ public sealed partial class ShellPage
     [DllImport("user32.dll")]
     private static extern short GetKeyState(int nVirtKey);
 
-    private static bool IsAltPressed()
-    {
-        return (GetKeyState(VkMenu) & KeyPressed) != 0;
-    }
+    private static bool IsAltPressed() => (GetKeyState(VkMenu) & KeyPressed) != 0;
 
     private delegate IntPtr
         LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam); // Callback делегат(для вызова callback метода)
@@ -1597,79 +2079,43 @@ public sealed partial class ShellPage
                 {
                     // Переключить между своими пресетами
                     case VirtualKey.W:
-                        {
-                            //Создать уведомление
-                            var nextCustomProfile = NextCustomProfile_Switch();
-                            ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextCustomProfile);
-                            MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
-                                "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
-                                InfoBarSeverity.Informational);
-                            MainWindow.Applyer.ApplyWithoutAdjLine(false);
-                            break;
-                        }
+                    {
+                        //Создать уведомление
+                        var nextCustomProfile = NextCustomProfile_Switch();
+                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, SettingsService,
+                            nextCustomProfile);
+                        MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
+                            "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
+                            InfoBarSeverity.Informational);
+                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
+                        break;
+                    }
                     // Переключить между готовыми пресетами
                     case VirtualKey.P:
-                        var nextPremadeProfile = NextPremadeProfile_Switch();
-                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(nextPremadeProfile);
+                        var nextPremadeProfile = NextPremadeProfile_Switch(out var icon, out var desc);
+                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, SettingsService,
+                            nextPremadeProfile, icon, desc);
                         MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
                             "Shell_ProfileChanging_Premade".GetLocalized() + $"{nextPremadeProfile}!",
                             InfoBarSeverity.Informational);
-                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
+                        //MainWindow.Applyer.ApplyWithoutAdjLine(false);
                         break;
                     // Переключить состояние RTSS
                     case VirtualKey.R:
                         if (SettingsService.RTSSMetricsEnabled)
                         {
-                            var iconGrid = new Grid
-                            {
-                                Width = 100,
-                                Height = 100,
-                                Children =
-                                {
-                                    new FontIcon
-                                    {
-                                        Glyph = "\uE7AC",
-                                        Opacity = 0.543d,
-                                        FontSize = 40
-                                    },
-                                    new FontIcon
-                                    {
-                                        Glyph = "\uE711",
-                                        Margin = new Thickness(4, 0, 0, 0),
-                                        VerticalAlignment = VerticalAlignment.Center,
-                                        HorizontalAlignment = HorizontalAlignment.Center,
-                                        FontSize = 40
-                                    }
-                                }
-                            };
-                            ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS " + "Cooler_Service_Disabled/Content".GetLocalized(), null, iconGrid);
-                            var navigationService = App.GetService<INavigationService>();
-                            navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+                            ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, SettingsService,
+                                "RTSS " + "Cooler_Service_Disabled/Content".GetLocalized(), "\uE7AC");
                             SettingsService.RTSSMetricsEnabled = false;
-                            SettingsService.SaveSettings();
                         }
                         else
                         {
-                            var iconGrid = new Grid
-                            {
-                                Width = 100,
-                                Height = 100,
-                                Children =
-                                {
-                                    new FontIcon
-                                    {
-                                        Glyph = "\uE7AC",
-                                        FontSize = 40
-                                    }
-                                }
-                            };
-                            ProfileSwitcher.ProfileSwitcher.ShowOverlay("RTSS " + "Cooler_Service_Enabled/Content".GetLocalized(), null, iconGrid);
+                            ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, SettingsService,
+                                "RTSS " + "Cooler_Service_Enabled/Content".GetLocalized(), "\uE7AC");
                             SettingsService.RTSSMetricsEnabled = true;
-                            SettingsService.SaveSettings();
-                            var navigationService = App.GetService<INavigationService>();
-                            navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!, null, true);
                         }
 
+                        SettingsService.SaveSettings();
                         MandarinAddNotification("Shell_RTSSChanging".GetLocalized(),
                             "Shell_RTSSChanging_Success".GetLocalized(), InfoBarSeverity.Informational);
                         break;
@@ -1750,10 +2196,7 @@ public sealed partial class ShellPage
         }
     }
 
-    private void Icon_Click(object sender, RoutedEventArgs e)
-    {
-        _fixedTitleBar = !_fixedTitleBar;
-    }
+    private void Icon_Click(object sender, RoutedEventArgs e) => _fixedTitleBar = !_fixedTitleBar;
 
     private void NavigationViewControl_DisplayModeChanged(NavigationView sender,
         NavigationViewDisplayModeChangedEventArgs args)
@@ -1846,10 +2289,10 @@ public sealed partial class ShellPage
     private static RectInt32 GetRect(Rect bounds, double scale)
     {
         return new RectInt32(
-            _X: (int)Math.Round(bounds.X * scale),
-            _Y: (int)Math.Round(bounds.Y * scale),
-            _Width: (int)Math.Round(bounds.Width * scale),
-            _Height: (int)Math.Round(bounds.Height * scale)
+            (int)Math.Round(bounds.X * scale),
+            (int)Math.Round(bounds.Y * scale),
+            (int)Math.Round(bounds.Width * scale),
+            (int)Math.Round(bounds.Height * scale)
         );
     }
 
