@@ -55,7 +55,7 @@ public abstract class UpdateChecker
 
         if (latestRelease == null)
         {
-            await App.MainWindow.ShowMessageDialogAsync("Не удалось найти релизы на GitHub.", "Ошибка");
+            await App.MainWindow.ShowMessageDialogAsync("Main_NoReleases".GetLocalized(), "Error".GetLocalized());
             return;
         }
         _updateNewVersion = latestRelease.Release;
@@ -130,7 +130,7 @@ public abstract class UpdateChecker
         var asset = release.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe") || a.Name.EndsWith(".msi"));
         if (asset == null)
         {
-            await App.MainWindow.ShowMessageDialogAsync("Не удалось найти установочный файл в релизе.", "Ошибка");
+            await App.MainWindow.ShowMessageDialogAsync("Main_NoReleaseFile".GetLocalized(), "Error".GetLocalized());
             return;
         }
 
@@ -210,7 +210,7 @@ public abstract class UpdateChecker
                 }
                 catch (Exception ex)
                 {
-                    await App.MainWindow.ShowMessageDialogAsync($"Произошла ошибка при загрузке обновления: {ex.Message}", "Ошибка");
+                    await App.MainWindow.ShowMessageDialogAsync("Main_ErrorReleaseLoad".GetLocalized() + $"{ex.Message}", "Error".GetLocalized());
                     await Task.Delay(2000);
                     goto label_8; // Повторить задачу открытия автообновления приложения, в случае если возникла ошибка доступа
                 }
@@ -219,7 +219,7 @@ public abstract class UpdateChecker
         }
         catch (Exception ex)
         {
-            await App.MainWindow.ShowMessageDialogAsync($"Произошла ошибка при загрузке обновления: {ex.Message}", "Ошибка");
+            await App.MainWindow.ShowMessageDialogAsync("Main_ErrorReleaseLoad".GetLocalized() + $"{ex.Message}", "Error".GetLocalized());
         }
     }
 
