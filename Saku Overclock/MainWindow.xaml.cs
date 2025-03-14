@@ -13,6 +13,7 @@ using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using Icon = System.Drawing.Icon;
+using Saku_Overclock.Services;
 
 namespace Saku_Overclock;
 
@@ -29,11 +30,12 @@ public sealed partial class MainWindow
         InitializeComponent();
         WindowStateChanged += (_, _) =>
         {
-            if (WindowState == WindowState.Minimized)
+            if (SettingsService.HidingType == 1 && WindowState == WindowState.Minimized)
             {
                 this.Hide();
             }
         };
+        AppWindow.Closing += AppWindow_Closing;
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         Content = null;
         Title = "AppDisplayName".GetLocalized();
@@ -92,6 +94,14 @@ public sealed partial class MainWindow
 
     #region Tray utils
 
+    private void AppWindow_Closing(Microsoft.UI.Windowing.AppWindow sender, Microsoft.UI.Windowing.AppWindowClosingEventArgs args)
+    {
+        if (SettingsService.HidingType == 2)
+        {
+            args.Cancel = true; // Отменяем закрытие
+            this.Hide(); // Скрываем в трей
+        } 
+    }
     public static void Set_ContextMenu_Tray()
     {
         _niBackup?.Dispose();
