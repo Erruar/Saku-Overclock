@@ -38,6 +38,15 @@
                                 <ComboBoxItem x:Uid="Settings_Start_MiniBoot" Content="Автостарт в трее"/>
                             </ComboBox>
                         </Grid>
+                        <TextBlock Margin="{StaticResource XSmallTopMargin}"   x:Uid="Settings_AppHide" >Параметры скрытия</TextBlock>
+                        <Grid HorizontalAlignment="Left" Width="190" CornerRadius="15">
+                            <Border Margin="-5,6,-6,10" Width="190" Height="36" Shadow="{StaticResource SharedShadow}" CornerRadius="15" Translation="0,0,20"/>
+                            <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Width="190" Margin="{StaticResource XSmallTopMargin}" CornerRadius="15" SelectedIndex="0" x:Name="HideCom" SelectionChanged="HideCom_SelectionChanged">
+                                <ComboBoxItem x:Uid="Settings_Hide_Nothing" Content="Ничего не делать"/>
+                                <ComboBoxItem x:Uid="Settings_Hide_Minimize" Content="Свернуть - в трей"/>
+                                <ComboBoxItem x:Uid="Settings_Hide_Close" Content="Закрыть - в трей"/>
+                            </ComboBox>
+                        </Grid>
                         <ToggleSwitch Margin="{StaticResource XSmallTopMargin}" x:Uid="Settings_Apply_Start" Name="CbApplyStart" Toggled="CbApplyStart_Click">Автоприменять разгон</ToggleSwitch>
                         <StackPanel Orientation="Horizontal">
                             <ToggleSwitch x:Uid="Settings_Auto_Reapply" Name="CbAutoReapply" Toggled="CbAutoReapply_Click">Автоприменять каждые (с)</ToggleSwitch>
@@ -590,7 +599,7 @@ Orientation="Horizontal"/>
                     </StackPanel> 
                 </ScrollViewer>
             </PivotItem>
-            <PivotItem>
+            <PivotItem HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="11,0,-90,0">
                 <PivotItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <FontIcon Glyph="&#xF210;" Margin="0,0,0,-2" FontSize="17"/>
@@ -668,7 +677,7 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                                 </Border>
                             </StackPanel>
                         </StackPanel>
-                    </StackPanel> 
+                    </StackPanel>
                 </ScrollViewer>
             </PivotItem>
             <PivotItem>
