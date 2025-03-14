@@ -1,9 +1,11 @@
 ﻿<Page
     x:Class="Saku_Overclock.Views.ГлавнаяPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ui="using:ABI.Microsoft.UI.Xaml.Controls" xmlns:emit="using:System.Reflection.Emit" xmlns:viewmodels="using:Saku_Overclock.ViewModels" xmlns:local="using:Saku_Overclock.Styles" d:DataContext="{d:DesignInstance Type=viewmodels:ГлавнаяViewModel}"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:Saku_Overclock.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:ГлавнаяViewModel}"
     mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />
@@ -27,6 +29,7 @@
                 </StackPanel>
             </StackPanel>
         </TeachingTip>
+        <TeachingTip x:Name="Apply_Teach" IsOpen="False"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
             <StackPanel Orientation="Horizontal" Padding="0,3,0,0">
                 <TextBlock FontSize="27" Text="Saku Overclock" FontWeight="ExtraBold" VerticalAlignment="Top" HorizontalAlignment="Left"/>
@@ -44,14 +47,14 @@ Text="{Binding Version}">
             <TextBlock FontSize="27" Text="—"/>
             <TextBlock Margin="10,5,0,0" x:Uid="Main_Welcome_1" FontSize="20" FontWeight="SemiBold" Text="Для тех, кто желает максимум!" Padding="0,2,0,0"/>
         </StackPanel>
-        <Grid HorizontalAlignment="Stretch" Margin="0,40,0,0">
+        <Grid HorizontalAlignment="Stretch" Margin="0,40,0,1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" MinWidth="525"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0" Margin="0,0,5,5" CornerRadius="8" Background="{ThemeResource PostAcrylicBrush}">
+            <Grid Grid.Column="0" Margin="0,0,7,5" CornerRadius="8" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}">
                 <StackPanel Margin="10,4,0,0" Orientation="Vertical">
-                    <TextBlock FontWeight="SemiBold" FontSize="17" Text="Информация об устройстве"/>
+                    <TextBlock FontWeight="SemiBold" FontSize="17" x:Uid="Main_DeviceInfo" Text="Информация об устройстве"/>
                 </StackPanel>
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
@@ -65,7 +68,7 @@ Text="{Binding Version}">
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0" Margin="10,0,0,0" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                              x:Name="LogoPlacer" PointerEntered="LogoPlacer_PointerEntered" PointerExited="LogoPlacer_PointerExited">
+                              x:Name="LogoPlacer" PointerPressed="LogoPlacer_PointerPressed">
                             <Border>
                                 <Border.Background>
                                     <ImageBrush ImageSource="ms-appx:///Assets/Ryzen-Logo.png" Stretch="Fill"/>
@@ -83,13 +86,13 @@ Text="{Binding Version}">
                             </Grid>
                         </Grid>
                         <Grid Grid.Column="1" Margin="10,0,0,0" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                              x:Name="TemperaturePlacer" PointerEntered="TemperaturePlacer_PointerEntered" PointerExited="TemperaturePlacer_PointerExited">
+                              x:Name="TemperaturePlacer" PointerPressed="TemperaturePlacer_PointerPressed">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <StackPanel Grid.Row="0" Margin="10,-20,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                <TextBlock FontWeight="SemiBold" Text="Температура процессора" TextWrapping="Wrap"/>
+                                <TextBlock FontWeight="SemiBold" x:Uid="Main_CpuTemp" Text="Температура процессора" TextWrapping="Wrap"/>
                                 <TextBlock FontWeight="Bold" FontSize="20" x:Name="Indicators_Temp" Text="43С"/>
                             </StackPanel>
                             <Grid Grid.Row="1">
@@ -142,13 +145,13 @@ Text="{Binding Version}">
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0" Margin="10,0,10,5" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                      x:Name="UsabilityPlacer" PointerEntered="UsabilityPlacer_PointerEntered" PointerExited="UsabilityPlacer_PointerExited">
+                                      x:Name="UsabilityPlacer" PointerPressed="UsabilityPlacer_PointerPressed">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="70"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                        <TextBlock FontWeight="SemiBold" Text="Загрузка процессора" TextWrapping="Wrap"/>
+                                        <TextBlock FontWeight="SemiBold" x:Uid="Main_CpuLoad" Text="Загрузка процессора" TextWrapping="Wrap"/>
                                         <TextBlock FontWeight="Bold" FontSize="20" x:Name="Indicators_Busy" Text="70%"/>
                                     </StackPanel>
                                     <Grid Grid.Column="1" Margin="-10,0,0,0">
@@ -157,13 +160,13 @@ Text="{Binding Version}">
                                     </Grid>
                                 </Grid>
                                 <Grid Grid.Row="1" Margin="10,5,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                      x:Name="FrequencyPlacer" PointerEntered="FrequencyPlacer_PointerEntered" PointerExited="FrequencyPlacer_PointerExited">
+                                      x:Name="FrequencyPlacer" PointerPressed="FrequencyPlacer_PointerPressed">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="70"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                        <TextBlock FontWeight="SemiBold" Text="Частота процессора" TextWrapping="Wrap"/>
+                                        <TextBlock FontWeight="SemiBold" x:Uid="Main_CpuFreq" Text="Частота процессора" TextWrapping="Wrap"/>
                                         <TextBlock FontWeight="Bold" FontSize="20" x:Name="Indicators_Freq" Text="5.7 ГГц"/>
                                     </StackPanel>
                                     <Grid Grid.Column="1" Margin="-10,0,0,0">
@@ -193,13 +196,13 @@ Text="{Binding Version}">
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <Grid Grid.Row="0" Grid.Column="0" Margin="10,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                          x:Name="RamPlacer" PointerEntered="RamPlacer_PointerEntered" PointerExited="RamPlacer_PointerExited">
+                                          x:Name="RamPlacer" PointerPressed="RamPlacer_PointerPressed">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                            <TextBlock FontWeight="SemiBold" Text="RAM Usage" TextWrapping="Wrap"/>
+                                            <TextBlock FontWeight="SemiBold" x:Uid="Main_RamUsage" Text="RAM Usage" TextWrapping="Wrap"/>
                                             <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_Ram" Text="7.8Gb"/>
                                         </StackPanel>
                                         <Grid Grid.Column="1" Margin="-10,0,0,0">
@@ -208,13 +211,13 @@ Text="{Binding Version}">
                                         </Grid>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                          x:Name="PowerPlacer" PointerEntered="PowerPlacer_PointerEntered" PointerExited="PowerPlacer_PointerExited">
+                                          x:Name="PowerPlacer" PointerPressed="PowerPlacer_PointerPressed">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                            <TextBlock FontWeight="SemiBold" Text="Real power" TextWrapping="Wrap"/>
+                                            <TextBlock FontWeight="SemiBold" x:Uid="Main_RealPower" Text="Real power" TextWrapping="Wrap"/>
                                             <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_Fast" Text="0"/>
                                         </StackPanel>
                                         <Grid Grid.Column="1" Margin="-10,0,0,0">
@@ -223,13 +226,13 @@ Text="{Binding Version}">
                                         </Grid>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                          x:Name="BatteryPlacer" PointerEntered="BatteryPlacer_PointerEntered" PointerExited="BatteryPlacer_PointerExited">
+                                          x:Name="BatteryPlacer" PointerPressed="BatteryPlacer_PointerPressed">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                            <TextBlock FontWeight="SemiBold" Text="Battery" TextWrapping="Wrap"/>
+                                            <TextBlock FontWeight="SemiBold" x:Uid="Main_Battery" Text="Battery" TextWrapping="Wrap"/>
                                             <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_BatteryPercent" Text="N/A"/>
                                         </StackPanel>
                                         <Grid Grid.Column="1" Margin="-10,0,0,0">
@@ -238,13 +241,13 @@ Text="{Binding Version}">
                                         </Grid>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="3" Margin="5,0,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="8" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                          x:Name="VrmPlacer" PointerEntered="VrmPlacer_PointerEntered" PointerExited="VrmPlacer_PointerExited">
+                                          x:Name="VrmPlacer" PointerPressed="VrmPlacer_PointerPressed">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                            <TextBlock FontWeight="SemiBold" Text="VRM EDC" TextWrapping="Wrap"/>
+                                            <TextBlock FontWeight="SemiBold" x:Uid="Main_MaxVrmCurrent" Text="VRM EDC" TextWrapping="Wrap"/>
                                             <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_VrmEdc" Text="0"/>
                                         </StackPanel>
                                         <Grid Grid.Column="1" Margin="-10,0,0,0">
@@ -273,7 +276,7 @@ Text="{Binding Version}">
                                                 <ColumnDefinition Width="70"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" Text="Пресеты" TextWrapping="Wrap"/>
+                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" x:Uid="Main_Profiles" Text="Пресеты" TextWrapping="Wrap"/>
                                             </StackPanel>
                                             <Grid Grid.Column="1" Margin="20,0,0,0">
                                                 <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xeadf;"/>
@@ -289,7 +292,7 @@ Text="{Binding Version}">
                                                 <ColumnDefinition Width="70"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" Text="Разгон" TextWrapping="Wrap"/>
+                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" x:Uid="Main_OverclockPage" Text="Разгон" TextWrapping="Wrap"/>
                                             </StackPanel>
                                             <Grid Grid.Column="1" Margin="20,0,0,0">
                                                 <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE945;"/>
@@ -305,7 +308,7 @@ Text="{Binding Version}">
                                                 <ColumnDefinition Width="70"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                                <TextBlock Margin="0,0,-25,0" FontWeight="SemiBold" Text="Настройки" TextWrapping="Wrap"/>
+                                                <TextBlock Margin="0,0,-25,0" FontWeight="SemiBold" x:Uid="Main_Settings" Text="Настройки" TextWrapping="Wrap"/>
                                             </StackPanel>
                                             <Grid Grid.Column="1" Margin="20,0,0,0">
                                                 <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE713;"/>
@@ -321,7 +324,7 @@ Text="{Binding Version}">
                                                 <ColumnDefinition Width="70"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" Text="Страница FAQ" TextWrapping="Wrap"/>
+                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" x:Uid="Main_FaqPage" Text="Страница FAQ" TextWrapping="Wrap"/>
                                             </StackPanel>
                                             <Grid Grid.Column="1" Margin="20,0,0,0">
                                                 <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE736;"/>
@@ -334,12 +337,12 @@ Text="{Binding Version}">
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid HorizontalAlignment="Stretch" Grid.Column="1" CornerRadius="8">
-                <Grid CornerRadius="8" VerticalAlignment="Stretch" Grid.Row="0" Margin="0,0,0,5 " HorizontalAlignment="Stretch" Background="{ThemeResource PostAcrylicBrush}">
+            <Grid HorizontalAlignment="Stretch" Grid.Column="1" CornerRadius="8" Margin="0,0,10,5" Shadow="{StaticResource SharedShadow}" Translation="0,0,20">
+                <Grid CornerRadius="8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{Binding ElementName=HiddenButton, Path=Background}">
                     <Pivot Margin="0,-15,0,-5" CornerRadius="8,8,8,8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                         <PivotItem Margin="12,0,12,-10">
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" Text="Пресеты"/>
+                                <TextBlock x:Uid="Main_Profiles" Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" Text="Пресеты"/>
                             </PivotItem.Header>
                             <Grid Margin="-12,0,-12,0">
                                 <Grid.RowDefinitions>
@@ -351,7 +354,7 @@ Text="{Binding Version}">
                                        x:Name="Preset_Pivot">
                                     <PivotItem Margin="0,0,0,7">
                                         <PivotItem.Header>
-                                            <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" Text="Свои"/>
+                                            <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_OwnProfiles" Text="Свои"/>
                                         </PivotItem.Header> 
                                         <ScrollViewer Grid.Row="0">
                                             <StackPanel Margin="20,0,20,0" Orientation="Vertical" 
@@ -371,7 +374,7 @@ Text="{Binding Version}">
                                     </PivotItem>
                                     <PivotItem Margin="0,0,0,7">
                                         <PivotItem.Header>
-                                            <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" Text="Готовые"/>
+                                            <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_PremadeProfiles" Text="Готовые"/>
                                         </PivotItem.Header>
                                         <ScrollViewer>
                                             <StackPanel Margin="20,0,20,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
@@ -424,10 +427,10 @@ Text="{Binding Version}">
                                         </ScrollViewer>
                                     </PivotItem>
                                 </Pivot>
-                                <Button Click="Apply_Click"  Grid.Row="1" Margin="10,-20,10,20" CornerRadius="16" MinHeight="20" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
+                                <Button Click="Apply_Click" x:Name="ApplyButton" Grid.Row="1" Margin="10,-20,10,20" CornerRadius="16" MinHeight="20" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
                                     <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                         <FontIcon Glyph="&#xE768;" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Применить" FontWeight="SemiBold" FontSize="16" Margin="0,-1,0,0"/>
+                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" x:Uid="Main_ApplyButton" Text="Применить" FontWeight="SemiBold" FontSize="16" Margin="0,-1,0,0"/>
                                         <FontIcon Glyph="&#xE76C;" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
                                     </Grid>
                                 </Button>

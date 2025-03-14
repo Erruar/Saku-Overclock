@@ -26,6 +26,7 @@ public sealed partial class ГлавнаяPage
     private readonly IBackgroundDataUpdater? _dataUpdater;
     private double _maxCpuFreq = 1d;
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
     private List<double>? _segmentLengths; // Хранит длины всех сегментов
     private double _totalLength; // Общая длина кривой
@@ -300,10 +301,10 @@ public sealed partial class ГлавнаяPage
                     case 6:
                         Main_AdditionalInfo1Name.Text = Indicators_Fast.Text;
                         Main_AdditionalInfo2Name.Text = info.CpuStapmValue == 0
-                            ? "Отключен"
+                            ? "Info_PowerSumInfo_Disabled".GetLocalized()
                             : Math.Round(info.CpuStapmValue, 1).ToString(CultureInfo.InvariantCulture) + "W";
                         Main_AdditionalInfo3Name.Text = info.CpuSlowValue == 0
-                            ? "Отключен"
+                            ? "Info_PowerSumInfo_Disabled".GetLocalized()
                             : Math.Round(info.CpuSlowValue, 1).ToString(CultureInfo.InvariantCulture) + "W";
                         break;
                     case 7:
@@ -599,7 +600,7 @@ public sealed partial class ГлавнаяPage
         }
     }
 
-    private void Apply_Click(object sender, RoutedEventArgs e)
+    private async void Apply_Click(object sender, RoutedEventArgs e)
     {
         var toggleButtons = VisualTreeHelper.FindVisualChildren<ToggleButton>(Preset_Pivot);
         foreach (var button in toggleButtons)
@@ -609,24 +610,30 @@ public sealed partial class ГлавнаяPage
                 if (button.Tag != null && button.Tag.ToString()!.Contains("Preset_"))
                 {
                     AppSettings.Preset = -1;
+                    var endMode = "Balance";
                     switch (button.Tag)
                     {
                         case "Preset_Min":
-                            ShellPage.NextPremadeProfile_Activate("Min");
+                            endMode = "Min";
                             break;
                         case "Preset_Eco":
-                            ShellPage.NextPremadeProfile_Activate("Eco");
+                            endMode = "Eco";
                             break;
                         case "Preset_Balance":
-                            ShellPage.NextPremadeProfile_Activate("Balance");
+                            endMode = "Balance";
                             break;
                         case "Preset_Speed":
-                            ShellPage.NextPremadeProfile_Activate("Speed");
+                            endMode = "Speed";
                             break;
                         case "Preset_Max":
-                            ShellPage.NextPremadeProfile_Activate("Max");
+                            endMode = "Max";
                             break;
                     }
+                    ShellPage.NextPremadeProfile_Activate(endMode);
+                    var (_, _, _, settings, _) = ShellPage.PremadedProfiles[endMode];
+                    AppSettings.RyzenADJline = settings;
+                    AppSettings.SaveSettings();
+                    MainWindow.Applyer.ApplyWithoutAdjLine(false);
                 }
                 else
                 {
@@ -666,6 +673,45 @@ public sealed partial class ГлавнаяPage
                             AppSettings.Preset = i;
                             AppSettings.SaveSettings();
                             ShellPage.MandarinSparseUnitProfile(profile);
+
+                            await Task.Delay(1000);
+                            var timer = 1000;
+                            if (ПараметрыPage.ApplyInfo != string.Empty)
+                            {
+                                timer *= ПараметрыPage.ApplyInfo.Split('\n').Length + 1;
+                            }
+
+                            Apply_Teach.Target = ApplyButton;
+                            Apply_Teach.Title = "Apply_Success".GetLocalized();
+                            Apply_Teach.Subtitle = "Apply_Success_Desc".GetLocalized();
+                            Apply_Teach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                            Apply_Teach.IsOpen = true;
+                            var infoSet = InfoBarSeverity.Success;
+                            if (ПараметрыPage.ApplyInfo != string.Empty)
+                            {
+                                await LogHelper.Log(ПараметрыPage.ApplyInfo);
+                                Apply_Teach.Title = "Apply_Warn".GetLocalized();
+                                Apply_Teach.Subtitle = "Apply_Warn_Desc".GetLocalized() + ПараметрыPage.ApplyInfo;
+                                Apply_Teach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
+                                await Task.Delay(timer);
+                                Apply_Teach.IsOpen = false;
+                                infoSet = InfoBarSeverity.Warning;
+                            }
+                            else
+                            {
+                                await LogHelper.Log("Apply_Success".GetLocalized());
+                                await Task.Delay(3000);
+                                Apply_Teach.IsOpen = false;
+                            }
+
+                            NotificationsService.Notifies ??= [];
+                            NotificationsService.Notifies.Add(new Notify
+                            {
+                                Title = Apply_Teach.Title,
+                                Msg = Apply_Teach.Subtitle + (ПараметрыPage.ApplyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                                Type = infoSet
+                            });
+                            NotificationsService.SaveNotificationsSettings();
                             break;
                         }
                     }
@@ -681,7 +727,12 @@ public sealed partial class ГлавнаяPage
         try
         {
             _currentMode = currMode;
-            Main_Teach.IsOpen = false;
+            if (Main_Teach.IsOpen)
+            {
+                RemovePlacerTip();
+                /*Main_Teach.IsOpen = false;
+                await Task.Delay(200);*/
+            }
             if (_waitForTip)
             {
                 await Task.Delay(200);
@@ -690,15 +741,16 @@ public sealed partial class ГлавнаяPage
 
             Main_Teach.IsOpen = false;
             _waitingForCursorFlag = true;
-            await Task.Delay(1500);
             if (!_waitingForCursorFlag || currMode != _currentMode)
             {
                 return; // Если курсор ушел на другой элемент — отменяем отображение
             }
 
+
             switch (currMode)
             {
                 case 1:
+                    Main_Teach.Target = LogoPlacer;
                     Main_AdditionalInfoDesc.Text = "Информация об устройстве";
                     Main_AdditionalInfo1Desc.Text = "Модель:";
                     Main_AdditionalInfo2Desc.Text = "Производитель:";
@@ -716,12 +768,14 @@ public sealed partial class ГлавнаяPage
 
                     break;
                 case 2:
+                    Main_Teach.Target = TemperaturePlacer;
                     Main_AdditionalInfoDesc.Text = "Температурные показатели";
                     Main_AdditionalInfo1Desc.Text = "Температура CPU:";
                     Main_AdditionalInfo2Desc.Text = "Разница от TJMax:";
                     Main_AdditionalInfo3Desc.Text = "Температура GPU:";
                     break;
                 case 3:
+                    Main_Teach.Target = UsabilityPlacer;
                     Main_AdditionalInfoDesc.Text = "Загрузка процессора";
                     Main_AdditionalInfo1Desc.Text = "Текущая загрузка:";
                     Main_AdditionalInfo2Desc.Text = "Кол. ядер:";
@@ -730,7 +784,7 @@ public sealed partial class ГлавнаяPage
                     {
                         Main_AdditionalInfo2Name.Text = CpuSingleton.GetInstance().info.topology.cores.ToString();
                         Main_AdditionalInfo3Name.Text = CpuSingleton.GetInstance().systemInfo.SMT.ToString()
-                            .Replace("True", "Включен").Replace("False", "Выключен");
+                            .Replace("True", "Cooler_Service_Enabled/Content".GetLocalized()).Replace("False", "Cooler_Service_Disabled/Content".GetLocalized()); // Просто перевод, не для настроек кулера
                     }
                     catch (Exception ex)
                     {
@@ -739,38 +793,43 @@ public sealed partial class ГлавнаяPage
 
                     break;
                 case 4:
+                    Main_Teach.Target = FrequencyPlacer;
                     Main_AdditionalInfoDesc.Text = "Частота процессора";
                     Main_AdditionalInfo1Desc.Text = "Средняя частота:";
                     Main_AdditionalInfo2Desc.Text = "Максимальная частота:";
                     Main_AdditionalInfo3Desc.Text = "Среднее напряжение:";
                     break;
                 case 5:
+                    Main_Teach.Target = RamPlacer;
                     Main_AdditionalInfoDesc.Text = "Оперативная память";
                     Main_AdditionalInfo1Desc.Text = "Процент загрузки:";
                     Main_AdditionalInfo2Desc.Text = "Используется сейчас:";
                     Main_AdditionalInfo3Desc.Text = "Общий объём:";
                     break;
                 case 6:
+                    Main_Teach.Target = PowerPlacer;
                     Main_AdditionalInfoDesc.Text = "Мощности системы";
                     Main_AdditionalInfo1Desc.Text = "Реальная мощность:";
                     Main_AdditionalInfo2Desc.Text = "STAPM:";
                     Main_AdditionalInfo3Desc.Text = "Средняя мощность:";
                     break;
                 case 7:
+                    Main_Teach.Target = VrmPlacer;
                     Main_AdditionalInfoDesc.Text = "Система питания и VRM";
                     Main_AdditionalInfo1Desc.Text = "VRM TDC:";
                     Main_AdditionalInfo2Desc.Text = "VRM EDC:";
                     Main_AdditionalInfo3Desc.Text = "SoC EDC:";
                     break;
                 case 8:
+                    Main_Teach.Target = BatteryPlacer;
                     Main_AdditionalInfoDesc.Text = "Информация о батарее";
-                    Main_AdditionalInfo1Desc.Text = "Степень износа:";
-                    Main_AdditionalInfo2Desc.Text = "Количество циклов:";
-                    Main_AdditionalInfo3Desc.Text = "Ост. Время работы:";
+                    Main_AdditionalInfo1Desc.Text = "infoABATWear/Text".GetLocalized() + ":";
+                    Main_AdditionalInfo2Desc.Text = "infoABATCycles.Text".GetLocalized() + ":";
+                    Main_AdditionalInfo3Desc.Text = "infoABATRemainTime.Text".GetLocalized() + ":";
                     break;
             }
 
-            Main_Teach.Target = sender as FrameworkElement;
+            
             Main_Teach.IsOpen = true;
         }
         catch (Exception ex)
@@ -785,51 +844,29 @@ public sealed partial class ГлавнаяPage
         Main_Teach.IsOpen = false;
         _waitForTip = true;
     }
+    private void LogoPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) => 
+        SetPlacerTipAsync(1, sender);
 
-    #region Pointer Entered
-
-    private void LogoPlacer_PointerEntered(object sender, PointerRoutedEventArgs e) => SetPlacerTipAsync(1, sender);
-
-    private void TemperaturePlacer_PointerEntered(object sender, PointerRoutedEventArgs e) =>
+    private void TemperaturePlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
         SetPlacerTipAsync(2, sender);
 
-    private void UsabilityPlacer_PointerEntered(object sender, PointerRoutedEventArgs e) =>
+    private void UsabilityPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
         SetPlacerTipAsync(3, sender);
 
-
-    private void FrequencyPlacer_PointerEntered(object sender, PointerRoutedEventArgs e) =>
+    private void FrequencyPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
         SetPlacerTipAsync(4, sender);
 
+    private void RamPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) => 
+        SetPlacerTipAsync(5, sender);
 
-    private void RamPlacer_PointerEntered(object sender, PointerRoutedEventArgs e) => SetPlacerTipAsync(5, sender);
+    private void PowerPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) => 
+        SetPlacerTipAsync(6, sender);
 
-    private void PowerPlacer_PointerEntered(object sender, PointerRoutedEventArgs e) => SetPlacerTipAsync(6, sender);
+    private void VrmPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
+        SetPlacerTipAsync(7, sender);
 
-    private void VrmPlacer_PointerEntered(object sender, PointerRoutedEventArgs e) => SetPlacerTipAsync(7, sender);
-
-    private void BatteryPlacer_PointerEntered(object sender, PointerRoutedEventArgs e) => SetPlacerTipAsync(8, sender);
-
-    #endregion
-
-    #region Pointer Exited
-
-    private void LogoPlacer_PointerExited(object sender, PointerRoutedEventArgs e) => RemovePlacerTip();
-
-    private void TemperaturePlacer_PointerExited(object sender, PointerRoutedEventArgs e) => RemovePlacerTip();
-
-    private void UsabilityPlacer_PointerExited(object sender, PointerRoutedEventArgs e) => RemovePlacerTip();
-
-    private void FrequencyPlacer_PointerExited(object sender, PointerRoutedEventArgs e) => RemovePlacerTip();
-
-    private void RamPlacer_PointerExited(object sender, PointerRoutedEventArgs e) => RemovePlacerTip();
-
-    private void PowerPlacer_PointerExited(object sender, PointerRoutedEventArgs e) => RemovePlacerTip();
-
-    private void BatteryPlacer_PointerExited(object sender, PointerRoutedEventArgs e) => RemovePlacerTip();
-
-    private void VrmPlacer_PointerExited(object sender, PointerRoutedEventArgs e) => RemovePlacerTip();
-
-    #endregion
+    private void BatteryPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
+     SetPlacerTipAsync(8, sender);
 
     #endregion
 
@@ -1036,4 +1073,5 @@ public sealed partial class ГлавнаяPage
     private static partial Regex UnmanagementWords();
 
     #endregion
+
 }

@@ -65,7 +65,7 @@
         <PipsPager x:Name="Pager" Margin="0,0,15,0" IsEnabled="False" NumberOfPages="3" Orientation="Vertical" PreviousButtonVisibility="Collapsed" NextButtonVisibility="Visible" HorizontalAlignment="Right" VerticalAlignment="Center" />
 
         <!-- License Text Section -->
-        <Grid x:Name="LicenseSection" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="LicenseSection" Visibility="Collapsed" Margin="0,60,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="60"/>
                 <RowDefinition />

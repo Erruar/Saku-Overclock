@@ -43,7 +43,7 @@ public sealed partial class ShellPage
         NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
 
     private static readonly IAppSettingsService
-        SettingsService = App.GetService<IAppSettingsService>(); // Настройки приложения
+        AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
     private Profile[] _profile = new Profile[1]; // Класс с профилями параметров разгона пользователя
 
@@ -68,7 +68,7 @@ public sealed partial class ShellPage
 
     public ShellPage(ShellViewModel viewModel)
     {
-        if (SettingsService.HotkeysEnabled)
+        if (AppSettings.HotkeysEnabled)
         {
             _proc = HookCallbackAsync;
             _hookId = SetHook(_proc); // Хук, который должен срабатывать
@@ -146,7 +146,7 @@ public sealed partial class ShellPage
 
     private void GetProfileInit()
     {
-        if (!SettingsService.OldTitleBar)
+        if (!AppSettings.OldTitleBar)
         {
             var itemz = new ObservableCollection<ComboBoxItem>();
             itemz.Clear();
@@ -197,40 +197,40 @@ public sealed partial class ShellPage
             itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Speed".GetLocalized(), Name = "PremadeSsASpd" });
             itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Max".GetLocalized(), Name = "PremadeSsAMax" });
             ViewModel.Items = itemz;
-            if (SettingsService.Preset == -1)
+            if (AppSettings.Preset == -1)
             {
-                if (SettingsService.PremadeMinActivated)
+                if (AppSettings.PremadeMinActivated)
                 {
                     SelectRightPremadedProfileName("PremadeSsAMin");
                 }
 
-                if (SettingsService.PremadeEcoActivated)
+                if (AppSettings.PremadeEcoActivated)
                 {
                     SelectRightPremadedProfileName("PremadeSsAEco");
                 }
 
-                if (SettingsService.PremadeBalanceActivated)
+                if (AppSettings.PremadeBalanceActivated)
                 {
                     SelectRightPremadedProfileName("PremadeSsABal");
                 }
 
-                if (SettingsService.PremadeSpeedActivated)
+                if (AppSettings.PremadeSpeedActivated)
                 {
                     SelectRightPremadedProfileName("PremadeSsASpd");
                 }
 
-                if (SettingsService.PremadeMaxActivated)
+                if (AppSettings.PremadeMaxActivated)
                 {
                     SelectRightPremadedProfileName("PremadeSsAMax");
                 }
             }
             else
             {
-                ViewModel.SelectedIndex = SettingsService.Preset + 1;
-                ProfileSetComboBox.SelectedIndex = SettingsService.Preset + 1;
+                ViewModel.SelectedIndex = AppSettings.Preset + 1;
+                ProfileSetComboBox.SelectedIndex = AppSettings.Preset + 1;
             }
 
-            if (SettingsService.ReapplyLatestSettingsOnAppLaunch)
+            if (AppSettings.ReapplyLatestSettingsOnAppLaunch)
             {
                 ProfileSetButton.IsEnabled = false;
             }
@@ -259,20 +259,20 @@ public sealed partial class ShellPage
         var profiles = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
         var activeProfile = profiles.FirstOrDefault(p =>
                                 (bool)typeof(IAppSettingsService).GetProperty($"Premade{p}Activated")
-                                    ?.GetValue(SettingsService)!) ??
+                                    ?.GetValue(AppSettings)!) ??
                             "Balance";
         string comboName;
-        if (SettingsService.Preset == -1)
+        if (AppSettings.Preset == -1)
         {
             NextPremadeProfile_Activate(NextProfiles[activeProfile]);
-            (nextProfile, desc, icon, SettingsService.RyzenADJline, comboName) =
+            (nextProfile, desc, icon, AppSettings.RyzenADJline, comboName) =
                 PremadedProfiles[NextProfiles[activeProfile]];
         }
         else
         {
-            SettingsService.Preset = -1;
+            AppSettings.Preset = -1;
             NextPremadeProfile_Activate(activeProfile);
-            (nextProfile, desc, icon, SettingsService.RyzenADJline, comboName) = PremadedProfiles[activeProfile];
+            (nextProfile, desc, icon, AppSettings.RyzenADJline, comboName) = PremadedProfiles[activeProfile];
         }
 
         desc = desc.GetLocalized();
@@ -295,10 +295,10 @@ public sealed partial class ShellPage
         foreach (var profile in profiles)
         {
             typeof(IAppSettingsService).GetProperty($"Premade{profile}Activated")
-                ?.SetValue(SettingsService, profile == nextProfile);
+                ?.SetValue(AppSettings, profile == nextProfile);
         }
 
-        SettingsService.SaveSettings();
+        AppSettings.SaveSettings();
     }
 
     private static Dictionary<string, string> NextProfiles => new()
@@ -310,7 +310,7 @@ public sealed partial class ShellPage
         { "Max", "Min" }
     };
 
-    private static Dictionary<string, (string name, string desc, string icon, string settings, string comboName)>
+    public static Dictionary<string, (string name, string desc, string icon, string settings, string comboName)>
         PremadedProfiles => new()
     {
         {
@@ -349,13 +349,13 @@ public sealed partial class ShellPage
     {
         var nextProfile = string.Empty;
         ProfileLoad();
-        if (SettingsService.Preset == -1) // У нас был готовый пресет
+        if (AppSettings.Preset == -1) // У нас был готовый пресет
         {
             if (_profile.Length > 0 &&
                 _profile[0].profilename !=
                 string.Empty) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
             {
-                SettingsService.Preset = 0;
+                AppSettings.Preset = 0;
                 try
                 {
                     foreach (var element in ProfileSetComboBox.Items)
@@ -389,12 +389,12 @@ public sealed partial class ShellPage
         }
         else // У нас уже был выставлен какой-то профиль
         {
-            var nextProfileIndex = _profile.Length - 1 >= SettingsService.Preset + 1 ? SettingsService.Preset + 1 : 0;
+            var nextProfileIndex = _profile.Length - 1 >= AppSettings.Preset + 1 ? AppSettings.Preset + 1 : 0;
             if (_profile.Length > nextProfileIndex &&
                 _profile[nextProfileIndex].profilename !=
                 string.Empty) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
             {
-                SettingsService.Preset = nextProfileIndex;
+                AppSettings.Preset = nextProfileIndex;
                 try
                 {
                     foreach (var element in ProfileSetComboBox.Items)
@@ -432,7 +432,7 @@ public sealed partial class ShellPage
             }
         }
 
-        SettingsService.SaveSettings();
+        AppSettings.SaveSettings();
         SelectedProfile = nextProfile;
         return nextProfile;
     }
@@ -444,8 +444,8 @@ public sealed partial class ShellPage
         if (!element!.Name.Contains("PremadeSsA"))
         {
             var indexRequired = ProfileSetComboBox.SelectedIndex - 1;
-            SettingsService.Preset = ProfileSetComboBox.SelectedIndex - 1;
-            SettingsService.SaveSettings();
+            AppSettings.Preset = ProfileSetComboBox.SelectedIndex - 1;
+            AppSettings.SaveSettings();
             ProfileLoad();
             MandarinSparseUnitProfile(_profile[indexRequired]);
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
@@ -462,75 +462,75 @@ public sealed partial class ShellPage
         {
             if (element.Name.Contains("Min"))
             {
-                SettingsService.PremadeMinActivated = true;
-                SettingsService.PremadeEcoActivated = false;
-                SettingsService.PremadeBalanceActivated = false;
-                SettingsService.PremadeSpeedActivated = false;
-                SettingsService.PremadeMaxActivated = false;
-                SettingsService.Preset = -1;
-                SettingsService.RyzenADJline =
+                AppSettings.PremadeMinActivated = true;
+                AppSettings.PremadeEcoActivated = false;
+                AppSettings.PremadeBalanceActivated = false;
+                AppSettings.PremadeSpeedActivated = false;
+                AppSettings.PremadeMaxActivated = false;
+                AppSettings.Preset = -1;
+                AppSettings.RyzenADJline =
                     " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=64 --slow-limit=6000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
-                    SettingsService.ReapplyOverclockTimer);
+                MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+                    AppSettings.ReapplyOverclockTimer);
             }
 
             if (element.Name.Contains("Eco"))
             {
-                SettingsService.PremadeMinActivated = false;
-                SettingsService.PremadeEcoActivated = true;
-                SettingsService.PremadeBalanceActivated = false;
-                SettingsService.PremadeSpeedActivated = false;
-                SettingsService.PremadeMaxActivated = false;
-                SettingsService.Preset = -1;
-                SettingsService.RyzenADJline =
+                AppSettings.PremadeMinActivated = false;
+                AppSettings.PremadeEcoActivated = true;
+                AppSettings.PremadeBalanceActivated = false;
+                AppSettings.PremadeSpeedActivated = false;
+                AppSettings.PremadeMaxActivated = false;
+                AppSettings.Preset = -1;
+                AppSettings.RyzenADJline =
                     " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=64 --slow-limit=16000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
-                    SettingsService.ReapplyOverclockTimer);
+                MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+                    AppSettings.ReapplyOverclockTimer);
             }
 
             if (element.Name.Contains("Bal"))
             {
-                SettingsService.PremadeMinActivated = false;
-                SettingsService.PremadeEcoActivated = false;
-                SettingsService.PremadeBalanceActivated = true;
-                SettingsService.PremadeSpeedActivated = false;
-                SettingsService.PremadeMaxActivated = false;
-                SettingsService.Preset = -1;
-                SettingsService.RyzenADJline =
+                AppSettings.PremadeMinActivated = false;
+                AppSettings.PremadeEcoActivated = false;
+                AppSettings.PremadeBalanceActivated = true;
+                AppSettings.PremadeSpeedActivated = false;
+                AppSettings.PremadeMaxActivated = false;
+                AppSettings.Preset = -1;
+                AppSettings.RyzenADJline =
                     " --tctl-temp=75 --stapm-limit=18000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
-                    SettingsService.ReapplyOverclockTimer);
+                MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+                    AppSettings.ReapplyOverclockTimer);
             }
 
             if (element.Name.Contains("Spd"))
             {
-                SettingsService.PremadeMinActivated = false;
-                SettingsService.PremadeEcoActivated = false;
-                SettingsService.PremadeBalanceActivated = false;
-                SettingsService.PremadeSpeedActivated = true;
-                SettingsService.PremadeMaxActivated = false;
-                SettingsService.Preset = -1;
-                SettingsService.RyzenADJline =
+                AppSettings.PremadeMinActivated = false;
+                AppSettings.PremadeEcoActivated = false;
+                AppSettings.PremadeBalanceActivated = false;
+                AppSettings.PremadeSpeedActivated = true;
+                AppSettings.PremadeMaxActivated = false;
+                AppSettings.Preset = -1;
+                AppSettings.RyzenADJline =
                     " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=64 --slow-limit=20000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
-                    SettingsService.ReapplyOverclockTimer);
+                MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+                    AppSettings.ReapplyOverclockTimer);
             }
 
             if (element.Name.Contains("Max"))
             {
-                SettingsService.PremadeMinActivated = false;
-                SettingsService.PremadeEcoActivated = false;
-                SettingsService.PremadeBalanceActivated = false;
-                SettingsService.PremadeSpeedActivated = false;
-                SettingsService.PremadeMaxActivated = true;
-                SettingsService.Preset = -1;
-                SettingsService.RyzenADJline =
+                AppSettings.PremadeMinActivated = false;
+                AppSettings.PremadeEcoActivated = false;
+                AppSettings.PremadeBalanceActivated = false;
+                AppSettings.PremadeSpeedActivated = false;
+                AppSettings.PremadeMaxActivated = true;
+                AppSettings.Preset = -1;
+                AppSettings.RyzenADJline =
                     " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=64 --slow-limit=60000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
-                    SettingsService.ReapplyOverclockTimer);
+                MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+                    AppSettings.ReapplyOverclockTimer);
             }
 
-            SettingsService.SaveSettings();
+            AppSettings.SaveSettings();
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 var navigationService = App.GetService<INavigationService>();
@@ -548,7 +548,7 @@ public sealed partial class ShellPage
         }
     }
 
-    public static void MandarinSparseUnitProfile(Profile profile)
+    public static void MandarinSparseUnitProfile(Profile profile, bool saveInfo = false)
     {
         var adjline = "";
         if (profile.cpu1)
@@ -1248,10 +1248,10 @@ public sealed partial class ShellPage
             }
         }
 
-        SettingsService.RyzenADJline = adjline + " ";
-        SettingsService.SaveSettings();
-        MainWindow.Applyer.Apply(SettingsService.RyzenADJline, false, SettingsService.ReapplyOverclock,
-            SettingsService.ReapplyOverclockTimer);
+        AppSettings.RyzenADJline = adjline + " ";
+        AppSettings.SaveSettings();
+        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, saveInfo, AppSettings.ReapplyOverclock,
+            AppSettings.ReapplyOverclockTimer);
     }
 
     private static uint GetCoreMask(Cpu cpu, int coreIndex)
@@ -1517,207 +1517,207 @@ public sealed partial class ShellPage
                             {
                                 {
                                     "Param_SMU_Func_Text/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].smuFunctionsEnabl = false
+                                    () => _profile[AppSettings.Preset].smuFunctionsEnabl = false
                                 },
                                 {
                                     "Param_CPU_c2/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].cpu2 = false
+                                    () => _profile[AppSettings.Preset].cpu2 = false
                                 },
                                 {
                                     "Param_VRM_v2/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].vrm2 = false
+                                    () => _profile[AppSettings.Preset].vrm2 = false
                                 },
                                 {
                                     "Param_VRM_v1/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].vrm1 = false
+                                    () => _profile[AppSettings.Preset].vrm1 = false
                                 },
                                 {
                                     "Param_CPU_c1/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].cpu1 = false
+                                    () => _profile[AppSettings.Preset].cpu1 = false
                                 },
                                 {
                                     "Param_ADV_a15/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd15 = false
+                                    () => _profile[AppSettings.Preset].advncd15 = false
                                 },
                                 {
                                     "Param_ADV_a11/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd11 = false
+                                    () => _profile[AppSettings.Preset].advncd11 = false
                                 },
                                 {
                                     "Param_ADV_a12/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd12 = false
+                                    () => _profile[AppSettings.Preset].advncd12 = false
                                 },
                                 {
                                     "Param_CO_O1/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].coall = false
+                                    () => _profile[AppSettings.Preset].coall = false
                                 },
                                 {
                                     "Param_CO_O2/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].cogfx = false
+                                    () => _profile[AppSettings.Preset].cogfx = false
                                 },
                                 {
                                     "Param_CCD1_CO_Section/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].coprefmode = 0
+                                    () => _profile[AppSettings.Preset].coprefmode = 0
                                 },
                                 {
                                     "Param_ADV_a14_E/Content".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd14 = false
+                                    () => _profile[AppSettings.Preset].advncd14 = false
                                 },
                                 {
                                     "Param_CPU_c5/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].cpu5 = false
+                                    () => _profile[AppSettings.Preset].cpu5 = false
                                 },
                                 {
                                     "Param_CPU_c3/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].cpu3 = false
+                                    () => _profile[AppSettings.Preset].cpu3 = false
                                 },
                                 {
                                     "Param_CPU_c4/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].cpu4 = false
+                                    () => _profile[AppSettings.Preset].cpu4 = false
                                 },
                                 {
                                     "Param_CPU_c6/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].cpu6 = false
+                                    () => _profile[AppSettings.Preset].cpu6 = false
                                 },
                                 {
                                     "Param_CPU_c7/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].cpu7 = false
+                                    () => _profile[AppSettings.Preset].cpu7 = false
                                 },
                                 {
                                     "Param_ADV_a6/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd6 = false
+                                    () => _profile[AppSettings.Preset].advncd6 = false
                                 },
                                 {
                                     "Param_VRM_v4/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].vrm4 = false
+                                    () => _profile[AppSettings.Preset].vrm4 = false
                                 },
                                 {
                                     "Param_VRM_v3/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].vrm3 = false
+                                    () => _profile[AppSettings.Preset].vrm3 = false
                                 },
                                 {
                                     "Param_ADV_a2/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd2 = false
+                                    () => _profile[AppSettings.Preset].advncd2 = false
                                 },
                                 {
                                     "Param_ADV_a1/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd1 = false
+                                    () => _profile[AppSettings.Preset].advncd1 = false
                                 },
                                 {
                                     "Param_ADV_a3/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd3 = false
+                                    () => _profile[AppSettings.Preset].advncd3 = false
                                 },
                                 {
                                     "Param_VRM_v7/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].vrm7 = false
+                                    () => _profile[AppSettings.Preset].vrm7 = false
                                 },
                                 {
                                     "Param_ADV_a4/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd4 = false
+                                    () => _profile[AppSettings.Preset].advncd4 = false
                                 },
                                 {
                                     "Param_ADV_a5/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd5 = false
+                                    () => _profile[AppSettings.Preset].advncd5 = false
                                 },
                                 {
                                     "Param_ADV_a10/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd10 = false
+                                    () => _profile[AppSettings.Preset].advncd10 = false
                                 },
                                 {
                                     "Param_ADV_a13_E/Content".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd13 = false
+                                    () => _profile[AppSettings.Preset].advncd13 = false
                                 },
                                 {
                                     "Param_ADV_a13_U/Content".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd13 = false
+                                    () => _profile[AppSettings.Preset].advncd13 = false
                                 },
                                 {
                                     "Param_ADV_a8/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd8 = false
+                                    () => _profile[AppSettings.Preset].advncd8 = false
                                 },
                                 {
                                     "Param_ADV_a7/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd7 = false
+                                    () => _profile[AppSettings.Preset].advncd7 = false
                                 },
                                 {
                                     "Param_VRM_v5/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].vrm5 = false
+                                    () => _profile[AppSettings.Preset].vrm5 = false
                                 },
                                 {
                                     "Param_VRM_v6/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].vrm6 = false
+                                    () => _profile[AppSettings.Preset].vrm6 = false
                                 },
                                 {
                                     "Param_ADV_a9/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].advncd9 = false
+                                    () => _profile[AppSettings.Preset].advncd9 = false
                                 },
                                 {
                                     "Param_GPU_g12/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu12 = false
+                                    () => _profile[AppSettings.Preset].gpu12 = false
                                 },
                                 {
                                     "Param_GPU_g11/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu11 = false
+                                    () => _profile[AppSettings.Preset].gpu11 = false
                                 },
                                 {
                                     "Param_GPU_g10/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu10 = false
+                                    () => _profile[AppSettings.Preset].gpu10 = false
                                 },
                                 {
                                     "Param_GPU_g9/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu9 = false
+                                    () => _profile[AppSettings.Preset].gpu9 = false
                                 },
                                 {
                                     "Param_GPU_g2/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu2 = false
+                                    () => _profile[AppSettings.Preset].gpu2 = false
                                 },
                                 {
                                     "Param_GPU_g1/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu1 = false
+                                    () => _profile[AppSettings.Preset].gpu1 = false
                                 },
                                 {
                                     "Param_GPU_g4/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu4 = false
+                                    () => _profile[AppSettings.Preset].gpu4 = false
                                 },
                                 {
                                     "Param_GPU_g3/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu3 = false
+                                    () => _profile[AppSettings.Preset].gpu3 = false
                                 },
                                 {
                                     "Param_GPU_g6/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu6 = false
+                                    () => _profile[AppSettings.Preset].gpu6 = false
                                 },
                                 {
                                     "Param_GPU_g5/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu5 = false
+                                    () => _profile[AppSettings.Preset].gpu5 = false
                                 },
                                 {
                                     "Param_GPU_g8/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu8 = false
+                                    () => _profile[AppSettings.Preset].gpu8 = false
                                 },
                                 {
                                     "Param_GPU_g7/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu7 = false
+                                    () => _profile[AppSettings.Preset].gpu7 = false
                                 },
                                 {
                                     "Param_VRM_v8/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].vrm8 = false
+                                    () => _profile[AppSettings.Preset].vrm8 = false
                                 },
                                 {
                                     "Param_GPU_g13/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].vrm9 = false
+                                    () => _profile[AppSettings.Preset].vrm9 = false
                                 },
                                 {
                                     "Param_GPU_g14/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].vrm9 = false
+                                    () => _profile[AppSettings.Preset].vrm9 = false
                                 },
                                 {
                                     "Param_GPU_g15/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu15 = false
+                                    () => _profile[AppSettings.Preset].gpu15 = false
                                 },
                                 {
                                     "Param_GPU_g16/Text".GetLocalized(),
-                                    () => _profile[SettingsService.Preset].gpu16 = false
+                                    () => _profile[AppSettings.Preset].gpu16 = false
                                 }
                             };
                             var loggingList = string.Empty;
@@ -1944,21 +1944,21 @@ public sealed partial class ShellPage
         try
         {
             var themeMobil = App.GetService<SettingsViewModel>();
-            var themeLight = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight
+            var themeLight = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeLight
                 ? ElementTheme.Light
                 : ElementTheme.Dark;
             themeMobil.SwitchThemeCommand.Execute(themeLight);
-            var themeBackground = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeBackground;
+            var themeBackground = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeBackground;
 
-            if (SettingsService.ThemeType > 2 &&
+            if (AppSettings.ThemeType > 2 &&
                 !string.IsNullOrEmpty(themeBackground) &&
                 (themeBackground.Contains("http") || themeBackground.Contains("appx") || File.Exists(themeBackground)))
             {
                 ThemeBackground.ImageSource = new BitmapImage(new Uri(themeBackground));
             }
 
-            ThemeOpacity.Opacity = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity;
-            ThemeMaskOpacity.Opacity = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
+            ThemeOpacity.Opacity = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeOpacity;
+            ThemeMaskOpacity.Opacity = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeMaskOpacity;
             var backupWidth = TitleIcon.Width;
             TitleIcon.Width = 0;
             TitleIcon.Width = backupWidth;
@@ -1966,9 +1966,9 @@ public sealed partial class ShellPage
         catch
         {
             MandarinAddNotification(
-                "ThemeError".GetLocalized() + "\"" + (SettingsService.ThemeType < _themeSelectorService.Themes.Count
-                    ? _themeSelectorService.Themes[SettingsService.ThemeType].ThemeName
-                    : $"Error in theme type = {SettingsService.ThemeType}") + "\"",
+                "ThemeError".GetLocalized() + "\"" + (AppSettings.ThemeType < _themeSelectorService.Themes.Count
+                    ? _themeSelectorService.Themes[AppSettings.ThemeType].ThemeName
+                    : $"Error in theme type = {AppSettings.ThemeType}") + "\"",
                 "ThemeNotFoundBg".GetLocalized(),
                 InfoBarSeverity.Error
             );
@@ -2082,7 +2082,7 @@ public sealed partial class ShellPage
                     {
                         //Создать уведомление
                         var nextCustomProfile = NextCustomProfile_Switch();
-                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, SettingsService,
+                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                             nextCustomProfile);
                         MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
                             "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
@@ -2093,29 +2093,29 @@ public sealed partial class ShellPage
                     // Переключить между готовыми пресетами
                     case VirtualKey.P:
                         var nextPremadeProfile = NextPremadeProfile_Switch(out var icon, out var desc);
-                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, SettingsService,
+                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                             nextPremadeProfile, icon, desc);
                         MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
                             "Shell_ProfileChanging_Premade".GetLocalized() + $"{nextPremadeProfile}!",
                             InfoBarSeverity.Informational);
-                        //MainWindow.Applyer.ApplyWithoutAdjLine(false);
+                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
                         break;
                     // Переключить состояние RTSS
                     case VirtualKey.R:
-                        if (SettingsService.RTSSMetricsEnabled)
+                        if (AppSettings.RTSSMetricsEnabled)
                         {
-                            ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, SettingsService,
+                            ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                                 "RTSS " + "Cooler_Service_Disabled/Content".GetLocalized(), "\uE7AC");
-                            SettingsService.RTSSMetricsEnabled = false;
+                            AppSettings.RTSSMetricsEnabled = false;
                         }
                         else
                         {
-                            ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, SettingsService,
+                            ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                                 "RTSS " + "Cooler_Service_Enabled/Content".GetLocalized(), "\uE7AC");
-                            SettingsService.RTSSMetricsEnabled = true;
+                            AppSettings.RTSSMetricsEnabled = true;
                         }
 
-                        SettingsService.SaveSettings();
+                        AppSettings.SaveSettings();
                         MandarinAddNotification("Shell_RTSSChanging".GetLocalized(),
                             "Shell_RTSSChanging_Success".GetLocalized(), InfoBarSeverity.Informational);
                         break;
@@ -2320,8 +2320,8 @@ public sealed partial class ShellPage
             return;
         }
 
-        SettingsService.SaveSettings();
-        ProfileSetButton.IsEnabled = ProfileSetComboBox.SelectedIndex != SettingsService.Preset + 1;
+        AppSettings.SaveSettings();
+        ProfileSetButton.IsEnabled = ProfileSetComboBox.SelectedIndex != AppSettings.Preset + 1;
     }
 
     private void ToggleNotificationPanelBtn_Click(object sender, RoutedEventArgs e)
