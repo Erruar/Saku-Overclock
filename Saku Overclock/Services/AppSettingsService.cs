@@ -24,6 +24,7 @@ public class AppSettingsService : IAppSettingsService
     public bool OldTitleBar { get; set; } = false; // Флаг старого тайтл бара приложения
     public bool FixedTitleBar { get; set; } = false; // Флаг фиксированного тайтл бара приложения
     public int AutostartType { get; set; } = 0; // Тип автостарта: 0 - выкл, 1 - при запуске приложения сразу в трей, 2 - автостарт с системой, 3 - автостарт и трей
+    public int HidingType { get; set; } = 2; // Тип скрытия в трей: 0 - выкл, 1 - при сворачивании приложения сразу в трей, 2 - при закрытии приложения сразу в трей
     public bool CheckForUpdates { get; set; } = true; // Флаг автообновлений
     public bool HotkeysEnabled { get; set; } = true; // Флаг включены ли горячие клавиши в приложении или нет
     public bool ReapplyLatestSettingsOnAppLaunch { get; set; } = true; // При запуске приложения переприменять последние применённые параметры
