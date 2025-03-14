@@ -19,6 +19,7 @@ using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
 using Windows.UI;
 using Windows.UI.Text;
+using static System.Environment;
 using Task = System.Threading.Tasks.Task;
 using TextGetOptions = Microsoft.UI.Text.TextGetOptions;
 using TextSetOptions = Microsoft.UI.Text.TextSetOptions;
@@ -60,6 +61,14 @@ public sealed partial class SettingsPage
             {
                 AutostartCom.SelectedIndex = 0;
             }
+            try
+            {
+                HideCom.SelectedIndex = SettingsService.HidingType;
+            }
+            catch
+            {
+                HideCom.SelectedIndex = 2;
+            }
 
             CbApplyStart.IsOn = SettingsService.ReapplyLatestSettingsOnAppLaunch;
             CbAutoReapply.IsOn = SettingsService.ReapplyOverclock;
@@ -92,7 +101,14 @@ public sealed partial class SettingsPage
                 {
                     try
                     {
-                        ThemeCombobox.Items.Add(theme.ThemeName.GetLocalized());
+                        if (theme.ThemeName.Contains("Theme_"))
+                        {
+                            ThemeCombobox.Items.Add(theme.ThemeName.GetLocalized());
+                        }
+                        else
+                        {
+                            ThemeCombobox.Items.Add(theme.ThemeName);
+                        }
                     }
                     catch
                     {
@@ -551,7 +567,7 @@ public sealed partial class SettingsPage
 
          */
 
-    private Color ParseColor(string hex)
+    private static Color ParseColor(string hex)
     {
         if (hex.Length == 6)
         {
@@ -580,10 +596,10 @@ public sealed partial class SettingsPage
     {
         try
         {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+            Directory.CreateDirectory(Path.Combine(GetFolderPath(SpecialFolder.Personal),
                 "SakuOverclock"));
             File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json",
+                GetFolderPath(SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json",
                 JsonConvert.SerializeObject(_rtssset, Formatting.Indented));
         }
         catch
@@ -597,9 +613,8 @@ public sealed partial class SettingsPage
         try
         {
             _rtssset = JsonConvert.DeserializeObject<RTSSsettings>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json"))!;
+                GetFolderPath(SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json"))!;
             _rtssset.RTSS_Elements.RemoveRange(0, 9);
-            //if (rtssset == null) { rtssset = new JsonContainers.RTSSsettings(); RtssSave(); }
         }
         catch
         {
@@ -612,10 +627,10 @@ public sealed partial class SettingsPage
     {
         try
         {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+            Directory.CreateDirectory(Path.Combine(GetFolderPath(SpecialFolder.Personal),
                 "SakuOverclock"));
             File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json",
+                GetFolderPath(SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json",
                 JsonConvert.SerializeObject(_niicons, Formatting.Indented));
         }
         catch
@@ -629,7 +644,7 @@ public sealed partial class SettingsPage
         try
         {
             _niicons = JsonConvert.DeserializeObject<NiIconsSettings>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json"))!;
+                GetFolderPath(SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json"))!;
         }
         catch
         {
@@ -695,6 +710,16 @@ public sealed partial class SettingsPage
             }
         }
 
+        SettingsService.SaveSettings();
+    }
+
+    private void HideCom_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_isLoaded)
+        {
+            return;
+        }
+        SettingsService.HidingType = HideCom.SelectedIndex;
         SettingsService.SaveSettings();
     }
 
@@ -919,7 +944,6 @@ public sealed partial class SettingsPage
             {
                 Height = 90,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                //IsEnabled = false,
                 Content = new Grid
                 {
                     HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -957,6 +981,14 @@ public sealed partial class SettingsPage
             {
                 Margin = new Thickness(0, 5, 0, 0),
                 Text = "ThemeBgOr".GetLocalized(),
+                VerticalAlignment = VerticalAlignment.Top,
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+            var gifText = new TextBlock
+            {
+                Margin = new Thickness(0, 5, 0, 0),
+                Foreground = (Brush)Application.Current.Resources["AccentTextFillColorPrimaryBrush"],
+                Text = "ThemeBgGifWarn".GetLocalized(),
                 VerticalAlignment = VerticalAlignment.Top,
                 HorizontalAlignment = HorizontalAlignment.Center
             };
@@ -1024,7 +1056,8 @@ public sealed partial class SettingsPage
                     {
                         fromFile,
                         orText,
-                        fromLink
+                        fromLink,
+                        gifText
                     }
                 },
                 CloseButtonText = "Cancel".GetLocalized(),
@@ -1036,33 +1069,31 @@ public sealed partial class SettingsPage
                 // Сброс отображаемого текста (если используется для уведомлений)
                 fromFilePickedFile.Text = "";
 
-                // Получаем дескриптор главного окна
-                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+                var ofn = new OpenFileName();
 
-                // Инициализируем структуру диалога
-                var ofn = new OpenFileName
-                {
-                    lStructSize = Marshal.SizeOf<OpenFileName>(),
-                    hwndOwner = hwnd,
-                    lpstrFile = new string(new char[256]),
-                    nMaxFile = new string(new char[256]).Length,
-                    lpstrFileTitle = "Select an image file",
-                    //nMaxFileTitle = 256,
+                ofn.structSize = Marshal.SizeOf(ofn);
 
-                    // Формат фильтра: описание и шаблон отделяются нулевым символом, окончание — двойной нулевой символ
-                    lpstrFilter = "Images (*.BMP;*.JPG;*.GIF;*.png;*.jpg)\0*.BMP;*.JPG;*.GIF;*.png;*.jpg\0\0",
+                ofn.filter = ".png\0*.png\0.jpeg\0*.jpeg\0.jpg\0*.jpg\0.gif\0*.gif\0";
 
-                    lpstrTitle = "Select an image file",
+                ofn.file = new string(new char[256]);
+                ofn.maxFile = ofn.file.Length;
 
-                    // Флаги: OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST | OFN_READONLY | OFN_NOCHANGEDIR
-                    Flags = 0x00080000 | 0x00001000 | 0x00000800 | 0x00000200 | 0x00020000
-                };
+                ofn.fileTitle = new string(new char[64]);
+                ofn.maxFileTitle = ofn.fileTitle.Length;
+
+                ofn.initialDir = Path.GetFullPath(SpecialFolder.MyPictures.ToString());
+                ofn.title = "Saku Overclock: Open image for theme background...";
+                ofn.defExt = "png";
 
                 // Вызываем диалог выбора файла
-                if (OpenFileDialog.GetOpenFileName(ref ofn))
+                if (OpenFileDialog.GetOpenFileNameApi(ofn))
                 {
+                    /*Console.WriteLine("Selected file with full path: {0}", ofn.file);
+                    Console.WriteLine("Selected file name: {0}", ofn.fileTitle);
+                    Console.WriteLine("Offset from file name: {0}", ofn.fileOffset);
+                    Console.WriteLine("Offset from file extension: {0}", ofn.fileExtension);*/
                     // Удаляем завершающие нулевые символы и получаем путь к выбранному файлу
-                    var selectedFile = ofn.lpstrFile.TrimEnd('\0');
+                    var selectedFile = ofn.file.TrimEnd('\0');
                     fromFilePickedFile.Text = "ThemePickedFile".GetLocalized() + selectedFile;
                     endStringPath = selectedFile;
                 }
@@ -2759,5 +2790,5 @@ public sealed partial class SettingsPage
         RtssSave();
     }
 
-    #endregion
+    #endregion 
 }
