@@ -4,59 +4,47 @@ using System.Text;
 namespace Saku_Overclock.Helpers;
 
 [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-public struct OpenFileName
+public class OpenFileName
 {
-    public int lStructSize;
-    public IntPtr hwndOwner;
-    public IntPtr hInstance;
+    public int structSize = 0;
+    public IntPtr dlgOwner = IntPtr.Zero;
+    public IntPtr instance = IntPtr.Zero;
 
-    [MarshalAs(UnmanagedType.LPTStr)]
-    public string lpstrFilter;
+    public string? filter = null;
+    public string? customFilter = null;
+    public int maxCustFilter = 0;
+    public int filterIndex = 0;
 
-    [MarshalAs(UnmanagedType.LPTStr)]
-    public string lpstrCustomFilter;
+    public string? file = null;
+    public int maxFile = 0;
 
-    public int nMaxCustFilter;
-    public int nFilterIndex;
+    public string? fileTitle = null;
+    public int maxFileTitle = 0;
 
-    // Поле для пути к файлу: фиксированная длина 256 символов
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-    public string lpstrFile;
+    public string? initialDir = null;
 
-    public int nMaxFile;
+    public string? title = null;
 
-    // Если необходимо получать только имя файла (без пути)
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-    public string lpstrFileTitle;
+    public int flags = 0;
+    public short fileOffset = 0;
+    public short fileExtension = 0;
 
-    public int nMaxFileTitle;
+    public string? defExt = null;
 
-    [MarshalAs(UnmanagedType.LPTStr)]
-    public string lpstrInitialDir;
+    public IntPtr custData = IntPtr.Zero;
+    public IntPtr hook = IntPtr.Zero;
 
-    [MarshalAs(UnmanagedType.LPTStr)]
-    public string lpstrTitle;
+    public string? templateName = null;
 
-    public int Flags;
-    public short nFileOffset;
-    public short nFileExtension;
-
-    [MarshalAs(UnmanagedType.LPTStr)]
-    public string lpstrDefExt;
-
-    public IntPtr lCustData;
-    public IntPtr lpfnHook;
-
-    [MarshalAs(UnmanagedType.LPTStr)]
-    public string lpTemplateName;
-
-    public IntPtr pvReserved;
-    public int dwReserved;
-    public int flagsEx;
+    public IntPtr reservedPtr = IntPtr.Zero;
+    public int reservedInt = 0;
+    public int flagsEx = 0;
 }
-public static class OpenFileDialog
+
+public class OpenFileDialog
 {
-    [DllImport("Comdlg32.dll", SetLastError = true,
-        ThrowOnUnmappableChar = true, CharSet = CharSet.Auto)]
-    public static extern bool GetOpenFileName(ref OpenFileName ofn);
+    public static bool GetOpenFileNameApi([In, Out] OpenFileName ofn) => GetOpenFileName(ofn);
+
+    [DllImport("Comdlg32.dll", CharSet = CharSet.Auto)]
+    private static extern bool GetOpenFileName([In, Out] OpenFileName ofn);
 }
