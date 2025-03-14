@@ -1672,13 +1672,13 @@ CPU VID
     <value>Фон из файла</value>
   </data>
   <data name="ThemeBgFromFileWhy" xml:space="preserve">
-    <value>Выберите файл любого фото. Не удаляйте файл! GIF анимированы но с высокой нагрузкой на GPU</value>
+    <value>Выберите любую фотографию на вашем компьютере</value>
   </data>
   <data name="ThemeBgFromURL" xml:space="preserve">
     <value>Фон из ссылки</value>
   </data>
   <data name="ThemeBgFromURLWhy" xml:space="preserve">
-    <value>Выберите ссылку на любое фото. Не работает без интернета! GIF анимированы но с высокой нагрузкой на GPU</value>
+    <value>Выберите ссылку на любую фотографию. Не работает без интернета! </value>
   </data>
   <data name="ThemeBgOr" xml:space="preserve">
     <value>или</value>
@@ -3044,5 +3044,74 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Preset_Speed_OverlayDesc" xml:space="preserve">
     <value>Лучшая производительность</value>
+  </data>
+  <data name="Main_ErrorReleaseLoad" xml:space="preserve">
+    <value>Произошла ошибка при загрузке обновления: </value>
+  </data>
+  <data name="Main_NoReleaseFile" xml:space="preserve">
+    <value>Не удалось найти установочный файл в релизе.</value>
+  </data>
+  <data name="Main_NoReleases" xml:space="preserve">
+    <value>Не удалось найти релизы на GitHub.</value>
+  </data>
+  <data name="Settings_AppHide.Text" xml:space="preserve">
+    <value>Скрывать в трей при нажатии</value>
+  </data>
+  <data name="Settings_Hide_Close.Content" xml:space="preserve">
+    <value>Кнопки закрыть окно</value>
+  </data>
+  <data name="Settings_Hide_Minimize.Content" xml:space="preserve">
+    <value>Кнопки свернуть окно</value>
+  </data>
+  <data name="Settings_Hide_Nothing.Content" xml:space="preserve">
+    <value>Не скрывать в трей</value>
+  </data>
+  <data name="ThemeBgGifWarn" xml:space="preserve">
+    <value>GIF анимированы но с высокой нагрузкой на GPU</value>
+  </data>
+  <data name="Main_ApplyButton.Text" xml:space="preserve">
+    <value>Применить</value>
+  </data>
+  <data name="Main_DeviceInfo.Text" xml:space="preserve">
+    <value>Информация об устройстве</value>
+  </data>
+  <data name="Main_FaqPage.Text" xml:space="preserve">
+    <value>Страница FAQ</value>
+  </data>
+  <data name="Main_OverclockPage.Text" xml:space="preserve">
+    <value>Разгон</value>
+  </data>
+  <data name="Main_OwnProfiles.Text" xml:space="preserve">
+    <value>Свои</value>
+  </data>
+  <data name="Main_PremadeProfiles.Text" xml:space="preserve">
+    <value>Готовые</value>
+  </data>
+  <data name="Main_Profiles.Text" xml:space="preserve">
+    <value>Пресеты</value>
+  </data>
+  <data name="Main_Settings.Text" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Main_Battery.Text" xml:space="preserve">
+    <value>Батарея</value>
+  </data>
+  <data name="Main_MaxVrmCurrent.Text" xml:space="preserve">
+    <value>VRM EDC</value>
+  </data>
+  <data name="Main_RamUsage.Text" xml:space="preserve">
+    <value>Исп. ОЗУ</value>
+  </data>
+  <data name="Main_RealPower.Text" xml:space="preserve">
+    <value>Реальн. мощн</value>
+  </data>
+  <data name="Main_CpuFreq.Text" xml:space="preserve">
+    <value>Частота процессора</value>
+  </data>
+  <data name="Main_CpuLoad.Text" xml:space="preserve">
+    <value>Загрузка процессора</value>
+  </data>
+  <data name="Main_CpuTemp.Text" xml:space="preserve">
+    <value>Температура процессора</value>
   </data>
 </root>

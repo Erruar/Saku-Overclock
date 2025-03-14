@@ -1634,13 +1634,13 @@ ARE DOING!!! IT CAN BURN YOUR CPU!</value>
     <value>Background from file</value>
   </data>
   <data name="ThemeBgFromFileWhy" xml:space="preserve">
-    <value>Choose any image or gif file. Don't delete the file! GIFs are animated but lead to to huge GPU usage</value>
+    <value>Choose any image or gif file from your computer</value>
   </data>
   <data name="ThemeBgFromURL" xml:space="preserve">
     <value>Background from link</value>
   </data>
   <data name="ThemeBgFromURLWhy" xml:space="preserve">
-    <value>Choose any image or gif URL. It will not work without internet! GIFs are animated but lead to huge GPU usage</value>
+    <value>Choose any image or gif URL. It will not work without internet!</value>
   </data>
   <data name="ThemeBgOr" xml:space="preserve">
     <value>or</value>
@@ -2974,5 +2974,74 @@ methods are available.</value>
   </data>
   <data name="Preset_Speed_OverlayDesc" xml:space="preserve">
     <value>Superior performance</value>
+  </data>
+  <data name="Main_ErrorReleaseLoad" xml:space="preserve">
+    <value>An error occurred while downloading the update: </value>
+  </data>
+  <data name="Main_NoReleaseFile" xml:space="preserve">
+    <value>Could not find the installation file in the release.</value>
+  </data>
+  <data name="Main_NoReleases" xml:space="preserve">
+    <value>Could not find the releases on GitHub.</value>
+  </data>
+  <data name="Settings_AppHide.Text" xml:space="preserve">
+    <value>Hide to tray when clicked</value>
+  </data>
+  <data name="Settings_Hide_Close.Content" xml:space="preserve">
+    <value>Close window button</value>
+  </data>
+  <data name="Settings_Hide_Minimize.Content" xml:space="preserve">
+    <value>Minimize window button</value>
+  </data>
+  <data name="Settings_Hide_Nothing.Content" xml:space="preserve">
+    <value>Do not hide in the tray</value>
+  </data>
+  <data name="ThemeBgGifWarn" xml:space="preserve">
+    <value>GIFs are animated but lead to huge GPU usage</value>
+  </data>
+  <data name="Main_ApplyButton.Text" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Main_DeviceInfo.Text" xml:space="preserve">
+    <value>Device information</value>
+  </data>
+  <data name="Main_FaqPage.Text" xml:space="preserve">
+    <value>FAQ Page</value>
+  </data>
+  <data name="Main_OverclockPage.Text" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="Main_OwnProfiles.Text" xml:space="preserve">
+    <value>Own</value>
+  </data>
+  <data name="Main_PremadeProfiles.Text" xml:space="preserve">
+    <value>Premade</value>
+  </data>
+  <data name="Main_Profiles.Text" xml:space="preserve">
+    <value>Profiles</value>
+  </data>
+  <data name="Main_Settings.Text" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Main_Battery.Text" xml:space="preserve">
+    <value>Battery</value>
+  </data>
+  <data name="Main_MaxVrmCurrent.Text" xml:space="preserve">
+    <value>VRM EDC</value>
+  </data>
+  <data name="Main_RamUsage.Text" xml:space="preserve">
+    <value>RAM Usage</value>
+  </data>
+  <data name="Main_RealPower.Text" xml:space="preserve">
+    <value>Real power</value>
+  </data>
+  <data name="Main_CpuFreq.Text" xml:space="preserve">
+    <value>CPU Frequency</value>
+  </data>
+  <data name="Main_CpuLoad.Text" xml:space="preserve">
+    <value>CPU Usage</value>
+  </data>
+  <data name="Main_CpuTemp.Text" xml:space="preserve">
+    <value>CPU Temperature</value>
   </data>
 </root>
