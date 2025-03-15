@@ -3044,4 +3044,64 @@ methods are available.</value>
   <data name="Main_CpuTemp.Text" xml:space="preserve">
     <value>CPU Temperature</value>
   </data>
+  <data name="Main_BatteryUnavailable" xml:space="preserve">
+    <value>Unavailable</value>
+  </data>
+  <data name="Main_FrequentlyUsed.Text" xml:space="preserve">
+    <value>Frequently used</value>
+  </data>
+  <data name="Main_AverageFrequency" xml:space="preserve">
+    <value>Average frequency:</value>
+  </data>
+  <data name="Main_AverageVoltage" xml:space="preserve">
+    <value>Average voltage:</value>
+  </data>
+  <data name="Main_BatteryInfo" xml:space="preserve">
+    <value>Battery information</value>
+  </data>
+  <data name="Main_CpuCoreCount" xml:space="preserve">
+    <value>Core count:</value>
+  </data>
+  <data name="Main_CpuFrequency" xml:space="preserve">
+    <value>Frequency</value>
+  </data>
+  <data name="Main_CpuTemp1" xml:space="preserve">
+    <value>CPU Temp:</value>
+  </data>
+  <data name="Main_CpuTJMaxDistance" xml:space="preserve">
+    <value>Distance from TJMax:</value>
+  </data>
+  <data name="Main_CpuUsage" xml:space="preserve">
+    <value>CPU Usage metrics</value>
+  </data>
+  <data name="Main_CpuUtilization" xml:space="preserve">
+    <value>Utilization:</value>
+  </data>
+  <data name="Main_DeviceInfo1" xml:space="preserve">
+    <value>Device information</value>
+  </data>
+  <data name="Main_GpuTemp" xml:space="preserve">
+    <value>GPU Temp:</value>
+  </data>
+  <data name="Main_MaxFrequency" xml:space="preserve">
+    <value>Max frequency:</value>
+  </data>
+  <data name="Main_RamSize" xml:space="preserve">
+    <value>Size:</value>
+  </data>
+  <data name="Main_RamUsage1" xml:space="preserve">
+    <value>Usage:</value>
+  </data>
+  <data name="Main_RamUtilization" xml:space="preserve">
+    <value>Utilization:</value>
+  </data>
+  <data name="Main_SystemPowers" xml:space="preserve">
+    <value>System powers</value>
+  </data>
+  <data name="Main_TemperatureSensors" xml:space="preserve">
+    <value>Temperature metrics</value>
+  </data>
+  <data name="Main_VrmInfo" xml:space="preserve">
+    <value>Currents and VRM</value>
+  </data>
 </root>

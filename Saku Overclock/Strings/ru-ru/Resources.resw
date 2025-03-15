@@ -3114,4 +3114,64 @@ Asus. Может не поддерживаться на
   <data name="Main_CpuTemp.Text" xml:space="preserve">
     <value>Температура процессора</value>
   </data>
+  <data name="Main_BatteryUnavailable" xml:space="preserve">
+    <value>Недоступно</value>
+  </data>
+  <data name="Main_FrequentlyUsed.Text" xml:space="preserve">
+    <value>Часто используемое</value>
+  </data>
+  <data name="Main_AverageFrequency" xml:space="preserve">
+    <value>Средняя частота:</value>
+  </data>
+  <data name="Main_AverageVoltage" xml:space="preserve">
+    <value>Среднее напряжение:</value>
+  </data>
+  <data name="Main_BatteryInfo" xml:space="preserve">
+    <value>Информация о батарее</value>
+  </data>
+  <data name="Main_CpuCoreCount" xml:space="preserve">
+    <value>Кол. ядер:</value>
+  </data>
+  <data name="Main_CpuFrequency" xml:space="preserve">
+    <value>Частота процессора</value>
+  </data>
+  <data name="Main_CpuTemp1" xml:space="preserve">
+    <value>Температура CPU:</value>
+  </data>
+  <data name="Main_CpuTJMaxDistance" xml:space="preserve">
+    <value>Разница от TJMax:</value>
+  </data>
+  <data name="Main_CpuUsage" xml:space="preserve">
+    <value>Загрузка процессора</value>
+  </data>
+  <data name="Main_CpuUtilization" xml:space="preserve">
+    <value>Текущая загрузка:</value>
+  </data>
+  <data name="Main_DeviceInfo1" xml:space="preserve">
+    <value>Информация об устройстве</value>
+  </data>
+  <data name="Main_GpuTemp" xml:space="preserve">
+    <value>Температура GPU:</value>
+  </data>
+  <data name="Main_MaxFrequency" xml:space="preserve">
+    <value>Максимальная частота:</value>
+  </data>
+  <data name="Main_RamSize" xml:space="preserve">
+    <value>Общий объём:</value>
+  </data>
+  <data name="Main_RamUsage1" xml:space="preserve">
+    <value>Используется сейчас:</value>
+  </data>
+  <data name="Main_RamUtilization" xml:space="preserve">
+    <value>Процент загрузки:</value>
+  </data>
+  <data name="Main_SystemPowers" xml:space="preserve">
+    <value>Мощности системы</value>
+  </data>
+  <data name="Main_TemperatureSensors" xml:space="preserve">
+    <value>Температурные показатели</value>
+  </data>
+  <data name="Main_VrmInfo" xml:space="preserve">
+    <value>Система питания и VRM</value>
+  </data>
 </root>
