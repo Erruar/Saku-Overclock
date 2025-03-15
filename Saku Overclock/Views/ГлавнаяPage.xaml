@@ -256,7 +256,7 @@ Text="{Binding Version}">
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <TextBlock Grid.Row="1" VerticalAlignment="Top" Margin="0,1,0,0" FontWeight="SemiBold" FontSize="17" Text="Часто используемое"/>
+                                <TextBlock Grid.Row="1" VerticalAlignment="Top" Margin="0,1,0,0" FontWeight="SemiBold" FontSize="17" x:Uid="Main_FrequentlyUsed" Text="Часто используемое"/>
                                 <Grid Grid.Row="2" VerticalAlignment="Stretch" Margin="-10,5,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition MaxHeight="75"/>

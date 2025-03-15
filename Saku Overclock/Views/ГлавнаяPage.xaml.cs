@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -14,6 +13,7 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
+using Windows.UI.Text;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Color = Windows.UI.Color;
 using Image = Microsoft.UI.Xaml.Controls.Image;
@@ -30,7 +30,7 @@ public sealed partial class ГлавнаяPage
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
     private List<double>? _segmentLengths; // Хранит длины всех сегментов
     private double _totalLength; // Общая длина кривой
-    private int _currentMode;
+    private int _currentMode; // Хранит режим, который выбрал пользователь, то, где стоял курсор при нажатии на блок, чтобы показать тултип с дополнительной информацией о просматриемом блоке
     private bool _waitForTip;
     private bool _waitForCheck;
     private bool _waitingForCursorFlag;
@@ -209,12 +209,12 @@ public sealed partial class ГлавнаяPage
             {
                 Indicators_Temp.Text = Math.Round(info.CpuTempValue, 1).ToString(CultureInfo.InvariantCulture) + "C";
                 Indicators_Busy.Text = Math.Round(info.CpuUsage, 0).ToString(CultureInfo.InvariantCulture) + "%";
-                Indicators_Freq.Text = Math.Round(info.CpuFrequency, 1).ToString(CultureInfo.InvariantCulture) + " ГГц";
+                Indicators_Freq.Text = Math.Round(info.CpuFrequency, 1).ToString(CultureInfo.InvariantCulture) + " " + "infoAGHZ".GetLocalized();
                 Indicators_Busy_Ring.Value = info.CpuUsage;
                 Indicators_Freq_Ring.Value = info.CpuFrequency / _maxCpuFreq * 100;
                 UpdatePointPosition(info.CpuTempValue);
                 Indicators_Fast.Text = info.CpuFastValue == 0
-                    ? "Disabled"
+                    ? "Info_PowerSumInfo_Disabled".GetLocalized()
                     : Math.Round(info.CpuFastValue, 1).ToString(CultureInfo.InvariantCulture) + "W";
                 Indicators_VrmEdc.Text = Math.Round(info.VrmEdcValue, 1).ToString(CultureInfo.InvariantCulture) + "A";
 
@@ -279,7 +279,7 @@ public sealed partial class ГлавнаяPage
                         Main_AdditionalInfo2Name.Text =
                             Math.Round(100 - info.CpuTempValue, 1).ToString(CultureInfo.InvariantCulture) + "C";
                         Main_AdditionalInfo3Name.Text = info.ApuTempValue == 0
-                            ? "Недоступно"
+                            ? "Main_BatteryUnavailable".GetLocalized()
                             : Math.Round(info.ApuTempValue, 1).ToString(CultureInfo.InvariantCulture) + "C";
                         break;
                     case 3:
@@ -288,9 +288,9 @@ public sealed partial class ГлавнаяPage
                     case 4:
                         Main_AdditionalInfo1Name.Text = Indicators_Freq.Text;
                         Main_AdditionalInfo2Name.Text =
-                            Math.Round(_maxCpuFreq, 1).ToString(CultureInfo.InvariantCulture) + " ГГц";
+                            Math.Round(_maxCpuFreq, 1).ToString(CultureInfo.InvariantCulture) + " " + "infoAGHZ".GetLocalized();
                         Main_AdditionalInfo3Name.Text = info.CpuVoltage == 0
-                            ? "Недоступно"
+                            ? "Main_BatteryUnavailable".GetLocalized()
                             : Math.Round(info.CpuVoltage, 1).ToString(CultureInfo.InvariantCulture) + "V";
                         break;
                     case 5:
@@ -309,19 +309,19 @@ public sealed partial class ГлавнаяPage
                         break;
                     case 7:
                         Main_AdditionalInfo1Name.Text = info.VrmTdcValue == 0
-                            ? "Недоступно"
+                            ? "Main_BatteryUnavailable".GetLocalized()
                             : Math.Round(info.VrmTdcValue, 1).ToString(CultureInfo.InvariantCulture) + "A";
                         Main_AdditionalInfo2Name.Text = info.VrmEdcValue == 0
-                            ? "Недоступно"
+                            ? "Main_BatteryUnavailable".GetLocalized()
                             : Math.Round(info.VrmEdcValue, 1).ToString(CultureInfo.InvariantCulture) + "A";
                         Main_AdditionalInfo3Name.Text = info.SocEdcValue == 0
-                            ? "Недоступно"
+                            ? "Main_BatteryUnavailable".GetLocalized()
                             : Math.Round(info.SocEdcValue, 1).ToString(CultureInfo.InvariantCulture) + "A";
                         break;
                     case 8:
-                        Main_AdditionalInfo1Name.Text = info.BatteryUnavailable ? "Недоступно" : info.BatteryHealth;
-                        Main_AdditionalInfo2Name.Text = info.BatteryUnavailable ? "Недоступно" : info.BatteryCycles;
-                        Main_AdditionalInfo3Name.Text = info.BatteryUnavailable ? "Недоступно" : batteryTime;
+                        Main_AdditionalInfo1Name.Text = info.BatteryUnavailable ? "Main_BatteryUnavailable".GetLocalized() : info.BatteryHealth;
+                        Main_AdditionalInfo2Name.Text = info.BatteryUnavailable ? "Main_BatteryUnavailable".GetLocalized() : info.BatteryCycles;
+                        Main_AdditionalInfo3Name.Text = info.BatteryUnavailable ? "Main_BatteryUnavailable".GetLocalized() : batteryTime;
                         break;
                 }
             }
@@ -499,7 +499,6 @@ public sealed partial class ГлавнаяPage
             }
 
             await GenerateFormattedReleaseNotes(MainChangelogStackPanel);
-            //MainChangelogStackPanel.Children.Add(new TextBlock { Text = UpdateChecker.GitHubInfoString, TextWrapping = Microsoft.UI.Xaml.TextWrapping.WrapWholeWords, Width = 274, Foreground = (Brush)Application.Current.Resources["AccentColor"] });
         }
         catch (Exception e)
         {
@@ -629,11 +628,33 @@ public sealed partial class ГлавнаяPage
                             endMode = "Max";
                             break;
                     }
+
                     ShellPage.NextPremadeProfile_Activate(endMode);
+
                     var (_, _, _, settings, _) = ShellPage.PremadedProfiles[endMode];
+
                     AppSettings.RyzenADJline = settings;
                     AppSettings.SaveSettings();
+
                     MainWindow.Applyer.ApplyWithoutAdjLine(false);
+
+                    NotificationsService.Notifies ??= [];
+                    NotificationsService.Notifies.Add(new Notify
+                    {
+                        Title = "Profile_APPLIED",
+                        Msg = "DEBUG MESSAGE",
+                        Type = InfoBarSeverity.Informational
+                    });
+                    NotificationsService.SaveNotificationsSettings();
+
+                    Apply_Teach.Target = ApplyButton;
+                    Apply_Teach.Title = "Apply_Success".GetLocalized();
+                    Apply_Teach.Subtitle = "Apply_Success_Desc".GetLocalized();
+                    Apply_Teach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                    Apply_Teach.IsOpen = true;
+                    await LogHelper.Log("Apply_Success".GetLocalized());
+                    await Task.Delay(3000);
+                    Apply_Teach.IsOpen = false;
                 }
                 else
                 {
@@ -673,6 +694,16 @@ public sealed partial class ГлавнаяPage
                             AppSettings.Preset = i;
                             AppSettings.SaveSettings();
                             ShellPage.MandarinSparseUnitProfile(profile);
+
+                            NotificationsService.Notifies ??= [];
+                            NotificationsService.Notifies.Add(new Notify
+                            {
+                                Title = "Profile_APPLIED",
+                                Msg = "DEBUG MESSAGE",
+                                Type = InfoBarSeverity.Informational
+                            });
+                            NotificationsService.SaveNotificationsSettings();
+
 
                             await Task.Delay(1000);
                             var timer = 1000;
@@ -722,7 +753,7 @@ public sealed partial class ГлавнаяPage
 
     #region Mouse Events & Blocks behavior
 
-    private async void SetPlacerTipAsync(int currMode, object sender)
+    private async void SetPlacerTipAsync(int currMode)
     {
         try
         {
@@ -730,8 +761,6 @@ public sealed partial class ГлавнаяPage
             if (Main_Teach.IsOpen)
             {
                 RemovePlacerTip();
-                /*Main_Teach.IsOpen = false;
-                await Task.Delay(200);*/
             }
             if (_waitForTip)
             {
@@ -751,10 +780,10 @@ public sealed partial class ГлавнаяPage
             {
                 case 1:
                     Main_Teach.Target = LogoPlacer;
-                    Main_AdditionalInfoDesc.Text = "Информация об устройстве";
-                    Main_AdditionalInfo1Desc.Text = "Модель:";
-                    Main_AdditionalInfo2Desc.Text = "Производитель:";
-                    Main_AdditionalInfo3Desc.Text = "Версия BIOS:";
+                    Main_AdditionalInfoDesc.Text = "Main_DeviceInfo1".GetLocalized();
+                    Main_AdditionalInfo1Desc.Text = "infoMModel/Text".GetLocalized() + ":";
+                    Main_AdditionalInfo2Desc.Text = "infoMProd/Text".GetLocalized() + ":";
+                    Main_AdditionalInfo3Desc.Text = "BIOS:";
                     try
                     {
                         Main_AdditionalInfo1Name.Text = CpuSingleton.GetInstance().systemInfo.MbName;
@@ -769,16 +798,16 @@ public sealed partial class ГлавнаяPage
                     break;
                 case 2:
                     Main_Teach.Target = TemperaturePlacer;
-                    Main_AdditionalInfoDesc.Text = "Температурные показатели";
-                    Main_AdditionalInfo1Desc.Text = "Температура CPU:";
-                    Main_AdditionalInfo2Desc.Text = "Разница от TJMax:";
-                    Main_AdditionalInfo3Desc.Text = "Температура GPU:";
+                    Main_AdditionalInfoDesc.Text = "Main_TemperatureSensors".GetLocalized();
+                    Main_AdditionalInfo1Desc.Text = "Main_CpuTemp1".GetLocalized();
+                    Main_AdditionalInfo2Desc.Text = "Main_CpuTJMaxDistance".GetLocalized();
+                    Main_AdditionalInfo3Desc.Text = "Main_GpuTemp".GetLocalized();
                     break;
                 case 3:
                     Main_Teach.Target = UsabilityPlacer;
-                    Main_AdditionalInfoDesc.Text = "Загрузка процессора";
-                    Main_AdditionalInfo1Desc.Text = "Текущая загрузка:";
-                    Main_AdditionalInfo2Desc.Text = "Кол. ядер:";
+                    Main_AdditionalInfoDesc.Text = "Main_CpuUsage".GetLocalized();
+                    Main_AdditionalInfo1Desc.Text = "Main_CpuUtilization".GetLocalized();
+                    Main_AdditionalInfo2Desc.Text = "Main_CpuCoreCount".GetLocalized();
                     Main_AdditionalInfo3Desc.Text = "SMT:";
                     try
                     {
@@ -794,42 +823,42 @@ public sealed partial class ГлавнаяPage
                     break;
                 case 4:
                     Main_Teach.Target = FrequencyPlacer;
-                    Main_AdditionalInfoDesc.Text = "Частота процессора";
-                    Main_AdditionalInfo1Desc.Text = "Средняя частота:";
-                    Main_AdditionalInfo2Desc.Text = "Максимальная частота:";
-                    Main_AdditionalInfo3Desc.Text = "Среднее напряжение:";
+                    Main_AdditionalInfoDesc.Text = "Main_CpuFrequency".GetLocalized();
+                    Main_AdditionalInfo1Desc.Text = "Main_AverageFrequency".GetLocalized();
+                    Main_AdditionalInfo2Desc.Text = "Main_MaxFrequency".GetLocalized();
+                    Main_AdditionalInfo3Desc.Text = "Main_AverageVoltage".GetLocalized();
                     break;
                 case 5:
                     Main_Teach.Target = RamPlacer;
-                    Main_AdditionalInfoDesc.Text = "Оперативная память";
-                    Main_AdditionalInfo1Desc.Text = "Процент загрузки:";
-                    Main_AdditionalInfo2Desc.Text = "Используется сейчас:";
-                    Main_AdditionalInfo3Desc.Text = "Общий объём:";
+                    Main_AdditionalInfoDesc.Text = "Info_RAM_text/Text".GetLocalized();
+                    Main_AdditionalInfo1Desc.Text = "Main_RamUtilization".GetLocalized();
+                    Main_AdditionalInfo2Desc.Text = "Main_RamUsage1".GetLocalized();
+                    Main_AdditionalInfo3Desc.Text = "Main_RamSize".GetLocalized();
                     break;
                 case 6:
                     Main_Teach.Target = PowerPlacer;
-                    Main_AdditionalInfoDesc.Text = "Мощности системы";
-                    Main_AdditionalInfo1Desc.Text = "Реальная мощность:";
+                    Main_AdditionalInfoDesc.Text = "Main_SystemPowers".GetLocalized();
+                    Main_AdditionalInfo1Desc.Text = "Param_CPU_c3/Text".GetLocalized() + ":"; // Реальная мощность 
                     Main_AdditionalInfo2Desc.Text = "STAPM:";
-                    Main_AdditionalInfo3Desc.Text = "Средняя мощность:";
+                    Main_AdditionalInfo3Desc.Text = "Param_CPU_c4/Text".GetLocalized() + ":"; // Средняя мощность
                     break;
                 case 7:
                     Main_Teach.Target = VrmPlacer;
-                    Main_AdditionalInfoDesc.Text = "Система питания и VRM";
+                    Main_AdditionalInfoDesc.Text = "Main_VrmInfo".GetLocalized();
                     Main_AdditionalInfo1Desc.Text = "VRM TDC:";
                     Main_AdditionalInfo2Desc.Text = "VRM EDC:";
                     Main_AdditionalInfo3Desc.Text = "SoC EDC:";
                     break;
                 case 8:
                     Main_Teach.Target = BatteryPlacer;
-                    Main_AdditionalInfoDesc.Text = "Информация о батарее";
+                    Main_AdditionalInfoDesc.Text = "Main_BatteryInfo".GetLocalized();
                     Main_AdditionalInfo1Desc.Text = "infoABATWear/Text".GetLocalized() + ":";
-                    Main_AdditionalInfo2Desc.Text = "infoABATCycles.Text".GetLocalized() + ":";
-                    Main_AdditionalInfo3Desc.Text = "infoABATRemainTime.Text".GetLocalized() + ":";
+                    Main_AdditionalInfo2Desc.Text = "infoABATCycles/Text".GetLocalized() + ":";
+                    Main_AdditionalInfo3Desc.Text = "infoABATRemainTime/Text".GetLocalized() + ":";
                     break;
             }
 
-            
+
             Main_Teach.IsOpen = true;
         }
         catch (Exception ex)
@@ -844,29 +873,29 @@ public sealed partial class ГлавнаяPage
         Main_Teach.IsOpen = false;
         _waitForTip = true;
     }
-    private void LogoPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) => 
-        SetPlacerTipAsync(1, sender);
+    private void LogoPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
+        SetPlacerTipAsync(1);
 
     private void TemperaturePlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-        SetPlacerTipAsync(2, sender);
+        SetPlacerTipAsync(2);
 
     private void UsabilityPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-        SetPlacerTipAsync(3, sender);
+        SetPlacerTipAsync(3);
 
     private void FrequencyPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-        SetPlacerTipAsync(4, sender);
+        SetPlacerTipAsync(4);
 
-    private void RamPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) => 
-        SetPlacerTipAsync(5, sender);
+    private void RamPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
+        SetPlacerTipAsync(5);
 
-    private void PowerPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) => 
-        SetPlacerTipAsync(6, sender);
+    private void PowerPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
+        SetPlacerTipAsync(6);
 
     private void VrmPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-        SetPlacerTipAsync(7, sender);
+        SetPlacerTipAsync(7);
 
     private void BatteryPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-     SetPlacerTipAsync(8, sender);
+     SetPlacerTipAsync(8);
 
     #endregion
 
