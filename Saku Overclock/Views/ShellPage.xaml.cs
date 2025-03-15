@@ -1427,10 +1427,15 @@ public sealed partial class ShellPage
                             Children = { updateButton }
                         };
                         break;
+                    case "Profile_APPLIED":
+                        contains = true;
+                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+                        break; 
                 }
 
                 if (notify1.Msg.Contains("DELETEUNAVAILABLE"))
                 {
+                    contains = true;
                     var but1 = new Button
                     {
                         CornerRadius = new CornerRadius(15),
@@ -2075,55 +2080,79 @@ public sealed partial class ShellPage
             if (GetAsyncKeyState(0x11) < 0 &&
                 IsAltPressed()) //0x11 - Control, 0x4000 - Alt
             {
-                switch ((VirtualKey)virtualkeyCode)
-                {
-                    // Переключить между своими пресетами
-                    case VirtualKey.W:
-                    {
-                        //Создать уведомление
-                        var nextCustomProfile = NextCustomProfile_Switch();
-                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
-                            nextCustomProfile);
-                        MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
-                            "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
-                            InfoBarSeverity.Informational);
-                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
-                        break;
-                    }
-                    // Переключить между готовыми пресетами
-                    case VirtualKey.P:
-                        var nextPremadeProfile = NextPremadeProfile_Switch(out var icon, out var desc);
-                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
-                            nextPremadeProfile, icon, desc);
-                        MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
-                            "Shell_ProfileChanging_Premade".GetLocalized() + $"{nextPremadeProfile}!",
-                            InfoBarSeverity.Informational);
-                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
-                        break;
-                    // Переключить состояние RTSS
-                    case VirtualKey.R:
-                        if (AppSettings.RTSSMetricsEnabled)
-                        {
-                            ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
-                                "RTSS " + "Cooler_Service_Disabled/Content".GetLocalized(), "\uE7AC");
-                            AppSettings.RTSSMetricsEnabled = false;
-                        }
-                        else
-                        {
-                            ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
-                                "RTSS " + "Cooler_Service_Enabled/Content".GetLocalized(), "\uE7AC");
-                            AppSettings.RTSSMetricsEnabled = true;
-                        }
-
-                        AppSettings.SaveSettings();
-                        MandarinAddNotification("Shell_RTSSChanging".GetLocalized(),
-                            "Shell_RTSSChanging_Success".GetLocalized(), InfoBarSeverity.Informational);
-                        break;
-                }
+                _ = Task.Run(async () => await HandleKeyboardKeysCallback(virtualkeyCode));
             }
         }
 
         return CallNextHookEx(_hookId, nCode, wParam, lParam); // Передаем нажатие в следующее приложение
+    }
+
+    private Task HandleKeyboardKeysCallback(int virtualkeyCode)
+    {
+        switch ((VirtualKey)virtualkeyCode)
+        {
+            // Переключить между своими пресетами
+            case VirtualKey.W:
+                {
+                    var nextCustomProfile = string.Empty;
+                    DispatcherQueue.TryEnqueue(() => // Используем диспатчер страницы
+                    {
+                        nextCustomProfile = NextCustomProfile_Switch();
+                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                            nextCustomProfile);
+                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
+                    }); 
+
+                    MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
+                        "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
+                        InfoBarSeverity.Informational);
+                    break;
+                }
+            // Переключить между готовыми пресетами
+            case VirtualKey.P:
+                var nextPremadeProfile = string.Empty;
+                DispatcherQueue.TryEnqueue(() => // Используем диспатчер страницы
+                {
+                    nextPremadeProfile = NextPremadeProfile_Switch(out var icon, out var desc);
+                ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                    nextPremadeProfile, icon, desc);
+                    MainWindow.Applyer.ApplyWithoutAdjLine(false);
+                });
+
+                MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
+                    "Shell_ProfileChanging_Premade".GetLocalized() + $"{nextPremadeProfile}!",
+                    InfoBarSeverity.Informational);
+                break;
+            // Переключить состояние RTSS
+            case VirtualKey.R:
+                if (AppSettings.RTSSMetricsEnabled)
+                {
+                    DispatcherQueue.TryEnqueue(() => // Используем диспатчер страницы
+                    {
+                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                        "RTSS " + "Cooler_Service_Disabled/Content".GetLocalized(), "\uE7AC");
+                    });
+
+                    AppSettings.RTSSMetricsEnabled = false;
+                }
+                else
+                {
+                    DispatcherQueue.TryEnqueue(() => // Используем диспатчер страницы
+                    {
+                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                        "RTSS " + "Cooler_Service_Enabled/Content".GetLocalized(), "\uE7AC");
+                    });
+
+                    AppSettings.RTSSMetricsEnabled = true;
+                }
+
+                AppSettings.SaveSettings();
+
+                MandarinAddNotification("Shell_RTSSChanging".GetLocalized(),
+                    "Shell_RTSSChanging_Success".GetLocalized(), InfoBarSeverity.Informational);
+                break;
+        }
+        return Task.CompletedTask;
     }
 
     #region Hook DLL Imports
