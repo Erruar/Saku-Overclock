@@ -87,7 +87,25 @@ public interface IAppSettingsService
     {
         get;
         set;
-    }
+    } // Тип отображаемых иконок Треймона
+
+    public bool StreamOptimizerEnabled
+    {
+        get;
+        set;
+    } // Включен ли оптимизатор стрима
+
+    public bool CurveOptimizerOverallEnabled
+    {
+        get;
+        set;
+    } // Включен ли глобальный андервольтинг
+
+    public int CurveOptimizerOverallLevel
+    {
+        get;
+        set;
+    } // Уровень глобального андервольтинга (0 - лёгкий, 1 - средний, 2 - сильный)
 
     // Пресеты, готовые пресеты и параметры
     public int Preset

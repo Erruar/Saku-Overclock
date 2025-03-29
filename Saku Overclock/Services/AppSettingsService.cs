@@ -34,7 +34,10 @@ public class AppSettingsService : IAppSettingsService
     public int ThemeType { get; set; } = 0; // Выбранная тема
     public bool NiIconsEnabled { get; set; } = false; // Включён ли Треймон
     public bool RTSSMetricsEnabled { get; set; } = false; // Включены ли RTSS Метрики
-    public int NiIconsType { get; set; } = -1;
+    public int NiIconsType { get; set; } = -1; // Тип отображаемых иконок Треймона
+    public bool StreamOptimizerEnabled { get; set; } = false; // Включен ли оптимизатор стрима
+    public bool CurveOptimizerOverallEnabled { get; set; } = false; // Включен ли глобальный андервольтинг
+    public int CurveOptimizerOverallLevel { get; set; } = 0; // Уровень глобального андервольтинга (0 - лёгкий, 1 - средний, 2 - сильный)
 
     // Пресеты, готовые пресеты и параметры
     public int Preset { get; set; } = 0; // Выбранный пресет

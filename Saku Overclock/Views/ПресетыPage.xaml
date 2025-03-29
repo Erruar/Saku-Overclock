@@ -10,6 +10,7 @@
     </Page.Resources>
     <Grid x:Name="ContentArea" Margin="-48,0,-50,0">
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
+        <Button x:Name="HiddenAccentButton" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed"/>
         <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="30" Margin="0,-65,0,0"></TextBlock>
         <Grid HorizontalAlignment="Stretch" Margin="0,-24,0,0" CornerRadius="8">
             <Grid.ColumnDefinitions>
@@ -43,21 +44,7 @@
                         </Grid.RowDefinitions>
                         <TextBlock Margin="23,0,0,0" VerticalAlignment="Center" Text="Сохранённые профили" Grid.Row="0" FontWeight="SemiBold" FontSize="16"/>
                         <Grid Grid.Row="1" Margin="10,3,5,9" CornerRadius="8">
-                            <local:ProfileSelector SelectionChanged="ProfilesControl_SelectionChanged" x:Name="ProfilesControl" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                                <local:ProfileSelector.Items>
-                                    <local:ProfileItem IconGlyph="&#xE718;" Text="User Custom 1" IsSelected="True" Description="Custom profile nothing much."/>
-                                    <local:ProfileItem IconGlyph="&#xE70B;" Text="User Custom 2"/>
-                                    <local:ProfileItem IconGlyph="&#xE708;" Text="User Custom 3"/>
-                                    <local:ProfileItem IconGlyph="&#xE709;" Text="User Custom 4"/>
-                                    <local:ProfileItem IconGlyph="&#xE74C;" Text="User Custom 5"/>
-                                    <local:ProfileItem IconGlyph="&#xE76E;" Text="User Custom 6"/>
-                                    <local:ProfileItem IconGlyph="&#xEcad;" Text="Maximum" x:Uid="Preset_Max_Name"/>
-                                    <local:ProfileItem IconGlyph="&#xe945;" Text="Speed" x:Uid="Preset_Speed_Name"/>
-                                    <local:ProfileItem IconGlyph="&#xec49;" Text="Balance" x:Uid="Preset_Balance_Name"/>
-                                    <local:ProfileItem IconGlyph="&#xec0a;" Text="Eco" x:Uid="Preset_Eco_Name"/>
-                                    <local:ProfileItem IconGlyph="&#xebc0;" Text="Minimum" x:Uid="Preset_Min_Name"/>
-                                </local:ProfileSelector.Items>
-                            </local:ProfileSelector> 
+                            <local:ProfileSelector SelectionChanged="ProfilesControl_SelectionChanged" x:Name="ProfilesControl" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
                         </Grid>
                         <Grid Grid.Row="2">
                             <Border VerticalAlignment="Top" Margin="25,0,25,0" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/> 
@@ -83,12 +70,13 @@
                             <FlipView x:Name="TipsFlipView" Background="Transparent">
                                 <FlipView.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Margin="17,27,17,10" 
-                       TextAlignment="Center" 
-                       HorizontalAlignment="Center" 
-                       VerticalAlignment="Center" 
-                       TextWrapping="WrapWholeWords" 
-                       Text="{Binding}" />
+                                        <ScrollViewer Margin="17,27,17,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <TextBlock TextAlignment="Center" 
+                                                       HorizontalAlignment="Center" 
+                                                       VerticalAlignment="Center" 
+                                                       TextWrapping="WrapWholeWords" 
+                                                       Text="{Binding}" />
+                                        </ScrollViewer> 
                                     </DataTemplate>
                                 </FlipView.ItemTemplate>
                             </FlipView>
@@ -97,15 +85,69 @@
                         <Grid Grid.Column="1" Margin="5,0,0,12" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=Discrd, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
                             <FlipView x:Name="AdvancedFlipView" Background="Transparent">
                                 <FlipViewItem>
-                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                                            <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" FontSize="13" Text="Curve Optimizer для всех ядер"/>
-                                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Slider x:Name="O1v" TickFrequency="10" TickPlacement="Outside" SnapsTo="StepValues" Margin="0,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="-50" Maximum="30" Value="0"/>
-                                            </Grid>
-                                            <CheckBox HorizontalAlignment="Center" x:Name="O1"/>  
-                                        </StackPanel>
-                                    </Grid>
+                                    <ScrollViewer Margin="0,28,0,0">
+                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                                <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
+                                                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                                        <TextBlock FontWeight="SemiBold" FontSize="17" Text="Андервольтинг"/>
+                                                        <FontIcon Margin="5,7.5,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" ToolTipService.ToolTip="Андервольтинг это возможность снизить напряжение на вашем процессоре" Glyph="&#xe9ce;">
+                                                            <FontIcon.RenderTransform>
+                                                                <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                            </FontIcon.RenderTransform>
+                                                        </FontIcon>
+                                                    </StackPanel>
+                                                    <ComboBox SelectionChanged="O1m_SelectionChanged" SizeChanged="O1m_SizeChanged" HorizontalAlignment="Center" Margin="5,3,0,0" Loaded="O1m_Loaded" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" x:Name="O1m" Background="{Binding ElementName=HiddenAccentButton, Path=Background}" Visibility="{Binding ElementName=O1, Path=IsOn}">
+                                                        <ComboBoxItem Content="Лёгкий"/>
+                                                        <ComboBoxItem Content="Средний"/>
+                                                        <ComboBoxItem Content="Сильный"/>
+                                                    </ComboBox>
+                                                </StackPanel>
+                                                <ToggleSwitch x:Name="O1" Toggled="O1_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
+                                                <Border Height="10" Background="Transparent"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </ScrollViewer>
+                                </FlipViewItem>
+                                <FlipViewItem>
+                                    <ScrollViewer Margin="0,28,0,0">
+                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                                    <TextBlock FontWeight="SemiBold" FontSize="17" Text="Stream Optimizer v2.0"/>
+                                                </StackPanel>
+                                                <InfoBar Severity="Error" Margin="22,7,22,0" x:Name="StreamOptimizerUnsupportedSign" HorizontalAlignment="Center" IsClosable="False" IsOpen="True" Title="Не поддерживается!"/>
+                                                <ToggleSwitch Visibility="Collapsed" x:Name="StreamOptimizerSwitch" Toggled="StreamOptimizerSwitch_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
+                                                <Border Height="10" Background="Transparent"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </ScrollViewer>
+                                </FlipViewItem>
+                                <FlipViewItem>
+                                    <ScrollViewer Margin="0,28,0,0">
+                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                                    <TextBlock FontWeight="SemiBold" FontSize="17" Text="RTSS Оверлей"/>
+                                                </StackPanel>
+                                                <ToggleSwitch x:Name="RtssOverlaySwitch" Toggled="RtssOverlaySwitch_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
+                                                <Border Height="10" Background="Transparent"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </ScrollViewer>
+                                </FlipViewItem>
+                                <FlipViewItem>
+                                    <ScrollViewer Margin="0,28,0,0">
+                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                                    <TextBlock FontWeight="SemiBold" FontSize="17" Text="TrayMon©"/>
+                                                </StackPanel>
+                                                <ToggleSwitch x:Name="TrayMonFeatSwitch" Toggled="TrayMonFeatSwitch_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
+                                                <Border Height="10" Background="Transparent"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </ScrollViewer>
                                 </FlipViewItem>
                             </FlipView>
                             <TextBlock Margin="0,7,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Text="Дополнительно" Grid.Row="0" FontWeight="SemiBold" FontSize="16"/>
@@ -142,298 +184,301 @@
                                 <RowDefinition Height="108" x:Name="OptionsVizualizerRow"/>
                             </Grid.RowDefinitions>
                             <ScrollViewer Grid.Row="0">
-                                <StackPanel>
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Margin="0,-2,0,0" TextWrapping="Wrap" x:Name="SelectedProfile_Name" FontWeight="SemiBold" FontSize="16" Text="Имя пресета"/>
                                     <TextBlock Margin="0,2,0,0" TextWrapping="Wrap" x:Name="SelectedProfile_Description" Text="Обычный кастомный пресет. Ничего нового. Кстати, вы можете изменить ему описание!"/>
-                                    <TextBlock Margin="0,13,0,0"  Text="Настройки пресета" FontWeight="SemiBold" FontSize="16"/> 
-                                    <Border Margin="2,10,2,0" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/>
-                                    <StackPanel Margin="0,12,0,0" Orientation="Vertical">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xE9CA;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AAADD8E6" Offset="0.0" />
-                                                        <GradientStop Color="#AAFFC0CB" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock x:Uid="Param_CPU_c1" Margin="5,0,0,0" Text="Максимальная температура CPU" FontSize="15"></TextBlock>
-                                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
-                                            <Grid>
-                                                <CheckBox Width="10" x:Name="c1" Checked="C1_Checked" Unchecked="C1_Checked"/>
-                                                <Slider x:Name="c1v" ValueChanged="C1_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" Value="80" HorizontalAlignment="Left" Minimum="50" Maximum="100"/>
-                                            </Grid>
-                                            <NumberBox Margin="10,0,0,0" Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c1t" ValueChanged="C2t_ValueChanged"  GotFocus="C2t_FocusEngaged"  LostFocus="C2t_FocusDisengaged"  Value="{Binding ElementName=c1v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xE945;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AAfdb640" Offset="0.0" />
-                                                        <GradientStop Color="#AAbc7838" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c2" Text="Лимит мощности CPU" FontSize="15"></TextBlock>
-                                            <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c2_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox x:Name="c2" Checked="C2_Checked" Unchecked="C2_Checked"/>
-                                                <Slider x:Name="c2v" ValueChanged="C2_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="40" Value="20"/>
-                                            </Grid>
-                                            <NumberBox Margin="10,0,0,0"  CornerRadius="6" Height="33" Width="120" Minimum="1" x:Name="c2t" HorizontalAlignment="Left" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged"  SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Value="{Binding ElementName=c2v, Path=Value, Mode=TwoWay}"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xE945;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AAfdb640" Offset="0.0" />
-                                                        <GradientStop Color="#AAbc7838" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c3" Text="Реальная мощность CPU" FontSize="15"></TextBlock>
-                                            <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c3_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox x:Name="c3" Checked="C3_Checked" Unchecked="C3_Checked"/>
-                                                <Slider x:Name="c3v" ValueChanged="C3_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="25"/>
-                                            </Grid>
-                                            <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c3t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c3v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xE945;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AAfdb640" Offset="0.0" />
-                                                        <GradientStop Color="#AAbc7838" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c4" Text="Средняя мощность CPU" FontSize="15"></TextBlock>
-                                            <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c4_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox x:Name="c4" Checked="C4_Checked" Unchecked="C4_Checked"/>
-                                                <Slider x:Name="c4v" ValueChanged="C4_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="25"/>
-                                            </Grid>
-                                            <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c4t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c4v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xE916;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AAa217e3" Offset="0.0" />
-                                                        <GradientStop Color="#AA2f2f70" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c5" Text="Время быстрого разгона" FontSize="15"></TextBlock>
-                                            <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c5_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox x:Name="c5" Checked="C5_Checked" Unchecked="C5_Checked"/>
-                                                <Slider x:Name="c5v" ValueChanged="C5_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="128" Value="64"/>
-                                            </Grid>
-                                            <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c5t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c5v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xE916;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AAa217e3" Offset="0.0" />
-                                                        <GradientStop Color="#AA2f2f70" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c6" Text="Время медленного разгона" FontSize="15"></TextBlock>
-                                            <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c6_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox x:Name="c6" Checked="C6_Checked" Unchecked="C6_Checked"/>
-                                                <Slider x:Name="c6v" ValueChanged="C6_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="128" Value="128"/>
-                                            </Grid>
-                                            <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c6t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c6v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AAb3100c" Offset="0.0" />
-                                                        <GradientStop Color="#AAbf80ff" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v1" Text="Максимальный ток VRM (A)" FontSize="15"></TextBlock>
-                                            <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v1_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox x:Name="V1" Checked="V1_Checked" Unchecked="V1_Checked"></CheckBox>
-                                                <Slider x:Name="V1V" ValueChanged="V1v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="180" Value="64"/>
-                                            </Grid>
-                                            <NumberBox Margin="10,0,0,0" Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v1t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V1V, Path=Value, Mode=TwoWay}"></NumberBox>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AAb3100c" Offset="0.0" />
-                                                        <GradientStop Color="#AAbf80ff" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v2" Text="Лимит по току VRM (A)" FontSize="15"></TextBlock>
-                                            <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v2_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox x:Name="V2" Checked="V2_Checked" Unchecked="V2_Checked"/>
-                                                <Slider x:Name="V2V" ValueChanged="V2v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="180" Value="55"/>
-                                            </Grid>
-                                            <NumberBox Margin="10,0,0,0" Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v2t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V2V, Path=Value, Mode=TwoWay}"></NumberBox>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AAb3100c" Offset="0.0" />
-                                                        <GradientStop Color="#AAbf80ff" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v3" Text="Максимальный ток SoC (A)" FontSize="15"></TextBlock>
-                                            <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v3_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox Checked="V3_Checked" Unchecked="V3_Checked" x:Name="V3"></CheckBox>
-                                                <Slider x:Name="V3V" ValueChanged="V3v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="180"/>
-                                            </Grid>
-                                            <NumberBox Margin="10,0,0,0" Minimum="5" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v3t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V3V, Path=Value, Mode=TwoWay}"></NumberBox>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AAb3100c" Offset="0.0" />
-                                                        <GradientStop Color="#AAbf80ff" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v4" Text="Лимит по току SoC (A)" FontSize="15"></TextBlock>
-                                            <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v4_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox Checked="V4_Checked" Unchecked="V4_Checked" x:Name="V4"></CheckBox>
-                                                <Slider x:Name="V4V" ValueChanged="V4v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="180"/>
-                                            </Grid>
-                                            <NumberBox Margin="10,0,0,0" Minimum="5" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v4t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V4V, Path=Value, Mode=TwoWay}"></NumberBox>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xEC4A;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AA4de2d1" Offset="0.0" />
-                                                        <GradientStop Color="#AA09a22b" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_GPU_g9" Text="Минимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
-                                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g9_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox Checked="G9_Checked" Unchecked="G9_Checked" x:Name="g9"/>
-                                                <Slider x:Name="g9v" ValueChanged="G9v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="3100" Value="400"/>
-                                            </Grid>
-                                            <NumberBox Minimum="0" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g9t" Margin="10,0,0,0" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g9v, Path=Value, Mode=TwoWay}"></NumberBox>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                            <Border Height="20" Width="20" CornerRadius="15">
-                                                <FontIcon Glyph="&#xEC4A;" FontSize="15"/>
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                        <GradientStop Color="#AA4de2d1" Offset="0.0" />
-                                                        <GradientStop Color="#AA09a22b" Offset="0.10" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
-                                            </Border>
-                                            <TextBlock Margin="5,0,0,0" x:Uid="Param_GPU_g10" Text="Максимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
-                                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g10_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
-                                                <FontIcon.RenderTransform>
-                                                    <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                </FontIcon.RenderTransform>
-                                            </FontIcon>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,7,0,10" Orientation="Horizontal">
-                                            <Grid>
-                                                <CheckBox Checked="G10_Checked" Unchecked="G10_Checked" x:Name="g10"/>
-                                                <Slider x:Name="g10v" ValueChanged="G10v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="3100" Value="1200"/>
-                                            </Grid>
-                                            <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g10t" Margin="10,0,0,0" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g10v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                    <StackPanel x:Name="ProfileSettings_StackPanel" Margin="0,13,0,0" Orientation="Vertical">
+                                        <TextBlock Text="Настройки пресета" FontWeight="SemiBold" FontSize="16"/>
+                                        <Border Margin="2,10,2,0" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/>
+                                        <StackPanel Margin="0,12,0,0" Orientation="Vertical">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xE9CA;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AAADD8E6" Offset="0.0" />
+                                                            <GradientStop Color="#AAFFC0CB" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock x:Uid="Param_CPU_c1" Margin="5,0,0,0" Text="Максимальная температура CPU" FontSize="15"></TextBlock>
+                                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                                                <Grid>
+                                                    <CheckBox Width="10" x:Name="c1" Checked="C1_Checked" Unchecked="C1_Checked"/>
+                                                    <Slider x:Name="c1v" ValueChanged="C1_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" Value="80" HorizontalAlignment="Left" Minimum="50" Maximum="100"/>
+                                                </Grid>
+                                                <NumberBox Margin="10,0,0,0" Minimum="50" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c1t" ValueChanged="C2t_ValueChanged"  GotFocus="C2t_FocusEngaged"  LostFocus="C2t_FocusDisengaged"  Value="{Binding ElementName=c1v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                            <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c2" Text="Лимит мощности CPU" FontSize="15"></TextBlock>
+                                                <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c2_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                                <Grid>
+                                                    <CheckBox x:Name="c2" Checked="C2_Checked" Unchecked="C2_Checked"/>
+                                                    <Slider x:Name="c2v" ValueChanged="C2_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="40" Value="20"/>
+                                                </Grid>
+                                                <NumberBox Margin="10,0,0,0"  CornerRadius="6" Height="33" Width="120" Minimum="1" x:Name="c2t" HorizontalAlignment="Left" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged"  SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" Value="{Binding ElementName=c2v, Path=Value, Mode=TwoWay}"/>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                            <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c3" Text="Реальная мощность CPU" FontSize="15"></TextBlock>
+                                                <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c3_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                                <Grid>
+                                                    <CheckBox x:Name="c3" Checked="C3_Checked" Unchecked="C3_Checked"/>
+                                                    <Slider x:Name="c3v" ValueChanged="C3_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="25"/>
+                                                </Grid>
+                                                <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c3t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c3v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xE945;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AAfdb640" Offset="0.0" />
+                                                            <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c4" Text="Средняя мощность CPU" FontSize="15"></TextBlock>
+                                                <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c4_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                                <Grid>
+                                                    <CheckBox x:Name="c4" Checked="C4_Checked" Unchecked="C4_Checked"/>
+                                                    <Slider x:Name="c4v" ValueChanged="C4_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="45" Value="25"/>
+                                                </Grid>
+                                                <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c4t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c4v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xE916;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AAa217e3" Offset="0.0" />
+                                                            <GradientStop Color="#AA2f2f70" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c5" Text="Время быстрого разгона" FontSize="15"></TextBlock>
+                                                <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c5_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                                <Grid>
+                                                    <CheckBox x:Name="c5" Checked="C5_Checked" Unchecked="C5_Checked"/>
+                                                    <Slider x:Name="c5v" ValueChanged="C5_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="128" Value="64"/>
+                                                </Grid>
+                                                <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c5t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c5v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xE916;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AAa217e3" Offset="0.0" />
+                                                            <GradientStop Color="#AA2f2f70" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c6" Text="Время медленного разгона" FontSize="15"></TextBlock>
+                                                <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c6_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                                <Grid>
+                                                    <CheckBox x:Name="c6" Checked="C6_Checked" Unchecked="C6_Checked"/>
+                                                    <Slider x:Name="c6v" ValueChanged="C6_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="1" Maximum="128" Value="128"/>
+                                                </Grid>
+                                                <NumberBox Margin="10,0,0,0" Minimum="1" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="c6t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=c6v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AAb3100c" Offset="0.0" />
+                                                            <GradientStop Color="#AAbf80ff" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v1" Text="Максимальный ток VRM (A)" FontSize="15"></TextBlock>
+                                                <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v1_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                                <Grid>
+                                                    <CheckBox x:Name="V1" Checked="V1_Checked" Unchecked="V1_Checked"></CheckBox>
+                                                    <Slider x:Name="V1V" ValueChanged="V1v_ValueChanged"  Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="180" Value="64"/>
+                                                </Grid>
+                                                <NumberBox Margin="10,0,0,0" Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v1t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V1V, Path=Value, Mode=TwoWay}"></NumberBox>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AAb3100c" Offset="0.0" />
+                                                            <GradientStop Color="#AAbf80ff" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v2" Text="Лимит по току VRM (A)" FontSize="15"></TextBlock>
+                                                <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v2_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                                <Grid>
+                                                    <CheckBox x:Name="V2" Checked="V2_Checked" Unchecked="V2_Checked"/>
+                                                    <Slider x:Name="V2V" ValueChanged="V2v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="45" Maximum="180" Value="55"/>
+                                                </Grid>
+                                                <NumberBox Margin="10,0,0,0" Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v2t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V2V, Path=Value, Mode=TwoWay}"></NumberBox>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AAb3100c" Offset="0.0" />
+                                                            <GradientStop Color="#AAbf80ff" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v3" Text="Максимальный ток SoC (A)" FontSize="15"></TextBlock>
+                                                <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v3_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                                <Grid>
+                                                    <CheckBox Checked="V3_Checked" Unchecked="V3_Checked" x:Name="V3"></CheckBox>
+                                                    <Slider x:Name="V3V" ValueChanged="V3v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="13" Maximum="180"/>
+                                                </Grid>
+                                                <NumberBox Margin="10,0,0,0" Minimum="5" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v3t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V3V, Path=Value, Mode=TwoWay}"></NumberBox>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AAb3100c" Offset="0.0" />
+                                                            <GradientStop Color="#AAbf80ff" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v4" Text="Лимит по току SoC (A)" FontSize="15"></TextBlock>
+                                                <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v4_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                                <Grid>
+                                                    <CheckBox Checked="V4_Checked" Unchecked="V4_Checked" x:Name="V4"></CheckBox>
+                                                    <Slider x:Name="V4V" ValueChanged="V4v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="180"/>
+                                                </Grid>
+                                                <NumberBox Margin="10,0,0,0" Minimum="5" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="v4t" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=V4V, Path=Value, Mode=TwoWay}"></NumberBox>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xEC4A;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AA4de2d1" Offset="0.0" />
+                                                            <GradientStop Color="#AA09a22b" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_GPU_g9" Text="Минимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
+                                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g9_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                                                <Grid>
+                                                    <CheckBox Checked="G9_Checked" Unchecked="G9_Checked" x:Name="g9"/>
+                                                    <Slider x:Name="g9v" ValueChanged="G9v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="0" Maximum="3100" Value="400"/>
+                                                </Grid>
+                                                <NumberBox Minimum="0" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g9t" Margin="10,0,0,0" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g9v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <Border Height="20" Width="20" CornerRadius="15">
+                                                    <FontIcon Glyph="&#xEC4A;" FontSize="15"/>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
+                                                            <GradientStop Color="#AA4de2d1" Offset="0.0" />
+                                                            <GradientStop Color="#AA09a22b" Offset="0.10" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_GPU_g10" Text="Максимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
+                                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g10_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
+                                                    <FontIcon.RenderTransform>
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                    </FontIcon.RenderTransform>
+                                                </FontIcon>
+                                            </StackPanel>
+                                            <StackPanel Margin="0,7,0,10" Orientation="Horizontal">
+                                                <Grid>
+                                                    <CheckBox Checked="G10_Checked" Unchecked="G10_Checked" x:Name="g10"/>
+                                                    <Slider x:Name="g10v" ValueChanged="G10v_ValueChanged" Margin="35,0,0,0" VerticalAlignment="Top" Width="200" HorizontalAlignment="Left" Minimum="10" Maximum="3100" Value="1200"/>
+                                                </Grid>
+                                                <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="g10t" Margin="10,0,0,0" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=g10v, Path=Value, Mode=TwoWay}"></NumberBox>
+                                            </StackPanel>
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel> 
@@ -464,8 +509,9 @@
                         </Grid>
                     </Grid> 
                 </Grid>
+                <TeachingTip x:Name="ApplyTeach" IsOpen="False"/>
                 <Grid Grid.Row="1" Margin="23,-10,23,6">  
-                    <Button CornerRadius="16" MinHeight="20" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
+                    <Button x:Name="ApplyButton" Click="ApplyButton_Click" CornerRadius="16" MinHeight="20" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
                         <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <FontIcon Glyph="&#xE768;" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
                             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Применить" FontWeight="SemiBold" FontSize="16" Margin="0,-1,0,0"/>

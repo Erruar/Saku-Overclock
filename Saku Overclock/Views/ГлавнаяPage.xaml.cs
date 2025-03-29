@@ -693,7 +693,9 @@ public sealed partial class ГлавнаяPage
                         {
                             AppSettings.Preset = i;
                             AppSettings.SaveSettings();
-                            ShellPage.MandarinSparseUnitProfile(profile);
+
+                            ПараметрыPage.ApplyInfo = string.Empty; 
+                            ShellPage.MandarinSparseUnitProfile(profile,true);
 
                             NotificationsService.Notifies ??= [];
                             NotificationsService.Notifies.Add(new Notify

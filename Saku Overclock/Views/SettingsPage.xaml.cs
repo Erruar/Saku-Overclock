@@ -37,7 +37,7 @@ public sealed partial class SettingsPage
     private NiIconsSettings _niicons = new();
     private bool _isLoaded;
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>();
-    private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
+    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
 
     public SettingsPage()
     {
@@ -55,7 +55,7 @@ public sealed partial class SettingsPage
         {
             try
             {
-                AutostartCom.SelectedIndex = SettingsService.AutostartType;
+                AutostartCom.SelectedIndex = AppSettings.AutostartType;
             }
             catch
             {
@@ -63,22 +63,22 @@ public sealed partial class SettingsPage
             }
             try
             {
-                HideCom.SelectedIndex = SettingsService.HidingType;
+                HideCom.SelectedIndex = AppSettings.HidingType;
             }
             catch
             {
                 HideCom.SelectedIndex = 2;
             }
 
-            CbApplyStart.IsOn = SettingsService.ReapplyLatestSettingsOnAppLaunch;
-            CbAutoReapply.IsOn = SettingsService.ReapplyOverclock;
-            nudAutoReapply.Value = SettingsService.ReapplyOverclockTimer;
-            CbAutoCheck.IsOn = SettingsService.CheckForUpdates;
-            ReapplySafe.IsOn = SettingsService.ReapplySafeOverclock;
-            ThemeLight.Visibility = SettingsService.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
-            ThemeCustomBg.IsEnabled = SettingsService.ThemeType > 7;
-            Settings_RTSS_Enable.IsOn = SettingsService.RTSSMetricsEnabled;
-            Settings_Keybinds_Enable.IsOn = SettingsService.HotkeysEnabled;
+            CbApplyStart.IsOn = AppSettings.ReapplyLatestSettingsOnAppLaunch;
+            CbAutoReapply.IsOn = AppSettings.ReapplyOverclock;
+            nudAutoReapply.Value = AppSettings.ReapplyOverclockTimer;
+            CbAutoCheck.IsOn = AppSettings.CheckForUpdates;
+            ReapplySafe.IsOn = AppSettings.ReapplySafeOverclock;
+            ThemeLight.Visibility = AppSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
+            ThemeCustomBg.IsEnabled = AppSettings.ThemeType > 7;
+            Settings_RTSS_Enable.IsOn = AppSettings.RTSSMetricsEnabled;
+            Settings_Keybinds_Enable.IsOn = AppSettings.HotkeysEnabled;
             RTSS_LoadAndApply();
             UpdateTheme_ComboBox();
             NiIcon_LoadValues();
@@ -116,29 +116,29 @@ public sealed partial class SettingsPage
                     }
                 }
 
-                ThemeOpacity.Value = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity;
-                ThemeMaskOpacity.Value = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
-                ThemeCustom.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustom;
-                ThemeCustomBg.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustomBg;
+                ThemeOpacity.Value = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeOpacity;
+                ThemeMaskOpacity.Value = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeMaskOpacity;
+                ThemeCustom.IsOn = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustom;
+                ThemeCustomBg.IsOn = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustomBg;
                 Theme_Custom();
             }
 
-            ThemeCombobox.SelectedIndex = SettingsService.ThemeType;
+            ThemeCombobox.SelectedIndex = AppSettings.ThemeType;
             ThemeLight.Visibility =
-                SettingsService.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
+                AppSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
         }
         catch
         {
             try
             {
-                SettingsService.ThemeType /= 2;
+                AppSettings.ThemeType /= 2;
             }
             catch
             {
-                SettingsService.ThemeType = 0;
+                AppSettings.ThemeType = 0;
             } //Нельзя делить на ноль
 
-            SettingsService.SaveSettings();
+            AppSettings.SaveSettings();
         }
     }
 
@@ -158,7 +158,7 @@ public sealed partial class SettingsPage
             ThemeOpacity.Visibility = Visibility.Visible;
             ThemeMaskOpacity.Visibility = Visibility.Visible;
             ThemeMaskOpacity.Visibility = Visibility.Visible;
-            ThemeCustomBg.IsEnabled = SettingsService.ThemeType > 7;
+            ThemeCustomBg.IsEnabled = AppSettings.ThemeType > 7;
             ThemeCustomBg.Visibility = Visibility.Visible;
             ThemeLight.Visibility = Visibility.Visible;
             ThemeBgButton.Visibility = Visibility.Visible;
@@ -669,8 +669,8 @@ public sealed partial class SettingsPage
         }
 
         Settings_Keybinds_Tooltip.IsOpen = true;
-        SettingsService.HotkeysEnabled = Settings_Keybinds_Enable.IsOn;
-        SettingsService.SaveSettings();
+        AppSettings.HotkeysEnabled = Settings_Keybinds_Enable.IsOn;
+        AppSettings.SaveSettings();
     }
 
     private void AutostartCom_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -680,7 +680,7 @@ public sealed partial class SettingsPage
             return;
         }
 
-        SettingsService.AutostartType = AutostartCom.SelectedIndex;
+        AppSettings.AutostartType = AutostartCom.SelectedIndex;
         var autoruns = new TaskService();
         if (AutostartCom.SelectedIndex == 2 || AutostartCom.SelectedIndex == 3)
         {
@@ -710,7 +710,7 @@ public sealed partial class SettingsPage
             }
         }
 
-        SettingsService.SaveSettings();
+        AppSettings.SaveSettings();
     }
 
     private void HideCom_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -719,8 +719,8 @@ public sealed partial class SettingsPage
         {
             return;
         }
-        SettingsService.HidingType = HideCom.SelectedIndex;
-        SettingsService.SaveSettings();
+        AppSettings.HidingType = HideCom.SelectedIndex;
+        AppSettings.SaveSettings();
     }
 
     private void CbApplyStart_Click(object sender, RoutedEventArgs e)
@@ -730,9 +730,9 @@ public sealed partial class SettingsPage
             return;
         }
 
-        SettingsService.ReapplyLatestSettingsOnAppLaunch = CbApplyStart.IsOn;
+        AppSettings.ReapplyLatestSettingsOnAppLaunch = CbApplyStart.IsOn;
 
-        SettingsService.SaveSettings();
+        AppSettings.SaveSettings();
     }
 
     private void CbAutoReapply_Click(object sender, RoutedEventArgs e)
@@ -745,17 +745,17 @@ public sealed partial class SettingsPage
         if (CbAutoReapply.IsOn)
         {
             AutoReapplyNumberboxPanel.Visibility = Visibility.Visible;
-            SettingsService.ReapplyOverclock = true;
-            SettingsService.ReapplyOverclockTimer = nudAutoReapply.Value;
+            AppSettings.ReapplyOverclock = true;
+            AppSettings.ReapplyOverclockTimer = nudAutoReapply.Value;
         }
         else
         {
             AutoReapplyNumberboxPanel.Visibility = Visibility.Collapsed;
-            SettingsService.ReapplyOverclock = false;
-            SettingsService.ReapplyOverclockTimer = 3;
+            AppSettings.ReapplyOverclock = false;
+            AppSettings.ReapplyOverclockTimer = 3;
         }
 
-        SettingsService.SaveSettings();
+        AppSettings.SaveSettings();
     }
 
     private void CbAutoCheck_Click(object sender, RoutedEventArgs e)
@@ -765,9 +765,9 @@ public sealed partial class SettingsPage
             return;
         }
 
-        SettingsService.CheckForUpdates = CbAutoCheck.IsOn;
+        AppSettings.CheckForUpdates = CbAutoCheck.IsOn;
 
-        SettingsService.SaveSettings();
+        AppSettings.SaveSettings();
     }
 
     private async void NudAutoReapply_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
@@ -780,9 +780,9 @@ public sealed partial class SettingsPage
             }
 
             await Task.Delay(20);
-            SettingsService.ReapplyOverclock = true;
-            SettingsService.ReapplyOverclockTimer = nudAutoReapply.Value;
-            SettingsService.SaveSettings();
+            AppSettings.ReapplyOverclock = true;
+            AppSettings.ReapplyOverclockTimer = nudAutoReapply.Value;
+            AppSettings.SaveSettings();
         }
         catch
         {
@@ -800,9 +800,9 @@ public sealed partial class SettingsPage
             }
 
             await Task.Delay(20);
-            SettingsService.ReapplySafeOverclock = ReapplySafe.IsOn;
+            AppSettings.ReapplySafeOverclock = ReapplySafe.IsOn;
             SendSmuCommand.SafeReapply = ReapplySafe.IsOn;
-            SettingsService.SaveSettings();
+            AppSettings.SaveSettings();
         }
         catch
         {
@@ -817,33 +817,33 @@ public sealed partial class SettingsPage
             return;
         }
 
-        SettingsService.ThemeType = ThemeCombobox.SelectedIndex != -1 ? ThemeCombobox.SelectedIndex : 0;
-        SettingsService.SaveSettings();
+        AppSettings.ThemeType = ThemeCombobox.SelectedIndex != -1 ? ThemeCombobox.SelectedIndex : 0;
+        AppSettings.SaveSettings();
         if (_themeSelectorService.Themes.Count != 0)
         {
             try
             {
-                ViewModel.SwitchThemeCommand.Execute(_themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight
+                ViewModel.SwitchThemeCommand.Execute(_themeSelectorService.Themes[AppSettings.ThemeType].ThemeLight
                     ? ElementTheme.Light
                     : ElementTheme.Dark);
             }
             catch
             {
-                SettingsService.ThemeType = 0;
-                SettingsService.SaveSettings();
+                AppSettings.ThemeType = 0;
+                AppSettings.SaveSettings();
             }
 
-            if (SettingsService.ThemeType == 0)
+            if (AppSettings.ThemeType == 0)
             {
                 ViewModel.SwitchThemeCommand.Execute(ElementTheme.Default);
             }
 
-            ThemeCustom.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustom;
-            ThemeOpacity.Value = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity;
-            ThemeMaskOpacity.Value = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity;
-            ThemeCustomBg.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustomBg;
+            ThemeCustom.IsOn = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustom;
+            ThemeOpacity.Value = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeOpacity;
+            ThemeMaskOpacity.Value = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeMaskOpacity;
+            ThemeCustomBg.IsOn = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustomBg;
             ThemeCustomBg.IsEnabled = ThemeCombobox.SelectedIndex > 7;
-            ThemeLight.IsOn = _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight;
+            ThemeLight.IsOn = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeLight;
             ThemeLight.Visibility = ThemeCombobox.SelectedIndex > 7 ? Visibility.Visible : Visibility.Collapsed;
             ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
             Theme_Custom();
@@ -866,7 +866,7 @@ public sealed partial class SettingsPage
         }
 
         Theme_Custom();
-        _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustom = ThemeCustom.IsOn;
+        _themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustom = ThemeCustom.IsOn;
         _themeSelectorService.SaveThemeInSettings();
     }
 
@@ -877,7 +877,7 @@ public sealed partial class SettingsPage
             return;
         }
 
-        _themeSelectorService.Themes[SettingsService.ThemeType].ThemeOpacity = ThemeOpacity.Value;
+        _themeSelectorService.Themes[AppSettings.ThemeType].ThemeOpacity = ThemeOpacity.Value;
         _themeSelectorService.SaveThemeInSettings();
         NotificationsService.Notifies ??= [];
         NotificationsService.Notifies.Add(new Notify
@@ -896,7 +896,7 @@ public sealed partial class SettingsPage
             return;
         }
 
-        _themeSelectorService.Themes[SettingsService.ThemeType].ThemeMaskOpacity = ThemeMaskOpacity.Value;
+        _themeSelectorService.Themes[AppSettings.ThemeType].ThemeMaskOpacity = ThemeMaskOpacity.Value;
         _themeSelectorService.SaveThemeInSettings();
         NotificationsService.Notifies ??= [];
         NotificationsService.Notifies.Add(new Notify
@@ -915,7 +915,7 @@ public sealed partial class SettingsPage
             return;
         }
 
-        _themeSelectorService.Themes[SettingsService.ThemeType].ThemeCustomBg = ThemeCustomBg.IsOn;
+        _themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustomBg = ThemeCustomBg.IsOn;
         _themeSelectorService.SaveThemeInSettings();
         ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -1420,8 +1420,8 @@ public sealed partial class SettingsPage
                             {
                                 _themeSelectorService.Themes.RemoveAt(int.Parse(sureDelete.Name));
                                 _themeSelectorService.SaveThemeInSettings();
-                                SettingsService.ThemeType = 0;
-                                SettingsService.SaveSettings();
+                                AppSettings.ThemeType = 0;
+                                AppSettings.SaveSettings();
                                 InitVal();
                                 themeLoaderPanel.Children.Remove(eachButton);
                             }
@@ -1530,7 +1530,7 @@ public sealed partial class SettingsPage
             return;
         }
 
-        _themeSelectorService.Themes[SettingsService.ThemeType].ThemeLight = ThemeLight.IsOn;
+        _themeSelectorService.Themes[AppSettings.ThemeType].ThemeLight = ThemeLight.IsOn;
         _themeSelectorService.SaveThemeInSettings();
         NotificationsService.Notifies ??= [];
         NotificationsService.Notifies.Add(new Notify
@@ -1567,7 +1567,7 @@ public sealed partial class SettingsPage
         NiLoad();
         try
         {
-            Settings_ni_Icons.IsOn = SettingsService.NiIconsEnabled;
+            Settings_ni_Icons.IsOn = AppSettings.NiIconsEnabled;
             NiIconComboboxElements.Items.Clear();
             if (_niicons.Elements.Count != 0)
             {
@@ -1583,7 +1583,7 @@ public sealed partial class SettingsPage
                     }
                 }
 
-                NiIconComboboxElements.SelectedIndex = SettingsService.NiIconsType;
+                NiIconComboboxElements.SelectedIndex = AppSettings.NiIconsType;
                 if (NiIconComboboxElements.SelectedIndex >= 0)
                 {
                     NiIcon_Stackpanel.Visibility = Visibility.Visible;
@@ -1591,23 +1591,23 @@ public sealed partial class SettingsPage
                     Settings_NiIconComboboxElements.Visibility = Visibility.Visible;
                     Settings_ni_EnabledElement.Visibility = Visibility.Visible;
                 }
-                if (SettingsService.NiIconsType >= 0 && _niicons.Elements.Count >= SettingsService.NiIconsType)
+                if (AppSettings.NiIconsType >= 0 && _niicons.Elements.Count >= AppSettings.NiIconsType)
                 {
-                    Settings_ni_EnabledElement.IsOn = _niicons.Elements[SettingsService.NiIconsType].IsEnabled;
-                    if (!_niicons.Elements[SettingsService.NiIconsType].IsEnabled)
+                    Settings_ni_EnabledElement.IsOn = _niicons.Elements[AppSettings.NiIconsType].IsEnabled;
+                    if (!_niicons.Elements[AppSettings.NiIconsType].IsEnabled)
                     {
                         NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
                         Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
                     }
 
                     NiIconCombobox.SelectedIndex =
-                        _niicons.Elements[SettingsService.NiIconsType].ContextMenuType;
+                        _niicons.Elements[AppSettings.NiIconsType].ContextMenuType;
                     NiIcons_ColorPicker_ColorPicker.Color =
-                        ParseColor(_niicons.Elements[SettingsService.NiIconsType].Color);
-                    Settings_Ni_GradientToggle.IsOn = _niicons.Elements[SettingsService.NiIconsType].IsGradient;
-                    NiIconShapeCombobox.SelectedIndex = _niicons.Elements[SettingsService.NiIconsType].IconShape;
-                    Settings_ni_Fontsize.Value = _niicons.Elements[SettingsService.NiIconsType].FontSize;
-                    Settings_ni_Opacity.Value = _niicons.Elements[SettingsService.NiIconsType].BgOpacity;
+                        ParseColor(_niicons.Elements[AppSettings.NiIconsType].Color);
+                    Settings_Ni_GradientToggle.IsOn = _niicons.Elements[AppSettings.NiIconsType].IsGradient;
+                    NiIconShapeCombobox.SelectedIndex = _niicons.Elements[AppSettings.NiIconsType].IconShape;
+                    Settings_ni_Fontsize.Value = _niicons.Elements[AppSettings.NiIconsType].FontSize;
+                    Settings_ni_Opacity.Value = _niicons.Elements[AppSettings.NiIconsType].BgOpacity;
                 }
             }
 
@@ -1640,8 +1640,8 @@ public sealed partial class SettingsPage
         }
         catch
         {
-            SettingsService.NiIconsType = -1; //Нет сохранённых
-            SettingsService.SaveSettings();
+            AppSettings.NiIconsType = -1; //Нет сохранённых
+            AppSettings.SaveSettings();
         }
     }
 
@@ -1652,10 +1652,10 @@ public sealed partial class SettingsPage
             return;
         }
 
-        SettingsService.NiIconsType = NiIconComboboxElements.SelectedIndex;
-        SettingsService.SaveSettings();
+        AppSettings.NiIconsType = NiIconComboboxElements.SelectedIndex;
+        AppSettings.SaveSettings();
         NiLoad();
-        if (_niicons.Elements.Count != 0 && SettingsService.NiIconsType != -1)
+        if (_niicons.Elements.Count != 0 && AppSettings.NiIconsType != -1)
         {
             if (NiIconComboboxElements.SelectedIndex >= 0)
             {
@@ -1665,20 +1665,20 @@ public sealed partial class SettingsPage
                 Settings_ni_EnabledElement.Visibility = Visibility.Visible;
             }
 
-            Settings_ni_EnabledElement.IsOn = _niicons.Elements[SettingsService.NiIconsType].IsEnabled;
-            if (!_niicons.Elements[SettingsService.NiIconsType].IsEnabled)
+            Settings_ni_EnabledElement.IsOn = _niicons.Elements[AppSettings.NiIconsType].IsEnabled;
+            if (!_niicons.Elements[AppSettings.NiIconsType].IsEnabled)
             {
                 NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
                 Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
             }
 
-            NiIconCombobox.SelectedIndex = _niicons.Elements[SettingsService.NiIconsType].ContextMenuType;
+            NiIconCombobox.SelectedIndex = _niicons.Elements[AppSettings.NiIconsType].ContextMenuType;
             NiIcons_ColorPicker_ColorPicker.Color =
-                ParseColor(_niicons.Elements[SettingsService.NiIconsType].Color);
-            Settings_Ni_GradientToggle.IsOn = _niicons.Elements[SettingsService.NiIconsType].IsGradient;
-            NiIconShapeCombobox.SelectedIndex = _niicons.Elements[SettingsService.NiIconsType].IconShape;
-            Settings_ni_Fontsize.Value = _niicons.Elements[SettingsService.NiIconsType].FontSize;
-            Settings_ni_Opacity.Value = _niicons.Elements[SettingsService.NiIconsType].BgOpacity;
+                ParseColor(_niicons.Elements[AppSettings.NiIconsType].Color);
+            Settings_Ni_GradientToggle.IsOn = _niicons.Elements[AppSettings.NiIconsType].IsGradient;
+            NiIconShapeCombobox.SelectedIndex = _niicons.Elements[AppSettings.NiIconsType].IconShape;
+            Settings_ni_Fontsize.Value = _niicons.Elements[AppSettings.NiIconsType].FontSize;
+            Settings_ni_Opacity.Value = _niicons.Elements[AppSettings.NiIconsType].BgOpacity;
         }
     }
 
@@ -1690,7 +1690,7 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[SettingsService.NiIconsType].ContextMenuType = NiIconCombobox.SelectedIndex;
+        _niicons.Elements[AppSettings.NiIconsType].ContextMenuType = NiIconCombobox.SelectedIndex;
         NiSave();
     }
 
@@ -1701,8 +1701,8 @@ public sealed partial class SettingsPage
             return;
         }
 
-        SettingsService.NiIconsEnabled = Settings_ni_Icons.IsOn;
-        SettingsService.SaveSettings();
+        AppSettings.NiIconsEnabled = Settings_ni_Icons.IsOn;
+        AppSettings.SaveSettings();
         if (Settings_ni_Icons.IsOn)
         {
             Settings_ni_Icons_Element.Visibility = Visibility.Visible;
@@ -1739,7 +1739,7 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[SettingsService.NiIconsType].IsEnabled = Settings_ni_EnabledElement.IsOn;
+        _niicons.Elements[AppSettings.NiIconsType].IsEnabled = Settings_ni_EnabledElement.IsOn;
         NiSave();
         if (NiIconComboboxElements.SelectedIndex >= 0 && Settings_ni_EnabledElement.IsOn)
         {
@@ -1761,7 +1761,7 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[SettingsService.NiIconsType].FontSize =
+        _niicons.Elements[AppSettings.NiIconsType].FontSize =
             Convert.ToInt32(Settings_ni_Fontsize.Value);
         NiSave();
     }
@@ -1774,7 +1774,7 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[SettingsService.NiIconsType].BgOpacity = Settings_ni_Opacity.Value;
+        _niicons.Elements[AppSettings.NiIconsType].BgOpacity = Settings_ni_Opacity.Value;
         NiSave();
     }
 
@@ -2147,12 +2147,12 @@ public sealed partial class SettingsPage
         NiLoad();
         if (Settings_Ni_GradientColorSwitcher.IsChecked == false)
         {
-            _niicons.Elements[SettingsService.NiIconsType].Color =
+            _niicons.Elements[AppSettings.NiIconsType].Color =
                 $"{NiIcons_ColorPicker_ColorPicker.Color.R:X2}{NiIcons_ColorPicker_ColorPicker.Color.G:X2}{NiIcons_ColorPicker_ColorPicker.Color.B:X2}";
         }
         else if (Settings_Ni_GradientColorSwitcher.IsChecked == true)
         {
-            _niicons.Elements[SettingsService.NiIconsType].SecondColor =
+            _niicons.Elements[AppSettings.NiIconsType].SecondColor =
                 $"{NiIcons_ColorPicker_ColorPicker.Color.R:X2}{NiIcons_ColorPicker_ColorPicker.Color.G:X2}{NiIcons_ColorPicker_ColorPicker.Color.B:X2}";
         }
 
@@ -2167,7 +2167,7 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[SettingsService.NiIconsType].IsGradient = true;
+        _niicons.Elements[AppSettings.NiIconsType].IsGradient = true;
         NiSave();
     }
 
@@ -2185,13 +2185,13 @@ public sealed partial class SettingsPage
             {
                 button.Content = "Settings_ni_TrayMonGradientColorSwitch/Content".GetLocalized() + "2";
                 NiIcons_ColorPicker_ColorPicker.Color =
-                    ParseColor(_niicons.Elements[SettingsService.NiIconsType].SecondColor);
+                    ParseColor(_niicons.Elements[AppSettings.NiIconsType].SecondColor);
             }
             else if (button.IsChecked == false)
             {
                 button.Content = "Settings_ni_TrayMonGradientColorSwitch/Content".GetLocalized() + "1";
                 NiIcons_ColorPicker_ColorPicker.Color =
-                    ParseColor(_niicons.Elements[SettingsService.NiIconsType].Color);
+                    ParseColor(_niicons.Elements[AppSettings.NiIconsType].Color);
             }
         }
     }
@@ -2206,10 +2206,10 @@ public sealed partial class SettingsPage
         try
         {
             NiLoad();
-            _niicons.Elements.RemoveAt(SettingsService.ThemeType);
+            _niicons.Elements.RemoveAt(AppSettings.ThemeType);
             NiSave();
-            SettingsService.ThemeType = -1;
-            SettingsService.SaveSettings();
+            AppSettings.ThemeType = -1;
+            AppSettings.SaveSettings();
             NiIcon_LoadValues();
         }
         catch (Exception ex)
@@ -2226,12 +2226,12 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[SettingsService.NiIconsType].IsEnabled = true;
-        _niicons.Elements[SettingsService.NiIconsType].ContextMenuType = 1;
-        _niicons.Elements[SettingsService.NiIconsType].Color = "FF6ACF";
-        _niicons.Elements[SettingsService.NiIconsType].IconShape = 0;
-        _niicons.Elements[SettingsService.NiIconsType].FontSize = 9;
-        _niicons.Elements[SettingsService.NiIconsType].BgOpacity = 0.5d;
+        _niicons.Elements[AppSettings.NiIconsType].IsEnabled = true;
+        _niicons.Elements[AppSettings.NiIconsType].ContextMenuType = 1;
+        _niicons.Elements[AppSettings.NiIconsType].Color = "FF6ACF";
+        _niicons.Elements[AppSettings.NiIconsType].IconShape = 0;
+        _niicons.Elements[AppSettings.NiIconsType].FontSize = 9;
+        _niicons.Elements[AppSettings.NiIconsType].BgOpacity = 0.5d;
         NiSave();
         NiIconComboboxElements_SelectionChanged(NiIconComboboxElements, SelectionChangedEventArgs.FromAbi(0));
     }
@@ -2244,7 +2244,7 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[SettingsService.NiIconsType].IconShape = NiIconShapeCombobox.SelectedIndex;
+        _niicons.Elements[AppSettings.NiIconsType].IconShape = NiIconShapeCombobox.SelectedIndex;
         NiSave();
     }
 
@@ -2759,8 +2759,8 @@ public sealed partial class SettingsPage
             return;
         }
 
-        SettingsService.RTSSMetricsEnabled = Settings_RTSS_Enable.IsOn;
-        SettingsService.SaveSettings();
+        AppSettings.RTSSMetricsEnabled = Settings_RTSS_Enable.IsOn;
+        AppSettings.SaveSettings();
         Settings_RTSS_Enable_Name.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
         RTTS_GridView.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
         RTSS_AdvancedCodeEditor_ToggleSwitch.Visibility =

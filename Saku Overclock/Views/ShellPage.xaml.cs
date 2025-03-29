@@ -1,10 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using Windows.Foundation;
-using Windows.Graphics;
-using Windows.System;
-using Windows.UI.Text;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -13,13 +10,20 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
+using Windows.Foundation;
+using Windows.Graphics;
+using Windows.System;
+using Windows.UI.Text;
 using ZenStates.Core;
+using Action = System.Action;
 using Button = Microsoft.UI.Xaml.Controls.Button;
+using Task = System.Threading.Tasks.Task;
 using WindowActivatedEventArgs = Microsoft.UI.Xaml.WindowActivatedEventArgs;
 
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
@@ -107,6 +111,7 @@ public sealed partial class ShellPage
         StartInfoUpdate();
         GetProfileInit();
         Theme_Loader(); //Загрузить тему
+        AutoStartChecker();
     }
 
     #region App TitleBar Initialization
@@ -854,239 +859,239 @@ public sealed partial class ShellPage
                 // Если выбран режим ноутбук
                 // Так как там как у компьютеров
                 case 1 when cpu.info.codeName == Cpu.CodeName.DragonRange:
-                {
-                    if (profile.coper0)
                     {
-                        adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
-                    }
+                        if (profile.coper0)
+                        {
+                            adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper1)
-                    {
-                        adjline += $" --set-coper={1048576 | ((int)profile.coper1value & 0xFFFF)} ";
-                    }
+                        if (profile.coper1)
+                        {
+                            adjline += $" --set-coper={1048576 | ((int)profile.coper1value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper2)
-                    {
-                        adjline += $" --set-coper={2097152 | ((int)profile.coper2value & 0xFFFF)} ";
-                    }
+                        if (profile.coper2)
+                        {
+                            adjline += $" --set-coper={2097152 | ((int)profile.coper2value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper3)
-                    {
-                        adjline += $" --set-coper={3145728 | ((int)profile.coper3value & 0xFFFF)} ";
-                    }
+                        if (profile.coper3)
+                        {
+                            adjline += $" --set-coper={3145728 | ((int)profile.coper3value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper4)
-                    {
-                        adjline += $" --set-coper={4194304 | ((int)profile.coper4value & 0xFFFF)} ";
-                    }
+                        if (profile.coper4)
+                        {
+                            adjline += $" --set-coper={4194304 | ((int)profile.coper4value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper5)
-                    {
-                        adjline += $" --set-coper={5242880 | ((int)profile.coper5value & 0xFFFF)} ";
-                    }
+                        if (profile.coper5)
+                        {
+                            adjline += $" --set-coper={5242880 | ((int)profile.coper5value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper6)
-                    {
-                        adjline += $" --set-coper={6291456 | ((int)profile.coper6value & 0xFFFF)} ";
-                    }
+                        if (profile.coper6)
+                        {
+                            adjline += $" --set-coper={6291456 | ((int)profile.coper6value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper7)
-                    {
-                        adjline += $" --set-coper={7340032 | ((int)profile.coper7value & 0xFFFF)} ";
-                    }
+                        if (profile.coper7)
+                        {
+                            adjline += $" --set-coper={7340032 | ((int)profile.coper7value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper8)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.coper8value & 0xFFFF)} ";
-                    }
+                        if (profile.coper8)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.coper8value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper9)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.coper9value & 0xFFFF)} ";
-                    }
+                        if (profile.coper9)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.coper9value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper10)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.coper10value & 0xFFFF)} ";
-                    }
+                        if (profile.coper10)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.coper10value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper11)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.coper11value & 0xFFFF)} ";
-                    }
+                        if (profile.coper11)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.coper11value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper12)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.coper12value & 0xFFFF)} ";
-                    }
+                        if (profile.coper12)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.coper12value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper13)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.coper13value & 0xFFFF)} ";
-                    }
+                        if (profile.coper13)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.coper13value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper14)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.coper14value & 0xFFFF)} ";
-                    }
+                        if (profile.coper14)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.coper14value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper15)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.coper15value & 0xFFFF)} ";
-                    }
+                        if (profile.coper15)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.coper15value & 0xFFFF)} ";
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case 1:
-                {
-                    if (profile.coper0)
                     {
-                        adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
-                    }
+                        if (profile.coper0)
+                        {
+                            adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper1)
-                    {
-                        adjline += $" --set-coper={(1 << 20) | ((int)profile.coper1value & 0xFFFF)} ";
-                    }
+                        if (profile.coper1)
+                        {
+                            adjline += $" --set-coper={(1 << 20) | ((int)profile.coper1value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper2)
-                    {
-                        adjline += $" --set-coper={(2 << 20) | ((int)profile.coper2value & 0xFFFF)} ";
-                    }
+                        if (profile.coper2)
+                        {
+                            adjline += $" --set-coper={(2 << 20) | ((int)profile.coper2value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper3)
-                    {
-                        adjline += $" --set-coper={(3 << 20) | ((int)profile.coper3value & 0xFFFF)} ";
-                    }
+                        if (profile.coper3)
+                        {
+                            adjline += $" --set-coper={(3 << 20) | ((int)profile.coper3value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper4)
-                    {
-                        adjline += $" --set-coper={(4 << 20) | ((int)profile.coper4value & 0xFFFF)} ";
-                    }
+                        if (profile.coper4)
+                        {
+                            adjline += $" --set-coper={(4 << 20) | ((int)profile.coper4value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper5)
-                    {
-                        adjline += $" --set-coper={(5 << 20) | ((int)profile.coper5value & 0xFFFF)} ";
-                    }
+                        if (profile.coper5)
+                        {
+                            adjline += $" --set-coper={(5 << 20) | ((int)profile.coper5value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper6)
-                    {
-                        adjline += $" --set-coper={(6 << 20) | ((int)profile.coper6value & 0xFFFF)} ";
-                    }
+                        if (profile.coper6)
+                        {
+                            adjline += $" --set-coper={(6 << 20) | ((int)profile.coper6value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper7)
-                    {
-                        adjline += $" --set-coper={(7 << 20) | ((int)profile.coper7value & 0xFFFF)} ";
-                    }
+                        if (profile.coper7)
+                        {
+                            adjline += $" --set-coper={(7 << 20) | ((int)profile.coper7value & 0xFFFF)} ";
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 //Если выбран режим компьютер
                 case 2:
-                {
-                    if (profile.coper0)
                     {
-                        adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
-                    }
+                        if (profile.coper0)
+                        {
+                            adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper1)
-                    {
-                        adjline += $" --set-coper={1048576 | ((int)profile.coper1value & 0xFFFF)} ";
-                    }
+                        if (profile.coper1)
+                        {
+                            adjline += $" --set-coper={1048576 | ((int)profile.coper1value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper2)
-                    {
-                        adjline += $" --set-coper={2097152 | ((int)profile.coper2value & 0xFFFF)} ";
-                    }
+                        if (profile.coper2)
+                        {
+                            adjline += $" --set-coper={2097152 | ((int)profile.coper2value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper3)
-                    {
-                        adjline += $" --set-coper={3145728 | ((int)profile.coper3value & 0xFFFF)} ";
-                    }
+                        if (profile.coper3)
+                        {
+                            adjline += $" --set-coper={3145728 | ((int)profile.coper3value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper4)
-                    {
-                        adjline += $" --set-coper={4194304 | ((int)profile.coper4value & 0xFFFF)} ";
-                    }
+                        if (profile.coper4)
+                        {
+                            adjline += $" --set-coper={4194304 | ((int)profile.coper4value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper5)
-                    {
-                        adjline += $" --set-coper={5242880 | ((int)profile.coper5value & 0xFFFF)} ";
-                    }
+                        if (profile.coper5)
+                        {
+                            adjline += $" --set-coper={5242880 | ((int)profile.coper5value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper6)
-                    {
-                        adjline += $" --set-coper={6291456 | ((int)profile.coper6value & 0xFFFF)} ";
-                    }
+                        if (profile.coper6)
+                        {
+                            adjline += $" --set-coper={6291456 | ((int)profile.coper6value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper7)
-                    {
-                        adjline += $" --set-coper={7340032 | ((int)profile.coper7value & 0xFFFF)} ";
-                    }
+                        if (profile.coper7)
+                        {
+                            adjline += $" --set-coper={7340032 | ((int)profile.coper7value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper8)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.coper8value & 0xFFFF)} ";
-                    }
+                        if (profile.coper8)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.coper8value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper9)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.coper9value & 0xFFFF)} ";
-                    }
+                        if (profile.coper9)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.coper9value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper10)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.coper10value & 0xFFFF)} ";
-                    }
+                        if (profile.coper10)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.coper10value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper11)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.coper11value & 0xFFFF)} ";
-                    }
+                        if (profile.coper11)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.coper11value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper12)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.coper12value & 0xFFFF)} ";
-                    }
+                        if (profile.coper12)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.coper12value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper13)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.coper13value & 0xFFFF)} ";
-                    }
+                        if (profile.coper13)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.coper13value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper14)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.coper14value & 0xFFFF)} ";
-                    }
+                        if (profile.coper14)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.coper14value & 0xFFFF)} ";
+                        }
 
-                    if (profile.coper15)
-                    {
-                        adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.coper15value & 0xFFFF)} ";
-                    }
+                        if (profile.coper15)
+                        {
+                            adjline +=
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.coper15value & 0xFFFF)} ";
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 // Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
                 case 3:
-                {
-                    cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName);
-                    var options = new Dictionary<int, double>
+                    {
+                        cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName);
+                        var options = new Dictionary<int, double>
                     {
                         { 0, profile.coper0value },
                         { 1, profile.coper1value },
@@ -1105,7 +1110,7 @@ public sealed partial class ShellPage
                         { 14, profile.coper14value },
                         { 15, profile.coper15value }
                     };
-                    var checks = new Dictionary<int, bool>
+                        var checks = new Dictionary<int, bool>
                     {
                         { 0, profile.coper0 },
                         { 1, profile.coper1 },
@@ -1124,25 +1129,25 @@ public sealed partial class ShellPage
                         { 14, profile.coper14 },
                         { 15, profile.coper15 }
                     };
-                    for (var i = 0; i < cpu.info.topology.physicalCores; i++)
-                    {
-                        var checkbox = i < 16 && checks[i];
-                        if (checkbox)
+                        for (var i = 0; i < cpu.info.topology.physicalCores; i++)
                         {
-                            var setVal = options[i];
-                            var mapIndex = i < 8 ? 0 : 1;
-                            if (((~cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1) // Если ядро включено
+                            var checkbox = i < 16 && checks[i];
+                            if (checkbox)
                             {
-                                if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U) // Если команда существует
+                                var setVal = options[i];
+                                var mapIndex = i < 8 ? 0 : 1;
+                                if (((~cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1) // Если ядро включено
                                 {
-                                    cpu.SetPsmMarginSingleCore(GetCoreMask(cpu, i), Convert.ToInt32(setVal));
+                                    if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U) // Если команда существует
+                                    {
+                                        cpu.SetPsmMarginSingleCore(GetCoreMask(cpu, i), Convert.ToInt32(setVal));
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    break;
-                }
+                        break;
+                    }
             }
         }
 
@@ -1367,10 +1372,10 @@ public sealed partial class ShellPage
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return; //Удалить и не показывать 
                     case "UpdateNAVBAR":
-                    {
-                        HideNavBar();
-                        return; //Удалить и не показывать
-                    }
+                        {
+                            HideNavBar();
+                            return; //Удалить и не показывать
+                        }
                     case "FirstLaunch":
                         HideNavBar();
                         Icon.Visibility = Visibility.Collapsed;
@@ -1430,7 +1435,7 @@ public sealed partial class ShellPage
                     case "Profile_APPLIED":
                         contains = true;
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
-                        break; 
+                        break;
                 }
 
                 if (notify1.Msg.Contains("DELETEUNAVAILABLE"))
@@ -1944,6 +1949,54 @@ public sealed partial class ShellPage
 
     #endregion
 
+    public void AutoStartChecker()
+    {
+        var taskService = new TaskService();
+        const string taskName = "Saku Overclock";
+        var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
+        var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
+        var pathToStartupLnk = Path.Combine(pathToProgramDirectory!, "Saku Overclock.exe");
+
+        if (AppSettings.AutostartType == 2 || AppSettings.AutostartType == 3)
+        {
+            // Проверяем существование задачи
+            var existingTask = taskService.GetTask(taskName);
+            if (existingTask != null)
+            {
+                // Проверяем корректность пути к исполняемому файлу
+                if (existingTask.Definition.Actions[0] is ExecAction execAction && execAction.Path.Equals(pathToStartupLnk, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Задача существует и путь корректен, ничего не делаем
+                    return;
+                }
+                else
+                {
+                    // Путь некорректен, удаляем задачу
+                    taskService.RootFolder.DeleteTask(taskName);
+                }
+            }
+
+            // Создаём новую задачу
+            var taskDefinition = taskService.NewTask();
+            taskDefinition.RegistrationInfo.Description = "An awesome ryzen laptop overclock utility for those who want real performance! Autostart Saku Overclock application task";
+            taskDefinition.RegistrationInfo.Author = "Sakura Serzhik";
+            taskDefinition.RegistrationInfo.Version = new Version("1.0.0");
+            taskDefinition.Principal.RunLevel = TaskRunLevel.Highest;
+            taskDefinition.Triggers.Add(new LogonTrigger { Enabled = true });
+            taskDefinition.Actions.Add(new ExecAction(pathToStartupLnk));
+
+            taskService.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
+        }
+        else
+        {
+            // Если задача существует, удаляем её
+            if (taskService.GetTask(taskName) != null)
+            {
+                taskService.RootFolder.DeleteTask(taskName);
+            }
+        }
+    }
+
     private void Theme_Loader()
     {
         try
@@ -2021,31 +2074,31 @@ public sealed partial class ShellPage
         switch (file)
         {
             case 'p':
-            {
-                _profile = [];
-                try
                 {
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                        JsonConvert.SerializeObject(_profile));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\profile.json");
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                        JsonConvert.SerializeObject(_profile));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                }
+                    _profile = [];
+                    try
+                    {
+                        Directory.CreateDirectory(
+                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                        File.WriteAllText(
+                            Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                            JsonConvert.SerializeObject(_profile));
+                    }
+                    catch
+                    {
+                        File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                    @"\SakuOverclock\profile.json");
+                        Directory.CreateDirectory(
+                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                        File.WriteAllText(
+                            Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                            JsonConvert.SerializeObject(_profile));
+                        App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
+                            AppContext.BaseDirectory));
+                    }
 
-                break;
-            }
+                    break;
+                }
         }
     }
 
@@ -2101,7 +2154,7 @@ public sealed partial class ShellPage
                         ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                             nextCustomProfile);
                         MainWindow.Applyer.ApplyWithoutAdjLine(false);
-                    }); 
+                    });
 
                     MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
                         "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
@@ -2114,8 +2167,8 @@ public sealed partial class ShellPage
                 DispatcherQueue.TryEnqueue(() => // Используем диспатчер страницы
                 {
                     nextPremadeProfile = NextPremadeProfile_Switch(out var icon, out var desc);
-                ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
-                    nextPremadeProfile, icon, desc);
+                    ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                        nextPremadeProfile, icon, desc);
                     MainWindow.Applyer.ApplyWithoutAdjLine(false);
                 });
 

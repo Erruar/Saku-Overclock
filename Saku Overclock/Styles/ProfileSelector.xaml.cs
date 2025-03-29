@@ -74,7 +74,7 @@ public sealed partial class ProfileSelector : UserControl
         }
     }
 
-    private void UpdateView()
+    public void UpdateView()
     {
         _pages.Clear();
         for (var i = 0; i < Items.Count; i += _visibleCount)

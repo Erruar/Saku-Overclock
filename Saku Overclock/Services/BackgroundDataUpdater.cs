@@ -27,6 +27,9 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     private string? _cachedSelectedProfileReplacement; // Кешированная замена имени профиля
     private bool _isIconsCreated;
 
+    private bool _isIconsUpdated; // Флаги, служащие подтверждением уничтожения или обновления информации на каких-либо страницах приложения в реальном времени
+    private bool _isRtssUpdated;
+
     private readonly List<ИнформацияPage.MinMax> _niiconsMinMaxValues =
     [
         new(), new(), new(), new(), new(), new(), new(), new(), new(), new(), new()
@@ -341,6 +344,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 var (avgCoreClk, avgCoreVolt, endClkString) = CalculateCoreMetrics(sensorsInformation);
                 if (AppSettings.RTSSMetricsEnabled)
                 {
+                    _isRtssUpdated = true;
                     var replacements = GetReplacements(avgCoreClk, avgCoreVolt, sensorsInformation);
 
                     if (_rtssset.AdvancedCodeEditor.Contains("$cpu_clock_cycle$") &&
@@ -363,6 +367,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
                 if (AppSettings.NiIconsEnabled)
                 {
+                    _isIconsUpdated = true;
                     if (!_isIconsCreated)
                     {
                         CreateNotifyIcons();
@@ -409,6 +414,9 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                     });
                 }
             }
+
+            if (_isRtssUpdated && !AppSettings.RTSSMetricsEnabled) { RtssHandler.ResetOsdText(); _isRtssUpdated = false; }
+            if (_isIconsUpdated && !AppSettings.NiIconsEnabled) { DisposeAllNotifyIcons(); _isIconsUpdated = false; _isIconsCreated = false; }
         }
         catch (Exception ex)
         {
@@ -614,7 +622,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         // Перебираем все иконки и вызываем Dispose для каждой из них
         foreach (var icon in _trayIcons.Values)
         {
-            icon.Dispose();
+            App.MainWindow.DispatcherQueue.TryEnqueue(icon.Dispose);
         }
 
         // Очищаем коллекцию иконок

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
@@ -158,9 +159,16 @@ public partial class App
         {
             FileName = "CrashHandler.exe",
             Arguments = $"{e} -theme dark -appName \"Saku Overclock\" -iconPath \"{sakuLogo}\"",
-            Verb = "runas" 
+            Verb = "runas"
         });
     }
+
+    // Импортируем функцию SetPriorityClass из kernel32.dll
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool SetPriorityClass(IntPtr hProcess, uint dwPriorityClass);
+
+    // Константа для приоритета "Нормальный"
+    private const uint NORMAL_PRIORITY_CLASS = 0x20;
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
@@ -171,6 +179,13 @@ public partial class App
             AppContext.BaseDirectory));
 
         await GetService<IActivationService>().ActivateAsync(args);
+
+        await Task.Delay(1500);
+        await Task.Run(() =>
+        {
+            var hProcess = Process.GetCurrentProcess().Handle;
+            SetPriorityClass(hProcess, NORMAL_PRIORITY_CLASS);
+        });
     }
     #endregion
 }
