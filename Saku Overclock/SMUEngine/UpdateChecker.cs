@@ -41,11 +41,23 @@ public abstract class UpdateChecker
     } = ГлавнаяViewModel.GetVersion();
 
     private static Release? _updateNewVersion;
+    private static bool _apiRateLimited;
 
     public static async Task CheckForUpdates()
     {
+        if (_apiRateLimited) { return; }
         var client = new GitHubClient(new ProductHeaderValue("Saku-Overclock-Updater"));
-        var releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
+        IReadOnlyList<Release>? releases = null;
+        try
+        {
+           releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
+
+        }
+        catch
+        {
+            _apiRateLimited = true;
+            return;
+        }
 
         // Выбираем релиз с самой высокой версией
         var latestRelease = releases
@@ -86,11 +98,26 @@ public abstract class UpdateChecker
 
     public static async Task GenerateReleaseInfoString()
     {
+        if (_apiRateLimited) 
+        {
+            GitHubInfoString = "**Failed to fetch info**";
+            return; 
+        }
         try
         {
 
             var client = new GitHubClient(new ProductHeaderValue("Saku-Overclock-Updater"));
-            var releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
+            IReadOnlyList<Release>? releases = null;
+            try
+            {
+                releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
+            }
+            catch
+            {
+                _apiRateLimited = true;
+                GitHubInfoString = "**Failed to fetch info**";
+                return;
+            }
 
             var sb = new StringBuilder();
             foreach (var release in releases.OrderByDescending(r => r.CreatedAt))
@@ -103,6 +130,7 @@ public abstract class UpdateChecker
         }
         catch
         {
+            _apiRateLimited = true;
             GitHubInfoString = "**Failed to fetch info**";
         }
     }

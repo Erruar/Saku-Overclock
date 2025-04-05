@@ -30,10 +30,10 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="23,-2,0,0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Vertical">
-                            <TextBlock FontWeight="SemiBold" FontSize="16" Text="Расширенный режим"/>
+                            <TextBlock FontWeight="SemiBold" x:Uid="Preset_AdvancedMode" FontSize="16" Text="Расширенный режим"/>
                         </StackPanel>
                         <Button Grid.Column="1" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Stretch" x:Name="TryAdvancedButton" CornerRadius="16" Margin="10,0,23,0" Click="TryAdvancedButton_Click">
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Попробовать" FontWeight="SemiBold"/>
+                            <TextBlock x:Uid="Preset_AdvancedModeTry" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Попробовать" FontWeight="SemiBold"/>
                         </Button>
                     </Grid>
                     <Grid Grid.Row="1" Margin="0,10,0,0" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
@@ -80,7 +80,7 @@
                                     </DataTemplate>
                                 </FlipView.ItemTemplate>
                             </FlipView>
-                            <TextBlock Margin="0,7,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Text="Советы" Grid.Row="0" FontWeight="SemiBold" FontSize="16"/>
+                            <TextBlock Margin="0,7,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" x:Uid="Preset_Suggestions" Text="Советы" Grid.Row="0" FontWeight="SemiBold" FontSize="16"/>
                         </Grid>
                         <Grid Grid.Column="1" Margin="5,0,0,12" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=Discrd, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
                             <FlipView x:Name="AdvancedFlipView" Background="Transparent">
@@ -90,7 +90,7 @@
                                             <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                                                 <StackPanel HorizontalAlignment="Center" Orientation="Vertical">
                                                     <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                                        <TextBlock FontWeight="SemiBold" FontSize="17" Text="Андервольтинг"/>
+                                                        <TextBlock FontWeight="SemiBold" FontSize="17" x:Uid="Preset_Undervolting" Text="Андервольтинг"/>
                                                         <FontIcon Margin="5,7.5,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" ToolTipService.ToolTip="Андервольтинг это возможность снизить напряжение на вашем процессоре" Glyph="&#xe9ce;">
                                                             <FontIcon.RenderTransform>
                                                                 <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
@@ -103,7 +103,7 @@
                                                         <ComboBoxItem Content="Сильный"/>
                                                     </ComboBox>
                                                 </StackPanel>
-                                                <ToggleSwitch x:Name="O1" Toggled="O1_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
+                                                <ToggleSwitch x:Uid="Preset_Switch" x:Name="O1" Toggled="O1_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
                                                 <Border Height="10" Background="Transparent"/>
                                             </StackPanel>
                                         </Grid>
@@ -115,9 +115,14 @@
                                             <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                                                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                                                     <TextBlock FontWeight="SemiBold" FontSize="17" Text="Stream Optimizer v2.0"/>
+                                                    <FontIcon Margin="5,6,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Preset_StreamOptimizer" Glyph="&#xe9ce;">
+                                                        <FontIcon.RenderTransform>
+                                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        </FontIcon.RenderTransform>
+                                                    </FontIcon>
                                                 </StackPanel>
                                                 <InfoBar Severity="Error" Margin="22,7,22,0" x:Name="StreamOptimizerUnsupportedSign" HorizontalAlignment="Center" IsClosable="False" IsOpen="True" Title="Не поддерживается!"/>
-                                                <ToggleSwitch Visibility="Collapsed" x:Name="StreamOptimizerSwitch" Toggled="StreamOptimizerSwitch_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
+                                                <ToggleSwitch x:Uid="Preset_Switch" Visibility="Collapsed" x:Name="StreamOptimizerSwitch" Toggled="StreamOptimizerSwitch_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
                                                 <Border Height="10" Background="Transparent"/>
                                             </StackPanel>
                                         </Grid>
@@ -128,9 +133,14 @@
                                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                             <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                                                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                                    <TextBlock FontWeight="SemiBold" FontSize="17" Text="RTSS Оверлей"/>
+                                                    <TextBlock FontWeight="SemiBold" FontSize="17" x:Uid="Preset_RtssOverlay" Text="RTSS Оверлей"/>
+                                                    <FontIcon Margin="5,6,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="InfoARTSSTooltip" Glyph="&#xe9ce;">
+                                                        <FontIcon.RenderTransform>
+                                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        </FontIcon.RenderTransform>
+                                                    </FontIcon>
                                                 </StackPanel>
-                                                <ToggleSwitch x:Name="RtssOverlaySwitch" Toggled="RtssOverlaySwitch_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
+                                                <ToggleSwitch x:Uid="Preset_Switch" x:Name="RtssOverlaySwitch" Toggled="RtssOverlaySwitch_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
                                                 <Border Height="10" Background="Transparent"/>
                                             </StackPanel>
                                         </Grid>
@@ -142,15 +152,20 @@
                                             <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                                                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                                                     <TextBlock FontWeight="SemiBold" FontSize="17" Text="TrayMon©"/>
+                                                    <FontIcon Margin="5,6,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="InfoANiIcons" Glyph="&#xe9ce;">
+                                                        <FontIcon.RenderTransform>
+                                                            <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        </FontIcon.RenderTransform>
+                                                    </FontIcon>
                                                 </StackPanel>
-                                                <ToggleSwitch x:Name="TrayMonFeatSwitch" Toggled="TrayMonFeatSwitch_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
+                                                <ToggleSwitch x:Uid="Preset_Switch" x:Name="TrayMonFeatSwitch" Toggled="TrayMonFeatSwitch_Toggled" Margin="37,0,-37,0" HorizontalAlignment="Center"/>
                                                 <Border Height="10" Background="Transparent"/>
                                             </StackPanel>
                                         </Grid>
                                     </ScrollViewer>
                                 </FlipViewItem>
                             </FlipView>
-                            <TextBlock Margin="0,7,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Text="Дополнительно" Grid.Row="0" FontWeight="SemiBold" FontSize="16"/>
+                            <TextBlock Margin="0,7,0,0" x:Uid="Preset_AdvancedFeatures" VerticalAlignment="Top" HorizontalAlignment="Center" Text="Дополнительно" Grid.Row="0" FontWeight="SemiBold" FontSize="16"/>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -171,19 +186,23 @@
                                 <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                             </Button.RenderTransform>
                             <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <FontIcon Glyph="&#xE70F;" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <FontIcon Margin="3,0,0,0" Glyph="&#xE70F;" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+                        <Button Margin="0,17,40,0" x:Name="CurrentMode_Button" Click="AnimatedToggleButton_Click" BorderBrush="Transparent" Background="Transparent" VerticalAlignment="Top" Grid.Row="0" CornerRadius="16" HorizontalAlignment="Right" Width="40" Height="40" HorizontalContentAlignment="Stretch">
+                            <Button.RenderTransform>
+                                <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
+                            </Button.RenderTransform>
+                            <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <FontIcon Margin="3,0,0,0" Glyph="&#xF4A5;" x:Name="CurrentMode_Icon" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                             </Grid>
                         </Button>
                         <StackPanel Margin="23,17,23,0" VerticalAlignment="Top" Grid.Row="0" Orientation="Vertical">
                             <TextBlock HorizontalAlignment="Left" MaxHeight="20" VerticalAlignment="Top" Text="Информация о пресете" FontWeight="SemiBold" FontSize="16"/> 
                             <Border Margin="2,10,2,0" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/>
                         </StackPanel>
-                        <Grid Grid.Row="1" Margin="23,10,23,10">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="108" x:Name="OptionsVizualizerRow"/>
-                            </Grid.RowDefinitions>
-                            <ScrollViewer Grid.Row="0">
+                        <Grid Grid.Row="1" Margin="23,10,23,10"> 
+                            <ScrollViewer>
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Margin="0,-2,0,0" TextWrapping="Wrap" x:Name="SelectedProfile_Name" FontWeight="SemiBold" FontSize="16" Text="Имя пресета"/>
                                     <TextBlock Margin="0,2,0,0" TextWrapping="Wrap" x:Name="SelectedProfile_Description" Text="Обычный кастомный пресет. Ничего нового. Кстати, вы можете изменить ему описание!"/>
@@ -482,30 +501,7 @@
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel> 
-                            </ScrollViewer>
-                            <Grid Grid.Row="1" Margin="0,0,0,0">
-                                <Button Margin="0,0,-13.5,0" ToolTipService.ToolTip="Скрыть" x:Name="HideOptionsVizualizerButton" Click="HideOptionsVizualizer_Click" BorderBrush="Transparent" Background="Transparent" VerticalAlignment="Top" Grid.Row="0" CornerRadius="16" HorizontalAlignment="Right" Width="40" Height="40" HorizontalContentAlignment="Stretch">
-                                    <Button.RenderTransform>
-                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
-                                    </Button.RenderTransform>
-                                    <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                        <FontIcon Glyph="&#xE738;" x:Name="HideOptionsVizualizerGlyph" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Button>
-                                <StackPanel Margin="0,-2,0,0" x:Name="SetOptionsScaler">
-                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="SemiBold" FontSize="16" Text="Применяемые настройки"/>
-                                    <Border Margin="2,10,2,0" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/>
-                                </StackPanel>
-                                <local:OptionsVisualizer x:Name="SetOptionsVisualizer" Margin="0,40,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                    <local:OptionsVisualizer.Items>
-                                        <local:OptionsItem Visibility="Visible" Value="80C" Sign="Temp" Description="Temp"/>
-                                        <local:OptionsItem Visibility="Visible" Value="20W" Sign="STAPM" Description="STAPM"/>
-                                        <local:OptionsItem Visibility="Visible" Value="30W" Sign="Fast" Description="Fast"/>
-                                        <local:OptionsItem Visibility="Visible" Value="23W" Sign="Slow" Description="Slow"/>
-                                        <local:OptionsItem Visibility="Visible" Value="70A" Sign="VRM EDC" Description="VRM EDC"/>
-                                    </local:OptionsVisualizer.Items>
-                                </local:OptionsVisualizer>
-                            </Grid>
+                            </ScrollViewer> 
                         </Grid>
                     </Grid> 
                 </Grid>

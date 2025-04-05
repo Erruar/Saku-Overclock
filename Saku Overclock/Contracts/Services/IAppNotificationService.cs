@@ -5,7 +5,7 @@ namespace Saku_Overclock.Contracts.Services;
 
 public interface IAppNotificationService
 {
-    public List<Notify>? Notifies
+    List<Notify>? Notifies
     {
         get; set;
     }

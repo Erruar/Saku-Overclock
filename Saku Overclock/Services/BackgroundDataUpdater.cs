@@ -12,6 +12,7 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
+using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using Icon = System.Drawing.Icon;
 
@@ -22,9 +23,11 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     private readonly IDataProvider? _dataProvider = dataProvider;
     private CancellationTokenSource? _cts;
     private Task? _updateTask;
-    private RTSSsettings _rtssset = new(); // Конфиг с настройками модуля RTSS
+    private readonly IRtssSettingsService
+        RtssSettings = App.GetService<IRtssSettingsService>(); // Конфиг с настройками модуля RTSS
     private string? _rtssLine; // Строка для вывода в модуль RTSS
     private string? _cachedSelectedProfileReplacement; // Кешированная замена имени профиля
+    private readonly string _cachedAppVersion = ГлавнаяViewModel.GetVersion(); // Кешированная версия приложения
     private bool _isIconsCreated;
 
     private bool _isIconsUpdated; // Флаги, служащие подтверждением уничтожения или обновления информации на каких-либо страницах приложения в реальном времени
@@ -62,7 +65,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 CreateNotifyIcons();
             }
 
-            RtssLoad();
+            RtssSettings.LoadSettings();
         }
         catch (Exception ex)
         {
@@ -300,38 +303,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
             _niicons = new NiIconsSettings();
             NiSave();
         }
-    }
-
-    private void RtssSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json",
-                JsonConvert.SerializeObject(_rtssset, Formatting.Indented));
-        }
-        catch
-        {
-            // ignored
-        }
-    }
-
-    private void RtssLoad()
-    {
-        try
-        {
-            _rtssset = JsonConvert.DeserializeObject<RTSSsettings>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\rtssparam.json"))!;
-            _rtssset.RTSS_Elements.RemoveRange(0, 9);
-        }
-        catch
-        {
-            _rtssset = new RTSSsettings();
-            RtssSave();
-        }
-    }
+    } 
 
     #endregion
 
@@ -347,11 +319,11 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                     _isRtssUpdated = true;
                     var replacements = GetReplacements(avgCoreClk, avgCoreVolt, sensorsInformation);
 
-                    if (_rtssset.AdvancedCodeEditor.Contains("$cpu_clock_cycle$") &&
-                        _rtssset.AdvancedCodeEditor.Contains("$cpu_clock_cycle_end$"))
+                    if (RtssSettings.AdvancedCodeEditor.Contains("$cpu_clock_cycle$") &&
+                        RtssSettings.AdvancedCodeEditor.Contains("$cpu_clock_cycle_end$"))
                     {
-                        var prefix = _rtssset.AdvancedCodeEditor.Split("$cpu_clock_cycle$")[0];
-                        var suffix = _rtssset.AdvancedCodeEditor.Split("$cpu_clock_cycle_end$")[1];
+                        var prefix = RtssSettings.AdvancedCodeEditor.Split("$cpu_clock_cycle$")[0];
+                        var suffix = RtssSettings.AdvancedCodeEditor.Split("$cpu_clock_cycle_end$")[1];
 
                         _rtssLine = ReplacePlaceholders(prefix, replacements)
                                     + endClkString
@@ -359,7 +331,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                     }
                     else
                     {
-                        _rtssLine = ReplacePlaceholders(_rtssset.AdvancedCodeEditor, replacements);
+                        _rtssLine = ReplacePlaceholders(RtssSettings.AdvancedCodeEditor, replacements);
                     }
 
                     RtssHandler.ChangeOsdText(_rtssLine);
@@ -488,6 +460,10 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         return new Dictionary<string, string>
         {
             {
+                "$AppVersion$",
+                _cachedAppVersion
+            },
+            {
                 "$SelectedProfile$",
                 _cachedSelectedProfileReplacement
             },
@@ -566,12 +542,12 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         var validCoreCount = 0;
         var endClkString = string.Empty;
 
-        if (string.IsNullOrEmpty(_rtssset.AdvancedCodeEditor))
+        if (string.IsNullOrEmpty(RtssSettings.AdvancedCodeEditor))
         {
-            RtssLoad();
+            RtssSettings.LoadSettings();
         }
 
-        var match = ClockCycleRegex().Match(_rtssset.AdvancedCodeEditor);
+        var match = ClockCycleRegex().Match(RtssSettings.AdvancedCodeEditor);
 
         for (uint f = 0; f < CpuSingleton.GetInstance().info.topology.cores; f++)
         {

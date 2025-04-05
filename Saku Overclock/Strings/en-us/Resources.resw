@@ -2090,13 +2090,16 @@ AND DO NOT TOUCH IT!</value>
     <value>SoC Volt</value>
   </data>
   <data name="InfoARTSSShowText.Text" xml:space="preserve">
-    <value>Show metrics in RTSS</value>
+    <value>RTSS In-Game Overlay</value>
   </data>
   <data name="InfoARTSSTooltip.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Show metrics in RTSS
-It will help you to view the 
-performance of your device 
-directly in the game via RTSS</value>
+    <value>RTSS In-Game Overlay
+Allows you to monitor FPS, 
+temperature, CPU load, and 
+other metrics in real-time 
+without minimizing the game. 
+Requires Rivatuner Statistics Server 
+to be installed and running</value>
   </data>
   <data name="InfoBattery.Text" xml:space="preserve">
     <value>Battery</value>
@@ -2208,17 +2211,13 @@ directly in the game via RTSS</value>
   </data>
   <data name="Settings_ni_Traymon.ToolTipService.ToolTip" xml:space="preserve">
     <value>TrayMon
-It's modern monitoring system tracks 
-your laptop's metrics by using data from 
-the information page and displays them 
-in the Windows tray menu. This way, you 
-can easily monitor the key metrics you 
-need, never miss important details, and 
-always stay informed about your 
-laptop's current performance.
-
-The application's CPU consumption 
-increases slightly</value>
+It's monitoring system that 
+displays real-time system 
+metrics (temperature, frequency, 
+CPU load, and other parameters) 
+in the Windows tray. Allows you 
+to track your laptop’s status 
+without opening extra windows</value>
   </data>
   <data name="Settings_RTSS_Updater.Text" xml:space="preserve">
     <value>In-Game Overlay</value>
@@ -2269,24 +2268,16 @@ changes are always current and saved
 automatically</value>
   </data>
   <data name="Settings_RTSS_Enable.ToolTipService.ToolTip" xml:space="preserve">
-    <value>In-Game Monitoring with RTSS
-It's modern monitoring system tracks 
-your laptop's metrics by using data from 
-the information page and displays them 
-in an on-screen display (OSD) overlay 
-during gameplay. This way, you 
-can easily monitor the key metrics you 
-need, never miss important details, and 
-always stay informed about your 
-laptop's current performance.
-This feature mirrors what you see on 
-the Information page
-
-The application's CPU consumption 
-increases slightly</value>
+    <value>RTSS In-Game Overlay
+Allows you to monitor FPS, 
+temperature, CPU load, and 
+other metrics in real-time 
+without minimizing the game. 
+Requires Rivatuner Statistics Server 
+to be installed and running</value>
   </data>
   <data name="Settings_RTSS_Enable.Header" xml:space="preserve">
-    <value>In-Game Monitoring with RTSS</value>
+    <value>RTSS In-Game Overlay</value>
   </data>
   <data name="Settings_RTSS_Enable.OffContent" xml:space="preserve">
     <value>Off.</value>
@@ -2364,17 +2355,13 @@ Maximum: </value>
   </data>
   <data name="InfoANiIcons.ToolTipService.ToolTip" xml:space="preserve">
     <value>TrayMon
-It's modern monitoring system tracks 
-your laptop's metrics by using data from 
-the information page and displays them 
-in the Windows tray menu. This way, you 
-can easily monitor the key metrics you 
-need, never miss important details, and 
-always stay informed about your 
-laptop's current performance.
-
-The application's CPU consumption 
-increases slightly</value>
+It's monitoring system that 
+displays real-time system 
+metrics (temperature, frequency, 
+CPU load, and other parameters) 
+in the Windows tray. Allows you 
+to track your laptop’s status 
+without opening extra windows</value>
   </data>
   <data name="Param_Profile_Edit_Name.Content" xml:space="preserve">
     <value>Change profile</value>
@@ -3103,5 +3090,47 @@ methods are available.</value>
   </data>
   <data name="Main_VrmInfo" xml:space="preserve">
     <value>Currents and VRM</value>
+  </data>
+  <data name="Preset_AdvancedFeatures.Text" xml:space="preserve">
+    <value>Дополнительно</value>
+  </data>
+  <data name="Preset_AdvancedMode.Text" xml:space="preserve">
+    <value>Расширенный режим</value>
+  </data>
+  <data name="Preset_AdvancedModeTry.Text" xml:space="preserve">
+    <value>Попробовать</value>
+  </data>
+  <data name="Preset_RtssOverlay.Text" xml:space="preserve">
+    <value>RTSS Overlay</value>
+  </data>
+  <data name="Preset_StreamOptimizer.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Stream Optimizer 
+It's an innovative technology 
+designed for your AMD Ryzen. It locks in the 
+ideal performance levels for your graphics card 
+and CPU, freeing you from lags and freezes during 
+gaming and streaming. With built-in temperature 
+management, it keeps your system cool and 
+ensures maximum performance</value>
+  </data>
+  <data name="Preset_Suggestions.Text" xml:space="preserve">
+    <value>Советы</value>
+  </data>
+  <data name="Preset_Switch.OffContent" xml:space="preserve">
+    <value>Off.</value>
+  </data>
+  <data name="Preset_Switch.OnContent" xml:space="preserve">
+    <value>On.</value>
+  </data>
+  <data name="Preset_Undervolting.Text" xml:space="preserve">
+    <value>Андервольтинг</value>
+  </data>
+  <data name="Param_NewbieMode" xml:space="preserve">
+    <value>Switch mode to Beginner:
+Simple and safe overclocking settings with clear explanations aimed at beginners</value>
+  </data>
+  <data name="Param_ProMode" xml:space="preserve">
+    <value>Switch mode to Pro: 
+Full control over processor settings and power consumption. Manually adjust overclocking, temperature, and power limits for maximum efficiency</value>
   </data>
 </root>

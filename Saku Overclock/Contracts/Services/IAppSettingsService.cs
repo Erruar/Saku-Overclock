@@ -5,237 +5,243 @@ public interface IAppSettingsService
     void SaveSettings();
     void LoadSettings();
 
-    public bool OldTitleBar
+    bool OldTitleBar
     {
         get;
         set;
     } // Флаг старого тайтл бара приложения
 
-    public bool FixedTitleBar
+    bool FixedTitleBar
     {
         get;
         set;
     } // Флаг фиксированного тайтл бара приложения
 
-    public int AutostartType
+    int AutostartType
     {
         get;
         set;
     } // Тип автостарта: 0 - выкл, 1 - при запуске приложения сразу в трей, 2 - автостарт с системой, 3 - автостарт и трей
 
-    public int HidingType
+    int HidingType
     {
         get;
         set;
     } // Тип скрытия в трей: 0 - выкл, 1 - при сворачивании приложения сразу в трей, 2 - при закрытии приложения сразу в трей
 
-    public bool CheckForUpdates
+    bool CheckForUpdates
     {
         get;
         set;
     } // Флаг автообновлений
 
-    public bool HotkeysEnabled
+    bool HotkeysEnabled
     {
         get;
         set;
     } // Флаг включены ли горячие клавиши в приложении или нет
 
-    public bool ReapplyLatestSettingsOnAppLaunch
+    bool ReapplyLatestSettingsOnAppLaunch
     {
         get;
         set;
     } // При запуске приложения переприменять последние применённые параметры
 
-    public bool ReapplySafeOverclock
+    bool ReapplySafeOverclock
     {
         get;
         set;
     } // Переприменять последние безопасные параметры
 
-    public bool ReapplyOverclock
+    bool ReapplyOverclock
     {
         get;
         set;
     } // Переприменять последние применённые параметры
 
-    public double ReapplyOverclockTimer
+    double ReapplyOverclockTimer
     {
         get;
         set;
     } // Время переприменения параметров (в секундах)
 
-    public int ThemeType
+    int ThemeType
     {
         get;
         set;
     } // Выбранная тема
 
-    public bool NiIconsEnabled
+    bool NiIconsEnabled
     {
         get;
         set;
     } // Включён ли Треймон
 
-    public bool RTSSMetricsEnabled
+    bool RTSSMetricsEnabled
     {
         get;
         set;
     } // Включены ли RTSS Метрики
 
-    public int NiIconsType
+    int NiIconsType
     {
         get;
         set;
     } // Тип отображаемых иконок Треймона
 
-    public bool StreamOptimizerEnabled
+    bool StreamOptimizerEnabled
     {
         get;
         set;
     } // Включен ли оптимизатор стрима
 
-    public bool CurveOptimizerOverallEnabled
+    bool CurveOptimizerOverallEnabled
     {
         get;
         set;
     } // Включен ли глобальный андервольтинг
 
-    public int CurveOptimizerOverallLevel
+    int CurveOptimizerOverallLevel
     {
         get;
         set;
     } // Уровень глобального андервольтинга (0 - лёгкий, 1 - средний, 2 - сильный)
 
+    bool ProfilespageViewModeBeginner
+    {
+        get;
+        set;
+    } // Текущий режим отображения настроек на странице управления профилями - Новичок, если false - Про
+
     // Пресеты, готовые пресеты и параметры
-    public int Preset
+    int Preset
     {
         get;
         set;
     } // Выбранный пресет
 
-    public string RyzenADJline
+    string RyzenADJline
     {
         get;
         set;
     } // RyzenADJline для применения параметров
 
-    public bool PremadeMinActivated
+    bool PremadeMinActivated
     {
         get;
         set;
     } // Готовые пресеты
 
-    public bool PremadeEcoActivated
+    bool PremadeEcoActivated
     {
         get;
         set;
     }
 
-    public bool PremadeBalanceActivated
+    bool PremadeBalanceActivated
     {
         get;
         set;
     }
 
-    public bool PremadeSpeedActivated
+    bool PremadeSpeedActivated
     {
         get;
         set;
     }
 
-    public bool PremadeMaxActivated
+    bool PremadeMaxActivated
     {
         get;
         set;
     }
 
     // Страница управления кулером
-    public string NBFCConfigXMLName
+    string NBFCConfigXMLName
     {
         get;
         set;
     } // Имя выбранного файла NBFC конфига
 
-    public bool NBFCAutoUpdateInformation
+    bool NBFCAutoUpdateInformation
     {
         get;
         set;
     } // Автообновление информации о скоростях кулеров
 
-    public bool NBFCServiceStatusDisabled
+    bool NBFCServiceStatusDisabled
     {
         get;
         set;
     } // Флаги использования NBFC
 
-    public bool NBFCServiceStatusReadOnly
+    bool NBFCServiceStatusReadOnly
     {
         get;
         set;
     }
 
-    public bool NBFCServiceStatusEnabled
+    bool NBFCServiceStatusEnabled
     {
         get;
         set;
     }
 
-    public double NBFCFan1UserFanSpeedRPM
+    double NBFCFan1UserFanSpeedRPM
     {
         get;
         set;
     } // Скорость первого кулера (>100 = авто)
 
-    public double NBFCFan2UserFanSpeedRPM
+    double NBFCFan2UserFanSpeedRPM
     {
         get;
         set;
     } // Скорость второго кулера (>100 = авто)
 
-    public bool NBFCFlagConsoleCheckSpeedRunning
+    bool NBFCFlagConsoleCheckSpeedRunning
     {
         get;
         set;
     } // Флаг действий с консолью NBFC
 
-    public bool FlagRyzenADJConsoleTemperatureCheckRunning
+    bool FlagRyzenADJConsoleTemperatureCheckRunning
     {
         get;
         set;
     } // Флаг действий с консолью RyzenADJ
 
-    public string NBFCAnswerSpeedFan1
+    string NBFCAnswerSpeedFan1
     {
         get;
         set;
     } // Ответ NBFC для первого кулера
 
-    public string NBFCAnswerSpeedFan2
+    string NBFCAnswerSpeedFan2
     {
         get;
         set;
     } // Ответ NBFC для второго кулера
 
-    public bool CoolerLastSavedAsusMode
+    bool CoolerLastSavedAsusMode
     {
         get;
         set;
     } // Сохранённый режим управления кулерами Asus
 
-    public bool AsusModeAutoUpdateInformation
+    bool AsusModeAutoUpdateInformation
     {
         get;
         set;
     } // Автообновление информации о кулерах Asus
 
-    public int AsusModeSelectedMode
+    int AsusModeSelectedMode
     {
         get;
         set;
     } // Режим управления Asus кулером
 
-    public double AsusModeFan1UserFanSpeedRPM
+    double AsusModeFan1UserFanSpeedRPM
     {
         get;
         set;

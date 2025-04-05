@@ -2156,13 +2156,16 @@ Overclock будут проигнорированы,
     <value>Напряжение SoC</value>
   </data>
   <data name="InfoARTSSShowText.Text" xml:space="preserve">
-    <value>Отображать метрики в RTSS</value>
+    <value>RTSS оверлей в игре</value>
   </data>
   <data name="InfoARTSSTooltip.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Отображать метрики в RTSS
-Поможет вам смотреть показатели 
-вашего устройства прямо в игре 
-через RTSS</value>
+    <value>RTSS оверлей в игре
+Позволяет следить за FPS, температурой, 
+загрузкой процессора и другими 
+показателями прямо во время игры, без 
+необходимости сворачивать игру. Для 
+работы требуется установленный и 
+запущенный Rivatuner Statistics Server</value>
   </data>
   <data name="InfoBattery.Text" xml:space="preserve">
     <value>Батарея</value>
@@ -2295,18 +2298,12 @@ Overclock будут проигнорированы,
   </data>
   <data name="Settings_ni_Traymon.ToolTipService.ToolTip" xml:space="preserve">
     <value>TrayMon 
-Это современная система мониторинга
-показателей вашего ноутбука, которая
-использует показатели со страницы 
-информации, чтобы отобразить их в 
-трей меню Windows. Так вы сможете 
-следить за нужными показателями, 
-не пропустите самое важное и всегда
-будете в курсе о текущих показателях
-вашего ноутбука
-
-Незначительно увеличит потребление
-приложением вашего процессора</value>
+Система мониторинга, которая отображает 
+текущие показатели системы (температуру, 
+частоту, загрузку процессора и другие 
+параметры) в области трея Windows. 
+Позволяет следить за состоянием ноутбука 
+без открытия дополнительных окон</value>
   </data>
   <data name="Settings_RTSS_Elements.Text" xml:space="preserve">
     <value>Отображаемые элементы</value>
@@ -2336,24 +2333,16 @@ Overclock будут проигнорированы,
 актуальными и сохранялись автоматически</value>
   </data>
   <data name="Settings_RTSS_Enable.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Мониторинг в играх с RTSS
-Это современная система мониторинга
-показателей вашего ноутбука, которая
-использует показатели со страницы 
-информации, чтобы отобразить их в 
-оверлее OSD (on-screen display) во время 
-игры. Так вы сможете видеть нужные вам 
-показатели, не пропустите самое важное 
-и всегда будете в курсе о текущих 
-показателях вашего ноутбука. Эта функция
-идентична той, что вы видите на странице
-информации
-
-Незначительно увеличит потребление
-приложением вашего процессора</value>
+    <value>RTSS оверлей в игре
+Позволяет следить за FPS, температурой, 
+загрузкой процессора и другими 
+показателями прямо во время игры, без 
+необходимости сворачивать игру. Для 
+работы требуется установленный и 
+запущенный Rivatuner Statistics Server</value>
   </data>
   <data name="Settings_RTSS_Enable.Header" xml:space="preserve">
-    <value>Мониторинг в играх с RTSS</value>
+    <value>RTSS оверлей в игре</value>
   </data>
   <data name="Settings_RTSS_Enable.OffContent" xml:space="preserve">
     <value>Откл.</value>
@@ -2432,18 +2421,12 @@ Overclock будут проигнорированы,
   </data>
   <data name="InfoANiIcons.ToolTipService.ToolTip" xml:space="preserve">
     <value>TrayMon 
-Это современная система мониторинга
-показателей вашего ноутбука, которая
-использует показатели со страницы 
-информации, чтобы отобразить их в 
-трей меню Windows. Так вы сможете 
-следить за нужными показателями, 
-не пропустите самое важное и всегда
-будете в курсе о текущих показателях
-вашего ноутбука
-
-Незначительно увеличит потребление
-приложением вашего процессора</value>
+Система мониторинга, которая отображает 
+текущие показатели системы (температуру, 
+частоту, загрузку процессора и другие 
+параметры) в области трея Windows. 
+Позволяет следить за состоянием ноутбука 
+без открытия дополнительных окон</value>
   </data>
   <data name="Param_Profile_Edit_Name.Content" xml:space="preserve">
     <value>Изменить пресет</value>
@@ -3173,5 +3156,48 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Main_VrmInfo" xml:space="preserve">
     <value>Система питания и VRM</value>
+  </data>
+  <data name="Preset_AdvancedFeatures.Text" xml:space="preserve">
+    <value>Дополнительно</value>
+  </data>
+  <data name="Preset_AdvancedMode.Text" xml:space="preserve">
+    <value>Расширенный режим</value>
+  </data>
+  <data name="Preset_AdvancedModeTry.Text" xml:space="preserve">
+    <value>Попробовать</value>
+  </data>
+  <data name="Preset_RtssOverlay.Text" xml:space="preserve">
+    <value>RTSS Оверлей</value>
+  </data>
+  <data name="Preset_StreamOptimizer.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Stream Optimizer
+Инновационная технология 
+для стабильной работы вашего AMD Ryzen. 
+Функция фиксирует оптимальные уровни 
+работы видеокарты и процессора, избавляя вас 
+от лагов и фризов во время игр и стриминга. 
+Контроль температуры заботится о системе, 
+позволяя наслаждаться максимальной 
+производительностью без перегрева</value>
+  </data>
+  <data name="Preset_Suggestions.Text" xml:space="preserve">
+    <value>Советы</value>
+  </data>
+  <data name="Preset_Switch.OffContent" xml:space="preserve">
+    <value>Откл.</value>
+  </data>
+  <data name="Preset_Switch.OnContent" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="Preset_Undervolting.Text" xml:space="preserve">
+    <value>Андервольтинг</value>
+  </data>
+  <data name="Param_NewbieMode" xml:space="preserve">
+    <value>Переключить режим отображения на Новичок:
+Простые и безопасные настройки разгона с понятными объяснениями. Идеально для начинающих пользователей</value>
+  </data>
+  <data name="Param_ProMode" xml:space="preserve">
+    <value>Переключить режим отображения на Про:
+Полный контроль над настройками процессора и энергопотребления. Ручная настройка разгона, температуры и лимитов мощности для максимальной эффективности</value>
   </data>
 </root>

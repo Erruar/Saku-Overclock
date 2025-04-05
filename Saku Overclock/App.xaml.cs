@@ -101,6 +101,7 @@ public partial class App
                 services.AddSingleton<IAppNotificationService, AppNotificationService>();
                 services.AddSingleton<ILocalThemeSettingsService, LocalThemeSettingsService>();
                 services.AddSingleton<IAppSettingsService, AppSettingsService>();
+                services.AddSingleton<IRtssSettingsService, RtssSettingsService>();
                 services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
                 services.AddTransient<INavigationViewService, NavigationViewService>();
                 services.AddSingleton<IActivationService, ActivationService>();

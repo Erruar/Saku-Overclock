@@ -38,8 +38,7 @@ public class AppSettingsService : IAppSettingsService
     public bool StreamOptimizerEnabled { get; set; } = false; // Включен ли оптимизатор стрима
     public bool CurveOptimizerOverallEnabled { get; set; } = false; // Включен ли глобальный андервольтинг
     public int CurveOptimizerOverallLevel { get; set; } = 0; // Уровень глобального андервольтинга (0 - лёгкий, 1 - средний, 2 - сильный)
-
-    // Пресеты, готовые пресеты и параметры
+    public bool ProfilespageViewModeBeginner { get; set; } = true; // Пресеты, готовые пресеты и параметры
     public int Preset { get; set; } = 0; // Выбранный пресет
     public string RyzenADJline { get; set; } = string.Empty; // RyzenADJline для применения параметров
     public bool PremadeMinActivated { get; set; } = false; // Готовые пресеты
