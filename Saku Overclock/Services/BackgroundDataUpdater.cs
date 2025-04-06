@@ -639,7 +639,16 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                     Id = Guid.Parse(element
                         .Guid) // Уникальный ID иконки ЕСЛИ ЕГО НЕТ - ПЕРЕЗАПИШЕТ ОСНОВНОЕ ТРЕЙ МЕНЮ
                 };
-                notifyIcon.ForceCreate();
+                try
+                {
+                    notifyIcon.ForceCreate(); 
+                }
+                catch
+                {
+                    LogHelper.LogError("BackgroudDataUpdater Service: Unable to create TrayMon Icons. Skipping creating icons. Restart app.");
+                    _isIconsCreated = true;
+                    return;
+                }
                 if (element.ContextMenuType != 0)
                 {
                     notifyIcon.ToolTipText = element.Name;

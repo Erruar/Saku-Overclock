@@ -135,18 +135,18 @@
 
   <ItemGroup>
     <PackageReference Include="Accord.Math" Version="3.8.2-alpha" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0-preview3" />
-    <PackageReference Include="H.NotifyIcon.WinUI" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.241114004-experimental1" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0-preview1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="H.NotifyIcon.WinUI" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250310001" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Octokit" Version="13.0.1" />
-    <PackageReference Include="System.Management" Version="9.0.0" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.0" />
-    <PackageReference Include="System.Threading.AccessControl" Version="6.0.0" />
-    <PackageReference Include="TaskScheduler" Version="2.11.0" />
-    <PackageReference Include="WinUIEx" Version="2.5.0" />
+    <PackageReference Include="Octokit" Version="14.0.0" />
+    <PackageReference Include="System.Management" Version="9.0.3" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.3" />
+    <PackageReference Include="System.Threading.AccessControl" Version="9.0.3" />
+    <PackageReference Include="TaskScheduler" Version="2.12.1" />
+    <PackageReference Include="WinUIEx" Version="2.5.1" />
   </ItemGroup>
 
   <ItemGroup>

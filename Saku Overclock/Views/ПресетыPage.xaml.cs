@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -19,6 +21,7 @@ public sealed partial class ПресетыPage
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
     private int _indexprofile = 0; // Выбранный профиль
     private PeriodicTimer? _flipTimer;
+    private ZenStates.Core.Cpu.CodeName? _codeName;
     private readonly Random _random = new();
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
 
@@ -77,16 +80,28 @@ public sealed partial class ПресетыPage
         StreamOptimizerSwitch.IsOn = AppSettings.StreamOptimizerEnabled;
         if (AppSettings.ProfilespageViewModeBeginner)
         {
-            ToolTipService.SetToolTip(CurrentMode_Button, "Param_ProMode".GetLocalized());
-            CurrentMode_Icon.Glyph = "\uE9F5";
+            BeginnerOptions_Button.IsChecked = true;
+            AdvancedOptions_Button.IsChecked = false;
         }
         else
         {
-            ToolTipService.SetToolTip(CurrentMode_Button, "Param_NewbieMode".GetLocalized());
-            CurrentMode_Icon.Glyph = "\uF4A5";
-        }
+            BeginnerOptions_Button.IsChecked = false;
+            AdvancedOptions_Button.IsChecked = true;
+        } 
+        ToolTipService.SetToolTip(AdvancedOptions_Button, "Param_ProMode".GetLocalized());
+        ToolTipService.SetToolTip(BeginnerOptions_Button, "Param_NewbieMode".GetLocalized());
 
         _isLoaded = true;
+
+        var cpu = CpuSingleton.GetInstance();
+        _codeName = cpu.info.codeName;
+        if (_codeName != ZenStates.Core.Cpu.CodeName.RavenRidge && _codeName != ZenStates.Core.Cpu.CodeName.Dali && _codeName != ZenStates.Core.Cpu.CodeName.Picasso) 
+        {
+            AdvancedGpu_OptionsPanel_0.Visibility = Visibility.Collapsed;
+            AdvancedGpu_OptionsPanel_1.Visibility = Visibility.Collapsed;
+            AdvancedGpu_OptionsPanel_2.Visibility = Visibility.Collapsed;
+            AdvancedGpu_OptionsPanel_3.Visibility = Visibility.Collapsed;
+        }
 
         // Таймер для смены страниц раз в 10 секунд
         _flipTimer = new PeriodicTimer(TimeSpan.FromSeconds(15));
@@ -122,7 +137,7 @@ public sealed partial class ПресетыPage
                 IsSelected = isChecked,
                 IconGlyph = profile.profileicon == string.Empty ? "\uE718" : profile.profileicon,
                 Text = profile.profilename,
-                Description = profile.profiledesc
+                Description = profile.profiledesc != string.Empty ? profile.profiledesc : profile.profilename
             };
             ProfilesControl.Items.Add(toggleButton);
         }
@@ -173,7 +188,62 @@ public sealed partial class ПресетыPage
             if (item.IsSelected)
             {
                 SelectedProfile_Name.Text = item.Text;
-                SelectedProfile_Description.Text = item.Description;
+
+                // Обход отсутствия описания, при помощи записывания имени пресета в описание. Чтобы не отображать два раза одну и ту же строку, описание пресета скрывается (так как его нет)
+                SelectedProfile_Description.Text = item.Description != item.Text ? item.Description : string.Empty; 
+                if (item.Description == item.Text)
+                {
+                    SelectedProfile_Description.Visibility = Visibility.Collapsed;
+                    EditCurrent_ButtonsStackPanel.Margin = new Thickness(0, 0, -13, -10);
+                    EditCurrent_ButtonsStackPanel.VerticalAlignment = VerticalAlignment.Top;
+                    SelectedProfile_TextsStackPanel.VerticalAlignment = VerticalAlignment.Center;
+                }
+                else
+                {
+                    SelectedProfile_Description.Visibility = Visibility.Visible;
+                    EditCurrent_ButtonsStackPanel.Margin = new Thickness(0, 17, -13, -10);
+                    EditCurrent_ButtonsStackPanel.VerticalAlignment = VerticalAlignment.Center;
+                    SelectedProfile_TextsStackPanel.VerticalAlignment = VerticalAlignment.Top;
+                }
+
+                if ((item.Text == "Preset_Max_Name/Text".GetLocalized() &&
+                item.Description == "Preset_Max_Desc/Text".GetLocalized()) ||
+                (item.Text == "Preset_Speed_Name/Text".GetLocalized() &&
+                item.Description == "Preset_Speed_Desc/Text".GetLocalized()) ||
+                (item.Text == "Preset_Balance_Name/Text".GetLocalized() &&
+                item.Description == "Preset_Balance_Desc/Text".GetLocalized()) ||
+                (item.Text == "Preset_Eco_Name/Text".GetLocalized() &&
+                item.Description == "Preset_Eco_Desc/Text".GetLocalized()) ||
+                (item.Text == "Preset_Min_Name/Text".GetLocalized() &&
+                item.Description == "Preset_Min_Desc/Text".GetLocalized())
+                )
+                {
+                    ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Collapsed;
+                    ProfileSettings_StackPanel.Visibility = Visibility.Collapsed;
+                    ProfileSettings_BeginnerView.Visibility = Visibility.Collapsed;
+                    PremadeProfile_AffectsOn.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    if (AppSettings.ProfilespageViewModeBeginner)
+                    {
+                        BeginnerOptions_Button.IsChecked = true;
+                        AdvancedOptions_Button.IsChecked = false;    
+                        ProfileSettings_StackPanel.Visibility = Visibility.Collapsed;
+                        ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
+                        ProfileSettings_BeginnerView.Visibility = Visibility.Visible;
+                        PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed; 
+                    }
+                    else
+                    {
+                        BeginnerOptions_Button.IsChecked = false;
+                        AdvancedOptions_Button.IsChecked = true;
+                        ProfileSettings_StackPanel.Visibility = Visibility.Visible;
+                        ProfileSettings_BeginnerView.Visibility = Visibility.Collapsed;
+                        ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
+                        PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed; 
+                    }
+                }
             }
         }
         if (AppSettings.Preset != -1)
@@ -192,6 +262,11 @@ public sealed partial class ПресетыPage
             if (_profile[index].cpu1value > c1v.Maximum)
             {
                 c1v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu1value);
+            }
+
+            if (_profile[index].cpu1value > BaseTdp_Slider.Maximum)
+            {
+                BaseTdp_Slider.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu1value);
             }
 
             if (_profile[index].cpu2value > c2v.Maximum)
@@ -256,8 +331,19 @@ public sealed partial class ПресетыPage
 
         try
         {
+            // Заранее скомпилированная функция увеличения TDP, созданная специально для фирменной функции Smart TDP
+            var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * _profile[index].cpu1value + 0.21631949); 
+
             c1.IsChecked = _profile[index].cpu1;
             c1v.Value = _profile[index].cpu1value;
+
+            BaseTdp_Slider.Value = _profile[index].cpu1value;
+            if (_profile[index].cpu1 && _profile[index].cpu2 && _profile[index].cpu3 &&
+                _profile[index].cpu1value == _profile[index].cpu3value && _profile[index].cpu2value == fineTunedTdp)
+            {
+                SmartTdp.IsOn = true;
+            }
+
             c2.IsChecked = _profile[index].cpu2;
             c2v.Value = _profile[index].cpu2value;
             c3.IsChecked = _profile[index].cpu3;
@@ -268,6 +354,39 @@ public sealed partial class ПресетыPage
             c5v.Value = _profile[index].cpu5value;
             c6.IsChecked = _profile[index].cpu6;
             c6v.Value = _profile[index].cpu6value;
+
+            if (!_profile[index].cpu5 && !_profile[index].cpu6)
+            {
+                Turbo_AutoModeButton.IsChecked = true;
+                Turbo_SettingModeButton.IsChecked = false;
+            }
+            else
+            {
+                if ((_profile[index].cpu5 && !_profile[index].cpu6) || (!_profile[index].cpu5 && _profile[index].cpu6))
+                {
+                    TurboSetOnly(Turbo_OtherModeToggle); 
+                }
+                if (_profile[index].cpu5 && _profile[index].cpu6)
+                {
+                    if (_profile[index].cpu5value == 300 && _profile[index].cpu6value == 5)
+                    {
+                        TurboSetOnly(Turbo_LightModeToggle); 
+                    }
+                    else if (_profile[index].cpu5value == 700 && _profile[index].cpu6value == 3)
+                    {
+                        TurboSetOnly(Turbo_BalanceModeToggle); 
+                    }
+                    else if (_profile[index].cpu5value == 5000 && _profile[index].cpu6value == 1)
+                    {
+                        TurboSetOnly(Turbo_HeavyModeToggle); 
+                    }
+                }
+                else
+                {
+                    TurboSetOnly(Turbo_OtherModeToggle);
+                }
+            }
+
             V1.IsChecked = _profile[index].vrm1;
             V1V.Value = _profile[index].vrm1value;
             V2.IsChecked = _profile[index].vrm2;
@@ -295,6 +414,30 @@ public sealed partial class ПресетыPage
         }
 
         _waitforload = false;
+    }
+
+    private void TurboSetOnly(ToggleButton button)
+    {
+        Turbo_OtherModeToggle.IsChecked = false;
+        Turbo_LightModeToggle.IsChecked = false;
+        Turbo_BalanceModeToggle.IsChecked = false;
+        Turbo_HeavyModeToggle.IsChecked = false;
+
+        switch (button.Name)
+        {
+            case "Turbo_OtherModeToggle":
+                Turbo_OtherModeToggle.IsChecked = true;
+                break;
+            case "Turbo_LightModeToggle":
+                Turbo_LightModeToggle.IsChecked = true;
+                break;
+            case "Turbo_BalanceModeToggle":
+                Turbo_BalanceModeToggle.IsChecked = true;
+                break;
+            case "Turbo_HeavyModeToggle":
+                Turbo_HeavyModeToggle.IsChecked = true;
+                break;
+        }
     }
 
     #endregion
@@ -437,101 +580,88 @@ public sealed partial class ПресетыPage
     }
 
     private void AnimatedToggleButton_Click(object sender, RoutedEventArgs e)
-    {
-        /*var pciAddress = MakePciAddress(0x0, 0x18, 0x5, 0xE8);
-        var regValue = ReadPciReg((uint)pciAddress);*/
-        var tdp = GetProcessorTdp(0x00, 0x18, 0x04);
-        App.MainWindow.ShowMessageDialogAsync($"TDP процессора: {tdp:F2} Вт", "Result:");
+    {  
         AppSettings.ProfilespageViewModeBeginner = !AppSettings.ProfilespageViewModeBeginner;
         AppSettings.SaveSettings();
         if (AppSettings.ProfilespageViewModeBeginner)
         {
-            ToolTipService.SetToolTip(CurrentMode_Button, "Param_ProMode".GetLocalized());
-            CurrentMode_Icon.Glyph = "\uE9F5";
+            BeginnerOptions_Button.IsChecked = true;
+            AdvancedOptions_Button.IsChecked = false;
+            ProfileSettings_StackPanel.Visibility = Visibility.Collapsed;
+            ProfileSettings_BeginnerView.Visibility = Visibility.Visible;
+            PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed;
+            ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
+        }
+        else
+        { 
+            BeginnerOptions_Button.IsChecked = false;
+            AdvancedOptions_Button.IsChecked = true;
+            ProfileSettings_StackPanel.Visibility = Visibility.Visible;
+            ProfileSettings_BeginnerView.Visibility = Visibility.Collapsed;
+            PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed;
+            ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
+        }
+    }
+
+    private void BaseTdp_Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        BaseTdp_Text.Text = Math.Round(e.NewValue,0).ToString() + "W"; 
+        if (!_isLoaded) { return; }
+        ChangedBaseTdp_Value(); 
+    }
+
+    private void SmartTdp_Toggled(object sender, RoutedEventArgs e)
+    {
+        ChangedBaseTdp_Value();
+    }
+
+    private void ChangedBaseTdp_Value()
+    {
+        ProfileLoad();
+        var index = _indexprofile == -1 ? 0 : _indexprofile;
+
+        // Заранее скомпилированная функция увеличения TDP, созданная специально для фирменной функции Smart TDP
+        var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * BaseTdp_Slider.Value + 0.21631949);
+
+        c1.IsChecked = true;
+        _profile[index].cpu1 = true;
+        c2.IsChecked = true;
+        _profile[index].cpu2 = true;
+        c3.IsChecked = true;
+        _profile[index].cpu3 = true;
+
+        c1v.Value = BaseTdp_Slider.Value;
+        _profile[index].cpu1value = BaseTdp_Slider.Value;
+
+        c3v.Value = BaseTdp_Slider.Value;
+        _profile[index].cpu3value = BaseTdp_Slider.Value;
+
+        if (SmartTdp.IsOn)
+        {
+            _profile[index].cpu2value = fineTunedTdp;
         }
         else
         {
-            ToolTipService.SetToolTip(CurrentMode_Button, "Param_NewbieMode".GetLocalized());
-            CurrentMode_Icon.Glyph = "\uF4A5";
+            c2v.Value = BaseTdp_Slider.Value;
+            _profile[index].cpu2value = BaseTdp_Slider.Value;
         }
+        if (_codeName != null && _codeName == ZenStates.Core.Cpu.CodeName.Unsupported ||
+            _codeName == ZenStates.Core.Cpu.CodeName.Raphael ||
+            _codeName == ZenStates.Core.Cpu.CodeName.GraniteRidge ||
+            _codeName == ZenStates.Core.Cpu.CodeName.SummitRidge)
+        {
+            // Так как на компьютерах невозможно выставить другие Power лимиты
+            c2.IsChecked = false;
+            _profile[index].cpu2 = false;
+            c3.IsChecked = false;
+            _profile[index].cpu3 = false;
+        }
+        ProfileSave();
     }
 
-    // Определения регистров из BKDG
-    private const int REG_PROCESSOR_TDP = 0x1B8;
-    private const int REG_TDP_LIMIT3 = 0xE8;
-
-    /// <summary>
-    /// Заглушка для чтения 32-битного значения из PCI Configuration Space.
-    /// Реализуйте этот метод согласно вашей среде (например, через WinRing0).
-    /// </summary>
-    /// <param name="bus">Номер шины</param>
-    /// <param name="device">Номер устройства</param>
-    /// <param name="function">Номер функции</param>
-    /// <param name="offset">Смещение регистра</param>
-    /// <returns>Содержимое регистра (DWORD)</returns>
-    public uint ReadPciConfigDword(byte bus, byte device, byte function, int offset)
+    private void SmartTdp_PointerPressed(object sender, object e)
     {
-        // Здесь необходимо реализовать чтение из PCI.
-        // Например, через WinRing0 или другой драйвер.
-        // Сейчас выбрасываем исключение, чтобы показать, что реализация отсутствует.
-        var pciAddress = MakePciAddress(bus, device, function, offset);
-        var regValue = ReadPciReg((uint)pciAddress);
-        return regValue;
-    }
-
-    /// <summary>
-    /// Получает TDP процессора в ваттах.
-    /// Параметры bus, device и function указывают на устройство, 
-    /// где функция (например, 0x04) содержит REG_PROCESSOR_TDP, 
-    /// а функция 0x05 — REG_TDP_LIMIT3.
-    /// </summary>
-    /// <param name="bus">Номер шины (например, 0)</param>
-    /// <param name="device">Номер устройства (например, 0x18)</param>
-    /// <param name="function">Номер функции для REG_PROCESSOR_TDP (например, 0x04)</param>
-    /// <returns>TDP в ваттах</returns>
-    public double GetProcessorTdp(byte bus, byte device, byte function)
-    {
-        // Чтение регистра REG_PROCESSOR_TDP (из функции, например, 0x04)
-        var tdpRegValue = ReadPciConfigDword(bus, device, function, REG_PROCESSOR_TDP);
-
-        // Верхние 16 бит — BaseTdp, нижние 16 бит — дополнительное значение
-        var baseTdp = tdpRegValue >> 16;
-        var tdpRaw = tdpRegValue & 0xFFFF;
-
-        // Чтение регистра REG_TDP_LIMIT3 из функции 0x05 (для того же устройства)
-        var tdpLimit3Value = ReadPciConfigDword(bus, device, 5, REG_TDP_LIMIT3);
-
-        // Вычисляем коэффициент перевода: ((val & 0x3FF) << 6) | ((val >> 10) & 0x3F)
-        var tdpToWatts = (((tdpLimit3Value & 0x3FF) << 6) | ((tdpLimit3Value >> 10) & 0x3F));
-
-        // Умножаем нижние 16 бит на коэффициент перевода
-        var product = (ulong)tdpRaw * tdpToWatts;
-
-        // Пересчёт в микроватты:
-        // Исходное значение задано в виде фиксированной точки с масштабом 1/(2^16).
-        // Для перевода в микроватты используем: (product * 15625) >> 10.
-        var processorPwrMicroWatt = (uint)((product * 15625UL) >> 10);
-
-        // Переводим микроватты в ватты
-        var processorPwrWatts = processorPwrMicroWatt / 1_000_000.0;
-
-        return processorPwrWatts;
-    }
-
-    long MakePciAddress(int bus, int device, int fn, int offset)
-    {
-        return 0x80000000 | bus << 16 | device << 11 | fn << 8 | offset;
-    }
-    uint ReadPciReg(uint pciDev)
-    {
-        const ushort PCI_ADDR_PORT = 0xCF8;
-        const ushort PCI_DATA_PORT = 0xCFC;
-        uint pciReg = 0;
-        var ols = new Ols(); // Winring0
-        ols.WriteIoPortDwordEx(PCI_ADDR_PORT, pciDev);
-        ols.ReadIoPortDwordEx(PCI_DATA_PORT, ref pciReg);
-        ols.Dispose();
-        return pciReg;
+        SmartTdp.IsOn = SmartTdp.IsOn == false;
     }
     #endregion
 
@@ -648,8 +778,28 @@ public sealed partial class ПресетыPage
         var selectedItem = (sender as ProfileSelector)!.SelectedItem;
         if (selectedItem != null)
         {
+            // Корректное отображение описания, даже если оно маленькое (чтобы Grid изменил свой размер корректно и слова не обрывались)
+            ProfileSettings_InfoRow.Height = new GridLength(0);
+            ProfileSettings_InfoRow.Height = GridLength.Auto;
+
             SelectedProfile_Name.Text = selectedItem.Text;
-            SelectedProfile_Description.Text = selectedItem.Description;
+
+            // Обход отсутствия описания, при помощи записывания имени пресета в описание. Чтобы не отображать два раза одну и ту же строку, описание пресета скрывается (так как его нет)
+            SelectedProfile_Description.Text = selectedItem.Description != selectedItem.Text ? selectedItem.Description : string.Empty;
+            if (selectedItem.Description == selectedItem.Text)
+            {
+                SelectedProfile_Description.Visibility = Visibility.Collapsed;  
+                EditCurrent_ButtonsStackPanel.Margin = new Thickness(0, 0, -13, -10);
+                EditCurrent_ButtonsStackPanel.VerticalAlignment = VerticalAlignment.Top;
+                SelectedProfile_TextsStackPanel.VerticalAlignment = VerticalAlignment.Center;
+            }
+            else
+            {
+                SelectedProfile_Description.Visibility = Visibility.Visible;
+                EditCurrent_ButtonsStackPanel.Margin = new Thickness(0, 17, -13, -10);
+                EditCurrent_ButtonsStackPanel.VerticalAlignment = VerticalAlignment.Center;
+                SelectedProfile_TextsStackPanel.VerticalAlignment = VerticalAlignment.Top;
+            } 
             if ((selectedItem.Text == "Preset_Max_Name/Text".GetLocalized() &&
                 selectedItem.Description == "Preset_Max_Desc/Text".GetLocalized()) ||
                 (selectedItem.Text == "Preset_Speed_Name/Text".GetLocalized() &&
@@ -663,10 +813,30 @@ public sealed partial class ПресетыPage
                 )
             {
                 ProfileSettings_StackPanel.Visibility = Visibility.Collapsed;
+                ProfileSettings_BeginnerView.Visibility = Visibility.Collapsed; 
+                PremadeProfile_AffectsOn.Visibility = Visibility.Visible;
+                ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Collapsed;
             }
             else
             {
-                ProfileSettings_StackPanel.Visibility = Visibility.Visible;
+                if (AppSettings.ProfilespageViewModeBeginner)
+                {
+                    BeginnerOptions_Button.IsChecked = true;
+                    AdvancedOptions_Button.IsChecked = false;
+                    ProfileSettings_StackPanel.Visibility = Visibility.Collapsed;
+                    ProfileSettings_BeginnerView.Visibility = Visibility.Visible;
+                    PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed;
+                    ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    BeginnerOptions_Button.IsChecked = false;
+                    AdvancedOptions_Button.IsChecked = true;
+                    ProfileSettings_StackPanel.Visibility = Visibility.Visible;
+                    ProfileSettings_BeginnerView.Visibility = Visibility.Collapsed;
+                    PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed;
+                    ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
+                }
                 for (var i = 0; i < _profile.Length; i++)
                 {
                     if (_profile[i].profiledesc == selectedItem.Description &&
@@ -1282,513 +1452,10 @@ public sealed partial class ПресетыPage
         }
     }
 
+
+
     #endregion
 
     #endregion
 
-
-}
-public class Ols : IDisposable
-{
-    const string dllNameX64 = "WinRing0x64.dll";
-    const string dllName = "WinRing0.dll";
-
-    // for this support library
-    public enum Status
-    {
-        NO_ERROR = 0,
-        DLL_NOT_FOUND = 1,
-        DLL_INCORRECT_VERSION = 2,
-        DLL_INITIALIZE_ERROR = 3,
-    }
-
-    // for WinRing0
-    public enum OlsDllStatus
-    {
-        OLS_DLL_NO_ERROR = 0,
-        OLS_DLL_UNSUPPORTED_PLATFORM = 1,
-        OLS_DLL_DRIVER_NOT_LOADED = 2,
-        OLS_DLL_DRIVER_NOT_FOUND = 3,
-        OLS_DLL_DRIVER_UNLOADED = 4,
-        OLS_DLL_DRIVER_NOT_LOADED_ON_NETWORK = 5,
-        OLS_DLL_UNKNOWN_ERROR = 9
-    }
-
-    // for WinRing0
-    public enum OlsDriverType
-    {
-        OLS_DRIVER_TYPE_UNKNOWN = 0,
-        OLS_DRIVER_TYPE_WIN_9X = 1,
-        OLS_DRIVER_TYPE_WIN_NT = 2,
-        OLS_DRIVER_TYPE_WIN_NT4 = 3,    // Obsolete
-        OLS_DRIVER_TYPE_WIN_NT_X64 = 4,
-        OLS_DRIVER_TYPE_WIN_NT_IA64 = 5
-    }
-
-    // for WinRing0
-    public enum OlsErrorPci : uint
-    {
-        OLS_ERROR_PCI_BUS_NOT_EXIST = 0xE0000001,
-        OLS_ERROR_PCI_NO_DEVICE = 0xE0000002,
-        OLS_ERROR_PCI_WRITE_CONFIG = 0xE0000003,
-        OLS_ERROR_PCI_READ_CONFIG = 0xE0000004
-    }
-
-    // Bus Number, Device Number and Function Number to PCI Device Address
-    public uint PciBusDevFunc(uint bus, uint dev, uint func)
-    {
-        return ((bus & 0xFF) << 8) | ((dev & 0x1F) << 3) | (func & 7);
-    }
-
-    // PCI Device Address to Bus Number
-    public uint PciGetBus(uint address)
-    {
-        return ((address >> 8) & 0xFF);
-    }
-
-    // PCI Device Address to Device Number
-    public uint PciGetDev(uint address)
-    {
-        return ((address >> 3) & 0x1F);
-    }
-
-    // PCI Device Address to Function Number
-    public uint PciGetFunc(uint address)
-    {
-        return (address & 7);
-    }
-
-    [DllImport("kernel32")]
-    public extern static IntPtr LoadLibrary(string lpFileName);
-
-
-    [DllImport("kernel32", SetLastError = true)]
-    private static extern bool FreeLibrary(IntPtr hModule);
-
-    [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = false)]
-    private static extern IntPtr GetProcAddress(IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
-
-    private IntPtr module = IntPtr.Zero;
-    private uint status = (uint)Status.NO_ERROR;
-
-    public Ols()
-    {
-        string fileName;
-         
-            fileName = dllNameX64; 
-
-        module = Ols.LoadLibrary(fileName);
-        if (module == IntPtr.Zero)
-        {
-            status = (uint)Status.DLL_NOT_FOUND;
-        }
-        else
-        {
-            GetDllStatus = (_GetDllStatus)GetDelegate("GetDllStatus", typeof(_GetDllStatus));
-            GetDllVersion = (_GetDllVersion)GetDelegate("GetDllVersion", typeof(_GetDllVersion));
-            GetDriverVersion = (_GetDriverVersion)GetDelegate("GetDriverVersion", typeof(_GetDriverVersion));
-            GetDriverType = (_GetDriverType)GetDelegate("GetDriverType", typeof(_GetDriverType));
-
-            InitializeOls = (_InitializeOls)GetDelegate("InitializeOls", typeof(_InitializeOls));
-            DeinitializeOls = (_DeinitializeOls)GetDelegate("DeinitializeOls", typeof(_DeinitializeOls));
-
-            IsCpuid = (_IsCpuid)GetDelegate("IsCpuid", typeof(_IsCpuid));
-            IsMsr = (_IsMsr)GetDelegate("IsMsr", typeof(_IsMsr));
-            IsTsc = (_IsTsc)GetDelegate("IsTsc", typeof(_IsTsc));
-            Hlt = (_Hlt)GetDelegate("Hlt", typeof(_Hlt));
-            HltTx = (_HltTx)GetDelegate("HltTx", typeof(_HltTx));
-            HltPx = (_HltPx)GetDelegate("HltPx", typeof(_HltPx));
-            Rdmsr = (_Rdmsr)GetDelegate("Rdmsr", typeof(_Rdmsr));
-            RdmsrTx = (_RdmsrTx)GetDelegate("RdmsrTx", typeof(_RdmsrTx));
-            RdmsrPx = (_RdmsrPx)GetDelegate("RdmsrPx", typeof(_RdmsrPx));
-            Wrmsr = (_Wrmsr)GetDelegate("Wrmsr", typeof(_Wrmsr));
-            WrmsrTx = (_WrmsrTx)GetDelegate("WrmsrTx", typeof(_WrmsrTx));
-            WrmsrPx = (_WrmsrPx)GetDelegate("WrmsrPx", typeof(_WrmsrPx));
-            Rdpmc = (_Rdpmc)GetDelegate("Rdpmc", typeof(_Rdpmc));
-            RdpmcTx = (_RdpmcTx)GetDelegate("RdpmcTx", typeof(_RdpmcTx));
-            RdpmcPx = (_RdpmcPx)GetDelegate("RdpmcPx", typeof(_RdpmcPx));
-            Cpuid = (_Cpuid)GetDelegate("Cpuid", typeof(_Cpuid));
-            CpuidTx = (_CpuidTx)GetDelegate("CpuidTx", typeof(_CpuidTx));
-            CpuidPx = (_CpuidPx)GetDelegate("CpuidPx", typeof(_CpuidPx));
-            Rdtsc = (_Rdtsc)GetDelegate("Rdtsc", typeof(_Rdtsc));
-            RdtscTx = (_RdtscTx)GetDelegate("RdtscTx", typeof(_RdtscTx));
-            RdtscPx = (_RdtscPx)GetDelegate("RdtscPx", typeof(_RdtscPx));
-
-            ReadIoPortByte = (_ReadIoPortByte)GetDelegate("ReadIoPortByte", typeof(_ReadIoPortByte));
-            ReadIoPortWord = (_ReadIoPortWord)GetDelegate("ReadIoPortWord", typeof(_ReadIoPortWord));
-            ReadIoPortDword = (_ReadIoPortDword)GetDelegate("ReadIoPortDword", typeof(_ReadIoPortDword));
-            ReadIoPortByteEx = (_ReadIoPortByteEx)GetDelegate("ReadIoPortByteEx", typeof(_ReadIoPortByteEx));
-            ReadIoPortWordEx = (_ReadIoPortWordEx)GetDelegate("ReadIoPortWordEx", typeof(_ReadIoPortWordEx));
-            ReadIoPortDwordEx = (_ReadIoPortDwordEx)GetDelegate("ReadIoPortDwordEx", typeof(_ReadIoPortDwordEx));
-
-            WriteIoPortByte = (_WriteIoPortByte)GetDelegate("WriteIoPortByte", typeof(_WriteIoPortByte));
-            WriteIoPortWord = (_WriteIoPortWord)GetDelegate("WriteIoPortWord", typeof(_WriteIoPortWord));
-            WriteIoPortDword = (_WriteIoPortDword)GetDelegate("WriteIoPortDword", typeof(_WriteIoPortDword));
-            WriteIoPortByteEx = (_WriteIoPortByteEx)GetDelegate("WriteIoPortByteEx", typeof(_WriteIoPortByteEx));
-            WriteIoPortWordEx = (_WriteIoPortWordEx)GetDelegate("WriteIoPortWordEx", typeof(_WriteIoPortWordEx));
-            WriteIoPortDwordEx = (_WriteIoPortDwordEx)GetDelegate("WriteIoPortDwordEx", typeof(_WriteIoPortDwordEx));
-
-            SetPciMaxBusIndex = (_SetPciMaxBusIndex)GetDelegate("SetPciMaxBusIndex", typeof(_SetPciMaxBusIndex));
-            ReadPciConfigByte = (_ReadPciConfigByte)GetDelegate("ReadPciConfigByte", typeof(_ReadPciConfigByte));
-            ReadPciConfigWord = (_ReadPciConfigWord)GetDelegate("ReadPciConfigWord", typeof(_ReadPciConfigWord));
-            ReadPciConfigDword = (_ReadPciConfigDword)GetDelegate("ReadPciConfigDword", typeof(_ReadPciConfigDword));
-            ReadPciConfigByteEx = (_ReadPciConfigByteEx)GetDelegate("ReadPciConfigByteEx", typeof(_ReadPciConfigByteEx));
-            ReadPciConfigWordEx = (_ReadPciConfigWordEx)GetDelegate("ReadPciConfigWordEx", typeof(_ReadPciConfigWordEx));
-            ReadPciConfigDwordEx = (_ReadPciConfigDwordEx)GetDelegate("ReadPciConfigDwordEx", typeof(_ReadPciConfigDwordEx));
-            WritePciConfigByte = (_WritePciConfigByte)GetDelegate("WritePciConfigByte", typeof(_WritePciConfigByte));
-            WritePciConfigWord = (_WritePciConfigWord)GetDelegate("WritePciConfigWord", typeof(_WritePciConfigWord));
-            WritePciConfigDword = (_WritePciConfigDword)GetDelegate("WritePciConfigDword", typeof(_WritePciConfigDword));
-            WritePciConfigByteEx = (_WritePciConfigByteEx)GetDelegate("WritePciConfigByteEx", typeof(_WritePciConfigByteEx));
-            WritePciConfigWordEx = (_WritePciConfigWordEx)GetDelegate("WritePciConfigWordEx", typeof(_WritePciConfigWordEx));
-            WritePciConfigDwordEx = (_WritePciConfigDwordEx)GetDelegate("WritePciConfigDwordEx", typeof(_WritePciConfigDwordEx));
-            FindPciDeviceById = (_FindPciDeviceById)GetDelegate("FindPciDeviceById", typeof(_FindPciDeviceById));
-            FindPciDeviceByClass = (_FindPciDeviceByClass)GetDelegate("FindPciDeviceByClass", typeof(_FindPciDeviceByClass));
-
-#if _PHYSICAL_MEMORY_SUPPORT
-                ReadDmiMemory = (_ReadDmiMemory)GetDelegate("ReadDmiMemory", typeof(_ReadDmiMemory));
-                ReadPhysicalMemory = (_ReadPhysicalMemory)GetDelegate("ReadPhysicalMemory", typeof(_ReadPhysicalMemory));
-                WritePhysicalMemory = (_WritePhysicalMemory)GetDelegate("WritePhysicalMemory", typeof(_WritePhysicalMemory));
-#endif
-            if (!(
-               GetDllStatus != null
-            && GetDllVersion != null
-            && GetDriverVersion != null
-            && GetDriverType != null
-            && InitializeOls != null
-            && DeinitializeOls != null
-            && IsCpuid != null
-            && IsMsr != null
-            && IsTsc != null
-            && Hlt != null
-            && HltTx != null
-            && HltPx != null
-            && Rdmsr != null
-            && RdmsrTx != null
-            && RdmsrPx != null
-            && Wrmsr != null
-            && WrmsrTx != null
-            && WrmsrPx != null
-            && Rdpmc != null
-            && RdpmcTx != null
-            && RdpmcPx != null
-            && Cpuid != null
-            && CpuidTx != null
-            && CpuidPx != null
-            && Rdtsc != null
-            && RdtscTx != null
-            && RdtscPx != null
-            && ReadIoPortByte != null
-            && ReadIoPortWord != null
-            && ReadIoPortDword != null
-            && ReadIoPortByteEx != null
-            && ReadIoPortWordEx != null
-            && ReadIoPortDwordEx != null
-            && WriteIoPortByte != null
-            && WriteIoPortWord != null
-            && WriteIoPortDword != null
-            && WriteIoPortByteEx != null
-            && WriteIoPortWordEx != null
-            && WriteIoPortDwordEx != null
-            && SetPciMaxBusIndex != null
-            && ReadPciConfigByte != null
-            && ReadPciConfigWord != null
-            && ReadPciConfigDword != null
-            && ReadPciConfigByteEx != null
-            && ReadPciConfigWordEx != null
-            && ReadPciConfigDwordEx != null
-            && WritePciConfigByte != null
-            && WritePciConfigWord != null
-            && WritePciConfigDword != null
-            && WritePciConfigByteEx != null
-            && WritePciConfigWordEx != null
-            && WritePciConfigDwordEx != null
-            && FindPciDeviceById != null
-            && FindPciDeviceByClass != null
-#if _PHYSICAL_MEMORY_SUPPORT
-                && ReadDmiMemory != null
-                && ReadPhysicalMemory != null
-                && WritePhysicalMemory != null
-#endif
-            ))
-            {
-                status = (uint)Status.DLL_INCORRECT_VERSION;
-            }
-
-            if (InitializeOls() == 0)
-            {
-                status = (uint)Status.DLL_INITIALIZE_ERROR;
-            }
-        }
-    }
-
-    public uint GetStatus()
-    {
-        return status;
-    }
-
-    public void Dispose()
-    {
-        if (module != IntPtr.Zero)
-        {
-            DeinitializeOls();
-            Ols.FreeLibrary(module);
-            module = IntPtr.Zero;
-        }
-    }
-
-    public Delegate GetDelegate(string procName, Type delegateType)
-    {
-        var ptr = GetProcAddress(module, procName);
-        if (ptr != IntPtr.Zero)
-        {
-            var d = Marshal.GetDelegateForFunctionPointer(ptr, delegateType);
-            return d;
-        }
-
-        var result = Marshal.GetHRForLastWin32Error();
-        throw Marshal.GetExceptionForHR(result);
-    }
-
-    //-----------------------------------------------------------------------------
-    // DLL Information
-    //-----------------------------------------------------------------------------
-    public delegate uint _GetDllStatus();
-    public delegate uint _GetDllVersion(ref byte major, ref byte minor, ref byte revision, ref byte release);
-    public delegate uint _GetDriverVersion(ref byte major, ref byte minor, ref byte revision, ref byte release);
-    public delegate uint _GetDriverType();
-
-    public delegate int _InitializeOls();
-    public delegate void _DeinitializeOls();
-
-    public _GetDllStatus GetDllStatus = null;
-    public _GetDriverType GetDriverType = null;
-    public _GetDllVersion GetDllVersion = null;
-    public _GetDriverVersion GetDriverVersion = null;
-
-    public _InitializeOls InitializeOls = null;
-    public _DeinitializeOls DeinitializeOls = null;
-
-    //-----------------------------------------------------------------------------
-    // CPU
-    //-----------------------------------------------------------------------------
-    public delegate int _IsCpuid();
-    public delegate int _IsMsr();
-    public delegate int _IsTsc();
-    public delegate int _Hlt();
-    public delegate int _HltTx(UIntPtr threadAffinityMask);
-    public delegate int _HltPx(UIntPtr processAffinityMask);
-    public delegate int _Rdmsr(uint index, ref uint eax, ref uint edx);
-    public delegate int _RdmsrTx(uint index, ref uint eax, ref uint edx, UIntPtr threadAffinityMask);
-    public delegate int _RdmsrPx(uint index, ref uint eax, ref uint edx, UIntPtr processAffinityMask);
-    public delegate int _Wrmsr(uint index, uint eax, uint edx);
-    public delegate int _WrmsrTx(uint index, uint eax, uint edx, UIntPtr threadAffinityMask);
-    public delegate int _WrmsrPx(uint index, uint eax, uint edx, UIntPtr processAffinityMask);
-    public delegate int _Rdpmc(uint index, ref uint eax, ref uint edx);
-    public delegate int _RdpmcTx(uint index, ref uint eax, ref uint edx, UIntPtr threadAffinityMask);
-    public delegate int _RdpmcPx(uint index, ref uint eax, ref uint edx, UIntPtr processAffinityMask);
-    public delegate int _Cpuid(uint index, ref uint eax, ref uint ebx, ref uint ecx, ref uint edx);
-    public delegate int _CpuidTx(uint index, ref uint eax, ref uint ebx, ref uint ecx, ref uint edx, UIntPtr threadAffinityMask);
-    public delegate int _CpuidPx(uint index, ref uint eax, ref uint ebx, ref uint ecx, ref uint edx, UIntPtr processAffinityMask);
-    public delegate int _Rdtsc(ref uint eax, ref uint edx);
-    public delegate int _RdtscTx(ref uint eax, ref uint edx, UIntPtr threadAffinityMask);
-    public delegate int _RdtscPx(ref uint eax, ref uint edx, UIntPtr processAffinityMask);
-
-    public _IsCpuid IsCpuid = null;
-    public _IsMsr IsMsr = null;
-    public _IsTsc IsTsc = null;
-    public _Hlt Hlt = null;
-    public _HltTx HltTx = null;
-    public _HltPx HltPx = null;
-    public _Rdmsr Rdmsr = null;
-    public _RdmsrTx RdmsrTx = null;
-    public _RdmsrPx RdmsrPx = null;
-    public _Wrmsr Wrmsr = null;
-    public _WrmsrTx WrmsrTx = null;
-    public _WrmsrPx WrmsrPx = null;
-    public _Rdpmc Rdpmc = null;
-    public _RdpmcTx RdpmcTx = null;
-    public _RdpmcPx RdpmcPx = null;
-    public _Cpuid Cpuid = null;
-    public _CpuidTx CpuidTx = null;
-    public _CpuidPx CpuidPx = null;
-    public _Rdtsc Rdtsc = null;
-    public _RdtscTx RdtscTx = null;
-    public _RdtscPx RdtscPx = null;
-
-    //-----------------------------------------------------------------------------
-    // I/O
-    //-----------------------------------------------------------------------------
-    public delegate byte _ReadIoPortByte(ushort port);
-    public delegate ushort _ReadIoPortWord(ushort port);
-    public delegate uint _ReadIoPortDword(ushort port);
-    public _ReadIoPortByte ReadIoPortByte;
-    public _ReadIoPortWord ReadIoPortWord;
-    public _ReadIoPortDword ReadIoPortDword;
-
-    public delegate int _ReadIoPortByteEx(ushort port, ref byte value);
-    public delegate int _ReadIoPortWordEx(ushort port, ref ushort value);
-    public delegate int _ReadIoPortDwordEx(ushort port, ref uint value);
-    public _ReadIoPortByteEx ReadIoPortByteEx;
-    public _ReadIoPortWordEx ReadIoPortWordEx;
-    public _ReadIoPortDwordEx ReadIoPortDwordEx;
-
-    public delegate void _WriteIoPortByte(ushort port, byte value);
-    public delegate void _WriteIoPortWord(ushort port, ushort value);
-    public delegate void _WriteIoPortDword(ushort port, uint value);
-    public _WriteIoPortByte WriteIoPortByte;
-    public _WriteIoPortWord WriteIoPortWord;
-    public _WriteIoPortDword WriteIoPortDword;
-
-    public delegate int _WriteIoPortByteEx(ushort port, byte value);
-    public delegate int _WriteIoPortWordEx(ushort port, ushort value);
-    public delegate int _WriteIoPortDwordEx(ushort port, uint value);
-    public _WriteIoPortByteEx WriteIoPortByteEx;
-    public _WriteIoPortWordEx WriteIoPortWordEx;
-    public _WriteIoPortDwordEx WriteIoPortDwordEx;
-
-    //-----------------------------------------------------------------------------
-    // PCI
-    //-----------------------------------------------------------------------------
-    public delegate void _SetPciMaxBusIndex(byte max);
-    public _SetPciMaxBusIndex SetPciMaxBusIndex;
-
-    public delegate byte _ReadPciConfigByte(uint pciAddress, byte regAddress);
-    public delegate ushort _ReadPciConfigWord(uint pciAddress, byte regAddress);
-    public delegate uint _ReadPciConfigDword(uint pciAddress, byte regAddress);
-    public _ReadPciConfigByte ReadPciConfigByte;
-    public _ReadPciConfigWord ReadPciConfigWord;
-    public _ReadPciConfigDword ReadPciConfigDword;
-
-    public delegate int _ReadPciConfigByteEx(uint pciAddress, uint regAddress, ref byte value);
-    public delegate int _ReadPciConfigWordEx(uint pciAddress, uint regAddress, ref ushort value);
-    public delegate int _ReadPciConfigDwordEx(uint pciAddress, uint regAddress, ref uint value);
-    public _ReadPciConfigByteEx ReadPciConfigByteEx;
-    public _ReadPciConfigWordEx ReadPciConfigWordEx;
-    public _ReadPciConfigDwordEx ReadPciConfigDwordEx;
-
-    public delegate void _WritePciConfigByte(uint pciAddress, byte regAddress, byte value);
-    public delegate void _WritePciConfigWord(uint pciAddress, byte regAddress, ushort value);
-    public delegate void _WritePciConfigDword(uint pciAddress, byte regAddress, uint value);
-    public _WritePciConfigByte WritePciConfigByte;
-    public _WritePciConfigWord WritePciConfigWord;
-    public _WritePciConfigDword WritePciConfigDword;
-
-    public delegate int _WritePciConfigByteEx(uint pciAddress, uint regAddress, byte value);
-    public delegate int _WritePciConfigWordEx(uint pciAddress, uint regAddress, ushort value);
-    public delegate int _WritePciConfigDwordEx(uint pciAddress, uint regAddress, uint value);
-    public _WritePciConfigByteEx WritePciConfigByteEx;
-    public _WritePciConfigWordEx WritePciConfigWordEx;
-    public _WritePciConfigDwordEx WritePciConfigDwordEx;
-
-    public delegate uint _FindPciDeviceById(ushort vendorId, ushort deviceId, byte index);
-    public delegate uint _FindPciDeviceByClass(byte baseClass, byte subClass, byte programIf, byte index);
-    public _FindPciDeviceById FindPciDeviceById;
-    public _FindPciDeviceByClass FindPciDeviceByClass;
-
-    //-----------------------------------------------------------------------------
-    // Physical Memory (unsafe)
-    //-----------------------------------------------------------------------------
-#if _PHYSICAL_MEMORY_SUPPORT
-        public unsafe delegate uint _ReadDmiMemory(byte* buffer, uint count, uint unitSize);
-        public _ReadDmiMemory ReadDmiMemory;
-
-        public unsafe delegate uint _ReadPhysicalMemory(UIntPtr address, byte* buffer, uint count, uint unitSize);
-        public unsafe delegate uint _WritePhysicalMemory(UIntPtr address, byte* buffer, uint count, uint unitSize);
-
-        public _ReadPhysicalMemory ReadPhysicalMemory;
-        public _WritePhysicalMemory WritePhysicalMemory;
-#endif
-
-
-    private static readonly int _numCores = System.Environment.ProcessorCount;
-
-    /// <summary>
-    /// Reads from a 64 bit MSR of the current CPU core.
-    /// </summary>
-    /// <param name="index">MSR index/address.</param>
-    public ulong ReadMsr(uint index)
-    {
-        uint lower = 0, upper = 0;
-        if (Rdmsr(index, ref lower, ref upper) == 0)
-            throw new NotSupportedException("Could not read from MSR.");
-
-        return ((ulong)upper << 32) | lower;
-    }
-
-    /// <summary>
-    /// Reads from a 64 bit MSR of a specific CPU core.
-    /// </summary>
-    /// <param name="index">MSR index/address.</param>
-    /// <param name="core">Index of the CPU core.</param>
-    public ulong ReadMsr(uint index, int core)
-    {
-        if (core < 0 || core >= _numCores)
-            throw new ArgumentOutOfRangeException("core");
-
-        uint lower = 0, upper = 0;
-        if (RdmsrTx(index, ref lower, ref upper, new UIntPtr(1u << core)) == 0)
-            throw new NotSupportedException("Could not read from MSR.");
-
-        return ((ulong)upper << 32) | lower;
-    }
-
-    /// <summary>
-    /// Writes to a 64 bit MSR of the current CPU core.
-    /// </summary>
-    /// <param name="index">MSR index/address.</param>
-    /// <param name="value">Value to be written.</param>
-    public void WriteMsr(uint index, ulong value)
-    {
-        var lower = (uint)(value & 0xFFFFFFFFu);
-        var upper = (uint)(value >> 32);
-
-        if (Wrmsr(index, lower, upper) == 0)
-            throw new NotSupportedException("Could not write to MSR.");
-    }
-
-    /// <summary>
-    /// Writes to a 64 bit MSR of a specific CPU core.
-    /// </summary>
-    /// <param name="index">MSR index/address.</param>
-    /// <param name="value">Value to be written.</param>
-    /// <param name="core">Index of the CPU core.</param>
-    public void WriteMsr(uint index, ulong value, int core)
-    {
-        if (core < 0 || core >= _numCores)
-            throw new ArgumentOutOfRangeException("core");
-
-        var lower = (uint)(value & 0xFFFFFFFFu);
-        var upper = (uint)(value >> 32);
-
-        if (WrmsrTx(index, lower, upper, new UIntPtr(1u << core)) == 0)
-            throw new NotSupportedException("Could not write to MSR.");
-    }
-
-
-    /// <summary>
-    /// Reads from a 32 bit PCI register.
-    /// </summary>
-    /// <param name="pciAddress"></param>
-    /// <param name="registerAddress"></param>
-    /// <returns></returns>
-    public uint ReadPciConfig(uint pciAddress, uint registerAddress)
-    {
-        uint settings = 0;
-        if (ReadPciConfigDwordEx(pciAddress, registerAddress, ref settings) == 0)
-            throw new NotSupportedException("Could not read from PCI register.");
-
-        return settings;
-    }
-
-    /// <summary>
-    /// Writes to a 32 bit PCI register.
-    /// </summary>
-    /// <param name="pciAddress"></param>
-    /// <param name="registerAddress"></param>
-    /// <param name="value"></param>
-    public void WritePciConfig(uint pciAddress, uint registerAddress, uint value)
-    {
-        if (WritePciConfigDwordEx(pciAddress, registerAddress, value) == 0)
-            throw new NotSupportedException("Could not write to PCI register.");
-    }
 }
