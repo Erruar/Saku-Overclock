@@ -388,7 +388,8 @@ internal class SendSmuCommand
                          _cpu?.info.codeName == Cpu.CodeName.Phoenix || _cpuCodenameString.Contains("PHOENIX") ||
                          _cpu?.info.codeName == Cpu.CodeName.Phoenix2 || _cpuCodenameString.Contains("HAWKPOINT") ||
                          _cpu?.info.codeName == Cpu.CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") ||
-                         _cpu?.info.codeName == Cpu.CodeName.DragonRange)
+                         _cpu?.info.codeName == Cpu.CodeName.DragonRange ||
+                         _cpu?.info.codeName == Cpu.CodeName.StrixHalo)
                 {
                     Socket_FT6_FP7_FP8();
                 }
@@ -597,7 +598,8 @@ internal class SendSmuCommand
                      _cpu?.info.codeName == Cpu.CodeName.Phoenix || _cpuCodenameString.Contains("PHOENIX") ||
                      _cpu?.info.codeName == Cpu.CodeName.Phoenix2 || _cpuCodenameString.Contains("HAWKPOINT") ||
                      _cpu?.info.codeName == Cpu.CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") ||
-                     _cpu?.info.codeName == Cpu.CodeName.DragonRange)
+                     _cpu?.info.codeName == Cpu.CodeName.DragonRange ||
+                     _cpu?.info.codeName == Cpu.CodeName.StrixHalo)
             {
                 Socket_FT6_FP7_FP8();
             }
@@ -641,7 +643,7 @@ internal class SendSmuCommand
             if (!_saveinfo && commandName == "stopcpu-freqto-ramstate")
             {
                 return;
-            } // Чтобы уж точно не осталось в RyzenADJline, так как может крашнуть систему
+            } // Чтобы уж точно не осталось в ADJline, так как может крашнуть систему
 
             var status = _cpu?.smu.SendSmuCommand(_testMailbox, command, ref args);
             if (status != SMU.Status.OK)
@@ -844,7 +846,7 @@ internal class SendSmuCommand
         }
     }
 
-    public static uint ReturnCoGfx(Cpu.CodeName codeName)
+    public static uint ReturnCoGfx(Cpu.CodeName codeName, bool isMp1)
     {
         Codename = codeName; //если класс неинициализирован - задать правильный Codename
         switch (Codename)
@@ -877,6 +879,8 @@ internal class SendSmuCommand
             case Cpu.CodeName.Phoenix2:
             case Cpu.CodeName.DragonRange:
             case Cpu.CodeName.HawkPoint:
+            case Cpu.CodeName.StrixPoint:
+            case Cpu.CodeName.StrixHalo:
                 Socket_FT6_FP7_FP8();
                 break;
             case Cpu.CodeName.GraniteRidge:
@@ -889,7 +893,7 @@ internal class SendSmuCommand
                 return 0U; // Find the command by name
         }
 
-        var matchingCommands = Commands?.Where(c => c.Item1 == "set-cogfx");
+        var matchingCommands = Commands?.Where(c => c.Item1 == "set-cogfx" && c.Item2 == isMp1);
         var commands = matchingCommands!.ToList();
         if (commands.Count != 0)
         {
@@ -899,7 +903,7 @@ internal class SendSmuCommand
         return 0U;
     }
 
-    public static uint ReturnCoPer(Cpu.CodeName codeName)
+    public static uint ReturnCoPer(Cpu.CodeName codeName, bool isMp1)
     {
         Codename = codeName; //если класс неинициализирован - задать правильный Codename
         switch (Codename)
@@ -932,6 +936,8 @@ internal class SendSmuCommand
             case Cpu.CodeName.Phoenix2:
             case Cpu.CodeName.DragonRange:
             case Cpu.CodeName.HawkPoint:
+            case Cpu.CodeName.StrixPoint:
+            case Cpu.CodeName.StrixHalo:
                 Socket_FT6_FP7_FP8();
                 break;
             case Cpu.CodeName.GraniteRidge:
@@ -944,7 +950,7 @@ internal class SendSmuCommand
                 return 0U; // Find the command by name
         }
 
-        var matchingCommands = Commands?.Where(c => c.Item1 == "set-coper");
+        var matchingCommands = Commands?.Where(c => c.Item1 == "set-coper" && c.Item2 == isMp1);
         var commands = matchingCommands!.ToList();
         if (commands.Count != 0)
         {
@@ -953,6 +959,43 @@ internal class SendSmuCommand
 
         return 0U;
     }
+
+    public static bool? IsPlatformPC(Cpu.CodeName codeName)
+    {
+        Codename = codeName;
+        return Codename switch
+        {
+            Cpu.CodeName.SummitRidge or Cpu.CodeName.PinnacleRidge => true,
+            Cpu.CodeName.RavenRidge or Cpu.CodeName.Picasso or Cpu.CodeName.Dali or Cpu.CodeName.FireFlight => false,
+            Cpu.CodeName.Matisse or Cpu.CodeName.Vermeer => true,
+            Cpu.CodeName.Renoir or Cpu.CodeName.Lucienne or Cpu.CodeName.Cezanne => false,
+            Cpu.CodeName.VanGogh => false,
+            Cpu.CodeName.Mendocino or Cpu.CodeName.Rembrandt or Cpu.CodeName.Phoenix or Cpu.CodeName.Phoenix2 or Cpu.CodeName.DragonRange or Cpu.CodeName.HawkPoint or Cpu.CodeName.StrixPoint or Cpu.CodeName.StrixHalo => false,
+            Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.Bergamo or Cpu.CodeName.Raphael => true,
+            _ => null,// Устройство не определено
+        };
+    }
+
+    public static uint GenerateSmuArgForSetGfxclkOverdriveByFreqVid(double frequencyMHz, double voltage)
+    {
+        // Вычисляем VID по напряжению
+        var rawVid = (1.55 - voltage) / 0.00625;
+        var vid = (uint)Math.Round(rawVid);
+
+        // Ограничения по диапазону VID
+        if (vid > 0xFF)
+        {
+            vid = 0xFF;
+        }
+
+        // Конвертируем частоту в целочисленный формат
+        var freq = (uint)Math.Round(frequencyMHz);
+
+        // Смещаем и комбинируем
+        var smuArg = (vid << 16) | (freq & 0xFFFF);
+        return smuArg;
+    }
+
 
     /*Commands and addresses. Commands architecture basis from Universal x86 Tuning Utility. Its author is https://github.com/JamesCJ60, a lot of commands as well as various sources,
      * I just put them together and found some news.
@@ -978,9 +1021,11 @@ internal class SendSmuCommand
             ("disable-feature", true, 0x6),
             ("stapm-limit", true, 0x1a),
             ("stapm-time", true, 0x1e),
+            ("stapm-time", false, 0x32),
             ("fast-limit", true, 0x1b),
             ("slow-limit", true, 0x1c),
             ("slow-time", true, 0x1d),
+            ("slow-time", false, 0x31),
             ("tctl-temp", true, 0x1f),
             ("cHTC-temp", false, 0x56), // Use RSMU address
             ("vrm-current", true, 0x20),
@@ -1072,8 +1117,8 @@ internal class SendSmuCommand
             ("oc-clk", true, 0x31),
             ("per-core-oc-clk", true, 0x32),
             ("oc-volt", true, 0x33),
-            ("dgpu-skin-temp", true, 0x37),
-            ("apu-skin-temp", true, 0x39),
+            ("dgpu-skin-temp", true, 0x39),
+            ("apu-skin-temp", true, 0x38),
             ("skin-temp-limit", true, 0x53),
             ("enable-oc", false, 0x17), // Use RSMU address
             ("disable-oc", false, 0x18),
@@ -1084,13 +1129,15 @@ internal class SendSmuCommand
             ("stapm-limit", false, 0x33),
             ("cHTC-temp", false, 0x37),
             ("pbo-scalar", false, 0x3F),
+            ("pbo-scalar", true, 0x49),
             ("set-cogfx", false, 0x57),
             ("set-coper", true, 0x54),
             ("set-coper", false, 0x52),
             ("set-coall", true, 0x55),
             ("set-cogfx", true, 0x64),
             ("set-coall", false, 0xB1),
-            ("gfx-clk", false, 0x89)
+            ("gfx-clk", false, 0x89),
+            ("set-gpuclockoverdrive-byvid", true, 0x34)
         ];
     }
 
@@ -1104,6 +1151,16 @@ internal class SendSmuCommand
             RsmuCmd = 0x3B10524;
             RsmuRsp = 0x3B10570;
             RsmuArg = 0x3B10A40;
+        }
+        else if (Codename == Cpu.CodeName.StrixPoint || Codename == Cpu.CodeName.StrixHalo) 
+        {
+            Mp1Cmd = 0x3B10928;
+            Mp1Rsp = 0x3B10978;
+            Mp1Arg = 0x3B10998;
+
+            RsmuCmd = 0x3B10a20; // Still Unknown
+            RsmuRsp = 0x3B10a80;
+            RsmuArg = 0x3B10a88;
         }
         else
         {
@@ -1134,13 +1191,18 @@ internal class SendSmuCommand
             ("cHTC-temp", false, 0x37),
             ("apu-skin-temp", true, 0x33),
             ("apu-slow-limit", true, 0x23),
+            ("skin-temp-limit", true, 0x4A),
             ("vrm-current", true, 0x1a),
             ("vrmmax-current", true, 0x1c),
             ("vrmsoc-current", true, 0x1b),
             ("vrmsocmax-current", true, 0x1d),
-            ("prochot-deassertion-ramp", true, 0x1f),
+            ("psi0-current", true, 0x1E),
+            ("psi0soc-current", true, 0x1F),
+            ("psi3cpu_current", true, 0x20),
+            ("psi3gfx_current", true, 0x21),
+            ("prochot-deassertion-ramp", true, 0x22),
             ("gfx-clk", false, 0x89),
-            ("dgpu-skin-temp", true, 0x32),
+            ("dgpu-skin-temp", true, 0x34),
             ("power-saving", true, 0x12),
             ("max-performance", true, 0x11),
             ("pbo-scalar", false, 0x3E),
@@ -1181,11 +1243,11 @@ internal class SendSmuCommand
             ("cHTC-temp", false, 0x37),
             ("apu-skin-temp", true, 0x33),
             ("vrm-current", true, 0x1a),
-            ("vrmmax-current", true, 0x1e),
+            ("skin-temp-limit", true, 0x4A),
+            ("vrmmax-current", true, 0x1c),
             ("vrmsoc-current", true, 0x1b),
             ("vrmsocmax-current", true, 0x1d),
-            ("vrmcvip-current", true, 0x1d),
-            ("vrmgfx-current", true, 0x1c),
+            ("vrmgfx-current", true, 0x1e),
             ("vrmgfxmax-current", true, 0x1f),
             ("prochot-deassertion-ramp", true, 0x22),
             ("psi3cpu_current", true, 0x20),
@@ -1244,13 +1306,13 @@ internal class SendSmuCommand
             // Store the commands
             ("enable-feature", true, 0x5), // Use MP1 address
             ("disable-feature", true, 0x6),
-            ("stapm-limit", true, 0x3D),
-            ("stapm-limit", false, 0x53), // Use RSMU address
+            ("fast-limit", true, 0x3D),
+            ("fast-limit", false, 0x53), // Use RSMU address
             ("vrm-current", true, 0x3B),
             ("vrm-current", false, 0x54),
             ("vrmmax-current", true, 0x3C),
             ("vrmmax-current", false, 0x55),
-            ("tctl-temp", true, 0x23),
+            ("tctl-temp", true, 0x3E), // previous 0x23
             ("tctl-temp", false, 0x56),
             ("pbo-scalar", false, 0x58),
             ("oc-clk", true, 0x26),
@@ -1285,8 +1347,13 @@ internal class SendSmuCommand
             // Store the commands
             ("enable-feature", true, 0x5), // Use MP1 address
             ("disable-feature", true, 0x7),
-            ("stapm-limit", true, 0x3e),
-            ("stapm-limit", false, 0x56), // Use RSMU address
+            ("stapm-limit", true, 0x4f), // Set CPU Stapm value! Not affect on PPT
+            ("fast-limit", true, 0x3e),
+            ("fast-limit", false, 0x56), // Set CPU PPT Limit // Use RSMU address
+            ("slow-limit", true, 0x5f),
+            ("stapm-time", true, 0x4e), 
+            ("slow-time", true, 0x61),
+            ("apu-slow-limit", true, 0x60),
             ("vrm-current", true, 0x3c),
             ("vrm-current", false, 0x57),
             ("vrmmax-current", true, 0x3d),
@@ -1298,10 +1365,14 @@ internal class SendSmuCommand
             ("per-core-oc-clk", false, 0x60),
             ("oc-volt", false, 0x61),
             ("set-coall", false, 0x7),
-            ("set-cogfx", false, 0x7),
-            ("set-coper", false, 0x6),
+            ("set-cogfx", false, 0x7), // Not sure, seems no.
+            ("set-coper", false, 0x6), 
+            ("set-coall", true, 0x36),
+            ("set-coper", true, 0x35),
             ("enable-oc", false, 0x5d),
-            ("disable-oc", false, 0x5e)
+            ("disable-oc", false, 0x5e),
+            ("set-vddoff-vid", true, 0x4B),
+            ("set-fll-btc-enable", true, 0x37) // 0 - True, 1 - False 
         ];
     }
 }
