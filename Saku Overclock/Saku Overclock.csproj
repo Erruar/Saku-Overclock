@@ -68,6 +68,7 @@
     <None Remove="param.png" />
     <None Remove="preset.png" />
     <None Remove="ProfileSwitcher\ProfileSwitcher.xaml" />
+    <None Remove="SakuLogo.json" />
     <None Remove="Services\Cpu.cs.bak.zip" />
     <None Remove="show.png" />
     <None Remove="startup.lnk" />
@@ -136,8 +137,10 @@
   <ItemGroup>
     <PackageReference Include="Accord.Math" Version="3.8.2-alpha" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.WinUI.Lottie" Version="8.1.240821" />
     <PackageReference Include="H.NotifyIcon.WinUI" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250310001" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -1026,5 +1029,11 @@
   
   <ItemGroup>
     <Resource Remove="Views\ОбновлениеPage.xaml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="SakuLogo.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup> 
 </Project>
