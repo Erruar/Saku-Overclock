@@ -40,21 +40,21 @@
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition Height="3*"/>
-                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="2*" x:Name="BatteryControlRow"/>
                         </Grid.RowDefinitions>
                         <TextBlock Margin="23,0,0,0" VerticalAlignment="Center" Text="Сохранённые профили" Grid.Row="0" FontWeight="SemiBold" FontSize="16"/>
                         <Grid Grid.Row="1" Margin="10,3,5,9" CornerRadius="8">
                             <local:ProfileSelector SelectionChanged="ProfilesControl_SelectionChanged" x:Name="ProfilesControl" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
                         </Grid>
-                        <Grid Grid.Row="2">
+                        <Grid Grid.Row="2" x:Name="BatteryControlStroke">
                             <Border VerticalAlignment="Top" Margin="25,0,25,0" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/> 
                         </Grid>
-                        <Grid Grid.Row="2">
+                        <Grid Grid.Row="2" x:Name="BatteryControlElement">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/> 
                                 <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
-                            <local:BatteryControl Value="55" Margin="23,10,0,10" Grid.Column="0" HorizontalAlignment="Stretch" MaxHeight="100" />
+                            <local:BatteryControl Value="55" Margin="23,10,0,10" Grid.Column="0" HorizontalAlignment="Stretch" x:Name="BatteryPercentage" MaxHeight="100" />
                             <StackPanel HorizontalAlignment="Right" Margin="0,6,23,0" Orientation="Vertical" VerticalAlignment="Center" Grid.Column="1">
                                 <TextBlock FontWeight="SemiBold" FontSize="16" HorizontalAlignment="Right" Text="Осталось времени работы:"/>
                                 <TextBlock FontWeight="Bold" FontSize="17" HorizontalAlignment="Right" x:Name="LastBatteryTime" Text="3 Часа 17 Минут"/>
@@ -211,7 +211,7 @@
                                             <TextBlock Margin="0,-2,0,-2" Text="Быстрая настройка" FontWeight="SemiBold"/>
                                         </ToggleButton>
                                         <ToggleButton Click="AnimatedToggleButton_Click" x:Name="AdvancedOptions_Button" CornerRadius="6" Margin="15,0,0,0">
-                                            <TextBlock Margin="0,-2,0,-2" Text="Расширенные параметры" FontWeight="SemiBold"/>
+                                            <TextBlock Margin="0,-2,0,-2" Text="Дополнительные функции" FontWeight="SemiBold"/>
                                         </ToggleButton>
                                     </StackPanel>
                                     <StackPanel x:Name="ProfileSettings_StackPanel" Margin="0,13,0,0" Orientation="Vertical">
@@ -511,28 +511,29 @@
                                                 <FontIcon FontSize="25" Glyph="&#xEC4A;" Margin="0,-3,0,0"/>
                                                 <StackPanel Margin="7,0,0,0" Orientation="Vertical">
                                                     <TextBlock FontWeight="SemiBold" Text="TDP"/>
-                                                    <TextBlock FontWeight="SemiBold" Text="20W"/>
+                                                    <TextBlock FontWeight="SemiBold" x:Name="TdpLimitSensor_Text" Text="20W"/>
                                                 </StackPanel>
-                                                <TextBlock Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}" Margin="5,-8,0,0" VerticalAlignment="Top" Text="18" FontWeight="Bold" FontSize="38"/>
+                                                <TextBlock Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}" Margin="5,-8,0,0" VerticalAlignment="Top" Text="18" FontWeight="Bold" FontSize="38" x:Name="TdpValueSensor_Text"/>
                                                 <TextBlock Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}" Margin="1,14,0,0" Text="W" VerticalAlignment="Center"/>
                                             </StackPanel>
 
                                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="0,5,0,0"> 
                                                 <FontIcon FontSize="25" Glyph="&#xE9D9;" Margin="0,-3,0,0"/>
-                                                <TextBlock Margin="5,-8,0,0" VerticalAlignment="Top" Text="5.5" FontWeight="Bold" FontSize="38"/>
+                                                <TextBlock Margin="5,-8,0,0" VerticalAlignment="Top" x:Name="CpuFreqSensor_Text" Text="5.5" FontWeight="Bold" FontSize="38"/>
                                                 <TextBlock Margin="1,14,0,0" Text="GHz" VerticalAlignment="Center"/>
                                             </StackPanel>
 
                                             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,0,0"> 
                                                 <FontIcon FontSize="25" Glyph="&#xE950;" Margin="0,-3,0,0"/>
-                                                <StackPanel Orientation="Vertical" Margin="7,0,0,0">
+                                                <StackPanel Orientation="Vertical" Margin="7,0,0,0" x:Name="TempSensors_StackPanel">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <TextBlock FontWeight="SemiBold" Text="CPU"/>
-                                                        <TextBlock FontWeight="SemiBold" Margin="4,0,0,0" Text="44C" Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}"/>
+                                                        <TextBlock FontWeight="SemiBold" x:Name="CpuTempSensor_CaptionText" Text="CPU"/>
+                                                        <TextBlock FontWeight="SemiBold" x:Name="CpuTempSensor_Text" Margin="4,0,0,0" Text="44C" Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}"/>
+                                                        <TextBlock Visibility="Collapsed" x:Name="CpuTempSensor_BigCaptionText" Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}" Margin="1,19,0,0" VerticalAlignment="Center" Text="C"/> 
                                                     </StackPanel>
-                                                    <StackPanel Orientation="Horizontal">
+                                                    <StackPanel Orientation="Horizontal" x:Name="GpuTempSensor_StackPanel">
                                                         <TextBlock FontWeight="SemiBold" Text="GPU"/>
-                                                        <TextBlock FontWeight="SemiBold" Margin="4,0,0,0" Text="37C" Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}"/>
+                                                        <TextBlock FontWeight="SemiBold" x:Name="GpuTempSensor_Text" Margin="4,0,0,0" Text="37C" Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}"/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </StackPanel>
@@ -587,27 +588,22 @@
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
-                                            <StackPanel Margin="0,5,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
-                                                <ToggleButton x:Name="Turbo_AutoModeButton" IsChecked="True" CornerRadius="8,0,0,8" FontWeight="SemiBold">Авто</ToggleButton>
-                                                <ToggleButton x:Name="Turbo_SettingModeButton" CornerRadius="0,8,8,0" FontWeight="SemiBold">Настроить</ToggleButton>
-                                            </StackPanel>
-                                        </Grid>
-                                        <Grid Margin="0,10,0,0" HorizontalAlignment="Stretch" Visibility="{Binding ElementName=Turbo_SettingModeButton, Path=IsChecked}">
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,4">
-                                                <ToggleButton x:Name="Turbo_LightModeToggle" CornerRadius="6" IsChecked="True">
-                                                    <TextBlock Margin="0,-2,0,-2" Text="Лёгкое" FontWeight="SemiBold"/>
-                                                </ToggleButton>
-                                                <ToggleButton x:Name="Turbo_BalanceModeToggle" CornerRadius="6" Margin="8,0,0,0">
-                                                    <TextBlock Margin="0,-2,0,-2" Text="Среднее" FontWeight="SemiBold"/>
-                                                </ToggleButton>
-                                                <ToggleButton x:Name="Turbo_HeavyModeToggle" CornerRadius="6" Margin="8,0,0,0">
-                                                    <TextBlock Margin="0,-2,0,-2" Text="Сильное" FontWeight="SemiBold"/>
-                                                </ToggleButton>
-                                                <ToggleButton x:Name="Turbo_OtherModeToggle" CornerRadius="6" Margin="8,0,0,0">
-                                                    <TextBlock Margin="0,-2,0,-2" TextWrapping="Wrap" Text="Другое" FontWeight="SemiBold"/>
-                                                </ToggleButton>
-                                            </StackPanel>
-                                        </Grid>
+                                            <Border Height="32" HorizontalAlignment="Right" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}" 
+                                            CornerRadius="10" Margin="0,5,0,4">
+                                                <StackPanel Margin="0,-9,0,-9" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <ToggleButton Background="Transparent" BorderBrush="Transparent" CornerRadius="10" Click="Turbo_OtherModeToggle_Click" x:Name="Turbo_LightModeToggle" IsChecked="True">
+                                                        <TextBlock Margin="0,-2,0,-2" Text="Авто" FontWeight="SemiBold"/>
+                                                    </ToggleButton>
+                                                    <ToggleButton Background="Transparent" BorderBrush="Transparent" CornerRadius="10" Click="Turbo_OtherModeToggle_Click" x:Name="Turbo_BalanceModeToggle" Margin="4,0,0,0">
+                                                        <TextBlock Margin="0,-2,0,-2" Text="Умное" FontWeight="SemiBold"/>
+                                                    </ToggleButton>
+                                                    <ToggleButton Background="Transparent" BorderBrush="Transparent" CornerRadius="10" Click="Turbo_OtherModeToggle_Click" x:Name="Turbo_HeavyModeToggle" Margin="4,0,0,0">
+                                                        <TextBlock Margin="0,-2,0,-2" Text="Сильное" FontWeight="SemiBold"/>
+                                                    </ToggleButton>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid> 
+                                        <Border Background="Transparent" Height="10"/>
                                     </StackPanel>
                                     <StackPanel Visibility="Collapsed" x:Name="PremadeProfile_AffectsOn" Margin="0,13,0,0" Orientation="Vertical">
                                         

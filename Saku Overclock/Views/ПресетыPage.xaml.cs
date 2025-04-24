@@ -20,6 +20,7 @@ public sealed partial class ПресетыPage
     private bool _waitforload = true; // Ожидание окончательной смены профиля на другой. Активируется при смене профиля 
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
     private int _indexprofile = 0; // Выбранный профиль
+    private readonly IBackgroundDataUpdater? _dataUpdater; 
     private PeriodicTimer? _flipTimer;
     private ZenStates.Core.Cpu.CodeName? _codeName;
     private readonly Random _random = new();
@@ -62,7 +63,13 @@ public sealed partial class ПресетыPage
         AppSettings.NBFCFlagConsoleCheckSpeedRunning = false;
         AppSettings.FlagRyzenADJConsoleTemperatureCheckRunning = false;
         AppSettings.SaveSettings();
-        Loaded += ПресетыPage_Loaded;
+        _dataUpdater = App.BackgroundUpdater!;
+        _dataUpdater.DataUpdated += OnDataUpdated;
+        Unloaded += (_, _) =>
+        {
+            _dataUpdater.DataUpdated -= OnDataUpdated;
+        };
+        Loaded += ПресетыPage_Loaded; 
     }
 
     private async void ПресетыPage_Loaded(object sender, RoutedEventArgs e)
@@ -357,22 +364,17 @@ public sealed partial class ПресетыPage
 
             if (!_profile[index].cpu5 && !_profile[index].cpu6)
             {
-                Turbo_AutoModeButton.IsChecked = true;
-                Turbo_SettingModeButton.IsChecked = false;
+                Turbo_LightModeToggle.IsChecked = true; 
             }
             else
-            {
+            {  
                 if ((_profile[index].cpu5 && !_profile[index].cpu6) || (!_profile[index].cpu5 && _profile[index].cpu6))
                 {
-                    TurboSetOnly(Turbo_OtherModeToggle); 
+                    Turbo_LightModeToggle.IsChecked = true; 
                 }
                 if (_profile[index].cpu5 && _profile[index].cpu6)
-                {
-                    if (_profile[index].cpu5value == 300 && _profile[index].cpu6value == 5)
-                    {
-                        TurboSetOnly(Turbo_LightModeToggle); 
-                    }
-                    else if (_profile[index].cpu5value == 700 && _profile[index].cpu6value == 3)
+                { 
+                    if (_profile[index].cpu5value == 400 && _profile[index].cpu6value == 3)
                     {
                         TurboSetOnly(Turbo_BalanceModeToggle); 
                     }
@@ -380,10 +382,14 @@ public sealed partial class ПресетыPage
                     {
                         TurboSetOnly(Turbo_HeavyModeToggle); 
                     }
+                    else
+                    {
+                        TurboSetOnly(Turbo_LightModeToggle);
+                    }
                 }
                 else
                 {
-                    TurboSetOnly(Turbo_OtherModeToggle);
+                    Turbo_LightModeToggle.IsChecked = true;
                 }
             }
 
@@ -417,17 +423,13 @@ public sealed partial class ПресетыPage
     }
 
     private void TurboSetOnly(ToggleButton button)
-    {
-        Turbo_OtherModeToggle.IsChecked = false;
+    { 
         Turbo_LightModeToggle.IsChecked = false;
         Turbo_BalanceModeToggle.IsChecked = false;
         Turbo_HeavyModeToggle.IsChecked = false;
 
         switch (button.Name)
-        {
-            case "Turbo_OtherModeToggle":
-                Turbo_OtherModeToggle.IsChecked = true;
-                break;
+        {  
             case "Turbo_LightModeToggle":
                 Turbo_LightModeToggle.IsChecked = true;
                 break;
@@ -440,9 +442,99 @@ public sealed partial class ПресетыPage
         }
     }
 
+    private void OnDataUpdated(object? sender, SensorsInformation info)
+    {
+        var batterySetValue = string.Empty;
+        if (info.BatteryUnavailable)
+        {
+            if (BatteryPercentage.Value != "N/A")
+            {
+                batterySetValue = "N/A"; 
+            }
+        }
+        else
+        {
+            batterySetValue = info.BatteryPercent;
+        } 
+
+        var trueBatLifeTime = info.BatteryLifeTime;
+        string batteryTime;
+        if (trueBatLifeTime < 0)
+        {
+            batteryTime = "InfoBatteryAC".GetLocalized(); // Устройство питается от сети
+        }
+        else
+        {
+            var ts = TimeSpan.FromSeconds(trueBatLifeTime); // Преобразуем секунды в TimeSpan
+            var parts = new List<string>();
+            if ((int)ts.TotalHours > 0)
+            {
+                parts.Add($"{(int)ts.TotalHours}h"); // Добавляем часы, если они есть
+            }
+
+            if (ts.Minutes > 0)
+            {
+                parts.Add($"{ts.Minutes}m"); // Добавляем минуты, если они есть
+            }
+
+            if (ts.Seconds > 0 || parts.Count == 0)
+            {
+                parts.Add(
+                    $"{ts.Seconds}s"); // Добавляем секунды – если других частей нет, или если секунды ненулевые
+            }
+
+            batteryTime = string.Join(" ", parts);
+        } 
+        
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            
+            if (info.BatteryUnavailable && BatteryControlStroke.Visibility != Visibility.Collapsed)
+            {
+                BatteryControlRow.Height = new GridLength(0);
+                BatteryControlStroke.Visibility = Visibility.Collapsed;
+                BatteryControlElement.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                if (batterySetValue != string.Empty)
+                {
+                    BatteryPercentage.Value = batterySetValue;
+                }
+                LastBatteryTime.Text = batteryTime;
+            }
+
+            TdpLimitSensor_Text.Text = Math.Round(info.CpuFastLimit) + "W";
+            TdpValueSensor_Text.Text = Math.Round(info.CpuFastValue).ToString();
+            CpuFreqSensor_Text.Text = Math.Round(info.CpuFrequency,1).ToString();
+
+            var updateSmallSign = true;
+
+            if (info.ApuTemperature == 0)
+            {
+                updateSmallSign = false;
+                TempSensors_StackPanel.Margin = new Thickness(7, 0, 0, 5);
+                TempSensors_StackPanel.VerticalAlignment = VerticalAlignment.Bottom;
+                GpuTempSensor_StackPanel.Visibility = Visibility.Collapsed;
+                CpuTempSensor_CaptionText.Visibility = Visibility.Collapsed;
+                CpuTempSensor_BigCaptionText.Visibility = Visibility.Visible; 
+                CpuTempSensor_Text.FontSize = 38;
+                CpuTempSensor_Text.Margin = new Thickness(4,-8,0,0);
+                CpuTempSensor_Text.FontWeight = new Windows.UI.Text.FontWeight(700);
+            }
+            else
+            {
+                GpuTempSensor_Text.Text = Math.Round(info.ApuTemperature) + "C";
+            }
+
+            CpuTempSensor_Text.Text = Math.Round(info.CpuTempValue) + (updateSmallSign ? "C" : string.Empty);
+            
+           
+        });
+    }
     #endregion
 
-    #region JSON voids
+        #region JSON voids
     private static void ProfileSave()
     {
         try
@@ -638,6 +730,7 @@ public sealed partial class ПресетыPage
 
         if (SmartTdp.IsOn)
         {
+            c2v.Value = fineTunedTdp;
             _profile[index].cpu2value = fineTunedTdp;
         }
         else
@@ -645,10 +738,7 @@ public sealed partial class ПресетыPage
             c2v.Value = BaseTdp_Slider.Value;
             _profile[index].cpu2value = BaseTdp_Slider.Value;
         }
-        if (_codeName != null && _codeName == ZenStates.Core.Cpu.CodeName.Unsupported ||
-            _codeName == ZenStates.Core.Cpu.CodeName.Raphael ||
-            _codeName == ZenStates.Core.Cpu.CodeName.GraniteRidge ||
-            _codeName == ZenStates.Core.Cpu.CodeName.SummitRidge)
+        if (SendSmuCommand.IsPlatformPC(CpuSingleton.GetInstance().info.codeName) != false) // Если устройство - не ноутбук
         {
             // Так как на компьютерах невозможно выставить другие Power лимиты
             c2.IsChecked = false;
@@ -659,10 +749,76 @@ public sealed partial class ПресетыPage
         ProfileSave();
     }
 
+    // Grid-помощник, который активирует переключатель когда пользователь нажал на область возле него
     private void SmartTdp_PointerPressed(object sender, object e)
     {
-        SmartTdp.IsOn = SmartTdp.IsOn == false;
+        SmartTdp.IsOn = SmartTdp.IsOn == false; 
+    } 
+
+    // Выбора режима усиления Турбобуста процессора: Авто, Умный, Сильный. Устанавливает параметры времени разгона процессора в зависимости от выбранной настройки
+    private void Turbo_OtherModeToggle_Click(object sender, RoutedEventArgs e)
+    {
+        if (!_isLoaded) { return; } 
+        
+        var toggle = sender as ToggleButton;
+        if (Turbo_LightModeToggle.IsChecked == false
+            && Turbo_BalanceModeToggle.IsChecked == false 
+            && Turbo_HeavyModeToggle.IsChecked == false)
+        {
+            toggle!.IsChecked = true;
+        }
+        else
+        {
+            int index;
+            if (AppSettings.Preset == -1) 
+            { 
+                return; 
+            }
+            else 
+            {
+                index = AppSettings.Preset;
+            }
+
+            ProfileLoad();
+
+            if (toggle!.Name == "Turbo_LightModeToggle")
+            {
+                TurboSetOnly(Turbo_LightModeToggle);
+                _profile[index].cpu5 = false;
+                _profile[index].cpu6 = false;
+                c5.IsChecked = false;
+                c6.IsChecked = false; 
+            }
+            else if (toggle.Name == "Turbo_BalanceModeToggle")
+            {
+                TurboSetOnly(Turbo_BalanceModeToggle);
+                _profile[index].cpu5 = true;
+                _profile[index].cpu6 = true;
+                _profile[index].cpu5value = 400;
+                _profile[index].cpu6value = 3;
+                c5.IsChecked = true;
+                c6.IsChecked = true;
+                c5v.Value = 400;
+                c6v.Value = 3;
+            }
+            else if (toggle.Name == "Turbo_HeavyModeToggle")
+            {
+                TurboSetOnly(Turbo_HeavyModeToggle);
+                _profile[index].cpu5 = true;
+                _profile[index].cpu6 = true;
+                _profile[index].cpu5value = 5000;
+                _profile[index].cpu6value = 1;
+                c5.IsChecked = true;
+                c6.IsChecked = true;
+                c5v.Maximum = 5000;
+                c5v.Value = 5000;
+                c6v.Value = 1;
+            }
+        }
+
+        ProfileSave();
     }
+
     #endregion
 
     #region Page Helpers Events
@@ -1457,5 +1613,6 @@ public sealed partial class ПресетыPage
     #endregion
 
     #endregion
+
 
 }
