@@ -110,6 +110,11 @@ public abstract class UpdateChecker
             IReadOnlyList<Release>? releases = null;
             try
             {
+                if (_apiRateLimited)
+                {
+                    GitHubInfoString = "**Failed to fetch info**";
+                    return;
+                }
                 releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
             }
             catch
