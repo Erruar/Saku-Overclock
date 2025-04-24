@@ -179,7 +179,7 @@ public partial class App
         GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(),
             AppContext.BaseDirectory));
 
-        await GetService<IActivationService>().ActivateAsync(args);
+        await GetService<IActivationService>().ActivateAsync(args); 
 
         await Task.Delay(1500);
         await Task.Run(() =>
