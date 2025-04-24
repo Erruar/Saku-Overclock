@@ -4942,7 +4942,8 @@ public sealed partial class ПараметрыPage
 
             if (O2.IsChecked == true)
             {
-                _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(_cpu.info.codeName);
+                _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(_cpu.info.codeName, false);
+                _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(_cpu.info.codeName, true);
                 //Using Irusanov method
                 for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
                 {
@@ -4956,7 +4957,8 @@ public sealed partial class ПараметрыPage
                     }
                 }
 
-                _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName);
+                _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, false);
+                _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, true);
             }
 
             if (CCD_CO_Mode_Sel.IsChecked == true &&
@@ -5191,7 +5193,8 @@ public sealed partial class ПараметрыPage
                     (CCD_CO_Mode.SelectedIndex ==
                      3) // Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
                 {
-                    _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName);
+                    _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, false);
+                    _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, true);
                     for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
                     {
                         var checkbox = i < 8
