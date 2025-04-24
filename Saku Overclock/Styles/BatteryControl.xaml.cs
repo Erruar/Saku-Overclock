@@ -27,9 +27,11 @@ public sealed partial class BatteryControl : UserControl
     }
     private void SetBattery(string? value)
     {
+        value ??= "100";
         _value = value;
-        BatteryText.Text = value != null && value.Contains('%') ? value : value + "%";
-        var dimSize = BatteryPercentGrid.ActualWidth * Convert.ToInt32(value) / 100;
+        BatteryText.Text = value.Contains('%') ? value : value + "%";
+        if (value == "N/A" || value == "NA") { value = "100"; BatteryText.Text = "N/A"; }
+        var dimSize = BatteryPercentGrid.ActualWidth * Convert.ToInt32(value?.Replace("%","")) / 100;
         if (dimSize != 0)
         {
             BatteryPercentBorder.Width = dimSize;
