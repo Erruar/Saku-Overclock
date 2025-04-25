@@ -271,9 +271,9 @@ public sealed partial class ПресетыPage
                 c1v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu1value);
             }
 
-            if (_profile[index].cpu1value > BaseTdp_Slider.Maximum)
+            if (_profile[index].cpu2value > BaseTdp_Slider.Maximum)
             {
-                BaseTdp_Slider.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu1value);
+                BaseTdp_Slider.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu2value);
             }
 
             if (_profile[index].cpu2value > c2v.Maximum)
@@ -339,20 +339,20 @@ public sealed partial class ПресетыPage
         try
         {
             // Заранее скомпилированная функция увеличения TDP, созданная специально для фирменной функции Smart TDP
-            var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * _profile[index].cpu1value + 0.21631949); 
+            var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * _profile[index].cpu3value + 0.21631949); 
 
-            c1.IsChecked = _profile[index].cpu1;
-            c1v.Value = _profile[index].cpu1value;
+            c2.IsChecked = _profile[index].cpu2;
+            c2v.Value = _profile[index].cpu2value;
 
-            BaseTdp_Slider.Value = _profile[index].cpu1value;
-            if (_profile[index].cpu1 && _profile[index].cpu2 && _profile[index].cpu3 &&
-                _profile[index].cpu1value == _profile[index].cpu3value && _profile[index].cpu2value == fineTunedTdp)
+            BaseTdp_Slider.Value = _profile[index].cpu2value;
+            if (_profile[index].cpu2 && _profile[index].cpu3 && _profile[index].cpu4 &&
+                _profile[index].cpu2value == _profile[index].cpu4value && _profile[index].cpu3value == fineTunedTdp)
             {
                 SmartTdp.IsOn = true;
             }
 
-            c2.IsChecked = _profile[index].cpu2;
-            c2v.Value = _profile[index].cpu2value;
+            c1.IsChecked = _profile[index].cpu1;
+            c1v.Value = _profile[index].cpu1value;
             c3.IsChecked = _profile[index].cpu3;
             c3v.Value = _profile[index].cpu3value;
             c4.IsChecked = _profile[index].cpu4;
@@ -715,36 +715,42 @@ public sealed partial class ПресетыPage
         // Заранее скомпилированная функция увеличения TDP, созданная специально для фирменной функции Smart TDP
         var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * BaseTdp_Slider.Value + 0.21631949);
 
-        c1.IsChecked = true;
-        _profile[index].cpu1 = true;
         c2.IsChecked = true;
         _profile[index].cpu2 = true;
         c3.IsChecked = true;
         _profile[index].cpu3 = true;
+        c4.IsChecked = true;
+        _profile[index].cpu4 = true;
 
-        c1v.Value = BaseTdp_Slider.Value;
-        _profile[index].cpu1value = BaseTdp_Slider.Value;
+        if (fineTunedTdp > c3v.Maximum || BaseTdp_Slider.Value > c2v.Maximum || BaseTdp_Slider.Value > c4v.Maximum)
+        {
+            c2v.Maximum = ПараметрыPage.FromValueToUpperFive(BaseTdp_Slider.Value);
+            c3v.Maximum = ПараметрыPage.FromValueToUpperFive(fineTunedTdp);
+            c4v.Maximum = ПараметрыPage.FromValueToUpperFive(BaseTdp_Slider.Value);
+        }
+        c2v.Value = BaseTdp_Slider.Value;
+        _profile[index].cpu2value = BaseTdp_Slider.Value;
 
-        c3v.Value = BaseTdp_Slider.Value;
-        _profile[index].cpu3value = BaseTdp_Slider.Value;
+        c4v.Value = BaseTdp_Slider.Value;
+        _profile[index].cpu4value = BaseTdp_Slider.Value;
 
         if (SmartTdp.IsOn)
         {
-            c2v.Value = fineTunedTdp;
-            _profile[index].cpu2value = fineTunedTdp;
+            c3v.Value = fineTunedTdp;
+            _profile[index].cpu3value = fineTunedTdp;
         }
         else
         {
-            c2v.Value = BaseTdp_Slider.Value;
-            _profile[index].cpu2value = BaseTdp_Slider.Value;
+            c3v.Value = BaseTdp_Slider.Value;
+            _profile[index].cpu3value = BaseTdp_Slider.Value;
         }
         if (SendSmuCommand.IsPlatformPC(CpuSingleton.GetInstance().info.codeName) != false) // Если устройство - не ноутбук
         {
             // Так как на компьютерах невозможно выставить другие Power лимиты
-            c2.IsChecked = false;
-            _profile[index].cpu2 = false;
             c3.IsChecked = false;
             _profile[index].cpu3 = false;
+            c4.IsChecked = false;
+            _profile[index].cpu4 = false;
         }
         ProfileSave();
     }
