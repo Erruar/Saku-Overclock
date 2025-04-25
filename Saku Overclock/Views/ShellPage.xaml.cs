@@ -627,20 +627,6 @@ public sealed partial class ShellPage
             adjline += " --prochot-deassertion-ramp=" + profile.vrm7value;
         }
 
-        if (profile.vrm8)
-        {
-            adjline += " --oc-volt-scalar=" + profile.vrm8value;
-        }
-
-        if (profile.vrm9)
-        {
-            adjline += " --oc-volt-modular=" + profile.vrm9value;
-        }
-
-        if (profile.vrm10)
-        {
-            adjline += " --oc-volt-variable=" + profile.vrm10value;
-        }
 
         //gpu
         if (profile.gpu1)
@@ -703,18 +689,6 @@ public sealed partial class ShellPage
             adjline += " --max-cpuclk=" + profile.gpu12value;
         }
 
-        if (profile.gpu15)
-        {
-            if (profile.gpu15value != 0)
-            {
-                adjline += " --start-gpu-link=" + (profile.gpu15value - 1);
-            }
-            else
-            {
-                adjline += " --stop-gpu-link=0";
-            }
-        }
-
         if (profile.gpu16)
         {
             if (profile.gpu16value != 0)
@@ -731,11 +705,6 @@ public sealed partial class ShellPage
         if (profile.advncd1)
         {
             adjline += " --vrmgfx-current=" + profile.advncd1value + "000";
-        }
-
-        if (profile.advncd2)
-        {
-            adjline += " --vrmcvip-current=" + profile.advncd2value + "000";
         }
 
         if (profile.advncd3)
@@ -835,7 +804,8 @@ public sealed partial class ShellPage
         var cpu = CpuSingleton.GetInstance();
         if (profile.cogfx)
         {
-            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(cpu.info.codeName);
+            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(cpu.info.codeName,false);
+            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(cpu.info.codeName, true);
             //Using Irusanov method
             for (var i = 0; i < cpu.info.topology.physicalCores; i++)
             {
@@ -849,7 +819,8 @@ public sealed partial class ShellPage
                 }
             }
 
-            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName);
+            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName, false);
+            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName, true);
         }
 
         if (profile.comode && profile.coprefmode != 0) // Если пользователь выбрал хотя-бы один режим и ...
@@ -1090,7 +1061,8 @@ public sealed partial class ShellPage
                 // Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
                 case 3:
                     {
-                        cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName);
+                        cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName, false);
+                        cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName, true);
                         var options = new Dictionary<int, double>
                     {
                         { 0, profile.coper0value },

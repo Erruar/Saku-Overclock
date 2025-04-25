@@ -1063,12 +1063,6 @@ internal class SendSmuCommand
             ("set-coall", false, 0x59),
             ("set-cogfx", false,
                 0x59), //cuz Raven, Dali and Picasso have gfx voltage control in this command too but in different registers
-            ("oc-volt-variable", false, 0x62), //For future updates
-            ("update-skintemp-error", true, 0x27),
-            ("setgpu-arerture-low", true, 0x28),
-            ("setgpu-arerture-high", true, 0x29),
-            ("start-gpu-link", true, 0x2A),
-            ("stop-gpu-link", true, 0x2B),
             ("setcpu-freqto-ramstate", true, 0x2F),
             ("stopcpu-freqto-ramstate", true, 0x30),
             ("stopcpu-freqto-ramstate", true, 0x31),
@@ -1277,7 +1271,7 @@ internal class SendSmuCommand
             // Store the commands
             ("enable-feature", true, 0x5), // Use MP1 address
             ("disable-feature", true, 0x6),
-            ("stapm-limit", false, 0x64), // Use RSMU address✓
+            ("fast-limit", false, 0x64), // Use RSMU address✓
             ("vrm-current", false, 0x65), //✓
             ("vrmmax-current", false, 0x66), //✓
             ("tctl-temp", false, 0x68), //✓
@@ -1347,7 +1341,7 @@ internal class SendSmuCommand
             // Store the commands
             ("enable-feature", true, 0x5), // Use MP1 address
             ("disable-feature", true, 0x7),
-            ("stapm-limit", true, 0x4f), // Set CPU Stapm value! Not affect on PPT
+            ("stapm-limit", true, 0x4f), // Set CPU Stapm value! Not affect on PPT. Works only if Stapm feature is enabled on platform
             ("fast-limit", true, 0x3e),
             ("fast-limit", false, 0x56), // Set CPU PPT Limit // Use RSMU address
             ("slow-limit", true, 0x5f),

@@ -389,12 +389,10 @@ public sealed partial class ПараметрыPage
                 if (_cpu?.info.codeName.ToString().Contains("VanGogh") == false)
                 {
                     A1_main.Visibility = Visibility.Collapsed;
-                    A2_main.Visibility = Visibility.Collapsed;
                     A3_main.Visibility = Visibility.Collapsed;
                     A4_main.Visibility = Visibility.Collapsed;
                     A5_main.Visibility = Visibility.Collapsed;
                     A1_desc.Visibility = Visibility.Collapsed;
-                    A2_desc.Visibility = Visibility.Collapsed;
                     A3_desc.Visibility = Visibility.Collapsed;
                     A4_desc.Visibility = Visibility.Collapsed;
                     A5_desc.Visibility = Visibility.Collapsed;
@@ -816,12 +814,7 @@ public sealed partial class ПараметрыPage
                     if (_profile[index].advncd1value > a1v.Maximum)
                     {
                         a1v.Maximum = FromValueToUpperFive(_profile[index].advncd1value);
-                    }
-
-                    if (_profile[index].advncd2value > a2v.Maximum)
-                    {
-                        a2v.Maximum = FromValueToUpperFive(_profile[index].advncd2value);
-                    }
+                    } 
 
                     if (_profile[index].advncd3value > a3v.Maximum)
                     {
@@ -936,15 +929,11 @@ public sealed partial class ПараметрыPage
                     g11.IsChecked = _profile[index].gpu11;
                     g11v.Value = _profile[index].gpu11value;
                     g12.IsChecked = _profile[index].gpu12;
-                    g12v.Value = _profile[index].gpu12value;
-                    g15.IsChecked = _profile[index].gpu15;
-                    g15m.SelectedIndex = _profile[index].gpu15value;
+                    g12v.Value = _profile[index].gpu12value; 
                     g16.IsChecked = _profile[index].gpu16;
                     g16m.SelectedIndex = _profile[index].gpu16value;
                     a1.IsChecked = _profile[index].advncd1;
-                    a1v.Value = _profile[index].advncd1value;
-                    a2.IsChecked = _profile[index].advncd2;
-                    a2v.Value = _profile[index].advncd2value;
+                    a1v.Value = _profile[index].advncd1value; 
                     a3.IsChecked = _profile[index].advncd3;
                     a3v.Value = _profile[index].advncd3value;
                     a4.IsChecked = _profile[index].advncd4;
@@ -3066,22 +3055,6 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private void A2_Checked(object sender, RoutedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        var check = a2.IsChecked == true;
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].advncd2 = check;
-            _profile[_indexprofile].advncd2value = a2v.Value;
-            ProfileSave();
-        }
-    }
 
     private void A3_Checked(object sender, RoutedEventArgs e)
     {
@@ -3973,21 +3946,6 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private void A2v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].advncd2value = a2v.Value;
-            ProfileSave();
-        }
-    }
-
     private void A3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
         if (_isLoaded == false || _waitforload)
@@ -4246,38 +4204,6 @@ public sealed partial class ПараметрыPage
         if (_indexprofile != -1)
         {
             _profile[_indexprofile].gpu12value = g12v.Value;
-            ProfileSave();
-        }
-    }
-
-    private void G15_Checked(object sender, RoutedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        var check = g15.IsChecked == true;
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].gpu15 = check;
-            _profile[_indexprofile].gpu15value = g15m.SelectedIndex;
-            ProfileSave();
-        }
-    }
-
-    private void G15m_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].gpu15value = g15m.SelectedIndex;
             ProfileSave();
         }
     }
@@ -4811,17 +4737,6 @@ public sealed partial class ПараметрыPage
                 _adjline += " --max-cpuclk=" + g12v.Value;
             }
 
-            if (g15.IsChecked == true)
-            {
-                if (g15m.SelectedIndex != 0)
-                {
-                    _adjline += " --start-gpu-link=" + (g15m.SelectedIndex - 1);
-                }
-                else
-                {
-                    _adjline += " --stop-gpu-link=0";
-                }
-            }
 
             if (g16.IsChecked == true)
             {
@@ -4841,10 +4756,6 @@ public sealed partial class ПараметрыPage
                 _adjline += " --vrmgfx-current=" + a1v.Value + "000";
             }
 
-            if (a2.IsChecked == true)
-            {
-                _adjline += " --vrmcvip-current=" + a2v.Value + "000";
-            }
 
             if (a3.IsChecked == true)
             {
