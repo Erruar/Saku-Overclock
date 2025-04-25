@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 
@@ -112,9 +113,9 @@ public sealed partial class AsusКулерPage
         });
 
         UpdateValues(
-            _systemInfo.Count > 0 ? _systemInfo[0].ToString(CultureInfo.InvariantCulture) : "?" + "℃",
-            _systemInfo.Count > 1 ? _systemInfo[1].ToString(CultureInfo.InvariantCulture) : "?" + "GHz",
-            _systemInfo.Count > 2 ? _systemInfo[2].ToString(CultureInfo.InvariantCulture) : "?" + "V",
+            (_systemInfo.Count > 0 ? Math.Round(_systemInfo[0], 2).ToString(CultureInfo.InvariantCulture) : "?") + "C",
+            (_systemInfo.Count > 1 ? Math.Round(_systemInfo[1], 2).ToString(CultureInfo.InvariantCulture) : "?") + " " + "infoAGHZ".GetLocalized(),
+            (_systemInfo.Count > 2 ? (_systemInfo[2] == 0 ? "N/A " : Math.Round(_systemInfo[2], 2).ToString(CultureInfo.InvariantCulture)) : "?") + "V",
             tempLine);
     }
 
