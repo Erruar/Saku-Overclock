@@ -501,8 +501,7 @@ the power at slow frequency rise of the processor</value>
 This is the time that the processor will
 increase its power until
 it is needed or until
-it reaches the actual power limit. 
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+it reaches the actual power limit</value>
   </data>
   <data name="Param_c6_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>
@@ -515,8 +514,7 @@ frequency rise most often occurs under
 prolonged load and increases
 processor performance.
 In other words, this is the
-duration of the turbo boost
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+duration of the turbo boost</value>
   </data>
   <data name="Param_g10_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Maximum iGPU frequency
@@ -1705,13 +1703,7 @@ With this parameter you can
 change volt/freq curve of
 your CPU which can give you
 more energy efficiency or
-more performance. 
-I AM NOT RESPONSIBLE FOR THE 
-CONSEQUENCES OF THESE COMMANDS
-Safe limits are from -50 to 30 but if
-you noticed any unstability - immidiately
-set curves closer to 0 value.
-IT IS NOT RECOMMENDED TO TOUCH IT </value>
+more performance</value>
   </data>
   <data name="Param_O2_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>iGPU Curve Optimizer
@@ -1719,14 +1711,7 @@ With this parameter you can
 change volt/freq curve of
 your iGPU which can give you
 more energy efficiency or
-more performance. 
-I AM NOT RESPONSIBLE FOR THE 
-CONSEQUENCES OF THESE COMMANDS
-Safe limits are from -50 to 30 but if
-you noticed any unstability - immidiately
-set curves closer to 0 value. If you see
-any artifacts - DON'T USE this parameter
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+more performance</value>
   </data>
   <data name="Param_CO_CCD1_1.Text" xml:space="preserve">
     <value>Core 0 Curve Optimizer</value>
@@ -1791,9 +1776,7 @@ be applyed. I AM NOT RESPONSIBLE
 FOR THE CONSEQUENCES OF THESE 
 COMMANDS. Safe limits are from -50 
 to 30 but if you noticed any unstability 
-immidiately set curves closer to 0 value.
-IT IS NOT RECOMMENDED TO TOUCH IT 
-  </value>
+immidiately set curves closer to 0 value</value>
   </data>
   <data name="TraceIt_Error" xml:space="preserve">
     <value>TraceIt! system - I found an error when executing the program:</value>
@@ -3132,5 +3115,22 @@ Simple and safe overclocking settings with clear explanations aimed at beginners
   <data name="Param_ProMode" xml:space="preserve">
     <value>Switch mode to Pro: 
 Full control over processor settings and power consumption. Manually adjust overclocking, temperature, and power limits for maximum efficiency</value>
+  </data>
+  <data name="Param_CO_PreferredMode_Desc.Text" xml:space="preserve">
+    <value>Preferred mode</value>
+  </data>
+  <data name="Param_CO_PreferredMode_Help.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Preferred mode
+If Curve Optimizer parameters do not 
+work correctly in the current mode or 
+you have a different platform you can 
+choose the mode that best suits your
+platform. The method from Irusanov
+is suitable for all platforms, but has 
+compatibility limitations. For best 
+results it is recommended to test CPU 
+under load for each of the modes and 
+choose the most stable one, where the 
+result of settings is achieved completely</value>
   </data>
 </root>
