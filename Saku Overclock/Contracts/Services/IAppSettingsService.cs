@@ -157,6 +157,10 @@ public interface IAppSettingsService
     }
 
     // Страница управления кулером
+    bool IsNBFCModeEnabled
+    {
+        get; set;
+    } // Выбранная конфигурация страницы управления кулером
     string NBFCConfigXMLName
     {
         get;
@@ -169,23 +173,11 @@ public interface IAppSettingsService
         set;
     } // Автообновление информации о скоростях кулеров
 
-    bool NBFCServiceStatusDisabled
+    int NBFCServiceType
     {
         get;
         set;
-    } // Флаги использования NBFC
-
-    bool NBFCServiceStatusReadOnly
-    {
-        get;
-        set;
-    }
-
-    bool NBFCServiceStatusEnabled
-    {
-        get;
-        set;
-    }
+    } // Флаги использования NBFC 
 
     double NBFCFan1UserFanSpeedRPM
     {

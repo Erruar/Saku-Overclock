@@ -48,11 +48,10 @@ public class AppSettingsService : IAppSettingsService
     public bool PremadeMaxActivated { get; set; } = true;
 
     // Страница управления кулером
+    public bool IsNBFCModeEnabled { get; set; } = true; // Выбранная конфигурация страницы управления кулером
     public string NBFCConfigXMLName { get; set; } = string.Empty; // Имя выбранного файла NBFC конфига
     public bool NBFCAutoUpdateInformation { get; set; } = true; // Автообновление информации о скоростях кулеров
-    public bool NBFCServiceStatusDisabled { get; set; } = true; // Флаги использования NBFC
-    public bool NBFCServiceStatusReadOnly { get; set; } = false;
-    public bool NBFCServiceStatusEnabled { get; set; } = false;
+    public int NBFCServiceType { get; set; } = 0; // Флаги использования NBFCq
     public double NBFCFan1UserFanSpeedRPM { get; set; } = 110.0; // Скорость первого кулера (>100 = авто)
     public double NBFCFan2UserFanSpeedRPM { get; set; } = 110.0; // Скорость второго кулера (>100 = авто)
     public bool NBFCFlagConsoleCheckSpeedRunning { get; set; } = false; // Флаг действий с консолью NBFC
