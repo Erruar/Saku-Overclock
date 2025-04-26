@@ -197,10 +197,7 @@
 &lt;/toast&gt;</value>
   </data>
   <data name="Cooler_Config.Text" xml:space="preserve">
-    <value>Сохранённые конфиги:</value>
-  </data>
-  <data name="Cooler_Current_Fan.Text" xml:space="preserve">
-    <value>Текущая скорость:</value>
+    <value>Выбранная конфигурация</value>
   </data>
   <data name="Cooler_Fan.Header" xml:space="preserve">
     <value>Желаемая скорость:</value>
@@ -209,19 +206,16 @@
     <value>Оптимизация кулера</value>
   </data>
   <data name="Cooler_Service.Text" xml:space="preserve">
-    <value>Состояние сервиса контроля скорости:</value>
+    <value>Управление кулерами</value>
   </data>
   <data name="Cooler_Service_Disabled.Content" xml:space="preserve">
-    <value>Выключен</value>
+    <value>Выключено</value>
   </data>
   <data name="Cooler_Service_Enabled.Content" xml:space="preserve">
-    <value>Включен</value>
+    <value>Включено</value>
   </data>
   <data name="Cooler_Service_Read.Content" xml:space="preserve">
-    <value>Включен только для чтения</value>
-  </data>
-  <data name="Cooler_Temp.Text" xml:space="preserve">
-    <value>Температура процессора:</value>
+    <value>Только чтение скорости</value>
   </data>
   <data name="Info_Autoupdate.Content" xml:space="preserve">
     <value>Автообновлять каждые (Мс)</value>
@@ -460,12 +454,6 @@
   </data>
   <data name="Preset_Speed_Name.Text" xml:space="preserve">
     <value>Скорость</value>
-  </data>
-  <data name="Cooler_Current_Fan_Val" xml:space="preserve">
-    <value>Текущая скорость:</value>
-  </data>
-  <data name="Cooler_Temp_Val" xml:space="preserve">
-    <value>Температура процессора:</value>
   </data>
   <data name="Info_Text.ToolTipService.ToolTip" xml:space="preserve">
     <value>О текущих и максимальных значениях: Текущие значения - текущие значения прямо сейчас, Максимальные значение - значения установленные в программе, теоретически процессор должен достигнуть их, чтобы убедиться в этом смотрите на текущие значения</value>
@@ -2712,55 +2700,32 @@ Asus. Может не поддерживаться на
     <value>Сбалансированный режим
 Включает сбалансированный,
 фиксированный режим работы 
-всех кулеров вашего ноутбука. 
-Учтите, что при это фиксированная
-скорость! Чтобы обратно включить
-режим "Авто" отключите все
-переключатели или в ручном 
-режиме установите значение 0</value>
+всех кулеров вашего ноутбука</value>
   </data>
   <data name="Cooler_AsusModeCoolerSpeeds_Manual.ToolTipService.ToolTip" xml:space="preserve">
     <value>Ручной режим
 Ваш собственный фиксированный 
 режим работы всех кулеров вашего 
-ноутбука. Учтите, что при это 
-фиксированная скорость! Чтобы 
-обратно включить режим "Авто" 
-отключите все переключатели или 
-в ручном режиме установите 
-значение 0.
-УЧТИТЕ, ЧТО Я НЕ ОТВЕЧАЮ ЗА 
-ПОСЛЕДСТВИЯ! ЭТА ФУНКЦИЯ
-ПРЕДОСТАВЛЯЕТСЯ "КАК ЕСТЬ"!</value>
+ноутбука</value>
   </data>
   <data name="Cooler_AsusModeCoolerSpeeds_Quiet.ToolTipService.ToolTip" xml:space="preserve">
     <value>Тихий режим
 Включает тихий, но эффективный, 
 фиксированный режим работы 
-всех кулеров вашего ноутбука. 
-Учтите, что при это фиксированная
-скорость! Чтобы обратно включить
-режим "Авто" отключите все
-переключатели или в ручном 
-режиме установите значение 0</value>
+всех кулеров вашего ноутбука</value>
   </data>
   <data name="Cooler_AsusModeCoolerSpeeds_Turbo.ToolTipService.ToolTip" xml:space="preserve">
     <value>Турбо режим
 Включает максимум ваших
 кулеров, турбо скорость при
 фиксированном режиме работы 
-всех кулеров вашего ноутбука. 
-Учтите, что при это фиксированная
-скорость! Чтобы обратно включить
-режим "Авто" отключите все
-переключатели или в ручном 
-режиме установите значение 0</value>
+всех кулеров вашего ноутбука</value>
   </data>
   <data name="Cooler_DownloadNBFC_AfterDesc" xml:space="preserve">
     <value>После успешной установки NBFC нажмите "Далее"</value>
   </data>
   <data name="Cooler_DownloadNBFC_Desc" xml:space="preserve">
-    <value>На вашем ноутбуке не скачана программа Notebook Fan Control, которая является обязательной для функционирования этой страницы приложения</value>
+    <value>Не скачана программа Notebook Fan Control, которая является обязательной для функционирования режима управления кулерами NBFC. Загрузить?</value>
   </data>
   <data name="Cooler_DownloadNBFC_ErrorDesc" xml:space="preserve">
     <value>Произошла ошибка при загрузке NBFC</value>
@@ -3192,5 +3157,55 @@ Asus. Может не поддерживаться на
 для каждого из режимов и выбрать 
 наиболее стабильный, где результат
 настроек достигается полностью</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerAutoText.Text" xml:space="preserve">
+    <value>Авто</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds_Auto.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Автоматический режим
+Скорость кулера не зафиксирована,
+а зависит от выставленной кривой
+от производителя или расширенного
+режима, где вы можете настроить эту
+кривую</value>
+  </data>
+  <data name="Cooler_Curve.Text" xml:space="preserve">
+    <value>Тип регулирования кулерами</value>
+  </data>
+  <data name="Cooler_Curve_Auto.Content" xml:space="preserve">
+    <value>Кривые из конфигурации</value>
+  </data>
+  <data name="Cooler_Curve_CuFx.Content" xml:space="preserve">
+    <value>Кулер 1: Кривая, Кулер 2: Фиксированный</value>
+  </data>
+  <data name="Cooler_Curve_Fan.Text" xml:space="preserve">
+    <value>Фиксированный режим вращения</value>
+  </data>
+  <data name="Cooler_Curve_Fan1_Part" xml:space="preserve">
+    <value> кулера 1</value>
+  </data>
+  <data name="Cooler_Curve_Fan2.Text" xml:space="preserve">
+    <value>Фиксированный режим вращения кулера 2</value>
+  </data>
+  <data name="Cooler_Curve_Fixed.Content" xml:space="preserve">
+    <value>Полностью фиксированный</value>
+  </data>
+  <data name="Cooler_Curve_FxCu.Content" xml:space="preserve">
+    <value>Кулер 1: Фиксированный, Кулер 2: Кривая</value>
+  </data>
+  <data name="Cooler_Curve_Smart.Content" xml:space="preserve">
+    <value>Умная кривая (Beta)</value>
+  </data>
+  <data name="Cooler_SelectedMode.Text" xml:space="preserve">
+    <value>Режим управления кулерами</value>
+  </data>
+  <data name="Cooler_SelectedMode_asus.Text" xml:space="preserve">
+    <value>Ноутбуки Asus</value>
+  </data>
+  <data name="Cooler_SelectedMode_nbfc.Text" xml:space="preserve">
+    <value>Универсальный NBFC</value>
+  </data>
+  <data name="Cooler_Curve_Fixed_Range.Content" xml:space="preserve">
+    <value>Различный фиксированный</value>
   </data>
 </root>

@@ -197,10 +197,7 @@
 &lt;/toast&gt;</value>
   </data>
   <data name="Cooler_Config.Text" xml:space="preserve">
-    <value>Saved configs:</value>
-  </data>
-  <data name="Cooler_Current_Fan.Text" xml:space="preserve">
-    <value>Current speed: </value>
+    <value>Selected configuration</value>
   </data>
   <data name="Cooler_Fan.Header" xml:space="preserve">
     <value>Target speed:</value>
@@ -209,7 +206,7 @@
     <value>Cooler tweaks</value>
   </data>
   <data name="Cooler_Service.Text" xml:space="preserve">
-    <value>Fan control service status:</value>
+    <value>Cooler management</value>
   </data>
   <data name="Cooler_Service_Disabled.Content" xml:space="preserve">
     <value>Disabled</value>
@@ -219,9 +216,6 @@
   </data>
   <data name="Cooler_Service_Read.Content" xml:space="preserve">
     <value>Read only</value>
-  </data>
-  <data name="Cooler_Temp.Text" xml:space="preserve">
-    <value>Current CPU temperature: </value>
   </data>
   <data name="Info_Autoupdate.Content" xml:space="preserve">
     <value>Refresh every (Milliseconds)</value>
@@ -456,12 +450,6 @@ All presets have autosaving</value>
   </data>
   <data name="Preset_Speed_Name.Text" xml:space="preserve">
     <value>Speed</value>
-  </data>
-  <data name="Cooler_Current_Fan_Val" xml:space="preserve">
-    <value>Current speed:</value>
-  </data>
-  <data name="Cooler_Temp_Val" xml:space="preserve">
-    <value>Current CPU temperature:</value>
   </data>
   <data name="Info_Text.ToolTipService.ToolTip" xml:space="preserve">
     <value>About the Setted and Current values: Setted is the value that you set in the program for the processor. Theoretically, the processor should reach it under load. Current is the value that shows the current value of this parameter right now</value>
@@ -801,9 +789,6 @@ the information page!</value>
   </data>
   <data name="Param_ADV_a13.Text" xml:space="preserve">
     <value>Preferred mode</value>
-  </data>
-  <data name="Param_ADV_a2.Text" xml:space="preserve">
-    <value>NPU Maximum TDC</value>
   </data>
   <data name="Param_ADV_a3.Text" xml:space="preserve">
     <value>iGPU Maximum EDC</value>
@@ -1377,14 +1362,6 @@ your iGPU will not consume more video
 memory than the specified value
 IT IS NOT RECOMMENDED TO TOUCH IT</value>
   </data>
-  <data name="Param_g15_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Fix dGPU frequency
-By this setting you can lock dGPU power-state 
-with freq. Not 100% that it will work.
-To disable this option select Auto then apply. After
-that you can disable checkbox
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
-  </data>
   <data name="Param_g16_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Fix 0,4 GHz frequency 
 This setting helps with 0,4 GHz CPU stuck.
@@ -1405,12 +1382,6 @@ IT IS NOT RECOMMENDED TO TOUCH IT</value>
   </data>
   <data name="Param_GPU_g12.Text" xml:space="preserve">
     <value>Max CPU frequency</value>
-  </data>
-  <data name="Param_GPU_g13.Text" xml:space="preserve">
-    <value>iGPU VRAM Low-DWORD address</value>
-  </data>
-  <data name="Param_GPU_g14.Text" xml:space="preserve">
-    <value>iGPU VRAM Hi-DWORD address</value>
   </data>
   <data name="Param_GPU_g15.Text" xml:space="preserve">
     <value>Fix dGPU freq</value>
@@ -2703,7 +2674,7 @@ set the value to 0</value>
     <value>After the NBFC has been successfully installed, click "Next"</value>
   </data>
   <data name="Cooler_DownloadNBFC_Desc" xml:space="preserve">
-    <value>Your laptop does not have the Notebook Fan Control program downloaded on it, which is mandatory for the operation of this application page</value>
+    <value>Notebook Fan Control program, which is required for NBFC cooler control mode to function, has not been downloaded. Download?</value>
   </data>
   <data name="Cooler_DownloadNBFC_ErrorDesc" xml:space="preserve">
     <value>An error occurred while loading the NBFC</value>
@@ -3075,13 +3046,13 @@ methods are available.</value>
     <value>Currents and VRM</value>
   </data>
   <data name="Preset_AdvancedFeatures.Text" xml:space="preserve">
-    <value>Дополнительно</value>
+    <value>Extra features</value>
   </data>
   <data name="Preset_AdvancedMode.Text" xml:space="preserve">
-    <value>Расширенный режим</value>
+    <value>Advanced mode</value>
   </data>
   <data name="Preset_AdvancedModeTry.Text" xml:space="preserve">
-    <value>Попробовать</value>
+    <value>Try it</value>
   </data>
   <data name="Preset_RtssOverlay.Text" xml:space="preserve">
     <value>RTSS Overlay</value>
@@ -3097,7 +3068,7 @@ management, it keeps your system cool and
 ensures maximum performance</value>
   </data>
   <data name="Preset_Suggestions.Text" xml:space="preserve">
-    <value>Советы</value>
+    <value>Suggestions</value>
   </data>
   <data name="Preset_Switch.OffContent" xml:space="preserve">
     <value>Off.</value>
@@ -3106,7 +3077,7 @@ ensures maximum performance</value>
     <value>On.</value>
   </data>
   <data name="Preset_Undervolting.Text" xml:space="preserve">
-    <value>Андервольтинг</value>
+    <value>Undervolting</value>
   </data>
   <data name="Param_NewbieMode" xml:space="preserve">
     <value>Switch mode to Beginner:
@@ -3132,5 +3103,55 @@ results it is recommended to test CPU
 under load for each of the modes and 
 choose the most stable one, where the 
 result of settings is achieved completely</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerAutoText.Text" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Cooler_AsusModeCoolerSpeeds_Auto.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Automatic mode
+Cooler speed is not fixed, but 
+depends on the set curve from 
+the manufacturer or advanced
+mode, where you can customize 
+this curve</value>
+  </data>
+  <data name="Cooler_Curve.Text" xml:space="preserve">
+    <value>Cooler control type</value>
+  </data>
+  <data name="Cooler_Curve_Auto.Content" xml:space="preserve">
+    <value>Curves from configuration file</value>
+  </data>
+  <data name="Cooler_Curve_CuFx.Content" xml:space="preserve">
+    <value>Cooler 1: Curve, Cooler 2: Fixed</value>
+  </data>
+  <data name="Cooler_Curve_Fan.Text" xml:space="preserve">
+    <value>Fixed rotation mode</value>
+  </data>
+  <data name="Cooler_Curve_Fan1_Part" xml:space="preserve">
+    <value>: cooler 1</value>
+  </data>
+  <data name="Cooler_Curve_Fan2.Text" xml:space="preserve">
+    <value>Fixed rotation mode: cooler 2</value>
+  </data>
+  <data name="Cooler_Curve_Fixed.Content" xml:space="preserve">
+    <value>Completely fixed mode</value>
+  </data>
+  <data name="Cooler_Curve_FxCu.Content" xml:space="preserve">
+    <value>Cooler 1: Fixed, Cooler 2: Curve</value>
+  </data>
+  <data name="Cooler_Curve_Smart.Content" xml:space="preserve">
+    <value>Smart curve (Beta)</value>
+  </data>
+  <data name="Cooler_SelectedMode.Text" xml:space="preserve">
+    <value>Cooler control mode</value>
+  </data>
+  <data name="Cooler_SelectedMode_asus.Text" xml:space="preserve">
+    <value>Asus Laptops</value>
+  </data>
+  <data name="Cooler_SelectedMode_nbfc.Text" xml:space="preserve">
+    <value>Universal NBFC</value>
+  </data>
+  <data name="Cooler_Curve_Fixed_Range.Content" xml:space="preserve">
+    <value>Different fixed mode</value>
   </data>
 </root>
