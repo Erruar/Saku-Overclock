@@ -387,8 +387,7 @@ internal class SendSmuCommand
                          _cpu?.info.codeName == Cpu.CodeName.Rembrandt || _cpuCodenameString.Contains("REMBRANDT") ||
                          _cpu?.info.codeName == Cpu.CodeName.Phoenix || _cpuCodenameString.Contains("PHOENIX") ||
                          _cpu?.info.codeName == Cpu.CodeName.Phoenix2 || _cpuCodenameString.Contains("HAWKPOINT") ||
-                         _cpu?.info.codeName == Cpu.CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") ||
-                         _cpu?.info.codeName == Cpu.CodeName.DragonRange ||
+                         _cpu?.info.codeName == Cpu.CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") || 
                          _cpu?.info.codeName == Cpu.CodeName.StrixHalo)
                 {
                     Socket_FT6_FP7_FP8();
@@ -397,6 +396,7 @@ internal class SendSmuCommand
                          _cpu?.info.codeName == Cpu.CodeName.GraniteRidge ||
                          _cpu?.info.codeName == Cpu.CodeName.Genoa ||
                          _cpu?.info.codeName == Cpu.CodeName.StormPeak ||
+                         _cpu?.info.codeName == Cpu.CodeName.DragonRange ||
                          _cpu?.info.codeName == Cpu.CodeName.Bergamo)
                 {
                     Socket_AM5_V1();
@@ -597,8 +597,7 @@ internal class SendSmuCommand
                      _cpu?.info.codeName == Cpu.CodeName.Rembrandt || _cpuCodenameString.Contains("REMBRANDT") ||
                      _cpu?.info.codeName == Cpu.CodeName.Phoenix || _cpuCodenameString.Contains("PHOENIX") ||
                      _cpu?.info.codeName == Cpu.CodeName.Phoenix2 || _cpuCodenameString.Contains("HAWKPOINT") ||
-                     _cpu?.info.codeName == Cpu.CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") ||
-                     _cpu?.info.codeName == Cpu.CodeName.DragonRange ||
+                     _cpu?.info.codeName == Cpu.CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") || 
                      _cpu?.info.codeName == Cpu.CodeName.StrixHalo)
             {
                 Socket_FT6_FP7_FP8();
@@ -607,6 +606,7 @@ internal class SendSmuCommand
                      _cpu?.info.codeName == Cpu.CodeName.GraniteRidge ||
                      _cpu?.info.codeName == Cpu.CodeName.Genoa ||
                      _cpu?.info.codeName == Cpu.CodeName.StormPeak ||
+                     _cpu?.info.codeName == Cpu.CodeName.DragonRange ||
                      _cpu?.info.codeName == Cpu.CodeName.Bergamo)
             {
                 Socket_AM5_V1();
@@ -877,7 +877,6 @@ internal class SendSmuCommand
             case Cpu.CodeName.Rembrandt:
             case Cpu.CodeName.Phoenix:
             case Cpu.CodeName.Phoenix2:
-            case Cpu.CodeName.DragonRange:
             case Cpu.CodeName.HawkPoint:
             case Cpu.CodeName.StrixPoint:
             case Cpu.CodeName.StrixHalo:
@@ -887,6 +886,7 @@ internal class SendSmuCommand
             case Cpu.CodeName.Genoa:
             case Cpu.CodeName.Bergamo:
             case Cpu.CodeName.Raphael:
+            case Cpu.CodeName.DragonRange: 
                 Socket_AM5_V1();
                 break;
             default:
@@ -934,7 +934,6 @@ internal class SendSmuCommand
             case Cpu.CodeName.Rembrandt:
             case Cpu.CodeName.Phoenix:
             case Cpu.CodeName.Phoenix2:
-            case Cpu.CodeName.DragonRange:
             case Cpu.CodeName.HawkPoint:
             case Cpu.CodeName.StrixPoint:
             case Cpu.CodeName.StrixHalo:
@@ -944,6 +943,7 @@ internal class SendSmuCommand
             case Cpu.CodeName.Genoa:
             case Cpu.CodeName.Bergamo:
             case Cpu.CodeName.Raphael:
+            case Cpu.CodeName.DragonRange: 
                 Socket_AM5_V1();
                 break;
             default:
@@ -970,8 +970,8 @@ internal class SendSmuCommand
             Cpu.CodeName.Matisse or Cpu.CodeName.Vermeer => true,
             Cpu.CodeName.Renoir or Cpu.CodeName.Lucienne or Cpu.CodeName.Cezanne => false,
             Cpu.CodeName.VanGogh => false,
-            Cpu.CodeName.Mendocino or Cpu.CodeName.Rembrandt or Cpu.CodeName.Phoenix or Cpu.CodeName.Phoenix2 or Cpu.CodeName.DragonRange or Cpu.CodeName.HawkPoint or Cpu.CodeName.StrixPoint or Cpu.CodeName.StrixHalo => false,
-            Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.Bergamo or Cpu.CodeName.Raphael => true,
+            Cpu.CodeName.Mendocino or Cpu.CodeName.Rembrandt or Cpu.CodeName.Phoenix or Cpu.CodeName.Phoenix2 or Cpu.CodeName.HawkPoint or Cpu.CodeName.StrixPoint or Cpu.CodeName.StrixHalo => false,
+            Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.Bergamo or Cpu.CodeName.Raphael or Cpu.CodeName.DragonRange => true,
             _ => null,// Устройство не определено
         };
     }
@@ -1119,7 +1119,7 @@ internal class SendSmuCommand
             ("oc-clk", false, 0x19),
             ("per-core-oc-clk", false, 0x1a),
             ("oc-volt", false, 0x1b),
-            ("stapm-limit", false, 0x31),
+            //("stapm-limit", false, 0x31),
             ("stapm-limit", false, 0x33),
             ("cHTC-temp", false, 0x37),
             ("pbo-scalar", false, 0x3F),
@@ -1136,18 +1136,10 @@ internal class SendSmuCommand
     }
 
     private static void Socket_FT6_FP7_FP8()
-    {
-        if (Codename == Cpu.CodeName.DragonRange)
+    { 
+        if (Codename == Cpu.CodeName.StrixPoint || Codename == Cpu.CodeName.StrixHalo) 
         {
-            Mp1Cmd = 0x3010508;
-            Mp1Rsp = 0x3010988;
-            Mp1Arg = 0x3010984;
-            RsmuCmd = 0x3B10524;
-            RsmuRsp = 0x3B10570;
-            RsmuArg = 0x3B10A40;
-        }
-        else if (Codename == Cpu.CodeName.StrixPoint || Codename == Cpu.CodeName.StrixHalo) 
-        {
+            // Correct
             Mp1Cmd = 0x3B10928;
             Mp1Rsp = 0x3B10978;
             Mp1Arg = 0x3B10998;
@@ -1179,10 +1171,11 @@ internal class SendSmuCommand
             ("fast-limit", false, 0x32),
             ("slow-limit", true, 0x16),
             ("slow-limit", false, 0x33),
-            ("slow-limit", false, 0x34),
+            //("slow-limit", false, 0x34),
             ("slow-time", true, 0x17),
             ("tctl-temp", true, 0x19),
             ("cHTC-temp", false, 0x37),
+            ("cHTC-temp", true, 0x63),
             ("apu-skin-temp", true, 0x33),
             ("apu-slow-limit", true, 0x23),
             ("skin-temp-limit", true, 0x4A),
@@ -1345,6 +1338,7 @@ internal class SendSmuCommand
             ("fast-limit", true, 0x3e),
             ("fast-limit", false, 0x56), // Set CPU PPT Limit // Use RSMU address
             ("slow-limit", true, 0x5f),
+            ("skin-temp-limit", true, 0x5E),
             ("stapm-time", true, 0x4e), 
             ("slow-time", true, 0x61),
             ("apu-slow-limit", true, 0x60),
@@ -1366,7 +1360,8 @@ internal class SendSmuCommand
             ("enable-oc", false, 0x5d),
             ("disable-oc", false, 0x5e),
             ("set-vddoff-vid", true, 0x4B),
-            ("set-fll-btc-enable", true, 0x37) // 0 - True, 1 - False 
+            ("set-fll-btc-enable", true, 0x37), // 0 - True, 1 - False
+            ("get-sustained-power-and-thm-limit", true, 0x23)                   // 
         ];
     }
 }
