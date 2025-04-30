@@ -8,7 +8,7 @@
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />
     </Page.Resources>
-    <Grid x:Name="ContentArea" Margin="-48,0,-50,0">
+    <Grid x:Name="ContentArea" Margin="-48,0,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
         <Button x:Name="HiddenAccentButton" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed"/>
         <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="30" Margin="0,-65,0,0"></TextBlock>
@@ -20,11 +20,11 @@
             <Grid Grid.Column="0" Margin="0,0,5,5" CornerRadius="8">
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
-                        <RowDefinition MaxHeight="62"/> 
-                        <RowDefinition Height="3*"/>
-                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="62"/> 
+                        <RowDefinition Height="3*" MaxHeight="258"/>
+                        <RowDefinition Height="2*" MaxHeight="240"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Margin="0,0,0,0" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
+                    <Grid Grid.Row="0" Margin="0,0,0,0" VerticalAlignment="Stretch" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition/>
