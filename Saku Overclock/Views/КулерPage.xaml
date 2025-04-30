@@ -8,7 +8,7 @@
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"></ThemeShadow>
     </Page.Resources>
-    <Grid x:Name="ContentArea" Margin="-48,0,-50,0">
+    <Grid x:Name="ContentArea" Margin="-48,0,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" MaxWidth="1200">
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
         <Button x:Name="HiddenDisabledButton" IsEnabled="False" Visibility="Collapsed"/>
         <Button x:Name="HiddenAccentButton" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed"/>
@@ -250,7 +250,7 @@ Stretch="Uniform" />
                                                     <ColumnDefinition/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <Slider Grid.Column="0" x:Name="Cooler_Fan1_Manual" Margin="5,0,20,0" Minimum="0" Maximum="100" Value="76" ValueChanged="Cooler_Fan1_Manual_ValueChanged"  HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                                <Slider Grid.Column="0" x:Name="Cooler_Fan1_Manual" Margin="5,0,20,0" Minimum="0" Maximum="101" Value="76" ValueChanged="Cooler_Fan_Manual_ValueChanged"  HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
                                                 <StackPanel Grid.Column="1" Margin="0,5.5,3,0" Orientation="Horizontal">
                                                     <TextBlock Text="{Binding ElementName=Cooler_Fan1_Manual, Path=Value}"/>
                                                     <TextBlock Text="%"/> 
@@ -296,7 +296,7 @@ Stretch="Uniform" />
                                                     <ColumnDefinition/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <Slider Grid.Column="0" x:Name="Cooler_Fan2_Manual" Minimum="0" Maximum="100" Value="34" Margin="5,0,20,0" ValueChanged="Cooler_Fan2_Manual_ValueChanged"  HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                                <Slider Grid.Column="0" x:Name="Cooler_Fan2_Manual" Minimum="0" Maximum="101" Value="34" Margin="5,0,20,0" ValueChanged="Cooler_Fan_Manual_ValueChanged"  HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
                                                 <StackPanel Grid.Column="1" Margin="0,5.5,3,0" Orientation="Horizontal">
                                                     <TextBlock Text="{Binding ElementName=Cooler_Fan2_Manual, Path=Value}"/>
                                                     <TextBlock Text="%"/>
