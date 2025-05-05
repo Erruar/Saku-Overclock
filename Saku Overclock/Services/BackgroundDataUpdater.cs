@@ -14,6 +14,7 @@ using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
+using Saku_Overclock.Wrappers;
 using Icon = System.Drawing.Icon;
 
 namespace Saku_Overclock.Services;
@@ -645,6 +646,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 }
                 catch
                 {
+                    element.Guid = Guid.NewGuid().ToString();
+                    NiSave();
                     LogHelper.LogError("BackgroudDataUpdater Service: Unable to create TrayMon Icons. Skipping creating icons. Restart app.");
                     _isIconsCreated = true;
                     return;

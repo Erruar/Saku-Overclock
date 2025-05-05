@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Saku_Overclock.SMUEngine;
+namespace Saku_Overclock.Wrappers;
 
 public static class AsusWinIOWrapper
 {
@@ -9,7 +9,30 @@ public static class AsusWinIOWrapper
     /*Included AsusWinIO64.dll is licenced to (c) ASUSTek COMPUTER INC*/
     /*ASUS System Control Interface is necessary for this software to work - ASUS System Analysis service must be running. It's automatically installed with MyASUS app.*/
 
+    #region DLL Voids
+
+    public static void Init_WinIo()
+    {
+        if (!IsDllRunning)
+        {
+            InitializeWinIo();
+            IsDllRunning = true;
+        }
+    }
+
+    public static void Cleanup_WinIo()
+    {
+        if (IsDllRunning)
+        {
+            ShutdownWinIo();
+            IsDllRunning = false;
+        }
+    }
+
+    #endregion
+
     #region DLL Imports
+
     [DllImport(DllName)]
     private static extern void InitializeWinIo(); // Инит функции
 
@@ -33,24 +56,6 @@ public static class AsusWinIOWrapper
 
     [DllImport(DllName)]
     public static extern ulong Thermal_Read_Cpu_Temperature(); // Узнать текущую температуру процессора
-    #endregion
-    #region DLL Voids
-    public static void Init_WinIo()
-    {
-        if (!IsDllRunning)
-        {
-            InitializeWinIo();
-            IsDllRunning = true;
-        }
-    }
-
-    public static void Cleanup_WinIo()
-    {
-        if (IsDllRunning)
-        {
-            ShutdownWinIo();
-            IsDllRunning = false;
-        }
-    }
-    #endregion
+    
+    #endregion 
 }

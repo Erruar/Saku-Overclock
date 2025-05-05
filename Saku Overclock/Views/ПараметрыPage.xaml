@@ -55,7 +55,7 @@
         <local:FocusToSpinButtonPlacementModeConverter x:Key="FocusToPlacement"/>
     </Page.Resources>
     <Grid x:Name="ContentArea" Margin="-48,0,-28,0">
-        <Grid>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
             <Grid.RowDefinitions> 
                 <RowDefinition></RowDefinition>
                 <RowDefinition Height="70"></RowDefinition>
@@ -263,7 +263,7 @@
                             </StackPanel>
                             <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
                                 <TextBlock x:Uid="Param_CPU_Recommend" Text="Рекомендации:        Баланс          Производительность" Foreground="#9db1cc"></TextBlock>
-                                <TextBlock FontWeight="SemiBold" Text="                                    75(С)                         90(С)" Margin="0,30,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" x:Name="TempRecommend" Text="                                    75(С)                         90(С)" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
                             <StackPanel Padding="0,0,0,13" Grid.Row="1" x:Name="Laptops_HTC_Temp" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <StackPanel Orientation="Horizontal">
@@ -292,7 +292,7 @@
                                 </StackPanel> 
                             </StackPanel>
                             <Grid Grid.Row="1" x:Name="Laptops_HTC_Temp_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock FontWeight="SemiBold" Text="                                    45(С)                         90(С)" Margin="0,30,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" Text="                                    80(С)                         90(С)" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
                             <StackPanel Padding="0,0,0,10" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <StackPanel Orientation="Horizontal">
@@ -321,7 +321,7 @@
                                 </StackPanel>
                             </StackPanel>
                             <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock FontWeight="SemiBold" Text="                                    20(W)                        30(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" x:Name="StapmRecommend" Text="                                    20(W)                        30(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
                             <StackPanel Padding="0,0,0,10" Grid.Row="3" Grid.Column="0" x:Name="ADV_Laptop_AplusA_Limit" Width="2000">
                                 <StackPanel Orientation="Horizontal">
@@ -349,8 +349,8 @@
                                     <NumberBox Minimum="10" Height="33" Width="120" HorizontalAlignment="Left" SpinButtonPlacementMode="Inline" SmallChange="1" LargeChange="10" x:Name="a9t" Margin="10,0,0,0" ValueChanged="C2t_ValueChanged" GotFocus="C2t_FocusEngaged" LostFocus="C2t_FocusDisengaged" Value="{Binding ElementName=a9v, Path=Value, Mode=TwoWay}"></NumberBox>
                                 </StackPanel>
                             </StackPanel>
-                            <Grid Grid.Row="3" Grid.Column="1" x:Name="ADV_Laptop_AplusA_Limit_Desc" HorizontalAlignment="Left" Margin="-600,0,0,0"> 
-                                <TextBlock x:Uid="ADV_Change" Text="                                        Don't change it!!!" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
+                            <Grid Grid.Row="3" Grid.Column="1" x:Name="ADV_Laptop_AplusA_Limit_Desc" HorizontalAlignment="Left" Margin="-600,0,0,0">
+                                <TextBlock x:Uid="ADV_Change" x:Name="SttRecommend" Text="                                    20(W)                        30(W)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid>
                             <StackPanel Padding="0,0,0,10" Grid.Row="4" x:Name="Laptops_Real_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <StackPanel Orientation="Horizontal">
@@ -379,7 +379,7 @@
                                 </StackPanel> 
                             </StackPanel>
                             <Grid Grid.Row="4" x:Name="Laptops_Real_Wattage_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock FontWeight="SemiBold" Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" x:Name="FastRecommend" Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
                             <StackPanel Padding="0,0,0,10" Grid.Row="5" x:Name="Laptops_Avg_Wattage" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
                                 <StackPanel Orientation="Horizontal">
@@ -408,7 +408,7 @@
                                 </StackPanel> 
                             </StackPanel>
                             <Grid Grid.Row="5" x:Name="Laptops_Avg_Wattage_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock FontWeight="SemiBold" Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" x:Name="SlowRecommend" Text="                                    25(W)                        35(W)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
                             
                             <StackPanel Padding="0,0,0,10" Grid.Row="6" x:Name="Laptops_Fast_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
@@ -438,7 +438,7 @@
                                 </StackPanel> 
                             </StackPanel>
                             <Grid Grid.Row="6" x:Name="Laptops_Fast_Speed_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock FontWeight="SemiBold" Text="                                     64(S)                         48(S)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" x:Name="StapmTimeRecommend" Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid>
                             
                             <StackPanel Padding="0,0,0,10" Grid.Row="7" x:Name="Laptops_slow_Speed" Grid.Column="0" HorizontalAlignment="Left" Width="2000">
@@ -468,7 +468,7 @@
                                 </StackPanel> 
                             </StackPanel>
                             <Grid Grid.Row="7" x:Name="Laptops_slow_Speed_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock FontWeight="SemiBold" Text="                                    128(S)                       105(S)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
+                                <TextBlock FontWeight="SemiBold" x:Name="SlowTimeRecommend" Text="                                     64(S)                         48(S)" Grid.Column="1" Margin="0,30,0,0" ></TextBlock>
                             </Grid> 
                         </Grid>
                     </Expander>
@@ -706,7 +706,7 @@
                                 </StackPanel> 
                             </StackPanel>
                             <Grid Grid.Row="6" x:Name="VRM_Laptops_Prochot_Time_Desc" Grid.Column="1" HorizontalAlignment="Left" Margin="-600,0,0,0">
-                                <TextBlock Text="                                    2(mS)                        2(mS)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
+                                <TextBlock x:Name="BdProchotTimeRecommend" Text="                                    2(mS)                        2(mS)" Margin="0,30,0,0" FontWeight="SemiBold" ></TextBlock>
                             </Grid> 
                         </Grid>
                     </Expander>

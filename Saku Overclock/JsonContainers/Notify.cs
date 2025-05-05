@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
-namespace Saku_Overclock.SMUEngine;
+namespace Saku_Overclock.JsonContainers;
 public class Notify
 {
     public string Title { get; set; } = "";

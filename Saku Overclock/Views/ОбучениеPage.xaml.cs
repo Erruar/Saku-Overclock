@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;

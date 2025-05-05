@@ -3,7 +3,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls; 
 using Octokit;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.SMUEngine;
+using Saku_Overclock.Helpers;
+using Saku_Overclock.JsonContainers;
+using Saku_Overclock.Services; 
 using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Views;
@@ -62,7 +64,7 @@ public sealed partial class ОбновлениеPage
         }
         catch (Exception e)
         {
-            SendSmuCommand.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 
@@ -92,7 +94,7 @@ public sealed partial class ОбновлениеPage
         }
         catch (Exception exception)
         {
-            SendSmuCommand.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception.ToString());
         }
     } 
     private void Cancel_Click(object sender, RoutedEventArgs e)

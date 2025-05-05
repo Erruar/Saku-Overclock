@@ -109,6 +109,8 @@ public partial class App
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<RyzenadjProvider>();
                 services.AddSingleton<ZenstatesCoreProvider>();
+                services.AddSingleton<ISendSmuCommandService, SendSmuCommandService>();
+                services.AddSingleton<IOcFinderService, OcFinderService>();
                 services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
                 services.AddSingleton<IDataProvider, CompositeDataProvider>(provider =>
                 {
@@ -140,7 +142,6 @@ public partial class App
                 services.AddTransient<ОбучениеPage>();
                 services.AddTransient<ОбучениеViewModel>();
                 services.AddTransient<MainWindow.Applyer>();
-                services.AddTransient<SendSmuCommand>();
                 // Configuration
                 services.Configure<LocalSettingsOptions>(
                     context.Configuration.GetSection(nameof(LocalSettingsOptions)));

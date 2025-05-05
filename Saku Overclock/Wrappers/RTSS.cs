@@ -1,11 +1,13 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Saku_Overclock.SMUEngine;
+namespace Saku_Overclock.Wrappers;
 
 public static class RtssHandler
 {
     private const string DllName = "SakuRTSSCLI.dll";
     private static bool _isRtssInitialized;
+
+    #region DLL Voids
 
     public static void ChangeOsdText(string text)
     {
@@ -29,6 +31,10 @@ public static class RtssHandler
         }
     }
 
+    #endregion
+
+    #region DLL Imports
+
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern void displayText(string text);
 
@@ -50,4 +56,6 @@ public static class RtssHandler
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern int ReleaseOSD();
+
+    #endregion
 }

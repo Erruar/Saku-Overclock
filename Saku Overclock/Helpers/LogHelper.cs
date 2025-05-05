@@ -4,12 +4,15 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Storage;
 using System.Text;
 using Saku_Overclock.ViewModels;
+using Saku_Overclock.JsonContainers;
+using Saku_Overclock.Contracts.Services;
 
 namespace Saku_Overclock.Helpers;
 
 internal static class LogHelper
 {
     private static readonly SemaphoreSlim LogSemaphore = new(1, 1);
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>();
 
     public static async Task ShowErrorMessageAndLog(Exception ex, XamlRoot xamlRoot)
     {
@@ -132,6 +135,26 @@ internal static class LogHelper
         {
             LogSemaphore.Release();
         }
+    }
+
+    public static Task TraceIt_TraceError(string error) //Система TraceIt! позволит логгировать все ошибки
+    {
+        _ = Task.Run(async () => 
+        {
+            await LogError(error);
+            if (error != string.Empty)
+            {
+                NotificationsService.Notifies ??= [];
+                NotificationsService.Notifies.Add(new Notify
+                {
+                    Title = "TraceIt_Error".GetLocalized(),
+                    Msg = error,
+                    Type = InfoBarSeverity.Error
+                });
+                NotificationsService.SaveNotificationsSettings();
+            }
+        }); 
+        return Task.CompletedTask;
     }
 
     public static Task Log(string message) => LogToFile($"[DEBUG] {message}", "Logs");

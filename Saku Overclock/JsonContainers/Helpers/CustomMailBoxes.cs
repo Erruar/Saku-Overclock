@@ -1,4 +1,4 @@
-namespace Saku_Overclock.SMUEngine;
+namespace Saku_Overclock.JsonContainers.Helpers;
 
 /*This is a config for QuickSMU commands file*/
 public class CustomMailBoxes

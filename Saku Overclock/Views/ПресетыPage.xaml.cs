@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
@@ -25,7 +26,7 @@ public sealed partial class ПресетыPage
     private ZenStates.Core.Cpu.CodeName? _codeName;
     private readonly Random _random = new();
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
-
+    private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>(); 
 
     private List<string> Tips
     {
@@ -333,7 +334,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            await LogHelper.TraceIt_TraceError(ex.ToString());
         }
 
         try
@@ -444,66 +445,8 @@ public sealed partial class ПресетыPage
 
     private void OnDataUpdated(object? sender, SensorsInformation info)
     {
-        var batterySetValue = string.Empty;
-        if (info.BatteryUnavailable)
-        {
-            if (BatteryPercentage.Value != "N/A")
-            {
-                batterySetValue = "N/A"; 
-            }
-        }
-        else
-        {
-            batterySetValue = info.BatteryPercent;
-        } 
-
-        var trueBatLifeTime = info.BatteryLifeTime;
-        string batteryTime;
-        if (trueBatLifeTime < 0)
-        {
-            batteryTime = "InfoBatteryAC".GetLocalized(); // Устройство питается от сети
-        }
-        else
-        {
-            var ts = TimeSpan.FromSeconds(trueBatLifeTime); // Преобразуем секунды в TimeSpan
-            var parts = new List<string>();
-            if ((int)ts.TotalHours > 0)
-            {
-                parts.Add($"{(int)ts.TotalHours}h"); // Добавляем часы, если они есть
-            }
-
-            if (ts.Minutes > 0)
-            {
-                parts.Add($"{ts.Minutes}m"); // Добавляем минуты, если они есть
-            }
-
-            if (ts.Seconds > 0 || parts.Count == 0)
-            {
-                parts.Add(
-                    $"{ts.Seconds}s"); // Добавляем секунды – если других частей нет, или если секунды ненулевые
-            }
-
-            batteryTime = string.Join(" ", parts);
-        } 
-        
         DispatcherQueue.TryEnqueue(() =>
         {
-            
-            if (info.BatteryUnavailable && BatteryControlStroke.Visibility != Visibility.Collapsed)
-            {
-                BatteryControlRow.Height = new GridLength(0);
-                BatteryControlStroke.Visibility = Visibility.Collapsed;
-                BatteryControlElement.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                if (batterySetValue != string.Empty)
-                {
-                    BatteryPercentage.Value = batterySetValue;
-                }
-                LastBatteryTime.Text = batteryTime;
-            }
-
             TdpLimitSensor_Text.Text = Math.Round(info.CpuFastLimit) + "W";
             TdpValueSensor_Text.Text = Math.Round(info.CpuFastValue).ToString();
             CpuFreqSensor_Text.Text = Math.Round(info.CpuFrequency,1).ToString();
@@ -528,8 +471,6 @@ public sealed partial class ПресетыPage
             }
 
             CpuTempSensor_Text.Text = Math.Round(info.CpuTempValue) + (updateSmallSign ? "C" : string.Empty);
-            
-           
         });
     }
     #endregion
@@ -547,7 +488,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -561,7 +502,7 @@ public sealed partial class ПресетыPage
         catch (Exception ex)
         {
             JsonRepair('p');
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -744,7 +685,7 @@ public sealed partial class ПресетыPage
             c3v.Value = BaseTdp_Slider.Value;
             _profile[index].cpu3value = BaseTdp_Slider.Value;
         }
-        if (SendSmuCommand.IsPlatformPC(CpuSingleton.GetInstance().info.codeName) != false) // Если устройство - не ноутбук
+        if (SendSmuCommand.IsPlatformPC(CpuSingleton.GetInstance()) != false) // Если устройство - не ноутбук
         {
             // Так как на компьютерах невозможно выставить другие Power лимиты
             c3.IsChecked = false;
@@ -879,7 +820,12 @@ public sealed partial class ПресетыPage
         AppSettings.PremadeSpeedActivated = false;
         AppSettings.PremadeMaxActivated = false;
         AppSettings.RyzenADJline =
-            " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
+            " --tctl-temp=68 --stapm-limit=15000 " +
+            " --fast-limit=18000 --stapm-time=500" +
+            " --slow-limit=16000 --slow-time=500 " +
+            "--vrm-current=120000 --vrmmax-current=120000 " +
+            "--vrmsoc-current=120000 --vrmsocmax-current=120000" +
+            " --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
         AppSettings.SaveSettings();
         MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
             AppSettings.ReapplyOverclockTimer);
@@ -893,7 +839,12 @@ public sealed partial class ПресетыPage
         AppSettings.PremadeSpeedActivated = false;
         AppSettings.PremadeMaxActivated = false;
         AppSettings.RyzenADJline =
-            " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2";
+            " --tctl-temp=75 --stapm-limit=17000 " +
+            " --fast-limit=20000 --stapm-time=64 " +
+            "--slow-limit=19000 --slow-time=128 " +
+            "--vrm-current=120000 --vrmmax-current=120000" +
+            " --vrmsoc-current=120000 --vrmsocmax-current=120000" +
+            " --vrmgfx-current=120000 --prochot-deassertion-ramp=2";
         AppSettings.SaveSettings();
         MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
             AppSettings.ReapplyOverclockTimer);
@@ -1599,7 +1550,7 @@ public sealed partial class ПресетыPage
                 }
                 catch (Exception ex)
                 {
-                    SendSmuCommand.TraceIt_TraceError(ex.ToString());
+                    LogHelper.TraceIt_TraceError(ex.ToString());
                     return;
                 }
             }

@@ -6,7 +6,7 @@ using Microsoft.Windows.AppNotifications;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts.Services;
 using Saku_Overclock.Core.Services;
-using Saku_Overclock.SMUEngine;
+using Saku_Overclock.JsonContainers;
 using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Services;

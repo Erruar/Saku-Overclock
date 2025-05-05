@@ -1,4 +1,4 @@
-﻿using Saku_Overclock.SMUEngine;
+﻿using Saku_Overclock.JsonContainers.Helpers;
 
 namespace Saku_Overclock.JsonContainers;
 

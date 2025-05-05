@@ -1,5 +1,6 @@
 ﻿using System.Management;
 using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using ZenStates.Core;
 
@@ -208,7 +209,7 @@ public class ZenstatesCoreProvider : IDataProvider
 
         if (_cachedTable == null || value >= _cachedTable.Length)
         {
-            SendSmuCommand.TraceIt_TraceError("Cached table is invalid or out of range.");
+            LogHelper.TraceIt_TraceError("Cached table is invalid or out of range.");
             return -1;
         }
         if (_cachedTable[value] >= 7 && GlobalCpuDetectionMethod == 1)

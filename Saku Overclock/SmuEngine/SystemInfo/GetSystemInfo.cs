@@ -3,6 +3,7 @@ using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 using Microsoft.Win32;
+using Saku_Overclock.Helpers;
 
 /*This is a modified processor WMI info file. It from Universal x86 Tuning Utility. Its author is https://github.com/JamesCJ60
 This file has been refactored many times and optimized to work with Saku Overclock by Sakurazhima Serzhik. I do not recommend rereading this file, it is better to familiarize yourself with https://github.com/JamesCJ60/Universal-x86-Tuning-Utility
@@ -494,7 +495,7 @@ internal class GetSystemInfo
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError($"Error retrieving GPU name: {ex}");
+            LogHelper.TraceIt_TraceError($"Error retrieving GPU name: {ex}");
         }
 
         _ = Garbage.Garbage_Collect();

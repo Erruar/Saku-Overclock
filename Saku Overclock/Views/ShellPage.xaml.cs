@@ -14,6 +14,7 @@ using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation;
@@ -45,6 +46,7 @@ public sealed partial class ShellPage
 
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
+    private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
 
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
@@ -1343,11 +1345,12 @@ public sealed partial class ShellPage
                         Theme_Loader();
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return; //Удалить и не показывать 
-                    case "UpdateNAVBAR":
-                        {
-                            HideNavBar();
-                            return; //Удалить и не показывать
-                        }
+                    case "UpdateNAVBAR": 
+                        HideNavBar();
+                        Icon.Visibility = Visibility.Collapsed;
+                        ProfileSetup.Visibility = Visibility.Collapsed;
+                        RingerNotifGrid.Visibility = Visibility.Collapsed;
+                        return; //Удалить и не показывать 
                     case "FirstLaunch":
                         HideNavBar();
                         Icon.Visibility = Visibility.Collapsed;

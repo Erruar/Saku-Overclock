@@ -16,6 +16,7 @@ using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using ZenStates.Core;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
+using Saku_Overclock.Wrappers;
 
 namespace Saku_Overclock.Views;
 
@@ -93,7 +94,7 @@ public sealed partial class ИнформацияPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
             App.GetService<IAppNotificationService>()
                 .Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory)); // Вывести ошибку
         }
@@ -394,7 +395,7 @@ public sealed partial class ИнформацияPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            await LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -428,7 +429,7 @@ public sealed partial class ИнформацияPage
                 }
                 catch (Exception ex)
                 {
-                    SendSmuCommand.TraceIt_TraceError(ex.ToString());
+                    LogHelper.TraceIt_TraceError(ex.ToString());
                 }
 
                 CalculatePstateDetails(eax, out var cpuDfsId, out var cpuFid);
@@ -449,7 +450,7 @@ public sealed partial class ИнформацияPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -516,12 +517,12 @@ public sealed partial class ИнформацияPage
             }
             catch (Exception exception)
             {
-                SendSmuCommand.TraceIt_TraceError(exception.ToString());
+                await LogHelper.TraceIt_TraceError(exception.ToString());
             }
         }
         catch (Exception exception)
         {
-            SendSmuCommand.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception.ToString());
         }
     }
 
@@ -537,7 +538,7 @@ public sealed partial class ИнформацияPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -1337,7 +1338,7 @@ public sealed partial class ИнформацияPage
                 }
                 catch (Exception ex)
                 {
-                    SendSmuCommand.TraceIt_TraceError(ex.ToString());
+                    LogHelper.TraceIt_TraceError(ex.ToString());
                 }
 
                 InfoRAMUsage.Text = _sensorsInformation.RamUsage;
@@ -1369,7 +1370,7 @@ public sealed partial class ИнформацияPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -1410,7 +1411,7 @@ public sealed partial class ИнформацияPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -1540,7 +1541,7 @@ public sealed partial class ИнформацияPage
         catch (Exception e)
         {
             // Логируем ошибку, если что-то пошло не так
-            SendSmuCommand.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 

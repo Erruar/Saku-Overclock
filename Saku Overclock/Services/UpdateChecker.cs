@@ -5,14 +5,14 @@ using Microsoft.UI.Xaml.Controls;
 using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Services;
+using Saku_Overclock.JsonContainers;
 using Saku_Overclock.ViewModels;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Application = Microsoft.UI.Xaml.Application;
 using FileMode = System.IO.FileMode;
 using Package = Windows.ApplicationModel.Package;
 
-namespace Saku_Overclock.SMUEngine;
+namespace Saku_Overclock.Services;
 public abstract class UpdateChecker
 {
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения

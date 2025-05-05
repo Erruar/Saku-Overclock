@@ -72,7 +72,6 @@
     <None Remove="Services\Cpu.cs.bak.zip" />
     <None Remove="show.png" />
     <None Remove="startup.lnk" />
-    <None Remove="Styles\BatteryControl.xaml" />
     <None Remove="Styles\ButtonCollapseLauncher.xaml" />
     <None Remove="Styles\ComboBoxCollapseLauncher.xaml" />
     <None Remove="Styles\CopyButton.xaml" />
@@ -916,9 +915,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Page Update="Styles\OptionsVisualizer.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Styles\BatteryControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Styles\NavigationSelector.xaml">

@@ -185,6 +185,7 @@ public class RyzenadjProvider : IDataProvider
         STRIXPOINT,
         END
     }
+
     #region DLL Imports
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern IntPtr init_ryzenadj();
@@ -352,6 +353,8 @@ public class RyzenadjProvider : IDataProvider
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern float get_socket_power(IntPtr ry);
+
     #endregion
+   
     #endregion
 }

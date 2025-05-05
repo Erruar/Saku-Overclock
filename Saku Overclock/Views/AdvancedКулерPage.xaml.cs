@@ -95,7 +95,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -270,7 +270,7 @@ public sealed partial class AdvancedКулерPage
                             }
                             catch (Exception ex)
                             {
-                                SendSmuCommand.TraceIt_TraceError(ex.ToString());
+                                await LogHelper.TraceIt_TraceError(ex.ToString());
                             }
 
                             // Добавление точек на соответствующий Polyline в соответствии с текущими значениями и идентификатором FanConfiguration
@@ -360,9 +360,7 @@ public sealed partial class AdvancedКулерPage
                 }
                 else
                 {
-                    // Если файл не найден, выводим сообщение
-                    var messageDialog = new MessageDialog("File not found: " + configFilePath);
-                    await messageDialog.ShowAsync();
+                    await LogHelper.TraceIt_TraceError("File not found: " + configFilePath);
                 }
             }
             catch (Exception ex)
@@ -372,7 +370,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception e)
         {
-            SendSmuCommand.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 
@@ -472,7 +470,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception e)
         {
-            SendSmuCommand.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 
@@ -484,7 +482,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception e)
         {
-            SendSmuCommand.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 
@@ -496,7 +494,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception e)
         {
-            SendSmuCommand.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 
@@ -824,7 +822,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception e)
         {
-            SendSmuCommand.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 

@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local1="using:Saku_Overclock.ViewModels"
     mc:Ignorable="d">
 
-    <Grid Margin="-48,-55,-40,0" x:Name="ContentArea">
+    <Grid Margin="-48,-55,-40,0" x:Name="ContentArea" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>

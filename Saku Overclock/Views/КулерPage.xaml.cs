@@ -380,12 +380,12 @@ public sealed partial class КулерPage
             }
             catch (Exception xException)
             {
-                SendSmuCommand.TraceIt_TraceError(xException.ToString());
+                LogHelper.TraceIt_TraceError(xException.ToString());
             }
         }
         catch (Exception ex1)
         {
-            SendSmuCommand.TraceIt_TraceError(ex1.ToString());
+            LogHelper.TraceIt_TraceError(ex1.ToString());
         }
     }
 
@@ -467,7 +467,7 @@ public sealed partial class КулерPage
         }
         catch (Exception exception)
         {
-            SendSmuCommand.TraceIt_TraceError(exception.ToString());
+            LogHelper.TraceIt_TraceError(exception.ToString());
         }
     }
 
@@ -479,7 +479,7 @@ public sealed partial class КулерPage
         }
         catch (Exception exception)
         {
-            SendSmuCommand.TraceIt_TraceError(exception.ToString());
+            LogHelper.TraceIt_TraceError(exception.ToString());
         }
     }
 
@@ -530,7 +530,7 @@ public sealed partial class КулерPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -618,7 +618,7 @@ public sealed partial class КулерPage
             }
             catch (Exception ex)
             {
-                SendSmuCommand.TraceIt_TraceError($"[Fan Control NBFC] Error (fan {fanNumber}): {ex.Message}");
+                LogHelper.TraceIt_TraceError($"[Fan Control NBFC] Error (fan {fanNumber}): {ex.Message}");
             }
 
             return string.Empty;
@@ -654,7 +654,7 @@ public sealed partial class КулерPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
         finally
         {
@@ -920,6 +920,8 @@ public sealed partial class КулерPage
                 break;
         }
         AppSettings.SaveSettings();
+        NbfcFanSetSpeed();
+        NbfcFanSetSpeed(1);
     }
 
     private void ModeOptions_Button_Click(object sender, RoutedEventArgs e)
@@ -987,7 +989,7 @@ public sealed partial class КулерPage
         }
         catch (Exception exception)
         {
-            SendSmuCommand.TraceIt_TraceError(exception.ToString());
+            LogHelper.TraceIt_TraceError(exception.ToString());
         }
     }
 }

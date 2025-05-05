@@ -11,6 +11,8 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.JsonContainers;
+using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.UI.Text;
@@ -154,7 +156,7 @@ public sealed partial class ГлавнаяPage
         catch (Exception ex)
         {
             JsonRepair('p');
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -502,7 +504,7 @@ public sealed partial class ГлавнаяPage
         }
         catch (Exception e)
         {
-            SendSmuCommand.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 

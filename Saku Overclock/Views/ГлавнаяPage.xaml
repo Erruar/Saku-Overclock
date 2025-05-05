@@ -11,7 +11,7 @@
         <ThemeShadow x:Name="SharedShadow" />
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
     </Page.Resources>
-    <Grid x:Name="ContentArea" Margin="-48,-65,-50,0">
+    <Grid x:Name="ContentArea" Margin="-48,-65,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
         <TeachingTip x:Name="Main_Teach" IsOpen="False">
             <StackPanel Orientation="Vertical">
                 <TextBlock FontWeight="Bold" FontSize="16" TextWrapping="Wrap" x:Name="Main_AdditionalInfoDesc" Text="Информация об устройстве"/>
@@ -52,6 +52,10 @@ Text="{Binding Version}">
                 <ColumnDefinition Width="2*" MinWidth="525"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition MaxHeight="545"/>
+                <RowDefinition Height="0.12"/>
+            </Grid.RowDefinitions>
             <Grid Grid.Column="0" Margin="0,0,7,5" CornerRadius="8" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}">
                 <StackPanel Margin="10,4,0,0" Orientation="Vertical">
                     <TextBlock FontWeight="SemiBold" FontSize="17" x:Uid="Main_DeviceInfo" Text="Информация об устройстве"/>

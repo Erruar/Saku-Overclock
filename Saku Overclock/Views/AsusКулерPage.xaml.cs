@@ -5,6 +5,7 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
+using Saku_Overclock.Wrappers;
 
 namespace Saku_Overclock.Views;
 
@@ -260,7 +261,7 @@ public sealed partial class AsusКулерPage
         }
         catch (Exception e)
         {
-            SendSmuCommand.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 

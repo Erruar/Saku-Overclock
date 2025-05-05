@@ -16,6 +16,7 @@ using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
+using Saku_Overclock.Wrappers;
 using Windows.Foundation.Metadata;
 using Windows.UI;
 using Windows.UI.Text;
@@ -36,6 +37,7 @@ public sealed partial class SettingsPage
     private NiIconsSettings _niicons = new();
     private bool _isLoaded;
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>();
+    private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
     private static readonly IRtssSettingsService RtssSettings = App.GetService<IRtssSettingsService>();
 
@@ -86,7 +88,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception e)
         {
-            SendSmuCommand.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 
@@ -673,7 +675,7 @@ public sealed partial class SettingsPage
             }
             catch (Exception exception)
             {
-                SendSmuCommand.TraceIt_TraceError(exception.ToString());
+                LogHelper.TraceIt_TraceError(exception.ToString());
             }
         }
 
@@ -768,7 +770,7 @@ public sealed partial class SettingsPage
 
             await Task.Delay(20);
             AppSettings.ReapplySafeOverclock = ReapplySafe.IsOn;
-            SendSmuCommand.SafeReapply = ReapplySafe.IsOn;
+            SendSmuCommand.GetSetSafeReapply(ReapplySafe.IsOn);
             AppSettings.SaveSettings();
         }
         catch
@@ -1164,7 +1166,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            await LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -2100,7 +2102,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception exception)
         {
-            SendSmuCommand.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception.ToString());
         }
     }
 
@@ -2181,7 +2183,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception ex)
         {
-            SendSmuCommand.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 

@@ -28,7 +28,7 @@ JsonRepair: метод для восстановления JSON-файлов в 
 CancelRange: устанавливает флаг отмены диапазона команд.
 Приватные методы для определения адресов и отправки команд SMU на процессор.
 Этот класс является частью большой системы, управляющей разгоном процессоров, и содержит функционал для загрузки/сохранения настроек, определения возможности разгона на данной архитектуре и отправки соответствующих команд на процессор.*/
-internal class SendSmuCommand
+public class SendSmuCommandService : ISendSmuCommandService
 {
     private static uint RsmuRsp
     {
@@ -74,28 +74,25 @@ internal class SendSmuCommand
 
     private bool _saveinfo;
     private Cpu? _cpu;
-    public static Cpu.CodeName Codename;
+    private static Cpu.CodeName Codename;
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
     private static string _cpuCodenameString = string.Empty;
-    private Smusettings _smusettings = new();
-    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>();
+    private Smusettings _smusettings = new(); 
     private readonly Mailbox _testMailbox = new();
     private Profile[] _profile = new Profile[1];
     private bool _cancelrange;
     private bool _dangersettingsapplied;
     private string _checkAdjLine = string.Empty;
+    private bool _isBatteryUnavailable = true;
 
-    public static bool SafeReapply
+    private bool SafeReapply
     {
         get;
         set;
     } = true;
 
-    public SendSmuCommand()
+    public SendSmuCommandService()
     {
-        var dataUpdater = App.BackgroundUpdater;
-        dataUpdater!.DataUpdated += OnDataUpdated;
-
         try
         {
             _cpu ??= CpuSingleton.GetInstance();
@@ -103,9 +100,17 @@ internal class SendSmuCommand
         }
         catch (Exception ex)
         {
-            App.GetService<IAppNotificationService>()
-                .Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-            TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError("[SendSmuCommand]@Launch_Get_ZenStates_Core - " + ex.ToString());
+        }
+
+        var dataUpdater = App.BackgroundUpdater;
+        if (dataUpdater != null)
+        {
+            dataUpdater.DataUpdated += OnDataUpdated;
+        }
+        else
+        {
+            _cpuCodenameString = _cpu != null ? _cpu.info.codeName.ToString() : "Unsupported";
         }
 
         try
@@ -114,12 +119,36 @@ internal class SendSmuCommand
         }
         catch (Exception ex)
         {
-            TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
-    private static void OnDataUpdated(object? sender, SensorsInformation info) => _cpuCodenameString =
+    private void OnDataUpdated(object? sender, SensorsInformation info)
+    {
+        _cpuCodenameString =
         _cpuCodenameString == (info.CpuFamily ?? "Unsupported") ? _cpuCodenameString : info.CpuFamily ?? "Unsupported";
+        _isBatteryUnavailable = info.BatteryUnavailable;
+    }
+    public void Init(Cpu? cpu = null)
+    {
+        if (cpu == null) 
+        {
+            _cpu ??= CpuSingleton.GetInstance();
+        }
+        _cpu = cpu;
+    }
+    public void SetCpuCodename(Cpu.CodeName codename)
+    {
+        Codename = codename;
+    }
+    public bool GetSetSafeReapply(bool? value = null)
+    {
+        if (value != null)
+        {
+            SafeReapply = value == true;
+        }
+        return SafeReapply;
+    }
 
     // JSON
     private void SmuSettingsLoad()
@@ -134,7 +163,7 @@ internal class SendSmuCommand
         catch (Exception ex)
         {
             JsonRepair('s');
-            TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -148,7 +177,7 @@ internal class SendSmuCommand
         catch (Exception ex)
         {
             JsonRepair('p');
-            TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -157,33 +186,33 @@ internal class SendSmuCommand
         switch (file)
         {
             case 's':
-            {
-                _smusettings = new Smusettings();
-                try
                 {
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                        @"\SakuOverclock\smusettings.json",
-                        JsonConvert.SerializeObject(_smusettings, Formatting.Indented));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\smusettings.json");
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                        @"\SakuOverclock\smusettings.json",
-                        JsonConvert.SerializeObject(_smusettings, Formatting.Indented));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                }
+                    _smusettings = new Smusettings();
+                    try
+                    {
+                        Directory.CreateDirectory(
+                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                        File.WriteAllText(
+                            Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                            @"\SakuOverclock\smusettings.json",
+                            JsonConvert.SerializeObject(_smusettings, Formatting.Indented));
+                    }
+                    catch
+                    {
+                        File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                    @"\SakuOverclock\smusettings.json");
+                        Directory.CreateDirectory(
+                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                        File.WriteAllText(
+                            Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                            @"\SakuOverclock\smusettings.json",
+                            JsonConvert.SerializeObject(_smusettings, Formatting.Indented));
+                        App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
+                            AppContext.BaseDirectory));
+                    }
 
-                break;
-            }
+                    break;
+                }
             case 'p':
 
                 _profile = [];
@@ -294,7 +323,7 @@ internal class SendSmuCommand
         }
         catch (Exception ex)
         {
-            TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -366,7 +395,7 @@ internal class SendSmuCommand
                          /*cpu.info.codeName == Cpu.CodeName.Pollock || */
                          _cpu?.info.codeName == Cpu.CodeName.FireFlight)
                 {
-                    Socket_FT5_FP5_AM4();
+                    Socket_FP5();
                 }
                 else if (_cpu?.info.codeName is Cpu.CodeName.Matisse or Cpu.CodeName.Vermeer)
                 {
@@ -377,7 +406,7 @@ internal class SendSmuCommand
                          _cpuCodenameString.Contains("CEZANNE") ||
                          _cpu?.info.codeName == Cpu.CodeName.Cezanne)
                 {
-                    Socket_FP6_AM4();
+                    Socket_FP6();
                 }
                 else if (_cpu?.info.codeName == Cpu.CodeName.VanGogh || _cpuCodenameString.Contains("VANGOGH"))
                 {
@@ -387,10 +416,10 @@ internal class SendSmuCommand
                          _cpu?.info.codeName == Cpu.CodeName.Rembrandt || _cpuCodenameString.Contains("REMBRANDT") ||
                          _cpu?.info.codeName == Cpu.CodeName.Phoenix || _cpuCodenameString.Contains("PHOENIX") ||
                          _cpu?.info.codeName == Cpu.CodeName.Phoenix2 || _cpuCodenameString.Contains("HAWKPOINT") ||
-                         _cpu?.info.codeName == Cpu.CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") || 
+                         _cpu?.info.codeName == Cpu.CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") ||
                          _cpu?.info.codeName == Cpu.CodeName.StrixHalo)
                 {
-                    Socket_FT6_FP7_FP8();
+                    Socket_FT6_FP7_FP8_FP11();
                 }
                 else if (_cpu?.info.codeName == Cpu.CodeName.Raphael ||
                          _cpu?.info.codeName == Cpu.CodeName.GraniteRidge ||
@@ -433,11 +462,11 @@ internal class SendSmuCommand
                                     ryzenAdjCommand.Contains(tc))) //Если есть совпадения в командах
                             {
                                 //Ничего не делать 
-                                //TraceIt_TraceError("Вы хотите применить опасные параметры?");
+                                //LogHelper.TraceIt_TraceError("Вы хотите применить опасные параметры?");
                             }
                             else
                             {
-                                //TraceIt_TraceError("Применены безопасные параметры?\n" + _ryzenAdjString);
+                                //LogHelper.TraceIt_TraceError("Применены безопасные параметры?\n" + _ryzenAdjString);
                                 var command = ryzenAdjCommand;
                                 if (!command.Contains('='))
                                 {
@@ -487,7 +516,7 @@ internal class SendSmuCommand
                         }
                         catch (Exception ex)
                         {
-                            TraceIt_TraceError(ex.ToString());
+                            LogHelper.TraceIt_TraceError(ex.ToString());
                         }
                     });
                 }
@@ -497,14 +526,14 @@ internal class SendSmuCommand
             }
             catch (Exception ex)
             {
-                TraceIt_TraceError(ex.ToString());
+                await LogHelper.TraceIt_TraceError(ex.ToString());
             }
 
             _checkAdjLine = ryzenAdjString;
         }
         catch (Exception e)
         {
-            TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 
@@ -545,7 +574,7 @@ internal class SendSmuCommand
         }
         catch (Exception ex)
         {
-            TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex.ToString());
             ПараметрыPage.ApplyInfo += "\n" + "Param_SMU_Command".GetLocalized() + "\"" +
                                        CommandNameParser(commandName) + "\" " +
                                        "Param_SMU_Command_Unavailable".GetLocalized();
@@ -575,7 +604,7 @@ internal class SendSmuCommand
                      /*cpu.info.codeName == Cpu.CodeName.Pollock || */
                      _cpu?.info.codeName == Cpu.CodeName.FireFlight)
             {
-                Socket_FT5_FP5_AM4();
+                Socket_FP5();
             }
             else if (_cpu?.info.codeName == Cpu.CodeName.Matisse ||
                      _cpu?.info.codeName == Cpu.CodeName.Vermeer)
@@ -587,7 +616,7 @@ internal class SendSmuCommand
                      _cpuCodenameString.Contains("CEZANNE") ||
                      _cpu?.info.codeName == Cpu.CodeName.Cezanne)
             {
-                Socket_FP6_AM4();
+                Socket_FP6();
             }
             else if (_cpu?.info.codeName == Cpu.CodeName.VanGogh || _cpuCodenameString.Contains("VANGOGH"))
             {
@@ -597,10 +626,10 @@ internal class SendSmuCommand
                      _cpu?.info.codeName == Cpu.CodeName.Rembrandt || _cpuCodenameString.Contains("REMBRANDT") ||
                      _cpu?.info.codeName == Cpu.CodeName.Phoenix || _cpuCodenameString.Contains("PHOENIX") ||
                      _cpu?.info.codeName == Cpu.CodeName.Phoenix2 || _cpuCodenameString.Contains("HAWKPOINT") ||
-                     _cpu?.info.codeName == Cpu.CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") || 
+                     _cpu?.info.codeName == Cpu.CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") ||
                      _cpu?.info.codeName == Cpu.CodeName.StrixHalo)
             {
-                Socket_FT6_FP7_FP8();
+                Socket_FT6_FP7_FP8_FP11();
             }
             else if (_cpu?.info.codeName == Cpu.CodeName.Raphael ||
                      _cpu?.info.codeName == Cpu.CodeName.GraniteRidge ||
@@ -746,19 +775,9 @@ internal class SendSmuCommand
         };
     }
 
-    public static void TraceIt_TraceError(string error) //Система TraceIt! позволит логгировать все ошибки
-    {
-        LogHelper.LogError(error);
-        if (error != string.Empty)
-        {
-            NotificationsService.Notifies ??= [];
-            NotificationsService.Notifies.Add(new Notify
-                { Title = "TraceIt_Error".GetLocalized(), Msg = error, Type = InfoBarSeverity.Error });
-            NotificationsService.SaveNotificationsSettings();
-        }
-    }
-
     public void CancelRange() => _cancelrange = true;
+
+    public event EventHandler? RangeCompleted;
 
     public async void SendRange(string commandIndex, string startIndex, string endIndex, int mailbox, bool log)
     {
@@ -797,7 +816,8 @@ internal class SendSmuCommand
                         if (_cancelrange)
                         {
                             _cancelrange = false;
-                            sw.WriteLine(@"//------CANCEL------\\");
+                            sw.WriteLine(@"//------CANCEL------\\"); 
+                            RangeCompleted?.Invoke(this, EventArgs.Empty);
                             return;
                         }
 
@@ -828,25 +848,26 @@ internal class SendSmuCommand
                             }
                         }
                     }
-                    
+
                     if (log)
                     {
+                        RangeCompleted?.Invoke(this, EventArgs.Empty);
                         sw.WriteLine(@"//------OK------\\");
                     }
                 });
             }
             catch (Exception ex)
             {
-                TraceIt_TraceError(ex.ToString());
+                await LogHelper.TraceIt_TraceError(ex.ToString());
             }
         }
         catch (Exception e)
         {
-            TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
 
-    public static uint ReturnCoGfx(Cpu.CodeName codeName, bool isMp1)
+    public uint ReturnCoGfx(Cpu.CodeName codeName, bool isMp1)
     {
         Codename = codeName; //если класс неинициализирован - задать правильный Codename
         switch (Codename)
@@ -859,7 +880,7 @@ internal class SendSmuCommand
             case Cpu.CodeName.Picasso:
             case Cpu.CodeName.Dali:
             case Cpu.CodeName.FireFlight:
-                Socket_FT5_FP5_AM4();
+                Socket_FP5();
                 break;
             case Cpu.CodeName.Matisse:
             case Cpu.CodeName.Vermeer:
@@ -868,7 +889,7 @@ internal class SendSmuCommand
             case Cpu.CodeName.Renoir:
             case Cpu.CodeName.Lucienne:
             case Cpu.CodeName.Cezanne:
-                Socket_FP6_AM4();
+                Socket_FP6();
                 break;
             case Cpu.CodeName.VanGogh:
                 Socket_FF3();
@@ -880,13 +901,13 @@ internal class SendSmuCommand
             case Cpu.CodeName.HawkPoint:
             case Cpu.CodeName.StrixPoint:
             case Cpu.CodeName.StrixHalo:
-                Socket_FT6_FP7_FP8();
+                Socket_FT6_FP7_FP8_FP11();
                 break;
             case Cpu.CodeName.GraniteRidge:
             case Cpu.CodeName.Genoa:
             case Cpu.CodeName.Bergamo:
             case Cpu.CodeName.Raphael:
-            case Cpu.CodeName.DragonRange: 
+            case Cpu.CodeName.DragonRange:
                 Socket_AM5_V1();
                 break;
             default:
@@ -903,7 +924,7 @@ internal class SendSmuCommand
         return 0U;
     }
 
-    public static uint ReturnCoPer(Cpu.CodeName codeName, bool isMp1)
+    public uint ReturnCoPer(Cpu.CodeName codeName, bool isMp1)
     {
         Codename = codeName; //если класс неинициализирован - задать правильный Codename
         switch (Codename)
@@ -916,7 +937,7 @@ internal class SendSmuCommand
             case Cpu.CodeName.Picasso:
             case Cpu.CodeName.Dali:
             case Cpu.CodeName.FireFlight:
-                Socket_FT5_FP5_AM4();
+                Socket_FP5();
                 break;
             case Cpu.CodeName.Matisse:
             case Cpu.CodeName.Vermeer:
@@ -925,7 +946,7 @@ internal class SendSmuCommand
             case Cpu.CodeName.Renoir:
             case Cpu.CodeName.Lucienne:
             case Cpu.CodeName.Cezanne:
-                Socket_FP6_AM4();
+                Socket_FP6();
                 break;
             case Cpu.CodeName.VanGogh:
                 Socket_FF3();
@@ -937,13 +958,13 @@ internal class SendSmuCommand
             case Cpu.CodeName.HawkPoint:
             case Cpu.CodeName.StrixPoint:
             case Cpu.CodeName.StrixHalo:
-                Socket_FT6_FP7_FP8();
+                Socket_FT6_FP7_FP8_FP11();
                 break;
             case Cpu.CodeName.GraniteRidge:
             case Cpu.CodeName.Genoa:
             case Cpu.CodeName.Bergamo:
             case Cpu.CodeName.Raphael:
-            case Cpu.CodeName.DragonRange: 
+            case Cpu.CodeName.DragonRange:
                 Socket_AM5_V1();
                 break;
             default:
@@ -960,23 +981,172 @@ internal class SendSmuCommand
         return 0U;
     }
 
-    public static bool? IsPlatformPC(Cpu.CodeName codeName)
+    public double ReturnCpuPowerLimit(Cpu cpu)
     {
-        Codename = codeName;
+        Codename = cpu.info.codeName; //если класс неинициализирован - задать правильный Codename
+        switch (Codename)
+        {
+            case Cpu.CodeName.SummitRidge:
+            case Cpu.CodeName.PinnacleRidge:
+                Socket_AM4_V1();
+                break;
+            case Cpu.CodeName.RavenRidge:
+            case Cpu.CodeName.Picasso:
+            case Cpu.CodeName.Dali:
+            case Cpu.CodeName.FireFlight:
+                Socket_FP5();
+                break;
+            case Cpu.CodeName.Matisse:
+            case Cpu.CodeName.Vermeer:
+                Socket_AM4_V2();
+                break;
+            case Cpu.CodeName.Renoir:
+            case Cpu.CodeName.Lucienne:
+            case Cpu.CodeName.Cezanne:
+                Socket_FP6();
+                break;
+            case Cpu.CodeName.VanGogh:
+                Socket_FF3();
+                break;
+            case Cpu.CodeName.Mendocino:
+            case Cpu.CodeName.Rembrandt:
+            case Cpu.CodeName.Phoenix:
+            case Cpu.CodeName.Phoenix2:
+            case Cpu.CodeName.HawkPoint:
+            case Cpu.CodeName.StrixPoint:
+            case Cpu.CodeName.StrixHalo:
+                Socket_FT6_FP7_FP8_FP11();
+                break;
+            case Cpu.CodeName.GraniteRidge:
+            case Cpu.CodeName.Genoa:
+            case Cpu.CodeName.Bergamo:
+            case Cpu.CodeName.Raphael:
+            case Cpu.CodeName.DragonRange:
+                Socket_AM5_V1();
+                break;
+            default:
+                return 35; // 35W is default
+        }
+
+        var actualCommand = 0x0U;
+        var matchingCommandsMp1 = Commands?.Where(c => c.Item1 == "get-sustained-power-and-thm-limit" && c.Item2 == true);
+        var matchingCommandsRsmu = Commands?.Where(c => c.Item1 == "get-sustained-power-and-thm-limit" && c.Item2 == false);
+        var commands = matchingCommandsMp1!.ToList();
+        var commands1 = matchingCommandsRsmu!.ToList();
+        var mailbox = 1;
+        if (commands.Count != 0)
+        {
+            actualCommand = commands.Select(command => command.Item3).FirstOrDefault();
+            mailbox = 1; // MP1
+        }
+        if (commands1.Count != 0)
+        {
+            actualCommand = commands1.Select(command => command.Item3).FirstOrDefault();
+            mailbox = 0; // RSMU
+        }
+
+        uint addrMsg;
+        uint addrRsp;
+        uint addrArg;
+
+        if (mailbox == 0)
+        {
+            addrMsg = RsmuCmd;
+            addrRsp = RsmuRsp;
+            addrArg = RsmuArg;
+        }
+        else
+        {
+            addrMsg = Mp1Cmd;
+            addrRsp = Mp1Rsp;
+            addrArg = Mp1Arg;
+        }
+
+        Mailbox _testMailbox1 = new()
+        {
+            SMU_ADDR_MSG = addrMsg,
+            SMU_ADDR_RSP = addrRsp,
+            SMU_ADDR_ARG = addrArg
+        };
+
+        var args = Utils.MakeCmdArgs();
+        var status = cpu?.smu.SendSmuCommand(_testMailbox1, actualCommand, ref args);
+
+        if (status != SMU.Status.OK)
+        {
+            LogHelper.TraceIt_TraceError("[SendSmuCommand+OCFinder]@Unable_To_Get_CpuPowerLimit_From_Smu_STATUS - " + status.ToString());
+        }
+
+        if (args[0] != 0x0)
+        {
+            return (args[0] & 0x00FF0000) >> 16;
+        }
+
+        return 35;
+    }
+
+    public bool? IsPlatformPC(Cpu cpu)
+    {
+        Codename = cpu.info.codeName;
+        if (IsPlatformPCByCodename(Codename) == true)
+        {
+            if (Codename == Cpu.CodeName.RavenRidge ||
+                Codename == Cpu.CodeName.Picasso ||
+                Codename == Cpu.CodeName.Renoir ||
+                Codename == Cpu.CodeName.Cezanne ||
+                Codename == Cpu.CodeName.Phoenix ||
+                Codename == Cpu.CodeName.Phoenix2)
+            {
+                if (cpu.info.packageType == Cpu.PackageType.FPX)
+                { 
+                    if (_isBatteryUnavailable == true)
+                    {
+                        if (cpu.info.cpuName.Contains('G') ||
+                        cpu.info.cpuName.Contains("GE") ||
+                        (cpu.info.cpuName.Contains('X') && !cpu.info.cpuName.Contains("HX")) ||
+                        cpu.info.cpuName.Contains('F') ||
+                        (cpu.info.cpuName.Contains("X3D") && !cpu.info.cpuName.Contains("HX3D")) ||
+                        cpu.info.cpuName.Contains("XT")
+                        )
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            return true;
+        } 
+        return null; // Платформа не определена!
+    }
+    private static bool? IsPlatformPCByCodename(Cpu.CodeName codeName)
+    {
+        if (Codename != codeName)
+        {
+            Codename = codeName;
+        }
         return Codename switch
         {
-            Cpu.CodeName.SummitRidge or Cpu.CodeName.PinnacleRidge => true,
-            Cpu.CodeName.RavenRidge or Cpu.CodeName.Picasso or Cpu.CodeName.Dali or Cpu.CodeName.FireFlight => false,
+            Cpu.CodeName.BristolRidge or Cpu.CodeName.SummitRidge or Cpu.CodeName.PinnacleRidge => true,
+            Cpu.CodeName.RavenRidge or Cpu.CodeName.Picasso or Cpu.CodeName.Dali or Cpu.CodeName.FireFlight => false, // Raven Ridge, Picasso can be PC!
             Cpu.CodeName.Matisse or Cpu.CodeName.Vermeer => true,
-            Cpu.CodeName.Renoir or Cpu.CodeName.Lucienne or Cpu.CodeName.Cezanne => false,
+            Cpu.CodeName.Renoir or Cpu.CodeName.Lucienne or Cpu.CodeName.Cezanne => false, // Renoir, Cezanne can be PC!
             Cpu.CodeName.VanGogh => false,
-            Cpu.CodeName.Mendocino or Cpu.CodeName.Rembrandt or Cpu.CodeName.Phoenix or Cpu.CodeName.Phoenix2 or Cpu.CodeName.HawkPoint or Cpu.CodeName.StrixPoint or Cpu.CodeName.StrixHalo => false,
+            Cpu.CodeName.Mendocino or Cpu.CodeName.Rembrandt or Cpu.CodeName.Phoenix or Cpu.CodeName.Phoenix2 or Cpu.CodeName.HawkPoint or Cpu.CodeName.StrixPoint or Cpu.CodeName.StrixHalo => false, // Phoenix can be PC!
             Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.Bergamo or Cpu.CodeName.Raphael or Cpu.CodeName.DragonRange => true,
             _ => null,// Устройство не определено
         };
     }
 
-    public static uint GenerateSmuArgForSetGfxclkOverdriveByFreqVid(double frequencyMHz, double voltage)
+    public uint GenerateSmuArgForSetGfxclkOverdriveByFreqVid(double frequencyMHz, double voltage)
     {
         // Вычисляем VID по напряжению
         var rawVid = (1.55 - voltage) / 0.00625;
@@ -1004,7 +1174,7 @@ internal class SendSmuCommand
      https://github.com/Erruar
      https://github.com/Irusanov
      https://github.com/FlyGoat */
-    private static void Socket_FT5_FP5_AM4()
+    private static void Socket_FP5()
     {
         Mp1Cmd = 0x3B10528;
         Mp1Rsp = 0x3B10564;
@@ -1067,15 +1237,16 @@ internal class SendSmuCommand
             ("stopcpu-freqto-ramstate", true, 0x30),
             ("stopcpu-freqto-ramstate", true, 0x31),
             ("set-ulv-vid", true, 0x35),
-            ("set-vddoff-vid", true, 0x3A),
-            ("set-vmin-freq", true, 0x3B), //GFX minimum Curve Optimizer diapazon
-            ("set-gpuclockoverdrive-byvid", true, 0x3D), //ONLY AM4!
-            ("set-powergate-xgbe", true, 0x3E), //SUPER DANGEROUS!!! WILL NOT BE IN SAKU OVERCLOCK UI
-            ("enable-cc6filter", true, 0x42)
+            ("set-vddoff-vid", true, 0x3A), // оффсет напряжения iGPU при работе от батареи или общей работе??
+            ("set-vmin-freq", true, 0x3B), //GFX minimum Curve Optimizer diapazon - Я сам уже не помню что делает
+            ("set-gpuclockoverdrive-byvid", true, 0x3D), // Используется в дебаг опция AMD CBS которые уже вырезали, но на первых AGESA было. Устанавливает макс частоту и напряжение iGPU, иногда работает, требуются тесты
+            ("enable-cc6filter", true, 0x42),
+            ("get-sustained-power-and-thm-limit", true, 0x43),
+            ("get-sustained-power-and-thm-limit", false, 0x65)
         ];
     }
 
-    private static void Socket_FP6_AM4()
+    private static void Socket_FP6()
     {
         Mp1Cmd = 0x3B10528;
         Mp1Rsp = 0x3B10564;
@@ -1131,13 +1302,14 @@ internal class SendSmuCommand
             ("set-cogfx", true, 0x64),
             ("set-coall", false, 0xB1),
             ("gfx-clk", false, 0x89),
-            ("set-gpuclockoverdrive-byvid", true, 0x34)
+            ("set-gpuclockoverdrive-byvid", true, 0x34),
+            ("get-sustained-power-and-thm-limit", true, 0x5B)
         ];
     }
 
-    private static void Socket_FT6_FP7_FP8()
-    { 
-        if (Codename == Cpu.CodeName.StrixPoint || Codename == Cpu.CodeName.StrixHalo) 
+    private static void Socket_FT6_FP7_FP8_FP11()
+    {
+        if (Codename == Cpu.CodeName.StrixPoint || Codename == Cpu.CodeName.StrixHalo)
         {
             // Correct
             Mp1Cmd = 0x3B10928;
@@ -1201,7 +1373,8 @@ internal class SendSmuCommand
             ("set-coper", true, 0x4b),
             ("set-cogfx", false, 0xb7),
             ("enable-oc", false, 0x17),
-            ("disable-oc", false, 0x18)
+            ("disable-oc", false, 0x18),
+            ("get-sustained-power-and-thm-limit", true, 0x5F)
         ];
     }
 
@@ -1245,7 +1418,8 @@ internal class SendSmuCommand
             ("set-coall", true, 0x4c),
             ("set-coall", false, 0x5d),
             ("set-coper", true, 0x4b),
-            ("set-cogfx", false, 0xb7)
+            ("set-cogfx", false, 0xb7),
+            ("get-sustained-power-and-thm-limit", true, 0x54)
         ];
     }
 
@@ -1339,7 +1513,7 @@ internal class SendSmuCommand
             ("fast-limit", false, 0x56), // Set CPU PPT Limit // Use RSMU address
             ("slow-limit", true, 0x5f),
             ("skin-temp-limit", true, 0x5E),
-            ("stapm-time", true, 0x4e), 
+            ("stapm-time", true, 0x4e),
             ("slow-time", true, 0x61),
             ("apu-slow-limit", true, 0x60),
             ("vrm-current", true, 0x3c),
@@ -1354,14 +1528,14 @@ internal class SendSmuCommand
             ("oc-volt", false, 0x61),
             ("set-coall", false, 0x7),
             ("set-cogfx", false, 0x7), // Not sure, seems no.
-            ("set-coper", false, 0x6), 
+            ("set-coper", false, 0x6),
             ("set-coall", true, 0x36),
             ("set-coper", true, 0x35),
             ("enable-oc", false, 0x5d),
             ("disable-oc", false, 0x5e),
             ("set-vddoff-vid", true, 0x4B),
             ("set-fll-btc-enable", true, 0x37), // 0 - True, 1 - False
-            ("get-sustained-power-and-thm-limit", true, 0x23)                   // 
+            ("get-sustained-power-and-thm-limit", true, 0x23)
         ];
     }
 }

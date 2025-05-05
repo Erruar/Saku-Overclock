@@ -8,7 +8,11 @@
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow"></ThemeShadow>
     </Page.Resources>
-    <Grid x:Name="ContentArea" Margin="-48,0,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" MaxWidth="1200">
+    <Grid x:Name="ContentArea" Margin="-48,0,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
+        <Grid.RowDefinitions>
+            <RowDefinition MaxHeight="460"/>
+            <RowDefinition MaxHeight="0.12"/>
+        </Grid.RowDefinitions>
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
         <Button x:Name="HiddenDisabledButton" IsEnabled="False" Visibility="Collapsed"/>
         <Button x:Name="HiddenAccentButton" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed"/>

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Specialized;
-using Saku_Overclock.SMUEngine;
+using Saku_Overclock.JsonContainers;
 
 namespace Saku_Overclock.Contracts.Services;
 

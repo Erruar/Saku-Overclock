@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Windows.UI.ViewManagement;
 using H.NotifyIcon;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Dispatching;
@@ -9,11 +8,12 @@ using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
+using Windows.UI.ViewManagement;
 using Icon = System.Drawing.Icon;
-using Saku_Overclock.Services;
 
 namespace Saku_Overclock;
 
@@ -24,6 +24,7 @@ public sealed partial class MainWindow
     private static TaskbarIcon? _ni;
     private static TaskbarIcon? _niBackup;
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
+    private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
 
     public MainWindow()
     {
@@ -100,7 +101,7 @@ public sealed partial class MainWindow
         {
             args.Cancel = true; // Отменяем закрытие
             this.Hide(); // Скрываем в трей
-        } 
+        }
     }
     public static void Set_ContextMenu_Tray()
     {
@@ -257,27 +258,45 @@ public sealed partial class MainWindow
 
     private async void Tray_Start() // Запустить все команды после запуска приложения если включен Автоприменять Разгон
     {
-        try
+        SettingsService.LoadSettings();
+        if (SettingsService.ReapplyLatestSettingsOnAppLaunch)
         {
-            if (SettingsService.ReapplyLatestSettingsOnAppLaunch)
+            try
+            { 
+                SendSmuCommand.Play_Invernate_QuickSMU(1);
+            }
+            catch (Exception ex)
             {
-                /*var cpu = App.GetService<ПараметрыPage>(); Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock, AppSettings.ReapplyOverclockTimer);
-                /*cpu.Play_Invernate_QuickSMU(1);#1#*/
-                var profileFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                await LogHelper.LogError("[Mainwindow@Tray_Start]::Play_Invernate_QuickSMU_FAILED - " + ex.ToString());
+            }
+
+            try
+            {
+                var profileFolderFile = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                                     "\\SakuOverclock\\profile.json";
-                if (File.Exists(profileFolder))
+                if (File.Exists(profileFolderFile))
                 {
                     var profile = JsonConvert.DeserializeObject<Profile[]>(await File.ReadAllTextAsync(
                         Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                         @"\SakuOverclock\profile.json"))!;
-                    if (SettingsService.Preset >= profile.Length && profile[SettingsService.Preset].autoPstate &&
-                        profile[SettingsService.Preset].enablePstateEditor)
+                    if (SettingsService.Preset < profile.Length && SettingsService.Preset != -1)
                     {
-                        ПараметрыPage.WritePstates();
+                        ShellPage.MandarinSparseUnitProfile(profile[SettingsService.Preset]);
+                        if (profile[SettingsService.Preset].autoPstate &&
+                        profile[SettingsService.Preset].enablePstateEditor)
+                        {
+                            ПараметрыPage.WritePstates();
+                        }
                     }
                 }
             }
-
+            catch (Exception ex)
+            {
+                await LogHelper.LogError("[Mainwindow@Tray_Start]::Apply_Last_Settings_FAILED - " + ex.ToString());
+            } 
+        }
+        try
+        {
             // Параллельный поток для выполнения задачи
             await Task.Run(async () =>
             {
@@ -297,9 +316,9 @@ public sealed partial class MainWindow
             // Вызов проверки обновлений
             await UpdateChecker.CheckForUpdates();
         }
-        catch
+        catch (Exception ex)
         {
-            //
+            await LogHelper.LogError("[Mainwindow@Tray_Start]::App_Hide_And_UpdateChecker_FATAL - " + ex.ToString());
         }
     }
 
@@ -309,7 +328,6 @@ public sealed partial class MainWindow
 
     public class Applyer
     {
-        private static SendSmuCommand? _sendSmuCommand;
         private static readonly DispatcherTimer Timer = new() { Interval = TimeSpan.FromMilliseconds(3 * 1000) };
         private static EventHandler<object>? _tickHandler;
 
@@ -320,16 +338,7 @@ public sealed partial class MainWindow
             double reapplyOverclockTimer)
         {
             try
-            {
-                try
-                {
-                    _sendSmuCommand = App.GetService<SendSmuCommand>();
-                }
-                catch
-                {
-                    return;
-                }
-
+            {  
                 if (reapplyOverclock)
                 {
                     try
@@ -359,7 +368,7 @@ public sealed partial class MainWindow
                             {
                                 await Process(ryzenAdJline,
                                     false); // Запустить SendSMUCommand снова, БЕЗ логирования, false
-                                _sendSmuCommand
+                                SendSmuCommand
                                     ?.Play_Invernate_QuickSMU(
                                         1); // Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
                             }
@@ -392,7 +401,7 @@ public sealed partial class MainWindow
             {
                 await Task.Run(() =>
                 {
-                    _sendSmuCommand?.Translate(adjLine, saveinfo);
+                    SendSmuCommand?.Translate(adjLine, saveinfo);
                 });
             }
             catch

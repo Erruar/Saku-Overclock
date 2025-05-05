@@ -15,7 +15,7 @@
         <helpers:BooleanToGlyphConverter x:Key="BooleanToGlyphConverter" />
     </Page.Resources>
 
-    <Grid Margin="-48,0,-40,0" x:Name="ContentArea"> 
+    <Grid Margin="-48,0,-40,0" x:Name="ContentArea" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200"> 
         <TextBlock x:Uid="Settings_Name" Text="Настройки программы" FontSize="30" Margin="-1,-65,0,0"></TextBlock>
         <Pivot Margin="-10,-40,0,0">
             <PivotItem >
@@ -688,7 +688,7 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                     </StackPanel>
                 </PivotItem.Header>
                 <ScrollViewer Margin="0,-2,-10,0">
-                    <StackPanel VerticalAlignment="Top" Margin="0, 0,0,0" HorizontalAlignment="Center">
+                    <StackPanel VerticalAlignment="Top" Margin="0,6,0,0" HorizontalAlignment="Center">
                         <ImageIcon Source="/Assets/SplashScreen.scale-200.png" Width="200" Height="200" HorizontalAlignment="Center"></ImageIcon>
                         <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
                         <TextBlock HorizontalAlignment="Center" Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />

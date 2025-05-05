@@ -20,11 +20,16 @@
             <Grid Grid.Column="0" Margin="0,0,5,5" CornerRadius="8">
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="62"/> 
+                        <RowDefinition MaxHeight="62"/> 
                         <RowDefinition Height="3*" MaxHeight="258"/>
                         <RowDefinition Height="2*" MaxHeight="240"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Margin="0,0,0,0" VerticalAlignment="Stretch" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
+                    <Grid Grid.Row="0" Margin="0,0,0,0" VerticalAlignment="Stretch" CornerRadius="8" 
+                          Shadow="{ThemeResource SharedShadow}" 
+                          Translation="0,0,20" 
+                          Background="{Binding ElementName=HiddenButton, Path=Background}" 
+                          BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" 
+                          BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition/>
@@ -40,24 +45,19 @@
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition Height="3*"/>
-                            <RowDefinition Height="2*" x:Name="BatteryControlRow"/>
+                            <RowDefinition Height="51"/>
                         </Grid.RowDefinitions>
                         <TextBlock Margin="23,0,0,0" VerticalAlignment="Center" Text="Сохранённые профили" Grid.Row="0" FontWeight="SemiBold" FontSize="16"/>
-                        <Grid Grid.Row="1" Margin="10,3,5,9" CornerRadius="8">
+                        <Grid Grid.Row="1" Margin="12,3,5,11" CornerRadius="8">
                             <local:ProfileSelector SelectionChanged="ProfilesControl_SelectionChanged" x:Name="ProfilesControl" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
                         </Grid>
-                        <Grid Grid.Row="2" x:Name="BatteryControlStroke">
-                            <Border VerticalAlignment="Top" Margin="25,0,25,0" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/> 
+                        <Grid Grid.Row="2">
+                            <Border VerticalAlignment="Top" Margin="25,3,25,0" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/> 
                         </Grid>
-                        <Grid Grid.Row="2" x:Name="BatteryControlElement">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/> 
-                                <ColumnDefinition Width="2*"/>
-                            </Grid.ColumnDefinitions>
-                            <local:BatteryControl Value="55" Margin="23,10,0,10" Grid.Column="0" HorizontalAlignment="Stretch" x:Name="BatteryPercentage" MaxHeight="100" />
-                            <StackPanel HorizontalAlignment="Right" Margin="0,6,23,0" Orientation="Vertical" VerticalAlignment="Center" Grid.Column="1">
-                                <TextBlock FontWeight="SemiBold" FontSize="16" HorizontalAlignment="Right" Text="Осталось времени работы:"/>
-                                <TextBlock FontWeight="Bold" FontSize="17" HorizontalAlignment="Right" x:Name="LastBatteryTime" Text="3 Часа 17 Минут"/>
+                        <Grid Grid.Row="2">
+                            <StackPanel HorizontalAlignment="Stretch" Margin="23,6,23,0" Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="1">
+                                <TextBlock FontWeight="SemiBold" FontSize="16" HorizontalAlignment="Right" Text="Не видите свой пресет? "/>
+                                <HyperlinkButton FontWeight="Bold" FontSize="16" Margin="0,-6,0,0" Content="Создайте его!"></HyperlinkButton>
                             </StackPanel>
                         </Grid>
                     </Grid>
@@ -170,7 +170,7 @@
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid Grid.Column="1" Margin="10,0,10,7" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=Discrd, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
+            <Grid Grid.Column="1" VerticalAlignment="Top" Margin="10,0,10,7" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=Discrd, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition Height="40"/>
@@ -603,7 +603,7 @@
                                                 </StackPanel>
                                             </Border>
                                         </Grid> 
-                                        <Border Background="Transparent" Height="10"/>
+                                        <Border Background="Transparent" Height="50"/>
                                     </StackPanel>
                                     <StackPanel Visibility="Collapsed" x:Name="PremadeProfile_AffectsOn" Margin="0,13,0,0" Orientation="Vertical">
                                         

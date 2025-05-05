@@ -28,11 +28,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Styles\BatteryControl.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
     <Page Update="Styles\NavigationSelector.xaml">
       <SubType>Designer</SubType>
     </Page>
