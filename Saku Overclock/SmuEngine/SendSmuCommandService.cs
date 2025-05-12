@@ -1195,7 +1195,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("slow-time", true, 0x1d),
             ("slow-time", false, 0x31),
             ("tctl-temp", true, 0x1f),
-            ("cHTC-temp", false, 0x56), // NOT SURE!!!
+            ("cHTC-temp", false, 0x56), // Not sure, rejected
             ("vrm-current", true, 0x20),
             ("vrmmax-current", true, 0x22),
             ("vrmsoc-current", true, 0x21),
@@ -1206,15 +1206,13 @@ public class SendSmuCommandService : ISendSmuCommandService
             //("pbo-scalar", false, 0x68),
             ("power-saving", true, 0x19),
             ("max-performance", true, 0x18),
-            ("oc-clk", false, 0x7d),
-            ("per-core-oc-clk", false, 0x7e),
+            ("oc-clk", false, 0x7d), //Not sure, rejected
+            ("per-core-oc-clk", false, 0x7e), // Not sure, rejected
             ("oc-clk", true, 0x59),
             ("per-core-oc-clk", true, 0x5A),
             ("oc-clk", true, 0x41), // Old AMD CBS OC method, freq in MHz, required MP1 entertain OC Mode (#define BIOSSMC_MSG_OC_Disable 3F /*Arg 0x1 - disable, arg 0x0 - enable*/)
             ("oc-volt", false, 0x7c), // Not sure, rejected
             ("oc-volt", true, 0x40), // Old AMD CBS OC method, set max VID, required MP1 entertain OC Mode (#define BIOSSMC_MSG_OC_Disable 3F /*Arg 0x1 - disable, arg 0x0 - enable*/)
-            ("enable-oc", false, 0x69),
-            ("disable-oc", false, 0x6a),
             ("disable-oc", true, 0x3F),
             ("max-cpuclk", true, 0x44),
             ("min-cpuclk", true, 0x45),
