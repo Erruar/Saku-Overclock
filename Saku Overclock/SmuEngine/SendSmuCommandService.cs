@@ -1062,7 +1062,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             addrArg = Mp1Arg;
         }
 
-        Mailbox _testMailbox1 = new()
+        Mailbox testMailbox1 = new()
         {
             SMU_ADDR_MSG = addrMsg,
             SMU_ADDR_RSP = addrRsp,
@@ -1070,11 +1070,11 @@ public class SendSmuCommandService : ISendSmuCommandService
         };
 
         var args = Utils.MakeCmdArgs();
-        var status = cpu?.smu.SendSmuCommand(_testMailbox1, actualCommand, ref args);
+        var status = cpu?.smu.SendSmuCommand(testMailbox1, actualCommand, ref args);
 
         if (status != SMU.Status.OK)
         {
-            LogHelper.TraceIt_TraceError("[SendSmuCommand+OCFinder]@Unable_To_Get_CpuPowerLimit_From_Smu_STATUS - " + status.ToString());
+            LogHelper.TraceIt_TraceError("[SendSmuCommand+OCFinder]@Unable_To_Get_CpuPowerLimit_From_Smu_STATUS - " + status);
         }
 
         if (args[0] != 0x0)
@@ -1090,31 +1090,24 @@ public class SendSmuCommandService : ISendSmuCommandService
         Codename = cpu.info.codeName;
         if (IsPlatformPCByCodename(Codename) == true)
         {
-            if (Codename == Cpu.CodeName.RavenRidge ||
-                Codename == Cpu.CodeName.Picasso ||
-                Codename == Cpu.CodeName.Renoir ||
-                Codename == Cpu.CodeName.Cezanne ||
-                Codename == Cpu.CodeName.Phoenix ||
-                Codename == Cpu.CodeName.Phoenix2)
+            if (Codename is Cpu.CodeName.RavenRidge or Cpu.CodeName.Picasso or Cpu.CodeName.Renoir or Cpu.CodeName.Cezanne or Cpu.CodeName.Phoenix or Cpu.CodeName.Phoenix2)
             {
                 if (cpu.info.packageType == Cpu.PackageType.FPX)
                 { 
-                    if (_isBatteryUnavailable == true)
+                    if (_isBatteryUnavailable)
                     {
                         if (cpu.info.cpuName.Contains('G') ||
-                        cpu.info.cpuName.Contains("GE") ||
-                        (cpu.info.cpuName.Contains('X') && !cpu.info.cpuName.Contains("HX")) ||
-                        cpu.info.cpuName.Contains('F') ||
-                        (cpu.info.cpuName.Contains("X3D") && !cpu.info.cpuName.Contains("HX3D")) ||
-                        cpu.info.cpuName.Contains("XT")
-                        )
+                            cpu.info.cpuName.Contains("GE") ||
+                            (cpu.info.cpuName.Contains('X') && !cpu.info.cpuName.Contains("HX")) ||
+                            cpu.info.cpuName.Contains('F') ||
+                            (cpu.info.cpuName.Contains("X3D") && !cpu.info.cpuName.Contains("HX3D")) ||
+                            cpu.info.cpuName.Contains("XT")
+                           )
                         {
                             return true;
                         }
-                        else
-                        {
-                            return false;
-                        }
+
+                        return false;
                     }
                     return false;
                 }
@@ -1187,17 +1180,22 @@ public class SendSmuCommandService : ISendSmuCommandService
         Commands =
         [
             // Store the commands
-            ("enable-feature", true, 0x5), // Use MP1 address
+            // true - Use MP1 address
+            // false - Use RSMU address
+            ("enable-feature", true, 0x5), 
             ("disable-feature", true, 0x6),
             ("stapm-limit", true, 0x1a),
+            ("stapm-limit", false, 0x2e),
             ("stapm-time", true, 0x1e),
             ("stapm-time", false, 0x32),
             ("fast-limit", true, 0x1b),
+            ("fast-limit", false, 0x30),
             ("slow-limit", true, 0x1c),
+            ("slow-limit", false, 0x2f),
             ("slow-time", true, 0x1d),
             ("slow-time", false, 0x31),
             ("tctl-temp", true, 0x1f),
-            ("cHTC-temp", false, 0x56), // Use RSMU address
+            ("cHTC-temp", false, 0x56), // NOT SURE!!!
             ("vrm-current", true, 0x20),
             ("vrmmax-current", true, 0x22),
             ("vrmsoc-current", true, 0x21),
@@ -1205,15 +1203,16 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("psi0-current", true, 0x24),
             ("psi0soc-current", true, 0x25),
             ("prochot-deassertion-ramp", true, 0x26),
-            ("pbo-scalar", false, 0x68),
+            //("pbo-scalar", false, 0x68),
             ("power-saving", true, 0x19),
             ("max-performance", true, 0x18),
             ("oc-clk", false, 0x7d),
-            ("oc-clk", true, 0x3C),
-            ("oc-clk", true, 0x41),
             ("per-core-oc-clk", false, 0x7e),
-            ("oc-volt", false, 0x7f),
-            ("oc-volt", true, 0x40),
+            ("oc-clk", true, 0x59),
+            ("per-core-oc-clk", true, 0x5A),
+            ("oc-clk", true, 0x41), // Old AMD CBS OC method, freq in MHz, required MP1 entertain OC Mode (#define BIOSSMC_MSG_OC_Disable 3F /*Arg 0x1 - disable, arg 0x0 - enable*/)
+            ("oc-volt", false, 0x7c), // Not sure, rejected
+            ("oc-volt", true, 0x40), // Old AMD CBS OC method, set max VID, required MP1 entertain OC Mode (#define BIOSSMC_MSG_OC_Disable 3F /*Arg 0x1 - disable, arg 0x0 - enable*/)
             ("enable-oc", false, 0x69),
             ("disable-oc", false, 0x6a),
             ("disable-oc", true, 0x3F),
@@ -1259,7 +1258,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         Commands =
         [
             // Store the commands
-            ("enable-feature", true, 0x5), // Use MP1 address
+            ("enable-feature", true, 0x5), 
             ("disable-feature", true, 0x7),
             ("max-performance", true, 0x11),
             ("power-saving", true, 0x12),
@@ -1285,7 +1284,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("dgpu-skin-temp", true, 0x39),
             ("apu-skin-temp", true, 0x38),
             ("skin-temp-limit", true, 0x53),
-            ("enable-oc", false, 0x17), // Use RSMU address
+            ("enable-oc", false, 0x17), 
             ("disable-oc", false, 0x18),
             ("oc-clk", false, 0x19),
             ("per-core-oc-clk", false, 0x1a),
@@ -1334,10 +1333,10 @@ public class SendSmuCommandService : ISendSmuCommandService
         Commands =
         [
             // Store the commands
-            ("enable-feature", true, 0x5), // Use MP1 address
+            ("enable-feature", true, 0x5), 
             ("disable-feature", true, 0x7),
             ("stapm-limit", true, 0x14),
-            ("stapm-limit", false, 0x31), // Use RSMU address
+            ("stapm-limit", false, 0x31),
             ("stapm-time", true, 0x18),
             ("fast-limit", true, 0x15),
             ("fast-limit", false, 0x32),
@@ -1391,10 +1390,10 @@ public class SendSmuCommandService : ISendSmuCommandService
         Commands =
         [
             // Store the commands
-            ("enable-feature", true, 0x5), // Use MP1 address
+            ("enable-feature", true, 0x5),
             ("disable-feature", true, 0x7),
             ("stapm-limit", true, 0x14),
-            ("stapm-limit", false, 0x31), // Use RSMU address
+            ("stapm-limit", false, 0x31), 
             ("stapm-time", true, 0x18),
             ("fast-limit", true, 0x15),
             ("slow-limit", true, 0x16),
@@ -1436,9 +1435,9 @@ public class SendSmuCommandService : ISendSmuCommandService
         Commands =
         [
             // Store the commands
-            ("enable-feature", true, 0x5), // Use MP1 address
+            ("enable-feature", true, 0x5), 
             ("disable-feature", true, 0x6),
-            ("fast-limit", false, 0x64), // Use RSMU address✓
+            ("fast-limit", false, 0x64), //✓
             ("vrm-current", false, 0x65), //✓
             ("vrmmax-current", false, 0x66), //✓
             ("tctl-temp", false, 0x68), //✓
@@ -1465,10 +1464,10 @@ public class SendSmuCommandService : ISendSmuCommandService
         Commands =
         [
             // Store the commands
-            ("enable-feature", true, 0x5), // Use MP1 address
+            ("enable-feature", true, 0x5),
             ("disable-feature", true, 0x6),
             ("fast-limit", true, 0x3D),
-            ("fast-limit", false, 0x53), // Use RSMU address
+            ("fast-limit", false, 0x53),
             ("vrm-current", true, 0x3B),
             ("vrm-current", false, 0x54),
             ("vrmmax-current", true, 0x3C),
@@ -1506,11 +1505,11 @@ public class SendSmuCommandService : ISendSmuCommandService
         Commands =
         [
             // Store the commands
-            ("enable-feature", true, 0x5), // Use MP1 address
+            ("enable-feature", true, 0x5),
             ("disable-feature", true, 0x7),
             ("stapm-limit", true, 0x4f), // Set CPU Stapm value! Not affect on PPT. Works only if Stapm feature is enabled on platform
             ("fast-limit", true, 0x3e),
-            ("fast-limit", false, 0x56), // Set CPU PPT Limit // Use RSMU address
+            ("fast-limit", false, 0x56), // Set CPU PPT Limit
             ("slow-limit", true, 0x5f),
             ("skin-temp-limit", true, 0x5E),
             ("stapm-time", true, 0x4e),
