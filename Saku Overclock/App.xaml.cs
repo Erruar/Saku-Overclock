@@ -160,7 +160,7 @@ public partial class App
         Process.Start(new ProcessStartInfo
         {
             FileName = "CrashHandler.exe",
-            Arguments = $"{e} -theme dark -appName \"Saku Overclock\" -iconPath \"{sakuLogo}\"",
+            Arguments = $"\"{e.Message}\" -theme dark -appName \"Saku Overclock\" -iconPath \"{sakuLogo}\"",
             Verb = "runas"
         });
     }
