@@ -312,10 +312,10 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     {
         try
         {
-            if (AppSettings.RTSSMetricsEnabled || AppSettings.NiIconsEnabled)
+            if (AppSettings.RtssMetricsEnabled || AppSettings.NiIconsEnabled)
             {
                 var (avgCoreClk, avgCoreVolt, endClkString) = CalculateCoreMetrics(sensorsInformation);
-                if (AppSettings.RTSSMetricsEnabled)
+                if (AppSettings.RtssMetricsEnabled)
                 {
                     _isRtssUpdated = true;
                     var replacements = GetReplacements(avgCoreClk, avgCoreVolt, sensorsInformation);
@@ -388,7 +388,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 }
             }
 
-            if (_isRtssUpdated && !AppSettings.RTSSMetricsEnabled) { RtssHandler.ResetOsdText(); _isRtssUpdated = false; }
+            if (_isRtssUpdated && !AppSettings.RtssMetricsEnabled) { RtssHandler.ResetOsdText(); _isRtssUpdated = false; }
             if (_isIconsUpdated && !AppSettings.NiIconsEnabled) { DisposeAllNotifyIcons(); _isIconsUpdated = false; _isIconsCreated = false; }
         }
         catch (Exception ex)

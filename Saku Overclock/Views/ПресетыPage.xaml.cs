@@ -61,8 +61,8 @@ public sealed partial class ПресетыPage
     public ПресетыPage()
     {
         InitializeComponent();
-        AppSettings.NBFCFlagConsoleCheckSpeedRunning = false;
-        AppSettings.FlagRyzenADJConsoleTemperatureCheckRunning = false;
+        AppSettings.NbfcFlagConsoleCheckSpeedRunning = false;
+        AppSettings.FlagRyzenAdjConsoleTemperatureCheckRunning = false;
         AppSettings.SaveSettings();
         _dataUpdater = App.BackgroundUpdater!;
         _dataUpdater.DataUpdated += OnDataUpdated;
@@ -83,7 +83,7 @@ public sealed partial class ПресетыPage
         // Загрузить остальные UI элементы, функции блока "Дополнительно"
         O1.IsOn = AppSettings.CurveOptimizerOverallEnabled;
         O1m.SelectedIndex = AppSettings.CurveOptimizerOverallLevel;
-        RtssOverlaySwitch.IsOn = AppSettings.RTSSMetricsEnabled;
+        RtssOverlaySwitch.IsOn = AppSettings.RtssMetricsEnabled;
         TrayMonFeatSwitch.IsOn = AppSettings.NiIconsEnabled;
         StreamOptimizerSwitch.IsOn = AppSettings.StreamOptimizerEnabled;
         if (AppSettings.ProfilespageViewModeBeginner)
@@ -594,7 +594,7 @@ public sealed partial class ПресетыPage
     private void RtssOverlaySwitch_Toggled(object sender, RoutedEventArgs e)
     {
         if (!_isLoaded) { return; }
-        AppSettings.RTSSMetricsEnabled = RtssOverlaySwitch.IsOn;
+        AppSettings.RtssMetricsEnabled = RtssOverlaySwitch.IsOn;
         AppSettings.SaveSettings();
     }
 
@@ -794,7 +794,7 @@ public sealed partial class ПресетыPage
         AppSettings.PremadeBalanceActivated = false;
         AppSettings.PremadeSpeedActivated = false;
         AppSettings.PremadeMaxActivated = false;
-        AppSettings.RyzenADJline =
+        AppSettings.RyzenAdjLine =
             " --tctl-temp=60 " + //
             "--stapm-limit=9000 " + //
             "--fast-limit=9000 " + //
@@ -808,7 +808,7 @@ public sealed partial class ПресетыPage
             "--vrmgfx-current=120000 " +
             "--prochot-deassertion-ramp=2 ";
         AppSettings.SaveSettings();
-        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+        MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
             AppSettings.ReapplyOverclockTimer);
     }
 
@@ -819,7 +819,7 @@ public sealed partial class ПресетыPage
         AppSettings.PremadeBalanceActivated = false;
         AppSettings.PremadeSpeedActivated = false;
         AppSettings.PremadeMaxActivated = false;
-        AppSettings.RyzenADJline =
+        AppSettings.RyzenAdjLine =
             " --tctl-temp=68 --stapm-limit=15000 " +
             " --fast-limit=18000 --stapm-time=500" +
             " --slow-limit=16000 --slow-time=500 " +
@@ -827,7 +827,7 @@ public sealed partial class ПресетыPage
             "--vrmsoc-current=120000 --vrmsocmax-current=120000" +
             " --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ";
         AppSettings.SaveSettings();
-        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+        MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
             AppSettings.ReapplyOverclockTimer);
     }
 
@@ -838,7 +838,7 @@ public sealed partial class ПресетыPage
         AppSettings.PremadeBalanceActivated = true;
         AppSettings.PremadeSpeedActivated = false;
         AppSettings.PremadeMaxActivated = false;
-        AppSettings.RyzenADJline =
+        AppSettings.RyzenAdjLine =
             " --tctl-temp=75 --stapm-limit=17000 " +
             " --fast-limit=20000 --stapm-time=64 " +
             "--slow-limit=19000 --slow-time=128 " +
@@ -846,7 +846,7 @@ public sealed partial class ПресетыPage
             " --vrmsoc-current=120000 --vrmsocmax-current=120000" +
             " --vrmgfx-current=120000 --prochot-deassertion-ramp=2";
         AppSettings.SaveSettings();
-        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+        MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
             AppSettings.ReapplyOverclockTimer);
     }
 
@@ -857,10 +857,10 @@ public sealed partial class ПресетыPage
         AppSettings.PremadeBalanceActivated = false;
         AppSettings.PremadeSpeedActivated = true;
         AppSettings.PremadeMaxActivated = false;
-        AppSettings.RyzenADJline =
+        AppSettings.RyzenAdjLine =
             " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2";
         AppSettings.SaveSettings();
-        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+        MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
             AppSettings.ReapplyOverclockTimer);
     }
 
@@ -871,10 +871,10 @@ public sealed partial class ПресетыPage
         AppSettings.PremadeBalanceActivated = false;
         AppSettings.PremadeSpeedActivated = false;
         AppSettings.PremadeMaxActivated = true;
-        AppSettings.RyzenADJline =
+        AppSettings.RyzenAdjLine =
             " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2";
         AppSettings.SaveSettings();
-        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+        MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
             AppSettings.ReapplyOverclockTimer);
     }
 
@@ -1083,7 +1083,7 @@ public sealed partial class ПресетыPage
 
         var (_, _, _, settings, _) = ShellPage.PremadedProfiles[endMode];
 
-        AppSettings.RyzenADJline = settings;
+        AppSettings.RyzenAdjLine = settings;
         AppSettings.SaveSettings();
 
         MainWindow.Applyer.ApplyWithoutAdjLine(false);

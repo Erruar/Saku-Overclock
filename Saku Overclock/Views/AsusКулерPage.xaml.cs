@@ -43,7 +43,7 @@ public sealed partial class AsusКулерPage
     private void AsusКулерPage_Loaded(object sender, RoutedEventArgs e)
     {
         AsusWinIOWrapper.Init_WinIo();
-        Fan1.Value = SettingsService.AsusModeFan1UserFanSpeedRPM;
+        Fan1.Value = SettingsService.AsusModeFan1UserFanSpeedRpm;
         switch (SettingsService.AsusModeSelectedMode)
         {
             case -1:
@@ -167,7 +167,7 @@ public sealed partial class AsusКулерPage
         }
 
         SettingsService.AsusModeSelectedMode = 0;
-        SettingsService.AsusModeFan1UserFanSpeedRPM = Fan1.Value;
+        SettingsService.AsusModeFan1UserFanSpeedRpm = Fan1.Value;
         SettingsService.SaveSettings();
         SetFanSpeeds((int)Fan1.Value);
     }
@@ -192,7 +192,7 @@ public sealed partial class AsusКулерPage
             {
                 case "AsusFans_ManualToggle":
                     SettingsService.AsusModeSelectedMode = 0;
-                    SettingsService.AsusModeFan1UserFanSpeedRPM = Fan1.Value;
+                    SettingsService.AsusModeFan1UserFanSpeedRpm = Fan1.Value;
                     AsusFans_BalanceToggle.IsChecked = false;
                     AsusFans_TurboToggle.IsChecked = false;
                     AsusFans_QuietToggle.IsChecked = false;

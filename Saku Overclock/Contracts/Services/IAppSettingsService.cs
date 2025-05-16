@@ -40,6 +40,16 @@ public interface IAppSettingsService
         get;
         set;
     } // Флаг включены ли горячие клавиши в приложении или нет
+    string HotkeysSwitchingCustomProfiles
+    {
+        get; 
+        set;
+    } // Список избранных переключаемых кастомных пресетов
+    string HotkeysSwitchingPremadeProfiles
+    {
+        get; 
+        set;
+    } // Список переключаемых готовых пресетов
 
     bool ReapplyLatestSettingsOnAppLaunch
     {
@@ -77,7 +87,7 @@ public interface IAppSettingsService
         set;
     } // Включён ли Треймон
 
-    bool RTSSMetricsEnabled
+    bool RtssMetricsEnabled
     {
         get;
         set;
@@ -120,11 +130,11 @@ public interface IAppSettingsService
         set;
     } // Выбранный пресет
 
-    string RyzenADJline
+    string RyzenAdjLine
     {
         get;
         set;
-    } // RyzenADJline для применения параметров
+    } // RyzenAdjLine для применения параметров
 
     bool PremadeMinActivated
     {
@@ -157,59 +167,59 @@ public interface IAppSettingsService
     }
 
     // Страница управления кулером
-    bool IsNBFCModeEnabled
+    bool IsNbfcModeEnabled
     {
         get; set;
     } // Выбранная конфигурация страницы управления кулером
-    string NBFCConfigXMLName
+    string NbfcConfigXmlName
     {
         get;
         set;
     } // Имя выбранного файла NBFC конфига
 
-    bool NBFCAutoUpdateInformation
+    bool NbfcAutoUpdateInformation
     {
         get;
         set;
     } // Автообновление информации о скоростях кулеров
 
-    int NBFCServiceType
+    int NbfcServiceType
     {
         get;
         set;
     } // Флаги использования NBFC 
 
-    double NBFCFan1UserFanSpeedRPM
+    double NbfcFan1UserFanSpeedRpm
     {
         get;
         set;
     } // Скорость первого кулера (>100 = авто)
 
-    double NBFCFan2UserFanSpeedRPM
+    double NbfcFan2UserFanSpeedRpm
     {
         get;
         set;
     } // Скорость второго кулера (>100 = авто)
 
-    bool NBFCFlagConsoleCheckSpeedRunning
+    bool NbfcFlagConsoleCheckSpeedRunning
     {
         get;
         set;
     } // Флаг действий с консолью NBFC
 
-    bool FlagRyzenADJConsoleTemperatureCheckRunning
+    bool FlagRyzenAdjConsoleTemperatureCheckRunning
     {
         get;
         set;
     } // Флаг действий с консолью RyzenADJ
 
-    string NBFCAnswerSpeedFan1
+    string NbfcAnswerSpeedFan1
     {
         get;
         set;
     } // Ответ NBFC для первого кулера
 
-    string NBFCAnswerSpeedFan2
+    string NbfcAnswerSpeedFan2
     {
         get;
         set;
@@ -221,19 +231,24 @@ public interface IAppSettingsService
         set;
     } // Сохранённый режим управления кулерами Asus
 
-    bool AsusModeAutoUpdateInformation
+    int AsusCoolerServiceType
     {
         get;
         set;
-    } // Автообновление информации о кулерах Asus
-
+    } // Тип управления кулерами Asus: выключено, только чтение, включено
     int AsusModeSelectedMode
     {
         get;
         set;
     } // Режим управления Asus кулером
 
-    double AsusModeFan1UserFanSpeedRPM
+    double AsusModeFan1UserFanSpeedRpm
+    {
+        get;
+        set;
+    } // Скорость первого кулера Asus (>100 = авто)
+    
+    double AsusModeFan2UserFanSpeedRpm
     {
         get;
         set;

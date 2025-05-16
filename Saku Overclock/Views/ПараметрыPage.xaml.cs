@@ -72,8 +72,8 @@ public sealed partial class ПараметрыPage
         InitializeComponent();
         ProfileLoad();
         _indexprofile = AppSettings.Preset;
-        AppSettings.NBFCFlagConsoleCheckSpeedRunning = false;
-        AppSettings.FlagRyzenADJConsoleTemperatureCheckRunning = false;
+        AppSettings.NbfcFlagConsoleCheckSpeedRunning = false;
+        AppSettings.FlagRyzenAdjConsoleTemperatureCheckRunning = false;
         AppSettings.SaveSettings();
         try
         {
@@ -5251,13 +5251,13 @@ public sealed partial class ПараметрыPage
                 }
             }
 
-            AppSettings.RyzenADJline = _adjline + " ";
+            AppSettings.RyzenAdjLine = _adjline + " ";
             _adjline = "";
             ApplyInfo = "";
             AppSettings.SaveSettings();
             SendSmuCommand.SetCpuCodename(_cpu!.info.codeName); 
             await LogHelper.Log($"Sending commandline: {_adjline}");
-            MainWindow.Applyer.Apply(AppSettings.RyzenADJline, true, AppSettings.ReapplyOverclock,
+            MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, true, AppSettings.ReapplyOverclock,
                 AppSettings.ReapplyOverclockTimer);
             if (EnablePstates.IsOn)
             {
@@ -5291,7 +5291,7 @@ public sealed partial class ПараметрыPage
             // ReSharper disable once HeuristicUnreachableCode
             {
                 Apply_tooltip.Title = "Apply_Success".GetLocalized();
-                Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + AppSettings.RyzenADJline;
+                Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + AppSettings.RyzenAdjLine;
             }
 #pragma warning restore CS0162 // Unreachable code detected
             Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };

@@ -512,7 +512,7 @@ public sealed partial class ИнформацияPage
 
             try
             {
-                infoRTSSButton.IsChecked = AppSettings.RTSSMetricsEnabled;
+                infoRTSSButton.IsChecked = AppSettings.RtssMetricsEnabled;
                 infoNiIconsButton.IsChecked = AppSettings.NiIconsEnabled;
             }
             catch (Exception exception)
@@ -1663,7 +1663,7 @@ public sealed partial class ИнформацияPage
                 return;
             }
 
-            AppSettings.RTSSMetricsEnabled = infoRTSSButton.IsChecked == true;
+            AppSettings.RtssMetricsEnabled = infoRTSSButton.IsChecked == true;
             AppSettings.SaveSettings();
         }
         catch

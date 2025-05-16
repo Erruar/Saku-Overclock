@@ -24,23 +24,25 @@ public class AppSettingsService : IAppSettingsService
     public bool OldTitleBar { get; set; } = false; // Флаг старого тайтл бара приложения
     public bool FixedTitleBar { get; set; } = false; // Флаг фиксированного тайтл бара приложения
     public int AutostartType { get; set; } = 0; // Тип автостарта: 0 - выкл, 1 - при запуске приложения сразу в трей, 2 - автостарт с системой, 3 - автостарт и трей
-    public int HidingType { get; set; } = 2; // Тип скрытия в трей: 0 - выкл, 1 - при сворачивании приложения сразу в трей, 2 - при закрытии приложения сразу в трей
+    public int HidingType { get; set; } =   2; // Тип скрытия в трей: 0 - выкл, 1 - при сворачивании приложения сразу в трей, 2 - при закрытии приложения сразу в трей
     public bool CheckForUpdates { get; set; } = true; // Флаг автообновлений
     public bool HotkeysEnabled { get; set; } = true; // Флаг включены ли горячие клавиши в приложении или нет
+    public string HotkeysSwitchingCustomProfiles { get; set; } = "All"; // Список избранных переключаемых кастомных пресетов
+    public string HotkeysSwitchingPremadeProfiles { get; set; } = "All"; // Список переключаемых готовых пресетов
     public bool ReapplyLatestSettingsOnAppLaunch { get; set; } = true; // При запуске приложения переприменять последние применённые параметры
     public bool ReapplySafeOverclock { get; set; } = true; // Переприменять последние безопасные параметры
     public bool ReapplyOverclock { get; set; } = true; // Переприменять последние применённые параметры
     public double ReapplyOverclockTimer { get; set; } = 3.0; // Время переприменения параметров (в секундах)
     public int ThemeType { get; set; } = 0; // Выбранная тема
     public bool NiIconsEnabled { get; set; } = false; // Включён ли Треймон
-    public bool RTSSMetricsEnabled { get; set; } = false; // Включены ли RTSS Метрики
+    public bool RtssMetricsEnabled { get; set; } = false; // Включены ли RTSS Метрики
     public int NiIconsType { get; set; } = -1; // Тип отображаемых иконок Треймона
     public bool StreamOptimizerEnabled { get; set; } = false; // Включен ли оптимизатор стрима
     public bool CurveOptimizerOverallEnabled { get; set; } = false; // Включен ли глобальный андервольтинг
     public int CurveOptimizerOverallLevel { get; set; } = 0; // Уровень глобального андервольтинга (0 - лёгкий, 1 - средний, 2 - сильный)
     public bool ProfilespageViewModeBeginner { get; set; } = true; // Пресеты, готовые пресеты и параметры
     public int Preset { get; set; } = 0; // Выбранный пресет
-    public string RyzenADJline { get; set; } = string.Empty; // RyzenADJline для применения параметров
+    public string RyzenAdjLine { get; set; } = string.Empty; // RyzenADJline для применения параметров
     public bool PremadeMinActivated { get; set; } = false; // Готовые пресеты
     public bool PremadeEcoActivated { get; set; } = false;
     public bool PremadeBalanceActivated { get; set; } = false;
@@ -48,20 +50,22 @@ public class AppSettingsService : IAppSettingsService
     public bool PremadeMaxActivated { get; set; } = true;
 
     // Страница управления кулером
-    public bool IsNBFCModeEnabled { get; set; } = true; // Выбранная конфигурация страницы управления кулером
-    public string NBFCConfigXMLName { get; set; } = string.Empty; // Имя выбранного файла NBFC конфига
-    public bool NBFCAutoUpdateInformation { get; set; } = true; // Автообновление информации о скоростях кулеров
-    public int NBFCServiceType { get; set; } = 0; // Флаги использования NBFCq
-    public double NBFCFan1UserFanSpeedRPM { get; set; } = 110.0; // Скорость первого кулера (>100 = авто)
-    public double NBFCFan2UserFanSpeedRPM { get; set; } = 110.0; // Скорость второго кулера (>100 = авто)
-    public bool NBFCFlagConsoleCheckSpeedRunning { get; set; } = false; // Флаг действий с консолью NBFC
-    public bool FlagRyzenADJConsoleTemperatureCheckRunning { get; set; } = false; // Флаг действий с консолью RyzenADJ
-    public string NBFCAnswerSpeedFan1 { get; set; } = string.Empty; // Ответ NBFC для первого кулера
-    public string NBFCAnswerSpeedFan2 { get; set; } = string.Empty; // Ответ NBFC для второго кулера
+    public bool IsNbfcModeEnabled { get; set; } = true; // Выбранная конфигурация страницы управления кулером
+    public string NbfcConfigXmlName { get; set; } = string.Empty; // Имя выбранного файла NBFC конфига
+    public bool NbfcAutoUpdateInformation { get; set; } = true; // Автообновление информации о скоростях кулеров
+    public int NbfcServiceType { get; set; } = 0; // Флаги использования NBFCq
+    public double NbfcFan1UserFanSpeedRpm { get; set; } = 110.0; // Скорость первого кулера (>100 = авто)
+    public double NbfcFan2UserFanSpeedRpm { get; set; } = 110.0; // Скорость второго кулера (>100 = авто)
+    public bool NbfcFlagConsoleCheckSpeedRunning { get; set; } = false; // Флаг действий с консолью NBFC
+    public bool FlagRyzenAdjConsoleTemperatureCheckRunning { get; set; } = false; // Флаг действий с консолью RyzenADJ
+    public string NbfcAnswerSpeedFan1 { get; set; } = string.Empty; // Ответ NBFC для первого кулера
+    public string NbfcAnswerSpeedFan2 { get; set; } = string.Empty; // Ответ NBFC для второго кулера
     public bool CoolerLastSavedAsusMode { get; set; } = false; // Сохранённый режим управления кулерами Asus
     public bool AsusModeAutoUpdateInformation { get; set; } = true; // Автообновление информации о кулерах Asus
+    public int AsusCoolerServiceType { get; set; } = 0; // Тип управления кулерами Asus: выключено, только чтение, включено
     public int AsusModeSelectedMode { get; set; } = 0; // Режим управления Asus кулером
-    public double AsusModeFan1UserFanSpeedRPM { get; set; } = 110.0; // Скорость первого кулера Asus (>100 = авто)
+    public double AsusModeFan1UserFanSpeedRpm { get; set; } = 110.0; // Скорость первого кулера Asus (>100 = авто)
+    public double AsusModeFan2UserFanSpeedRpm { get; set; } = 110.0; // Скорость второго кулера Asus (>100 = авто)
 
     // Загрузка настроек
     public void LoadSettings()

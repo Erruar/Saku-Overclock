@@ -635,7 +635,7 @@ public sealed partial class ГлавнаяPage
 
                     var (_, _, _, settings, _) = ShellPage.PremadedProfiles[endMode];
 
-                    AppSettings.RyzenADJline = settings;
+                    AppSettings.RyzenAdjLine = settings;
                     AppSettings.SaveSettings();
 
                     MainWindow.Applyer.ApplyWithoutAdjLine(false);

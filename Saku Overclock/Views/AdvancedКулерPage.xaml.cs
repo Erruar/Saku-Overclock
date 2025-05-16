@@ -37,9 +37,9 @@ public sealed partial class AdvancedКулерPage
         App.GetService<AdvancedКулерViewModel>(); // Инициализация ViewModel
         InitializeComponent();
         Load_example(); // Загрузка примера из файла
-        SettingsService.NBFCFlagConsoleCheckSpeedRunning =
+        SettingsService.NbfcFlagConsoleCheckSpeedRunning =
             false; // Старые флаги для выключения автообновления информации в фоне программы
-        SettingsService.FlagRyzenADJConsoleTemperatureCheckRunning = false;
+        SettingsService.FlagRyzenAdjConsoleTemperatureCheckRunning = false;
         SettingsService.SaveSettings();
         LoadFanCurvesFromConfig(); // Загрузить кривые
         Init_Configs(); // Инициализация конфигов NBFC
@@ -240,8 +240,8 @@ public sealed partial class AdvancedКулерPage
             try
             {
                 var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" +
-                                     SettingsService.NBFCConfigXMLName + ".xml";
-                Config_Name1.Text = SettingsService.NBFCConfigXMLName;
+                                     SettingsService.NbfcConfigXmlName + ".xml";
+                Config_Name1.Text = SettingsService.NbfcConfigXmlName;
                 if (File.Exists(configFilePath))
                 {
                     // Загрузка XML-документа из файла
@@ -858,7 +858,7 @@ public sealed partial class AdvancedКулерPage
         var rowCounter = 0; // Счетчик строк в Grid
         try
         {
-            var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" + SettingsService.NBFCConfigXMLName +
+            var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" + SettingsService.NbfcConfigXmlName +
                                  ".xml";
             if (File.Exists(configFilePath))
             {

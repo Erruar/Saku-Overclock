@@ -121,7 +121,7 @@ public sealed partial class ProfileSwitcher : Window
 
         if (profileDesc?.Length > 26)
         {
-            profileDesc = profileDesc.Remove(26) + "...";
+            profileDesc = profileDesc[..26] + "...";
         }
         _instance.ProfileDesc.Text = profileDesc ?? string.Empty;
         
