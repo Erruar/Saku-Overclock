@@ -13,6 +13,11 @@
         <helpers:HexColorInverterConverter x:Key="HexColorInverterConverter" />
         <helpers:ColorToBrushConverter x:Key="ColorToBrushConverter" />
         <helpers:BooleanToGlyphConverter x:Key="BooleanToGlyphConverter" />
+        <DataTemplate x:Key="PresetTemplate" x:DataType="x:String">
+            <Border Width="190" Height="130" Background="{Binding ElementName=nudAutoReapply, Path=Background}" CornerRadius="10" Padding="10">
+                <TextBlock Text="{x:Bind}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" />
+            </Border>
+        </DataTemplate>
     </Page.Resources>
 
     <Grid Margin="-48,0,-40,0" x:Name="ContentArea" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200"> 
@@ -620,10 +625,13 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                         </TeachingTip>
                         <StackPanel Padding="0,0,0,10">
                             <TextBlock x:Name="Settings_Keybinds_Enable_Name" Text="Комбинации клавиш" x:Uid="Settings_Keybinds_Elements" />
-                            <StackPanel Width="355" HorizontalAlignment="Left" Margin="{StaticResource XSmallTopMargin}" Orientation="Vertical">
-                                <Border Height="70" CornerRadius="4" Background="{Binding ElementName=nudAutoReapply, Path=BorderBrush}">
+                            <StackPanel HorizontalAlignment="Stretch" Margin="0,10,100,0" Orientation="Vertical">
+                                <Border Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="15" HorizontalAlignment="Stretch" Height="50" Background="{Binding ElementName=nudAutoReapply, Path=Background}">
                                     <Grid>
-                                        <Button Margin="0,0,20,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Right">
+                                        <Button Margin="0,0,0,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Right">
+                                            <Button.RenderTransform>
+                                                <ScaleTransform CenterY="22" ScaleX="0.9" ScaleY="0.9"/>
+                                            </Button.RenderTransform>
                                             <StackPanel Margin="-5,-4,-5,-5" HorizontalAlignment="Stretch" Orientation="Horizontal">
                                                 <Border CornerRadius="4" HorizontalAlignment="Left" Width="50" Height="35" Background="{Binding ElementName=Settings_DiscordButton, Path=Background, Mode=OneWay}">
                                                     <TextBlock Text="Ctrl" Foreground="{Binding ElementName=Settings_DiscordText, Path=Foreground, Mode=OneWay}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="17"/>
@@ -636,8 +644,29 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                                                 </Border>
                                             </StackPanel>
                                         </Button>
-                                        <TextBlock Width="170" TextWrapping="WrapWholeWords" HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="20,0,0,0" x:Uid="Settings_Keybinds_Elements_Custom" Text="Switch between custom user profiles"/>
+                                        <TextBlock FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="SemiBold" Margin="20,0,0,0" x:Uid="Settings_Keybinds_Elements_Custom" Text="Switch between custom user profiles"/>
                                     </Grid>
+                                </Border>
+                                <Border Margin="0,10,0,0" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="15" HorizontalAlignment="Stretch" Background="{Binding ElementName=nudAutoReapply, Path=Background}">
+                                    <Grid HorizontalAlignment="Stretch">
+                                       
+                                        <StackPanel Padding="0,30,0,30" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
+                                            <FontIcon FontSize="40" Glyph="&#xE8D9;"/>
+                                            <TextBlock FontSize="16" FontWeight="Medium" Margin="20,10,0,0" Text="Нет избранных пресетов, но вы можете перетащить сюда нужные"/>
+                                        </StackPanel>
+                                    </Grid> 
+                                </Border>
+                                <Border Margin="0,10,0,0" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="15" HorizontalAlignment="Stretch" Background="{Binding ElementName=nudAutoReapply, Path=Background}">
+                                    <GridView HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,10,0,0" 
+    x:Name="PresetsGrid"
+    ItemTemplate="{StaticResource PresetTemplate}"
+                                        ItemsSource="{x:Bind Presets, Mode=OneWay}"
+    SelectionMode="Single"
+    CanDragItems="True"
+                                        CanReorderItems="True"
+    AllowDrop="True"
+    IsItemClickEnabled="True"  />
+
                                 </Border>
                                 <Border Margin="0,7,0,0" Height="70" CornerRadius="4" Background="{Binding ElementName=nudAutoReapply, Path=BorderBrush}">
                                     <Grid>
