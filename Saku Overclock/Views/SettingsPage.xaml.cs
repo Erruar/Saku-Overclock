@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -40,6 +41,18 @@ public sealed partial class SettingsPage
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
     private static readonly IRtssSettingsService RtssSettings = App.GetService<IRtssSettingsService>();
+    private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
+    public ObservableCollection<string> Presets
+    {
+        get;
+    } 
+        = 
+    [
+    "Пресет 1",
+    "Пресет 2",
+    "Пресет 3",
+    "Пресет 4"
+    ];
 
     public SettingsPage()
     {
@@ -79,11 +92,12 @@ public sealed partial class SettingsPage
             ReapplySafe.IsOn = AppSettings.ReapplySafeOverclock;
             ThemeLight.Visibility = AppSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
             ThemeCustomBg.IsEnabled = AppSettings.ThemeType > 7;
-            Settings_RTSS_Enable.IsOn = AppSettings.RTSSMetricsEnabled;
+            Settings_RTSS_Enable.IsOn = AppSettings.RtssMetricsEnabled;
             Settings_Keybinds_Enable.IsOn = AppSettings.HotkeysEnabled;
             RTSS_LoadAndApply();
             UpdateTheme_ComboBox();
-            NiIcon_LoadValues();
+            NiIcon_LoadValues(); 
+            LoadProfiles();
             await Task.Delay(390);
         }
         catch (Exception e)
@@ -91,7 +105,15 @@ public sealed partial class SettingsPage
             await LogHelper.TraceIt_TraceError(e.ToString());
         }
     }
-
+    private void LoadProfiles()
+    {
+        Presets.Clear();
+        ProfileLoad();
+        foreach (var profile in _profile)
+        {
+            Presets.Add(profile.profilename);
+        }
+    }
     private void UpdateTheme_ComboBox()
     {
         ThemeCombobox.Items.Clear();
@@ -619,6 +641,34 @@ public sealed partial class SettingsPage
         {
             _niicons = new NiIconsSettings();
             NiSave();
+        }
+    }
+    private static void ProfileSave()
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(GetFolderPath(SpecialFolder.Personal),
+                "SakuOverclock"));
+            File.WriteAllText(
+                GetFolderPath(SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                JsonConvert.SerializeObject(_profile, Formatting.Indented));
+        }
+        catch (Exception ex)
+        {
+            LogHelper.TraceIt_TraceError(ex.ToString());
+        }
+    }
+
+    private static void ProfileLoad()
+    {
+        try
+        {
+            _profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(
+                GetFolderPath(SpecialFolder.Personal) + @"\SakuOverclock\profile.json"))!;
+        }
+        catch (Exception ex)
+        { 
+            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
     #endregion
@@ -2728,7 +2778,7 @@ public sealed partial class SettingsPage
             return;
         }
 
-        AppSettings.RTSSMetricsEnabled = Settings_RTSS_Enable.IsOn;
+        AppSettings.RtssMetricsEnabled = Settings_RTSS_Enable.IsOn;
         AppSettings.SaveSettings();
         Settings_RTSS_Enable_Name.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
         RTTS_GridView.Visibility = Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
