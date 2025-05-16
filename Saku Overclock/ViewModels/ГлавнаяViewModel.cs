@@ -7,7 +7,7 @@ namespace Saku_Overclock.ViewModels;
 
 public partial class ГлавнаяViewModel : ObservableRecipient
 {
-    private const string Versioning = "CC-104"; // RC-9
+    private static readonly string Versioning = $"CC-{Assembly.GetExecutingAssembly().GetName().Version?.Revision}"; // RC-9
     public ГлавнаяViewModel()
     {
         _versionDescription = GetVersionDescription();
