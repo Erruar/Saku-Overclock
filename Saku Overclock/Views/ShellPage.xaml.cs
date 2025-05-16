@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -43,6 +44,10 @@ public sealed partial class ShellPage
     private bool _loaded = true; // Запустился ли UI поток приложения
     private bool _isNotificationPanelShow; // Флаг: Открыта ли панель уведомлений
     private int? _compareList; // Нет новых уведомлений - пока
+
+    private CancellationTokenSource? _applyDebounceCts;
+    private readonly object _applyDebounceLock = new();
+    private bool _applyScheduled = false;
 
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
@@ -167,12 +172,37 @@ public sealed partial class ShellPage
                 IsEnabled = false
             };
             itemz.Add(userProfiles);
+
             ProfileLoad();
+
+            if (_profile == null)
+            {
+                _profile = new Profile[1];
+                _profile[0] = new Profile();
+                ProfileSave();
+            }
+
             foreach (var profile in _profile)
             {
+                var securedProfile = profile;
+                if (profile == null) 
+                { 
+                    securedProfile = new Profile();  
+                    if (_profile.Length > 0)
+                    {
+                        _profile[0] = securedProfile;
+                        ProfileSave();
+                    }
+                    else
+                    {
+                        _profile = new Profile[1];
+                        _profile[0] = securedProfile;
+                        ProfileSave();
+                    }
+                }
                 var comboBoxItem = new ComboBoxItem
                 {
-                    Content = profile.profilename,
+                    Content = securedProfile.profilename,
                     IsEnabled = true
                 };
                 itemz.Add(comboBoxItem);
@@ -272,14 +302,14 @@ public sealed partial class ShellPage
         if (AppSettings.Preset == -1)
         {
             NextPremadeProfile_Activate(NextProfiles[activeProfile]);
-            (nextProfile, desc, icon, AppSettings.RyzenADJline, comboName) =
+            (nextProfile, desc, icon, AppSettings.RyzenAdjLine, comboName) =
                 PremadedProfiles[NextProfiles[activeProfile]];
         }
         else
         {
             AppSettings.Preset = -1;
             NextPremadeProfile_Activate(activeProfile);
-            (nextProfile, desc, icon, AppSettings.RyzenADJline, comboName) = PremadedProfiles[activeProfile];
+            (nextProfile, desc, icon, AppSettings.RyzenAdjLine, comboName) = PremadedProfiles[activeProfile];
         }
 
         desc = desc.GetLocalized();
@@ -475,9 +505,9 @@ public sealed partial class ShellPage
                 AppSettings.PremadeSpeedActivated = false;
                 AppSettings.PremadeMaxActivated = false;
                 AppSettings.Preset = -1;
-                AppSettings.RyzenADJline =
+                AppSettings.RyzenAdjLine =
                     " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=64 --slow-limit=6000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+                MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
                     AppSettings.ReapplyOverclockTimer);
             }
 
@@ -489,9 +519,9 @@ public sealed partial class ShellPage
                 AppSettings.PremadeSpeedActivated = false;
                 AppSettings.PremadeMaxActivated = false;
                 AppSettings.Preset = -1;
-                AppSettings.RyzenADJline =
+                AppSettings.RyzenAdjLine =
                     " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=64 --slow-limit=16000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+                MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
                     AppSettings.ReapplyOverclockTimer);
             }
 
@@ -503,9 +533,9 @@ public sealed partial class ShellPage
                 AppSettings.PremadeSpeedActivated = false;
                 AppSettings.PremadeMaxActivated = false;
                 AppSettings.Preset = -1;
-                AppSettings.RyzenADJline =
+                AppSettings.RyzenAdjLine =
                     " --tctl-temp=75 --stapm-limit=18000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+                MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
                     AppSettings.ReapplyOverclockTimer);
             }
 
@@ -517,9 +547,9 @@ public sealed partial class ShellPage
                 AppSettings.PremadeSpeedActivated = true;
                 AppSettings.PremadeMaxActivated = false;
                 AppSettings.Preset = -1;
-                AppSettings.RyzenADJline =
+                AppSettings.RyzenAdjLine =
                     " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=64 --slow-limit=20000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+                MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
                     AppSettings.ReapplyOverclockTimer);
             }
 
@@ -531,9 +561,9 @@ public sealed partial class ShellPage
                 AppSettings.PremadeSpeedActivated = false;
                 AppSettings.PremadeMaxActivated = true;
                 AppSettings.Preset = -1;
-                AppSettings.RyzenADJline =
+                AppSettings.RyzenAdjLine =
                     " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=64 --slow-limit=60000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
-                MainWindow.Applyer.Apply(AppSettings.RyzenADJline, false, AppSettings.ReapplyOverclock,
+                MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
                     AppSettings.ReapplyOverclockTimer);
             }
 
@@ -1227,9 +1257,9 @@ public sealed partial class ShellPage
             }
         }
 
-        AppSettings.RyzenADJline = adjline + " ";
+        AppSettings.RyzenAdjLine = adjline + " ";
         AppSettings.SaveSettings();
-        MainWindow.Applyer.Apply(AppSettings.RyzenADJline, saveInfo, AppSettings.ReapplyOverclock,
+        MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, saveInfo, AppSettings.ReapplyOverclock,
             AppSettings.ReapplyOverclockTimer);
     }
 
@@ -2101,6 +2131,7 @@ public sealed partial class ShellPage
 
     private nint HookCallbackAsync(int nCode, IntPtr wParam, IntPtr lParam) // Собственно сам callback метод
     {
+        CallNextHookEx(_hookId, nCode, wParam, lParam); // Передаем нажатие в следующее приложение
         // Проверяем следует ли перехватывать хук (первая половина), и то, что произошло именно событие нажатия на клавишу (вторая половина)
         if (nCode >= 0 && wParam == WmKeydown)
         {
@@ -2108,11 +2139,11 @@ public sealed partial class ShellPage
             if (GetAsyncKeyState(0x11) < 0 &&
                 IsAltPressed()) //0x11 - Control, 0x4000 - Alt
             {
-                _ = Task.Run(async () => await HandleKeyboardKeysCallback(virtualkeyCode));
+                HandleKeyboardKeysCallback(virtualkeyCode);
             }
         }
 
-        return CallNextHookEx(_hookId, nCode, wParam, lParam); // Передаем нажатие в следующее приложение
+        return 0x0;
     }
 
     private Task HandleKeyboardKeysCallback(int virtualkeyCode)
@@ -2122,14 +2153,11 @@ public sealed partial class ShellPage
             // Переключить между своими пресетами
             case VirtualKey.W:
                 {
-                    var nextCustomProfile = string.Empty;
-                    DispatcherQueue.TryEnqueue(() => // Используем диспатчер страницы
-                    {
-                        nextCustomProfile = NextCustomProfile_Switch();
-                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
-                            nextCustomProfile);
-                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
-                    });
+                    string nextCustomProfile;
+                    nextCustomProfile = NextCustomProfile_Switch();
+                    ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                            nextCustomProfile); 
+                    ScheduleApplyProfile();
 
                     MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
                         "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
@@ -2138,14 +2166,12 @@ public sealed partial class ShellPage
                 }
             // Переключить между готовыми пресетами
             case VirtualKey.P:
-                var nextPremadeProfile = string.Empty;
-                DispatcherQueue.TryEnqueue(() => // Используем диспатчер страницы
-                {
-                    nextPremadeProfile = NextPremadeProfile_Switch(out var icon, out var desc);
-                    ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
-                        nextPremadeProfile, icon, desc);
-                    MainWindow.Applyer.ApplyWithoutAdjLine(false);
-                });
+                string nextPremadeProfile;
+                nextPremadeProfile = NextPremadeProfile_Switch(out var icon, out var desc);
+                ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                        nextPremadeProfile, icon, desc); 
+
+                ScheduleApplyProfile();
 
                 MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
                     "Shell_ProfileChanging_Premade".GetLocalized() + $"{nextPremadeProfile}!",
@@ -2153,25 +2179,20 @@ public sealed partial class ShellPage
                 break;
             // Переключить состояние RTSS
             case VirtualKey.R:
-                if (AppSettings.RTSSMetricsEnabled)
+                if (AppSettings.RtssMetricsEnabled)
                 {
-                    DispatcherQueue.TryEnqueue(() => // Используем диспатчер страницы
-                    {
-                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                  
+                    ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                         "RTSS " + "Cooler_Service_Disabled/Content".GetLocalized(), "\uE7AC");
-                    });
 
-                    AppSettings.RTSSMetricsEnabled = false;
+                    AppSettings.RtssMetricsEnabled = false;
                 }
                 else
                 {
-                    DispatcherQueue.TryEnqueue(() => // Используем диспатчер страницы
-                    {
-                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                    ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                         "RTSS " + "Cooler_Service_Enabled/Content".GetLocalized(), "\uE7AC");
-                    });
 
-                    AppSettings.RTSSMetricsEnabled = true;
+                    AppSettings.RtssMetricsEnabled = true;
                 }
 
                 AppSettings.SaveSettings();
@@ -2181,6 +2202,46 @@ public sealed partial class ShellPage
                 break;
         }
         return Task.CompletedTask;
+    }
+
+    private void ScheduleApplyProfile()
+    {
+        lock (_applyDebounceLock)
+        {
+            _applyDebounceCts?.Cancel(); // Отменить предыдущий таймер
+            _applyDebounceCts = new CancellationTokenSource();
+            var token = _applyDebounceCts.Token;
+
+            // Если уже была одна отложенная задача и она выполнилась — разрешить следующую
+            if (_applyScheduled)
+            {
+                _applyScheduled = false;
+            }
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(2), token);
+
+                    lock (_applyDebounceLock)
+                    {
+                        if (!_applyScheduled)
+                        {
+                            _applyScheduled = true;
+                            DispatcherQueue.TryEnqueue(() => // Используем диспатчер страницы
+                            {
+                                MainWindow.Applyer.ApplyWithoutAdjLine(false); // Применить только один раз
+                            });
+                        }
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    // Повторное нажатие — перезапуск ожидания
+                }
+            });
+        }
     }
 
     #region Hook DLL Imports
