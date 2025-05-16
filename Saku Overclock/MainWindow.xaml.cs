@@ -279,6 +279,16 @@ public sealed partial class MainWindow
                     var profile = JsonConvert.DeserializeObject<Profile[]>(await File.ReadAllTextAsync(
                         Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                         @"\SakuOverclock\profile.json"))!;
+                    if (profile == null)
+                    {
+                        var _profile = new Profile[1];
+                        Directory.CreateDirectory(
+                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+                        File.WriteAllText(
+                            Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                            JsonConvert.SerializeObject(_profile));
+                        return;
+                    }
                     if (SettingsService.Preset < profile.Length && SettingsService.Preset != -1)
                     {
                         ShellPage.MandarinSparseUnitProfile(profile[SettingsService.Preset]);
@@ -331,7 +341,7 @@ public sealed partial class MainWindow
         private static readonly DispatcherTimer Timer = new() { Interval = TimeSpan.FromMilliseconds(3 * 1000) };
         private static EventHandler<object>? _tickHandler;
 
-        public static void ApplyWithoutAdjLine(bool saveinfo) => Apply(SettingsService.RyzenADJline, saveinfo,
+        public static void ApplyWithoutAdjLine(bool saveinfo) => Apply(SettingsService.RyzenAdjLine, saveinfo,
             SettingsService.ReapplyOverclock, SettingsService.ReapplyOverclockTimer);
 
         public static async void Apply(string ryzenAdJline, bool saveinfo, bool reapplyOverclock,
