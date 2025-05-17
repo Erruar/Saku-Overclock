@@ -115,7 +115,7 @@ The new version features a welcoming first-launch experience with smooth animati
 
 The image below showcases our improved main page and completely redesigned interface. Stay tuned - this release will be worth the wait!
 
-[![Product New Screen Shot][product-screenshot-new]](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/image-18.png)
+![Product New Screen Shot](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/image-18.png)
 
 
 ### Pictures
