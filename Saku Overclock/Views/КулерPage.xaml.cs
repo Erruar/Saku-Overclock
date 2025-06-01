@@ -10,9 +10,9 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
-using Windows.Foundation.Metadata;
-using Windows.UI.Text; 
 using Saku_Overclock.Wrappers;
+using Windows.Foundation.Metadata;
+using Windows.UI.Text;
 using Application = Microsoft.UI.Xaml.Application;
 using FileMode = System.IO.FileMode;
 
@@ -164,27 +164,52 @@ public sealed partial class КулерPage
         }
         finally
         {
-            if (AppSettings.NbfcServiceType == 2 || ServiceCombo.SelectedIndex == 2)
+
+            if (_selectedModeAsus)
             {
-                Cooler_Fan1_Manual.Value = AppSettings.NbfcFan1UserFanSpeedRpm;
-                Cooler_Fan2_Manual.Value = AppSettings.NbfcFan2UserFanSpeedRpm;
-
-                NbfcFanSetSpeed();
-                if (Cooler_Fan1_Manual.Value > 100)
+                if (AppSettings.AsusCoolerServiceType == 2 || ServiceCombo.SelectedIndex == 2)
                 {
-                    UpdatePageFanRpms();
-                    AppSettings.NbfcFan1UserFanSpeedRpm = 110.0;
-                }
-                else
-                {
-                    CpuFanRpm.Text = Cooler_Fan1_Manual.Value.ToString(CultureInfo.InvariantCulture) + "%";
-                    AppSettings.NbfcFlagConsoleCheckSpeedRunning = false;
-                }
+                    Cooler_Fan1_Manual.Value = AppSettings.AsusModeFan1UserFanSpeedRpm;
+                    Cooler_Fan2_Manual.Value = AppSettings.AsusModeFan2UserFanSpeedRpm;
 
-                AppSettings.SaveSettings();
+                    NbfcFanSetSpeed();
+                    if (Cooler_Fan1_Manual.Value > 100)
+                    {
+                        UpdatePageFanRpms();
+                        AppSettings.AsusModeFan1UserFanSpeedRpm = 110.0;
+                    }
+                    else
+                    {
+                        CpuFanRpm.Text = Cooler_Fan1_Manual.Value.ToString(CultureInfo.InvariantCulture) + "%"; 
+                    }
+
+                    AppSettings.SaveSettings();
+                }
+            }
+            else
+            {
+                if (AppSettings.NbfcServiceType == 2 || ServiceCombo.SelectedIndex == 2)
+                {
+                    Cooler_Fan1_Manual.Value = AppSettings.NbfcFan1UserFanSpeedRpm;
+                    Cooler_Fan2_Manual.Value = AppSettings.NbfcFan2UserFanSpeedRpm;
+
+                    NbfcFanSetSpeed();
+                    if (Cooler_Fan1_Manual.Value > 100)
+                    {
+                        UpdatePageFanRpms();
+                        AppSettings.NbfcFan1UserFanSpeedRpm = 110.0;
+                    }
+                    else
+                    {
+                        CpuFanRpm.Text = Cooler_Fan1_Manual.Value.ToString(CultureInfo.InvariantCulture) + "%";
+                        AppSettings.NbfcFlagConsoleCheckSpeedRunning = false;
+                    }
+
+                    AppSettings.SaveSettings();
+                }
             }
 
-            if (AppSettings.NbfcServiceType == 1 || ServiceCombo.SelectedIndex == 1)
+            if (AppSettings.AsusCoolerServiceType == 1 || AppSettings.NbfcServiceType == 1 || ServiceCombo.SelectedIndex == 1)
             {
                 UpdatePageFanRpms();
             }
@@ -347,10 +372,10 @@ public sealed partial class КулерPage
                 var fanCount = AsusWinIOWrapper.HealthyTable_FanCounts();
                 if (fanCount == -1)
                 {
-                    _unavailableFlag = true;
+                    /*_unavailableFlag = true;
                     AsusOptions_Button.IsEnabled = false;
                     AsusUnavailable.Visibility = Visibility.Visible;
-                    ToolTipService.SetToolTip(AsusUnavailable, "Упс... Кажется ваше устройство не поддерживает этот тип управления кулерами!");
+                    ToolTipService.SetToolTip(AsusUnavailable, "Cooler_AsusModeUnsupportedSign".GetLocalized());*/
                 }
                 else
                 {
@@ -441,6 +466,19 @@ public sealed partial class КулерPage
     #endregion
 
     #region Event Handlers 
+
+    private void EnterOneCoolerMode(bool enter = true)
+    {
+        CoolerFansGrid.ColumnDefinitions.Clear();
+        CoolerFansGrid.ColumnDefinitions.Add(new ColumnDefinition());
+
+        if (!enter)
+        {
+            CoolerFansGrid.ColumnDefinitions.Add(new ColumnDefinition());
+        }
+
+        CoolerFan2.Visibility = enter ? Visibility.Collapsed : Visibility.Visible;
+    }
 
     private void SelectOnly(ToggleButton name)
     {
@@ -738,6 +776,11 @@ public sealed partial class КулерPage
 
     private void StartAsusWinIOUpdate()
     {
+        if (_fanCount == 1)
+        {
+            EnterOneCoolerMode();
+        }
+
         _rpmUpdateTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromMilliseconds(500)
@@ -1045,6 +1088,25 @@ public sealed partial class КулерPage
         _selectedModeAsus = AppSettings.IsNbfcModeEnabled;
 
         Cooler_Config.Visibility = _selectedModeAsus ? Visibility.Collapsed : Visibility.Visible;
+        if (NbfcUnavailable.Visibility == Visibility.Visible && _selectedModeAsus)
+        {
+            NbfcUnavailable.Visibility = Visibility.Collapsed;
+            CoolerManagementGrid.Visibility = Visibility.Visible;
+            CoolerManagementTypeGrid.Visibility = Visibility.Visible;
+            Cooler_Curve_Fan1.Visibility = Visibility.Visible;
+            Cooler_Curve_Fan2.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            if (_isNbfcNotLoaded)
+            {
+                NbfcUnavailable.Visibility = Visibility.Visible;
+                CoolerManagementGrid.Visibility = Visibility.Collapsed;
+                CoolerManagementTypeGrid.Visibility = Visibility.Collapsed;
+                Cooler_Curve_Fan1.Visibility = Visibility.Collapsed;
+                Cooler_Curve_Fan2.Visibility = Visibility.Collapsed;
+            }
+        }
 
     }
 
@@ -1073,17 +1135,38 @@ public sealed partial class КулерPage
 
                 if (fanNumber == 0)
                 {
-                    AppSettings.NbfcFan1UserFanSpeedRpm = fanValue;
+                    if (_selectedModeAsus)
+                    {
+                        AppSettings.AsusModeFan1UserFanSpeedRpm = fanValue;
+                    }
+                    else
+                    {
+                        AppSettings.NbfcFan1UserFanSpeedRpm = fanValue;
+                    }
 
                     if (CurveCombo.SelectedIndex == 4)
                     {
-                        AppSettings.NbfcFan2UserFanSpeedRpm = fanValue;
+                        if (_selectedModeAsus)
+                        {
+                            AppSettings.AsusModeFan2UserFanSpeedRpm = fanValue;
+                        }
+                        else
+                        {
+                            AppSettings.NbfcFan2UserFanSpeedRpm = fanValue;
+                        }
                         Cooler_Fan2_Manual.Value = fanValue;
                     }
                 }
                 else
                 {
-                    AppSettings.NbfcFan2UserFanSpeedRpm = fanValue;
+                    if (_selectedModeAsus)
+                    {
+                        AppSettings.AsusModeFan2UserFanSpeedRpm = fanValue;
+                    }
+                    else
+                    {
+                        AppSettings.NbfcFan2UserFanSpeedRpm = fanValue;
+                    }
                 }
 
                 fanRpmTextBlock.Text = fanInvar + "%";
@@ -1105,11 +1188,21 @@ public sealed partial class КулерPage
 
     #region Asus WinIo Voids
 
-    private static void SetFanSpeed(byte value, byte fanIndex = 0)
+    #region Set Fan Speed
+
+    private static void SetFanSpeeds(int percent)
     {
-        AsusWinIOWrapper.HealthyTable_SetFanIndex(fanIndex);
-        AsusWinIOWrapper.HealthyTable_SetFanTestMode((char)(value > 0 ? 0x01 : 0x00));
-        AsusWinIOWrapper.HealthyTable_SetFanPwmDuty(value);
+        var value = (byte)(percent / 100.0f * 255);
+        SetFanSpeeds(value);
+    }
+    private static void SetOneFanSpeed(int percent, byte fan = 0)
+    {
+        var value = (byte)(percent / 100.0f * 255);
+        if (_fanCount == -1 && _unavailableFlag == false)
+        {
+            _fanCount = AsusWinIOWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
+        }
+        SetFanSpeed(value, fan);
     }
 
     private static async void SetFanSpeeds(byte value)
@@ -1133,24 +1226,16 @@ public sealed partial class КулерPage
         }
     }
 
-    private static void SetFanSpeeds(int percent)
+    private static void SetFanSpeed(byte value, byte fanIndex = 0)
     {
-        var value = (byte)(percent / 100.0f * 255);
-        SetFanSpeeds(value);
+        AsusWinIOWrapper.HealthyTable_SetFanIndex(fanIndex);
+        AsusWinIOWrapper.HealthyTable_SetFanTestMode((char)(value > 0 ? 0x01 : 0x00));
+        AsusWinIOWrapper.HealthyTable_SetFanPwmDuty(value);
     }
 
-    private static int GetFanSpeed(byte fanIndex = 0)
-    {
-        if (_setFanIndex != fanIndex)
-        {
-            AsusWinIOWrapper.HealthyTable_SetFanIndex(fanIndex);
-            _setFanIndex =
-                fanIndex; // Лишний раз не использовать, после использования задать значение, которое было использовано
-        }
+    #endregion
 
-        var fanSpeed = AsusWinIOWrapper.HealthyTable_FanRPM();
-        return fanSpeed;
-    }
+    #region Get Fan Speed
 
     private static List<int> GetFanSpeeds()
     {
@@ -1174,7 +1259,20 @@ public sealed partial class КулерPage
         return fanSpeeds;
     }
 
-    private static int HealthyTable_FanCounts() => AsusWinIOWrapper.HealthyTable_FanCounts();
+    private static int GetFanSpeed(byte fanIndex = 0)
+    {
+        if (_setFanIndex != fanIndex)
+        {
+            AsusWinIOWrapper.HealthyTable_SetFanIndex(fanIndex);
+            _setFanIndex =
+                fanIndex; // Лишний раз не использовать, после использования задать значение, которое было использовано
+        }
 
-    #endregion 
+        var fanSpeed = AsusWinIOWrapper.HealthyTable_FanRPM();
+        return fanSpeed;
+    }
+
+    #endregion
+
+    #endregion
 }

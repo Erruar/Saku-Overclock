@@ -21,8 +21,8 @@
     </Page.Resources>
 
     <Grid Margin="-48,0,-40,0" x:Name="ContentArea" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200"> 
-        <TextBlock x:Uid="Settings_Name" Text="Настройки программы" FontSize="30" Margin="-1,-65,0,0"></TextBlock>
-        <Pivot Margin="-10,-40,0,0">
+        <TextBlock x:Uid="Settings_Name" Text="Настройки программы" FontSize="30" Margin="-1,-95,0,0"></TextBlock>
+        <Pivot Margin="-10,-57,0,0">
             <PivotItem >
                 <PivotItem.Header>
                     <StackPanel Orientation="Horizontal">
@@ -32,6 +32,7 @@
                 </PivotItem.Header>
                 <ScrollViewer Margin="-1,-2,-10,0">
                     <StackPanel Orientation="Vertical">
+                        <Border Height="3" Background="Transparent"/>
                         <TextBlock FontSize="20" FontWeight="SemiBold" x:Uid="Settings_AppBeh">Поведение приложения</TextBlock>
                         <TextBlock Margin="{StaticResource XSmallTopMargin}"   x:Uid="Settings_AppStart" >Параметры запуска</TextBlock>
                         <Grid HorizontalAlignment="Left" Width="190" CornerRadius="15">
@@ -76,6 +77,7 @@
                 </PivotItem.Header>
                 <ScrollViewer Margin="0,-2,-10,0">
                     <StackPanel>
+                        <Border Height="3" Background="Transparent"/>
                         <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
                         <TextBlock x:Uid="Settings_Theme" Margin="{StaticResource XSmallTopMargin}"/>
                         <StackPanel Margin="{StaticResource XSmallTopMargin}">
@@ -196,6 +198,7 @@
                 </PivotItem.Header>
                 <ScrollViewer Margin="0,-2,-10,0">
                     <StackPanel Orientation="Vertical">
+                        <Border Height="3" Background="Transparent"/>
                         <TextBlock x:Uid="Settings_RTSS_Updater" Style="{ThemeResource SubtitleTextBlockStyle}" />
                         <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
                             <ToggleSwitch x:Uid="Settings_RTSS_Enable" x:Name="Settings_RTSS_Enable" Toggled="Settings_RTSS_Enable_Toggled">Мониторинг в играх с RTSS</ToggleSwitch>
@@ -613,6 +616,7 @@ Orientation="Horizontal"/>
                 </PivotItem.Header>
                 <ScrollViewer Margin="0,-2,-10,0">
                     <StackPanel Orientation="Vertical">
+                        <Border Height="3" Background="Transparent"/>
                         <TextBlock x:Uid="Settings_Keybinds" Style="{ThemeResource SubtitleTextBlockStyle}" Text="Сочетания клавиш" />
                         <ToggleSwitch x:Uid="Settings_Keybinds_Enable" IsOn="True" Margin="{StaticResource XSmallTopMargin}" x:Name="Settings_Keybinds_Enable" Toggled="Settings_Keybinds_Enable_Toggled">Использовать комбинации клавиш</ToggleSwitch>
                         <TeachingTip x:Name="Settings_Keybinds_Tooltip"
@@ -718,6 +722,7 @@ Subtitle="error in line 257 of org.sakuoverclock.app">
                 </PivotItem.Header>
                 <ScrollViewer Margin="0,-2,-10,0">
                     <StackPanel VerticalAlignment="Top" Margin="0,6,0,0" HorizontalAlignment="Center">
+                        <Border Height="3" Background="Transparent"/>
                         <ImageIcon Source="/Assets/SplashScreen.scale-200.png" Width="200" Height="200" HorizontalAlignment="Center"></ImageIcon>
                         <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
                         <TextBlock HorizontalAlignment="Center" Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />

@@ -36,6 +36,7 @@ public sealed partial class ГлавнаяPage
     private bool _waitForTip;
     private bool _waitForCheck;
     private bool _waitingForCursorFlag;
+    private string _doubleClickApplyPrev = string.Empty;
 
     public ГлавнаяPage()
     {
@@ -83,6 +84,7 @@ public sealed partial class ГлавнаяPage
             var toggleButton = new ToggleButton
             {
                 Margin = new Thickness(0, 3, 0, 0),
+                CornerRadius = new CornerRadius(16),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Left,
                 IsChecked = isChecked,
@@ -511,6 +513,45 @@ public sealed partial class ГлавнаяPage
     #endregion
 
     #region Event Handlers
+    private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        var isCompact = e.NewSize.Height < 400;
+        var (Main, Device, Segments, Frequent) = isCompact ? CompactGridMargins : NormalGridMargins;
+
+        if (MainGrid.Margin != Main)
+        {
+            MainGrid.Margin = Main;
+        }
+
+        if (DeviceInfoSign.Margin != Device)
+        {
+            DeviceInfoSign.Margin = Device;
+        }
+
+        if (SegmentsGrid.Margin != Segments)
+        {
+            SegmentsGrid.Margin = Segments;
+        }
+
+        if (FriquentlyUsedGrid.Margin != Frequent)
+        {
+            FriquentlyUsedGrid.Margin = Frequent;
+        }
+    }
+    private static readonly (Thickness Main, Thickness Device, Thickness Segments, Thickness Frequent) CompactGridMargins =
+    (
+        new Thickness( 00, -3, 0, 0),
+        new Thickness( 14,  2, 0, 0),
+        new Thickness(-10,  2, 0, 0),
+        new Thickness(-10,  2, 0, 3)
+    );
+    private static readonly (Thickness Main, Thickness Device, Thickness Segments, Thickness Frequent) NormalGridMargins =
+    (
+        new Thickness( 00, 20, 0, 0),
+        new Thickness( 14, 16, 0, 0),
+        new Thickness(-10, 08, 0, 0),
+        new Thickness(-10, 05, 0, 3)
+    );
 
     private void HyperLink_Click(object sender, RoutedEventArgs e)
     {
@@ -564,6 +605,7 @@ public sealed partial class ГлавнаяPage
             {
                 content.HorizontalAlignment = HorizontalAlignment.Center;
                 content.Opacity = 0.8;
+                content.Margin = new Thickness(0,-20,0,0);
             }
         }
     }
@@ -591,6 +633,29 @@ public sealed partial class ГлавнаяPage
                     button.IsChecked = false;
                 }
             }
+            var name = string.Empty;
+            var desc = string.Empty;
+            var icon = string.Empty;
+            var textBlocks = VisualTreeHelper.FindVisualChildren<TextBlock>((sender as ToggleButton)!);
+            foreach (var block in textBlocks)
+            {
+                if (block.FontWeight == new FontWeight(700))
+                {
+                    name = block.Text;
+                }
+                else
+                {
+                    if (block.TextWrapping == TextWrapping.Wrap)
+                    {
+                        desc = block.Text;
+                    }
+                }
+            }
+            if (_doubleClickApplyPrev == name + desc)
+            {
+                Apply_Click(null, null);
+            }
+            _doubleClickApplyPrev = name + desc;
 
             await Task.Delay(20);
             _waitForCheck = false;
@@ -601,7 +666,7 @@ public sealed partial class ГлавнаяPage
         }
     }
 
-    private async void Apply_Click(object sender, RoutedEventArgs e)
+    private async void Apply_Click(object? sender, RoutedEventArgs? e)
     {
         var toggleButtons = VisualTreeHelper.FindVisualChildren<ToggleButton>(Preset_Pivot);
         foreach (var button in toggleButtons)

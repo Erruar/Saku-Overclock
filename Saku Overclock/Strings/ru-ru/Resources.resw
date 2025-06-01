@@ -3208,4 +3208,145 @@ Asus. Может не поддерживаться на
   <data name="Cooler_Curve_Fixed_Range.Content" xml:space="preserve">
     <value>Различный фиксированный</value>
   </data>
+  <data name="Cooler_AsusModeUnsupportedSign" xml:space="preserve">
+    <value>Упс... Кажется ваше устройство не поддерживает этот тип управления кулерами!</value>
+  </data>
+  <data name="Cooler_InstallNbfc.Content" xml:space="preserve">
+    <value>Установить NBFC</value>
+  </data>
+  <data name="Cooler_NbfcIsntInstalled.Text" xml:space="preserve">
+    <value>Вы уверены что NBFC установлен?</value>
+  </data>
+  <data name="Cooler_NbfcNoConfigFiles.Content" xml:space="preserve">
+    <value>Файлы конфигурации не найдены</value>
+  </data>
+  <data name="Param_Apply_DevOptions.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Применить параметры разработчика
+Применяет только выбранные параметры
+разработчика, будь то отправка Smu
+команд, запись P-State или функции Smu.
+Установленные настройки P-State, Smu
+функции и Smu заметки будут сохранены.</value>
+  </data>
+  <data name="Param_DeveloperOptions.Text" xml:space="preserve">
+    <value>Параметры для разработчиков</value>
+  </data>
+  <data name="Param_DeveloperOptionsEnter.Text" xml:space="preserve">
+    <value>Войти в режим разработчика</value>
+  </data>
+  <data name="Param_DeveloperOptionsExit.Text" xml:space="preserve">
+    <value>Вернуться к параметрам разгона</value>
+  </data>
+  <data name="Param_DeveloperOptionsExitSign.Text" xml:space="preserve">
+    <value>Покинуть режим разработчика</value>
+  </data>
+  <data name="Param_DeveloperOptions_CommandResult" xml:space="preserve">
+    <value>вернула результат: </value>
+  </data>
+  <data name="Param_DeveloperOptions_Name.Text" xml:space="preserve">
+    <value>Параметры разработчика</value>
+  </data>
+  <data name="Param_DeveloperOptions_ResultSaved" xml:space="preserve">
+    <value>
+Результат сохранён в уведомлениях</value>
+  </data>
+  <data name="Param_DeveloperOptions_SmuCommand" xml:space="preserve">
+    <value>Команда</value>
+  </data>
+  <data name="Preset_SavedProfiles.Text" xml:space="preserve">
+    <value>Сохранённые профили</value>
+  </data>
+  <data name="Preset_SavedProfilesAddNew.Text" xml:space="preserve">
+    <value>Добавить </value>
+  </data>
+  <data name="Preset_UndervoltingDesc.Text" xml:space="preserve">
+    <value>Снижает напряжение на вашем процессоре, для лучшей производительности при том же потреблении</value>
+  </data>
+  <data name="Param_Profile_Delete_Profile.Content" xml:space="preserve">
+    <value>Удалить пресет</value>
+  </data>
+  <data name="Param_Profile_New_Desc_Add.PlaceholderText" xml:space="preserve">
+    <value>Новое описание...</value>
+  </data>
+  <data name="Preset_BetterTurbo.Text" xml:space="preserve">
+    <value>Усиление турбобуста</value>
+  </data>
+  <data name="Preset_BetterTurboDesc.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Усиление турбобуста
+Вы можете настроить поведение процессора при 
+кратковременной и долговременной нагрузке, 
+улучшив его способность сохранять частоту и 
+мощность этим параметром
+
+Эти параметры вашего пресета будут изменены:
+Тик медленного разгона
+Тик быстрого разгона</value>
+  </data>
+  <data name="Preset_CurveOptions_Disabled.Text" xml:space="preserve">
+    <value>Выкл</value>
+  </data>
+  <data name="Preset_CurveOptions_Effective.Text" xml:space="preserve">
+    <value>Средний</value>
+  </data>
+  <data name="Preset_CurveOptions_Light.Text" xml:space="preserve">
+    <value>Лёгкий</value>
+  </data>
+  <data name="Preset_DetailSettingsMode.Text" xml:space="preserve">
+    <value>Дополнительные функции</value>
+  </data>
+  <data name="Preset_IgpuAuto.Content" xml:space="preserve">
+    <value>Авто</value>
+  </data>
+  <data name="Preset_IgpuMaxed.Content" xml:space="preserve">
+    <value>Максимум</value>
+  </data>
+  <data name="Preset_IgpuOptimization.Text" xml:space="preserve">
+    <value>Улучшение iGPU</value>
+  </data>
+  <data name="Preset_IgpuOptimizationDesc.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Улучшение iGPU
+Увеличивает производительность встроенной графики 
+(iGPU) благодаря безопасному разгону частоты 
+
+Эти параметры вашего пресета будут изменены:
+Минимальная частота iGPU
+Максимальная частота iGPU/Зафиксировать частоту iGPU</value>
+  </data>
+  <data name="Preset_IgpuStable.Content" xml:space="preserve">
+    <value>Стабильное</value>
+  </data>
+  <data name="Preset_QuickSettingsMode.Text" xml:space="preserve">
+    <value>Быстрая настройка</value>
+  </data>
+  <data name="Preset_SmartTdp.Text" xml:space="preserve">
+    <value>Умная оптимизация TDP</value>
+  </data>
+  <data name="Preset_TdpLimit.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Лимит TDP и Умная оптимизация TDP
+Ограничивает тепловыделение процессора (TDP) до 
+заданного уровня. Это влияет на максимальную 
+производительность и нагрев: чем ниже лимит тем 
+холоднее и энергоэффективнее работает ноутбук, 
+но с возможным снижением скорости. Умная 
+оптимизация TDP позволяет процессору превышать
+установленный вами лимит, для компенсации 
+снижения скорости.
+
+Эти параметры вашего пресета будут изменены:
+Лимит мощности STAPM/Общий лимит потребления
+Реальная мощность
+Средняя мощность</value>
+  </data>
+  <data name="Preset_TdpLimitText.Text" xml:space="preserve">
+    <value>Лимит TDP</value>
+  </data>
+  <data name="Preset_TurboAuto.Text" xml:space="preserve">
+    <value>Авто</value>
+  </data>
+  <data name="Preset_TurboHeavy.Text" xml:space="preserve">
+    <value>Сильное</value>
+  </data>
+  <data name="Preset_TurboSmart.Text" xml:space="preserve">
+    <value>Умное</value>
+  </data>
 </root>

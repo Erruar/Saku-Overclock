@@ -53,9 +53,9 @@
     </Page.Resources>
     <!--Pages can be added as references or inline-->
     <Grid x:Name="ContentArea" Margin="-48,0,-28,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
-        <TextBlock Text="Advanced cooler tweaking" x:Uid="AdvancedCooler_Page" FontSize="30" Margin="0,-65,0,0"></TextBlock>
+        <TextBlock Text="Advanced cooler tweaking" x:Uid="AdvancedCooler_Page" FontSize="30" Margin="0,-95,0,0"></TextBlock>
         <ContentControl HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-            <TabView x:Name="MainTab" Background="{ThemeResource LayerOnMicaBaseAltFillColorTransparentBrush}" AddTabButtonClick="Tabs_AddTabButtonClick" PointerMoved="TabView_PointerMoved" TabCloseRequested="Tabs_TabCloseRequested" CloseButtonOverlayMode="OnPointerOver" TabWidthMode="SizeToContent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+            <TabView Margin="0,-55,0,0" x:Name="MainTab" Background="{ThemeResource LayerOnMicaBaseAltFillColorTransparentBrush}" AddTabButtonClick="Tabs_AddTabButtonClick" PointerMoved="TabView_PointerMoved" TabCloseRequested="Tabs_TabCloseRequested" CloseButtonOverlayMode="OnPointerOver" TabWidthMode="SizeToContent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                 <TabView.TabItems>
                     <TabViewItem Header="Readme" x:Name="Example_1Tab">
                         <TabViewItem.IconSource>

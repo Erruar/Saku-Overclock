@@ -16,8 +16,8 @@
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
         <Button x:Name="HiddenDisabledButton" IsEnabled="False" Visibility="Collapsed"/>
         <Button x:Name="HiddenAccentButton" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed"/>
-        <TextBlock x:Uid="Cooler_Name" Text="Пресеты" FontSize="30" Margin="0,-65,0,0"></TextBlock>
-        <Grid HorizontalAlignment="Stretch" Margin="0,-24,0,0" CornerRadius="8">
+        <TextBlock x:Uid="Cooler_Name" Text="Пресеты" FontSize="30" Margin="0,-95,0,0"></TextBlock>
+        <Grid HorizontalAlignment="Stretch" Margin="0,-44,0,0" CornerRadius="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -29,26 +29,26 @@
                         <RowDefinition Height="62"/>
                     </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0" Margin="0,0,0,0" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
+                    <Grid Grid.Row="0" Margin="0,0,0,0" CornerRadius="16" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
                         <ScrollViewer Margin="0,0,-20,-20" Padding="0,0,20,20">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <Grid Grid.Row="0">
+                                <Grid Grid.Row="0" x:Name="CoolerFansGrid">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <Grid x:Name="GridStackSizer" Grid.Column="0">
+                                    <Grid x:Name="CoolerFan1" Grid.Column="0">
                                         <Border Margin="-5,-25,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                             <Grid>
                                                 <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
                                                     <TextBlock FontWeight="Bold" Foreground="White" FontSize="20" HorizontalAlignment="Center" x:Name="CpuFanRpm" Text="N/A"/>
                                                     <TextBlock FontStyle="Italic" Foreground="White" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,20,0,0" Text="RPM"/>
                                                 </Grid>
-                                                <Button VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="30" Margin="5,0,0,40" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
+                                                <Button CornerRadius="9" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="30" Margin="5,0,0,40" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
                                                     <TextBlock Foreground="White" FontWeight="Bold" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Center" x:Name="CpuFanTemp" Margin="0,0,0,0" Text="CPU Fan"/>
                                                 </Button>
                                             </Grid>
@@ -59,14 +59,14 @@ Stretch="Uniform" />
                                             </Border.Background>
                                         </Border>
                                     </Grid>
-                                    <Grid Grid.Column="1">
+                                    <Grid Grid.Column="1" x:Name="CoolerFan2">
                                         <Border Margin="0,-25,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                             <Grid>
                                                 <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
                                                     <TextBlock FontWeight="Bold" Foreground="White" FontSize="20" HorizontalAlignment="Center" x:Name="GpuFanRpm" Text="N/A"/>
                                                     <TextBlock FontStyle="Italic" Foreground="White" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,20,0,0" Text="RPM"/>
                                                 </Grid>
-                                                <Button VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="30" Margin="5,0,0,40" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
+                                                <Button CornerRadius="9" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="30" Margin="5,0,0,40" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
                                                     <TextBlock Foreground="White" FontWeight="Bold" FontSize="16" VerticalAlignment="Bottom" HorizontalAlignment="Center" x:Name="GpuFanTemp" Margin="0,0,0,0" Text="GPU Fan"/>
                                                 </Button>
                                             </Grid>
@@ -85,8 +85,8 @@ Stretch="Uniform" />
                                             <TextBlock FontWeight="SemiBold" Text="TDP"/>
                                             <TextBlock FontWeight="SemiBold" x:Name="TdpLimitSensor_Text" Text="20W"/>
                                         </StackPanel>
-                                        <TextBlock Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}" Margin="5,-8,0,0" VerticalAlignment="Top" Text="18" FontWeight="Bold" FontSize="38" x:Name="TdpValueSensor_Text"/>
-                                        <TextBlock Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}" Margin="1,14,0,0" Text="W" VerticalAlignment="Center"/>
+                                        <TextBlock Margin="5,-8,0,0" VerticalAlignment="Top" Text="18" FontWeight="Bold" FontSize="38" x:Name="TdpValueSensor_Text"/>
+                                        <TextBlock Margin="1,14,0,0" Text="W" VerticalAlignment="Center"/>
                                     </StackPanel>
 
                                     <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="40,5,0,0">
@@ -99,8 +99,8 @@ Stretch="Uniform" />
                                         <FontIcon FontSize="25" Glyph="&#xF7B0;" Margin="0,-3,0,0"/>
                                         <StackPanel Orientation="Vertical" Margin="7,0,0,5" VerticalAlignment="Bottom">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock x:Name="CpuCurrentSensor_Text" Margin="4,-8,0,0" FontWeight="Bold" FontSize="38" Text="44" Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}"/>
-                                                <TextBlock Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}" Margin="1,19,0,0" VerticalAlignment="Center" Text="A"/>
+                                                <TextBlock x:Name="CpuCurrentSensor_Text" Margin="4,-8,0,0" FontWeight="Bold" FontSize="38" Text="44"/>
+                                                <TextBlock Margin="1,19,0,0" VerticalAlignment="Center" Text="A"/>
                                             </StackPanel> 
                                         </StackPanel>
                                     </StackPanel>
@@ -109,15 +109,15 @@ Stretch="Uniform" />
                         </ScrollViewer> 
                     </Grid>
 
-                    <Grid Grid.Row="1" Margin="0,10,0,2" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
+                    <Grid Grid.Row="1" Margin="0,10,0,2" CornerRadius="16" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel Margin="23,-2,0,0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Vertical">
+                        <StackPanel Margin="17,-2,0,0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Vertical">
                             <TextBlock FontWeight="SemiBold" x:Uid="Preset_AdvancedMode" FontSize="16" Text="Расширенный режим"/>
                         </StackPanel>
-                        <Button Grid.Column="1" Style="{StaticResource AccentButtonStyle}" x:Uid="Cooler_Advanced" HorizontalAlignment="Stretch" x:Name="TryAdvancedButton" CornerRadius="16" Margin="10,0,23,0" Click="AdvancedCooler_Click">
+                        <Button Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Grid.Column="1" x:Uid="Cooler_Advanced" HorizontalAlignment="Stretch" x:Name="TryAdvancedButton" CornerRadius="16" Margin="10,0,12,0" Click="AdvancedCooler_Click">
                             <TextBlock x:Uid="Preset_AdvancedModeTry" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Попробовать" FontWeight="SemiBold"/>
                         </Button>
                     </Grid>
@@ -125,7 +125,7 @@ Stretch="Uniform" />
                 </Grid>
             </Grid>
 
-            <Grid Grid.Column="1" Margin="10,0,10,7" CornerRadius="8" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=Discrd, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
+            <Grid Grid.Column="1" Margin="10,0,10,7" CornerRadius="16" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=Discrd, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
                
                 <Grid Grid.Row="0">
                     <Grid Margin="23,17,23,10" VerticalAlignment="Top">
@@ -138,10 +138,12 @@ Stretch="Uniform" />
                             <ScrollViewer Margin="0,0,-20,-20" Padding="0,0,20,20">
                                 <StackPanel Orientation="Vertical">
                                     <StackPanel Visibility="Visible" Orientation="Horizontal" Margin="0,4,0,4">
-                                        <ToggleButton Click="ModeOptions_Button_Click" x:Name="NbfcOptions_Button" CornerRadius="6" IsChecked="True">
+                                        <ToggleButton Click="ModeOptions_Button_Click" x:Name="NbfcOptions_Button" CornerRadius="9" IsChecked="True" Shadow="{ThemeResource SharedShadow}" 
+                                                      Translation="0,0,14">
                                             <TextBlock Margin="0,-2,0,-2" Text="Универсальный NBFC" x:Uid="Cooler_SelectedMode_nbfc" FontWeight="SemiBold"/>
                                         </ToggleButton>
-                                        <ToggleButton Click="ModeOptions_Button_Click" x:Name="AsusOptions_Button" CornerRadius="6" Margin="15,0,0,0">
+                                        <ToggleButton Click="ModeOptions_Button_Click" x:Name="AsusOptions_Button" CornerRadius="9" Margin="15,0,0,0" Shadow="{ThemeResource SharedShadow}" 
+                                                      Translation="0,0,14">
                                             <TextBlock Margin="0,-2,0,-2" Text="Ноутбуки Asus" x:Uid="Cooler_SelectedMode_asus" FontWeight="SemiBold"/>
                                         </ToggleButton>
                                         <FontIcon Glyph="&#xE7BA;" x:Name="AsusUnavailable" Visibility="Collapsed" Margin="-10,-20,0,0">
@@ -158,7 +160,7 @@ Stretch="Uniform" />
                                             </Grid.RowDefinitions> 
                                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,3,0,0">
                                                 <TextBlock x:Uid="Cooler_Config" Text="Сохранённые конфиги" FontSize="20"></TextBlock>
-                                                <Button Margin="5,-4,0,0" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" VerticalAlignment="Bottom" Click="Suggest_Click" x:Name="Suggest" x:Uid="Cooler_Suggest" Height="40" Width="40" ToolTipService.ToolTip="Suggest">
+                                                <Button CornerRadius="12" Margin="5,-4,0,0" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" VerticalAlignment="Bottom" Click="Suggest_Click" x:Name="Suggest" x:Uid="Cooler_Suggest" Height="40" Width="40" ToolTipService.ToolTip="Suggest">
                                                     <Button.RenderTransform>
                                                         <ScaleTransform ScaleX="0.6" ScaleY="0.6" CenterX="20" CenterY="20"/>
                                                     </Button.RenderTransform>
@@ -176,15 +178,15 @@ Stretch="Uniform" />
                                                 </TeachingTip>
                                             </StackPanel>
                                             <Grid Grid.Row="1" Margin="2,7,2,0">
-                                                <ComboBox SelectedIndex="0" CornerRadius="4" Style="{ThemeResource AcrylicComboBoxStyle}" x:Name="Selfan" Height="30" HorizontalAlignment="Stretch" SelectionChanged="Selfan_SelectionChanged">
-                                                    <ComboBoxItem>Файлы конфигурации не найдены</ComboBoxItem>
+                                                <ComboBox SelectedIndex="0" CornerRadius="9" Style="{ThemeResource AcrylicComboBoxStyle}" x:Name="Selfan" Height="30" HorizontalAlignment="Stretch" SelectionChanged="Selfan_SelectionChanged">
+                                                    <ComboBoxItem x:Uid="Cooler_NbfcNoConfigFiles">Файлы конфигурации не найдены</ComboBoxItem>
                                                 </ComboBox>
-                                                <Border CornerRadius="4" VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Stretch" Margin="-1,0,-1,0" Height="32" />
+                                                <Border CornerRadius="9" VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Stretch" Margin="-1,0,-1,0" Height="32" />
                                             </Grid>
                                         </Grid>
                                         <Grid x:Name="NbfcUnavailable" Visibility="Collapsed" HorizontalAlignment="Stretch" Margin="0,10,0,0">
-                                            <TextBlock FontWeight="SemiBold" HorizontalAlignment="Center" Text="Вы уверены что NBFC установлен?"/>
-                                            <Button Click="InstallNbfc_Click" CornerRadius="15" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Center" FontWeight="Bold" Style="{StaticResource AccentButtonStyle}" Margin="0,30,0,0" Content="Установить NBFC"/>
+                                            <TextBlock FontWeight="SemiBold" HorizontalAlignment="Center" x:Uid="Cooler_NbfcIsntInstalled" Text="Вы уверены что NBFC установлен?"/>
+                                            <Button Click="InstallNbfc_Click" CornerRadius="10" Shadow="{StaticResource SharedShadow}" x:Uid="Cooler_InstallNbfc" Translation="0,0,20" HorizontalAlignment="Center" FontWeight="Bold" Margin="0,30,0,0" Content="Установить NBFC"/>
                                         </Grid>
                                         <Grid x:Name="CoolerManagementGrid" HorizontalAlignment="Stretch" Margin="0,10,0,0">
                                             <Grid.RowDefinitions>
@@ -193,12 +195,12 @@ Stretch="Uniform" />
                                             </Grid.RowDefinitions>
                                             <TextBlock Grid.Row="0" x:Uid="Cooler_Service" Text="Управление кулерами" FontSize="20"></TextBlock>
                                             <Grid Grid.Row="1" Margin="2,7,2,0">
-                                                <ComboBox SelectedIndex="0" CornerRadius="4" Style="{ThemeResource AcrylicComboBoxStyle}" x:Name="ServiceCombo" Height="30" HorizontalAlignment="Stretch" SelectionChanged="ServiceCombo_SelectionChanged">
+                                                <ComboBox SelectedIndex="0" CornerRadius="9" Style="{ThemeResource AcrylicComboBoxStyle}" x:Name="ServiceCombo" Height="30" HorizontalAlignment="Stretch" SelectionChanged="ServiceCombo_SelectionChanged">
                                                     <ComboBoxItem x:Uid="Cooler_Service_Disabled">Disabled</ComboBoxItem>
                                                     <ComboBoxItem x:Uid="Cooler_Service_Read">Read only</ComboBoxItem>
                                                     <ComboBoxItem x:Uid="Cooler_Service_Enabled">Auto</ComboBoxItem> 
                                                 </ComboBox>
-                                                <Border CornerRadius="4" VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Stretch" Margin="-1,0,-1,0" Height="32" />
+                                                <Border CornerRadius="9" VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Stretch" Margin="-1,0,-1,0" Height="32" />
                                             </Grid>
                                         </Grid>
 
@@ -209,7 +211,7 @@ Stretch="Uniform" />
                                             </Grid.RowDefinitions>
                                             <TextBlock Grid.Row="0" x:Uid="Cooler_Curve" Text="Тип регулирования кулерами" FontSize="20"></TextBlock>
                                             <Grid Grid.Row="1" Margin="2,7,2,0">
-                                                <ComboBox SelectedIndex="0" CornerRadius="4" Style="{ThemeResource AcrylicComboBoxStyle}" x:Name="CurveCombo" Height="30" HorizontalAlignment="Stretch" SelectionChanged="CurveCombo_SelectionChanged">
+                                                <ComboBox SelectedIndex="0" CornerRadius="9" Style="{ThemeResource AcrylicComboBoxStyle}" x:Name="CurveCombo" Height="30" HorizontalAlignment="Stretch" SelectionChanged="CurveCombo_SelectionChanged">
                                                     <ComboBoxItem x:Uid="Cooler_Curve_Auto">Кривые из конфигурации</ComboBoxItem>
                                                     <ComboBoxItem x:Uid="Cooler_Curve_FxCu">Кулер 1: Фиксированный, Кулер 2: Кривая</ComboBoxItem>
                                                     <ComboBoxItem x:Uid="Cooler_Curve_CuFx">Кулер 1: Кривая, Кулер 2: Фиксированный</ComboBoxItem>
@@ -217,7 +219,7 @@ Stretch="Uniform" />
                                                     <ComboBoxItem x:Uid="Cooler_Curve_Fixed">Полностью фиксированный</ComboBoxItem>
                                                     <ComboBoxItem x:Uid="Cooler_Curve_Smart">Умная кривая (Beta)</ComboBoxItem> 
                                                 </ComboBox>
-                                                <Border CornerRadius="4" VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Stretch" Margin="-1,0,-1,0" Height="32" />
+                                                <Border CornerRadius="9" VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Stretch" Margin="-1,0,-1,0" Height="32" />
                                             </Grid>
                                         </Grid>
 
@@ -229,25 +231,33 @@ Stretch="Uniform" />
                                             </Grid.RowDefinitions>
                                             <TextBlock Grid.Row="0" x:Uid="Cooler_Curve_Fan" x:Name="Cooler_Curve_Fan_Text" Text="Фиксированный режим вращения" FontSize="20"></TextBlock>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,7,0,0" Grid.Row="1">
-                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Quiet" Width="69" HorizontalAlignment="Stretch" x:Name="Nbfc_QuietToggle" Click="Nbfc_Fan1Control_Click">
+                                                <ToggleButton CornerRadius="22" x:Uid="Cooler_AsusModeCoolerSpeeds_Quiet" Height="72" Width="72" HorizontalAlignment="Stretch" x:Name="Nbfc_QuietToggle" Click="Nbfc_Fan1Control_Click"
+                                                        Shadow="{ThemeResource SharedShadow}" 
+                                                        Translation="0,0,15">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                                         <BitmapIcon UriSource="/Assets/AsusCoolerIcons/QuietSpeed.png" ShowAsMonochrome="True" Width="40" Height="40" HorizontalAlignment="Center" Margin="0,0,0,0"/>
                                                         <TextBlock HorizontalAlignment="Center" x:Uid="Cooler_AsusModeCoolerQuiet" Text="Тихий"/>
                                                     </StackPanel>
                                                 </ToggleButton>
-                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Balance" Width="69" HorizontalAlignment="Stretch" Margin="4,0,0,0" x:Name="Nbfc_BalanceToggle" Click="Nbfc_Fan1Control_Click">
+                                                <ToggleButton CornerRadius="22" x:Uid="Cooler_AsusModeCoolerSpeeds_Balance" Height="72" Width="72" HorizontalAlignment="Stretch" Margin="6,0,0,0" x:Name="Nbfc_BalanceToggle" Click="Nbfc_Fan1Control_Click"
+                                                        Shadow="{ThemeResource SharedShadow}" 
+                                                        Translation="0,0,15">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                                         <BitmapIcon UriSource="/Assets/AsusCoolerIcons/BalanceSpeed.png" ShowAsMonochrome="True" Width="40" Height="40" HorizontalAlignment="Center" Margin="0,0,0,0"/>
                                                         <TextBlock HorizontalAlignment="Center" x:Uid="Cooler_AsusModeCoolerBalance" Text="Баланс"/>
                                                     </StackPanel>
                                                 </ToggleButton>
-                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Turbo" Width="69" HorizontalAlignment="Stretch" Margin="4,0,0,0" x:Name="Nbfc_TurboToggle" Click="Nbfc_Fan1Control_Click">
+                                                <ToggleButton CornerRadius="22" x:Uid="Cooler_AsusModeCoolerSpeeds_Turbo" Height="72" Width="72" HorizontalAlignment="Stretch" Margin="6,0,0,0" x:Name="Nbfc_TurboToggle" Click="Nbfc_Fan1Control_Click"
+                                                        Shadow="{ThemeResource SharedShadow}" 
+                                                        Translation="0,0,15">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                                         <BitmapIcon UriSource="/Assets/AsusCoolerIcons/TurboSpeed.png" ShowAsMonochrome="True" Width="40" Height="40" HorizontalAlignment="Center" Margin="0,0,0,0"/>
                                                         <TextBlock HorizontalAlignment="Center" x:Uid="Cooler_AsusModeCoolerTurbo" Text="Турбо"/>
                                                     </StackPanel>
                                                 </ToggleButton>
-                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Manual" Height="72" Width="69" HorizontalAlignment="Stretch" Margin="4,0,0,0" x:Name="Nbfc_AutoToggle" Click="Nbfc_Fan1Control_Click">
+                                                <ToggleButton CornerRadius="22" x:Uid="Cooler_AsusModeCoolerSpeeds_Manual" Height="72" Width="72" HorizontalAlignment="Stretch" Margin="6,0,0,0" x:Name="Nbfc_AutoToggle" Click="Nbfc_Fan1Control_Click"
+                                                        Shadow="{ThemeResource SharedShadow}" 
+                                                        Translation="0,0,15">
                                                     <StackPanel Orientation="Vertical"  Margin="0,14,0,0" HorizontalAlignment="Center">
                                                         <FontIcon Glyph="&#xE9E9;" HorizontalAlignment="Center" FontSize="25" Margin="0,0,2,0"/>
                                                         <TextBlock HorizontalAlignment="Center" x:Uid="Cooler_AsusModeCoolerManual" Text="Ручной"/>
@@ -275,25 +285,33 @@ Stretch="Uniform" />
                                             </Grid.RowDefinitions>
                                             <TextBlock Grid.Row="0" x:Uid="Cooler_Curve_Fan2" Text="Фиксированный режим вращения кулера 2" FontSize="20"></TextBlock>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,7,0,0" Grid.Row="1">
-                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Quiet" Width="69" HorizontalAlignment="Stretch" x:Name="Nbfc_QuietToggle1" Click="Nbfc_Fan1Control_Click">
+                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Quiet" Height="72" Width="72" CornerRadius="22" HorizontalAlignment="Stretch" x:Name="Nbfc_QuietToggle1" Click="Nbfc_Fan1Control_Click"
+                                                        Shadow="{ThemeResource SharedShadow}" 
+                                                        Translation="0,0,15">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                                         <BitmapIcon UriSource="/Assets/AsusCoolerIcons/QuietSpeed.png" ShowAsMonochrome="True" Width="40" Height="40" HorizontalAlignment="Center" Margin="0,0,0,0"/>
                                                         <TextBlock HorizontalAlignment="Center" x:Uid="Cooler_AsusModeCoolerQuiet" Text="Тихий"/>
                                                     </StackPanel>
                                                 </ToggleButton>
-                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Balance" Width="69" HorizontalAlignment="Stretch" Margin="4,0,0,0" x:Name="Nbfc_BalanceToggle1" Click="Nbfc_Fan1Control_Click">
+                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Balance" Height="72" Width="72" CornerRadius="22" HorizontalAlignment="Stretch" Margin="4,0,0,0" x:Name="Nbfc_BalanceToggle1" Click="Nbfc_Fan1Control_Click"
+                                                        Shadow="{ThemeResource SharedShadow}" 
+                                                        Translation="0,0,15">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                                         <BitmapIcon UriSource="/Assets/AsusCoolerIcons/BalanceSpeed.png" ShowAsMonochrome="True" Width="40" Height="40" HorizontalAlignment="Center" Margin="0,0,0,0"/>
                                                         <TextBlock HorizontalAlignment="Center" x:Uid="Cooler_AsusModeCoolerBalance" Text="Баланс"/>
                                                     </StackPanel>
                                                 </ToggleButton>
-                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Turbo" Width="69" HorizontalAlignment="Stretch" Margin="4,0,0,0" x:Name="Nbfc_TurboToggle1" Click="Nbfc_Fan1Control_Click">
+                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Turbo" Height="72" Width="72" CornerRadius="22" HorizontalAlignment="Stretch" Margin="4,0,0,0" x:Name="Nbfc_TurboToggle1" Click="Nbfc_Fan1Control_Click"
+                                                        Shadow="{ThemeResource SharedShadow}" 
+                                                        Translation="0,0,15">
                                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                                         <BitmapIcon UriSource="/Assets/AsusCoolerIcons/TurboSpeed.png" ShowAsMonochrome="True" Width="40" Height="40" HorizontalAlignment="Center" Margin="0,0,0,0"/>
                                                         <TextBlock HorizontalAlignment="Center" x:Uid="Cooler_AsusModeCoolerTurbo" Text="Турбо"/>
                                                     </StackPanel>
                                                 </ToggleButton>
-                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Manual" Height="72" Width="69" HorizontalAlignment="Stretch" Margin="4,0,0,0" x:Name="Nbfc_AutoToggle1" Click="Nbfc_Fan1Control_Click">
+                                                <ToggleButton x:Uid="Cooler_AsusModeCoolerSpeeds_Manual" Height="72" Width="72" CornerRadius="22" HorizontalAlignment="Stretch" Margin="4,0,0,0" x:Name="Nbfc_AutoToggle1" Click="Nbfc_Fan1Control_Click"
+                                                        Shadow="{ThemeResource SharedShadow}" 
+                                                        Translation="0,0,15">
                                                     <StackPanel Orientation="Vertical"  Margin="0,14,0,0" HorizontalAlignment="Center">
                                                         <FontIcon Glyph="&#xE9E9;" HorizontalAlignment="Center" FontSize="25" Margin="0,0,2,0"/>
                                                         <TextBlock HorizontalAlignment="Center" x:Uid="Cooler_AsusModeCoolerManual" Text="Ручной"/>

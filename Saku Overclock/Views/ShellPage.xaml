@@ -141,6 +141,7 @@
                             Margin="8,8,0,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
+                            CornerRadius="12"
                             Click="Icon_Click"
                             PointerEntered="TitleIcon_PointerEntered" 
                             Shadow="{ThemeResource SharedShadow}"
@@ -265,7 +266,7 @@
       VerticalAlignment="Stretch"
       CornerRadius="0,0,0,0">
                     <ToggleButton x:Name="ToggleNotificationPanelBtn"
-                  Padding="0"
+                  Padding="0" CornerRadius="9"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch" Click="ToggleNotificationPanelBtn_Click"
                   Shadow="{ThemeResource SharedShadow}" Translation="0,0,12"

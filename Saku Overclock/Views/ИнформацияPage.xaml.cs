@@ -911,7 +911,7 @@ public sealed partial class ИнформацияPage
                                             2 =>
                                                 $"{Math.Round(_sensorsInformation.SocEdcValue, 3)}A/{Math.Round(_sensorsInformation.SocEdcLimit, 3)}A",
                                             3 =>
-                                                $"{Math.Round(_sensorsInformation.SocTdcValue, 3)}A/{Math.Round(_sensorsInformation.SocTdcValue, 3)}A",
+                                                $"{Math.Round(_sensorsInformation.SocTdcValue, 3)}A/{Math.Round(_sensorsInformation.SocTdcLimit, 3)}A",
                                             _ => "0A"
                                         };
                                         break;

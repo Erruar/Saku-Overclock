@@ -125,7 +125,7 @@ public sealed partial class ProfileSwitcher : Window
         }
         _instance.ProfileDesc.Text = profileDesc ?? string.Empty;
         
-        if (profileDesc == null)
+        if (profileDesc == null || string.IsNullOrEmpty(profileDesc))
         {
             _instance.ProfileDesc.Visibility = Visibility.Collapsed;
         }

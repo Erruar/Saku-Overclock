@@ -52,6 +52,7 @@ public sealed partial class ПараметрыPage
     private bool _waitforload = true; // Ожидание окончательной смены профиля на другой. Активируется при смене профиля
     private string? _adjline; // Команды RyzenADJ для применения
     private readonly Mailbox _testMailbox = new(); // Новый адрес SMU
+    private bool _commandReturnedValue = false; // Флаг если команда вернула значение
 
     private static string?
         _equalvid; // Преобразование из напряжения в его ID. Используется в секции Состояния CPU для указания напряжения PState
@@ -966,6 +967,7 @@ public sealed partial class ПараметрыPage
                     a9v.Value = _profile[index].advncd9value;
                     a9.IsChecked = _profile[index].advncd9;
                     a10v.Value = _profile[index].advncd10value;
+                    a10.IsChecked = _profile[index].advncd10;
                     a11v.Value = _profile[index].advncd11value;
                     a11.IsChecked = _profile[index].advncd11;
                     a12v.Value = _profile[index].advncd12value;
@@ -1793,6 +1795,7 @@ public sealed partial class ПараметрыPage
     //SMU КОМАНДЫ
     private void ApplySettings(int mode, int commandIndex)
     {
+        _commandReturnedValue = false;
         try
         {
             Task.Run(async () => await LogHelper.Log("Applying user SMU settings task started."));
@@ -1838,6 +1841,7 @@ public sealed partial class ПараметрыPage
                 TryConvertToUint(userArgs[i], out var temp);
                 args[i] = temp;
             }
+            var argsBefore = args.ToArray<uint>();
 
             Task.Run(async () =>
                 await LogHelper.Log(
@@ -1846,7 +1850,7 @@ public sealed partial class ПараметрыPage
                     $"Address MSG: {_testMailbox.SMU_ADDR_MSG}\n" +
                     $"Address RSP: {_testMailbox.SMU_ADDR_RSP}\n" +
                     $"Address ARG: {_testMailbox.SMU_ADDR_ARG}"));
-            var status = _cpu?.smu.SendSmuCommand(_testMailbox, command, ref args);
+            var status = _cpu?.smu.SendSmuCommand(_testMailbox, command, ref args); 
             if (status != SMU.Status.OK)
             {
                 ApplyInfo += "\n" + "SMUErrorText".GetLocalized() + ": " +
@@ -1863,6 +1867,11 @@ public sealed partial class ПараметрыPage
                 {
                     ApplyInfo += "\n" + "SMUErrorNoCMD".GetLocalized();
                 }
+            }
+            if (args[0] != argsBefore[0] || args[1] != argsBefore[1] || args[2] != argsBefore[2])
+            {
+                _commandReturnedValue = true;
+                ApplyInfo += "Param_DeveloperOptions_SmuCommand".GetLocalized() + $" {comboBoxMailboxSelect.SelectedValue} 0x{command:X} " + "Param_DeveloperOptions_CommandResult".GetLocalized() + $"0x{args[0]:X}({args[0]}) 0x{args[1]:X}({args[1]}) 0x{args[2]:X}({args[2]})" + "Param_DeveloperOptions_ResultSaved".GetLocalized();
             }
             Task.Run(async () => await LogHelper.Log($"Get status: {status}"));
         }
@@ -4624,280 +4633,415 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            await LogHelper.Log("Applying user settings.");
-            if (c1.IsChecked == true)
+            if (NormalUserMode.Visibility == Visibility.Visible)
             {
-                _adjline += " --tctl-temp=" + c1v.Value;
-            }
-
-            if (c2.IsChecked == true)
-            {
-                _adjline += " --stapm-limit=" + c2v.Value + "000";
-            }
-
-            if (c3.IsChecked == true)
-            {
-                _adjline += " --fast-limit=" + c3v.Value + "000";
-            }
-
-            if (c4.IsChecked == true)
-            {
-                _adjline += " --slow-limit=" + c4v.Value + "000";
-            }
-
-            if (c5.IsChecked == true)
-            {
-                _adjline += " --stapm-time=" + c5v.Value;
-            }
-
-            if (c6.IsChecked == true)
-            {
-                _adjline += " --slow-time=" + c6v.Value;
-            }
-
-            if (c7.IsChecked == true)
-            {
-                _adjline += " --cHTC-temp=" + c7v.Value;
-            }
-
-            //vrm
-            if (V1.IsChecked == true)
-            {
-                _adjline += " --vrmmax-current=" + V1V.Value + "000";
-            }
-
-            if (V2.IsChecked == true)
-            {
-                _adjline += " --vrm-current=" + V2V.Value + "000";
-            }
-
-            if (V3.IsChecked == true)
-            {
-                _adjline += " --vrmsocmax-current=" + V3V.Value + "000";
-            }
-
-            if (V4.IsChecked == true)
-            {
-                _adjline += " --vrmsoc-current=" + V4V.Value + "000";
-            }
-
-            if (V5.IsChecked == true)
-            {
-                _adjline += " --psi0-current=" + V5V.Value + "000";
-            }
-
-            if (V6.IsChecked == true)
-            {
-                _adjline += " --psi0soc-current=" + V6V.Value + "000";
-            }
-
-            if (V7.IsChecked == true)
-            {
-                _adjline += " --prochot-deassertion-ramp=" + V7V.Value;
-            }
-
-            //gpu
-            if (g1.IsChecked == true)
-            {
-                _adjline += " --min-socclk-frequency=" + g1v.Value;
-            }
-
-            if (g2.IsChecked == true)
-            {
-                _adjline += " --max-socclk-frequency=" + g2v.Value;
-            }
-
-            if (g3.IsChecked == true)
-            {
-                _adjline += " --min-fclk-frequency=" + g3v.Value;
-            }
-
-            if (g4.IsChecked == true)
-            {
-                _adjline += " --max-fclk-frequency=" + g4v.Value;
-            }
-
-            if (g5.IsChecked == true)
-            {
-                _adjline += " --min-vcn=" + g5v.Value;
-            }
-
-            if (g6.IsChecked == true)
-            {
-                _adjline += " --max-vcn=" + g6v.Value;
-            }
-
-            if (g7.IsChecked == true)
-            {
-                _adjline += " --min-lclk=" + g7v.Value;
-            }
-
-            if (g8.IsChecked == true)
-            {
-                _adjline += " --max-lclk=" + g8v.Value;
-            }
-
-            if (g9.IsChecked == true)
-            {
-                _adjline += " --min-gfxclk=" + g9v.Value;
-            }
-
-            if (g10.IsChecked == true)
-            {
-                _adjline += " --max-gfxclk=" + g10v.Value;
-            }
-
-            if (g11.IsChecked == true)
-            {
-                _adjline += " --min-cpuclk=" + g11v.Value;
-            }
-
-            if (g12.IsChecked == true)
-            {
-                _adjline += " --max-cpuclk=" + g12v.Value;
-            }
-
-
-            if (g16.IsChecked == true)
-            {
-                if (g16m.SelectedIndex != 0)
+                await LogHelper.Log("Applying user settings.");
+                if (c1.IsChecked == true)
                 {
-                    _adjline += " --setcpu-freqto-ramstate=" + (g16m.SelectedIndex - 1);
+                    _adjline += " --tctl-temp=" + c1v.Value;
                 }
-                else
+
+                if (c2.IsChecked == true)
                 {
-                    _adjline += " --stopcpu-freqto-ramstate=0";
+                    _adjline += " --stapm-limit=" + c2v.Value + "000";
                 }
-            }
 
-            //advanced
-            if (a1.IsChecked == true)
-            {
-                _adjline += " --vrmgfx-current=" + a1v.Value + "000";
-            }
-
-
-            if (a3.IsChecked == true)
-            {
-                _adjline += " --vrmgfxmax_current=" + a3v.Value + "000";
-            }
-
-            if (a4.IsChecked == true)
-            {
-                _adjline += " --psi3cpu_current=" + a4v.Value + "000";
-            }
-
-            if (a5.IsChecked == true)
-            {
-                _adjline += " --psi3gfx_current=" + a5v.Value + "000";
-            }
-
-            if (a6.IsChecked == true)
-            {
-                _adjline += " --apu-skin-temp=" + a6v.Value;
-            }
-
-            if (a7.IsChecked == true)
-            {
-                _adjline += " --dgpu-skin-temp=" + a7v.Value;
-            }
-
-            if (a8.IsChecked == true)
-            {
-                _adjline += " --apu-slow-limit=" + a8v.Value + "000";
-            }
-
-            if (a9.IsChecked == true)
-            {
-                _adjline += " --skin-temp-limit=" + a9v.Value + "000";
-            }
-
-            if (a10.IsChecked == true)
-            {
-                _adjline += " --gfx-clk=" + a10v.Value;
-            }
-
-            if (a11.IsChecked == true)
-            {
-                _adjline += " --oc-clk=" + a11v.Value;
-            }
-
-            if (a12.IsChecked == true)
-            {
-                _adjline += " --oc-volt=" + Math.Round((1.55 - a12v.Value / 1000) / 0.00625);
-            }
-
-
-            if (a13.IsChecked == true)
-            {
-                switch (a13m.SelectedIndex)
+                if (c3.IsChecked == true)
                 {
-                    case 1:
-                        _adjline += " --max-performance=1";
-                        break;
-                    case 2:
-                        _adjline += " --power-saving=1";
-                        break;
+                    _adjline += " --fast-limit=" + c3v.Value + "000";
                 }
-            }
 
-            if (a14.IsChecked == true)
-            {
-                switch (a14m.SelectedIndex)
+                if (c4.IsChecked == true)
                 {
-                    case 0:
-                        _adjline += " --disable-oc=1";
-                        break;
-                    case 1:
-                        _adjline += " --enable-oc=1";
-                        break;
+                    _adjline += " --slow-limit=" + c4v.Value + "000";
                 }
-            }
 
-            if (a15.IsChecked == true)
-            {
-                _adjline += " --pbo-scalar=" + a15v.Value * 100;
-            }
-
-            if (O1.IsChecked == true)
-            {
-                if (O1v.Value >= 0.0)
+                if (c5.IsChecked == true)
                 {
-                    _adjline += $" --set-coall={O1v.Value} ";
+                    _adjline += " --stapm-time=" + c5v.Value;
                 }
-                else
-                {
-                    _adjline += $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)O1v.Value))} ";
-                }
-            }
 
-            if (O2.IsChecked == true)
-            {
-                _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(_cpu.info.codeName, false);
-                _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(_cpu.info.codeName, true);
-                //Using Irusanov method
-                for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
+                if (c6.IsChecked == true)
                 {
-                    var mapIndex = i < 8 ? 0 : 1;
-                    if (((~_cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1)
+                    _adjline += " --slow-time=" + c6v.Value;
+                }
+
+                if (c7.IsChecked == true)
+                {
+                    _adjline += " --cHTC-temp=" + c7v.Value;
+                }
+
+                //vrm
+                if (V1.IsChecked == true)
+                {
+                    _adjline += " --vrmmax-current=" + V1V.Value + "000";
+                }
+
+                if (V2.IsChecked == true)
+                {
+                    _adjline += " --vrm-current=" + V2V.Value + "000";
+                }
+
+                if (V3.IsChecked == true)
+                {
+                    _adjline += " --vrmsocmax-current=" + V3V.Value + "000";
+                }
+
+                if (V4.IsChecked == true)
+                {
+                    _adjline += " --vrmsoc-current=" + V4V.Value + "000";
+                }
+
+                if (V5.IsChecked == true)
+                {
+                    _adjline += " --psi0-current=" + V5V.Value + "000";
+                }
+
+                if (V6.IsChecked == true)
+                {
+                    _adjline += " --psi0soc-current=" + V6V.Value + "000";
+                }
+
+                if (V7.IsChecked == true)
+                {
+                    _adjline += " --prochot-deassertion-ramp=" + V7V.Value;
+                }
+
+                //gpu
+                if (g1.IsChecked == true)
+                {
+                    _adjline += " --min-socclk-frequency=" + g1v.Value;
+                }
+
+                if (g2.IsChecked == true)
+                {
+                    _adjline += " --max-socclk-frequency=" + g2v.Value;
+                }
+
+                if (g3.IsChecked == true)
+                {
+                    _adjline += " --min-fclk-frequency=" + g3v.Value;
+                }
+
+                if (g4.IsChecked == true)
+                {
+                    _adjline += " --max-fclk-frequency=" + g4v.Value;
+                }
+
+                if (g5.IsChecked == true)
+                {
+                    _adjline += " --min-vcn=" + g5v.Value;
+                }
+
+                if (g6.IsChecked == true)
+                {
+                    _adjline += " --max-vcn=" + g6v.Value;
+                }
+
+                if (g7.IsChecked == true)
+                {
+                    _adjline += " --min-lclk=" + g7v.Value;
+                }
+
+                if (g8.IsChecked == true)
+                {
+                    _adjline += " --max-lclk=" + g8v.Value;
+                }
+
+                if (g9.IsChecked == true)
+                {
+                    _adjline += " --min-gfxclk=" + g9v.Value;
+                }
+
+                if (g10.IsChecked == true)
+                {
+                    _adjline += " --max-gfxclk=" + g10v.Value;
+                }
+
+                if (g11.IsChecked == true)
+                {
+                    _adjline += " --min-cpuclk=" + g11v.Value;
+                }
+
+                if (g12.IsChecked == true)
+                {
+                    _adjline += " --max-cpuclk=" + g12v.Value;
+                }
+
+
+                if (g16.IsChecked == true)
+                {
+                    if (g16m.SelectedIndex != 0)
                     {
-                        if (_cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
-                        {
-                            _cpu.SetPsmMarginSingleCore(GetCoreMask(i), Convert.ToInt32(O2v.Value));
-                        }
+                        _adjline += " --setcpu-freqto-ramstate=" + (g16m.SelectedIndex - 1);
+                    }
+                    else
+                    {
+                        _adjline += " --stopcpu-freqto-ramstate=0";
                     }
                 }
 
-                _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, false);
-                _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, true);
-            }
-
-            if (CCD_CO_Mode_Sel.IsChecked == true &&
-                CCD_CO_Mode.SelectedIndex != 0) // Если пользователь выбрал хотя-бы один режим и ...
-            {
-                if (CCD_CO_Mode.SelectedIndex == 1) // Если выбран режим ноутбук
+                //advanced
+                if (a1.IsChecked == true)
                 {
-                    if (_cpu?.info.codeName == Cpu.CodeName.DragonRange) // Так как там как у компьютеров
+                    _adjline += " --vrmgfx-current=" + a1v.Value + "000";
+                }
+
+
+                if (a3.IsChecked == true)
+                {
+                    _adjline += " --vrmgfxmax_current=" + a3v.Value + "000";
+                }
+
+                if (a4.IsChecked == true)
+                {
+                    _adjline += " --psi3cpu_current=" + a4v.Value + "000";
+                }
+
+                if (a5.IsChecked == true)
+                {
+                    _adjline += " --psi3gfx_current=" + a5v.Value + "000";
+                }
+
+                if (a6.IsChecked == true)
+                {
+                    _adjline += " --apu-skin-temp=" + a6v.Value * 256;
+                }
+
+                if (a7.IsChecked == true)
+                {
+                    _adjline += " --dgpu-skin-temp=" + a7v.Value * 256;
+                }
+
+                if (a8.IsChecked == true)
+                {
+                    _adjline += " --apu-slow-limit=" + a8v.Value + "000";
+                }
+
+                if (a9.IsChecked == true)
+                {
+                    _adjline += " --skin-temp-limit=" + a9v.Value + "000";
+                }
+
+                if (a10.IsChecked == true)
+                {
+                    _adjline += " --gfx-clk=" + a10v.Value;
+                }
+
+                if (a11.IsChecked == true)
+                {
+                    _adjline += " --oc-clk=" + a11v.Value;
+                }
+
+                if (a12.IsChecked == true)
+                {
+                    _adjline += " --oc-volt=" + Math.Round((1.55 - a12v.Value / 1000) / 0.00625);
+                }
+
+
+                if (a13.IsChecked == true)
+                {
+                    switch (a13m.SelectedIndex)
+                    {
+                        case 1:
+                            _adjline += " --max-performance=1";
+                            break;
+                        case 2:
+                            _adjline += " --power-saving=1";
+                            break;
+                    }
+                }
+
+                if (a14.IsChecked == true)
+                {
+                    switch (a14m.SelectedIndex)
+                    {
+                        case 0:
+                            _adjline += " --disable-oc=1";
+                            break;
+                        case 1:
+                            _adjline += " --enable-oc=1";
+                            break;
+                    }
+                }
+
+                if (a15.IsChecked == true)
+                {
+                    _adjline += " --pbo-scalar=" + a15v.Value * 100;
+                }
+
+                if (O1.IsChecked == true)
+                {
+                    if (O1v.Value >= 0.0)
+                    {
+                        _adjline += $" --set-coall={O1v.Value} ";
+                    }
+                    else
+                    {
+                        _adjline += $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)O1v.Value))} ";
+                    }
+                }
+
+                if (O2.IsChecked == true)
+                {
+                    _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(_cpu.info.codeName, false);
+                    _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(_cpu.info.codeName, true);
+                    //Using Irusanov method
+                    for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
+                    {
+                        var mapIndex = i < 8 ? 0 : 1;
+                        if (((~_cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1)
+                        {
+                            if (_cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
+                            {
+                                _cpu.SetPsmMarginSingleCore(GetCoreMask(i), Convert.ToInt32(O2v.Value));
+                            }
+                        }
+                    }
+
+                    _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, false);
+                    _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, true);
+                }
+
+                if (CCD_CO_Mode_Sel.IsChecked == true &&
+                    CCD_CO_Mode.SelectedIndex != 0) // Если пользователь выбрал хотя-бы один режим и ...
+                {
+                    if (CCD_CO_Mode.SelectedIndex == 1) // Если выбран режим ноутбук
+                    {
+                        if (_cpu?.info.codeName == Cpu.CodeName.DragonRange) // Так как там как у компьютеров
+                        {
+                            if (CCD1_1.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={0 | ((int)CCD1_1v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_2.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={1048576 | ((int)CCD1_2v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_3.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={2097152 | ((int)CCD1_3v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_4.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={3145728 | ((int)CCD1_4v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_5.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={4194304 | ((int)CCD1_5v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_6.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={5242880 | ((int)CCD1_6v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_7.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={6291456 | ((int)CCD1_7v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_8.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={7340032 | ((int)CCD1_8v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD2_1.IsChecked == true)
+                            {
+                                _adjline +=
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)CCD2_1v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD2_2.IsChecked == true)
+                            {
+                                _adjline +=
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)CCD2_2v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD2_3.IsChecked == true)
+                            {
+                                _adjline +=
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)CCD2_3v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD2_4.IsChecked == true)
+                            {
+                                _adjline +=
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)CCD2_4v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD2_5.IsChecked == true)
+                            {
+                                _adjline +=
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)CCD2_5v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD2_6.IsChecked == true)
+                            {
+                                _adjline +=
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)CCD2_6v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD2_7.IsChecked == true)
+                            {
+                                _adjline +=
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)CCD2_7v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD2_8.IsChecked == true)
+                            {
+                                _adjline +=
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)CCD2_8v.Value & 0xFFFF)} ";
+                            }
+                        }
+                        else
+                        {
+                            if (CCD1_1.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={0 | ((int)CCD1_1v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_2.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={(1 << 20) | ((int)CCD1_2v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_3.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={(2 << 20) | ((int)CCD1_3v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_4.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={(3 << 20) | ((int)CCD1_4v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_5.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={(4 << 20) | ((int)CCD1_5v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_6.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={(5 << 20) | ((int)CCD1_6v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_7.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={(6 << 20) | ((int)CCD1_7v.Value & 0xFFFF)} ";
+                            }
+
+                            if (CCD1_8.IsChecked == true)
+                            {
+                                _adjline += $" --set-coper={(7 << 20) | ((int)CCD1_8v.Value & 0xFFFF)} ";
+                            }
+                        }
+                    }
+                    else if (CCD_CO_Mode.SelectedIndex == 2) //Если выбран режим компьютер
                     {
                         if (CCD1_1.IsChecked == true)
                         {
@@ -4987,167 +5131,36 @@ public sealed partial class ПараметрыPage
                                 $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)CCD2_8v.Value & 0xFFFF)} ";
                         }
                     }
-                    else
+                    else if
+                        (CCD_CO_Mode.SelectedIndex ==
+                         3) // Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
                     {
-                        if (CCD1_1.IsChecked == true)
+                        _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, false);
+                        _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, true);
+                        for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
                         {
-                            _adjline += $" --set-coper={0 | ((int)CCD1_1v.Value & 0xFFFF)} ";
-                        }
-
-                        if (CCD1_2.IsChecked == true)
-                        {
-                            _adjline += $" --set-coper={(1 << 20) | ((int)CCD1_2v.Value & 0xFFFF)} ";
-                        }
-
-                        if (CCD1_3.IsChecked == true)
-                        {
-                            _adjline += $" --set-coper={(2 << 20) | ((int)CCD1_3v.Value & 0xFFFF)} ";
-                        }
-
-                        if (CCD1_4.IsChecked == true)
-                        {
-                            _adjline += $" --set-coper={(3 << 20) | ((int)CCD1_4v.Value & 0xFFFF)} ";
-                        }
-
-                        if (CCD1_5.IsChecked == true)
-                        {
-                            _adjline += $" --set-coper={(4 << 20) | ((int)CCD1_5v.Value & 0xFFFF)} ";
-                        }
-
-                        if (CCD1_6.IsChecked == true)
-                        {
-                            _adjline += $" --set-coper={(5 << 20) | ((int)CCD1_6v.Value & 0xFFFF)} ";
-                        }
-
-                        if (CCD1_7.IsChecked == true)
-                        {
-                            _adjline += $" --set-coper={(6 << 20) | ((int)CCD1_7v.Value & 0xFFFF)} ";
-                        }
-
-                        if (CCD1_8.IsChecked == true)
-                        {
-                            _adjline += $" --set-coper={(7 << 20) | ((int)CCD1_8v.Value & 0xFFFF)} ";
-                        }
-                    }
-                }
-                else if (CCD_CO_Mode.SelectedIndex == 2) //Если выбран режим компьютер
-                {
-                    if (CCD1_1.IsChecked == true)
-                    {
-                        _adjline += $" --set-coper={0 | ((int)CCD1_1v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD1_2.IsChecked == true)
-                    {
-                        _adjline += $" --set-coper={1048576 | ((int)CCD1_2v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD1_3.IsChecked == true)
-                    {
-                        _adjline += $" --set-coper={2097152 | ((int)CCD1_3v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD1_4.IsChecked == true)
-                    {
-                        _adjline += $" --set-coper={3145728 | ((int)CCD1_4v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD1_5.IsChecked == true)
-                    {
-                        _adjline += $" --set-coper={4194304 | ((int)CCD1_5v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD1_6.IsChecked == true)
-                    {
-                        _adjline += $" --set-coper={5242880 | ((int)CCD1_6v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD1_7.IsChecked == true)
-                    {
-                        _adjline += $" --set-coper={6291456 | ((int)CCD1_7v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD1_8.IsChecked == true)
-                    {
-                        _adjline += $" --set-coper={7340032 | ((int)CCD1_8v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD2_1.IsChecked == true)
-                    {
-                        _adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)CCD2_1v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD2_2.IsChecked == true)
-                    {
-                        _adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)CCD2_2v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD2_3.IsChecked == true)
-                    {
-                        _adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)CCD2_3v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD2_4.IsChecked == true)
-                    {
-                        _adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)CCD2_4v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD2_5.IsChecked == true)
-                    {
-                        _adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)CCD2_5v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD2_6.IsChecked == true)
-                    {
-                        _adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)CCD2_6v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD2_7.IsChecked == true)
-                    {
-                        _adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)CCD2_7v.Value & 0xFFFF)} ";
-                    }
-
-                    if (CCD2_8.IsChecked == true)
-                    {
-                        _adjline +=
-                            $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)CCD2_8v.Value & 0xFFFF)} ";
-                    }
-                }
-                else if
-                    (CCD_CO_Mode.SelectedIndex ==
-                     3) // Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
-                {
-                    _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, false);
-                    _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, true);
-                    for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
-                    {
-                        var checkbox = i < 8
-                            ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i + 1}")
-                            : (CheckBox)CCD2_Grid.FindName($"CCD2_{i - 7}");
-                        if (checkbox != null && checkbox.IsChecked == true)
-                        {
-                            var setVal = i < 8
-                                ? (Slider)CCD1_Grid.FindName($"CCD1_{i + 1}v")
-                                : (Slider)CCD2_Grid.FindName($"CCD2_{i - 7}v");
-                            var mapIndex = i < 8 ? 0 : 1;
-                            if (((~_cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1) // Если ядро включено
+                            var checkbox = i < 8
+                                ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i + 1}")
+                                : (CheckBox)CCD2_Grid.FindName($"CCD2_{i - 7}");
+                            if (checkbox != null && checkbox.IsChecked == true)
                             {
-                                if (_cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U) // Если команда существует
+                                var setVal = i < 8
+                                    ? (Slider)CCD1_Grid.FindName($"CCD1_{i + 1}v")
+                                    : (Slider)CCD2_Grid.FindName($"CCD2_{i - 7}v");
+                                var mapIndex = i < 8 ? 0 : 1;
+                                if (((~_cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1) // Если ядро включено
                                 {
-                                    _cpu.SetPsmMarginSingleCore(GetCoreMask(i), Convert.ToInt32(setVal.Value));
+                                    if (_cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U) // Если команда существует
+                                    {
+                                        _cpu.SetPsmMarginSingleCore(GetCoreMask(i), Convert.ToInt32(setVal.Value));
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            
 
             if (SMU_Func_Enabl.IsOn)
             {
@@ -5297,7 +5310,7 @@ public sealed partial class ПараметрыPage
             Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
             Apply_tooltip.IsOpen = true;
             var infoSet = InfoBarSeverity.Success;
-            if (ApplyInfo != string.Empty)
+            if (ApplyInfo != string.Empty && _commandReturnedValue == false)
             {
                 await LogHelper.Log(ApplyInfo);
                 Apply_tooltip.Title = "Apply_Warn".GetLocalized();
@@ -5309,6 +5322,10 @@ public sealed partial class ПараметрыPage
             }
             else
             {
+                if (_commandReturnedValue)
+                {
+                    Apply_tooltip.Subtitle = ApplyInfo;
+                }
                 await LogHelper.Log("Apply_Success".GetLocalized());
                 await Task.Delay(3000);
                 Apply_tooltip.IsOpen = false;
@@ -5318,10 +5335,11 @@ public sealed partial class ПараметрыPage
             NotificationsService.Notifies.Add(new Notify
             {
                 Title = Apply_tooltip.Title,
-                Msg = Apply_tooltip.Subtitle + (ApplyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                Msg = Apply_tooltip.Subtitle.Replace("Param_DeveloperOptions_ResultSaved".GetLocalized(), string.Empty) + ((ApplyInfo != string.Empty && !_commandReturnedValue) ? "DELETEUNAVAILABLE" : ""),
                 Type = infoSet
             });
-            NotificationsService.SaveNotificationsSettings(); 
+            NotificationsService.SaveNotificationsSettings();
+            _commandReturnedValue = false;
             SendSmuCommand.Play_Invernate_QuickSMU(0);
         }
         catch (Exception exception)
@@ -5439,43 +5457,7 @@ public sealed partial class ПараметрыPage
                     {
                         if (currProfile.profilename != string.Empty || currProfile.profilename != "Unsigned profile")
                         {
-                            ProfileCOM.Items.Add(currProfile.profilename/*new ComboBoxItem
-                            {
-                                Content = new StackPanel
-                                {
-                                    Orientation = Orientation.Horizontal,
-                                    Children = 
-                                    { 
-                                        new TextBlock
-                                        {
-                                            Text = currProfile.profilename
-                                        },
-                                        new TextBlock
-                                        {
-                                            Text = " " + currProfile.cpu2value.ToString(CultureInfo.InvariantCulture) + "W",
-                                            Foreground = new SolidColorBrush(new Color { A = 255, B = 154, G = 143, R = 178})
-                                        },
-                                        new TextBlock
-                                        {
-                                            Text = "-" 
-                                        },
-                                        new TextBlock
-                                        {
-                                            Text = currProfile.cpu3value.ToString(CultureInfo.InvariantCulture) + "W",
-                                            Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 112, R = 194})
-                                        },
-                                        new TextBlock
-                                        {
-                                            Text = "-" 
-                                        },
-                                        new TextBlock
-                                        {
-                                            Text = currProfile.vrm1value.ToString(CultureInfo.InvariantCulture) + "A",
-                                            Foreground = new SolidColorBrush(new Color { A = 255, B = 26, G = 23, R = 162})
-                                        }
-                                    },
-                                } 
-                            }*/);
+                            ProfileCOM.Items.Add(currProfile.profilename);
                         }
                     }
 
@@ -5949,6 +5931,24 @@ public sealed partial class ПараметрыPage
                 }
             }
         }
+    }
+
+    private void BackToNormalMode_Click(object sender, RoutedEventArgs e)
+    {
+        ToolTipService.SetToolTip(ActionButton_Apply, "Param_Apply/ToolTipService/ToolTip".GetLocalized()); 
+        DeveloperSettingsMode.Visibility = Visibility.Collapsed;
+        DeveloperOptionsApply.Visibility = Visibility.Collapsed; 
+        NormalUserMode.Visibility = Visibility.Visible;
+        Param_Name.Text = "Param_Name/Text".GetLocalized();
+    }
+
+    private void OpenDeveloperOptionsMode_Click(object sender, RoutedEventArgs e)
+    {
+        ToolTipService.SetToolTip(ActionButton_Apply, "Param_Apply_DevOptions/ToolTipService/ToolTip".GetLocalized());
+        NormalUserMode.Visibility = Visibility.Collapsed;
+        DeveloperSettingsMode.Visibility = Visibility.Visible;
+        DeveloperOptionsApply.Visibility = Visibility.Visible;
+        Param_Name.Text = "Param_DeveloperOptions_Name/Text".GetLocalized();
     }
     #endregion
 
@@ -6998,5 +6998,6 @@ public sealed partial class ПараметрыPage
     private void VID_1_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID1();
     private void VID_2_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args) => Save_ID2();
 
-    #endregion 
+    #endregion
+
 }

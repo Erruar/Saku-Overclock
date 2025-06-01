@@ -26,8 +26,8 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <ToggleButton Padding="5" 
-                                                  CornerRadius="8" 
-                                                  Margin="0,0,5,5"
+                                                  CornerRadius="28" 
+                                                  Margin="0,0,6,5"
                                                   HorizontalAlignment="Stretch"
                                                   VerticalAlignment="Stretch"
                                                   Shadow="{ThemeResource SharedShadow}" 

@@ -11,6 +11,7 @@ public class RyzenadjProvider : IDataProvider
     public static bool IsPhysicallyUnavailable { get; private set; } = false; // Флаг, указывающий, что Ryzenadj физически недоступен.
     private bool _isDllRunning; // Флаг запущен ли dll
     private bool _isTableRunning; // Флаг запущена ли таблица Power Table внутри dll
+    private bool? _useOnlyTwoCores = null; // Флаг использования только 4х ядер на Picasso
 
     #region Provider Initialization
     /// <summary>
@@ -133,27 +134,52 @@ public class RyzenadjProvider : IDataProvider
         double sumCoreVolt = 0;
         var validCoreCount = 0;
         var validCoreCountVoltage = 0;
+
         List<double> clkPerClock = [];
         List<double> voltPerClock = [];
         List<double> tempPerClock = [];
         List<double> powerPerClock = [];
+
+        if (_useOnlyTwoCores == null)
+        {
+            var family = get_cpu_family(_rypointer);
+            _useOnlyTwoCores = family is RyzenFamily.PICASSO or RyzenFamily.DALI or RyzenFamily.RAVEN;
+        }
+
+        // Сначала заполняем коллекции для отображения — для всех 8 ядер
         for (uint f = 0; f < 8; f++)
         {
             var clk = Math.Round(get_core_clk(_rypointer, f), 3);
             var volt = Math.Round(get_core_volt(_rypointer, f), 3);
             var pwr = Math.Round(get_core_power(_rypointer, f), 3);
             var temp = Math.Round(get_core_temp(_rypointer, f), 3);
-            if (clk > 0) // Исключаем нули и -1
+
+            if (clk > 0) // частота не нулевая
             {
                 clkPerClock.Add(clk);
                 tempPerClock.Add(temp);
                 powerPerClock.Add(pwr);
-                sumCoreClk += clk;
-                validCoreCount++;
             }
+
             if (volt > 0)
             {
                 voltPerClock.Add(volt);
+            }
+
+            // Средние значения — только по нужному количеству ядер
+            if (_useOnlyTwoCores == true && f >= 2)
+            {
+                continue; // пропускаем ядра выше второго
+            }
+
+            if (clk > 0)
+            {
+                sumCoreClk += clk;
+                validCoreCount++;
+            }
+
+            if (volt > 0)
+            {
                 sumCoreVolt += volt;
                 validCoreCountVoltage++;
             }
@@ -162,8 +188,16 @@ public class RyzenadjProvider : IDataProvider
         var avgCoreClk = validCoreCount > 0 ? sumCoreClk / validCoreCount : 0;
         var avgCoreVolt = validCoreCountVoltage > 0 ? sumCoreVolt / validCoreCountVoltage : 0;
 
-        return (avgCoreClk, avgCoreVolt, clkPerClock.ToArray(), voltPerClock.ToArray(), tempPerClock.ToArray(), powerPerClock.ToArray());
+        return (
+            avgCoreClk,
+            avgCoreVolt,
+            clkPerClock.ToArray(),
+            voltPerClock.ToArray(),
+            tempPerClock.ToArray(),
+            powerPerClock.ToArray()
+               );
     }
+
     #endregion
 
     #region RyzenADJ usings

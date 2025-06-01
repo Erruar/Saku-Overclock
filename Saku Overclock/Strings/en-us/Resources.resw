@@ -440,7 +440,7 @@ All presets have autosaving</value>
     <value>Minimum</value>
   </data>
   <data name="Preset_Name.Text" xml:space="preserve">
-    <value>Premaded presets</value>
+    <value>Premade presets</value>
   </data>
   <data name="Preset_Speed" xml:space="preserve">
     <value>Speed</value>
@@ -492,8 +492,7 @@ it is needed or until
 it reaches the actual power limit</value>
   </data>
   <data name="Param_c6_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>
-Time of fast frequency rise
+    <value>Time of fast frequency rise
 This is the time that the processor will
 increase its power until
 it is needed or until
@@ -1510,7 +1509,7 @@ ARE DOING!!! IT CAN BURN YOUR CPU!</value>
     <value>Activated</value>
   </data>
   <data name="Shell_PremadedProfiles" xml:space="preserve">
-    <value>Premaded profiles</value>
+    <value>Premade profiles</value>
   </data>
   <data name="Shell_Preset_Balance" xml:space="preserve">
     <value>Balance</value>
@@ -2098,16 +2097,16 @@ to be installed and running</value>
     <value>RAM</value>
   </data>
   <data name="Param_IncompatibleProfile.Message" xml:space="preserve">
-    <value>You can't change premaded profiles! That's what they're "Premaded". Select one of your saved profiles</value>
+    <value>You can't change premade profiles! That's what they're "Premade". Select one of your saved profiles</value>
   </data>
   <data name="Param_IncompatibleProfile.Title" xml:space="preserve">
     <value>Oops... it looks like you're doing something wrong!</value>
   </data>
   <data name="Param_Premaded" xml:space="preserve">
-    <value>Premaded</value>
+    <value>Premade</value>
   </data>
   <data name="Param_PremadedCombo.Text" xml:space="preserve">
-    <value>Premaded</value>
+    <value>Premade</value>
   </data>
   <data name="Param_IncompatibleCPU.Message" xml:space="preserve">
     <value>You can't use those parameters. If your CPU is AMD Ryzen - contact the app developer</value>
@@ -2400,7 +2399,7 @@ UPDATE</value>
     <value>Switch between custom user profiles</value>
   </data>
   <data name="Settings_Keybinds_Elements_Premaded.Text" xml:space="preserve">
-    <value>Switch between premaded profiles</value>
+    <value>Switch between premade profiles</value>
   </data>
   <data name="Settings_Keybinds_Elements_RTSS.Text" xml:space="preserve">
     <value>Switch RTSS Overlay state with overlay alert</value>
@@ -2575,7 +2574,7 @@ on your Asus device</value>
 Switch to NBFC mode. Fan control for 
 most laptops with custom fan curve 
 settings. Need to use config file for
-your laptop or select one of premaded
+your laptop or select one of premade
 or create a new one</value>
   </data>
   <data name="Cooler_AsusModeCharacter.Text" xml:space="preserve">
@@ -2739,7 +2738,7 @@ Please note that it may take up to 2 minutes to launch!</value>
     <value>PowerMon Pro</value>
   </data>
   <data name="Tray_Profiles.Description" xml:space="preserve">
-    <value>Premaded presets for each situation</value>
+    <value>Premade presets for each situation</value>
   </data>
   <data name="Tray_Profiles.Label" xml:space="preserve">
     <value>Presets</value>
@@ -2788,7 +2787,7 @@ methods are available.</value>
     <value>You have successfully switched your profiles to </value>
   </data>
   <data name="Shell_ProfileChanging_Premade" xml:space="preserve">
-    <value>You have successfully switched premaded profiles to </value>
+    <value>You have successfully switched premade profiles to </value>
   </data>
   <data name="Shell_RTSSChanging" xml:space="preserve">
     <value>Overlay state changed</value>
@@ -3153,5 +3152,145 @@ this curve</value>
   </data>
   <data name="Cooler_Curve_Fixed_Range.Content" xml:space="preserve">
     <value>Different fixed mode</value>
+  </data>
+  <data name="Cooler_AsusModeUnsupportedSign" xml:space="preserve">
+    <value>Oops... Looks like your device doesn't support this type of cooler control!</value>
+  </data>
+  <data name="Cooler_InstallNbfc.Content" xml:space="preserve">
+    <value>Install NBFC</value>
+  </data>
+  <data name="Cooler_NbfcIsntInstalled.Text" xml:space="preserve">
+    <value>Are you sure the NBFC is installed?</value>
+  </data>
+  <data name="Cooler_NbfcNoConfigFiles.Content" xml:space="preserve">
+    <value>No configuration files found</value>
+  </data>
+  <data name="Param_Apply_DevOptions.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Apply developer settings
+Applies only selected developer options
+Such as sending Smu commands, P-State 
+writing, or Smu functions.
+Your previous P-State settings, Smu
+functions and Smu notes will be saved.</value>
+  </data>
+  <data name="Param_DeveloperOptions.Text" xml:space="preserve">
+    <value>Developer options</value>
+  </data>
+  <data name="Param_DeveloperOptionsEnter.Text" xml:space="preserve">
+    <value>Enter in developer options mode</value>
+  </data>
+  <data name="Param_DeveloperOptionsExit.Text" xml:space="preserve">
+    <value>Return to overclock page</value>
+  </data>
+  <data name="Param_DeveloperOptionsExitSign.Text" xml:space="preserve">
+    <value>Exit developer options mode</value>
+  </data>
+  <data name="Param_DeveloperOptions_CommandResult" xml:space="preserve">
+    <value>returned the result: </value>
+  </data>
+  <data name="Param_DeveloperOptions_Name.Text" xml:space="preserve">
+    <value>Developer options</value>
+  </data>
+  <data name="Param_DeveloperOptions_ResultSaved" xml:space="preserve">
+    <value>
+All results are saved in notifications</value>
+  </data>
+  <data name="Param_DeveloperOptions_SmuCommand" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="Preset_SavedProfiles.Text" xml:space="preserve">
+    <value>Saved presets</value>
+  </data>
+  <data name="Preset_SavedProfilesAddNew.Text" xml:space="preserve">
+    <value>Add new </value>
+  </data>
+  <data name="Preset_UndervoltingDesc.Text" xml:space="preserve">
+    <value>Reduces the voltage on your processor to make it work better without using more power.</value>
+  </data>
+  <data name="Param_Profile_Delete_Profile.Content" xml:space="preserve">
+    <value>Delete preset</value>
+  </data>
+  <data name="Param_Profile_New_Desc_Add.PlaceholderText" xml:space="preserve">
+    <value>New description...</value>
+  </data>
+  <data name="Preset_BetterTurbo.Text" xml:space="preserve">
+    <value>Better Turboboost</value>
+  </data>
+  <data name="Preset_BetterTurboDesc.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Better Turboboost
+Improves the processor's ability to conserve frequency 
+and power, enabling you to adjust its behaviour under 
+short-term and long-term load.
+
+These parameters of your preset will be changed:
+Time of slow frequency rise
+Time of fast frequency rise</value>
+  </data>
+  <data name="Preset_CurveOptions_Disabled.Text" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="Preset_CurveOptions_Effective.Text" xml:space="preserve">
+    <value>Effective</value>
+  </data>
+  <data name="Preset_CurveOptions_Light.Text" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Preset_DetailSettingsMode.Text" xml:space="preserve">
+    <value>Detailed settings</value>
+  </data>
+  <data name="Preset_IgpuAuto.Content" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Preset_IgpuMaxed.Content" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="Preset_IgpuOptimization.Text" xml:space="preserve">
+    <value>iGPU Enhancement</value>
+  </data>
+  <data name="Preset_IgpuOptimizationDesc.ToolTipService.ToolTip" xml:space="preserve">
+    <value>iGPU Enhancement
+Increases the performance of the integrated graphics 
+(iGPU) through safe frequency overclocking
+
+These parameters of your preset will be changed:
+Minimum iGPU clock
+Maximum iGPU clock/Fixed iGPU freq</value>
+  </data>
+  <data name="Preset_IgpuStable.Content" xml:space="preserve">
+    <value>Stable</value>
+  </data>
+  <data name="Preset_QuickSettingsMode.Text" xml:space="preserve">
+    <value>Fast settings</value>
+  </data>
+  <data name="Preset_SmartTdp.Text" xml:space="preserve">
+    <value>Smart TDP Optimization</value>
+  </data>
+  <data name="Preset_TdpLimit.ToolTipService.ToolTip" xml:space="preserve">
+    <value>TDP Limit and Smart TDP Optimization 
+Limits the processor's heat dissipation (TDP) 
+to a specified level. This affects maximum 
+performance and heating: the lower the limit, 
+the cooler and more energy-efficient the 
+notebook runs, but with a possible reduction in 
+speed. Smart TDP optimization allows the 
+processor to exceed the limit you set, to 
+compensate for the reduction in speed.
+
+These parameters of your preset will be changed:
+Sustained power limit/Laptop power limit
+Actual power limit
+Average power limit</value>
+  </data>
+  <data name="Preset_TdpLimitText.Text" xml:space="preserve">
+    <value>TDP Limit</value>
+  </data>
+  <data name="Preset_TurboAuto.Text" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Preset_TurboHeavy.Text" xml:space="preserve">
+    <value>Heavy</value>
+  </data>
+  <data name="Preset_TurboSmart.Text" xml:space="preserve">
+    <value>Smart</value>
   </data>
 </root>

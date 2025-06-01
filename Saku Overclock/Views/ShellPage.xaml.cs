@@ -46,8 +46,15 @@ public sealed partial class ShellPage
     private int? _compareList; // Нет новых уведомлений - пока
 
     private CancellationTokenSource? _applyDebounceCts;
-    private readonly object _applyDebounceLock = new();
-    private bool _applyScheduled = false;
+    private readonly Lock _applyDebounceLock = new();
+    private string _pendingProfileToApply = string.Empty; // Профиль, который нужно применить
+    private bool _isCustomProfile = false; // Флаг типа профиля для применения
+    private int _pendingCustomProfileIndex = -1; // Индекс кастомного профиля для применения
+
+    // Состояние для отслеживания позиции при быстром переключении
+    private int _virtualCustomProfileIndex = -1; // Виртуальная позиция в кастомных профилях
+    private string _virtualPremadeProfile = string.Empty; // Виртуальная позиция в готовых профилях
+    private bool _isVirtualStateActive = false; // Флаг активности виртуального состояния
 
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
@@ -109,6 +116,10 @@ public sealed partial class ShellPage
 
     #region JSON and Initialization
 
+    #region App TitleBar Initialization
+
+    #region App TitleBar
+
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
@@ -120,8 +131,6 @@ public sealed partial class ShellPage
         Theme_Loader(); //Загрузить тему
         AutoStartChecker();
     }
-
-    #region App TitleBar Initialization
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
@@ -153,6 +162,8 @@ public sealed partial class ShellPage
             MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
         }
     }
+    
+    #endregion
 
     #region User Profiles
 
@@ -185,9 +196,9 @@ public sealed partial class ShellPage
             foreach (var profile in _profile)
             {
                 var securedProfile = profile;
-                if (profile == null) 
-                { 
-                    securedProfile = new Profile();  
+                if (profile == null)
+                {
+                    securedProfile = new Profile();
                     if (_profile.Length > 0)
                     {
                         _profile[0] = securedProfile;
@@ -287,45 +298,6 @@ public sealed partial class ShellPage
         }
     }
 
-    private string NextPremadeProfile_Switch(out string icon, out string desc)
-    {
-        icon = "\uE783";
-        desc = "Unable to read description";
-        string nextProfile;
-
-        var profiles = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
-        var activeProfile = profiles.FirstOrDefault(p =>
-                                (bool)typeof(IAppSettingsService).GetProperty($"Premade{p}Activated")
-                                    ?.GetValue(AppSettings)!) ??
-                            "Balance";
-        string comboName;
-        if (AppSettings.Preset == -1)
-        {
-            NextPremadeProfile_Activate(NextProfiles[activeProfile]);
-            (nextProfile, desc, icon, AppSettings.RyzenAdjLine, comboName) =
-                PremadedProfiles[NextProfiles[activeProfile]];
-        }
-        else
-        {
-            AppSettings.Preset = -1;
-            NextPremadeProfile_Activate(activeProfile);
-            (nextProfile, desc, icon, AppSettings.RyzenAdjLine, comboName) = PremadedProfiles[activeProfile];
-        }
-
-        desc = desc.GetLocalized();
-        foreach (var element in ProfileSetComboBox.Items.OfType<ComboBoxItem>())
-        {
-            if (element.Name == comboName)
-            {
-                ProfileSetComboBox.SelectedItem = element;
-                ProfileSetButton.IsEnabled = false;
-                break;
-            }
-        }
-
-        return nextProfile.GetLocalized();
-    }
-
     public static void NextPremadeProfile_Activate(string nextProfile)
     {
         var profiles = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
@@ -382,96 +354,211 @@ public sealed partial class ShellPage
         }
     };
 
-    private string NextCustomProfile_Switch()
+    // Методы для получения следующего профиля БЕЗ применения настроек
+    private (string profileName, string profileKey) GetNextPremadeProfile(out string icon, out string desc)
     {
-        var nextProfile = string.Empty;
-        ProfileLoad();
-        if (AppSettings.Preset == -1) // У нас был готовый пресет
-        {
-            if (_profile.Length > 0 &&
-                _profile[0].profilename !=
-                string.Empty) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
-            {
-                AppSettings.Preset = 0;
-                try
-                {
-                    foreach (var element in ProfileSetComboBox.Items)
-                    {
-                        if (element != null && element as ComboBoxItem != null)
-                        {
-                            var selectedName = (element as ComboBoxItem)!.Content.ToString();
-                            if (selectedName != null && selectedName == _profile[0].profilename)
-                            {
-                                ProfileSetComboBox.SelectedItem = element as ComboBoxItem;
-                                ProfileSetButton.IsEnabled = false;
-                                nextProfile = selectedName;
-                            }
-                        }
-                        else
-                        {
-                            MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                                $"Unable to select the profile {(element as ComboBoxItem)!.Content}",
-                                InfoBarSeverity.Error);
-                        }
-                    }
+        icon = "\uE783";
+        desc = "Unable to read description";
 
-                    MandarinSparseUnit();
-                }
-                catch
-                {
-                    MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                        $"Unable to select the profile {_profile[0].profilename}", InfoBarSeverity.Error);
-                }
-            }
+        var profiles = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
+
+        string currentProfile;
+
+        // Определяем текущую позицию
+        if (_isVirtualStateActive && !string.IsNullOrEmpty(_virtualPremadeProfile))
+        {
+            // Используем виртуальную позицию при быстром переключении
+            currentProfile = _virtualPremadeProfile;
         }
-        else // У нас уже был выставлен какой-то профиль
+        else
         {
-            var nextProfileIndex = _profile.Length - 1 >= AppSettings.Preset + 1 ? AppSettings.Preset + 1 : 0;
-            if (_profile.Length > nextProfileIndex &&
-                _profile[nextProfileIndex].profilename !=
-                string.Empty) // Проверка именно на НОЛЬ, а не на пустую строку, так как профиль может загрузиться некорректно
+            // Определяем реальную текущую позицию
+            if (AppSettings.Preset == -1)
             {
-                AppSettings.Preset = nextProfileIndex;
-                try
-                {
-                    foreach (var element in ProfileSetComboBox.Items)
-                    {
-                        if (element != null && element as ComboBoxItem != null)
-                        {
-                            var selectedName = (element as ComboBoxItem)!.Content.ToString();
-                            if (selectedName != null && selectedName == _profile[nextProfileIndex].profilename)
-                            {
-                                ProfileSetComboBox.SelectedItem = element as ComboBoxItem;
-                                ProfileSetButton.IsEnabled = false;
-                                nextProfile = selectedName;
-                            }
-                        }
-                        else
-                        {
-                            MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                                $"Unable to select the profile {(element as ComboBoxItem)!.Content}",
-                                InfoBarSeverity.Error);
-                        }
-                    }
+                // Активен готовый профиль - ищем какой именно
+                currentProfile = profiles.FirstOrDefault(p =>
+                                    (bool)typeof(IAppSettingsService).GetProperty($"Premade{p}Activated")
+                                        ?.GetValue(AppSettings)!) ?? "Balance";
 
-                    MandarinSparseUnit();
-                }
-                catch
-                {
-                    MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                        $"Unable to select the profile {_profile[0].profilename}", InfoBarSeverity.Error);
-                }
+                // Инициализируем виртуальное состояние
+                _virtualPremadeProfile = currentProfile;
+                _isVirtualStateActive = true;
             }
             else
             {
-                MandarinAddNotification("TraceIt_Error".GetLocalized(), nextProfileIndex.ToString(),
-                    InfoBarSeverity.Error);
+                // Был активен кастомный профиль - начинаем с Balance
+                currentProfile = "Balance";
+                _virtualPremadeProfile = currentProfile;
+                _isVirtualStateActive = true;
             }
         }
 
-        AppSettings.SaveSettings();
-        SelectedProfile = nextProfile;
-        return nextProfile;
+        // Получаем следующий профиль
+        var nextProfile = NextProfiles[currentProfile];
+
+        // Обновляем виртуальную позицию
+        _virtualPremadeProfile = nextProfile;
+
+        // Получаем данные профиля для отображения
+        var (name, description, iconStr, _, _) = PremadedProfiles[nextProfile];
+        desc = description.GetLocalized();
+        icon = iconStr;
+
+        return (name.GetLocalized(), nextProfile);
+    }
+
+    private (string profileName, int profileIndex) GetNextCustomProfile(out string? icon, out string? desc)
+    {
+        icon = string.Empty;
+        desc = string.Empty;
+
+        try
+        {
+            ProfileLoad();
+
+            if (_profile == null || _profile.Length == 0)
+            {
+                MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                    "No custom profiles available", InfoBarSeverity.Warning);
+                return (string.Empty, -1);
+            }
+
+            int nextProfileIndex;
+
+            // Определяем текущую позицию
+            if (_isVirtualStateActive && _virtualCustomProfileIndex >= 0)
+            {
+                // Используем виртуальную позицию при быстром переключении
+                nextProfileIndex = (_virtualCustomProfileIndex + 1) % _profile.Length;
+            }
+            else
+            {
+                // Определяем реальную текущую позицию
+                if (AppSettings.Preset == -1)
+                {
+                    // Сейчас активен готовый пресет - начинаем с первого кастомного
+                    nextProfileIndex = 0;
+                    _virtualCustomProfileIndex = -1; // Чтобы следующий был 0
+                    _isVirtualStateActive = true;
+                }
+                else
+                {
+                    // Уже выбран кастомный профиль
+                    nextProfileIndex = (AppSettings.Preset + 1) % _profile.Length;
+                    _virtualCustomProfileIndex = AppSettings.Preset;
+                    _isVirtualStateActive = true;
+                }
+            }
+
+            // Обновляем виртуальную позицию
+            _virtualCustomProfileIndex = nextProfileIndex;
+
+            // Проверяем корректность индекса и данных профиля
+            if (nextProfileIndex >= 0 && nextProfileIndex < _profile.Length &&
+                !string.IsNullOrEmpty(_profile[nextProfileIndex].profilename))
+            {
+                var profile = _profile[nextProfileIndex];
+                icon = profile.profileicon;
+                desc = profile.profiledesc;
+                return (profile.profilename, nextProfileIndex);
+            }
+            else
+            {
+                MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                    $"Invalid profile index: {nextProfileIndex}", InfoBarSeverity.Error);
+                return (string.Empty, -1);
+            }
+        }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                $"Error getting next custom profile: {ex.Message}", InfoBarSeverity.Error);
+            return (string.Empty, -1);
+        }
+    }
+
+    // Методы для применения профилей (вызываются только после задержки)
+    private void ApplyPremadeProfile(string profileKey)
+    {
+        try
+        {
+            // Активируем профиль
+            NextPremadeProfile_Activate(profileKey);
+            AppSettings.Preset = -1; // Устанавливаем флаг готового профиля
+
+            // Получаем данные профиля и обновляем настройки
+            var (_, _, _, settings, comboName) = PremadedProfiles[profileKey];
+            AppSettings.RyzenAdjLine = settings;
+
+            // Обновляем UI
+            foreach (var element in ProfileSetComboBox.Items.OfType<ComboBoxItem>())
+            {
+                if (element.Name == comboName)
+                {
+                    ProfileSetComboBox.SelectedItem = element;
+                    ProfileSetButton.IsEnabled = false;
+                    break;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                $"Error applying premade profile: {ex.Message}", InfoBarSeverity.Error);
+        }
+    }
+
+    private void ApplyCustomProfile(int profileIndex)
+    {
+        try
+        {
+            if (_profile == null || profileIndex < 0 || profileIndex >= _profile.Length)
+            {
+                MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                    $"Invalid custom profile index: {profileIndex}", InfoBarSeverity.Error);
+                return;
+            }
+
+            AppSettings.Preset = profileIndex;
+            var profile = _profile[profileIndex];
+
+            // Обновляем UI
+            UpdateProfileComboBox(profile.profilename);
+            MandarinSparseUnit();
+            SelectedProfile = profile.profilename;
+
+            AppSettings.SaveSettings();
+        }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                $"Error applying custom profile: {ex.Message}", InfoBarSeverity.Error);
+        }
+    }
+
+    private void UpdateProfileComboBox(string profileName)
+    {
+        try
+        {
+            foreach (var element in ProfileSetComboBox.Items.OfType<ComboBoxItem>())
+            {
+                var selectedName = element.Content?.ToString();
+                if (!string.IsNullOrEmpty(selectedName) && selectedName == profileName)
+                {
+                    ProfileSetComboBox.SelectedItem = element;
+                    ProfileSetButton.IsEnabled = false;
+                    return;
+                }
+            }
+
+            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                $"Profile '{profileName}' not found in ComboBox", InfoBarSeverity.Warning);
+        }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                $"Error updating ComboBox: {ex.Message}", InfoBarSeverity.Error);
+        }
     }
 
     private void MandarinSparseUnit()
@@ -756,12 +843,12 @@ public sealed partial class ShellPage
 
         if (profile.advncd6)
         {
-            adjline += " --apu-skin-temp=" + profile.advncd6value;
+            adjline += " --apu-skin-temp=" + profile.advncd6value * 256;
         }
 
         if (profile.advncd7)
         {
-            adjline += " --dgpu-skin-temp=" + profile.advncd7value;
+            adjline += " --dgpu-skin-temp=" + profile.advncd7value * 256;
         }
 
         if (profile.advncd8)
@@ -836,7 +923,7 @@ public sealed partial class ShellPage
         var cpu = CpuSingleton.GetInstance();
         if (profile.cogfx)
         {
-            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(cpu.info.codeName,false);
+            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(cpu.info.codeName, false);
             cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(cpu.info.codeName, true);
             //Using Irusanov method
             for (var i = 0; i < cpu.info.topology.physicalCores; i++)
@@ -1279,9 +1366,59 @@ public sealed partial class ShellPage
         return coreMask;
     }
 
+    public static void AutoStartChecker()
+    {
+        var taskService = new TaskService();
+        const string taskName = "Saku Overclock";
+        var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
+        var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
+        var pathToStartupLnk = Path.Combine(pathToProgramDirectory!, "Saku Overclock.exe");
+
+        if (AppSettings.AutostartType == 2 || AppSettings.AutostartType == 3)
+        {
+            // Проверяем существование задачи
+            var existingTask = taskService.GetTask(taskName);
+            if (existingTask != null)
+            {
+                // Проверяем корректность пути к исполняемому файлу
+                if (existingTask.Definition.Actions[0] is ExecAction execAction && execAction.Path.Equals(pathToStartupLnk, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Задача существует и путь корректен, ничего не делаем
+                    return;
+                }
+                else
+                {
+                    // Путь некорректен, удаляем задачу
+                    taskService.RootFolder.DeleteTask(taskName);
+                }
+            }
+
+            // Создаём новую задачу
+            var taskDefinition = taskService.NewTask();
+            taskDefinition.RegistrationInfo.Description = "An awesome ryzen laptop overclock utility for those who want real performance! Autostart Saku Overclock application task";
+            taskDefinition.RegistrationInfo.Author = "Sakura Serzhik";
+            taskDefinition.RegistrationInfo.Version = new Version("1.0.0");
+            taskDefinition.Principal.RunLevel = TaskRunLevel.Highest;
+            taskDefinition.Triggers.Add(new LogonTrigger { Enabled = true });
+            taskDefinition.Actions.Add(new ExecAction(pathToStartupLnk));
+
+            taskService.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
+        }
+        else
+        {
+            // Если задача существует, удаляем её
+            if (taskService.GetTask(taskName) != null)
+            {
+                taskService.RootFolder.DeleteTask(taskName);
+            }
+        }
+    }
+
     #endregion
 
     #region Notifications
+
+    #region Window Definitions
 
     private void Window_Activated(object sender, WindowActivatedEventArgs args)
     {
@@ -1310,6 +1447,9 @@ public sealed partial class ShellPage
         }
     }
 
+    #endregion
+
+    #region Info Update Timers
     private void StartInfoUpdate()
     {
         _dispatcherTimer = new DispatcherTimer();
@@ -1322,6 +1462,10 @@ public sealed partial class ShellPage
 
     private void StopInfoUpdate() => _dispatcherTimer?.Stop();
 
+    #endregion
+
+    #region Info Update Timer Stop When Page Navigated
+
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
@@ -1333,6 +1477,10 @@ public sealed partial class ShellPage
         base.OnNavigatedFrom(e);
         StopInfoUpdate();
     }
+
+    #endregion
+
+    #region Notification Update Voids
 
     private Task GetNotify()
     {
@@ -1375,7 +1523,7 @@ public sealed partial class ShellPage
                         Theme_Loader();
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return; //Удалить и не показывать 
-                    case "UpdateNAVBAR": 
+                    case "UpdateNAVBAR":
                         HideNavBar();
                         Icon.Visibility = Visibility.Collapsed;
                         ProfileSetup.Visibility = Visibility.Collapsed;
@@ -1715,18 +1863,6 @@ public sealed partial class ShellPage
                                     () => _profile[AppSettings.Preset].gpu7 = false
                                 },
                                 {
-                                    "Param_VRM_v8/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].vrm8 = false
-                                },
-                                {
-                                    "Param_GPU_g13/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].vrm9 = false
-                                },
-                                {
-                                    "Param_GPU_g14/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].vrm9 = false
-                                },
-                                {
                                     "Param_GPU_g15/Text".GetLocalized(),
                                     () => _profile[AppSettings.Preset].gpu15 = false
                                 },
@@ -1760,9 +1896,14 @@ public sealed partial class ShellPage
                             but2.IsEnabled = true;
                             await sw.WriteLineAsync(@"//------OK------\\");
                             sw.Close();
-                            if (navigationService.Frame!.GetPageViewModel() is not ПараметрыViewModel)
+
+                            if (navigationService.Frame!.GetPageViewModel() is not ГлавнаяViewModel)
                             {
-                                navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true);
+                                navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, false);
+                            }
+                            else
+                            {
+                                navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!, null, false);
                             }
 
                             var butLogs = new Button
@@ -1954,53 +2095,9 @@ public sealed partial class ShellPage
 
     #endregion
 
-    public void AutoStartChecker()
-    {
-        var taskService = new TaskService();
-        const string taskName = "Saku Overclock";
-        var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
-        var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
-        var pathToStartupLnk = Path.Combine(pathToProgramDirectory!, "Saku Overclock.exe");
+    #endregion
 
-        if (AppSettings.AutostartType == 2 || AppSettings.AutostartType == 3)
-        {
-            // Проверяем существование задачи
-            var existingTask = taskService.GetTask(taskName);
-            if (existingTask != null)
-            {
-                // Проверяем корректность пути к исполняемому файлу
-                if (existingTask.Definition.Actions[0] is ExecAction execAction && execAction.Path.Equals(pathToStartupLnk, StringComparison.OrdinalIgnoreCase))
-                {
-                    // Задача существует и путь корректен, ничего не делаем
-                    return;
-                }
-                else
-                {
-                    // Путь некорректен, удаляем задачу
-                    taskService.RootFolder.DeleteTask(taskName);
-                }
-            }
-
-            // Создаём новую задачу
-            var taskDefinition = taskService.NewTask();
-            taskDefinition.RegistrationInfo.Description = "An awesome ryzen laptop overclock utility for those who want real performance! Autostart Saku Overclock application task";
-            taskDefinition.RegistrationInfo.Author = "Sakura Serzhik";
-            taskDefinition.RegistrationInfo.Version = new Version("1.0.0");
-            taskDefinition.Principal.RunLevel = TaskRunLevel.Highest;
-            taskDefinition.Triggers.Add(new LogonTrigger { Enabled = true });
-            taskDefinition.Actions.Add(new ExecAction(pathToStartupLnk));
-
-            taskService.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
-        }
-        else
-        {
-            // Если задача существует, удаляем её
-            if (taskService.GetTask(taskName) != null)
-            {
-                taskService.RootFolder.DeleteTask(taskName);
-            }
-        }
-    }
+    #region JSON Initialization
 
     private void Theme_Loader()
     {
@@ -2109,6 +2206,8 @@ public sealed partial class ShellPage
 
     #endregion
 
+    #endregion
+
     #region Keyboard Hooks
 
     private static IntPtr SetHook(LowLevelKeyboardProc proc) // Эту функцию можно не изменять
@@ -2120,9 +2219,6 @@ public sealed partial class ShellPage
         return SetWindowsHookEx(WhKeyboardLl, proc, // Вызываем WinAPI функцию
             GetModuleHandle(curModule.ModuleName), 0); // Получаем хэндл модуля
     }
-
-    [DllImport("user32.dll")]
-    private static extern short GetKeyState(int nVirtKey);
 
     private static bool IsAltPressed() => (GetKeyState(VkMenu) & KeyPressed) != 0;
 
@@ -2154,34 +2250,59 @@ public sealed partial class ShellPage
             case VirtualKey.W:
                 {
                     string nextCustomProfile;
-                    nextCustomProfile = NextCustomProfile_Switch();
-                    ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
-                            nextCustomProfile); 
-                    ScheduleApplyProfile();
+                    int nextCustomIndex;
+                    (nextCustomProfile, nextCustomIndex) = GetNextCustomProfile(out var icon1, out var desc1);
 
-                    MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
-                        "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
-                        InfoBarSeverity.Informational);
+                    if (!string.IsNullOrEmpty(nextCustomProfile))
+                    {
+                        // Сохраняем информацию о профиле для применения БЕЗ изменения настроек
+                        lock (_applyDebounceLock)
+                        {
+                            _pendingProfileToApply = nextCustomProfile;
+                            _isCustomProfile = true;
+                            _pendingCustomProfileIndex = nextCustomIndex;
+                        }
+
+                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                                nextCustomProfile, icon1, desc1);
+                        ScheduleApplyProfile();
+
+                        MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
+                            "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
+                            InfoBarSeverity.Informational);
+                    }
                     break;
                 }
             // Переключить между готовыми пресетами
             case VirtualKey.P:
                 string nextPremadeProfile;
-                nextPremadeProfile = NextPremadeProfile_Switch(out var icon, out var desc);
-                ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
-                        nextPremadeProfile, icon, desc); 
+                string nextPremadeKey;
+                (nextPremadeProfile, nextPremadeKey) = GetNextPremadeProfile(out var icon, out var desc);
 
-                ScheduleApplyProfile();
+                if (!string.IsNullOrEmpty(nextPremadeProfile))
+                {
+                    // Сохраняем информацию о профиле для применения БЕЗ изменения настроек
+                    lock (_applyDebounceLock)
+                    {
+                        _pendingProfileToApply = nextPremadeKey; // Сохраняем ключ профиля
+                        _isCustomProfile = false;
+                    }
 
-                MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
-                    "Shell_ProfileChanging_Premade".GetLocalized() + $"{nextPremadeProfile}!",
-                    InfoBarSeverity.Informational);
+                    ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                            nextPremadeProfile, icon, desc);
+
+                    ScheduleApplyProfile();
+
+                    MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
+                        "Shell_ProfileChanging_Premade".GetLocalized() + $"{nextPremadeProfile}!",
+                        InfoBarSeverity.Informational);
+                }
                 break;
             // Переключить состояние RTSS
             case VirtualKey.R:
                 if (AppSettings.RtssMetricsEnabled)
                 {
-                  
+
                     ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                         "RTSS " + "Cooler_Service_Disabled/Content".GetLocalized(), "\uE7AC");
 
@@ -2203,50 +2324,89 @@ public sealed partial class ShellPage
         }
         return Task.CompletedTask;
     }
-
     private void ScheduleApplyProfile()
     {
         lock (_applyDebounceLock)
         {
-            _applyDebounceCts?.Cancel(); // Отменить предыдущий таймер
+            // Отменяем предыдущий таймер
+            _applyDebounceCts?.Cancel();
             _applyDebounceCts = new CancellationTokenSource();
             var token = _applyDebounceCts.Token;
-
-            // Если уже была одна отложенная задача и она выполнилась — разрешить следующую
-            if (_applyScheduled)
-            {
-                _applyScheduled = false;
-            }
 
             Task.Run(async () =>
             {
                 try
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(2), token);
+                    // Ждем 1500мс для дебаунсинга
+                    await Task.Delay(TimeSpan.FromMilliseconds(1500), token);
 
-                    lock (_applyDebounceLock)
+                    // Применяем профиль в UI потоке
+                    DispatcherQueue.TryEnqueue(() =>
                     {
-                        if (!_applyScheduled)
+                        try
                         {
-                            _applyScheduled = true;
-                            DispatcherQueue.TryEnqueue(() => // Используем диспатчер страницы
+                            // ТОЛЬКО ЗДЕСЬ обновляем настройки и применяем профиль
+                            string profileToApply;
+                            bool isCustom;
+                            int customIndex;
+
+                            lock (_applyDebounceLock)
                             {
-                                MainWindow.Applyer.ApplyWithoutAdjLine(false); // Применить только один раз
-                            });
+                                profileToApply = _pendingProfileToApply;
+                                isCustom = _isCustomProfile;
+                                customIndex = _pendingCustomProfileIndex;
+
+                                // Сбрасываем виртуальное состояние после применения
+                                _isVirtualStateActive = false;
+                                _virtualCustomProfileIndex = -1;
+                                _virtualPremadeProfile = string.Empty;
+                            }
+
+                            if (!string.IsNullOrEmpty(profileToApply))
+                            {
+                                if (isCustom)
+                                {
+                                    // Применяем кастомный профиль
+                                    ApplyCustomProfile(customIndex);
+                                }
+                                else
+                                {
+                                    // Применяем готовый профиль
+                                    ApplyPremadeProfile(profileToApply);
+                                }
+
+                                MainWindow.Applyer.ApplyWithoutAdjLine(false);
+                            }
                         }
-                    }
+                        catch (Exception ex)
+                        {
+                            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                                $"Error applying profile: {ex.Message}", InfoBarSeverity.Error);
+                        }
+                    });
                 }
                 catch (TaskCanceledException)
                 {
-                    // Повторное нажатие — перезапуск ожидания
+                    // Таймер был отменен из-за нового нажатия - это нормально
+                }
+                catch (Exception ex)
+                {
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                            $"Error in profile scheduling: {ex.Message}", InfoBarSeverity.Error);
+                    });
                 }
             });
         }
-    }
+    } 
 
     #region Hook DLL Imports
 
     // Импорт необходимых функций из WinApi
+    [DllImport("user32.dll")]
+    private static extern short GetKeyState(int nVirtKey);
+
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern IntPtr SetWindowsHookEx(int idHook,
         LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);

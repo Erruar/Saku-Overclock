@@ -253,7 +253,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                     var busyRam = totalRam - Convert.ToDouble(objram["FreePhysicalMemory"]);
                     var usagePercent = (int)Math.Round(busyRam * 100 / totalRam, 0);
                     var totalRamGb = Math.Round(totalRam / 1024 / 1024, 1) + "GB"; // Преобразуем в GB
-                    var busyRamGb = Math.Round(busyRam / 1024 / 1024, 2) + "GB";
+                    var busyRamGb = Math.Round(busyRam / 1024 / 1024, 1) + "GB";
                     var usageString = $"{usagePercent}%\n{busyRamGb}/{totalRamGb}";
 
                     return (totalRamGb, busyRamGb, usagePercent, usageString);

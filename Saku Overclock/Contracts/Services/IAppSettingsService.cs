@@ -115,7 +115,7 @@ public interface IAppSettingsService
     {
         get;
         set;
-    } // Уровень глобального андервольтинга (0 - лёгкий, 1 - средний, 2 - сильный)
+    } // Уровень глобального андервольтинга (0 - выкл, 1 - лёгкий, 2 - средний)
 
     bool ProfilespageViewModeBeginner
     {
