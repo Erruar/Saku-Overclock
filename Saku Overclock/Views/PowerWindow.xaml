@@ -23,7 +23,7 @@
                Margin="40,0,0,0"/>
             <HyperlinkButton TabIndex="-1" Margin="120,1,0,0">PRO</HyperlinkButton>
         </Grid>
-        <ScrollViewer Margin="0,50,0,33"  Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+        <ScrollViewer Margin="0,50,0,33" HorizontalContentAlignment="Stretch" Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Top">
             <Grid>
                 <GridView x:Name="PowerGridView"  ItemsSource="{x:Bind _powerGridItems}" HorizontalAlignment="Stretch">
                     <GridView.Header>
@@ -32,12 +32,11 @@
                                 <ColumnDefinition Width="65"/>
                                 <ColumnDefinition Width="65"/>
                                 <ColumnDefinition Width="65"/> 
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition MaxWidth="190"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Index" x:Name="IndexName" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Column="0"/>
                             <TextBlock Text="Offset" x:Name="OffsetName" VerticalAlignment="Center" Margin="-24,0,0,0" HorizontalAlignment="Center" Grid.Column="1"/>
                             <TextBlock Text="Value" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2"/>
-                            <TextBlock Visibility="Collapsed" x:Name="NotePos" Margin="2,0,0,0"  Text="Row|Column" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                             <TextBlock Text="Quick Note" x:Name="NoteName" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="3"/>
                         </Grid>
                     </GridView.Header>
@@ -48,27 +47,19 @@
                                     <ColumnDefinition Width="65"/>
                                     <ColumnDefinition Width="65"/>
                                     <ColumnDefinition Width="65"/> 
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="190"/>
                                 </Grid.ColumnDefinitions>
-                         <!----><TextBlock Visibility="{Binding Normal}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Text="{Binding Index}" Grid.Column="0"/>
-                                <CheckBox Visibility="{Binding Rtss}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Column="0" IsChecked="{Binding Osd, Mode=TwoWay}"></CheckBox>
-                         <!----><TextBlock Visibility="{Binding Normal}" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Offset}" Grid.Column="1"/>
-                                <TextBox Margin="-20,0,9,0" Visibility="{Binding Rtss}" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding NoteValue, Mode=TwoWay}" Grid.Column="1"/>
-                         <!----><TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Value}" Grid.Column="2"/>
-                                <StackPanel Grid.Column="3" Visibility="{Binding Rtss}" Orientation="Horizontal" Margin="10,0,-23,0">
-                                    <NumberBox Value="{Binding Row, Mode=TwoWay}" Minimum="1" Width="36" Margin="4,0,0,0" CornerRadius="15,0,0,15"/>
-                                    <StackPanel Margin="-4.50,0,-23,0" Width="40" CornerRadius="0,15,15,0">
-                                        <NumberBox Value="{Binding Column, Mode=TwoWay}" Minimum="1" Width="36" Margin="-15,0,-20,0" CornerRadius="0,15,15,0"/>
-                                    </StackPanel>
-                                </StackPanel>
-                         <!----><TextBox Margin="{Binding NoteColumn}" Text="{Binding Note, Mode=TwoWay}" HorizontalAlignment="Left" Width="2500" Grid.Column="3"/>
+                                <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Text="{Binding Index}" Grid.Column="0"/>
+                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Offset}" Grid.Column="1"/>
+                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Value}" Grid.Column="2"/>
+                                <TextBox Margin="10,0,0,0" Text="{Binding Note, Mode=TwoWay}" HorizontalAlignment="Stretch" Grid.Column="3"/>
                             </Grid>
                         </DataTemplate>
                     </GridView.ItemTemplate>
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <ItemsWrapGrid HorizontalAlignment="Left"
-                           MaximumRowsOrColumns="1"
+                            <ItemsWrapGrid HorizontalAlignment="Stretch"
+                           MaximumRowsOrColumns="9"
                            Orientation="Horizontal"/>
                         </ItemsPanelTemplate>
                     </GridView.ItemsPanel>
@@ -80,14 +71,10 @@
                 <ColumnDefinition MaxWidth="200"/>
                 <ColumnDefinition MinWidth="40"/>
             </Grid.ColumnDefinitions>
-            <NumberBox Grid.Column="0" Minimum="200" HorizontalAlignment="Stretch" Value="500" Height="33" SpinButtonPlacementMode="Inline" SmallChange="200" MaxWidth="200" LargeChange="400" x:Name="NumericUpDownInterval" ></NumberBox>
+            <NumberBox Grid.Column="0" Minimum="300" Maximum="3000" HorizontalAlignment="Stretch" Value="500" Height="33" SpinButtonPlacementMode="Inline" SmallChange="200" MaxWidth="200" LargeChange="400" x:Name="NumericUpDownInterval" ></NumberBox>
             <Button Grid.Column="1" HorizontalAlignment="Stretch" Height="33" Click="Button_Click">
                 Reapply every
             </Button>
         </Grid>
-        
-        <!--<ToggleButton VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="33" Height="33" Click="Settings_Click">
-            <FontIcon Glyph="&#xE713;" Margin="-10,0,-10,0"></FontIcon>
-        </ToggleButton>-->
     </Grid>
 </Window>
