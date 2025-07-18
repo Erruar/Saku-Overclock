@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -10,45 +11,147 @@ namespace Saku_Overclock.Views;
 
 internal partial class PowerWindow : IDisposable
 {
-    private int _noteColumnOverrider = 3;
     private Powercfg? _notes;
     private ObservableCollection<PowerMonitorItem>? _powerGridItems;
     private readonly IDataProvider? _dataProvider = App.GetService<IDataProvider>();
     private bool _isInitialized = false;
+    private float[]? _rawData; // Сырые данные
+    private int _currentPage = 0;
+    private const int PAGE_SIZE = 50; // Показываем только 50 элементов за раз
+    private int _totalItems = 0;
+    private bool _isLoading = false;
 
     public PowerWindow()
     {
         InitializeComponent();
+        InitializeWindowProperties();
+        InitializeTimer();
+
+        // Быстрая синхронная инициализация
+        _powerGridItems = [];
+        PowerGridView.ItemsSource = _powerGridItems;
+
+        // Загружаем первую страницу
+        LoadInitialData();
+    }
+
+    private void InitializeWindowProperties()
+    {
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
-        Activated += PowerWindow_Activated;
         AppTitleBarText.Text = "Saku PowerMon";
         this.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/powermon.ico"));
         this.SetWindowSize(342, 579);
-        NoteLoad();
+
+        Activated += PowerWindow_Activated;
+        Closed += PowerWindow_Closed;
+    }
+
+    private void InitializeTimer()
+    {
         _powerCfgTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
         _powerCfgTimer.Tick += PowerCfgTimer_Tick;
-        _powerCfgTimer.Stop();
-        InitializeComponent();
+    }
 
-        FillInData(_dataProvider.GetPowerTable()!);
+    private void LoadInitialData()
+    {
+        try
+        {
+            // Быстрая загрузка заметок
+            NoteLoad();
 
-        Closed += PowerWindow_Closed; 
+            // Получаем данные
+            _rawData = _dataProvider?.GetPowerTable();
+            if (_rawData == null)
+            {
+                return;
+            }
+
+            _totalItems = _rawData.Length;
+
+            // Загружаем первую страницу
+            LoadPage(0);
+
+            _isInitialized = true;
+            _powerCfgTimer.Start();
+
+            // Обновляем индикатор
+            UpdatePageInfo();
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Unable to initialize PowerMon data: " + e.Message);
+        }
+    }
+
+    private void LoadPage(int page)
+    {
+        if (_isLoading || _rawData == null)
+        {
+            return;
+        }
+
+        _isLoading = true;
+        _currentPage = page;
+
+        try
+        {
+            _powerGridItems?.Clear();
+
+            var startIndex = page * PAGE_SIZE;
+            var endIndex = Math.Min(startIndex + PAGE_SIZE, _totalItems);
+
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                // Убеждаемся что у нас есть заметка
+                while (_notes?._notelist.Count <= i)
+                {
+                    _notes?._notelist.Add(" ");
+                }
+
+                var item = new PowerMonitorItem
+                {
+                    Index = $"{i:D4}",
+                    Offset = $"0x{i * 4:X4}",
+                    Value = $"{_rawData[i]:F6}",
+                    Note = _notes?._notelist[i] ?? " ",
+                    RealIndex = i // Сохраняем реальный индекс
+                };
+
+                _powerGridItems?.Add(item);
+            }
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void UpdatePageInfo()
+    {
+        var totalPages = (_totalItems + PAGE_SIZE - 1) / PAGE_SIZE;
+        PageInfo.Text = "PowerMon_Page".GetLocalized() + $"{_currentPage + 1}/{totalPages}";
+
+        PrevPageButton.IsEnabled = _currentPage > 0;
+        NextPageButton.IsEnabled = _currentPage < totalPages - 1;
     }
 
     #region JSON containers
 
     private void NoteSave()
     {
+        if (_notes == null)
+        {
+            return;
+        }
+
         try
         {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            Directory.CreateDirectory(Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\", "PowerMon"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                @"\SakuOverclock\PowerMon\powercfg.json", JsonConvert.SerializeObject(_notes, Formatting.Indented));
+            var basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock", "PowerMon");
+            Directory.CreateDirectory(basePath);
+
+            var filePath = Path.Combine(basePath, "powercfg.json");
+            File.WriteAllText(filePath, JsonConvert.SerializeObject(_notes, Formatting.Indented));
         }
         catch
         {
@@ -58,111 +161,46 @@ internal partial class PowerWindow : IDisposable
 
     private void NoteLoad()
     {
-        var filePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\PowerMon\powercfg.json";
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock", "PowerMon", "powercfg.json");
+
         if (File.Exists(filePath))
         {
             try
             {
-                _notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(filePath))!;
+                _notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(filePath));
             }
             catch
             {
-                JsonRepair();
+                _notes = new Powercfg();
             }
         }
         else
         {
-            JsonRepair();
-        }
-    }
-
-    private void JsonRepair()
-    {
-        if (_notes != null) //перепроверка на соответствие, восстановление конфига.
-        {
-            try
-            {
-                Directory.CreateDirectory(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                Directory.CreateDirectory(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\",
-                    "PowerMon"));
-                File.WriteAllText(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                    @"\SakuOverclock\PowerMon\powercfg.json", JsonConvert.SerializeObject(_notes));
-            }
-            catch
-            {
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                            @"\SakuOverclock\PowerMon\powercfg.json");
-                Directory.CreateDirectory(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                Directory.CreateDirectory(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\",
-                    "PowerMon"));
-                File.WriteAllText(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                    @"\SakuOverclock\PowerMon\powercfg.json", JsonConvert.SerializeObject(_notes));
-                App.GetService<IAppNotificationService>()
-                    .Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-            }
-        }
-        else //Всё же если за 5 раз пересканирования файл пуст
-        {
             _notes = new Powercfg();
-            try
-            {
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                            @"\SakuOverclock\PowerMon\powercfg.json");
-                Directory.CreateDirectory(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                Directory.CreateDirectory(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\",
-                    "PowerMon"));
-                File.WriteAllText(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                    @"\SakuOverclock\PowerMon\powercfg.json", JsonConvert.SerializeObject(_notes));
-            }
-            catch
-            {
-                App.GetService<IAppNotificationService>()
-                    .Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory));
-            }
         }
 
-        try
-        {
-            for (var j = 0; j < 5; j++)
-            {
-                _notes = JsonConvert.DeserializeObject<Powercfg>(File.ReadAllText(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                    @"\SakuOverclock\PowerMon\powercfg.json"))!;
-                if (_notes != null)
-                {
-                    break;
-                }
-            }
-        }
-        catch
-        {
-            App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                AppContext.BaseDirectory));
-        }
-
+        _notes ??= new Powercfg();
     }
 
     #endregion
 
     #region Event Handlers
-    public void Dispose() => GC.SuppressFinalize(this);
+
+    public void Dispose()
+    {
+        _powerCfgTimer?.Stop();
+        GC.SuppressFinalize(this);
+    }
 
     private void PowerWindow_Closed(object sender, WindowEventArgs args)
     {
-        //CPU?.powerTable.Dispose();
+        _powerCfgTimer?.Stop();
+        _powerGridItems?.Clear();
         _powerGridItems = null;
         _notes = null;
+        _rawData = null;
         PowerGridView.ItemsSource = null;
-        PowerGridView.Items.Clear();
+
         _ = Garbage.Garbage_Collect();
         Dispose();
     }
@@ -176,78 +214,111 @@ internal partial class PowerWindow : IDisposable
 
     private void PowerCfgTimer_Tick(object? sender, object e)
     {
-        RefreshData(_dataProvider!.GetPowerTable()!);
-    }
+        if (!_isInitialized || _isLoading)
+        {
+            return;
+        }
 
-    private void Button_Click(object sender, RoutedEventArgs e)
+        RefreshCurrentPage();
+    }
+    private void NumericUpDownInterval_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
+        if (!_isInitialized || _isLoading)
+        {
+            return;
+        }
+
         try
         {
-            _powerCfgTimer.Interval = new TimeSpan(0, 0, 0, 0, Convert.ToInt32(NumericUpDownInterval.Value));
+            var interval = Convert.ToInt32(NumericUpDownInterval.Value);
+            _powerCfgTimer.Interval = new TimeSpan(0, 0, 0, 0, interval);
         }
         catch
         {
             NumericUpDownInterval.Value = 500;
-            _powerCfgTimer.Interval = new TimeSpan(0, 0, 0, 0, Convert.ToInt32(NumericUpDownInterval.Value));
+            _powerCfgTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
         }
     }
 
-    private void Settings_Click(object sender, RoutedEventArgs e)
+    private void PrevPage_Click(object sender, RoutedEventArgs e)
     {
-        IndexName.Text = IndexName.Text == "Index" ? "OSD" : "Index";
-        OffsetName.Text = OffsetName.Text == "Offset" ? "Color #" : "Offset";
-        NoteName.Text = NoteName.Text == "Quick Note" ? "OSD Name (value)" : "Quick Note";
-        _noteColumnOverrider = _noteColumnOverrider == 3 ? 4 : 3;
+        if (_currentPage > 0)
+        {
+            LoadPage(_currentPage - 1);
+            UpdatePageInfo();
+        }
+    }
+
+    private void NextPage_Click(object sender, RoutedEventArgs e)
+    {
+        var totalPages = (_totalItems + PAGE_SIZE - 1) / PAGE_SIZE;
+        if (_currentPage < totalPages - 1)
+        {
+            LoadPage(_currentPage + 1);
+            UpdatePageInfo();
+        }
+    }
+
+    private void GoToPage_Click(object sender, RoutedEventArgs e)
+    {
+        if (int.TryParse(PageInput.Text, out var page))
+        {
+            var totalPages = (_totalItems + PAGE_SIZE - 1) / PAGE_SIZE;
+            page = Math.Max(1, Math.Min(page, totalPages)) - 1; // Конвертировать в правильный индекс
+
+            if (page != _currentPage)
+            {
+                LoadPage(page);
+                UpdatePageInfo();
+            }
+        }
     }
 
     #endregion
 
-    #region PowerMon PowerTable voids
+    #region PowerMon PowerTable
 
     private sealed partial class PowerMonitorItem : INotifyPropertyChanged
     {
         private string? _value;
-        private readonly string? _note;
+        private string? _note;
 
         public string? Index
         {
-            get;
-            set;
+            get; set;
         }
-
         public string? Offset
         {
-            get;
-            set;
+            get; set;
         }
+        public int RealIndex
+        {
+            get; set;
+        } // Реальный индекс в массиве
 
         public string? Value
         {
             get => _value;
             set
             {
-                if (_value == value)
+                if (_value != value)
                 {
-                    return;
+                    _value = value;
+                    OnPropertyChanged(nameof(Value));
                 }
-
-                _value = value;
-                OnPropertyChanged(nameof(Value));
             }
         }
 
         public string? Note
         {
             get => _note;
-            init
+            set
             {
-                if (_note == value)
+                if (_note != value)
                 {
-                    return;
+                    _note = value;
+                    OnPropertyChanged(nameof(Note));
                 }
-
-                _note = value;
-                OnPropertyChanged(nameof(Note));
             }
         }
 
@@ -259,67 +330,47 @@ internal partial class PowerWindow : IDisposable
         }
     }
 
-    private async void FillInData(float[] table)
+    private void RefreshCurrentPage()
     {
-        try
+        if (_rawData == null || _isLoading)
         {
-            PowerGridView.ItemsSource = _powerGridItems;
-            await Task.Run(() =>
+            return;
+        }
+
+        // Получаем новые данные
+        var newData = _dataProvider?.GetPowerTable();
+        if (newData == null)
+        {
+            return;
+        }
+
+        _rawData = newData;
+
+        // Обновляем только видимые элементы
+        for (var i = 0; i < _powerGridItems!.Count; i++)
+        {
+            var item = _powerGridItems[i];
+            var realIndex = item.RealIndex;
+
+            if (realIndex < _rawData.Length)
             {
-                NoteLoad();
-                _powerGridItems = [];
-                for (var i = 0; i < table.Length; i++)
+                var newValue = $"{_rawData[realIndex]:F6}";
+                if (item.Value != newValue)
                 {
-                    if (_notes?._notelist.Count <= i)
+                    item.Value = newValue;
+                }
+
+                // Сохраняем заметки если изменились
+                if (item.Note != _notes?._notelist[realIndex])
+                {
+                    if (_notes != null && realIndex < _notes._notelist.Count)
                     {
-                        _notes._notelist.Add(" ");
+                        _notes._notelist[realIndex] = item.Note ?? " ";
+                        // Отложенное сохранение
+                        Task.Run(NoteSave);
                     }
-
-                    var subItem = new PowerMonitorItem
-                    {
-                        Index = $"{i:D4}",
-                        Offset = $"0x{i * 4:X4}",
-                        Value = $"{table[i]:F6}",
-                        Note = _notes?._notelist[i]
-                    };
-                    _powerGridItems.Add(subItem);
                 }
-            }); 
-            _powerCfgTimer.Start();
-        }
-        catch (Exception e)
-        {
-            // ReSharper disable once AsyncVoidMethod
-            throw new Exception("Unable to fill in data to PowerMon PowerTable " + e); // TODO handle exception
-        }
-        _isInitialized = true;
-    }
-
-    private void RefreshData(float[] table)
-    {
-        if (!_isInitialized) { return; }
-        try
-        {
-            var index = 0;
-            foreach (var item in _powerGridItems!)
-            {
-                //Безопасная зона 
-                item.Value = $"{table[index]:F6}"; // Обновление информации
-                if (item.Note != _notes?._notelist[index])
-                {
-                    _notes!._notelist[index] = item.Note!;
-                    NoteSave();
-                }
-
-                index++;
             }
-
-            // Явное обновление GridView
-            PowerGridView.ItemsSource = _powerGridItems;
-        }
-        catch
-        { 
-            // Ignored
         }
     }
 
