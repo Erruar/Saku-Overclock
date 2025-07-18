@@ -11,9 +11,11 @@ public interface ISendSmuCommandService
     void CancelRange();
     void SendRange(string commandIndex, string startIndex, string endIndex, int mailbox, bool log);
     event EventHandler? RangeCompleted;
+    string GetCodeNameGeneration(Cpu cpu);
     uint ReturnCoGfx(Cpu.CodeName codeName, bool isMp1);
     uint ReturnCoPer(Cpu.CodeName codeName, bool isMp1);
     double ReturnCpuPowerLimit(Cpu cpu);
+    bool ReturnUndervoltingAvailability(Cpu cpu);
     bool? IsPlatformPC(Cpu cpu);
     uint GenerateSmuArgForSetGfxclkOverdriveByFreqVid(double frequencyMHz, double voltage);
 }
