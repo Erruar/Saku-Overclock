@@ -56,7 +56,7 @@ Text="{Binding Version}">
                 <RowDefinition MaxHeight="545"/>
                 <RowDefinition Height="0.12"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Column="0" SizeChanged="Grid_SizeChanged" Margin="0,0,7,5" CornerRadius="16" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}">
+            <Grid Grid.Column="0" SizeChanged="Grid_SizeChanged" Margin="0,0,7,5" CornerRadius="16" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                 <StackPanel x:Name="DeviceInfoSign" Margin="14,16,0,0" Orientation="Vertical">
                     <TextBlock FontWeight="SemiBold" FontSize="17" x:Uid="Main_DeviceInfo" Text="Информация об устройстве"/>
                 </StackPanel>
@@ -342,7 +342,7 @@ Text="{Binding Version}">
                 </Grid>
             </Grid>
             <Grid HorizontalAlignment="Stretch" Grid.Column="1" CornerRadius="16" Margin="0,0,10,5" Shadow="{StaticResource SharedShadow}" Translation="0,0,20">
-                <Grid CornerRadius="8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{Binding ElementName=HiddenButton, Path=Background}">
+                <Grid CornerRadius="8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                     <Pivot Margin="0,-15,0,-5" CornerRadius="8,8,8,8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                         <PivotItem Margin="12,0,12,-10">
                             <PivotItem.Header>
@@ -364,7 +364,7 @@ Text="{Binding Version}">
                                             <StackPanel Margin="20,0,20,0" Orientation="Vertical" 
                                                         HorizontalAlignment="Stretch" IsHitTestVisible="True"
                                                         x:Name="Preset_Custom">
-                                                <ToggleButton CornerRadius="16" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                                     <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                         <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xE718;"/>
                                                         <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
@@ -382,7 +382,7 @@ Text="{Binding Version}">
                                         </PivotItem.Header>
                                         <ScrollViewer>
                                             <StackPanel Margin="20,0,20,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                                <ToggleButton CornerRadius="16" x:Name="Preset_Max" Tag="Preset_Max" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Max" Tag="Preset_Max" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                                     <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                         <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xEcad;"/>
                                                         <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
@@ -391,7 +391,7 @@ Text="{Binding Version}">
                                                         </StackPanel>
                                                     </Grid> 
                                                 </ToggleButton>
-                                                <ToggleButton CornerRadius="16" x:Name="Preset_Speed" Tag="Preset_Speed" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Speed" Tag="Preset_Speed" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                                     <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                         <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xe945;"/>
                                                         <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
@@ -400,7 +400,7 @@ Text="{Binding Version}">
                                                         </StackPanel>
                                                     </Grid> 
                                                 </ToggleButton>
-                                                <ToggleButton CornerRadius="16" x:Name="Preset_Balance" Tag="Preset_Balance" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Balance" Tag="Preset_Balance" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                                     <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                         <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec49;"/>
                                                         <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
@@ -409,7 +409,7 @@ Text="{Binding Version}">
                                                         </StackPanel>
                                                     </Grid> 
                                                 </ToggleButton>
-                                                <ToggleButton CornerRadius="16" x:Name="Preset_Eco" Tag="Preset_Eco" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Eco" Tag="Preset_Eco" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                                     <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                         <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec0a;"/>
                                                         <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
@@ -418,7 +418,7 @@ Text="{Binding Version}">
                                                         </StackPanel>
                                                     </Grid> 
                                                 </ToggleButton>
-                                                <ToggleButton CornerRadius="16" x:Name="Preset_Min" Tag="Preset_Min" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,7" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Min" Tag="Preset_Min" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,7" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                                     <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                         <FontIcon HorizontalAlignment="Left" Margin="6,0,0,0" Glyph="&#xebc0;"/>
                                                         <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">

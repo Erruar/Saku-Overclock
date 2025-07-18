@@ -83,10 +83,12 @@ public sealed partial class ГлавнаяPage
 
             var toggleButton = new ToggleButton
             {
-                Margin = new Thickness(0, 3, 0, 0),
+                Margin = new Thickness(0, 7, 0, 0),
                 CornerRadius = new CornerRadius(16),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Left,
+                Shadow = new ThemeShadow(),
+                Translation = new System.Numerics.Vector3(0, 0, 20),
                 IsChecked = isChecked,
                 Content = new Grid
                 {
