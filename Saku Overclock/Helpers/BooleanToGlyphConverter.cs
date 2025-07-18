@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Data;
 
 namespace Saku_Overclock.Helpers;
 
-public class BooleanToGlyphConverter : IValueConverter
+public partial class BooleanToGlyphConverter : IValueConverter
 {
     public object? Convert(object value, Type targetType, object parameter, string language)
     {
