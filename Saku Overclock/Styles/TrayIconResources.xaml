@@ -132,7 +132,7 @@
         </tb:TaskbarIcon.GeneratedIcon>-->
         <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout>
-                <MenuFlyoutItem Command="{StaticResource Command1}" />
+                <MenuFlyoutItem MinWidth="250" Command="{StaticResource Command1}" />
                 <MenuFlyoutSeparator />
                 <MenuFlyoutItem Command="{StaticResource Command2}" />
                 <MenuFlyoutSeparator />
