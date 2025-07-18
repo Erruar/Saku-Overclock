@@ -11,7 +11,6 @@ public class ZenstatesCoreProvider : IDataProvider
     private List<double> _currentCpuClocks = [];
     private float _currentCpuLoad;
     private int _globalCoreCounter = -1;
-    public static int GlobalCpuDetectionMethod { get; set; } = 1;
     private readonly Cpu Cpu = CpuSingleton.GetInstance();
     private readonly Dictionary<int, int> CoreIndexMap = [];
     private int _cpuLoadIndex;
@@ -24,10 +23,7 @@ public class ZenstatesCoreProvider : IDataProvider
         // Здесь реализация через Zenstates Core (с WMI, таблицами FIRM и т.п.)
         await RefreshPowerTable();
         await InitializeCoreIndexMapAsync((int)Cpu.info.topology.cores);
-        if (GlobalCpuDetectionMethod == 2)
-        {
-            await AsyncWmiGetCoreFreq((int)Cpu.info.topology.cores);
-        }
+        
         await Task.Delay(50);
         var (avgCoreClk, clkPerClock) = CalculateCoreMetrics();
         return new SensorsInformation
@@ -55,6 +51,11 @@ public class ZenstatesCoreProvider : IDataProvider
         };
     }
 
+    public float[]? GetPowerTable()
+    {
+        return Cpu.powerTable.Table;
+    }
+
     private (double avgCoreClk, double[] clkPerClock) CalculateCoreMetrics()
     {
         double sumCoreClk = 0;
@@ -79,7 +80,6 @@ public class ZenstatesCoreProvider : IDataProvider
     #region Get Information voids
     private async Task InitializeCoreIndexMapAsync(int coreCounter)
     {
-        GlobalCpuDetectionMethod = 1;
         if (_isInitialized || _isInitializing) { return; }
         _isInitializing = true;
         CoreIndexMap.Clear();
@@ -117,13 +117,12 @@ public class ZenstatesCoreProvider : IDataProvider
         }).ConfigureAwait(false);
         _isInitialized = true;
     }
-    private async Task AsyncWmiGetCoreFreq(int coreCounter)
+    private async Task AsyncWmiGetCoreFreq(int coreCounter) /* Не используется ! */
     {
-        GlobalCpuDetectionMethod = 2;
         await Task.Run(() =>
         {
-            _currentCpuClocks = GetSystemInfo.GetCurrentClockSpeedsMHz(coreCounter);
-            _currentCpuLoad = (float)GetSystemInfo.GetCurrentUtilisation();
+            _currentCpuClocks = GetSystemInfo.GetCurrentClockSpeedsMHz(coreCounter); // Через WMI. Медленно. ОЧЕНЬ МЕДЛЕННО.
+            _currentCpuLoad = (float)GetSystemInfo.GetCurrentUtilisation(); // Через WMI. Медленно. ОЧЕНЬ МЕДЛЕННО.
         });
     }
 
@@ -168,12 +167,7 @@ public class ZenstatesCoreProvider : IDataProvider
         {
             return 0;
         }
-        if (GlobalCpuDetectionMethod == 1)
-        {
-            return (_cachedTable != null && _cachedTable.Length >= _cpuLoadIndex && _cpuLoadIndex >= 0) ? _cachedTable[_cpuLoadIndex] : 0;
-        }
-
-        return _currentCpuLoad;
+        return (_cachedTable != null && _cachedTable.Length >= _cpuLoadIndex && _cpuLoadIndex >= 0) ? _cachedTable[_cpuLoadIndex] : 0;
     }
     private float GetStapmLimit() => _cachedTable != null ? _cachedTable[0] : 0;
 
@@ -198,7 +192,8 @@ public class ZenstatesCoreProvider : IDataProvider
 
     private float GetCoreClock(uint core)
     {
-        if (!_isInitialized)
+        return (float)Cpu.GetCoreMulti((int)core)/10;
+        /*if (!_isInitialized)
         {
             return _currentCpuClocks.Count - 1 > (int)core ? (float)_currentCpuClocks[(int)core] : -1f;
         }
@@ -212,7 +207,7 @@ public class ZenstatesCoreProvider : IDataProvider
             LogHelper.TraceIt_TraceError("Cached table is invalid or out of range.");
             return -1;
         }
-        if (_cachedTable[value] >= 7 && GlobalCpuDetectionMethod == 1)
+        if (_cachedTable[value] >= 7)
         {
             foreach (var el in _cachedTable)
             {
@@ -222,22 +217,7 @@ public class ZenstatesCoreProvider : IDataProvider
                 }
             }
         }
-        if (GlobalCpuDetectionMethod == 1)
-        {
-            return _cachedTable[value];
-        }
-
-        if (_currentCpuClocks[(int)core] == 0)
-        {
-            foreach (var el in _currentCpuClocks)
-            {
-                if (el > 0)
-                {
-                    return (float)el;
-                }
-            }
-        }
-        return (float)_currentCpuClocks[(int)core];
+        return _cachedTable[value];*/
     }
     #endregion
 }

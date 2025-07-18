@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 
 namespace Saku_Overclock.Services;
@@ -60,6 +61,55 @@ public class RyzenadjProvider : IDataProvider
             return 0;
         }
     }
+
+    /// <summary>
+    /// Получает всю Power Table как массив float значений
+    /// </summary>
+    /// <returns>Массив float значений или null при ошибке</returns>
+    public float[]? GetPowerTable()
+    {
+        if (_rypointer == IntPtr.Zero && !IsPhysicallyUnavailable)
+        {
+            Initialize();
+        }
+
+        try
+        {
+            // Получаем размер таблицы в байтах
+            var tableSizeBytes = get_table_size(_rypointer);
+            if (tableSizeBytes == UIntPtr.Zero)
+            {
+                return null;
+            }
+
+            // Вычисляем количество float значений
+            var floatCount = (int)tableSizeBytes / sizeof(float);
+            if (floatCount <= 0)
+            {
+                return null;
+            }
+
+            // Получаем указатель на таблицу
+            var tablePtr = get_table_values(_rypointer);
+            if (tablePtr == IntPtr.Zero)
+            {
+                return null;
+            }
+
+            // Копируем данные в управляемый массив
+            var values = new float[floatCount];
+            Marshal.Copy(tablePtr, values, 0, floatCount);
+
+            return values;
+        }
+        catch (Exception ex)
+        {
+            // Логируем ошибку если нужно
+            LogHelper.LogError($"[RyzenadjProvider::GetPowerTable]@Power Table read error: {ex.Message}");
+            return null;
+        }
+    }
+
     public void Cleanup_ryzenadj(IntPtr ry)
     {
         if (_isDllRunning)
@@ -240,7 +290,7 @@ public class RyzenadjProvider : IDataProvider
     private static extern uint get_table_ver(IntPtr ry);
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern ulong get_table_size(IntPtr ry);
+    private static extern UIntPtr get_table_size(IntPtr ry);
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern IntPtr get_table_values(IntPtr ry);
