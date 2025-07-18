@@ -49,32 +49,32 @@
         TODO: Update item icons by updating FontIcon.Glyph properties.
         https://docs.microsoft.com/windows/apps/design/style/segoe-fluent-icons-font#icon-list
         -->
-                    <NavigationViewItem x:Uid="Shell_Главная" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ГлавнаяViewModel">
+                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Главная" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ГлавнаяViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xf157;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem x:Uid="Shell_Пресеты" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ПресетыViewModel">
+                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Пресеты" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ПресетыViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xeadf;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem x:Uid="Shell_Параметры" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ПараметрыViewModel">
+                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Параметры" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ПараметрыViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe945;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem x:Uid="Shell_Информация" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ИнформацияViewModel">
+                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Информация" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ИнформацияViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe950;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem x:Uid="Shell_Кулер" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.КулерViewModel">
+                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Кулер" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.КулерViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ca;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem ToolTipService.ToolTip="DEBUG @ Enter first setup mode page" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ОбновлениеViewModel">
+                    <NavigationViewItem Visibility="Collapsed" CornerRadius="9" ToolTipService.ToolTip="DEBUG @ Enter first setup mode page" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ОбновлениеViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82F;"/>
                         </NavigationViewItem.Icon>
@@ -124,17 +124,7 @@
       Canvas.ZIndex="4"
       Height="{Binding ElementName=NavigationViewControl, Path=CompactPaneLength}"
       IsHitTestVisible="True"
-      VerticalAlignment="Top">
-                    <!--<Image Source="/Assets/WindowIcon.ico"
-           HorizontalAlignment="Left"
-           Width="16"
-           Height="16" />
-    <TextBlock x:Name="AppTitleBarText"
-               VerticalAlignment="Center"
-               TextWrapping="NoWrap"
-               Style="{StaticResource CaptionTextBlockStyle}"
-               Margin="28,0,0,0"/>
-    <HyperlinkButton TabIndex="-1" Margin="107,2,0,0">Rel-Cand v2</HyperlinkButton>-->
+      VerticalAlignment="Top"> 
                     <Button x:Name="Icon"
                             Grid.Column="0"
                             Height="33"
@@ -221,42 +211,7 @@
                             </StackPanel>
                         </StackPanel>
                     </Button>
-                </Grid>
-                <Grid HorizontalAlignment="Center" Grid.Column="3" x:Name="ProfileSetup" Canvas.ZIndex="4" Margin="0,8,0,0">
-                    <Border Margin="0,-3,0,3" Height="{Binding ElementName=ProfileSetComboBox, Path=ActualHeight}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Shadow="{ThemeResource SharedShadow}" CornerRadius="15" Translation="0,0,22"/>
-                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <ComboBox x:Name="ProfileSetComboBox"  
-                              Grid.Column="0"
-                              MinWidth="167" ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
-                              Canvas.ZIndex="4" SelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"
-                              CornerRadius="15,0,0,15" SelectionChanged="ProfileSetComboBox_SelectionChanged"
-                              Style="{ThemeResource AcrylicComboBoxStyle}">
-                            <ComboBox.DataContext>
-                                <local:ПараметрыViewModel></local:ПараметрыViewModel>
-                            </ComboBox.DataContext>
-                            <ComboBoxItem Content="User profile..."/>
-                            <ComboBoxItem IsEnabled="False" >
-                                <NavigationViewItemSeparator BorderThickness="1"></NavigationViewItemSeparator>
-                            </ComboBoxItem>
-                            <ComboBoxItem Content="Min"/>
-                            <ComboBoxItem Content="Eco"/>
-                            <ComboBoxItem Content="Balance"/>
-                            <ComboBoxItem Content="Speed"/>
-                            <ComboBoxItem Content="Max"/>
-                        </ComboBox>
-                        <Button x:Name="ProfileSetButton" Margin="0,-10,0,0"
-                              Grid.Column="1"  IsEnabledChanged="ProfileSetButton_IsEnabledChanged"
-                              MinWidth="148"   Click="ProfileSetButton_Click"
-                              Canvas.ZIndex="4" Style="{StaticResource AccentButtonStyle}"
-                              CornerRadius="0,15,15,0" Height="{Binding ElementName=ProfileSetComboBox, Path=ActualHeight}" >
-                            <TextBlock Text="Activate!" x:Name="ActivateText" FontWeight="ExtraBold"></TextBlock>
-                        </Button>
-                    </Grid>
-                </Grid>
+                </Grid> 
                 <Grid Name="RingerNotifGrid"
       Grid.Column="5" Canvas.ZIndex="4"
       Width="32"

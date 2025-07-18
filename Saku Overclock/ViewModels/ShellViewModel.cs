@@ -18,6 +18,8 @@ public partial class ShellViewModel : ObservableRecipient
     public ObservableCollection<ComboBoxItem> items;
     [ObservableProperty]
     public int selectedIndex;
+    [ObservableProperty]
+    public ComboBoxItem selectedItem;
     public INavigationService NavigationService
     {
         get;
@@ -37,7 +39,7 @@ public partial class ShellViewModel : ObservableRecipient
                 Content = new TextBlock 
                 { 
                     Text = "User profiles", 
-                    Foreground = (Microsoft.UI.Xaml.Media.Brush)App.Current.Resources["AccentTextFillColorTertiaryBrush"] },
+                },
                     IsEnabled = false 
                 },
             new() { Content = "dd" },

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Xml.Linq;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
@@ -23,6 +24,7 @@ using Windows.Graphics;
 using Windows.System;
 using Windows.UI.Text;
 using ZenStates.Core;
+using static Octokit.Caching.CachedResponse;
 using Action = System.Action;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using Task = System.Threading.Tasks.Task;
@@ -59,6 +61,7 @@ public sealed partial class ShellPage
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
+    private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
 
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
@@ -161,8 +164,8 @@ public sealed partial class ShellPage
         {
             MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
         }
-    }
-    
+    }  
+
     #endregion
 
     #region User Profiles
@@ -275,24 +278,25 @@ public sealed partial class ShellPage
             else
             {
                 ViewModel.SelectedIndex = AppSettings.Preset + 1;
-                ProfileSetComboBox.SelectedIndex = AppSettings.Preset + 1;
-            }
-
-            if (AppSettings.ReapplyLatestSettingsOnAppLaunch)
-            {
-                ProfileSetButton.IsEnabled = false;
+                foreach (var item in ViewModel.Items)
+                {
+                    if (item.Content.ToString() == _profile[AppSettings.Preset].profilename)
+                    {
+                        ViewModel.SelectedItem = item;
+                    }
+                }
             }
         }
     }
 
     private void SelectRightPremadedProfileName(string names)
     {
-        foreach (var box in ProfileSetComboBox.Items)
+        foreach (var box in ViewModel.Items)
         {
             var combobox = box as ComboBoxItem;
             if (combobox?.Name.Contains(names) == true)
             {
-                ProfileSetComboBox.SelectedItem = combobox;
+                ViewModel.SelectedItem = combobox;
                 return;
             }
         }
@@ -325,31 +329,31 @@ public sealed partial class ShellPage
         {
             "Min",
             ("Shell_Preset_Min", "Preset_Min_OverlayDesc", "\uEBC0",
-                " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=900 --slow-limit=6000 --slow-time=900 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ",
+                OcFinder.CreatePreset(PresetType.Min, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard : (AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
                 "PremadeSsAMin")
         },
         {
             "Eco",
             ("Shell_Preset_Eco", "Preset_Eco_OverlayDesc", "\uEC0A",
-                " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=500 --slow-limit=16000 --slow-time=500 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ",
+                OcFinder.CreatePreset(PresetType.Eco, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard : (AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
                 "PremadeSsAEco")
         },
         {
             "Balance",
             ("Shell_Preset_Balance", "Preset_Balance_OverlayDesc", "\uEC49",
-                " --tctl-temp=75 --stapm-limit=17000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ",
+                OcFinder.CreatePreset(PresetType.Balance, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
                 "PremadeSsABal")
         },
         {
             "Speed",
             ("Shell_Preset_Speed", "Preset_Speed_OverlayDesc", "\uE945",
-                " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=32 --slow-limit=20000 --slow-time=64 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ",
+                OcFinder.CreatePreset(PresetType.Performance, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
                 "PremadeSsASpd")
         },
         {
             "Max",
             ("Shell_Preset_Max", "Preset_Max_OverlayDesc", "\uECAD",
-                " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=80 --slow-limit=60000 --slow-time=1 --vrm-current=120000 --vrmmax-current=120000 --vrmsoc-current=120000 --vrmsocmax-current=120000 --vrmgfx-current=120000 --prochot-deassertion-ramp=2 ",
+                OcFinder.CreatePreset(PresetType.Max, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
                 "PremadeSsAMax")
         }
     };
@@ -491,12 +495,13 @@ public sealed partial class ShellPage
             AppSettings.RyzenAdjLine = settings;
 
             // Обновляем UI
-            foreach (var element in ProfileSetComboBox.Items.OfType<ComboBoxItem>())
+            foreach (var element in ViewModel.Items.OfType<ComboBoxItem>())
             {
+                var selectedName = element.Content?.ToString();
                 if (element.Name == comboName)
                 {
-                    ProfileSetComboBox.SelectedItem = element;
-                    ProfileSetButton.IsEnabled = false;
+                    SelectedProfile = selectedName!;
+                    ViewModel.SelectedItem = element;
                     break;
                 }
             }
@@ -540,13 +545,13 @@ public sealed partial class ShellPage
     {
         try
         {
-            foreach (var element in ProfileSetComboBox.Items.OfType<ComboBoxItem>())
+            foreach (var element in ViewModel.Items.OfType<ComboBoxItem>())
             {
                 var selectedName = element.Content?.ToString();
                 if (!string.IsNullOrEmpty(selectedName) && selectedName == profileName)
                 {
-                    ProfileSetComboBox.SelectedItem = element;
-                    ProfileSetButton.IsEnabled = false;
+                    SelectedProfile = selectedName; 
+                    ViewModel.SelectedItem = element;
                     return;
                 }
             }
@@ -563,12 +568,12 @@ public sealed partial class ShellPage
 
     private void MandarinSparseUnit()
     {
-        var element = ProfileSetComboBox.SelectedItem as ComboBoxItem;
+        var element = ViewModel.SelectedItem;
         //Required index
         if (!element!.Name.Contains("PremadeSsA"))
         {
-            var indexRequired = ProfileSetComboBox.SelectedIndex - 1;
-            AppSettings.Preset = ProfileSetComboBox.SelectedIndex - 1;
+            var indexRequired = ViewModel.SelectedIndex - 1;
+            AppSettings.Preset = ViewModel.SelectedIndex - 1;
             AppSettings.SaveSettings();
             ProfileLoad();
             MandarinSparseUnitProfile(_profile[indexRequired]);
@@ -584,6 +589,7 @@ public sealed partial class ShellPage
         }
         else
         {
+            var optimizationLevel = AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard : (AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep);
             if (element.Name.Contains("Min"))
             {
                 AppSettings.PremadeMinActivated = true;
@@ -592,8 +598,7 @@ public sealed partial class ShellPage
                 AppSettings.PremadeSpeedActivated = false;
                 AppSettings.PremadeMaxActivated = false;
                 AppSettings.Preset = -1;
-                AppSettings.RyzenAdjLine =
-                    " --tctl-temp=60 --stapm-limit=9000 --fast-limit=9000 --stapm-time=64 --slow-limit=6000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
+                AppSettings.RyzenAdjLine = OcFinder.CreatePreset(PresetType.Min, optimizationLevel).CommandString;
                 MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
                     AppSettings.ReapplyOverclockTimer);
             }
@@ -606,8 +611,7 @@ public sealed partial class ShellPage
                 AppSettings.PremadeSpeedActivated = false;
                 AppSettings.PremadeMaxActivated = false;
                 AppSettings.Preset = -1;
-                AppSettings.RyzenAdjLine =
-                    " --tctl-temp=68 --stapm-limit=15000  --fast-limit=18000 --stapm-time=64 --slow-limit=16000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
+                AppSettings.RyzenAdjLine = OcFinder.CreatePreset(PresetType.Eco, optimizationLevel).CommandString;
                 MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
                     AppSettings.ReapplyOverclockTimer);
             }
@@ -620,8 +624,7 @@ public sealed partial class ShellPage
                 AppSettings.PremadeSpeedActivated = false;
                 AppSettings.PremadeMaxActivated = false;
                 AppSettings.Preset = -1;
-                AppSettings.RyzenAdjLine =
-                    " --tctl-temp=75 --stapm-limit=18000  --fast-limit=20000 --stapm-time=64 --slow-limit=19000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
+                AppSettings.RyzenAdjLine = OcFinder.CreatePreset(PresetType.Balance, optimizationLevel).CommandString;
                 MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
                     AppSettings.ReapplyOverclockTimer);
             }
@@ -634,8 +637,7 @@ public sealed partial class ShellPage
                 AppSettings.PremadeSpeedActivated = true;
                 AppSettings.PremadeMaxActivated = false;
                 AppSettings.Preset = -1;
-                AppSettings.RyzenAdjLine =
-                    " --tctl-temp=80 --stapm-limit=20000  --fast-limit=20000 --stapm-time=64 --slow-limit=20000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
+                AppSettings.RyzenAdjLine = OcFinder.CreatePreset(PresetType.Performance, optimizationLevel).CommandString;
                 MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
                     AppSettings.ReapplyOverclockTimer);
             }
@@ -648,8 +650,7 @@ public sealed partial class ShellPage
                 AppSettings.PremadeSpeedActivated = false;
                 AppSettings.PremadeMaxActivated = true;
                 AppSettings.Preset = -1;
-                AppSettings.RyzenAdjLine =
-                    " --tctl-temp=90 --stapm-limit=45000  --fast-limit=60000 --stapm-time=64 --slow-limit=60000 --slow-time=128 --vrm-current=180000 --vrmmax-current=180000 --vrmsoc-current=180000 --vrmsocmax-current=180000 --vrmgfx-current=180000 --prochot-deassertion-ramp=2";
+                AppSettings.RyzenAdjLine = OcFinder.CreatePreset(PresetType.Max, optimizationLevel).CommandString;
                 MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
                     AppSettings.ReapplyOverclockTimer);
             }
@@ -674,15 +675,18 @@ public sealed partial class ShellPage
 
     public static void MandarinSparseUnitProfile(Profile profile, bool saveInfo = false)
     {
+        var isBristol = CpuSingleton.GetInstance()?.info.codeName == Cpu.CodeName.BristolRidge;
+
         var adjline = "";
         if (profile.cpu1)
         {
-            adjline += " --tctl-temp=" + profile.cpu1value;
+            adjline += " --tctl-temp=" + profile.cpu1value + (isBristol ? "000" : string.Empty);
         }
 
         if (profile.cpu2)
         {
-            adjline += " --stapm-limit=" + profile.cpu2value + "000";
+            var stapmBoostMillisecondsBristol = profile.cpu5value * 1000 < 180000 ? profile.cpu5value * 1000 : 180000;
+            adjline += " --stapm-limit=" + profile.cpu2value + "000" + (isBristol ? ",2," + stapmBoostMillisecondsBristol : string.Empty);
         }
 
         if (profile.cpu3)
@@ -692,7 +696,7 @@ public sealed partial class ShellPage
 
         if (profile.cpu4)
         {
-            adjline += " --slow-limit=" + profile.cpu4value + "000";
+            adjline += " --slow-limit=" + profile.cpu4value + "000" + (isBristol ? "," + profile.cpu4value + "000,0" : string.Empty);
         }
 
         if (profile.cpu5)
@@ -713,37 +717,38 @@ public sealed partial class ShellPage
         //vrm
         if (profile.vrm1)
         {
-            adjline += " --vrmmax-current=" + profile.vrm1value + "000";
+            adjline += " --vrmmax-current=" + profile.vrm1value + "000" + (isBristol ? "," + profile.vrm3value + "000," + profile.vrm3value + "000" : string.Empty);
         }
 
         if (profile.vrm2)
         {
-            adjline += " --vrm-current=" + profile.vrm2value + "000";
+            adjline += " --vrm-current=" + profile.vrm2value + "000" + (isBristol ? "," + profile.vrm4value + "000," + profile.vrm4value + "000" : string.Empty);
         }
 
-        if (profile.vrm3)
+        if (profile.vrm3 && !isBristol)
         {
             adjline += " --vrmsocmax-current=" + profile.vrm3value + "000";
         }
 
-        if (profile.vrm4)
+        if (profile.vrm4 && !isBristol)
         {
             adjline += " --vrmsoc-current=" + profile.vrm4value + "000";
         }
 
         if (profile.vrm5)
         {
-            adjline += " --psi0-current=" + profile.vrm5value + "000";
+            adjline += " --psi0-current=" + profile.vrm5value + "000" + (isBristol ? "," + profile.vrm6value + "000," + profile.vrm6value + "000" : string.Empty); ;
         }
 
-        if (profile.vrm6)
+        if (profile.vrm6 && !isBristol)
         {
             adjline += " --psi0soc-current=" + profile.vrm6value + "000";
         }
 
         if (profile.vrm7)
         {
-            adjline += " --prochot-deassertion-ramp=" + profile.vrm7value;
+            var prochotDeassertionTimeMillisecondsBristol = profile.vrm7value < 100 ? profile.vrm7value : 100;
+            adjline += " --prochot-deassertion-ramp=" + (isBristol ? prochotDeassertionTimeMillisecondsBristol : profile.vrm7value);
         }
 
 
@@ -1484,12 +1489,11 @@ public sealed partial class ShellPage
 
     private Task GetNotify()
     {
-        if (ProfileSetComboBox.SelectedIndex != -1 && ((ComboBoxItem?)ProfileSetComboBox.SelectedItem)?.Content != null)
+        if (ViewModel.SelectedIndex != -1 && ((ComboBoxItem?)ViewModel.SelectedItem)?.Content != null)
         {
-            if (SelectedProfile != ((ComboBoxItem?)ProfileSetComboBox.SelectedItem)?.Content.ToString() &&
-                !ProfileSetButton.IsEnabled)
+            if (SelectedProfile != ((ComboBoxItem?)ViewModel.SelectedItem)?.Content.ToString())
             {
-                SelectedProfile = ((ComboBoxItem?)ProfileSetComboBox.SelectedItem)?.Content.ToString()!;
+                SelectedProfile = ViewModel.SelectedItem?.Content.ToString()!;
             }
         }
 
@@ -1525,24 +1529,21 @@ public sealed partial class ShellPage
                         return; //Удалить и не показывать 
                     case "UpdateNAVBAR":
                         HideNavBar();
-                        Icon.Visibility = Visibility.Collapsed;
-                        ProfileSetup.Visibility = Visibility.Collapsed;
+                        Icon.Visibility = Visibility.Collapsed; 
                         RingerNotifGrid.Visibility = Visibility.Collapsed;
                         return; //Удалить и не показывать 
                     case "FirstLaunch":
                         HideNavBar();
-                        Icon.Visibility = Visibility.Collapsed;
-                        ProfileSetup.Visibility = Visibility.Collapsed;
+                        Icon.Visibility = Visibility.Collapsed; 
                         RingerNotifGrid.Visibility = Visibility.Collapsed;
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return;
                     case "ExitFirstLaunch":
                         ShowNavBar();
-                        Icon.Visibility = Visibility.Visible;
-                        ProfileSetup.Visibility = Visibility.Visible;
+                        Icon.Visibility = Visibility.Visible; 
                         RingerNotifGrid.Visibility = Visibility.Visible;
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
-                        return;
+                        return; 
                     case "UPDATE_REQUIRED":
                         var newVersion = UpdateChecker.GetNewVersion();
 
@@ -1574,7 +1575,6 @@ public sealed partial class ShellPage
                         {
                             HideNavBar();
                             Icon.Visibility = Visibility.Collapsed;
-                            ProfileSetup.Visibility = Visibility.Collapsed;
                             RingerNotifGrid.Visibility = Visibility.Collapsed;
                             var navigationService = App.GetService<INavigationService>();
                             navigationService.NavigateTo(typeof(ОбновлениеViewModel).FullName!, null, true);
@@ -2544,13 +2544,7 @@ public sealed partial class ShellPage
         var bounds = transform.TransformBounds(new Rect(0, 0,
             TitleIcon.ActualWidth,
             TitleIcon.ActualHeight));
-        var searchBoxRect = GetRect(bounds, scaleAdjustment);
-
-        transform = ProfileSetup.TransformToVisual(null);
-        bounds = transform.TransformBounds(new Rect(0, 0,
-            ProfileSetup.ActualWidth,
-            ProfileSetup.ActualHeight));
-        var profileSetupRect = GetRect(bounds, scaleAdjustment);
+        var searchBoxRect = GetRect(bounds, scaleAdjustment); 
 
         transform = RingerNotifGrid.TransformToVisual(null);
         bounds = transform.TransformBounds(new Rect(0, 0,
@@ -2558,7 +2552,7 @@ public sealed partial class ShellPage
             RingerNotifGrid.ActualHeight));
         var ringerNotifRect = GetRect(bounds, scaleAdjustment);
 
-        var rectArray = new[] { searchBoxRect, profileSetupRect, ringerNotifRect };
+        var rectArray = new[] { searchBoxRect, ringerNotifRect };
 
         var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(MAppWindow.Id);
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
@@ -2578,29 +2572,6 @@ public sealed partial class ShellPage
 
     #region Event Handlers
 
-    private void ProfileSetButton_Click(object sender, RoutedEventArgs e)
-    {
-        MandarinSparseUnit();
-        ProfileSetButton.IsEnabled = false;
-    }
-
-    private void ProfileSetButton_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
-    {
-        ActivateText.Text = ProfileSetButton.IsEnabled
-            ? "Shell_Activate".GetLocalized()
-            : "Shell_DeActivate".GetLocalized();
-    }
-
-    private void ProfileSetComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (!_loaded)
-        {
-            return;
-        }
-
-        AppSettings.SaveSettings();
-        ProfileSetButton.IsEnabled = ProfileSetComboBox.SelectedIndex != AppSettings.Preset + 1;
-    }
 
     private void ToggleNotificationPanelBtn_Click(object sender, RoutedEventArgs e)
     {
