@@ -27,6 +27,25 @@ public class CompositeDataProvider : IDataProvider
         }
     }
 
+    public float[]? GetPowerTable()
+    {
+        if (!_fallbackMode)
+        {
+            try
+            {
+                return _ryzenadjProvider.GetPowerTable();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка при получении данных через Ryzenadj: {ex.Message}");
+                _fallbackMode = true;
+            }
+        }
+
+        // Если мы в режиме fallback – используем Zenstates Core.
+        return _zenstatesProvider.GetPowerTable();
+    }
+
     /// <summary>
     /// Возвращает информацию с использованием Ryzenadj, если он доступен,
     /// иначе – через Zenstates Core.
