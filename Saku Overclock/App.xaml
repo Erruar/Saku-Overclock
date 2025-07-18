@@ -10,7 +10,7 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <ResourceDictionary>
                     <ResourceDictionary.ThemeDictionaries>
-                        <ResourceDictionary x:Key="Default">
+                        <ResourceDictionary x:Key="Default"> 
                             <!--Основное окно--> 
                     <AcrylicBrush x:Key="AcrylicSemiButtonBackground"
                                           FallbackColor="#88222222"
@@ -606,17 +606,24 @@
                         </ResourceDictionary>
                     </ResourceDictionary.ThemeDictionaries>
                 </ResourceDictionary>
-                <ResourceDictionary Source="/Styles/FontSizes.xaml" /> 
-                <ResourceDictionary Source="/Styles/Thickness.xaml" />
-                <ResourceDictionary Source="/Styles/TextBlock.xaml" /> 
-                <ResourceDictionary Source="/Styles/CopyButton.xaml" />
+                <ResourceDictionary>
+                    <Style TargetType="Slider" BasedOn="{StaticResource FatSliderStyle}"/>
+                    <Style TargetType="ComboBox" BasedOn="{StaticResource AcrylicComboBoxStyle}"/>
+                </ResourceDictionary>
+                <ResourceDictionary Source="/Styles/FontSizes.xaml"/> 
+                <ResourceDictionary Source="/Styles/Thickness.xaml"/>
+                <ResourceDictionary Source="/Styles/TextBlock.xaml"/> 
+                <ResourceDictionary Source="/Styles/CopyButton.xaml"/>
+                
+                <!--  Slider style-->
+                <ResourceDictionary Source="/Styles/SliderCollapseLauncher.xaml"/>
                 <!--  ComboBox style  -->
-                <ResourceDictionary Source="/Styles/ComboBoxCollapseLauncher.xaml" />
+                <ResourceDictionary Source="/Styles/ComboBoxCollapseLauncher.xaml"/>
                 <!-- Toggle button style-->
-                <ResourceDictionary Source="/Styles/ToggleButtonCollapseLauncher.xaml" />
+                <ResourceDictionary Source="/Styles/ToggleButtonCollapseLauncher.xaml"/>
                 <!-- Button style-->
-                <ResourceDictionary Source="/Styles/ButtonCollapseLauncher.xaml" />
-                <ResourceDictionary Source="/Styles/TrayIconResources.xaml" />
+                <ResourceDictionary Source="/Styles/ButtonCollapseLauncher.xaml"/>
+                <ResourceDictionary Source="/Styles/TrayIconResources.xaml"/>
             </ResourceDictionary.MergedDictionaries> 
         </ResourceDictionary>
     </Application.Resources>
