@@ -18,7 +18,6 @@ using Saku_Overclock.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
 using Windows.UI;
-using Windows.UI.Core;
 using ZenStates.Core;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using CheckBox = Microsoft.UI.Xaml.Controls.CheckBox;
@@ -26,6 +25,7 @@ using ComboBox = Microsoft.UI.Xaml.Controls.ComboBox;
 using Mailbox = ZenStates.Core.Mailbox;
 using Process = System.Diagnostics.Process;
 using TextBox = Microsoft.UI.Xaml.Controls.TextBox;
+using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
 
@@ -36,8 +36,8 @@ public sealed partial class ПараметрыPage
     private static Smusettings _smusettings = new(); // Загрузка настроек быстрых команд SMU
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
-    private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>(); 
-    private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>(); 
+    private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
+    private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
     private int _indexprofile; // Выбранный профиль
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Все настройки приложения
     private bool _isSearching; // Флаг, выполняется ли поиск, чтобы не сканировать адреса SMU
@@ -78,7 +78,7 @@ public sealed partial class ПараметрыPage
         AppSettings.SaveSettings();
         try
         {
-            _cpu ??= CpuSingleton.GetInstance(); 
+            _cpu ??= CpuSingleton.GetInstance();
         }
         catch (Exception ex)
         {
@@ -90,13 +90,17 @@ public sealed partial class ПараметрыPage
         Loaded += ПараметрыPage_Loaded;
     }
 
+
     #region JSON and initialization
+
+    #region Page Load 
 
     private async void ПараметрыPage_Loaded(object sender, RoutedEventArgs e)
     {
         try
         {
             await LogHelper.Log("Opened Overclock page. Start loading.");
+
             _isLoaded = true;
             try
             {
@@ -128,6 +132,8 @@ public sealed partial class ПараметрыPage
             await LogHelper.TraceIt_TraceError(exception.ToString());
         }
     }
+
+    #endregion
 
     #region JSON only voids
 
@@ -262,15 +268,22 @@ public sealed partial class ПараметрыPage
     private void RecommendationsInit()
     {
         var data = OcFinder.GetPerformanceRecommendationData();
-        TempRecommend.Text =          $"                                    {data.Item1[0]}(С)                         {data.Item1[1]}(С)";
-        StapmRecommend.Text =         $"                                   {(data.Item2[0] > 99 ? data.Item2[0] : " " + data.Item2[0])}(W)                        {(data.Item2[1] > 99 ? data.Item2[1] : " " + data.Item2[1])}(W)";
-        FastRecommend.Text =          $"                                   {(data.Item3[0] > 99 ? data.Item3[0] : " " + data.Item3[0])}(W)                        {(data.Item3[1] > 99 ? data.Item3[1] : " " + data.Item3[1])}(W)";
-        SlowRecommend.Text = FastRecommend.Text;
-        SttRecommend.Text =           $"                                   {(data.Item4[0] > 99 ? data.Item4[0] : " " + data.Item4[0])}(W)                        {(data.Item4[1] > 99 ? data.Item4[1] : " " + data.Item4[1])}(W)";
-        SlowTimeRecommend.Text =          $"                                     {(data.Item5[0] > 99 ? data.Item5[0] : " " + data.Item5[0])}(S)                         {(data.Item5[1] > 99 ? data.Item5[1] : " " + data.Item5[1])}(S)";
-        StapmTimeRecommend.Text =         $"                                     {(data.Item6[0] > 99 ? data.Item6[0] : " " + data.Item6[0])}(S)                        {(data.Item6[1] > 99 ? data.Item6[1] : " " + data.Item6[1])}(S)";
-        BdProchotTimeRecommend.Text = $"                                    {(data.Item7[0] > 99 ? data.Item7[0] : (data.Item7[0] > 9 ? "  " + data.Item7[0] : " " + data.Item7[0]))}(mS)" +
-                                      $"                        {(data.Item7[1] > 99 ? data.Item7[1] : (data.Item7[1] > 9 ? "  " + data.Item7[1] : " " + data.Item7[1]))}(mS)";
+        TempRecommend_0.Text = $"{data.Item1[0]}С";
+        TempRecommend_1.Text = $"{data.Item1[1]}С";
+        StapmRecommend_0.Text = $"{data.Item2[0]}W";
+        StapmRecommend_1.Text = $"{data.Item2[1]}W";
+        FastRecommend_0.Text = $"{data.Item3[0]}W";
+        FastRecommend_1.Text = $"{data.Item3[1]}W";
+        SlowRecommend_0.Text = FastRecommend_0.Text;
+        SlowRecommend_1.Text = FastRecommend_1.Text;
+        SttRecommend_0.Text = $"{data.Item4[0]}W";
+        SttRecommend_1.Text = $"{data.Item4[1]}W";
+        SlowTimeRecommend_0.Text = $"{data.Item5[0]}S";
+        SlowTimeRecommend_1.Text = $"{data.Item5[1]}S";
+        StapmTimeRecommend_0.Text = $"{data.Item6[0]}S";
+        StapmTimeRecommend_1.Text = $"{data.Item6[1]}S";
+        BdProchotTimeRecommend_0.Text = $"{data.Item7[0]}mS";
+        BdProchotTimeRecommend_0.Text = $"{data.Item7[1]}mS";
     }
     private void SlidersInit()
     {
@@ -298,7 +311,7 @@ public sealed partial class ПараметрыPage
             {
                 ProfileCOM.Items.Add(currProfile.profilename);
             }
-        } 
+        }
 
         if (AppSettings.Preset > _profile.Length)
         {
@@ -320,40 +333,65 @@ public sealed partial class ПараметрыPage
                     ProfileCOM.SelectedIndex = _indexprofile + 1;
                 }
             }
-        } 
+        }
         _waitforload = false;
     }
-
-    private void DesktopCPU_HideUnavailableParameters()
+    private void LaptopCpu_FP5_HideUnavailableParameters()
     {
-        Laptops_Avg_Wattage.Visibility = Visibility.Collapsed; //Убрать параметры для ноутбуков
+        ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed;
+        ADV_Laptop_AplusA_Limit_Desc.Visibility = Visibility.Collapsed;
+        ADV_Laptop_iGPU_Limit.Visibility = Visibility.Collapsed;
+        ADV_Laptop_iGPU_Limit_Desc.Visibility = Visibility.Collapsed;
+        Laptops_HTC_Temp.Visibility = Visibility.Collapsed;
+        Laptops_HTC_Temp_Desc.Visibility = Visibility.Collapsed;
+        ADV_Laptop_iGPU_Temp.Visibility = Visibility.Collapsed;
+        ADV_Laptop_iGPU_Temp_Desc.Visibility = Visibility.Collapsed;
+        ADV_Laptop_dGPU_Temp.Visibility = Visibility.Collapsed;
+        ADV_Laptop_dGPU_Temp_Desc.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_Cpu.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_Cpu_Desc.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_iGpu.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_iGpu_Desc.Visibility = Visibility.Collapsed;
+    }
+
+    private void DesktopCpu_AM4_HideUnavailableParameters()
+    {
+        //Убрать параметры для ноутбуков
+        Laptops_Avg_Wattage.Visibility = Visibility.Collapsed;
         Laptops_Avg_Wattage_Desc.Visibility = Visibility.Collapsed;
         Laptops_Fast_Speed.Visibility = Visibility.Collapsed;
         Laptops_Fast_Speed_Desc.Visibility = Visibility.Collapsed;
-        Laptops_HTC_Temp.Visibility = Visibility.Collapsed;
-        Laptops_HTC_Temp_Desc.Visibility = Visibility.Collapsed;
-        Laptops_Real_Wattage.Visibility = Visibility.Collapsed;
-        Laptops_Real_Wattage_Desc.Visibility = Visibility.Collapsed;
         Laptops_slow_Speed.Visibility = Visibility.Collapsed;
         Laptops_slow_Speed_Desc.Visibility = Visibility.Collapsed;
-        VRM_Laptops_Prochot_Time.Visibility = Visibility.Collapsed; //Убрать настройки VRM
+        ADV_Laptop_iGPU_Limit.Visibility = Visibility.Collapsed;
+        ADV_Laptop_iGPU_Limit_Desc.Visibility = Visibility.Collapsed;
+        ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed;
+        ADV_Laptop_AplusA_Limit_Desc.Visibility = Visibility.Collapsed;
+        DesktopCpu_AM5_HideUnavailableParameters();
+    }
+    private void DesktopCpu_AM5_HideUnavailableParameters()
+    {
+        //Убрать параметры для ноутбуков
+        Laptops_Stapm_Limit.Visibility = Visibility.Collapsed;
+        Laptops_Stapm_Limit_Desc.Visibility = Visibility.Collapsed;
+        VRM_Laptops_Prochot_Time.Visibility = Visibility.Collapsed;
         VRM_Laptops_Prochot_Time_Desc.Visibility = Visibility.Collapsed;
         VRM_Laptops_PSI_SoC.Visibility = Visibility.Collapsed;
         VRM_Laptops_PSI_SoC_Desc.Visibility = Visibility.Collapsed;
         VRM_Laptops_PSI_VDD.Visibility = Visibility.Collapsed;
         VRM_Laptops_PSI_VDD_Desc.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_Cpu.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_Cpu_Desc.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_iGpu.Visibility = Visibility.Collapsed;
+        VRM_Laptops_PSI_iGpu_Desc.Visibility = Visibility.Collapsed;
         VRM_Laptops_SoC_Limit.Visibility = Visibility.Collapsed;
         VRM_Laptops_SoC_Limit_Desc.Visibility = Visibility.Collapsed;
         VRM_Laptops_SoC_Max.Visibility = Visibility.Collapsed;
         VRM_Laptops_SoC_Max_Desc.Visibility = Visibility.Collapsed;
-        ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed; //Убрать расширенный разгон
-        ADV_Laptop_AplusA_Limit_Desc.Visibility = Visibility.Collapsed;
         ADV_Laptop_dGPU_Temp.Visibility = Visibility.Collapsed;
         ADV_Laptop_dGPU_Temp_Desc.Visibility = Visibility.Collapsed;
         ADV_Laptop_iGPU_Freq.Visibility = Visibility.Collapsed;
         ADV_Laptop_iGPU_Freq_Desc.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Limit.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Limit_Desc.Visibility = Visibility.Collapsed;
         ADV_Laptop_iGPU_Temp.Visibility = Visibility.Collapsed;
         ADV_Laptop_iGPU_Temp_Desc.Visibility = Visibility.Collapsed;
         ADV_Laptop_Pref_Mode.Visibility = Visibility.Collapsed;
@@ -404,84 +442,177 @@ public sealed partial class ПараметрыPage
             await LogHelper.Log((_cpu?.info.codeName.ToString() ?? "Unknown") + " Codename");
             if (SettingsViewModel.VersionId != 5) // Если не дебаг. В дебаг версии отображаются все параметры
             {
-                if (_cpu?.info.codeName.ToString().Contains("VanGogh") == false)
+                /*                 F P 4    C P U                    */
+                if (_cpu?.info.codeName == Cpu.CodeName.BristolRidge)
                 {
-                    A1_main.Visibility = Visibility.Collapsed;
-                    A3_main.Visibility = Visibility.Collapsed;
-                    A4_main.Visibility = Visibility.Collapsed;
-                    A5_main.Visibility = Visibility.Collapsed;
-                    A1_desc.Visibility = Visibility.Collapsed;
-                    A3_desc.Visibility = Visibility.Collapsed;
-                    A4_desc.Visibility = Visibility.Collapsed;
-                    A5_desc.Visibility = Visibility.Collapsed;
+                    LaptopCpu_FP5_HideUnavailableParameters();
+
+                    Laptops_Avg_Wattage.Visibility = Visibility.Collapsed;
+                    Laptops_Avg_Wattage_Desc.Visibility = Visibility.Collapsed;
+                    Laptops_slow_Speed.Visibility = Visibility.Collapsed;
+                    Laptops_slow_Speed_Desc.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Fix04.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Fix04_Desc.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Oc_Mode.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Oc_Mode_Desc.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Pbo_Scalar.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Pbo_Scalar_Desc.Visibility = Visibility.Collapsed;
+                    SmuFunctionsGrid.Visibility = Visibility.Collapsed;
+                    CpuPowerStateOptionsGrid.Visibility = Visibility.Collapsed;
+                    AdvancedFreqOptionsGrid.Visibility = Visibility.Collapsed;
+                    CO_Expander.Visibility = Visibility.Collapsed;
+                    CCD1_Expander.Visibility = Visibility.Collapsed;
+                    CCD2_Expander.Visibility = Visibility.Collapsed;
+                    ActionButton_Mon.Visibility = Visibility.Collapsed;
+
+                    Param_ADV_Pdesc.Text = "Param_ADV_PdescBristol".GetLocalized();
+
+                    var elements = VisualTreeHelper.FindVisualChildren<TextBlock>(VrmOptionsGrid);
+                    foreach (var element in elements)
+                    {
+                        element.Text = element.Text.Replace("SoC","NB");
+                    }
+                }
+                /*                 F P 5    C P U                    */
+                if (_cpu?.info.codeName == Cpu.CodeName.RavenRidge ||
+                    _cpu?.info.codeName == Cpu.CodeName.FireFlight ||
+                    _cpu?.info.codeName == Cpu.CodeName.Dali ||
+                    _cpu?.info.codeName == Cpu.CodeName.Picasso)
+                {
+                    LaptopCpu_FP5_HideUnavailableParameters();
                 }
                 else
-                {
-                    // Если перед нами вангог (стимдек и его подобные)
-                    VRM_Laptops_PSI_SoC.Visibility = Visibility.Collapsed;
-                    VRM_Laptops_PSI_SoC_Desc.Visibility = Visibility.Collapsed;
-                    VRM_Laptops_PSI_VDD.Visibility = Visibility.Collapsed;
-                    VRM_Laptops_PSI_VDD_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed; // Убрать расширенный разгон
-                    ADV_Laptop_AplusA_Limit_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_dGPU_Temp.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_dGPU_Temp_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_iGPU_Limit.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_iGPU_Limit_Desc.Visibility = Visibility.Collapsed;
-                }
-
-                if (_cpu?.info.codeName.ToString().Contains("Raven") == false &&
-                    _cpu?.info.codeName.ToString().Contains("Dali") == false &&
-                    _cpu?.info.codeName.ToString().Contains("Picasso") == false)
                 {
                     iGPU_Subsystems.Visibility = Visibility.Collapsed;
                 }
 
-                if (_cpu?.info.codeName.ToString().Contains("Mendocino") == true ||
-                    _cpu?.info.codeName.ToString().Contains("Rembrandt") == true ||
-                    _cpu?.info.codeName.ToString().Contains("Phoenix") == true ||
-                    _cpu?.info.codeName.ToString().Contains("DragonRange") == true ||
-                    _cpu?.info.codeName.ToString().Contains("HawkPoint") == true)
+                /*                 F P 6    C P U                    */
+                if (_cpu?.info.codeName == Cpu.CodeName.Renoir  ||
+                    _cpu?.info.codeName == Cpu.CodeName.Cezanne ||
+                    _cpu?.info.codeName == Cpu.CodeName.Lucienne)
                 {
-                    VRM_Laptops_PSI_SoC.Visibility = Visibility.Collapsed;
-                    VRM_Laptops_PSI_SoC_Desc.Visibility = Visibility.Collapsed;
-                    VRM_Laptops_PSI_VDD.Visibility = Visibility.Collapsed;
-                    VRM_Laptops_PSI_VDD_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_OCVOLT.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_OCVOLT_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed; //Убрать расширенный разгон
-                    ADV_Laptop_AplusA_Limit_Desc.Visibility = Visibility.Collapsed;
+                    Laptops_Stapm_Limit.Visibility = Visibility.Collapsed;
+                    Laptops_Stapm_Limit_Desc.Visibility = Visibility.Collapsed;
+                    Laptops_HTC_Temp.Visibility = Visibility.Collapsed;
+                    Laptops_HTC_Temp_Desc.Visibility = Visibility.Collapsed;
+                    VRM_Laptops_PSI_Cpu.Visibility = Visibility.Collapsed;
+                    VRM_Laptops_PSI_Cpu_Desc.Visibility = Visibility.Collapsed;
+                    VRM_Laptops_PSI_iGpu.Visibility = Visibility.Collapsed;
+                    VRM_Laptops_PSI_iGpu_Desc.Visibility = Visibility.Collapsed;
                 }
 
-                if (_cpu?.info.codeName.ToString().Contains("Pinnacle") == true ||
-                    _cpu?.info.codeName.ToString().Contains("Summit") == true)
+                /*                 F F 3    C P U                    */
+                if (_cpu?.info.codeName == Cpu.CodeName.VanGogh)
+                {
+                    Laptops_Stapm_Limit.Visibility = Visibility.Collapsed;
+                    Laptops_Stapm_Limit_Desc.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_dGPU_Temp.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_dGPU_Temp_Desc.Visibility = Visibility.Collapsed;
+                    Laptops_HTC_Temp.Visibility = Visibility.Collapsed;
+                    Laptops_HTC_Temp_Desc.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Oc_Mode.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Oc_Mode_Desc.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Pbo_Scalar.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Pbo_Scalar_Desc.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Cpu_Volt.Visibility = Visibility.Collapsed;
+                    ADV_Laptop_Cpu_Volt_Desc.Visibility = Visibility.Collapsed;
+                }
+
+                /*     F T 6   F P 7   F P 8   F P 11    C P U       */
+                if (_cpu?.info.codeName == Cpu.CodeName.Mendocino ||
+                    _cpu?.info.codeName == Cpu.CodeName.Rembrandt ||
+                    _cpu?.info.codeName == Cpu.CodeName.Phoenix ||
+                    _cpu?.info.codeName == Cpu.CodeName.Phoenix2 ||
+                    _cpu?.info.codeName == Cpu.CodeName.HawkPoint ||
+                    _cpu?.info.codeName == Cpu.CodeName.StrixPoint ||
+                    _cpu?.info.codeName == Cpu.CodeName.StrixHalo ||
+                    _cpu?.info.codeName == Cpu.CodeName.KrackanPoint)
+                {
+                    Laptops_Stapm_Limit.Visibility = Visibility.Collapsed;
+                    Laptops_Stapm_Limit_Desc.Visibility = Visibility.Collapsed;
+                    Laptops_HTC_Temp.Visibility = Visibility.Collapsed;
+                    Laptops_HTC_Temp_Desc.Visibility = Visibility.Collapsed;
+                }
+
+                /*              A M 4  v 1    C P U                  */
+                if (_cpu?.info.codeName == Cpu.CodeName.PinnacleRidge ||
+                    _cpu?.info.codeName == Cpu.CodeName.SummitRidge)
                 {
                     CCD1_Expander.Visibility = Visibility.Collapsed; //Убрать Оптимизатор кривой
                     CCD2_Expander.Visibility = Visibility.Collapsed;
                     CO_Expander.Visibility = Visibility.Collapsed;
-                    DesktopCPU_HideUnavailableParameters();
+                    DesktopCpu_AM4_HideUnavailableParameters();
                 }
 
-                if (_cpu?.info.codeName.ToString().Contains("Matisse") == true ||
-                    _cpu?.info.codeName.ToString().Contains("Vermeer") == true)
+                /*              A M 4  v 2    C P U                  */
+                if (_cpu?.info.codeName == Cpu.CodeName.Matisse ||
+                    _cpu?.info.codeName == Cpu.CodeName.Vermeer)
                 {
-                    DesktopCPU_HideUnavailableParameters();
+                    DesktopCpu_AM4_HideUnavailableParameters();
+                }
+                /*                 A M 5    C P U                    */
+                if (_cpu?.info.codeName == Cpu.CodeName.Raphael      ||
+                    _cpu?.info.codeName == Cpu.CodeName.Genoa        ||
+                    _cpu?.info.codeName == Cpu.CodeName.GraniteRidge ||
+                    _cpu?.info.codeName == Cpu.CodeName.StormPeak    ||
+                    _cpu?.info.codeName == Cpu.CodeName.DragonRange  ||
+                    _cpu?.info.codeName == Cpu.CodeName.Bergamo)
+                {
+#if DEBUG
+                    var i1 = OcFinder.CreatePreset(Services.PresetType.Min, Services.OptimizationLevel.Basic);
+                    var i2 = OcFinder.CreatePreset(Services.PresetType.Min, Services.OptimizationLevel.Standard);
+                    var i3 = OcFinder.CreatePreset(Services.PresetType.Min, Services.OptimizationLevel.Deep);
+                    var e1 = i1.CommandString + i2.CommandString + i3.CommandString;
+                    var g1 = i1.Metrics.PerformanceScore.ToString() + " " + i2.Metrics.PerformanceScore.ToString() + " " + i3.Metrics.PerformanceScore.ToString();
+
+                    var i4 = OcFinder.CreatePreset(Services.PresetType.Eco, Services.OptimizationLevel.Basic);
+                    var i5 = OcFinder.CreatePreset(Services.PresetType.Eco, Services.OptimizationLevel.Standard);
+                    var i6 = OcFinder.CreatePreset(Services.PresetType.Eco, Services.OptimizationLevel.Deep);
+                    var e2 = i4.CommandString + i5.CommandString + i6.CommandString;
+                    var g2 = i4.Metrics.PerformanceScore.ToString() + " " + i5.Metrics.PerformanceScore.ToString() + " " + i6.Metrics.PerformanceScore.ToString();
+
+                    var i7 = OcFinder.CreatePreset(Services.PresetType.Balance, Services.OptimizationLevel.Basic);
+                    var i8 = OcFinder.CreatePreset(Services.PresetType.Balance, Services.OptimizationLevel.Standard);
+                    var i9 = OcFinder.CreatePreset(Services.PresetType.Balance, Services.OptimizationLevel.Deep);
+                    var e3 = i7.CommandString + i8.CommandString + i9.CommandString;
+                    var g3 = i7.Metrics.PerformanceScore.ToString() + " " + i8.Metrics.PerformanceScore.ToString() + " " + i9.Metrics.PerformanceScore.ToString();
+
+                    var i10 = OcFinder.CreatePreset(Services.PresetType.Performance, Services.OptimizationLevel.Basic);
+                    var i11 = OcFinder.CreatePreset(Services.PresetType.Performance, Services.OptimizationLevel.Standard);
+                    var i12 = OcFinder.CreatePreset(Services.PresetType.Performance, Services.OptimizationLevel.Deep);
+                    var e4 = i10.CommandString + i11.CommandString + i12.CommandString;
+                    var g4 = i10.Metrics.PerformanceScore.ToString() + " " + i11.Metrics.PerformanceScore.ToString() + " " + i12.Metrics.PerformanceScore.ToString();
+
+                    var i13 = OcFinder.CreatePreset(Services.PresetType.Max, Services.OptimizationLevel.Basic);
+                    var i14 = OcFinder.CreatePreset(Services.PresetType.Max, Services.OptimizationLevel.Standard);
+                    var i15 = OcFinder.CreatePreset(Services.PresetType.Max, Services.OptimizationLevel.Deep);
+                    var e5 = i13.CommandString + i14.CommandString + i15.CommandString;
+                    var g5 = i13.Metrics.PerformanceScore.ToString() + " " + i14.Metrics.PerformanceScore.ToString() + " " + i15.Metrics.PerformanceScore.ToString();
+
+                    var f2 = g1 + "\n" + g2 + "\n" + g3 + "\n" + g4 + "\n" + g5;
+                    var f1 = e1 + "\n" + e2 + "\n" + e3 + "\n" + e4 + "\n" + e5;
+#endif
+                    DesktopCpu_AM5_HideUnavailableParameters();
                 }
 
                 uint cores = 0;
 
-                if (_cpu == null || _cpu?.info.codeName.ToString().Contains("Unsupported") == true)
+                if (_cpu == null || _cpu?.info.codeName == Cpu.CodeName.Unsupported)
                 {
-                    MainScroll.IsEnabled = false;
-                    ActionButton_Apply.IsEnabled = false;
-                    ActionButton_Delete.IsEnabled = false;
-                    ActionButton_Mon.IsEnabled = false;
-                    ActionButton_Save.IsEnabled = false;
-                    ActionButton_Share.IsEnabled = false;
-                    EditProfileButton.IsEnabled = false;
+                    MainScroll.Visibility = Visibility.Collapsed;
+                    ActionButton_Apply.Visibility = Visibility.Collapsed;
+                    ActionButton_Delete.Visibility = Visibility.Collapsed;
+                    ActionButton_Mon.Visibility = Visibility.Collapsed;
+                    ActionButton_Save.Visibility = Visibility.Collapsed;
+                    ActionButton_Share.Visibility = Visibility.Collapsed;
+                    EditProfileButton.Visibility = Visibility.Collapsed;
+                    SuggestBox.Visibility = Visibility.Collapsed;
+                    FiltersButton.Visibility = Visibility.Collapsed;
+                    ProfilesGrid.Visibility = Visibility.Collapsed;
                     Action_IncompatibleProfile.IsOpen = false;
-                    Action_IncompatibleCPU.IsOpen = true;
-                    cores = (uint)await ИнформацияPage.GetCpuCoresAsync();
+                    Action_IncompatibleCPU.Visibility = Visibility.Visible;
+
+                    return; // Остановить загрузку страницы
                 }
 
                 if (_cpu != null)
@@ -819,26 +950,6 @@ public sealed partial class ПараметрыPage
                         g10v.Maximum = FromValueToUpperFive(_profile[index].gpu10value);
                     }
 
-                    if (_profile[index].gpu11value > g11v.Maximum)
-                    {
-                        g11v.Maximum = FromValueToUpperFive(_profile[index].gpu11value);
-                    }
-
-                    if (_profile[index].gpu12value > g12v.Maximum)
-                    {
-                        g12v.Maximum = FromValueToUpperFive(_profile[index].gpu12value);
-                    }
-
-                    if (_profile[index].advncd1value > a1v.Maximum)
-                    {
-                        a1v.Maximum = FromValueToUpperFive(_profile[index].advncd1value);
-                    } 
-
-                    if (_profile[index].advncd3value > a3v.Maximum)
-                    {
-                        a3v.Maximum = FromValueToUpperFive(_profile[index].advncd3value);
-                    }
-
                     if (_profile[index].advncd4value > a4v.Maximum)
                     {
                         a4v.Maximum = FromValueToUpperFive(_profile[index].advncd4value);
@@ -944,16 +1055,8 @@ public sealed partial class ПараметрыPage
                     g9.IsChecked = _profile[index].gpu9;
                     g10v.Value = _profile[index].gpu10value;
                     g10.IsChecked = _profile[index].gpu10;
-                    g11.IsChecked = _profile[index].gpu11;
-                    g11v.Value = _profile[index].gpu11value;
-                    g12.IsChecked = _profile[index].gpu12;
-                    g12v.Value = _profile[index].gpu12value; 
                     g16.IsChecked = _profile[index].gpu16;
                     g16m.SelectedIndex = _profile[index].gpu16value;
-                    a1.IsChecked = _profile[index].advncd1;
-                    a1v.Value = _profile[index].advncd1value; 
-                    a3.IsChecked = _profile[index].advncd3;
-                    a3v.Value = _profile[index].advncd3value;
                     a4.IsChecked = _profile[index].advncd4;
                     a4v.Value = _profile[index].advncd4value;
                     a5.IsChecked = _profile[index].advncd5;
@@ -1132,7 +1235,10 @@ public sealed partial class ПараметрыPage
             {
                 Height = 50,
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
-                HorizontalAlignment = HorizontalAlignment.Stretch
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                CornerRadius = new CornerRadius(13),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             // Создание Grid внутри Button
             var innerGrid = new Grid
@@ -1153,7 +1259,7 @@ public sealed partial class ПараметрыPage
             // Создание TextBlock
             var textBlock1 = new TextBlock
             {
-                Margin = new Thickness(35, 0.5, 0, 0),
+                Margin = string.IsNullOrWhiteSpace(_smusettings.QuickSmuCommands[i].Description) ? new Thickness(35, 9, 0, 0) : new Thickness(35, 0.5, 0, 0),
                 VerticalAlignment = VerticalAlignment.Top,
                 Text = _smusettings.QuickSmuCommands[i].Name,
                 FontWeight = FontWeights.SemiBold
@@ -1188,7 +1294,10 @@ public sealed partial class ПараметрыPage
                     Symbol = Symbol.Play,
                     Margin = new Thickness(-5, 0, -5, 0),
                     HorizontalAlignment = HorizontalAlignment.Left
-                }
+                },
+                CornerRadius = new CornerRadius(10),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             buttonsGrid.Children.Add(playButton);
             var editButton = new Button //Кнопка изменить
@@ -1202,7 +1311,10 @@ public sealed partial class ПараметрыPage
                 {
                     Symbol = Symbol.Edit,
                     Margin = new Thickness(-5, 0, -5, 0)
-                }
+                },
+                CornerRadius = new CornerRadius(10),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             buttonsGrid.Children.Add(editButton);
             var rsmuButton = new Button
@@ -1210,7 +1322,10 @@ public sealed partial class ПараметрыPage
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Width = 86,
                 Height = 35,
-                Margin = new Thickness(0, 0, 93, 0)
+                Margin = new Thickness(0, 0, 93, 0),
+                CornerRadius = new CornerRadius(10),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             var rsmuTextBlock = new TextBlock
             {
@@ -1223,7 +1338,10 @@ public sealed partial class ПараметрыPage
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Width = 86,
                 Height = 35,
-                Margin = new Thickness(0, 0, 187, 0)
+                Margin = new Thickness(0, 0, 187, 0),
+                CornerRadius = new CornerRadius(10),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             var cmdTextBlock = new TextBlock
             {
@@ -1236,7 +1354,10 @@ public sealed partial class ПараметрыPage
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Width = 86,
                 Height = 35,
-                Margin = new Thickness(0, 0, 281, 0)
+                Margin = new Thickness(0, 0, 281, 0),
+                CornerRadius = new CornerRadius(10),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             var autoTextBlock = new TextBlock
             {
@@ -1307,18 +1428,18 @@ public sealed partial class ПараметрыPage
     private void CollectSearchItems()
     {
         _searchItems.Clear();
-        var expanders = Helpers.VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
+        var expanders = VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
         foreach (var expander in expanders)
         {
-            var stackPanels = Helpers.VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
+            var stackPanels = VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
             foreach (var stackPanel in stackPanels)
             {
-                var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize - 15 == 0);
+                var textBlocks = VisualTreeHelper.FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize - 15 == 0);
                 foreach (var textBlock in textBlocks)
                 {
                     if (!string.IsNullOrWhiteSpace(textBlock.Text) &&
                         !_searchItems.Contains(textBlock.Text)
-                        && !(textBlock.Text.Contains('') || 
+                        && !(textBlock.Text.Contains('') ||
                              textBlock.Text.Contains('') ||
                              textBlock.Text.Contains('') ||
                              textBlock.Text.Contains('') ||
@@ -1326,31 +1447,31 @@ public sealed partial class ПараметрыPage
                              textBlock.Text.Contains('')))
                     {
                         _searchItems.Add(textBlock.Text);
-                    } 
+                    }
                 }
             }
         }
-    } 
+    }
 
     private void ResetVisibility()
     {
-        var expanders = Helpers.VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
+        var expanders = VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
         foreach (var expander in expanders)
         {
             _isSearching = true;
             expander.IsExpanded = true;
-            var stackPanels = Helpers.VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
+            var stackPanels = VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
             foreach (var stackPanel in stackPanels)
             {
                 stackPanel.Visibility = Visibility.Visible;
-                var adjacentGrid = Helpers.VisualTreeHelper.FindAdjacentGrid(stackPanel);
+                var adjacentGrid = VisualTreeHelper.FindAdjacentGrid(stackPanel);
                 if (adjacentGrid != null)
                 {
                     adjacentGrid.Visibility = Visibility.Visible;
                 }
             }
         }
-    } 
+    }
 
     private void SuggestBox_OnTextChanged(AutoSuggestBox? sender, AutoSuggestBoxTextChangedEventArgs? args)
     {
@@ -1368,7 +1489,7 @@ public sealed partial class ПараметрыPage
                 var found = splitText.All(key => searchItem.Contains(key, StringComparison.CurrentCultureIgnoreCase));
                 if (found)
                 {
-                    var textBlock = new TextBlock { Text = searchItem, Margin = new Thickness(-10,0,-10,0), Foreground = Param_Name.Foreground };
+                    var textBlock = new TextBlock { Text = searchItem, Margin = new Thickness(-10, 0, -10, 0), Foreground = Param_Name.Foreground };
                     ToolTipService.SetToolTip(textBlock, searchItem);
                     suitableItems.Add(textBlock);
                 }
@@ -1388,19 +1509,19 @@ public sealed partial class ПараметрыPage
             // Сбросить скрытое
             ResetVisibility();
 
-            var expanders = Helpers.VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
+            var expanders = VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
             foreach (var expander in expanders)
             {
-                var stackPanels = Helpers.VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
-                var arrayStackPanels = stackPanels as StackPanel[] ?? stackPanels.ToArray(); 
+                var stackPanels = VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
+                var arrayStackPanels = stackPanels as StackPanel[] ?? [.. stackPanels];
                 var anyVisible = false;
 
                 foreach (var stackPanel in arrayStackPanels)
                 {
-                    var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize - 15 == 0);
+                    var textBlocks = VisualTreeHelper.FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize - 15 == 0);
                     var containsText = textBlocks.Any(tb => tb.Text.Contains(searchText, StringComparison.CurrentCultureIgnoreCase));
 
-                    var containsControl = Helpers.VisualTreeHelper.FindVisualChildren<CheckBox>(stackPanel).Any();
+                    var containsControl = VisualTreeHelper.FindVisualChildren<CheckBox>(stackPanel).Any();
 
                     // Если текст и элементы управления найдены, делаем StackPanel видимой
                     if (containsText && containsControl)
@@ -1409,14 +1530,14 @@ public sealed partial class ПараметрыPage
                         anyVisible = true;
 
                         // Второй проход: делаем видимыми все дочерние элементы
-                        Helpers.VisualTreeHelper.SetAllChildrenVisibility(stackPanel, Visibility.Visible);
+                        VisualTreeHelper.SetAllChildrenVisibility(stackPanel, Visibility.Visible);
                     }
                     else
                     {
                         stackPanel.Visibility = Visibility.Collapsed;
                     }
 
-                    var adjacentGrid = Helpers.VisualTreeHelper.FindAdjacentGrid(stackPanel);
+                    var adjacentGrid = VisualTreeHelper.FindAdjacentGrid(stackPanel);
                     if (adjacentGrid != null)
                     {
                         adjacentGrid.Visibility = stackPanel.Visibility;
@@ -1426,7 +1547,7 @@ public sealed partial class ПараметрыPage
                 {
                     if (stackPanel1.Visibility == Visibility.Visible)
                     {
-                        Helpers.VisualTreeHelper.SetAllChildrenVisibility(stackPanel1, Visibility.Visible);
+                        VisualTreeHelper.SetAllChildrenVisibility(stackPanel1, Visibility.Visible);
                     }
                 }
 
@@ -1485,19 +1606,19 @@ public sealed partial class ПараметрыPage
         {
             ResetVisibility();
         }
-        var expanders = Helpers.VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
+        var expanders = VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
         foreach (var expander in expanders)
         {
-            var stackPanels = Helpers.VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
-            var arrayStackPanels = stackPanels as StackPanel[] ?? stackPanels.ToArray(); 
+            var stackPanels = VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
+            var arrayStackPanels = stackPanels as StackPanel[] ?? [.. stackPanels];
             var anyVisible = false;
 
             foreach (var stackPanel in arrayStackPanels)
             {
-                var textBlocks = Helpers.VisualTreeHelper.FindVisualChildren<FontIcon>(stackPanel).Where(tb => tb.FontSize - 15 == 0);
-                var containsText = textBlocks.Any(tb => Helpers.VisualTreeHelper.FindAjantedFontIcons(tb, glyphs));
+                var textBlocks = VisualTreeHelper.FindVisualChildren<FontIcon>(stackPanel).Where(tb => tb.FontSize - 15 == 0);
+                var containsText = textBlocks.Any(tb => VisualTreeHelper.FindAjantedFontIcons(tb, glyphs));
 
-                var containsControl = Helpers.VisualTreeHelper.FindVisualChildren<CheckBox>(stackPanel).Any();
+                var containsControl = VisualTreeHelper.FindVisualChildren<CheckBox>(stackPanel).Any();
 
                 // Если текст и элементы управления найдены, делаем StackPanel видимой
                 if (containsText && containsControl)
@@ -1506,14 +1627,14 @@ public sealed partial class ПараметрыPage
                     anyVisible = true;
 
                     // Второй проход: делаем видимыми все дочерние элементы
-                    Helpers.VisualTreeHelper.SetAllChildrenVisibility(stackPanel, Visibility.Visible);
+                    VisualTreeHelper.SetAllChildrenVisibility(stackPanel, Visibility.Visible);
                 }
                 else
                 {
                     stackPanel.Visibility = Visibility.Collapsed;
                 }
 
-                var adjacentGrid = Helpers.VisualTreeHelper.FindAdjacentGrid(stackPanel);
+                var adjacentGrid = VisualTreeHelper.FindAdjacentGrid(stackPanel);
                 if (adjacentGrid != null)
                 {
                     adjacentGrid.Visibility = stackPanel.Visibility;
@@ -1523,7 +1644,7 @@ public sealed partial class ПараметрыPage
             {
                 if (secondStackPanel.Visibility == Visibility.Visible)
                 {
-                    Helpers.VisualTreeHelper.SetAllChildrenVisibility(secondStackPanel, Visibility.Visible);
+                    VisualTreeHelper.SetAllChildrenVisibility(secondStackPanel, Visibility.Visible);
                 }
             }
 
@@ -1850,7 +1971,7 @@ public sealed partial class ПараметрыPage
                     $"Address MSG: {_testMailbox.SMU_ADDR_MSG}\n" +
                     $"Address RSP: {_testMailbox.SMU_ADDR_RSP}\n" +
                     $"Address ARG: {_testMailbox.SMU_ADDR_ARG}"));
-            var status = _cpu?.smu.SendSmuCommand(_testMailbox, command, ref args); 
+            var status = _cpu?.smu.SendSmuCommand(_testMailbox, command, ref args);
             if (status != SMU.Status.OK)
             {
                 ApplyInfo += "\n" + "SMUErrorText".GetLocalized() + ": " +
@@ -1919,39 +2040,15 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            await LogHelper.Log("Saku PowerMon Clicked to open. Showing dialog");
-            var monDialog = new ContentDialog
+            await LogHelper.Log("Saku PowerMon starting...");
+            var newWindow = new PowerWindow();
+            var micaBackdrop = new MicaBackdrop
             {
-                Title = "PowerMonText".GetLocalized(),
-                Content = "PowerMonDesc".GetLocalized(),
-                CloseButtonText = "Cancel".GetLocalized(),
-                PrimaryButtonText = "Open".GetLocalized(),
-                DefaultButton = ContentDialogButton.Close
+                Kind = MicaKind.BaseAlt
             };
+            newWindow.SystemBackdrop = micaBackdrop;
+            newWindow.Activate();
 
-            // Use this code to associate the dialog to the appropriate AppWindow by setting
-            // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                monDialog.XamlRoot = XamlRoot;
-            }
-
-            var result = await monDialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
-            {
-                await LogHelper.Log("Saku PowerMon starting...");
-                var newWindow = new PowerWindow(_cpu);
-                var micaBackdrop = new MicaBackdrop
-                {
-                    Kind = MicaKind.BaseAlt
-                };
-                newWindow.SystemBackdrop = micaBackdrop;
-                newWindow.Activate();
-            }
-            else
-            {
-                await LogHelper.Log("Saku PowerMon dialog closed");
-            }
         }
         catch (Exception exception)
         {
@@ -1998,58 +2095,70 @@ public sealed partial class ПараметрыPage
             var symbolButton = new Button
             {
                 VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(320, 60, 0, 0),
+                Margin = new Thickness(0, 41, 0, 0),
                 Width = 40,
                 Height = 40,
                 Content = new ContentControl
                 {
                     Content = _smuSymbol1
-                }
+                },
+                CornerRadius = new CornerRadius(10),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             var comboSelSmu = new ComboBox
             {
-                Margin = new Thickness(0, 20, 0, 0),
-                VerticalAlignment = VerticalAlignment.Top
+                Margin = new Thickness(55, 5, 0, 0),
+                VerticalAlignment = VerticalAlignment.Top,
+                CornerRadius = new CornerRadius(10),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             var mainText = new TextBox
             {
-                Margin = new Thickness(0, 60, 0, 0),
+                Margin = new Thickness(55, 45, 0, 0),
                 PlaceholderText = "New_Name".GetLocalized(),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
-                Height = 39.5,
-                Width = 315
+                Width = 305,
+                CornerRadius = new CornerRadius(10),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             var descText = new TextBox
             {
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(0, 105.5, 0, 0),
+                Margin = new Thickness(55, 85, 0, 0),
                 PlaceholderText = "Desc".GetLocalized(),
-                Height = 40,
-                Width = 360
+                Width = 305,
+                CornerRadius = new CornerRadius(10),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             var cmdText = new TextBox
             {
-                Margin = new Thickness(0, 152, 0, 0),
+                /* Margin = new Thickness(0, 152, 0, 0),*/
                 PlaceholderText = "Command".GetLocalized(),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Height = 40,
-                Width = 176
+                /*HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top, */
+                Width = 176,
+                CornerRadius = new CornerRadius(10),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             var argText = new TextBox
             {
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(180, 152, 0, 0),
+                /*Margin = new Thickness(180, 152, 0, 0),*/
                 PlaceholderText = "Arguments".GetLocalized(),
-                Height = 40,
-                Width = 179
+                Width = 179,
+                CornerRadius = new CornerRadius(10),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow
             };
             var autoRun = new CheckBox
             {
-                Margin = new Thickness(1, 195, 0, 0),
+                Margin = new Thickness(1, 185, 0, 0),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
                 Content = "Param_Autorun".GetLocalized(),
@@ -2057,7 +2166,7 @@ public sealed partial class ПараметрыPage
             };
             var applyWith = new CheckBox
             {
-                Margin = new Thickness(1, 225, 0, 0),
+                Margin = new Thickness(1, 215, 0, 0),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
                 Content = "Param_WithApply".GetLocalized(),
@@ -2105,8 +2214,40 @@ public sealed partial class ПараметрыPage
                             symbolButton,
                             mainText,
                             descText,
-                            cmdText,
-                            argText,
+                            new StackPanel
+                            {
+                                HorizontalAlignment = HorizontalAlignment.Left,
+                                VerticalAlignment = VerticalAlignment.Top,
+                                Margin = new Thickness(0, 122, 0, 0),
+                                Orientation = Orientation.Vertical,
+                                Children =
+                                {
+                                    new TextBlock
+                                    {
+                                        Margin = new Thickness(2,0,0,0),
+                                        Text = "Command".GetLocalized(),
+                                        Padding = new Thickness(0,0,0,3)
+                                    },
+                                    cmdText
+                                }
+                            },
+                            new StackPanel
+                            {
+                                HorizontalAlignment = HorizontalAlignment.Left,
+                                VerticalAlignment = VerticalAlignment.Top,
+                                Margin = new Thickness(180, 122, 0, 0),
+                                Orientation = Orientation.Vertical,
+                                Children =
+                                {
+                                    new TextBlock
+                                    {
+                                        Margin = new Thickness(2,0,0,0),
+                                        Text = "Arguments".GetLocalized(),
+                                        Padding = new Thickness(0,0,0,3)
+                                    },
+                                    argText
+                                }
+                            },
                             autoRun,
                             applyWith
                         }
@@ -2425,7 +2566,7 @@ public sealed partial class ПараметрыPage
                             SendSmuCommand?.SendRange(cmdStart.Text, argStart.Text, argEnd.Text, saveIndex, run);
                             RangeStarted.IsOpen = true;
                             RangeStarted.Title = "SMURange".GetLocalized() + ". " + argStart.Text + "-" + argEnd.Text;
-                            
+
                         }
 
                         comboBoxMailboxSelect.SelectedIndex = saveIndex;
@@ -2467,7 +2608,7 @@ public sealed partial class ПараметрыPage
         if (SendSmuCommand != null)
         {
             SendSmuCommand.RangeCompleted -= CloseRangeStarted!;
-        } 
+        }
     }
 
     private void SymbolButton_Click(object sender, RoutedEventArgs e) => SymbolFlyout.ShowAt(sender as Button);
@@ -2600,7 +2741,7 @@ public sealed partial class ПараметрыPage
     }
 
     private void CancelRange_Click(object sender, RoutedEventArgs e)
-    { 
+    {
         SendSmuCommand.CancelRange();
         CloseInfoRange();
     }
@@ -2646,6 +2787,28 @@ public sealed partial class ПараметрыPage
         catch (Exception exception)
         {
             await LogHelper.TraceIt_TraceError(exception.ToString());
+        }
+    }
+
+    private void SuggestBox_Loaded(object sender, RoutedEventArgs e)
+    {
+        var texts = VisualTreeHelper.FindVisualChildren<ScrollContentPresenter>(SuggestBox);
+        foreach (var text in texts)
+        {
+            text.Margin = new Thickness(12, 10, 0, 0);
+        }
+        var contents = VisualTreeHelper.FindVisualChildren<ContentControl>(SuggestBox);
+        foreach (var content in contents)
+        {
+            var presents = VisualTreeHelper.FindVisualChildren<ContentPresenter>(content);
+            foreach (var present in presents)
+            {
+                var texts1 = VisualTreeHelper.FindVisualChildren<TextBlock>(present);
+                foreach (var text in texts1)
+                {
+                    text.Margin = new Thickness(0, 5, 0, 0);
+                }
+            }
         }
     }
 
@@ -3067,40 +3230,6 @@ public sealed partial class ПараметрыPage
     }
 
     //Расширенные параметры
-    private void A1_Checked(object sender, RoutedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        var check = a1.IsChecked == true;
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].advncd1 = check;
-            _profile[_indexprofile].advncd1value = a1v.Value;
-            ProfileSave();
-        }
-    }
-
-
-    private void A3_Checked(object sender, RoutedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        var check = a3.IsChecked == true;
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].advncd3 = check;
-            _profile[_indexprofile].advncd3value = a3v.Value;
-            ProfileSave();
-        }
-    }
 
     private void A4_Checked(object sender, RoutedEventArgs e)
     {
@@ -3960,35 +4089,6 @@ public sealed partial class ПараметрыPage
     }
 
     //Расширенные параметры
-    private void A1v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].advncd1value = a1v.Value;
-            ProfileSave();
-        }
-    }
-
-    private void A3v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].advncd3value = a3v.Value;
-            ProfileSave();
-        }
-    }
 
     private void A4v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
@@ -4169,70 +4269,6 @@ public sealed partial class ПараметрыPage
         if (_indexprofile != -1)
         {
             _profile[_indexprofile].cpu7value = c7v.Value;
-            ProfileSave();
-        }
-    }
-
-    private void G11_Checked(object sender, RoutedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        var check = g11.IsChecked == true;
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].gpu11 = check;
-            _profile[_indexprofile].gpu11value = g11v.Value;
-            ProfileSave();
-        }
-    }
-
-    private void G11v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].gpu11value = g11v.Value;
-            ProfileSave();
-        }
-    }
-
-    private void G12_Checked(object sender, RoutedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        var check = g12.IsChecked == true;
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].gpu12 = check;
-            _profile[_indexprofile].gpu12value = g12v.Value;
-            ProfileSave();
-        }
-    }
-
-    private void G12v_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (_isLoaded == false || _waitforload)
-        {
-            return;
-        }
-
-        ProfileLoad();
-        if (_indexprofile != -1)
-        {
-            _profile[_indexprofile].gpu12value = g12v.Value;
             ProfileSave();
         }
     }
@@ -4631,6 +4667,7 @@ public sealed partial class ПараметрыPage
     //Кнопка применить, итоговый выход, Zen States-Core SMU Command
     private async void Apply_Click(object sender, RoutedEventArgs e)
     {
+        var isBristol = _cpu?.info.codeName == Cpu.CodeName.BristolRidge;
         try
         {
             if (NormalUserMode.Visibility == Visibility.Visible)
@@ -4638,12 +4675,13 @@ public sealed partial class ПараметрыPage
                 await LogHelper.Log("Applying user settings.");
                 if (c1.IsChecked == true)
                 {
-                    _adjline += " --tctl-temp=" + c1v.Value;
+                    _adjline += " --tctl-temp=" + c1v.Value + (isBristol ? "000" : string.Empty);
                 }
 
                 if (c2.IsChecked == true)
                 {
-                    _adjline += " --stapm-limit=" + c2v.Value + "000";
+                    var stapmBoostMillisecondsBristol = c5v.Value * 1000 < 180000 ? c5v.Value * 1000 : 180000;
+                    _adjline += " --stapm-limit=" + c2v.Value + "000" + (isBristol ? ",2," + stapmBoostMillisecondsBristol : string.Empty);
                 }
 
                 if (c3.IsChecked == true)
@@ -4653,7 +4691,7 @@ public sealed partial class ПараметрыPage
 
                 if (c4.IsChecked == true)
                 {
-                    _adjline += " --slow-limit=" + c4v.Value + "000";
+                    _adjline += " --slow-limit=" + c4v.Value + "000" + (isBristol ? "," + c4v.Value + "000,0" : string.Empty);
                 }
 
                 if (c5.IsChecked == true)
@@ -4674,37 +4712,38 @@ public sealed partial class ПараметрыPage
                 //vrm
                 if (V1.IsChecked == true)
                 {
-                    _adjline += " --vrmmax-current=" + V1V.Value + "000";
+                    _adjline += " --vrmmax-current=" + V1V.Value + "000" +  (isBristol ? "," + V3V.Value + "000," + V3V.Value + "000" : string.Empty);
                 }
 
                 if (V2.IsChecked == true)
                 {
-                    _adjline += " --vrm-current=" + V2V.Value + "000";
+                    _adjline += " --vrm-current=" + V2V.Value + "000" + (isBristol ? "," + V4V.Value + "000," + V4V.Value + "000" : string.Empty);
                 }
 
-                if (V3.IsChecked == true)
+                if (V3.IsChecked == true && !isBristol)
                 {
                     _adjline += " --vrmsocmax-current=" + V3V.Value + "000";
                 }
 
-                if (V4.IsChecked == true)
+                if (V4.IsChecked == true && !isBristol)
                 {
                     _adjline += " --vrmsoc-current=" + V4V.Value + "000";
                 }
 
                 if (V5.IsChecked == true)
                 {
-                    _adjline += " --psi0-current=" + V5V.Value + "000";
+                    _adjline += " --psi0-current=" + V5V.Value + "000" + (isBristol ? "," + V6V.Value + "000," + V6V.Value + "000" : string.Empty); ;
                 }
 
-                if (V6.IsChecked == true)
+                if (V6.IsChecked == true && !isBristol)
                 {
                     _adjline += " --psi0soc-current=" + V6V.Value + "000";
                 }
 
                 if (V7.IsChecked == true)
                 {
-                    _adjline += " --prochot-deassertion-ramp=" + V7V.Value;
+                    var prochotDeassertionTimeMillisecondsBristol = V7V.Value < 100 ? V7V.Value : 100;
+                    _adjline += " --prochot-deassertion-ramp=" + (isBristol ? prochotDeassertionTimeMillisecondsBristol : V7V.Value);
                 }
 
                 //gpu
@@ -4758,40 +4797,19 @@ public sealed partial class ПараметрыPage
                     _adjline += " --max-gfxclk=" + g10v.Value;
                 }
 
-                if (g11.IsChecked == true)
-                {
-                    _adjline += " --min-cpuclk=" + g11v.Value;
-                }
-
-                if (g12.IsChecked == true)
-                {
-                    _adjline += " --max-cpuclk=" + g12v.Value;
-                }
-
-
                 if (g16.IsChecked == true)
                 {
-                    if (g16m.SelectedIndex != 0)
+                    _cpu ??= CpuSingleton.GetInstance();
+                    _adjline += _cpu.info.codeName switch
                     {
-                        _adjline += " --setcpu-freqto-ramstate=" + (g16m.SelectedIndex - 1);
-                    }
-                    else
-                    {
-                        _adjline += " --stopcpu-freqto-ramstate=0";
-                    }
+                        Cpu.CodeName.RavenRidge or Cpu.CodeName.FireFlight or Cpu.CodeName.Cezanne or Cpu.CodeName.Renoir or Cpu.CodeName.Lucienne => g16m.SelectedIndex != 0 ? " --disable-feature=0,32" : " --enable-feature=0,32",
+                        Cpu.CodeName.Rembrandt or Cpu.CodeName.Mendocino or Cpu.CodeName.Phoenix or Cpu.CodeName.Phoenix2 or Cpu.CodeName.HawkPoint or Cpu.CodeName.StrixPoint or Cpu.CodeName.StrixHalo or Cpu.CodeName.KrackanPoint => g16m.SelectedIndex != 0 ? " --disable-feature=0,16" : " --enable-feature=0,16",
+                        Cpu.CodeName.Raphael or Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.StormPeak or Cpu.CodeName.DragonRange or Cpu.CodeName.Bergamo => g16m.SelectedIndex != 0 ? " --disable-feature=128" : " --enable-feature=128",
+                        _ => g16m.SelectedIndex != 0 ? " --setcpu-freqto-ramstate=0" : " --stopcpu-freqto-ramstate=0",
+                    };
                 }
 
                 //advanced
-                if (a1.IsChecked == true)
-                {
-                    _adjline += " --vrmgfx-current=" + a1v.Value + "000";
-                }
-
-
-                if (a3.IsChecked == true)
-                {
-                    _adjline += " --vrmgfxmax_current=" + a3v.Value + "000";
-                }
 
                 if (a4.IsChecked == true)
                 {
@@ -4825,7 +4843,13 @@ public sealed partial class ПараметрыPage
 
                 if (a10.IsChecked == true)
                 {
-                    _adjline += " --gfx-clk=" + a10v.Value;
+                    var val = 0x480000 | (int)a10v.Value; // Always at 1.1V
+                    _cpu ??= CpuSingleton.GetInstance();
+                    _adjline += _cpu.info.codeName switch
+                    {
+                        Cpu.CodeName.RavenRidge or Cpu.CodeName.FireFlight or Cpu.CodeName.Dali or Cpu.CodeName.Picasso => " --set-gpuclockoverdrive-byvid=" + val,
+                        _ => " --gfx-clk=" + a10v.Value,
+                    };
                 }
 
                 if (a11.IsChecked == true)
@@ -4841,28 +4865,20 @@ public sealed partial class ПараметрыPage
 
                 if (a13.IsChecked == true)
                 {
-                    switch (a13m.SelectedIndex)
+                    _adjline += a13m.SelectedIndex switch
                     {
-                        case 1:
-                            _adjline += " --max-performance=1";
-                            break;
-                        case 2:
-                            _adjline += " --power-saving=1";
-                            break;
-                    }
+                        2 => " --power-saving=1",
+                        _ => " --max-performance=1",
+                    };
                 }
 
                 if (a14.IsChecked == true)
                 {
-                    switch (a14m.SelectedIndex)
+                    _adjline += a14m.SelectedIndex switch
                     {
-                        case 0:
-                            _adjline += " --disable-oc=1";
-                            break;
-                        case 1:
-                            _adjline += " --enable-oc=1";
-                            break;
-                    }
+                        1 => " --enable-oc=1",
+                        _ => " --disable-oc=1",
+                    };
                 }
 
                 if (a15.IsChecked == true)
@@ -4872,14 +4888,7 @@ public sealed partial class ПараметрыPage
 
                 if (O1.IsChecked == true)
                 {
-                    if (O1v.Value >= 0.0)
-                    {
-                        _adjline += $" --set-coall={O1v.Value} ";
-                    }
-                    else
-                    {
-                        _adjline += $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)O1v.Value))} ";
-                    }
+                    _adjline += (O1v.Value >= 0.0) ? $" --set-coall={O1v.Value} " : $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)O1v.Value))} ";
                 }
 
                 if (O2.IsChecked == true)
@@ -5160,7 +5169,7 @@ public sealed partial class ПараметрыPage
                     }
                 }
             }
-            
+
 
             if (SMU_Func_Enabl.IsOn)
             {
@@ -5268,7 +5277,7 @@ public sealed partial class ПараметрыPage
             _adjline = "";
             ApplyInfo = "";
             AppSettings.SaveSettings();
-            SendSmuCommand.SetCpuCodename(_cpu!.info.codeName); 
+            SendSmuCommand.SetCpuCodename(_cpu!.info.codeName);
             await LogHelper.Log($"Sending commandline: {_adjline}");
             MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, true, AppSettings.ReapplyOverclock,
                 AppSettings.ReapplyOverclockTimer);
@@ -5935,11 +5944,12 @@ public sealed partial class ПараметрыPage
 
     private void BackToNormalMode_Click(object sender, RoutedEventArgs e)
     {
-        ToolTipService.SetToolTip(ActionButton_Apply, "Param_Apply/ToolTipService/ToolTip".GetLocalized()); 
+        ToolTipService.SetToolTip(ActionButton_Apply, "Param_Apply/ToolTipService/ToolTip".GetLocalized());
         DeveloperSettingsMode.Visibility = Visibility.Collapsed;
-        DeveloperOptionsApply.Visibility = Visibility.Collapsed; 
+        DeveloperOptionsApply.Visibility = Visibility.Collapsed;
         NormalUserMode.Visibility = Visibility.Visible;
         Param_Name.Text = "Param_Name/Text".GetLocalized();
+        Suggestions_Filter_StackPanel.Visibility = Visibility.Visible;
     }
 
     private void OpenDeveloperOptionsMode_Click(object sender, RoutedEventArgs e)
@@ -5949,6 +5959,7 @@ public sealed partial class ПараметрыPage
         DeveloperSettingsMode.Visibility = Visibility.Visible;
         DeveloperOptionsApply.Visibility = Visibility.Visible;
         Param_Name.Text = "Param_DeveloperOptions_Name/Text".GetLocalized();
+        Suggestions_Filter_StackPanel.Visibility = Visibility.Collapsed;
     }
     #endregion
 
@@ -6281,7 +6292,7 @@ public sealed partial class ПараметрыPage
             if (NumaUtil.HighestNumaNode > 0)
             {
                 NumaUtil.SetThreadProcessorAffinity((ushort)(numanode + 1),
-                    Enumerable.Range(0, Environment.ProcessorCount).ToArray());
+                    [.. Enumerable.Range(0, Environment.ProcessorCount)]);
             }
 
             if (!ApplyTscWorkaround())
