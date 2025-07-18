@@ -99,7 +99,7 @@ public interface IAppSettingsService
         set;
     } // Тип отображаемых иконок Треймона
 
-    bool StreamOptimizerEnabled
+    bool StreamStabilizerEnabled
     {
         get;
         set;
@@ -165,6 +165,12 @@ public interface IAppSettingsService
         get;
         set;
     }
+
+    int PremadeOptimizationLevel
+    {
+        get;
+        set;
+    }  // Уровень оптимизации пресета: 0 - Базовый, 1 - Стандартный, 2 - Расширенный
 
     // Страница управления кулером
     bool IsNbfcModeEnabled

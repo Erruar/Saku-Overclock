@@ -37,7 +37,7 @@ public class AppSettingsService : IAppSettingsService
     public bool NiIconsEnabled { get; set; } = false; // Включён ли Треймон
     public bool RtssMetricsEnabled { get; set; } = false; // Включены ли RTSS Метрики
     public int NiIconsType { get; set; } = -1; // Тип отображаемых иконок Треймона
-    public bool StreamOptimizerEnabled { get; set; } = false; // Включен ли оптимизатор стрима
+    public bool StreamStabilizerEnabled { get; set; } = false; // Включен ли оптимизатор стрима
     public bool CurveOptimizerOverallEnabled { get; set; } = false; // Включен ли глобальный андервольтинг
     public int CurveOptimizerOverallLevel { get; set; } = 0; // Уровень глобального андервольтинга (0 - выкл, 1 - лёгкий, 2 - средний)
     public bool ProfilespageViewModeBeginner { get; set; } = true; // Пресеты, готовые пресеты и параметры
@@ -48,6 +48,7 @@ public class AppSettingsService : IAppSettingsService
     public bool PremadeBalanceActivated { get; set; } = false;
     public bool PremadeSpeedActivated { get; set; } = false;
     public bool PremadeMaxActivated { get; set; } = true;
+    public int PremadeOptimizationLevel { get; set; } = 0; // Уровень оптимизации пресета: 0 - Базовый, 1 - Стандартный, 2 - Расширенный
 
     // Страница управления кулером
     public bool IsNbfcModeEnabled { get; set; } = true; // Выбранная конфигурация страницы управления кулером
