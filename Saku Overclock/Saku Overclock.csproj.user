@@ -36,6 +36,9 @@
     <Page Update="Styles\ProfileSelector.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Styles\SliderCollapseLauncher.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\ОбучениеPage.xaml">
