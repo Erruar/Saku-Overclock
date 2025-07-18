@@ -9,191 +9,645 @@ using Saku_Overclock.Views;
 using ZenStates.Core;
 
 namespace Saku_Overclock.Services;
+
+public enum OptimizationLevel
+{
+    Basic,      // Только безопасные настройки
+    Standard,   // Стандартные настройки
+    Deep        // Стандартные + Андервольтинг + Агрессивные настройки
+}
+
+public enum PresetType
+{
+    Min,
+    Eco,
+    Balance,
+    Performance,
+    Max
+}
+
+public class PresetMetrics
+{
+    public int PerformanceScore
+    {
+        get; set;
+    }     // -50 - +50
+    public int EfficiencyScore
+    {
+        get; set;
+    }     // -50 - +50
+    public int ThermalScore
+    {
+        get; set;
+    }        // -50 - +50
+}
+
+public class PresetConfiguration
+{
+    public string CommandString { get; set; } = "";
+    public PresetMetrics Metrics { get; set; } = new();
+    public PresetType Type
+    {
+        get; set;
+    }
+    public OptimizationLevel Level
+    {
+        get; set;
+    }
+    public bool IsUndervoltingEnabled
+    {
+        get; set;
+    }
+}
+
+public class PresetCurves
+{
+    public double[] MinCurve { get; set; } = new double[4];
+    public double[] EcoCurve { get; set; } = new double[4];
+    public double[] BalanceCurve { get; set; } = new double[4];
+    public double[] PerformanceCurve { get; set; } = new double[4];
+    public double[] MaxCurve { get; set; } = new double[4];
+    public double[] FastMultipliers { get; set; } = new double[2]; // Только коэффициенты для fast = a * stapm + b
+}
+
+public class ArchitectureProfile
+{
+    public string Name { get; set; } = "";
+    public PresetCurves LaptopCurves { get; set; } = new();
+    public PresetCurves DesktopCurves { get; set; } = new();
+    public double EfficiencyMultiplier { get; set; } = 1.0;
+    public double ThermalMultiplier { get; set; } = 1.0;
+    public int MaxSafeTempBasic { get; set; } = 75;
+    public int MaxSafeTempStandard { get; set; } = 90;
+    public int MaxSafeTempDeep { get; set; } = 95;
+
+    // Дополнительные множители для тонкой настройки архитектуры
+    public double StapmBonus { get; set; } = 0.0; // Добавляется к результату кривой
+    public double FastBonus { get; set; } = 0.0;  // Добавляется к результату fast расчета
+}
+
+public class SafetyLimits
+{
+    public int MaxTempBasic { get; set; } = 75;
+    public int MaxTempStandard { get; set; } = 90;
+    public int MaxTempDeep { get; set; } = 95;
+
+    public double MaxStapmMultiplierBasic { get; set; } = 1.1;
+    public double MaxStapmMultiplierStandard { get; set; } = 1.3;
+    public double MaxStapmMultiplierDeep { get; set; } = 1.5;
+
+    public int MinStapmTime { get; set; } = 200;
+    public int MaxStapmTime { get; set; } = 900;
+}
+
 public class OcFinderService : IOcFinderService
 {
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
+    private readonly IDataProvider? _dataProvider = App.GetService<IDataProvider>();
     private Cpu _cpu;
+
+    private const bool _forceTraining = false;
+    private bool _isInitialized = false;
+    private bool _isTdpInitialized = false;
+    private bool _isUndervoltingAvailable = false;
+    private bool _isUndervoltingChecked = false;
+
+    // Кэшированные значения TDP
+    private double _validatedCpuPower = 35.0;
+    private bool _isPlatformPC = false;
+
+    private readonly SafetyLimits _safetyLimits = new();
+    private readonly Dictionary<string, ArchitectureProfile> _architectureProfiles = [];
+
+    // Кэш для метрик
+    private readonly Dictionary<string, PresetMetrics> _metricsCache = [];
+
     public OcFinderService()
     {
         _cpu = CpuSingleton.GetInstance();
+        InitializeArchitectureProfiles();
     }
 
-    private bool _isInitialized = false;
-
-    private string MinPreset = "";
-    private string EcoPreset = "";
-    private string BalancePreset = "";
-    private string PerformancePreset = "";
-    private string MaxPreset = "";
-
-    private int TempLimitBalance = 80;
-    private int TempLimitPerf = 90;
-
-    private int StapmLimitBalance = 20;
-    private int StapmLimitPerf = 30;
-
-    private int FastLimitBalance = 25;
-    private int FastLimitPerf = 35;
-
-    private int SttLimitBalance = 50;
-    private int SttLimitPerf = 70;
-
-    private int SlowTimeBalance = 5;
-    private int SlowTimePerf = 3;
-
-    private int StapmTimeBalance = 300;
-    private int StapmTimePerf = 200;
-
-    private int BdProchotTimeBalance = 20;
-    private int BdProchotTimePerf = 200;
-
-    public void GeneratePremadeProfiles()
+    /// <summary>
+    /// Ленивая инициализация TDP - вызывается только при первом обращении
+    /// </summary>
+    public void LazyInitTdp()
     {
-        if (/*_isInitialized*/false) { return; }
+        if (_isTdpInitialized)
+        {
+            return;
+        }
 
-        var x = 35d;
-        var y = 65d;
         _cpu ??= CpuSingleton.GetInstance();
-
         var cpuPower = SendSmuCommand.ReturnCpuPowerLimit(_cpu);
-        var platformPc = SendSmuCommand.IsPlatformPC(_cpu) == true;
+        CheckUndervoltingFeature();
+        var powerTable = _dataProvider?.GetPowerTable();
+        var powerTableCheckError = false;
+        var checkupCpuPower = 35d;
 
-        if (_cpu != null)
-        { 
-            if (platformPc)
+        if (powerTable != null && powerTable.Length > 3)
+        {
+            var powerLimit = powerTable[0];
+            var realPower = powerTable[2];
+            var avgPower = powerTable[4];
+
+            // Трёхкратная проверка для точного определения текущего лимита мощности
+            if (powerLimit != 0)
             {
-                y = cpuPower;
+                checkupCpuPower = powerLimit;
+            }
+            else if (realPower != 0)
+            {
+                checkupCpuPower = realPower;
+            }
+            else if (avgPower != 0)
+            {
+                checkupCpuPower = avgPower;
             }
             else
             {
-                x = cpuPower;
+                powerTableCheckError = true;
             }
-            if (cpuPower > 45 && !platformPc)
-            {
-                x = 45d;
-            }
-        }
-
-        double stapm_val_min; 
-        double stapm_val_eco; 
-        double stapm_val_bal; 
-        double stapm_val_per; 
-        double stapm_val_max;
-
-        if (!platformPc)
-        {
-            stapm_val_min =  0.0013 * x * x * x - 0.1228 * x * x + 3.5876 * x - 24.5430; // Min
-            stapm_val_eco =  0.0006 * x * x * x - 0.0630 * x * x + 2.3241 * x - 10.8710; // Eco
-            stapm_val_bal =  0.0000 * x * x * x - 0.0005 * x * x + 0.9628 * x + 2.92380; // Bal
-            stapm_val_per = -0.0003 * x * x * x + 0.0292 * x * x + 0.2543 * x + 13.3532; // Perf
-            stapm_val_max = -0.0009 * x * x * x + 0.0776 * x * x - 0.8828 * x + 28.8492; // Max
-
-            if (stapm_val_min < 6) { stapm_val_min = 6; }
         }
         else
         {
-            stapm_val_min =  0.00003451 * y * y * y - 0.011510 * y * y + 1.52400 * y - 25.52000; // Min
-            stapm_val_eco =  0.00001711 * y * y * y - 0.006530 * y * y + 1.16600 * y - 8.417000;  // Eco
-            stapm_val_bal = -0.00002563 * y * y * y + 0.005565 * y * y + 0.63570 * y + 7.069000; // Bal
-            stapm_val_per = -0.00006658 * y * y * y + 0.021440 * y * y - 1.14200 * y + 81.64000; // Perf
-            stapm_val_max = -0.00005653 * y * y * y + 0.021680 * y * y - 1.21900 * y + 98.47000; // Max
+            powerTableCheckError = true;
         }
 
+        if (!powerTableCheckError && cpuPower > checkupCpuPower)
+        {
+            cpuPower = checkupCpuPower;
+        }
 
-        var fast_val_min = platformPc == false ? FromValueToUpper(1.17335141 * stapm_val_min + 0.21631949, 2) : (int)stapm_val_min;
-        var fast_val_eco = platformPc == false ? FromValueToUpper(1.17335141 * stapm_val_eco + 0.21631949, 3) : (int)stapm_val_eco;
-        var fast_val_bal = platformPc == false ? FromValueToUpper(1.17335141 * stapm_val_bal + 0.21631949, 3) : (int)stapm_val_bal;
-        var fast_val_per = platformPc == false ? FromValueToUpper(1.17335141 * stapm_val_per + 0.21631949, 4) : (int)stapm_val_per;
-        var fast_val_max = platformPc == false ? FromValueToUpper(1.17335141 * stapm_val_max + 0.21631949, 5) : (int)stapm_val_max; 
+        _isPlatformPC = SendSmuCommand.IsPlatformPC(_cpu) == true;
+        _validatedCpuPower = cpuPower;
 
-        StapmLimitBalance = (int)stapm_val_bal;
-        StapmLimitPerf = (int)stapm_val_per;
+        // Ограничение для мобильных платформ
+        if (_validatedCpuPower > 45 && !_isPlatformPC)
+        {
+            _validatedCpuPower = 45d;
+        }
 
-        FastLimitBalance = fast_val_bal;
-        FastLimitPerf = fast_val_per;
+        if (_cpu.info.codeName == Cpu.CodeName.BristolRidge) 
+        {
+            _validatedCpuPower = 35d;
+        }
 
-        SttLimitBalance = 2*(int)stapm_val_bal;
-        SttLimitPerf = 2*(int)stapm_val_per;
+        _isTdpInitialized = true;
+    }
 
-        MinPreset = " --tctl-temp=60 " + //
-            $"--stapm-limit={stapm_val_min * 1000} " + //
-            $"--fast-limit={fast_val_min * 1000} " + //
-            $"--stapm-time=900 " + //
-            $"--slow-limit={stapm_val_min * 1000} " + //
-            $"--slow-time=900 " + //
-            $"--vrm-current=120000 " + //
-            $"--vrmmax-current=120000 " + //
-            $"--vrmsoc-current=120000 " + //
-            $"--vrmsocmax-current=120000 " + //
-            $"--prochot-deassertion-ramp=2 ";
+    /// <summary>
+    /// Проверка доступности андервольтинга
+    /// </summary>
+    private bool CheckUndervoltingFeature()
+    {
+        if (_isUndervoltingChecked)
+        {
+            return _isUndervoltingAvailable;
+        }
 
-        EcoPreset = " --tctl-temp=70 " + //
-            $"--stapm-limit={stapm_val_eco * 1000} " + //
-            $"--fast-limit={fast_val_eco * 1000} " + //
-            $"--stapm-time=500 " + //
-            $"--slow-limit={stapm_val_eco * 1000} " + //
-            $"--slow-time=500 " + //
-            $"--vrm-current=120000 " + //
-            $"--vrmmax-current=120000 " + //
-            $"--vrmsoc-current=120000 " + //
-            $"--vrmsocmax-current=120000 " + //
-            $"--prochot-deassertion-ramp=2 ";
+        _isUndervoltingAvailable = SendSmuCommand.ReturnUndervoltingAvailability(_cpu);
+        _isUndervoltingChecked = true;
+        return _isUndervoltingAvailable;
+    }
 
-        BalancePreset = " --tctl-temp=90 " + //
-            $"--stapm-limit={stapm_val_bal * 1000} " + //
-            $"--fast-limit={fast_val_bal * 1000} " + //
-            $"--stapm-time=300 " + //
-            $"--slow-limit={stapm_val_bal * 1000} " + //
-            $"--slow-time=5 " + //
-            $"--vrm-current=120000 " + //
-            $"--vrmmax-current=120000 " + //
-            $"--vrmsoc-current=120000 " + //
-            $"--vrmsocmax-current=120000 " + //
-            $"--prochot-deassertion-ramp=20 ";
+    /// <summary>
+    /// Инициализация профилей архитектур с кривыми для каждого типа пресета
+    /// </summary>
+    private void InitializeArchitectureProfiles()
+    {
+        // Базовый профиль (используется для всех архитектур как основа)
+        var baseProfile = new ArchitectureProfile
+        {
+            Name = "Base",
+            LaptopCurves = new PresetCurves
+            {
+                MinCurve = [0.00130000, -0.1228000, 3.5876, -24.5430],
+                EcoCurve = [0.00060000, -0.0630000, 2.3241, -10.8710],
+                BalanceCurve = [0.00002262, -0.0004827, 0.9628, 2.92400],
+                PerformanceCurve = [-0.0003000, 0.0292000, 0.2543, 13.3532],
+                MaxCurve = [-0.0009000, 0.0776000, -0.8828, 28.8492],
+                FastMultipliers = [1.17335141, 0.21631949]
+            },
+            DesktopCurves = new PresetCurves
+            {
+                MinCurve = [0.000034510, -0.011510, 1.52400, -25.52000],
+                EcoCurve = [0.000017110, -0.006530, 1.16600, -8.417000],
+                BalanceCurve = [-0.00002563, 0.005565, 0.63570, 7.069000],
+                PerformanceCurve = [-0.00006658, 0.021440, -1.14200, 81.64000],
+                MaxCurve = [-0.00005653, 0.021680, -1.21900, 98.47000],
+                FastMultipliers = [1.0, 0.0] // Для десктопа fast = stapm
+            },
+            EfficiencyMultiplier = 1.0,
+            ThermalMultiplier = 1.0
+        };
 
-        PerformancePreset = " --tctl-temp=90 " + //
-            $"--stapm-limit={stapm_val_per * 1000} " + //
-            $"--fast-limit={fast_val_per * 1000} " + //
-            $"--stapm-time=200 " + //
-            $"--slow-limit={stapm_val_per * 1000} " + //
-            $"--slow-time=3 " + //
-            $"--vrm-current=120000 " + //
-            $"--vrmmax-current=120000 " + //
-            $"--vrmsoc-current=120000 " + //
-            $"--vrmsocmax-current=120000 " + //
-            $"--prochot-deassertion-ramp=200 ";
+        // PreZen профиль
+        _architectureProfiles["PreZen"] = new ArchitectureProfile
+        {
+            Name = "PreZen",
+            LaptopCurves = baseProfile.LaptopCurves,
+            DesktopCurves = baseProfile.DesktopCurves,
+            EfficiencyMultiplier = 0.9,
+            ThermalMultiplier = 0.95,
+            StapmBonus = 2.0, // Завышаеи мощность для старой архитектуры
+            FastBonus = 1.0
+        };
 
-        MaxPreset = " --tctl-temp=100 " + //
-            $"--stapm-limit={stapm_val_max * 1000} " + //
-            $"--fast-limit={fast_val_max * 1000} " + //
-            $"--stapm-time=9000 " + //
-            $"--slow-limit={stapm_val_max * 1000} " + //
-            $"--slow-time=1 " + //
-            $"--vrm-current=120000 " + //
-            $"--vrmmax-current=120000 " + //
-            $"--vrmsoc-current=120000 " + //
-            $"--vrmsocmax-current=120000 " + //
-            $"--prochot-deassertion-ramp=100 ";
+        // Zen профиль
+        _architectureProfiles["Zen"] = new ArchitectureProfile
+        {
+            Name = "Zen",
+            LaptopCurves = baseProfile.LaptopCurves,
+            DesktopCurves = baseProfile.DesktopCurves,
+            EfficiencyMultiplier = 1.0,
+            ThermalMultiplier = 1.0
+        };
 
+        // Zen2 профиль
+        _architectureProfiles["Zen2"] = new ArchitectureProfile
+        {
+            Name = "Zen2",
+            LaptopCurves = baseProfile.LaptopCurves,
+            DesktopCurves = baseProfile.DesktopCurves,
+            EfficiencyMultiplier = 1.05,
+            ThermalMultiplier = 1.0,
+            StapmBonus = 1.0
+        };
+
+        // Zen3 профиль (базовый)
+        _architectureProfiles["Zen3"] = new ArchitectureProfile
+        {
+            Name = "Zen3",
+            LaptopCurves = baseProfile.LaptopCurves,
+            DesktopCurves = baseProfile.DesktopCurves,
+            EfficiencyMultiplier = 1.05,
+            ThermalMultiplier = 1.0,
+            StapmBonus = 1.5
+        };
+
+        // Zen4 профиль (более эффективный)
+        _architectureProfiles["Zen4"] = new ArchitectureProfile
+        {
+            Name = "Zen4",
+            LaptopCurves = baseProfile.LaptopCurves,
+            DesktopCurves = baseProfile.DesktopCurves,
+            EfficiencyMultiplier = 1.15,
+            ThermalMultiplier = 1.10,
+            StapmBonus = 2.5,
+            FastBonus = 1.0
+        };
+
+        // Zen5 профиль (самый эффективный)
+        _architectureProfiles["Zen5"] = new ArchitectureProfile
+        {
+            Name = "Zen5",
+            LaptopCurves = baseProfile.LaptopCurves,
+            DesktopCurves = baseProfile.DesktopCurves,
+            EfficiencyMultiplier = 1.25,
+            ThermalMultiplier = 1.20,
+            StapmBonus = 3.5,
+            FastBonus = 2.0
+        };
+    }
+
+    /// <summary>
+    /// Получение профиля архитектуры на основе CPU
+    /// </summary>
+    private ArchitectureProfile GetArchitectureProfile()
+    {
+        if (_cpu?.info.codeName != null)
+        {
+            var codenameGeneration = SendSmuCommand.GetCodeNameGeneration(_cpu);
+            return codenameGeneration switch
+            {
+                "FP4" => _architectureProfiles["PreZen"],
+                "FP5" => _architectureProfiles["Zen"],
+                "FF3" => _architectureProfiles["Zen2"],
+                "FP6" => _architectureProfiles["Zen3"],
+                "FP7" => _architectureProfiles["Zen4"],
+                "FP8" => _architectureProfiles["Zen5"],
+                "AM4_V1" => _architectureProfiles["Zen2"],
+                "AM4_V2" => _architectureProfiles["Zen3"],
+                "AM5" => _architectureProfiles["Zen"],
+                _ => _architectureProfiles["Zen3"]
+            };
+        }
+
+        return _architectureProfiles["Zen3"]; // По умолчанию
+    }
+
+    /// <summary>
+    /// Расчет полиномиальной аппроксимации
+    /// </summary>
+    private static double CalculatePolynomial(double[] coefficients, double x)
+    {
+        double result = 0;
+        for (var i = 0; i < coefficients.Length; i++)
+        {
+            result += coefficients[i] * Math.Pow(x, coefficients.Length - 1 - i);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Получение кривой для конкретного типа пресета
+    /// </summary>
+    private double[] GetCurveForPresetType(PresetType type, PresetCurves curves)
+    {
+        return type switch
+        {
+            PresetType.Min => curves.MinCurve,
+            PresetType.Eco => curves.EcoCurve,
+            PresetType.Balance => curves.BalanceCurve,
+            PresetType.Performance => curves.PerformanceCurve,
+            PresetType.Max => curves.MaxCurve,
+            _ => curves.BalanceCurve
+        };
+    }
+
+    /// <summary>
+    /// Создание пресета с использованием специфичных кривых для каждого типа
+    /// </summary>
+    public PresetConfiguration CreatePreset(PresetType type, OptimizationLevel level)
+    {
+        LazyInitTdp();
+
+        var profile = GetArchitectureProfile();
+        var curves = _isPlatformPC ? profile.DesktopCurves : profile.LaptopCurves;
+
+        // Получаем кривую для конкретного типа пресета
+        var presetCurve = GetCurveForPresetType(type, curves);
+
+        // Рассчитываем STAPM напрямую из кривой пресета
+        var stapmValue = CalculatePolynomial(presetCurve, _validatedCpuPower);
+
+        // Добавляем архитектурный бонус
+        stapmValue += profile.StapmBonus;
+
+        // Модификация под уровень оптимизации (небольшая корректировка)
+        var levelBonus = level switch
+        {
+            OptimizationLevel.Basic => type == PresetType.Min ? 0 : -1.0,
+            OptimizationLevel.Standard => 0,
+            OptimizationLevel.Deep => type == PresetType.Max ? 0 : 1.5,
+            _ => 0
+        };
+
+        stapmValue += levelBonus;
+
+        // Минимальный лимит
+        if (stapmValue < 6)
+        {
+            stapmValue = 6;
+        }
+
+        // Расчет Fast limit
+        var fastValue = _isPlatformPC ?
+            stapmValue + profile.FastBonus :
+            FromValueToUpper(curves.FastMultipliers[0] * stapmValue + curves.FastMultipliers[1] + profile.FastBonus, 3);
+
+        // Температурные лимиты
+        var tempLimit = level switch
+        {
+            OptimizationLevel.Basic => Math.Min(profile.MaxSafeTempBasic, GetBaseTempForPreset(type)),
+            OptimizationLevel.Standard => Math.Min(profile.MaxSafeTempStandard, GetBaseTempForPreset(type)),
+            OptimizationLevel.Deep => Math.Min(profile.MaxSafeTempDeep, GetBaseTempForPreset(type)),
+            _ => GetBaseTempForPreset(type)
+        };
+
+        // Временные параметры
+        var (stapmTime, slowTime, prochotRamp) = GetTimingParameters(type, level);
+
+        var preset = new PresetConfiguration
+        {
+            Type = type,
+            Level = level,
+            IsUndervoltingEnabled = level == OptimizationLevel.Deep && _isUndervoltingAvailable,
+            CommandString = BuildCommandString(stapmValue, fastValue, tempLimit, stapmTime, slowTime, prochotRamp, level),
+            Metrics = CalculateMetrics(type, level, stapmValue, tempLimit, profile)
+        };
+
+        return preset;
+    }
+
+    private static int GetBaseTempForPreset(PresetType type) => type switch
+    {
+        PresetType.Min => 60,
+        PresetType.Eco => 70,
+        PresetType.Balance => 90,
+        PresetType.Performance => 90,
+        PresetType.Max => 100,
+        _ => 80
+    };
+
+    private (int stapmTime, int slowTime, int prochotRamp) GetTimingParameters(PresetType type, OptimizationLevel level)
+    {
+        var baseTiming = type switch
+        {
+            PresetType.Min => (900, 900, 2),
+            PresetType.Eco => (500, 500, 2),
+            PresetType.Balance => (300, 5, 20),
+            PresetType.Performance => (200, 3, 200),
+            PresetType.Max => (100, 2, 100),
+            _ => (300, 5, 20)
+        };
+
+        // Для глубокой оптимизации без андервольтинга - более агрессивные тайминги
+        if (level == OptimizationLevel.Deep && !_isUndervoltingAvailable)
+        {
+            baseTiming.Item1 = Math.Max(baseTiming.Item1 - 100, _safetyLimits.MinStapmTime);
+            baseTiming.Item2 = Math.Max(baseTiming.Item2 - 1, 1);
+        }
+
+        return baseTiming;
+    }
+
+    private string BuildCommandString(double stapm, double fast, int tempLimit, int stapmTime, int slowTime, int prochotRamp, OptimizationLevel level)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append($"--fast-limit={(int)(fast * 1000)} ");
+
+        if (_cpu.info.codeName != Cpu.CodeName.BristolRidge)
+        {
+            sb.Append($"--tctl-temp={tempLimit} ");
+            sb.Append($"--stapm-limit={(int)(stapm * 1000)} ");
+            sb.Append($"--slow-limit={(int)(stapm * 1000)} ");
+            sb.Append($"--stapm-time={stapmTime} ");
+            sb.Append($"--slow-time={slowTime} ");
+            sb.Append($"--vrm-current=120000 ");
+            sb.Append($"--vrmmax-current=140000 ");
+            sb.Append($"--vrmsoc-current=100000 ");
+            sb.Append($"--vrmsocmax-current=110000 ");
+        }
+        else
+        {
+            var tempLimitBr = tempLimit > 85 ? 84000 : tempLimit * 1000;
+            sb.Append($"--tctl-temp={tempLimitBr} ");
+            sb.Append($"--stapm-limit={(int)(stapm * 1000)},2,{stapmTime*1000} ");
+            sb.Append($"--max-performance=0 "); // Включит Max Performance режим
+            sb.Append($"--disable-feature=10 "); // Выключит Pkg-Pwr лимит
+
+            if (level == OptimizationLevel.Deep) 
+            {
+                sb.Append($"--disable-feature=400 "); // Выключит PSTATE_ARBITER лимит
+            }
+        }
+
+        sb.Append($"--prochot-deassertion-ramp={prochotRamp} ");
+
+        // Для глубокой оптимизации добавляем андервольтинг если доступен
+        if (level == OptimizationLevel.Deep && _isUndervoltingAvailable)
+        {
+            sb.Append(CurveOptimizerGenerateStringHelper(-10)); // Базовый андервольтинг
+        }
+
+        return sb.ToString().Trim();
+    }
+
+    public string CurveOptimizerGenerateStringHelper(int value) => (value >= 0) ?
+        $" --set-coall={value} " : $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * value))} ";
+
+    private PresetMetrics CalculateMetrics(PresetType type, OptimizationLevel level, double stapm, int tempLimit, ArchitectureProfile profile)
+    {
+        var cacheKey = $"{type}_{level}_{stapm:F1}_{tempLimit}";
+        if (_metricsCache.TryGetValue(cacheKey, out var cached))
+        {
+            return cached;
+        }
+
+        var baseTemp = 80;
+
+        // Производительность (-50 - +50) 
+        var val = (stapm / _validatedCpuPower * 100) - 100;
+        var performanceScore = Math.Min(50,
+                               Math.Pow(
+                               Math.Abs(val), 0.7)
+                               * profile.EfficiencyMultiplier
+                               * (val > 0 ? 1 : -1));
+
+        // Температуры (-50 - +50)  - чем ниже лимит, тем выше балл
+        var thermalScore = Math.Min(50, -0.5 * (int)(100 - tempLimit / (double)baseTemp * 100 * profile.ThermalMultiplier));
+
+        // Бонусы за уровень оптимизации
+        var isPresetEco = type == PresetType.Eco || type == PresetType.Min;
+        var levelBonus = level switch
+        {
+            OptimizationLevel.Basic => isPresetEco ? 1 : -1,
+            OptimizationLevel.Standard => 0,
+            OptimizationLevel.Deep => isPresetEco ? -1 : 1,
+            _ => 0
+        };
+
+        // Эффективность (-50 - +50)  - обратная зависимость от потребления
+        var effScore = (int)performanceScore + thermalScore + levelBonus;
+        if (performanceScore < 0 && thermalScore < 0 && effScore < 0)
+        {
+            effScore *= -1;
+        }
+
+        if (!isPresetEco)
+        {
+            effScore = (int)performanceScore * thermalScore + levelBonus;
+        }
+
+        var efficiencyScore = Math.Min(50, (effScore - 0.5 * effScore * (2 - profile.EfficiencyMultiplier)));
+
+        var metrics = new PresetMetrics
+        {
+            PerformanceScore = (int)Math.Max(-50, Math.Min(50, performanceScore + levelBonus)),
+            EfficiencyScore = (int)Math.Max(-50, Math.Min(50, efficiencyScore + levelBonus)),
+            ThermalScore = (int)Math.Max(-50, Math.Min(50, thermalScore + levelBonus))
+        };
+
+        _metricsCache[cacheKey] = metrics;
+        return metrics;
+    }
+
+    // Публичные методы для теста андервольтинга
+    public bool IsUndervoltingAvailable()
+    {
+        return CheckUndervoltingFeature();
+    }
+
+    public PresetMetrics GetPresetMetrics(PresetType type, OptimizationLevel level)
+    {
+        var preset = CreatePreset(type, level);
+        return preset.Metrics;
+    }
+
+    public void ClearMetricsCache()
+    {
+        _metricsCache.Clear();
+    }
+
+    private static int FromValueToUpper(double value, int upper) => (int)Math.Ceiling(value / upper) * upper;
+
+    // Legacy методы для совместимости
+    public void GeneratePremadeProfiles()
+    {
+        if (_isInitialized && !_forceTraining)
+        {
+            return;
+        }
+
+        LazyInitTdp();
         _isInitialized = true;
     }
-    public string GetMinPreset() => MinPreset;
-    public string GetEcoPreset() => EcoPreset;
-    public string GetBalPreset() => BalancePreset;
-    public string GetPerfPreset() => PerformancePreset;
-    public string GetMaxPreset() => MaxPreset;
+
     public (int[], int[], int[], int[], int[], int[], int[]) GetPerformanceRecommendationData()
     {
-        if (!_isInitialized) { GeneratePremadeProfiles(); }
+        if (!_isInitialized)
+        {
+            GeneratePremadeProfiles();
+        }
+
+        // Генерируем данные на основе Balance и Performance пресетов
+        var balancePreset = CreatePreset(PresetType.Balance, OptimizationLevel.Standard);
+        var performancePreset = CreatePreset(PresetType.Performance, OptimizationLevel.Standard);
+
+        // Извлекаем значения из строк команд (упрощенно)
+        var balanceValues = ParseCommandString(balancePreset.CommandString);
+        var performanceValues = ParseCommandString(performancePreset.CommandString);
+
         return new(
-            [TempLimitBalance, TempLimitPerf], 
-            [StapmLimitBalance, StapmLimitPerf], 
-            [FastLimitBalance, FastLimitPerf], 
-            [SttLimitBalance, SttLimitPerf], 
-            [SlowTimeBalance, SlowTimePerf], 
-            [StapmTimeBalance, StapmTimePerf], 
-            [BdProchotTimeBalance, BdProchotTimePerf] 
-            );
+            [balanceValues.TempLimit, performanceValues.TempLimit],
+            [balanceValues.StapmLimit, performanceValues.StapmLimit],
+            [balanceValues.FastLimit, performanceValues.FastLimit],
+            [balanceValues.SlowLimit, performanceValues.SlowLimit],
+            [balanceValues.SlowTime, performanceValues.SlowTime],
+            [balanceValues.StapmTime, performanceValues.StapmTime],
+            [balanceValues.ProchotRamp, performanceValues.ProchotRamp]
+        );
     }
-    private static int FromValueToUpper(double value, int upper) => (int)Math.Ceiling(value / upper) * upper;
+
+    private (int TempLimit, int StapmLimit, int FastLimit, int SlowLimit, int SlowTime, int StapmTime, int ProchotRamp) ParseCommandString(string commandString)
+    {
+        // Простой парсер для извлечения значений из строки команд
+        var parts = commandString.Split(' ');
+        var values = new Dictionary<string, int>();
+
+        foreach (var part in parts)
+        {
+            if (part.Contains('='))
+            {
+                var keyValue = part.Split('=');
+                if (keyValue.Length == 2 && int.TryParse(keyValue[1], out var value))
+                {
+                    values[keyValue[0]] = value;
+                }
+            }
+        }
+
+        return (
+            values.GetValueOrDefault("--tctl-temp", 80),
+            values.GetValueOrDefault("--stapm-limit", 35000) / 1000,
+            values.GetValueOrDefault("--fast-limit", 35000) / 1000,
+            values.GetValueOrDefault("--slow-limit", 35000) / 1000,
+            values.GetValueOrDefault("--slow-time", 5),
+            values.GetValueOrDefault("--stapm-time", 300),
+            values.GetValueOrDefault("--prochot-deassertion-ramp", 20)
+        );
+    }
 }
