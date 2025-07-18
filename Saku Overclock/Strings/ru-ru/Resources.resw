@@ -221,7 +221,7 @@
     <value>Автообновлять каждые (Мс)</value>
   </data>
   <data name="Info_Name.Text" xml:space="preserve">
-    <value>Показатели процессора</value>
+    <value>Системные показатели</value>
   </data>
   <data name="Info_Refresh.ToolTipService.ToolTip" xml:space="preserve">
     <value>Обновить</value>
@@ -384,7 +384,7 @@
     <value>Рекомендации:        Баланс          Производительность</value>
   </data>
   <data name="Param_VRM_Name.Text" xml:space="preserve">
-    <value>Разгон VRM</value>
+    <value>Лимиты VRM</value>
   </data>
   <data name="Param_VRM_v1.Text" xml:space="preserve">
     <value>Максимальный ток VRM </value>
@@ -643,13 +643,13 @@
 НЕ РЕКОММЕНДУЕТСЯ ИЗМЕНЯТЬ</value>
   </data>
   <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
-    <value>Изменение мощности процессора</value>
+    <value>Настройка лимитов потребления и контроля температуры</value>
   </data>
   <data name="Param_GPU_Pdesc.Text" xml:space="preserve">
     <value>Изменение частот подсистем процессора</value>
   </data>
   <data name="Param_VRM_Pdesc.Text" xml:space="preserve">
-    <value>Изменение всех значений VRM</value>
+    <value>Управление токами подсистемы питания</value>
   </data>
   <data name="Cooler_Autoupdate.ToolTipService.ToolTip" xml:space="preserve">
     <value>Автообновление информации
@@ -667,7 +667,7 @@
     <value>Состояния CPU</value>
   </data>
   <data name="Param_CPU_Text.Text" xml:space="preserve">
-    <value>Потребление CPU</value>
+    <value>Питание и температура</value>
   </data>
   <data name="Param_enableps.Text" xml:space="preserve">
     <value>Настройки состояний CPU</value>
@@ -753,58 +753,49 @@ CPU на приблизительно указанное
 графикой</value>
   </data>
   <data name="Param_a4_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Отвечает за максимальный ток
+    <value>Максимальный ток PSI3 CPU (А)
+Отвечает за максимальный ток
 потребляемый процессором
-по линии PCI Express</value>
+при простое или состоянии 
+энергосбережения системы</value>
   </data>
   <data name="Param_a5_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Отвечает за максимальный ток
-потребляемый всеми GPU
-по линии PCI Express
-Он НЕ МОЖЕТ быть меньше
-чем максимальный ток
-Интегрированной графики!</value>
+    <value>Максимальный ток PSI3 CPU (А)
+Отвечает за максимальный ток
+потребляемый встроенной
+графикой процессора при 
+простое или состоянии 
+энергосбережения системы</value>
   </data>
   <data name="Param_a6_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Максимальная температура
+    <value>Максимальная температура iGPU (С)
 Этим значением вы можете ограничить 
-iGPU по температуре, выше
-этого значения он не будет греться
-будет начинаться троттлинг
-Это сработает ТОЛЬКО если вы видите 
-значения температуры на странице 
-информации!</value>
+интегрированную видеокарту по температуре, 
+выше этого значения будет происходить 
+троттлинг частот</value>
   </data>
   <data name="Param_a7_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Максимальная температура
+    <value>Максимальная температура dGPU (С)
 Этим значением вы можете ограничить 
-dGPU по температуре, выше
-этого значения он не будет греться
-будет начинаться троттлинг
-Это сработает ТОЛЬКО если вы видите 
-значения температуры на странице 
-информации!</value>
+дискретную видеокарту по температуре, выше
+этого значения будет происходить троттлинг
+частот. Эффекта может не быть если функция
+не реализована производителем ноутбука</value>
   </data>
   <data name="Param_a8_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Это значение ограничит iGPU
-по теплопакету на то значение
-которое вы установили. Выше этого
-значения он не будет греться и
-разгоняться
-Это сработает ТОЛЬКО если вы видите 
-значения температуры на странице 
-информации!</value>
+    <value>Этим значением вы можете ограничить 
+интегрированную видеокарту по мощности,
+выше этого значения будет происходить 
+троттлинг частот</value>
   </data>
   <data name="Param_a9_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Это значение ограничит систему
-по теплопакету на то значение
-которое вы установили. Выше этого
-значения она не будет греться и
-разгоняться. Это ограничение 
-AMD APU + AMD dGPU
-Это сработает ТОЛЬКО если вы видите 
-значения температуры на странице 
-информации!</value>
+    <value>Общий лимит потребления (W)
+Это значение ограничит систему
+по мощности на то значение
+которое вы установили. При 
+превышении лимита мощности 
+вся система начнёт снижать 
+частоты и мощность</value>
   </data>
   <data name="Param_ADV_a1.Text" xml:space="preserve">
     <value>Лимит по току iGPU</value>
@@ -821,17 +812,14 @@ AMD APU + AMD dGPU
   <data name="Param_ADV_a13.Text" xml:space="preserve">
     <value>Предпочтительный режим</value>
   </data>
-  <data name="Param_ADV_a2.Text" xml:space="preserve">
-    <value>Лимит по току CVIP</value>
-  </data>
   <data name="Param_ADV_a3.Text" xml:space="preserve">
     <value>Максимальный ток iGPU</value>
   </data>
   <data name="Param_ADV_a4.Text" xml:space="preserve">
-    <value>Максимальный ток CPU по линии PCI</value>
+    <value>Максимальный ток PSI3 CPU</value>
   </data>
   <data name="Param_ADV_a5.Text" xml:space="preserve">
-    <value>Максимальный ток GPU по линии PCI</value>
+    <value>Максимальный ток PSI3 iGPU</value>
   </data>
   <data name="Param_ADV_a6.Text" xml:space="preserve">
     <value>Максимальная температура iGPU</value>
@@ -846,10 +834,10 @@ AMD APU + AMD dGPU
     <value>Общий лимит потребления </value>
   </data>
   <data name="Param_ADV_Pdesc.Text" xml:space="preserve">
-    <value>Экспериментальные опасные параметры</value>
+    <value>Управление режимами производительности, OC Mode и PBO</value>
   </data>
   <data name="Param_ADV_Text.Text" xml:space="preserve">
-    <value>Расширенные параметры CPU</value>
+    <value>Режимы работы CPU</value>
   </data>
   <data name="Set_settings" xml:space="preserve">
     <value>Вы успешно применили ваши настройки</value>
@@ -870,7 +858,7 @@ AMD APU + AMD dGPU
     <value>Ошибка добавления</value>
   </data>
   <data name="ADV_Auto.Text" xml:space="preserve">
-    <value>                                           Автоматически</value>
+    <value>Автоматически</value>
   </data>
   <data name="ADV_Change.Text" xml:space="preserve">
     <value>                                        Не стоит менять!!!</value>
@@ -912,19 +900,19 @@ AMD APU + AMD dGPU
     <value>Текущее реальное потр</value>
   </data>
   <data name="infoAActualL.Text" xml:space="preserve">
-    <value>Реальная мощность</value>
+    <value>Реальная мощн.</value>
   </data>
   <data name="infoAAVGC.Text" xml:space="preserve">
     <value>Текущее среднее потр</value>
   </data>
   <data name="infoAAVGL.Text" xml:space="preserve">
-    <value>Средняя мощность</value>
+    <value>Средняя мощн.</value>
   </data>
   <data name="infoAStapmC.Text" xml:space="preserve">
     <value>Текущее потребление</value>
   </data>
   <data name="infoAStapmL.Text" xml:space="preserve">
-    <value>Мощности STAPM</value>
+    <value>Мощн. STAPM</value>
   </data>
   <data name="infoBaseC.Text" xml:space="preserve">
     <value>Базовая частота</value>
@@ -984,7 +972,7 @@ AMD APU + AMD dGPU
     <value>Температура</value>
   </data>
   <data name="infoACPUUSAGE.Text" xml:space="preserve">
-    <value>Загрузка процессора</value>
+    <value>Загрузка ЦП</value>
   </data>
   <data name="infoAFast.Text" xml:space="preserve">
     <value>Вр. быстр. разгона</value>
@@ -1138,13 +1126,11 @@ AMD APU + AMD dGPU
   </data>
   <data name="Param_PowerMon.ToolTipService.ToolTip" xml:space="preserve">
     <value>Открыть Saku PowerMon Pro
-Монитор всех параметров ACPI, FIRM, 
-AOD, Power, Temp, Load таблиц устройства.
-Учтите что его запуск может занять до 2 
-минут!</value>
+Мониторинг всех сенсоров устройства 
+предоставляемых через SMU</value>
   </data>
   <data name="PowerMonDesc" xml:space="preserve">
-    <value>Вы действительно хотите открыть PowerMon? Учтите, что его загрузка может занимать до 2 минут и оба приложения зависнут. Пожалуйста дождитесь полной загрузки, после чего можете его использовать, программы при этом не будут зависать</value>
+    <value>Вы действительно хотите открыть PowerMon? </value>
   </data>
   <data name="PowerMonText" xml:space="preserve">
     <value>Открыть Saku PowerMon Pro?</value>
@@ -1354,7 +1340,7 @@ CPU VID
     <value>Макс. производительность</value>
   </data>
   <data name="Param_ADV_a14.Text" xml:space="preserve">
-    <value>Расширенный разгон</value>
+    <value>Разблокировка OC Mode</value>
   </data>
   <data name="Param_ADV_a14_A.Content" xml:space="preserve">
     <value>Авто/Выключено</value>
@@ -1363,7 +1349,7 @@ CPU VID
     <value>Режим разгона</value>
   </data>
   <data name="Param_ADV_a15.Text" xml:space="preserve">
-    <value>Множитель PBO</value>
+    <value>Множитель PBO Scalar</value>
   </data>
   <data name="Param_g11_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Минимальная частота CPU
@@ -1443,27 +1429,6 @@ CPU VID
   <data name="Param_GPU_g16.Text" xml:space="preserve">
     <value>Исправление 0,4 ГГц CPU</value>
   </data>
-  <data name="Param_GPU_State0.Content" xml:space="preserve">
-    <value>Состояние 0</value>
-  </data>
-  <data name="Param_GPU_State1.Content" xml:space="preserve">
-    <value>Состояние 1</value>
-  </data>
-  <data name="Param_GPU_State2.Content" xml:space="preserve">
-    <value>Состояние 2</value>
-  </data>
-  <data name="Param_GPU_State3.Content" xml:space="preserve">
-    <value>Состояние 3</value>
-  </data>
-  <data name="Param_GPU_State4.Content" xml:space="preserve">
-    <value>Состояние 4</value>
-  </data>
-  <data name="Param_GPU_State5.Content" xml:space="preserve">
-    <value>Состояние 5</value>
-  </data>
-  <data name="Param_GPU_State6.Content" xml:space="preserve">
-    <value>Состояние 6</value>
-  </data>
   <data name="Param_Super_heavywarn" xml:space="preserve">
     <value>ВНИМАНИЕ! СУПЕР ОПАСНАЯ ЗОНА!</value>
   </data>
@@ -1506,12 +1471,6 @@ CPU VID
   </data>
   <data name="Param_VRM_v10.Text" xml:space="preserve">
     <value>Стабильность напряжения</value>
-  </data>
-  <data name="Param_VRM_v8.Text" xml:space="preserve">
-    <value>Множитель напряжения</value>
-  </data>
-  <data name="Param_VRM_v9.Text" xml:space="preserve">
-    <value>Дискреция напряжения</value>
   </data>
   <data name="DeleteSuccessDesc" xml:space="preserve">
     <value>Вы успешно навсегда удалили пресет </value>
@@ -2178,15 +2137,15 @@ Overclock будут проигнорированы,
     <value>Упс... кажется вы делаете что-то не так!</value>
   </data>
   <data name="Param_Premaded" xml:space="preserve">
-    <value>Готовый пресет</value>
+    <value>Свои пресеты</value>
   </data>
   <data name="Param_PremadedCombo.Text" xml:space="preserve">
-    <value>Готовый пресет</value>
+    <value>Свои пресеты</value>
   </data>
-  <data name="Param_IncompatibleCPU.Message" xml:space="preserve">
-    <value>Вы не можете использовать эти настройки. Если ваш процессор от AMD Ryzen, напишите об этом автору приложения</value>
+  <data name="Param_IncompatibleCPU_Desc.Text" xml:space="preserve">
+    <value>Вы не можете использовать эти настройки. Если ваш процессор AMD Ryzen, напишите об этом автору приложения</value>
   </data>
-  <data name="Param_IncompatibleCPU.Title" xml:space="preserve">
+  <data name="Param_IncompatibleCPU.Text" xml:space="preserve">
     <value>Упс... кажется ваш процессор не поддерживается!</value>
   </data>
   <data name="Param_UnsignedProfile" xml:space="preserve">
@@ -2783,9 +2742,7 @@ Asus. Может не поддерживаться на
     <value>Разгон</value>
   </data>
   <data name="Tray_PowerMon.Description" xml:space="preserve">
-    <value>Монитор всех параметров и таблиц устройства.
-Учтите что его запуск может занять до 2 
-минут!</value>
+    <value>Монитор всех сенсоров устройства предоставляемых через SMU</value>
   </data>
   <data name="Tray_PowerMon.Label" xml:space="preserve">
     <value>PowerMon Pro</value>
@@ -3108,17 +3065,6 @@ Asus. Может не поддерживаться на
   <data name="Preset_RtssOverlay.Text" xml:space="preserve">
     <value>RTSS Оверлей</value>
   </data>
-  <data name="Preset_StreamOptimizer.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Stream Optimizer
-Инновационная технология 
-для стабильной работы вашего AMD Ryzen. 
-Функция фиксирует оптимальные уровни 
-работы видеокарты и процессора, избавляя вас 
-от лагов и фризов во время игр и стриминга. 
-Контроль температуры заботится о системе, 
-позволяя наслаждаться максимальной 
-производительностью без перегрева</value>
-  </data>
   <data name="Preset_Suggestions.Text" xml:space="preserve">
     <value>Советы</value>
   </data>
@@ -3244,7 +3190,7 @@ Asus. Может не поддерживаться на
     <value>вернула результат: </value>
   </data>
   <data name="Param_DeveloperOptions_Name.Text" xml:space="preserve">
-    <value>Параметры разработчика</value>
+    <value>Для разработчиков</value>
   </data>
   <data name="Param_DeveloperOptions_ResultSaved" xml:space="preserve">
     <value>
@@ -3348,5 +3294,169 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Preset_TurboSmart.Text" xml:space="preserve">
     <value>Умное</value>
+  </data>
+  <data name="Param_GPU_g16_E.Content" xml:space="preserve">
+    <value>Включено</value>
+  </data>
+  <data name="Param_Suggestion.Text" xml:space="preserve">
+    <value>Совет:</value>
+  </data>
+  <data name="Param_Suggestion_Balance.Text" xml:space="preserve">
+    <value>Баланс</value>
+  </data>
+  <data name="Param_Suggestion_Performance.Text" xml:space="preserve">
+    <value>Скорость</value>
+  </data>
+  <data name="infoAdvancedSpecifications.Text" xml:space="preserve">
+    <value>Дополнительно</value>
+  </data>
+  <data name="infoExpandGraph.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Расширить график</value>
+  </data>
+  <data name="infoSpecifications.Text" xml:space="preserve">
+    <value>Характеристики</value>
+  </data>
+  <data name="infoTimings.Text" xml:space="preserve">
+    <value>Тайминги</value>
+  </data>
+  <data name="Preset_StreamStabilizer.Text" xml:space="preserve">
+    <value>Stream Stabilizer v3.0©</value>
+  </data>
+  <data name="Preset_StreamStabilizerDesc.Text" xml:space="preserve">
+    <value>Инновация для Ryzen: максимум FPS, без лагов, фризов, перегрева. Умный авторазгон во время стриминга</value>
+  </data>
+  <data name="Preset_StreamStabilizerTooltip.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Stream Stabilizer
+Инновационная технология 
+для стабильной работы вашего AMD Ryzen. 
+Функция фиксирует оптимальные уровни 
+работы видеокарты и процессора, избавляя вас 
+от лагов и фризов во время игр и стриминга. 
+Контроль температуры заботится о системе, 
+позволяя наслаждаться максимальной 
+производительностью без перегрева</value>
+  </data>
+  <data name="Preset_StreamStabilizer_Smart.Text" xml:space="preserve">
+    <value>Умный</value>
+  </data>
+  <data name="Preset_RtssOverlayDesc.Text" xml:space="preserve">
+    <value>Мониторинг FPS, температуры, загрузки CPU в игре. Без сворачивания. Требует RTSS</value>
+  </data>
+  <data name="Preset_RtssOverlay_Enabled.Text" xml:space="preserve">
+    <value>Вкл</value>
+  </data>
+  <data name="PowerMon_Goto.Text" xml:space="preserve">
+    <value>Нам на:</value>
+  </data>
+  <data name="PowerMon_Index.Text" xml:space="preserve">
+    <value>Индекс</value>
+  </data>
+  <data name="PowerMon_Note.Text" xml:space="preserve">
+    <value>Заметка</value>
+  </data>
+  <data name="PowerMon_Offset.Text" xml:space="preserve">
+    <value>Оффсет</value>
+  </data>
+  <data name="PowerMon_Page" xml:space="preserve">
+    <value>Стр. </value>
+  </data>
+  <data name="PowerMon_Showing50Items.Text" xml:space="preserve">
+    <value>Показано 50 элементов для улучш. производительности</value>
+  </data>
+  <data name="PowerMon_UpdateEvery.Text" xml:space="preserve">
+    <value>Обновл. каждые:</value>
+  </data>
+  <data name="PowerMon_UpdateEvery_Ms_Sign.Text" xml:space="preserve">
+    <value>мс</value>
+  </data>
+  <data name="PowerMon_Value.Text" xml:space="preserve">
+    <value>Значение</value>
+  </data>
+  <data name="Preset_EnergyEfficiency.Text" xml:space="preserve">
+    <value>Энергоэффективность</value>
+  </data>
+  <data name="Preset_ForIllustrations.Text" xml:space="preserve">
+    <value>Только для иллюстрации</value>
+  </data>
+  <data name="Preset_HelpWith_Gaming.Content" xml:space="preserve">
+    <value>Тяжёлые игры</value>
+  </data>
+  <data name="Preset_HelpWith_HardWorkload.Content" xml:space="preserve">
+    <value>Тяжёлая работа</value>
+  </data>
+  <data name="Preset_HelpWith_LightGaming.Content" xml:space="preserve">
+    <value>Лёгкие игры</value>
+  </data>
+  <data name="Preset_HelpWith_OfficeWorkload.Content" xml:space="preserve">
+    <value>Офисная работа</value>
+  </data>
+  <data name="Preset_HelpWith_Striming.Content" xml:space="preserve">
+    <value>Стриминг</value>
+  </data>
+  <data name="Preset_HelpWith_Videos.Content" xml:space="preserve">
+    <value>Просмотр видео</value>
+  </data>
+  <data name="Preset_OptimizationLevel.Text" xml:space="preserve">
+    <value>Уровень оптимизации:</value>
+  </data>
+  <data name="Preset_OptimizationLevel_Average.Content" xml:space="preserve">
+    <value>Стандартный</value>
+  </data>
+  <data name="Preset_OptimizationLevel_Average_Desc" xml:space="preserve">
+    <value>Пресет применяет стандартный набор настроек. Ничего лишнего, всё нацелено на правильную работу пресета</value>
+  </data>
+  <data name="Preset_OptimizationLevel_Base.Content" xml:space="preserve">
+    <value>Базовый</value>
+  </data>
+  <data name="Preset_OptimizationLevel_Base_Desc" xml:space="preserve">
+    <value>Позволит пресету применять только самые безопасные настройки. Пресет может работать не так эффективно как задумано</value>
+  </data>
+  <data name="Preset_OptimizationLevel_Strong.Content" xml:space="preserve">
+    <value>Сильный</value>
+  </data>
+  <data name="Preset_OptimizationLevel_Strong_Desc" xml:space="preserve">
+    <value>Пресет применяет дополнительные настройки помимо стандартных. Используется андервольтинг и расширенное управление частотами</value>
+  </data>
+  <data name="Preset_Performance.Text" xml:space="preserve">
+    <value>Производительность</value>
+  </data>
+  <data name="Preset_PerformanceCheck.Text" xml:space="preserve">
+    <value>Оценка пресета</value>
+  </data>
+  <data name="Preset_SystemMetrics.Text" xml:space="preserve">
+    <value>Показатели системы</value>
+  </data>
+  <data name="Preset_Temperatures.Text" xml:space="preserve">
+    <value>Температуры</value>
+  </data>
+  <data name="Param_AdvancedFreq.Text" xml:space="preserve">
+    <value>Расширенные настройки частоты</value>
+  </data>
+  <data name="Param_AdvancedFreqDesc.Text" xml:space="preserve">
+    <value>Зафиксируйте частоты системы на заданном уровне</value>
+  </data>
+  <data name="Param_ADV_PdescBristol" xml:space="preserve">
+    <value>Управление режимами производительности</value>
+  </data>
+  <data name="Preset_ApplicableSettings.Text" xml:space="preserve">
+    <value>Применяемые настройки</value>
+  </data>
+  <data name="Preset_AppliedAllSettings.Text" xml:space="preserve">
+    <value>Применяются все настройки пресета</value>
+  </data>
+  <data name="Preset_ExpandList.Text" xml:space="preserve">
+    <value>Раскрыть список</value>
+  </data>
+  <data name="Preset_HelpWith.Text" xml:space="preserve">
+    <value>Для чего подходит этот пресет?</value>
+  </data>
+  <data name="Preset_MaxCurrent.Text" xml:space="preserve">
+    <value>Ограничения по току: </value>
+  </data>
+  <data name="Preset_MaxPower.Text" xml:space="preserve">
+    <value>Лимиты мощности: </value>
+  </data>
+  <data name="Preset_MaxTemp.Text" xml:space="preserve">
+    <value>Макс температура:</value>
   </data>
 </root>
