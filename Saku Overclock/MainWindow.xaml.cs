@@ -25,6 +25,7 @@ public sealed partial class MainWindow
     private static TaskbarIcon? _niBackup;
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
+    private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
 
     public MainWindow()
     {
@@ -71,7 +72,7 @@ public sealed partial class MainWindow
         sakuLogoCommand.ExecuteRequested += GithubLink_ExecuteRequested;
 
         _ni = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
-        _ni.ForceCreate();
+        _ni.ForceCreate(); 
 
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _settings = new UISettings();
@@ -159,7 +160,7 @@ public sealed partial class MainWindow
     {
         try
         {
-            var newWindow = new PowerWindow(CpuSingleton.GetInstance());
+            var newWindow = new PowerWindow();
             var micaBackdrop = new MicaBackdrop
             {
                 Kind = MicaKind.BaseAlt
@@ -259,6 +260,7 @@ public sealed partial class MainWindow
     private async void Tray_Start() // Запустить все команды после запуска приложения если включен Автоприменять Разгон
     {
         SettingsService.LoadSettings();
+        OcFinder.LazyInitTdp();
         if (SettingsService.ReapplyLatestSettingsOnAppLaunch)
         {
             try
