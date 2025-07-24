@@ -1623,7 +1623,7 @@ CPU VID
     <value>Фон из ссылки</value>
   </data>
   <data name="ThemeBgFromURLWhy" xml:space="preserve">
-    <value>Выберите ссылку на любую фотографию. Не работает без интернета! </value>
+    <value>Вставьте ссылку на любую фотографию. Не работает без интернета! </value>
   </data>
   <data name="ThemeBgOr" xml:space="preserve">
     <value>или</value>

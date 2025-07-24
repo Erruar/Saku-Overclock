@@ -1766,7 +1766,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             // SMU command map for AM5 socket (last update: 2025-07-05)
             ("enable-feature",                    true,  0x03),
             ("disable-feature",                   true,  0x04), // Can be locked
-            //("stapm-limit",                     true,  0x4f), // Set CPU Stapm value! Not affect on PPT. Works only if Stapm feature is enabled on platform BE CAREFUL! If you apply this command and then "fast-limit" - actual PPT limit will NOT be saved thats why I commented that command for safety
+            ("stapm-limit",                       true,  0x4f), // Set CPU Stapm value! Not affect on PPT. Works only if Stapm feature is enabled on platform BE CAREFUL! If you apply this command and then "fast-limit" - actual PPT limit will NOT be saved thats why I commented that command for safety
             ("fast-limit",                        true,  0x3e),
             ("fast-limit",                        false, 0x56), // Set CPU PPT Limit
             ("slow-limit",                        true,  0x5f),

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Accord.Math.Distances;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Views;
 using ZenStates.Core;
+using static ZenStates.Core.Cpu;
 
 namespace Saku_Overclock.Services;
 
@@ -41,11 +43,27 @@ public class PresetMetrics
         get; set;
     }        // -50 - +50
 }
+public class PresetOptions
+{
+    public string ThermalOptions
+    {
+        get; set;
+    } = string.Empty;
+    public string PowerOptions
+    {
+        get; set;
+    } = string.Empty;
+    public string CurrentOptions
+    {
+        get; set;
+    } = string.Empty;
+}
 
 public class PresetConfiguration
 {
     public string CommandString { get; set; } = "";
     public PresetMetrics Metrics { get; set; } = new();
+    public PresetOptions Options { get; set; } = new();
     public PresetType Type
     {
         get; set;
@@ -121,6 +139,7 @@ public class OcFinderService : IOcFinderService
 
     // Кэш для метрик
     private readonly Dictionary<string, PresetMetrics> _metricsCache = [];
+    private readonly Dictionary<string, PresetOptions> _optionsCache = [];
 
     public OcFinderService()
     {
@@ -419,13 +438,16 @@ public class OcFinderService : IOcFinderService
         // Временные параметры
         var (stapmTime, slowTime, prochotRamp) = GetTimingParameters(type, level);
 
+        var commandString = BuildCommandString(stapmValue, fastValue, tempLimit, stapmTime, slowTime, prochotRamp, level);
+
         var preset = new PresetConfiguration
         {
             Type = type,
             Level = level,
             IsUndervoltingEnabled = level == OptimizationLevel.Deep && _isUndervoltingAvailable,
-            CommandString = BuildCommandString(stapmValue, fastValue, tempLimit, stapmTime, slowTime, prochotRamp, level),
-            Metrics = CalculateMetrics(type, level, stapmValue, tempLimit, profile)
+            CommandString = commandString,
+            Metrics = CalculateMetrics(type, level, stapmValue, tempLimit, profile),
+            Options = GetPresetOptions(commandString)
         };
 
         return preset;
@@ -469,10 +491,16 @@ public class OcFinderService : IOcFinderService
 
         sb.Append($"--fast-limit={(int)(fast * 1000)} ");
 
-        if (_cpu.info.codeName != Cpu.CodeName.BristolRidge)
+        if (_cpu.info.codeName != CodeName.BristolRidge)
         {
             sb.Append($"--tctl-temp={tempLimit} ");
-            sb.Append($"--stapm-limit={(int)(stapm * 1000)} ");
+
+            // DragonRange is laptop CPU but with Desktop silicon and has Stapm limit
+            var codenameGen = SendSmuCommand.GetCodeNameGeneration(_cpu);
+            if (codenameGen == "AM5" && _cpu.info.codeName == CodeName.DragonRange || codenameGen != "AM5")
+            {
+                sb.Append($"--stapm-limit={(int)(stapm * 1000)} ");
+            }
             sb.Append($"--slow-limit={(int)(stapm * 1000)} ");
             sb.Append($"--stapm-time={stapmTime} ");
             sb.Append($"--slow-time={slowTime} ");
@@ -485,13 +513,13 @@ public class OcFinderService : IOcFinderService
         {
             var tempLimitBr = tempLimit > 85 ? 84000 : tempLimit * 1000;
             sb.Append($"--tctl-temp={tempLimitBr} ");
-            sb.Append($"--stapm-limit={(int)(stapm * 1000)},2,{stapmTime*1000} ");
+            sb.Append($"--stapm-limit={(int)(stapm * 1000)},2,{stapmTime * 1000} ");
             sb.Append($"--max-performance=0 "); // Включит Max Performance режим
             sb.Append($"--disable-feature=10 "); // Выключит Pkg-Pwr лимит
 
             if (level == OptimizationLevel.Deep) 
             {
-                sb.Append($"--disable-feature=400 "); // Выключит PSTATE_ARBITER лимит
+                sb.Append($"--disable-feature=8 "); // Выключит TDC лимит
             }
         }
 
@@ -511,7 +539,7 @@ public class OcFinderService : IOcFinderService
 
     private PresetMetrics CalculateMetrics(PresetType type, OptimizationLevel level, double stapm, int tempLimit, ArchitectureProfile profile)
     {
-        var cacheKey = $"{type}_{level}_{stapm:F1}_{tempLimit}";
+        var cacheKey = $"{type}_{level}_{(int)stapm:F1}_{tempLimit}";
         if (_metricsCache.TryGetValue(cacheKey, out var cached))
         {
             return cached;
@@ -576,6 +604,43 @@ public class OcFinderService : IOcFinderService
         var preset = CreatePreset(type, level);
         return preset.Metrics;
     }
+    public PresetOptions GetPresetOptions(string preset)
+    {
+        var cacheKey = $"{preset}";
+        if (_optionsCache.TryGetValue(cacheKey, out var cached))
+        {
+            return cached;
+        }
+
+
+        var parts = preset.Split(' ');
+        var values = new Dictionary<string, int>();
+
+        foreach (var part in parts)
+        {
+            if (part.Contains('='))
+            {
+                var keyValue = part.Split('=');
+                if (keyValue.Length >= 2 && int.TryParse(keyValue[1], out var value))
+                {
+                    values[keyValue[0]] = value;
+                }
+            }
+        }
+
+        var options = new PresetOptions()
+        {
+            ThermalOptions = values.GetValueOrDefault("--tctl-temp", 80).ToString() + "C",
+            PowerOptions = (values.GetValueOrDefault("--stapm-limit", 35000) / 1000).ToString() + "W, "
+            + (values.GetValueOrDefault("--fast-limit", 35000) / 1000).ToString() + "W, "
+            + (values.GetValueOrDefault("--slow-limit", 35000) / 1000).ToString() + "W",
+            CurrentOptions = (values.GetValueOrDefault("--vrmmax-current", 110000) / 1000).ToString() + "A, " + (values.GetValueOrDefault("--vrm-current", 90000) / 1000).ToString() + "A, " + (values.GetValueOrDefault("--vrmsocmax-current", 50000) / 1000).ToString() + "A"
+        };
+
+        _optionsCache[cacheKey] = options;
+
+        return options;
+    }
 
     public void ClearMetricsCache()
     {
@@ -633,7 +698,7 @@ public class OcFinderService : IOcFinderService
             if (part.Contains('='))
             {
                 var keyValue = part.Split('=');
-                if (keyValue.Length == 2 && int.TryParse(keyValue[1], out var value))
+                if (keyValue.Length >= 2 && int.TryParse(keyValue[1], out var value))
                 {
                     values[keyValue[0]] = value;
                 }

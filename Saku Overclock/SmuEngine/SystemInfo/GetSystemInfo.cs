@@ -468,7 +468,7 @@ internal class GetSystemInfo
         try
         {
             // Создаем отфильтрованный список видеокарт
-            CachedGPUList ??= new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
+            CachedGPUList ??= [.. new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
             .Get()
             .Cast<ManagementObject>()
             .Where(element =>
@@ -476,8 +476,7 @@ internal class GetSystemInfo
                 var name = element["Name"]?.ToString() ?? string.Empty;
                 return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
                        !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
-            })
-            .ToList(); // Преобразуем в список для индексации
+            })]; // Преобразуем в список для индексации
 
 
             // Проверяем, что индекс i находится в пределах допустимых значений
@@ -935,180 +934,16 @@ internal class GetSystemInfo
 
         return cacheSizes;
     }
-    public static string Codename()
+
+    public static string GetBigLITTLE(int cores)
     {
-        var cpuName = FamilyHelpers.CPUName;
-        if (FamilyHelpers.TYPE == Family.ProcessorType.Intel)
-        {
-            if (cpuName.Contains("6th"))
-            {
-                return "Skylake";
-            }
-
-            if (cpuName.Contains("7th"))
-            {
-                return "Kaby Lake";
-            }
-
-            if (cpuName.Contains("8th") && cpuName.Contains('G'))
-            {
-                return "Kaby Lake";
-            }
-
-            if (cpuName.Contains("8121U") || cpuName.Contains("8114Y"))
-            {
-                return "Cannon Lake";
-            }
-
-            if (cpuName.Contains("8th"))
-            {
-                return "Coffee Lake";
-            }
-
-            if (cpuName.Contains("9th"))
-            {
-                return "Coffee Lake";
-            }
-
-            if (cpuName.Contains("10th") && cpuName.Contains('G'))
-            {
-                return "Ice Lake";
-            }
-
-            if (cpuName.Contains("10th"))
-            {
-                return "Comet Lake";
-            }
-
-            if (cpuName.Contains("11th") && cpuName.Contains('G') || cpuName.Contains("11th") && cpuName.Contains('U') || cpuName.Contains("11th") && cpuName.Contains('H') || cpuName.Contains("11th") && cpuName.Contains("KB"))
-            {
-                return "Tiger Lake";
-            }
-
-            if (cpuName.Contains("11th"))
-            {
-                return "Rocket Lake";
-            }
-
-            if (cpuName.Contains("12th"))
-            {
-                return "Alder Lake";
-            }
-
-            if (cpuName.Contains("13th") || cpuName.Contains("14th") || cpuName.Contains("Core") && cpuName.Contains("100") && !cpuName.Contains("th"))
-            {
-                return "Raptor Lake";
-            }
-
-            if (cpuName.Contains("Core") && cpuName.Contains("Ultra") && cpuName.Contains("100"))
-            {
-                return "Meteor Lake";
-            }
-        }
-        else
-        {
-            switch (FamilyHelpers.FAM)
-            {
-                case Family.RyzenFamily.SummitRidge:
-                    return "Summit Ridge";
-                case Family.RyzenFamily.PinnacleRidge:
-                    return "Pinnacle Ridge";
-                case Family.RyzenFamily.RavenRidge:
-                    return "Raven Ridge";
-                case Family.RyzenFamily.Dali:
-                    return "Dali";
-                case Family.RyzenFamily.Pollock:
-                    return "Pollock";
-                case Family.RyzenFamily.Picasso:
-                    return "Picasso";
-                case Family.RyzenFamily.FireFlight:
-                    return "Fire Flight";
-                case Family.RyzenFamily.Matisse:
-                    return "Matisse";
-                case Family.RyzenFamily.Renoir:
-                    return "Renoir";
-                case Family.RyzenFamily.Lucienne:
-                    return "Lucienne";
-                case Family.RyzenFamily.VanGogh:
-                    return "Van Gogh";
-                case Family.RyzenFamily.Mendocino:
-                    return "Mendocino";
-                case Family.RyzenFamily.Vermeer:
-                    return "Vermeer";
-                case Family.RyzenFamily.Cezanne_Barcelo:
-                    if (cpuName.Contains("25") || cpuName.Contains("75") || cpuName.Contains("30"))
-                    {
-                        return "Barcelo";
-                    }
-
-                    return "Cezanne";
-
-                case Family.RyzenFamily.Rembrandt:
-                    return "Rembrandt";
-                case Family.RyzenFamily.Raphael:
-                    return "Raphael";
-                case Family.RyzenFamily.DragonRange:
-                    return "Dragon Range";
-                case Family.RyzenFamily.PhoenixPoint:
-                    return "Phoenix Point";
-                case Family.RyzenFamily.PhoenixPoint2:
-                    return "Phoenix Point 2";
-                case Family.RyzenFamily.HawkPoint:
-                    return "Hawk Point";
-                case Family.RyzenFamily.SonomaValley:
-                    return "Sonoma Valley";
-                case Family.RyzenFamily.GraniteRidge:
-                    return "Granite Ridge";
-                case Family.RyzenFamily.FireRange:
-                    return "Fire Range";
-                case Family.RyzenFamily.StrixPoint:
-                    return "Strix Point";
-                case Family.RyzenFamily.StrixPoint2:
-                    return "Strix Point 2";
-                case Family.RyzenFamily.Sarlak:
-                    return "Sarlak";
-                default:
-                    return "";
-            }
-        }
-        return "";
-    }
-    public static string GetBigLITTLE(int cores, double l2)
-    {
-        var bigCores = 0;
         int smallCores;
-        if (FamilyHelpers.TYPE == Family.ProcessorType.Intel)
+        var cpuName = CpuSingleton.GetInstance().info.cpuName;
+        if (cpuName.Contains("7540U") || cpuName.Contains("7440U"))
         {
-            if (FamilyHelpers.CPUName.Contains("12th") || FamilyHelpers.CPUName.Contains("13th") || FamilyHelpers.CPUName.Contains("14th") || FamilyHelpers.CPUName.Contains("Core") && FamilyHelpers.CPUName.Contains("1000") && !FamilyHelpers.CPUName.Contains('i'))
-            {
-                if (l2 % 1.25 == 0)
-                {
-                    bigCores = (int)(l2 / 1.25);
-                }
-                else if (l2 % 2 == 0)
-                {
-                    bigCores = (int)(l2 / 2);
-                }
-                smallCores = cores - bigCores;
-
-                if (smallCores > 0)
-                {
-                    return FamilyHelpers.CPUName.Contains("Ultra") && FamilyHelpers.CPUName.Contains("100")
-                        ? $"{cores} ({bigCores} Performance Cores + {smallCores - 2} Efficiency Cores + 2 LP Efficiency Cores)"
-                        : $"{cores} ({bigCores} Performance Cores + {smallCores} Efficiency Cores)";
-                }
-
-                return cores.ToString();
-            }
-
-            return cores.ToString();
-        }
-
-        if (FamilyHelpers.CPUName.Contains("7540U") || FamilyHelpers.CPUName.Contains("7440U"))
-        {
-            bigCores = 2;
+            var bigCores = 2;
             smallCores = cores - bigCores;
-            return $"{cores} ({bigCores} Prime Cores + {smallCores} Compact Cores)";
+            return $"{cores} ({bigCores}P+{smallCores}C)";
         }
 
         return cores.ToString();
@@ -1152,11 +987,7 @@ internal class GetSystemInfo
         {
             list += ", x86-64";
         }
-        if (IsVirtualizationEnabled() && FamilyHelpers.TYPE == Family.ProcessorType.Intel)
-        {
-            list += ", VT-x";
-        }
-        else if (IsVirtualizationEnabled())
+        if (IsVirtualizationEnabled())
         {
             list += ", AMD-V";
         }
@@ -1189,7 +1020,7 @@ internal class GetSystemInfo
         var prefixToRemove = ", ";
         if (input.StartsWith(prefixToRemove))
         {
-            input = input.Remove(0, prefixToRemove.Length);
+            input = input[prefixToRemove.Length..];
         }
         return input;
     }
@@ -1212,7 +1043,7 @@ internal class GetSystemInfo
         }
         catch
         {
-
+            //
         }
         return false;
     }
@@ -1228,12 +1059,9 @@ internal class GetSystemInfo
     {
         try
         {
-            if (FamilyHelpers.TYPE != Family.ProcessorType.Intel)
+            if (CpuSingleton.GetInstance().info.codeName < ZenStates.Core.Cpu.CodeName.Raphael)
             {
-                if (FamilyHelpers.FAM < Family.RyzenFamily.Raphael)
-                {
-                    return false;
-                }
+                return false;
             }
 
             return NativeMethods.IsProcessorFeaturePresent(NativeMethods.PF_AVX512F_INSTRUCTIONS_AVAILABLE);
@@ -1313,47 +1141,5 @@ internal partial class Garbage
         {
 
         }
-    }
-}
-public class Family
-{
-    public enum RyzenFamily
-    {
-        Unknown = -1,
-        SummitRidge,
-        PinnacleRidge,
-        RavenRidge,
-        Dali,
-        Pollock,
-        Picasso,
-        FireFlight,
-        Matisse,
-        Renoir,
-        Lucienne,
-        VanGogh,
-        Mendocino,
-        Vermeer,
-        Cezanne_Barcelo,
-        Rembrandt,
-        Raphael,
-        DragonRange,
-        PhoenixPoint,
-        PhoenixPoint2,
-        HawkPoint,
-        SonomaValley,
-        GraniteRidge,
-        FireRange,
-        StrixPoint,
-        StrixPoint2,
-        Sarlak,
-    }
-
-    public enum ProcessorType
-    {
-        Unknown = -1,
-        Amd_Apu,
-        Amd_Desktop_Cpu,
-        Amd_Laptop_Cpu,
-        Intel,
     }
 }

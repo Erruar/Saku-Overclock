@@ -723,6 +723,11 @@ StrokeThickness="1.5" >
                                     <ColumnDefinition Width="120"/>
                                     <ColumnDefinition Width="75"/>
                                 </Grid.ColumnDefinitions>
+                                <Grid.ChildrenTransitions>
+                                    <TransitionCollection>
+                                        <RepositionThemeTransition />
+                                    </TransitionCollection>
+                                </Grid.ChildrenTransitions>
                                 <!-- C в конце имени это то, что они относятся к CPU-->
                                 <StackPanel VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="0" Margin="0,4,0,0">
                                     <TextBlock Margin="11,3,0,3" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="infoSpecifications" FontWeight="SemiBold">Характеристики</TextBlock>
@@ -736,21 +741,21 @@ StrokeThickness="1.5" >
                                 <StackPanel VerticalAlignment="Stretch" Grid.Row="3" Grid.Column="0" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="infoThreadC">Threads</TextBlock>
                                 </StackPanel>
-                                <StackPanel VerticalAlignment="Stretch" Grid.Row="4" Grid.Column="0" Margin="0,8,0,0">
+                                <StackPanel Visibility="Collapsed" x:Name="tbBaseClock_Panel0" VerticalAlignment="Stretch" Grid.Row="4" Grid.Column="0" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="infoBaseC">Base Clock</TextBlock>
                                 </StackPanel>
-                                <StackPanel VerticalAlignment="Stretch" Grid.Row="5" Grid.Column="0" Margin="0,8,0,0">
+                                <StackPanel Visibility="Collapsed" x:Name="tbL1Cache_Panel0" VerticalAlignment="Stretch" Grid.Row="5" Grid.Column="0" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="infoL1C">L1 Cache</TextBlock>
                                 </StackPanel>
-                                <StackPanel VerticalAlignment="Stretch" Grid.Row="6" Grid.Column="0" Margin="0,8,0,0">
+                                <StackPanel Visibility="Collapsed" x:Name="tbL2Cache_Panel0" VerticalAlignment="Stretch" Grid.Row="6" Grid.Column="0" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="infoL2C">L2 Cache</TextBlock>
                                 </StackPanel>
-                                <StackPanel VerticalAlignment="Stretch" Grid.Row="7" Grid.Column="0" Margin="0,8,0,0">
+                                <StackPanel Visibility="Collapsed" x:Name="tbL3Cache_Panel0" VerticalAlignment="Stretch" Grid.Row="7" Grid.Column="0" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="infoL3C">L3 Cache</TextBlock>
                                 </StackPanel>
 
                                 <StackPanel VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0">
-                                    <TextBlock Margin="11,3,0,3" TextWrapping="Wrap" x:Name="tbCodename"/>
+                                    <TextBlock Margin="11,3,-10,3" TextWrapping="Wrap" x:Name="tbCodename"/>
                                 </StackPanel>
                                 <StackPanel VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" x:Name="tbCores"/>
@@ -758,16 +763,16 @@ StrokeThickness="1.5" >
                                 <StackPanel VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" x:Name="tbThreads"/>
                                 </StackPanel>
-                                <StackPanel VerticalAlignment="Center" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0">
+                                <StackPanel Visibility="Collapsed" x:Name="tbBaseClock_Panel1" VerticalAlignment="Center" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" x:Name="tbBaseClock"/>
                                 </StackPanel>
-                                <StackPanel VerticalAlignment="Center" Grid.Row="5" Grid.Column="1" Margin="0,8,0,0">
+                                <StackPanel Visibility="Collapsed" x:Name="tbL1Cache_Panel1" VerticalAlignment="Center" Grid.Row="5" Grid.Column="1" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" x:Name="tbL1Cache"/>
                                 </StackPanel>
-                                <StackPanel VerticalAlignment="Center" Grid.Row="6" Grid.Column="1" Margin="0,8,0,0">
+                                <StackPanel Visibility="Collapsed" x:Name="tbL2Cache_Panel1" VerticalAlignment="Center" Grid.Row="6" Grid.Column="1" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" x:Name="tbL2Cache"/>
                                 </StackPanel>
-                                <StackPanel Padding="0,0,0,5" VerticalAlignment="Center" Grid.Row="7" Grid.Column="1" Margin="0,8,0,0">
+                                <StackPanel Visibility="Collapsed" x:Name="tbL3Cache_Panel1" Padding="0,0,0,5" VerticalAlignment="Center" Grid.Row="7" Grid.Column="1" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" x:Name="tbL3Cache"/>
                                 </StackPanel>
                             </Grid>
@@ -782,6 +787,11 @@ StrokeThickness="1.5" >
                                     <ColumnDefinition Width="90"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
+                                <Grid.ChildrenTransitions>
+                                    <TransitionCollection>
+                                        <RepositionThemeTransition />
+                                    </TransitionCollection>
+                                </Grid.ChildrenTransitions>
                                 <!-- C в конце имени это то, что они относятся к CPU-->
                                 <StackPanel VerticalAlignment="Top" Grid.Row="0" Grid.Column="0" Margin="0,4,-27,0">
                                     <TextBlock Margin="11,3,0,3" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="infoAdvancedSpecifications" FontWeight="SemiBold">Дополнительно</TextBlock>
@@ -789,20 +799,20 @@ StrokeThickness="1.5" >
                                 <StackPanel VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="0" Margin="0,8,0,0">
                                     <TextBlock Margin="11,3,0,3" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="infoSMU" x:Name="infoSMU">SMU</TextBlock>
                                 </StackPanel>
-                                <StackPanel VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Margin="0,0,0,0">
+                                <StackPanel Visibility="Collapsed" x:Name="infoCaptC_Panel0" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Margin="0,0,0,0">
                                     <TextBlock Margin="11,3,0,3" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="infoCaptC">Caption</TextBlock>
                                 </StackPanel>
-                                <StackPanel VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Margin="0,0,-10,0">
+                                <StackPanel Visibility="Collapsed" x:Name="infoInstructC_Panel0" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Margin="0,0,-10,0">
                                     <TextBlock Margin="11,3,0,3" Foreground="{ThemeResource TextFillColorSecondary}" x:Uid="infoInstructC">Instructions</TextBlock>
                                 </StackPanel>
 
                                 <StackPanel VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Margin="0,8,5,0">
                                     <TextBlock Margin="11,3,0,3" x:Name="tbSMU"/>
                                 </StackPanel>
-                                <StackPanel MaxWidth="151" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="1" Margin="0,8,5,0">
+                                <StackPanel Visibility="Collapsed" x:Name="infoCaptC_Panel1" MaxWidth="151" VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="1" Margin="0,8,5,0">
                                     <TextBlock MaxWidth="151" Margin="11,3,0,3" TextWrapping="Wrap" x:Name="tbCaption"/>
                                 </StackPanel>
-                                <StackPanel MaxWidth="141" VerticalAlignment="Stretch" Grid.Row="3" Grid.Column="1" Margin="0,8,5,0">
+                                <StackPanel Visibility="Collapsed" x:Name="infoInstructC_Panel1" MaxWidth="141" VerticalAlignment="Stretch" Grid.Row="3" Grid.Column="1" Margin="0,8,5,0">
                                     <TextBlock MaxWidth="141" Margin="11,3,0,3" TextWrapping="Wrap" x:Name="tbInstructions"/>
                                 </StackPanel>
                             </Grid>

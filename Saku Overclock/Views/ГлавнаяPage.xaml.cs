@@ -518,26 +518,26 @@ public sealed partial class ГлавнаяPage
     private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         var isCompact = e.NewSize.Height < 400;
-        var (Main, Device, Segments, Frequent) = isCompact ? CompactGridMargins : NormalGridMargins;
+        var (main, device, segments, frequent) = isCompact ? CompactGridMargins : NormalGridMargins;
 
-        if (MainGrid.Margin != Main)
+        if (MainGrid.Margin != main)
         {
-            MainGrid.Margin = Main;
+            MainGrid.Margin = main;
         }
 
-        if (DeviceInfoSign.Margin != Device)
+        if (DeviceInfoSign.Margin != device)
         {
-            DeviceInfoSign.Margin = Device;
+            DeviceInfoSign.Margin = device;
         }
 
-        if (SegmentsGrid.Margin != Segments)
+        if (SegmentsGrid.Margin != segments)
         {
-            SegmentsGrid.Margin = Segments;
+            SegmentsGrid.Margin = segments;
         }
 
-        if (FriquentlyUsedGrid.Margin != Frequent)
+        if (FriquentlyUsedGrid.Margin != frequent)
         {
-            FriquentlyUsedGrid.Margin = Frequent;
+            FriquentlyUsedGrid.Margin = frequent;
         }
     }
     private static readonly (Thickness Main, Thickness Device, Thickness Segments, Thickness Frequent) CompactGridMargins =

@@ -1,23 +1,23 @@
 ﻿using System.Management;
 using System.Numerics;
-using Windows.Foundation;
-using Windows.UI;
-using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using Microsoft.Win32;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
+using Saku_Overclock.Wrappers;
+using Windows.Foundation;
+using Windows.UI;
+using Windows.UI.Text;
 using ZenStates.Core;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
-using Saku_Overclock.Wrappers;
-using static ZenStates.Core.Cpu;
 
 namespace Saku_Overclock.Views;
 
@@ -44,10 +44,10 @@ public sealed partial class ИнформацияPage
     private readonly List<InfoPageCPUPoints> _batPointer = []; // Лист графика зарядки батареи
     private readonly List<InfoPageCPUPoints> _pstPointer = []; // Лист графика изменения P-State
     private readonly List<double> _psTatesList = [0, 0, 0]; // Лист с информацией о P-State
-    private static readonly Point _maxedPoint = new(65, 54);
-    private static readonly Point _startPoint = new(-2, 54);
-    private static readonly Point _zeroPoint = new(0, 0);
-    private static readonly CornerRadius _defaultCornerRadius = new(10);
+    private static readonly Point MaxedPoint = new(65, 54);
+    private static readonly Point StartPoint = new(-2, 54);
+    private static readonly Point ZeroPoint = new(0, 0);
+    private static readonly CornerRadius DefaultCornerRadius = new(10);
     private double
         _maxGfxClock =
             0.1; // Максимальная частота графического процессора, используется для графика частоты графического процессора
@@ -126,31 +126,13 @@ public sealed partial class ИнформацияPage
         }
     }
 
-    public static async Task<int> GetCpuCoresAsync()
+    private static (string name, string baseClock) ReadCpuFromRegistry()
     {
-        return await Task.Run(() =>
-        {
-            var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
-            try
-            {
-                foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
-                {
-                    var numberOfCores = Convert.ToInt32(queryObj["NumberOfCores"]);
-                    var numberOfLogicalProcessors = Convert.ToInt32(queryObj["NumberOfLogicalProcessors"]);
-                    var l2Size = Convert.ToDouble(queryObj["L2CacheSize"]) / 1024;
-
-                    return numberOfLogicalProcessors == numberOfCores
-                        ? numberOfCores
-                        : int.Parse(GetSystemInfo.GetBigLITTLE(numberOfCores, l2Size));
-                }
-            }
-            catch
-            {
-                return 0; // Возвращаем 0 в случае ошибки
-            }
-
-            return 0; // Возвращаем 0, если данные не были найдены
-        });
+        const string key = @"HARDWARE\DESCRIPTION\System\CentralProcessor\0";
+        using var reg = Registry.LocalMachine.OpenSubKey(key);
+        var name = reg?.GetValue("ProcessorNameString") as string ?? "";
+        var mhz = reg?.GetValue("~MHz")?.ToString() ?? "";
+        return (name, mhz);
     }
 
     private async Task GetCpuInfo()
@@ -158,40 +140,46 @@ public sealed partial class ИнформацияPage
         try
         {
             // Переменные для хранения данных
-            string name = string.Empty, description = string.Empty, baseClock = string.Empty;
-            double l3Size = 0;
 
-            // Асинхронное выполнение WMI-запросов и первичных операций
-            var cpuInfoTask = Task.Run(() =>
-            {
-                var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
-                foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
-                {
-                    name = queryObj["Name"]?.ToString() ?? "";
-                    description = queryObj["Description"]?.ToString() ?? "";
-                    _numberOfCores = Convert.ToInt32(queryObj["NumberOfCores"]);
-                    _numberOfLogicalProcessors = Convert.ToInt32(queryObj["NumberOfLogicalProcessors"]);
-                    _ = Convert.ToDouble(queryObj["L2CacheSize"]) / 1024;
-                    l3Size = Convert.ToDouble(queryObj["L3CacheSize"]) / 1024;
-                    baseClock = queryObj["MaxClockSpeed"]?.ToString() ?? "";
-                }
-            });
+            var (name, baseclock) = ReadCpuFromRegistry();
+            tbBaseClock.Text = $"{baseclock} MHz";
+            tbThreads.Text = Environment.ProcessorCount.ToString();
 
-            if (_numberOfCores == 0 && _cpu != null)
+            _cpuName = _cpu == null ? name : _cpu.info.cpuName;
+
+            if (_cpu != null && (_numberOfCores == 0 || _numberOfLogicalProcessors == 0))
             {
                 _numberOfCores = (int)_cpu.info.topology.cores;
+                _numberOfLogicalProcessors = (int)_cpu.info.topology.logicalCores;
             }
 
-            if (_numberOfLogicalProcessors == 0 && _cpu != null)
+            try
             {
-                _numberOfLogicalProcessors = (int)_cpu.info.topology.logicalCores;
+                tbCodename.Text = $"{_cpu?.info.codeName}";
+            }
+            catch
+            {
+                tbCodename.Visibility = Visibility.Collapsed;
+                tbCode.Visibility = Visibility.Collapsed;
+            }
+
+            try
+            {
+                tbSMU.Text = _cpu?.systemInfo.GetSmuVersionString();
+            }
+            catch
+            {
+                tbSMU.Visibility = Visibility.Collapsed;
+                infoSMU.Visibility = Visibility.Collapsed;
             }
 
             // Обновление UI в основном потоке
             await InfoCpuSectionGridBuilder();
 
-            _cpuName = _cpu == null ? name : _cpu.info.cpuName;
             tbProcessor.Text = _cpuName;
+            tbCores.Text = _numberOfLogicalProcessors == _numberOfCores
+                ? _numberOfCores.ToString()
+                : GetSystemInfo.GetBigLITTLE(_numberOfCores);
 
             var gpuNameTask = Task.Run(() =>
             {
@@ -203,57 +191,59 @@ public sealed partial class ИнформацияPage
             var instructionSetsTask = Task.Run(GetSystemInfo.InstructionSets);
             var l1CacheTask = Task.Run(() => CalculateCacheSizeAsync(GetSystemInfo.CacheLevel.Level1));
             var l2CacheTask = Task.Run(() => CalculateCacheSizeAsync(GetSystemInfo.CacheLevel.Level2));
-            var codeNameTask = Task.Run(GetSystemInfo.Codename);
 
             // Ожидание выполнения всех задач
-            await Task.WhenAll(cpuInfoTask, gpuNameTask, instructionSetsTask, l1CacheTask, l2CacheTask, codeNameTask);
+            await Task.WhenAll(gpuNameTask, instructionSetsTask, l1CacheTask, l2CacheTask);
 
             // Получение результатов
             var gpuName = gpuNameTask.Result;
             var instructionSets = instructionSetsTask.Result;
             var l1Cache = l1CacheTask.Result;
-            var l2Cache = l2CacheTask.Result;
-            var codeName = codeNameTask.Result;
-            tbCaption.Text = description;
+            var l2Cache = l2CacheTask.Result; 
 
-            if (!string.IsNullOrEmpty(codeName))
-            {
-                tbCodename.Text = codeName;
-            }
-            else
-            {
-                try
-                {
-                    tbCodename.Text = $"{_cpu?.info.codeName}";
-                }
-                catch
-                {
-                    tbCodename.Visibility = Visibility.Collapsed;
-                    tbCode.Visibility = Visibility.Collapsed;
-                }
-
-            }
-
-            tbCores.Text = _numberOfLogicalProcessors == _numberOfCores
-                ? _numberOfCores.ToString()
-                : GetSystemInfo.GetBigLITTLE(_numberOfCores, l2Cache);
             _gpuName = gpuName;
-            try
-            {
-                tbSMU.Text = _cpu?.systemInfo.GetSmuVersionString();
-            }
-            catch
-            {
-                tbSMU.Visibility = Visibility.Collapsed;
-                infoSMU.Visibility = Visibility.Collapsed;
-            }
 
             tbThreads.Text = _numberOfLogicalProcessors.ToString();
-            tbL3Cache.Text = $"{l3Size:0.##} MB";
             tbL1Cache.Text = $"{l1Cache:0.##} MB";
             tbL2Cache.Text = $"{l2Cache:0.##} MB";
-            tbBaseClock.Text = $"{baseClock} MHz";
             tbInstructions.Text = instructionSets;
+
+            var wmiTask = Task.Run(() =>
+            {
+                var desc = "";
+                double l3 = 0;
+                var searcher = new ManagementObjectSearcher(
+                    "root\\CIMV2",
+                    "SELECT Description, L3CacheSize FROM Win32_Processor");
+                foreach (var obj in searcher.Get().Cast<ManagementObject>())
+                {
+                    desc = obj["Description"]?.ToString() ?? "";
+                    l3 = Convert.ToDouble(obj["L3CacheSize"]) / 1024;
+                    break; // нам всего одна строка
+                }
+                return (desc, l3);
+            });
+
+            var (description, l3Size) = await wmiTask;
+
+            tbCaption.Text = description;
+            tbL3Cache.Text = $"{l3Size:0.##} MB";
+
+            tbBaseClock_Panel0.Visibility = Visibility.Visible;
+            tbL1Cache_Panel0.Visibility = Visibility.Visible;
+            tbL2Cache_Panel0.Visibility = Visibility.Visible;
+            tbL3Cache_Panel0.Visibility = Visibility.Visible;
+
+            tbBaseClock_Panel1.Visibility = Visibility.Visible;
+            tbL1Cache_Panel1.Visibility = Visibility.Visible;
+            tbL2Cache_Panel1.Visibility = Visibility.Visible;
+            tbL3Cache_Panel1.Visibility = Visibility.Visible;
+
+            infoCaptC_Panel0.Visibility = Visibility.Visible;
+            infoInstructC_Panel0.Visibility = Visibility.Visible;
+
+            infoCaptC_Panel1.Visibility = Visibility.Visible;
+            infoInstructC_Panel1.Visibility = Visibility.Visible;
         }
         catch (Exception ex)
         {
@@ -545,7 +535,7 @@ public sealed partial class ИнформацияPage
     #endregion
 
     #region Info Update voids
-    
+
     private void UpdateInfo()
     {
         try
@@ -660,18 +650,18 @@ public sealed partial class ИнформацияPage
                     InfoCPUSectionGetInfoSelectIndexesButton.Visibility = Visibility.Collapsed;
                 }
 
-                InfoACPUBannerPolygon.Points.Remove(_maxedPoint);
-                InfoACPUBigBannerPolygon.Points.Remove(_maxedPoint);
-                InfoAGPUBannerPolygon.Points.Remove(_maxedPoint);
-                InfoAGPUBigBannerPolygon.Points.Remove(_maxedPoint);
-                InfoARAMBannerPolygon.Points.Remove(_maxedPoint);
-                InfoARAMBigBannerPolygon.Points.Remove(_maxedPoint);
-                InfoAVRMBannerPolygon.Points.Remove(_maxedPoint);
-                InfoAVRMBigBannerPolygon.Points.Remove(_maxedPoint);
-                InfoABATBannerPolygon.Points.Remove(_maxedPoint);
-                InfoABATBigBannerPolygon.Points.Remove(_maxedPoint);
-                InfoAPSTBannerPolygon.Points.Remove(_maxedPoint);
-                InfoAPSTBigBannerPolygon.Points.Remove(_maxedPoint);
+                InfoACPUBannerPolygon.Points.Remove(MaxedPoint);
+                InfoACPUBigBannerPolygon.Points.Remove(MaxedPoint);
+                InfoAGPUBannerPolygon.Points.Remove(MaxedPoint);
+                InfoAGPUBigBannerPolygon.Points.Remove(MaxedPoint);
+                InfoARAMBannerPolygon.Points.Remove(MaxedPoint);
+                InfoARAMBigBannerPolygon.Points.Remove(MaxedPoint);
+                InfoAVRMBannerPolygon.Points.Remove(MaxedPoint);
+                InfoAVRMBigBannerPolygon.Points.Remove(MaxedPoint);
+                InfoABATBannerPolygon.Points.Remove(MaxedPoint);
+                InfoABATBigBannerPolygon.Points.Remove(MaxedPoint);
+                InfoAPSTBannerPolygon.Points.Remove(MaxedPoint);
+                InfoAPSTBigBannerPolygon.Points.Remove(MaxedPoint);
 
                 var currBatRate = 0d;
                 var beforeMaxBatRate = 0;
@@ -871,20 +861,20 @@ public sealed partial class ИнформацияPage
                                         currText.Text = GetSystemInfo.GetGPUName((int)f);
                                         break;
                                     case 2:
-                                    {
-                                        var reject = 0;
-                                        foreach (var element in tbRAMModel.Text.Split('/'))
                                         {
-                                            if (reject == (int)f)
+                                            var reject = 0;
+                                            foreach (var element in tbRAMModel.Text.Split('/'))
                                             {
-                                                currText.Text = element;
+                                                if (reject == (int)f)
+                                                {
+                                                    currText.Text = element;
+                                                }
+
+                                                reject++;
                                             }
 
-                                            reject++;
+                                            break;
                                         }
-
-                                        break;
-                                    }
                                     case 3:
                                         currText.Text = f switch
                                         {
@@ -1020,11 +1010,11 @@ public sealed partial class ИнформацияPage
                 infoICPUUsageBigBanner.Text = infoICPUUsageBanner.Text;
 
                 //InfoACPUBanner График
-                InfoACPUBannerPolygon.Points.Remove(_zeroPoint);
+                InfoACPUBannerPolygon.Points.Remove(ZeroPoint);
                 _cpuPointer.Add(new InfoPageCPUPoints { X = 60, Y = 48 - (int)(coreCpuUsage * 0.48) });
                 if (CPUFlyout.IsOpen)
                 {
-                    InfoACPUBigBannerPolygon.Points.Remove(_zeroPoint);
+                    InfoACPUBigBannerPolygon.Points.Remove(ZeroPoint);
                     InfoACPUBigBannerPolygon.Points.Add(new Point(60,
                         48 - (int)(coreCpuUsage * 0.48)));
                 }
@@ -1061,20 +1051,20 @@ public sealed partial class ИнформацияPage
 
                 if (CPUFlyout.IsOpen)
                 {
-                    InfoACPUBigBannerPolygon.Points.Add(_maxedPoint);
+                    InfoACPUBigBannerPolygon.Points.Add(MaxedPoint);
                 }
 
-                InfoACPUBannerPolygon.Points.Add(_maxedPoint);
+                InfoACPUBannerPolygon.Points.Add(MaxedPoint);
 
 
                 //InfoAGPUBanner График
-                InfoAGPUBannerPolygon.Points.Remove(_zeroPoint);
+                InfoAGPUBannerPolygon.Points.Remove(ZeroPoint);
                 _gpuPointer.Add(new InfoPageCPUPoints { X = 60, Y = 48 - (int)(gfxClk / _maxGfxClock * 48) });
                 InfoAGPUBannerPolygon.Points.Add(new Point(60,
                     48 - (int)(gfxClk / _maxGfxClock * 48)));
                 if (GPUFlyout.IsOpen)
                 {
-                    InfoAGPUBigBannerPolygon.Points.Remove(_zeroPoint);
+                    InfoAGPUBigBannerPolygon.Points.Remove(ZeroPoint);
                     InfoAGPUBigBannerPolygon.Points.Add(new Point(60,
                         48 - (int)(gfxClk / _maxGfxClock * 48)));
                 }
@@ -1111,13 +1101,13 @@ public sealed partial class ИнформацияPage
 
                 if (GPUFlyout.IsOpen)
                 {
-                    InfoAGPUBigBannerPolygon.Points.Add(_maxedPoint);
+                    InfoAGPUBigBannerPolygon.Points.Add(MaxedPoint);
                 }
 
-                InfoAGPUBannerPolygon.Points.Add(_maxedPoint);
+                InfoAGPUBannerPolygon.Points.Add(MaxedPoint);
 
                 //InfoAVRMBanner График
-                InfoAVRMBannerPolygon.Points.Remove(_zeroPoint);
+                InfoAVRMBannerPolygon.Points.Remove(ZeroPoint);
                 _vrmPointer.Add(new InfoPageCPUPoints
                 {
                     X = 60,
@@ -1126,7 +1116,7 @@ public sealed partial class ИнформацияPage
                 });
                 if (VRMFlyout.IsOpen)
                 {
-                    InfoAVRMBigBannerPolygon.Points.Remove(_zeroPoint);
+                    InfoAVRMBigBannerPolygon.Points.Remove(ZeroPoint);
                     InfoAVRMBigBannerPolygon.Points.Add(new Point(60,
                         48 - (int)(_sensorsInformation.VrmEdcValue /
                             _sensorsInformation.VrmEdcLimit * 48)));
@@ -1164,19 +1154,19 @@ public sealed partial class ИнформацияPage
                     }
                 }
 
-                InfoAVRMBannerPolygon.Points.Add(_maxedPoint);
+                InfoAVRMBannerPolygon.Points.Add(MaxedPoint);
                 if (VRMFlyout.IsOpen)
                 {
-                    InfoAVRMBigBannerPolygon.Points.Add(_maxedPoint);
+                    InfoAVRMBigBannerPolygon.Points.Add(MaxedPoint);
                 }
 
                 //InfoAPSTBanner График
-                InfoAPSTBannerPolygon.Points.Remove(_zeroPoint);
+                InfoAPSTBannerPolygon.Points.Remove(ZeroPoint);
                 _pstPointer.Add(new InfoPageCPUPoints { X = 60, Y = 48 - currentPstate * 16 });
                 InfoAPSTBannerPolygon.Points.Add(new Point(60, 48 - currentPstate * 16));
                 if (PSTFlyout.IsOpen)
                 {
-                    InfoAPSTBigBannerPolygon.Points.Remove(_zeroPoint);
+                    InfoAPSTBigBannerPolygon.Points.Remove(ZeroPoint);
                     InfoAPSTBigBannerPolygon.Points.Add(new Point(60, 48 - currentPstate * 16));
                 }
 
@@ -1210,25 +1200,25 @@ public sealed partial class ИнформацияPage
 
                 if (PSTFlyout.IsOpen)
                 {
-                    InfoAPSTBigBannerPolygon.Points.Add(_maxedPoint);
+                    InfoAPSTBigBannerPolygon.Points.Add(MaxedPoint);
                 }
 
-                InfoAPSTBannerPolygon.Points.Add(_maxedPoint);
+                InfoAPSTBannerPolygon.Points.Add(MaxedPoint);
 
                 //InfoABATBanner График
-                InfoABATBannerPolygon.Points.Remove(_zeroPoint);
+                InfoABATBannerPolygon.Points.Remove(ZeroPoint);
                 _batPointer.Add(new InfoPageCPUPoints { X = 60, Y = 48 - (int)(Math.Abs(currBatRate) / _maxBatRate * 48) });
                 InfoABATBannerPolygon.Points.Add(new Point(60,
                     48 - (int)(Math.Abs(currBatRate) / _maxBatRate * 48)));
                 if (BATFlyout.IsOpen)
                 {
-                    InfoABATBigBannerPolygon.Points.Remove(_zeroPoint);
+                    InfoABATBigBannerPolygon.Points.Remove(ZeroPoint);
                     InfoABATBigBannerPolygon.Points.Add(new Point(60,
                         48 - (int)(Math.Abs(currBatRate) / _maxBatRate * 48)));
                 }
 
                 foreach (var element in _batPointer.ToList())
-                { 
+                {
                     if (element.X < 0)
                     {
                         _batPointer.Remove(element);
@@ -1258,17 +1248,17 @@ public sealed partial class ИнформацияPage
 
                 if (BATFlyout.IsOpen)
                 {
-                    InfoABATBigBannerPolygon.Points.Add(_maxedPoint);
+                    InfoABATBigBannerPolygon.Points.Add(MaxedPoint);
                 }
 
-                InfoABATBannerPolygon.Points.Add(_maxedPoint);
+                InfoABATBannerPolygon.Points.Add(MaxedPoint);
                 try
                 {
                     var busyRam = _busyRam;
                     var usageResult = _totalRam;
                     if (busyRam != 0 && usageResult != 0)
                     {
-                        InfoARAMBannerPolygon.Points.Remove(_zeroPoint);
+                        InfoARAMBannerPolygon.Points.Remove(ZeroPoint);
                         _ramPointer.Add(new InfoPageCPUPoints
                         {
                             X = 60,
@@ -1278,7 +1268,7 @@ public sealed partial class ИнформацияPage
                             48 - (int)(busyRam * 100 / usageResult * 0.48)));
                         if (RAMFlyout.IsOpen)
                         {
-                            InfoARAMBigBannerPolygon.Points.Remove(_zeroPoint);
+                            InfoARAMBigBannerPolygon.Points.Remove(ZeroPoint);
                             InfoARAMBigBannerPolygon.Points.Add(new Point(60,
                                 48 - (int)(busyRam * 100 / usageResult * 0.48)));
                         }
@@ -1316,10 +1306,10 @@ public sealed partial class ИнформацияPage
 
                     if (RAMFlyout.IsOpen)
                     {
-                        InfoARAMBigBannerPolygon.Points.Add(_maxedPoint);
+                        InfoARAMBigBannerPolygon.Points.Add(MaxedPoint);
                     }
 
-                    InfoARAMBannerPolygon.Points.Add(_maxedPoint);
+                    InfoARAMBannerPolygon.Points.Add(MaxedPoint);
                 }
                 catch (Exception ex)
                 {
@@ -1355,29 +1345,29 @@ public sealed partial class ИнформацияPage
         try
         {
             InfoACPUBannerPolygon.Points.Clear();
-            InfoACPUBannerPolygon.Points.Add(_startPoint);
+            InfoACPUBannerPolygon.Points.Add(StartPoint);
             InfoACPUBigBannerPolygon.Points.Clear();
-            InfoACPUBigBannerPolygon.Points.Add(_startPoint);
+            InfoACPUBigBannerPolygon.Points.Add(StartPoint);
             InfoAGPUBannerPolygon.Points.Clear();
-            InfoAGPUBannerPolygon.Points.Add(_startPoint);
+            InfoAGPUBannerPolygon.Points.Add(StartPoint);
             InfoAGPUBigBannerPolygon.Points.Clear();
-            InfoAGPUBigBannerPolygon.Points.Add(_startPoint);
+            InfoAGPUBigBannerPolygon.Points.Add(StartPoint);
             InfoARAMBannerPolygon.Points.Clear();
-            InfoARAMBannerPolygon.Points.Add(_startPoint);
+            InfoARAMBannerPolygon.Points.Add(StartPoint);
             InfoARAMBigBannerPolygon.Points.Clear();
-            InfoARAMBigBannerPolygon.Points.Add(_startPoint);
+            InfoARAMBigBannerPolygon.Points.Add(StartPoint);
             InfoAVRMBannerPolygon.Points.Clear();
-            InfoAVRMBannerPolygon.Points.Add(_startPoint);
+            InfoAVRMBannerPolygon.Points.Add(StartPoint);
             InfoAVRMBigBannerPolygon.Points.Clear();
-            InfoAVRMBigBannerPolygon.Points.Add(_startPoint);
+            InfoAVRMBigBannerPolygon.Points.Add(StartPoint);
             InfoABATBannerPolygon.Points.Clear();
-            InfoABATBannerPolygon.Points.Add(_startPoint);
+            InfoABATBannerPolygon.Points.Add(StartPoint);
             InfoABATBigBannerPolygon.Points.Clear();
-            InfoABATBigBannerPolygon.Points.Add(_startPoint);
+            InfoABATBigBannerPolygon.Points.Add(StartPoint);
             InfoAPSTBannerPolygon.Points.Clear();
-            InfoAPSTBannerPolygon.Points.Add(_startPoint);
+            InfoAPSTBannerPolygon.Points.Add(StartPoint);
             InfoAPSTBigBannerPolygon.Points.Clear();
-            InfoAPSTBigBannerPolygon.Points.Add(_startPoint);
+            InfoAPSTBigBannerPolygon.Points.Add(StartPoint);
             _dispatcherTimer = new DispatcherTimer();
             _dispatcherTimer.Tick += (_, _) => UpdateInfo();
             _dispatcherTimer.Interval = TimeSpan.FromMilliseconds(300);
@@ -1538,7 +1528,7 @@ public sealed partial class ИнформацияPage
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     HorizontalContentAlignment = HorizontalAlignment.Stretch,
                     VerticalAlignment = VerticalAlignment.Stretch,
-                    CornerRadius = _defaultCornerRadius,
+                    CornerRadius = DefaultCornerRadius,
                     Content = new Grid
                     {
                         VerticalAlignment = VerticalAlignment.Stretch,
@@ -1716,7 +1706,7 @@ public sealed partial class ИнформацияPage
     private static void HandleFlyoutOpening(Flyout flyout, Polygon polygon, FontIcon expandIcon, Button expandButton)
     {
         polygon.Points.Clear();
-        polygon.Points.Add(_startPoint);
+        polygon.Points.Add(StartPoint);
 
         if (flyout.IsOpen)
         {

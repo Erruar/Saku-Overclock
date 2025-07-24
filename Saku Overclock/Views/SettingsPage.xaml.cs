@@ -963,6 +963,9 @@ public sealed partial class SettingsPage
             {
                 Height = 90,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
+                CornerRadius = new CornerRadius(16),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow,
                 Content = new Grid
                 {
                     HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -1031,6 +1034,9 @@ public sealed partial class SettingsPage
                 Margin = new Thickness(0, 5, 0, 0),
                 Height = 90,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
+                CornerRadius = new CornerRadius(16),
+                Translation = new System.Numerics.Vector3(0, 0, 12),
+                Shadow = SharedShadow,
                 Content = new Grid
                 {
                     HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -1711,6 +1717,8 @@ public sealed partial class SettingsPage
         NiLoad();
         _niicons.Elements[AppSettings.NiIconsType].ContextMenuType = NiIconCombobox.SelectedIndex;
         NiSave();
+
+        App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
     private void Settings_ni_Icons_Toggled(object sender, RoutedEventArgs e)
@@ -1748,6 +1756,8 @@ public sealed partial class SettingsPage
             Settings_ni_Add_Element.Visibility = Visibility.Collapsed;
             Settings_ni_EnabledElement.Visibility = Visibility.Collapsed;
         }
+
+        App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
     private void Settings_ni_EnabledElement_Toggled(object sender, RoutedEventArgs e)
@@ -1770,6 +1780,8 @@ public sealed partial class SettingsPage
             NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
             Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
         }
+
+        App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
     private void Settings_ni_Fontsize_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
@@ -1783,6 +1795,8 @@ public sealed partial class SettingsPage
         _niicons.Elements[AppSettings.NiIconsType].FontSize =
             Convert.ToInt32(Settings_ni_Fontsize.Value);
         NiSave();
+
+        App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
     private void Settings_ni_Opacity_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
@@ -1795,6 +1809,8 @@ public sealed partial class SettingsPage
         NiLoad();
         _niicons.Elements[AppSettings.NiIconsType].BgOpacity = Settings_ni_Opacity.Value;
         NiSave();
+
+        App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
     private async void Settings_ni_Add_Element_Click(object sender, RoutedEventArgs e)
@@ -2154,6 +2170,8 @@ public sealed partial class SettingsPage
         {
             await LogHelper.TraceIt_TraceError(exception.ToString());
         }
+
+        App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
     private void NiIcons_ColorPicker_ColorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
@@ -2176,6 +2194,8 @@ public sealed partial class SettingsPage
         }
 
         NiSave();
+
+        App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
     private void Settings_Ni_GradientToggle_Toggled(object sender, RoutedEventArgs e)
@@ -2188,6 +2208,8 @@ public sealed partial class SettingsPage
         NiLoad();
         _niicons.Elements[AppSettings.NiIconsType].IsGradient = true;
         NiSave();
+
+        App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
     private void Settings_Ni_GradientColorSwitcher_Click(object sender, RoutedEventArgs e)
@@ -2213,6 +2235,8 @@ public sealed partial class SettingsPage
                     ParseColor(_niicons.Elements[AppSettings.NiIconsType].Color);
             }
         }
+
+        App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
     private void Settings_ni_Delete_Click(object sender, RoutedEventArgs e)
@@ -2230,6 +2254,8 @@ public sealed partial class SettingsPage
             AppSettings.ThemeType = -1;
             AppSettings.SaveSettings();
             NiIcon_LoadValues();
+
+            App.BackgroundUpdater?.UpdateNotifyIcons();
         }
         catch (Exception ex)
         {
@@ -2253,6 +2279,8 @@ public sealed partial class SettingsPage
         _niicons.Elements[AppSettings.NiIconsType].BgOpacity = 0.5d;
         NiSave();
         NiIconComboboxElements_SelectionChanged(NiIconComboboxElements, SelectionChangedEventArgs.FromAbi(0));
+
+        App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
     private void NiIconShapeCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2265,6 +2293,8 @@ public sealed partial class SettingsPage
         NiLoad();
         _niicons.Elements[AppSettings.NiIconsType].IconShape = NiIconShapeCombobox.SelectedIndex;
         NiSave();
+
+        App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
     #endregion

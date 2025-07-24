@@ -52,7 +52,7 @@ public sealed partial class ПараметрыPage
     private bool _waitforload = true; // Ожидание окончательной смены профиля на другой. Активируется при смене профиля
     private string? _adjline; // Команды RyzenADJ для применения
     private readonly Mailbox _testMailbox = new(); // Новый адрес SMU
-    private bool _commandReturnedValue = false; // Флаг если команда вернула значение
+    private bool _commandReturnedValue; // Флаг если команда вернула значение
 
     private static string?
         _equalvid; // Преобразование из напряжения в его ID. Используется в секции Состояния CPU для указания напряжения PState
@@ -699,6 +699,8 @@ public sealed partial class ПараметрыPage
                     CCD2_Grid5_1.Visibility = Visibility.Visible;
                     CCD2_Grid6_1.Visibility = Visibility.Visible;
                     CCD2_Grid7_1.Visibility = Visibility.Visible;
+
+                    cores = _cpu?.info.topology.cores ?? 8;
                     if (cores > 8)
                     {
                         if (cores <= 15)
@@ -1962,7 +1964,7 @@ public sealed partial class ПараметрыPage
                 TryConvertToUint(userArgs[i], out var temp);
                 args[i] = temp;
             }
-            var argsBefore = args.ToArray<uint>();
+            var argsBefore = args.ToArray();
 
             Task.Run(async () =>
                 await LogHelper.Log(
@@ -2558,12 +2560,9 @@ public sealed partial class ПараметрыPage
                                 run = true;
                             }
 
-                            if (SendSmuCommand != null)
-                            {
-                                SendSmuCommand.RangeCompleted += CloseRangeStarted;
-                            }
+                            SendSmuCommand.RangeCompleted += CloseRangeStarted;
 
-                            SendSmuCommand?.SendRange(cmdStart.Text, argStart.Text, argEnd.Text, saveIndex, run);
+                            SendSmuCommand.SendRange(cmdStart.Text, argStart.Text, argEnd.Text, saveIndex, run);
                             RangeStarted.IsOpen = true;
                             RangeStarted.Title = "SMURange".GetLocalized() + ". " + argStart.Text + "-" + argEnd.Text;
 
@@ -2605,10 +2604,9 @@ public sealed partial class ПараметрыPage
             RangeStarted.IsOpen = false;
         });
 
-        if (SendSmuCommand != null)
-        {
-            SendSmuCommand.RangeCompleted -= CloseRangeStarted!;
-        }
+        
+        SendSmuCommand.RangeCompleted -= CloseRangeStarted;
+        
     }
 
     private void SymbolButton_Click(object sender, RoutedEventArgs e) => SymbolFlyout.ShowAt(sender as Button);
@@ -4732,7 +4730,7 @@ public sealed partial class ПараметрыPage
 
                 if (V5.IsChecked == true)
                 {
-                    _adjline += " --psi0-current=" + V5V.Value + "000" + (isBristol ? "," + V6V.Value + "000," + V6V.Value + "000" : string.Empty); ;
+                    _adjline += " --psi0-current=" + V5V.Value + "000" + (isBristol ? "," + V6V.Value + "000," + V6V.Value + "000" : string.Empty); 
                 }
 
                 if (V6.IsChecked == true && !isBristol)
@@ -6496,14 +6494,7 @@ public sealed partial class ПараметрыPage
     private void TurboBoost()
     {
         SetCorePerformanceBoost(Turbo_boost.IsOn); //Турбобуст... 
-        if (Turbo_boost.IsOn) //Сохранение
-        {
-            _profile[_indexprofile].turboBoost = true;
-        }
-        else
-        {
-            _profile[_indexprofile].turboBoost = false;
-        }
+        _profile[_indexprofile].turboBoost = Turbo_boost.IsOn; //Сохранение
 
         ProfileSave();
     }

@@ -1577,7 +1577,7 @@ ARE DOING!!! IT CAN BURN YOUR CPU!</value>
     <value>Background from link</value>
   </data>
   <data name="ThemeBgFromURLWhy" xml:space="preserve">
-    <value>Choose any image or gif URL. It will not work without internet!</value>
+    <value>Paste any image or gif URL. It will not work without internet!</value>
   </data>
   <data name="ThemeBgOr" xml:space="preserve">
     <value>or</value>

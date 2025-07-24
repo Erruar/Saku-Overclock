@@ -791,14 +791,38 @@
                                             </Grid>
                                             <Border Margin="2,5,2,4" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/>
                                             <TextBlock x:Uid="Preset_HelpWith" Text="Для чего подходит этот пресет?"/>
-                                            <GridView CanDrag="False" SelectionMode="None" CanDragItems="False" CanReorderItems="False">
-                                                <Button CornerRadius="9" Width="130" x:Uid="Preset_HelpWith_Gaming">Тяжёлые игры</Button>
-                                                <Button CornerRadius="9" Width="130" x:Uid="Preset_HelpWith_Striming">Стриминг</Button>
-                                                <Button CornerRadius="9" Width="130" x:Uid="Preset_HelpWith_HardWorkload">Тяжёлая работа</Button>
-                                                <Button CornerRadius="9" Width="130" x:Uid="Preset_HelpWith_OfficeWorkload">Офисная работа</Button>
-                                                <Button CornerRadius="9" Width="130" x:Uid="Preset_HelpWith_LightGaming">Лёгкие игры</Button>
-                                                <Button CornerRadius="9" Width="130" x:Uid="Preset_HelpWith_Videos">Просмотр видео</Button>
-                                            </GridView>
+                                            <StackPanel Margin="0,5,0,7" Orientation="Vertical" HorizontalAlignment="Stretch">
+                                                <Grid HorizontalAlignment="Stretch">
+                                                    <Grid.ChildrenTransitions>
+                                                        <TransitionCollection>
+                                                            <RepositionThemeTransition />
+                                                        </TransitionCollection>
+                                                    </Grid.ChildrenTransitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition x:Name="Preset_HW_ColumnHelper1"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Button Grid.Column="0" HorizontalAlignment="Stretch" CornerRadius="9" x:Name="Preset_HW_Gaming" x:Uid="Preset_HelpWith_Gaming">Тяжёлые игры</Button>
+                                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,0,0,0" CornerRadius="9" x:Name="Preset_HW_Striming" x:Uid="Preset_HelpWith_Striming">Стриминг</Button>
+                                                    <Button Grid.Column="2" HorizontalAlignment="Stretch" Margin="5,0,0,0" CornerRadius="9" x:Name="Preset_HW_HardWorkload" x:Uid="Preset_HelpWith_HardWorkload">Тяжёлая работа</Button>
+                                                </Grid>
+                                                <Grid Margin="0,5,0,0" HorizontalAlignment="Stretch">
+                                                    <Grid.ChildrenTransitions>
+                                                        <TransitionCollection>
+                                                            <RepositionThemeTransition />
+                                                        </TransitionCollection>
+                                                    </Grid.ChildrenTransitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition x:Name="Preset_HW_ColumnHelper2"/>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Button Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,5,0" CornerRadius="9" x:Name="Preset_HW_LightGaming" x:Uid="Preset_HelpWith_LightGaming">Лёгкие игры</Button>
+                                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" CornerRadius="9" x:Name="Preset_HW_OfficeWorkload" x:Uid="Preset_HelpWith_OfficeWorkload">Офисная работа</Button>
+                                                    <Button Grid.Column="2" HorizontalAlignment="Stretch" Margin="5,0,0,0" CornerRadius="9" x:Name="Preset_HW_Videos" x:Uid="Preset_HelpWith_Videos">Просмотр видео</Button>
+                                                </Grid>
+                                            </StackPanel>
                                             <Border Margin="2,0,2,4" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/>
                                             <TextBlock x:Uid="Preset_ApplicableSettings" Text="Применяемые настройки"/>
                                             <Expander HorizontalContentAlignment="Stretch" CornerRadius="18" HorizontalAlignment="Stretch" Margin="0,8,0,8">
@@ -806,21 +830,21 @@
                                                     <StackPanel Margin="-3,7,0,7" Orientation="Vertical">
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock x:Uid="Preset_MaxTemp" Text="Макс температура: "/>
-                                                            <TextBlock FontWeight="SemiBold" Margin="5,0,0,0" Text="90C"/>
+                                                            <TextBlock x:Name="Preset_Options_Temp" FontWeight="SemiBold" Margin="5,0,0,0" Text="90C"/>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock x:Uid="Preset_MaxPower" Text="Лимиты мощности: "/>
-                                                            <TextBlock FontWeight="SemiBold" Margin="5,0,0,0" Text="40W, 45W, 42W"/>
+                                                            <TextBlock x:Name="Preset_Options_Power" FontWeight="SemiBold" Margin="5,0,0,0" Text="40W, 45W, 42W"/>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock x:Uid="Preset_MaxCurrent" Text="Ограничения по току: "/>
-                                                            <TextBlock FontWeight="SemiBold" Margin="5,0,0,0" Text="110A, 65A"/>
+                                                            <TextBlock x:Name="Preset_Options_Currents" FontWeight="SemiBold" Margin="5,0,0,0" Text="110A, 65A"/>
                                                         </StackPanel>
                                                         <TextBlock x:Uid="Preset_ExpandList" Foreground="{ThemeResource TextFillColorTertiary}" Text="Раскрыть список"/>
                                                     </StackPanel>
                                                 </Expander.Header>
                                                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-3,0,0,0">
-                                                    <RichTextBlock>
+                                                    <RichTextBlock x:Name="Preset_Options_CommandLine">
                                                         <Paragraph>
                                                             Макс температура 90C
                                                         </Paragraph>

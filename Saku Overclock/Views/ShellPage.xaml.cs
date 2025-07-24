@@ -24,7 +24,6 @@ using Windows.Graphics;
 using Windows.System;
 using Windows.UI.Text;
 using ZenStates.Core;
-using static Octokit.Caching.CachedResponse;
 using Action = System.Action;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using Task = System.Threading.Tasks.Task;
@@ -43,7 +42,6 @@ public sealed partial class ShellPage
     private static IntPtr _hookId = IntPtr.Zero; // ID хука, используется, например, для удаления
     private readonly LowLevelKeyboardProc _proc; // Коллбэк метод (вызывается при срабатывании хука)
     private DispatcherTimer? _dispatcherTimer; // Таймер обновления уведомлений
-    private bool _loaded = true; // Запустился ли UI поток приложения
     private bool _isNotificationPanelShow; // Флаг: Открыта ли панель уведомлений
     private int? _compareList; // Нет новых уведомлений - пока
 
@@ -128,7 +126,6 @@ public sealed partial class ShellPage
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
-        _loaded = true;
         StartInfoUpdate();
         GetProfileInit();
         Theme_Loader(); //Загрузить тему
