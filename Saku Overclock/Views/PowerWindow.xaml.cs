@@ -20,6 +20,7 @@ internal partial class PowerWindow : IDisposable
     private const int PAGE_SIZE = 50; // Показываем только 50 элементов за раз
     private int _totalItems = 0;
     private bool _isLoading = false;
+    private int _previousScroll = 0;
 
     public PowerWindow()
     {
@@ -246,6 +247,10 @@ internal partial class PowerWindow : IDisposable
         {
             LoadPage(_currentPage - 1);
             UpdatePageInfo();
+            MainScroll.ChangeView(
+            horizontalOffset: null,
+            verticalOffset: MainScroll.ScrollableHeight - 1,
+            zoomFactor: null);
         }
     }
 
@@ -256,6 +261,59 @@ internal partial class PowerWindow : IDisposable
         {
             LoadPage(_currentPage + 1);
             UpdatePageInfo();
+            MainScroll.ChangeView(null,1,null);
+        }
+    }
+    private bool MaxedOut;
+    private async void MainScroll_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+    {
+        // писать код сюда
+        if (!e.IsIntermediate) // Проверяем, что прокрутка завершена
+        {
+            var scrollViewer = sender as ScrollViewer;
+            var totalPages = (_totalItems + PAGE_SIZE - 1) / PAGE_SIZE;
+
+            // Если долистали до самого низа и есть следующая страница
+            if (scrollViewer!.VerticalOffset >= scrollViewer.ScrollableHeight &&
+                _currentPage < totalPages - 1)
+            {
+                if (!MaxedOut && scrollViewer!.VerticalOffset == scrollViewer.ScrollableHeight)
+                {
+                    MaxedOut = true;
+                    return;
+                }
+                MaxedOut = false;
+                if (totalPages - 1 == _currentPage + 1)
+                {
+                    scrollViewer.ChangeView(null, 1, null);
+                    await Task.Delay(190);
+                    var page = totalPages;
+                    page = Math.Max(1, Math.Min(page, totalPages)) - 1; // Конвертировать в правильный индекс
+
+                    if (page != _currentPage)
+                    {
+                        LoadPage(page);
+                        UpdatePageInfo();
+                    }
+                }
+                else
+                {
+                    LoadPage(_currentPage + 1);
+                    UpdatePageInfo();
+                    // Перемещаем к началу новой страницы
+                    scrollViewer.ChangeView(null, 1, null);
+                }
+                
+            }
+            // Если долистали до самого верха и есть предыдущая страница
+            else if (scrollViewer.VerticalOffset <= 0 &&
+                     _currentPage > 0 && totalPages - 1 != _currentPage) // Конвертировать в правильный индекс, если страница не последняя
+            {
+                LoadPage(_currentPage - 1);
+                UpdatePageInfo();
+                // Перемещаем к концу предыдущей страницы
+                scrollViewer.ChangeView(null, scrollViewer.ScrollableHeight - 1, null);
+            }
         }
     }
 
