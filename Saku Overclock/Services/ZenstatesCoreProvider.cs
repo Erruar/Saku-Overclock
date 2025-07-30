@@ -22,7 +22,6 @@ public class ZenstatesCoreProvider : IDataProvider
         RefreshPowerTable();
         await InitializeCoreIndexMapAsync((int)Cpu.info.topology.cores);
 
-        await Task.Delay(50);
         var (avgCoreClk, clkPerClock) = CalculateCoreMetrics();
         return new SensorsInformation
         {
@@ -179,7 +178,7 @@ public class ZenstatesCoreProvider : IDataProvider
         // Создаем шаблон позиций отключенных ядер относительно начала группы
         var disabledOffsets = disabledCores.OrderBy(x => x).ToList();
 
-        for (int i = 0; i < _cachedTable.Length - maxCoresPerCcd; i++)
+        for (var i = 0; i < _cachedTable?.Length - maxCoresPerCcd; i++)
         {
             // Проверяем, может ли здесь начинаться группа частот ядер
             if (!IsValidFrequencyGroupStart(i, disabledOffsets, maxCoresPerCcd))
@@ -190,7 +189,7 @@ public class ZenstatesCoreProvider : IDataProvider
             // Собираем группу частот
             var group = CollectFrequencyGroup(i, disabledOffsets, maxCoresPerCcd);
 
-            if (group.Any() && IsValidFrequencyGroup(group))
+            if (group.Count != 0 && IsValidFrequencyGroup(group))
             {
                 groups.Add((i, group));
 
@@ -210,14 +209,14 @@ public class ZenstatesCoreProvider : IDataProvider
         foreach (var offset in disabledOffsets)
         {
             var checkIndex = startIndex + offset;
-            if (checkIndex >= _cachedTable.Length || _cachedTable[checkIndex] != 0)
+            if (checkIndex >= _cachedTable?.Length || _cachedTable?[checkIndex] != 0)
             {
                 return false;
             }
         }
 
         // Проверяем, что остальные значения в пределах разумного диапазона частот
-        for (int i = 0; i < maxCoresPerCcd && (startIndex + i) < _cachedTable.Length; i++)
+        for (var i = 0; i < maxCoresPerCcd && (startIndex + i) < _cachedTable?.Length; i++)
         {
             // Пропускаем позиции отключенных ядер
             if (disabledOffsets.Contains(i))
@@ -240,7 +239,7 @@ public class ZenstatesCoreProvider : IDataProvider
     {
         var group = new List<(int index, float frequency)>();
 
-        for (int i = 0; i < maxCoresPerCcd && (startIndex + i) < _cachedTable.Length; i++)
+        for (var i = 0; i < maxCoresPerCcd && (startIndex + i) < _cachedTable?.Length; i++)
         {
             var currentIndex = startIndex + i;
             var frequency = _cachedTable[currentIndex];
@@ -255,7 +254,7 @@ public class ZenstatesCoreProvider : IDataProvider
         return group;
     }
 
-    private bool IsValidFrequencyGroup(List<(int index, float frequency)> group)
+    private static bool IsValidFrequencyGroup(List<(int index, float frequency)> group)
     {
         // Группа должна содержать хотя бы одно ненулевое значение
         if (!group.Any(g => g.frequency > 0))
@@ -337,45 +336,6 @@ public class ZenstatesCoreProvider : IDataProvider
                     }
                 }
             }
-
-
-           /* // Пытаемся сопоставить ядра с частотами в текущей группе
-            var groupMatches = new List<(int core, int tableIndex, float tableFreq)>();
-
-            foreach (var (index, frequency) in validFrequencies)
-            {
-                if (usedTableIndices.Contains(index))
-                {
-                    continue;
-                }
-
-                // Ищем наиболее подходящее ядро для этой частоты
-                var bestCoreMatch = coresByFrequency
-                    .Where(c => !usedCores.Contains(c.Core))
-                    .Select(c => new { c.Core, c.Frequency, Diff = Math.Abs(c.Frequency - frequency) })
-                    .Where(x => x.Diff <= 0.3f) // Допуск 300 МГц
-                    .OrderBy(x => x.Diff)
-                    .FirstOrDefault();
-
-                if (bestCoreMatch != null)
-                {
-                    groupMatches.Add((bestCoreMatch.Core, index, frequency));
-                    usedCores.Add(bestCoreMatch.Core);
-                    usedTableIndices.Add(index);
-                }
-            }
-
-            // Добавляем найденные соответствия в маппинг
-            foreach (var (core, tableIndex, _) in groupMatches)
-            {
-                _coreToTableIndexMap[core] = tableIndex;
-            }
-
-            // Если сопоставили все активные ядра, выходим
-            if (usedCores.Count >= activeCores.Count)
-            {
-                break;
-            }*/
         }
 
         // Логируем результат для отладки
@@ -402,12 +362,10 @@ public class ZenstatesCoreProvider : IDataProvider
 
     private float GetCoreClock(uint core)
     {
-        var coreInt = (int)core;
-
         // Проверяем кэш маппинга к Power Table
-        if (_coreToTableIndexMap.TryGetValue(coreInt, out var tableIndex) &&
+        if (_coreToTableIndexMap.TryGetValue((int)core, out var tableIndex) &&
             _cachedTable != null &&
-            tableIndex < _cachedTable.Length)
+            tableIndex < _cachedTable?.Length)
         {
             var tableFreq = _cachedTable[tableIndex];
             if (tableFreq >= 0.38)
@@ -418,32 +376,6 @@ public class ZenstatesCoreProvider : IDataProvider
 
         // Последний fallback - прямое обращение к CPU Multiplier
         return (float)Cpu.GetCoreMulti((int)core) / 10; // В итоге приложение всегда падает сюда
-
-        /*if (!_isInitialized)
-        {
-            return _currentCpuClocks.Count - 1 > (int)core ? (float)_currentCpuClocks[(int)core] : -1f;
-        }
-        if (!CoreIndexMap.TryGetValue((int)core, out var value))
-        {
-            return -1;
-        }
-
-        if (_cachedTable == null || value >= _cachedTable.Length)
-        {
-            LogHelper.TraceIt_TraceError("Cached table is invalid or out of range.");
-            return -1;
-        }
-        if (_cachedTable[value] >= 7)
-        {
-            foreach (var el in _cachedTable)
-            {
-                if (el < 7)
-                {
-                    return el;
-                }
-            }
-        }
-        return _cachedTable[value];*/
     }
 
     private float GetCoreLoad()
