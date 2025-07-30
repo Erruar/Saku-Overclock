@@ -117,12 +117,19 @@ public abstract class UpdateChecker
                 }
                 releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
             }
+            catch (RateLimitExceededException v1)
+            {
+                _apiRateLimited = true;
+                GitHubInfoString = $"**Failed to fetch info**\n{v1}";
+                return;
+            }
             catch
             {
                 _apiRateLimited = true;
                 GitHubInfoString = "**Failed to fetch info**";
                 return;
             }
+            
 
             var sb = new StringBuilder();
             var currentRelease = 0;
