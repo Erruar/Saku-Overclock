@@ -205,8 +205,6 @@
 
 <!-- ABOUT THE PROJECT -->
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_large)
-
 ## About The Project
 
 [![Product Name Screen Shot][product-screenshot]](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main.png)
@@ -683,6 +681,8 @@ Don't forget to give the project a star! Thanks again!
 Distributed under the GPL-3.0 License. See `LICENSE.md` for more information.
 
 This application contains elements of [Collapse Launcher](https://github.com/CollapseLauncher/Collapse), which is licensed by [MIT license](https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE), such elements **are marked** in the code as [Collapse Launcher](https://github.com/CollapseLauncher/Collapse) and **according to MIT license** contains full **MIT license** and code fragment authors and links.
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_large)
 
 > [!IMPORTANT]
 > ## Copyright Policy
