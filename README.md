@@ -204,9 +204,13 @@
 </div>
 
 <!-- ABOUT THE PROJECT -->
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_large)
+
 ## About The Project
 
 [![Product Name Screen Shot][product-screenshot]](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main.png)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_shield)
 
 Saku Overclock is an incredible utility for Ryzen laptop overclocking, providing precise control over various parameters to enhance your device's performance. Our program offers:
 
