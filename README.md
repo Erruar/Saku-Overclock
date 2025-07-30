@@ -22,84 +22,9 @@
 <!-- PROJECT LOGO -->
 
 <br />
- <div style="
-  background-color: #303030AF;
-  padding: 80px;
-  border-radius: 32px;
-  margin-bottom: 20px;
-">
-      <div style="
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 64px;
-  gap: 50px;
-  align-items: center;">
-        <!--<h2 style="margin: 0;">
-          Saku-Overclock
-        </h2>-->
-        <img alt="Picture" src="Saku Overclock/Assets/WindowIcon.ico" alt="Logo" width="80" height="80">
-        <div style="
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  color: #9BA1AB;">
-          <div>
-            License GPL v3,
-            Protected DMCA
-          </div>
-        </div>
-      </div>
-      <div style="
-    font-family: 'Open Sauce Two', 'Open Sauce', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 78px;
-    line-height: 78px;
-    word-wrap: break-word;">
-        №.1
-      </div>
-      <div style="
-    font-family: 'Open Sauce Two', 'Open Sauce', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 78px;
-    line-height: 78px;
-    word-wrap: break-word;
-    background-clip: text;
-    color: transparent;
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-    background-image: linear-gradient(150deg,rgba(94, 88, 204, 1) 0%, rgba(68, 68, 133, 1) 35%, rgba(0, 212, 255, 1) 100%);">
-        Laptops overclocking Software
-      </div>
-      <div style="
-    font-family: 'Open Sauce Two', 'Open Sauce', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 78px;
-    line-height: 78px;
-    word-wrap: break-word;">
-                  <span style="font-weight: 800;">Saku-Overclock</span>
-              </div>
-            <div style="
-    font-size: 14px;
-    line-height: 20px;">
-        Unleash real power with <b>Saku-Overclock</b>. Access to any hidden parameters on your laptop easily with suggestions.
-      </div>
-      <footer style="display: flex; margin-top: 10px; justify-content: space-between;">
-        <span>
-          <div style="font-weight: 800;">
-            Last update
-          </div>
-          <div>
-            7/30/2025
-          </div>
-        </span>
-        <span>
-          <div style="font-weight: 800;">
-            Revision
-          </div>
-          <div style="overflow: hidden; text-overflow: ellipsis;">
-            v221 Consumer Creative
-          </div>
-        </span>
-      </footer>
-</div>
+ <div>
+  <img alt="hero" src="https://raw.githubusercontent.com/Erruar/Saku-Overclock/6051007d9a3b6b7d8f60d182164fa68c05281426/Images/main/Saku-hero.svg"></img>
+ </div>
 
 <!-- TABLE OF CONTENTS -->
 <div align="center">
