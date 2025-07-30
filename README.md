@@ -23,7 +23,7 @@
 
 <br />
  <div>
-  <img alt="hero" src="https://raw.githubusercontent.com/Erruar/Saku-Overclock/6051007d9a3b6b7d8f60d182164fa68c05281426/Images/main/Saku-hero.svg"></img>
+  <img alt="hero" src="https://raw.githubusercontent.com/Erruar/Saku-Overclock/refs/heads/master/Images/main/Saku-hero.svg"></img>
  </div>
 
 <!-- TABLE OF CONTENTS -->
