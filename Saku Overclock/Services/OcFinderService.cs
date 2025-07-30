@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Accord.Math.Distances;
+﻿using System.Text;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.SMUEngine;
-using Saku_Overclock.Views;
 using ZenStates.Core;
 using static ZenStates.Core.Cpu;
 
