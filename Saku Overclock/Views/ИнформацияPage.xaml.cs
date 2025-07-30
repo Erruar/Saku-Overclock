@@ -782,17 +782,17 @@ public sealed partial class ИнформацияPage
                 infoAVRMUsageBigBannerPolygonText.Text = infoAVRMUsageBannerPolygonText.Text;
                 tbSOCEDCL.Text = Math.Round(_sensorsInformation.SocEdcValue, 3) + "A/" +
                                  (int)_sensorsInformation.SocEdcLimit + "A";
-                tbSOCVOLT.Text = Math.Round(_sensorsInformation.SocVoltage, 3) == 0
-                    ? Math.Round(_cpu!.powerTable.VDDCR_SOC, 3) + "V"
+                tbSOCVOLT.Text = _sensorsInformation.SocVoltage == 0
+                    ? Math.Round(_cpu!.powerTable?.VDDCR_SOC ?? 0, 3) + "V"
                     : Math.Round(_sensorsInformation.SocVoltage, 3) + "V";
                 tbSOCPOWER.Text = Math.Round(_sensorsInformation.SocPower, 3) == 0
-                    ? Math.Round(_cpu!.powerTable.VDDCR_SOC * 10, 3) + "W"
+                    ? Math.Round((_cpu!.powerTable?.VDDCR_SOC ?? 0) * 10, 3) + "W"
                     : Math.Round(_sensorsInformation.SocPower, 3) + "W";
                 tbMEMCLOCK.Text = Math.Round(_sensorsInformation.MemFrequency, 3) == 0
-                    ? Math.Round(_cpu!.powerTable.MCLK, 3) + "InfoFreqBoundsMHZ".GetLocalized()
+                    ? Math.Round(_cpu!.powerTable?.MCLK ?? 0, 3) + "InfoFreqBoundsMHZ".GetLocalized()
                     : Math.Round(_sensorsInformation.MemFrequency, 3) + "InfoFreqBoundsMHZ".GetLocalized();
                 tbFabricClock.Text = Math.Round(_sensorsInformation.FabricFrequency, 3) == 0
-                    ? Math.Round(_cpu!.powerTable.FCLK, 3) + "InfoFreqBoundsMHZ".GetLocalized()
+                    ? Math.Round(_cpu!.powerTable?.FCLK ?? 0, 3) + "InfoFreqBoundsMHZ".GetLocalized()
                     : Math.Round(_sensorsInformation.FabricFrequency, 3) + "InfoFreqBoundsMHZ".GetLocalized();
                 var coreClk = 0d;
                 var endtrace = 0;
