@@ -18,63 +18,190 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-[![Discord][discord-shield]][discord-url]
-[![Donalerts][donalerts-shield]][donalerts-url]
-[![GPL License][license-shield]][license-url]
-[![DMCA PROTECTED][dmca-shield]][dmca-url]
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Erruar/Saku-Overclock/total?style=for-the-badge&label=Our%20downloads)
-
-
 
 <!-- PROJECT LOGO -->
+
 <br />
+ <div style="
+  background-color: #303030AF;
+  padding: 80px;
+  border-radius: 32px;
+  margin-bottom: 20px;
+">
+      <div style="
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 64px;
+  gap: 50px;
+  align-items: center;">
+        <!--<h2 style="margin: 0;">
+          Saku-Overclock
+        </h2>-->
+        <img alt="Picture" src="Saku Overclock/Assets/WindowIcon.ico" alt="Logo" width="80" height="80">
+        <div style="
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: #9BA1AB;">
+          <div>
+            License GPL v3,
+            Protected DMCA
+          </div>
+        </div>
+      </div>
+      <div style="
+    font-family: 'Open Sauce Two', 'Open Sauce', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 78px;
+    line-height: 78px;
+    word-wrap: break-word;">
+        №.1
+      </div>
+      <div style="
+    font-family: 'Open Sauce Two', 'Open Sauce', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 78px;
+    line-height: 78px;
+    word-wrap: break-word;
+    background-clip: text;
+    color: transparent;
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+    background-image: linear-gradient(150deg,rgba(94, 88, 204, 1) 0%, rgba(68, 68, 133, 1) 35%, rgba(0, 212, 255, 1) 100%);">
+        Laptops overclocking Software
+      </div>
+      <div style="
+    font-family: 'Open Sauce Two', 'Open Sauce', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 78px;
+    line-height: 78px;
+    word-wrap: break-word;">
+                  <span style="font-weight: 800;">Saku-Overclock</span>
+              </div>
+            <div style="
+    font-size: 14px;
+    line-height: 20px;">
+        Unleash real power with <b>Saku-Overclock</b>. Access to any hidden parameters on your laptop easily with suggestions.
+      </div>
+      <footer style="display: flex; margin-top: 10px; justify-content: space-between;">
+        <span>
+          <div style="font-weight: 800;">
+            Last update
+          </div>
+          <div>
+            7/30/2025
+          </div>
+        </span>
+        <span>
+          <div style="font-weight: 800;">
+            Revision
+          </div>
+          <div style="overflow: hidden; text-overflow: ellipsis;">
+            v221 Consumer Creative
+          </div>
+        </span>
+      </footer>
+</div>
+
+<!-- TABLE OF CONTENTS -->
 <div align="center">
-  <a href="https://github.com/Erruar/Saku-Overclock">
-    <img alt="Picture" src="Saku Overclock/Assets/WindowIcon.ico" alt="Logo" width="80" height="80">
-  </a>
-
-  <h3 align="center">Saku Overclock</h3>
-
-  <p align="center">
-    An awesome laptop overclock utility for those who want real performance!
-    <br />
-    <a href="https://github.com/Erruar/Saku-Overclock/releases"><strong>Explore the releases »</strong></a>
-    <br />
-    <br />
-    <a href="https://www.youtube.com/watch?v=RToJMa5GZ7Q">View installation</a>
-    ·
-    <a href="https://github.com/Erruar/Saku-Overclock/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/Erruar/Saku-Overclock/issues">Request Feature</a>
+<p style="
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    max-width: 100%;
+    margin: 0 auto;
+">
+    <a href="#about-the-project" style="
+        color: #e9e9e9; 
+        background: linear-gradient(138deg,rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%); 
+        padding: 10px; 
+        border-radius: 9px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        ">
+      <strong>⚡ Features</strong>
+    </a>
+    <a href="https://github.com/Erruar/Saku-Overclock/releases" style="
+        color: #e9e9e9; 
+        background: linear-gradient(138deg,rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%); 
+        padding: 10px; 
+        border-radius: 9px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        ">
+      <strong>📥 Download</strong>
+    </a>
+    <a href="#pictures" style="
+        color: #e9e9e9; 
+        background: linear-gradient(138deg,rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%); 
+        padding: 10px; 
+        border-radius: 9px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        ">
+      <strong>🎮 Gallery</strong>
+    </a>
+    <a href="https://discord.com/invite/eFcP6TSjEZ" style="
+        color: #e9e9e9; 
+        background: linear-gradient(138deg,rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%); 
+        padding: 10px; 
+        border-radius: 9px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        ">
+      <strong>💬 Community</strong>
+    </a>
+    <a href="https://github.com/Erruar/Saku-Overclock/wiki/FAQ" style="
+        color: #e9e9e9; 
+        background: linear-gradient(138deg,rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%); 
+        padding: 10px; 
+        border-radius: 9px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        ">
+      <strong>📖 Docs</strong>
+    </a>
   </p>
 </div>
- 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#pictures">Pictures</a></li>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#requirements">Requirements</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#projects-used">Projects used:</a></li>
-  </ol>
-</details>
+<div align="center">
+<p style="
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    max-width: 100%;
+    margin: 16px auto;
+    padding: 0 10px;
+">
+    <a href="https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md" 
+       style="
+          color: #e9e9e9;
+          background: linear-gradient(138deg, rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%);
+          padding: 8px 14px;
+          border-radius: 9px;
+          font-size: 0.95em;
+          font-weight: 500;
+          text-decoration: none;
+          white-space: nowrap;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+          min-width: auto;
+       ">
+       <strong>📄 License: GPL v3</strong>
+    </a>
+    <a href="https://www.dmca.com/r/0l8wx4k" 
+       style="
+          color: #e9e9e9;
+          background: linear-gradient(138deg, rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%);
+          padding: 8px 14px;
+          border-radius: 9px;
+          font-size: 0.95em;
+          font-weight: 500;
+          text-decoration: none;
+          white-space: nowrap;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+          min-width: auto;
+       ">
+       <strong>🔨 Protected: DMCA</strong>
+    </a>
+</p>
+</div>
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
@@ -592,15 +719,15 @@ Here you can see links to everything that was used in the development of the pro
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[discord-shield]: https://img.shields.io/badge/Join%20our-discord-%23ff7f50?style=for-the-badge&logo=discord&logoColor=%23ff7f50
+[discord-shield]: https://img.shields.io/badge/Join%20our-discord-%23ff7f50?style=flat&logo=discord&logoColor=%23ff7f50
 [discord-url]: https://discord.gg/WzgsFvgTuh
-[dmca-shield]: https://www.dmca.com/Badges/dmca-badge-w150-5x1-02.png
+[dmca-shield]: https://img.shields.io/badge/protected-DMCA-blue
 [dmca-url]: https://www.dmca.com/r/0l8wx4k
-[donalerts-shield]: https://img.shields.io/badge/Support%20me-DonAlerts-%23f13a13?style=for-the-badge&logo=disqus&logoColor=%23f13a13
+[donalerts-shield]: https://img.shields.io/badge/Support%20me-DonAlerts-%23f13a13?style=flat&logo=disqus&logoColor=%23f13a13
 [donalerts-url]: https://www.donationalerts.com/r/RubyTrack
-[license-shield]: https://img.shields.io/badge/LICENSE%20-GPL-%230ff99C?style=for-the-badge
+[license-shield]: https://img.shields.io/badge/license%20-GPL-%2376b900?style=flat
 [license-url]: https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md
-[product-screenshot]: https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main.png
+[product-screenshot]: https://raw.githubusercontent.com/Erruar/Saku-Overclock/refs/heads/master/Images/main/main.png
 [Dotnet.com]: https://img.shields.io/badge/%20-Dotnet-%23512BD4?style=for-the-badge&logo=dotnet&logoColor=%23FFFFFF&link=https%3A%2F%2Fdotnet.microsoft.com%2F
 [Dotnet-url]: https://dotnet.microsoft.com/
 [Json.org]: https://img.shields.io/badge/%20-JSON-%23000000?style=for-the-badge&logo=json
