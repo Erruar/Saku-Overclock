@@ -82,25 +82,6 @@ Use the `README.md` to get started.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-# Saku Overclock: The Next Evolution
-
-Saku Overclock is actively under development with significant improvements on the horizon! While I'm carefully crafting the official release to ensure premium quality (delaying GitHub updates), the project is very much alive and progressing rapidly.
-
-**What's coming in the new version:**
-- Completely redesigned, intuitive, and visually stunning interface
-- Enhanced profile management system
-- Improved fan control capabilities
-- Better hotkey profile switching
-
-The new version features a welcoming first-launch experience with smooth animations, guided tutorials, and our innovative OC Finder© technology. This powerful analyzer will scan your system for all possible overclocking methods and create ready-made profiles tailored specifically to your hardware.
-
-**Want early access?** Join our Discord community and become a beta tester today! Experience these improvements before the official release and help shape the future of Saku Overclock.
-
-The image below showcases our improved main page and completely redesigned interface. Stay tuned - this release will be worth the wait!
-
-![Product New Screen Shot](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/image-18.png)
-
-
 ### Pictures
 <details>
   <summary>Main</summary>
