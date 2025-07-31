@@ -434,32 +434,30 @@ My program was built using Win UI 3 .NET 9.0 interface with UWP framework and is
 
 
 <!-- GETTING STARTED -->
-## Getting Started
+## ⏩ Getting Started
 
-Let's figure out how to install my app!
-To get a copy of my app and running follow these simple steps:
+Ready to unlock your laptop's true potential? Saku Overclock installs in minutes and starts delivering results immediately.
 
-### Requirements
+### Prerequisites
 
-In order for my app to work properly, you will first need to download Notebook fan controller
-[Link to download](https://github.com/hirschmann/nbfc/releases)
-If you don't want to control the coolers through my app, you can skip this step.
+**Enhanced Fan Control (Optional)**  
+For advanced cooling management, install [Notebook Fan Controller](https://github.com/hirschmann/nbfc/releases) before proceeding. This enables custom fan curves and thermal profiles.  
+*Skip this step if you prefer automatic thermal management.*
 
-### Installation
+### ⚡ Quick Installation
 
-Let's install my app! It's easier than you think
+Experience professional overclocking in three simple steps:
 
-1. Get a `.exe file` from releases: [Releases link](https://github.com/Erruar/Saku-Overclock/releases)
-2. Double-click on downloaded `.exe`
-3. Install it as usual application
-4. Open Saku Overclock link from your Desktop
-5. Welcome to overclock world!
+1. **Download** the latest release from our [releases page](https://github.com/Erruar/Saku-Overclock/releases)
+2. **Run** the installer and follow the standard Windows installation process  
+3. **Launch** Saku Overclock from your desktop and begin optimizing
 
-### If you have any troubles 
-<a href="https://github.com/Erruar/Saku-Overclock/issues/new"><strong>Seems like app isn't working for me »</strong></a>
+That's it. Your laptop is now ready for precision tuning.
 
-## Video installation (Click to open)
-[![Playback](https://i.ytimg.com/vi/RToJMa5GZ7Q/maxresdefault.jpg)](https://www.youtube.com/watch?v=RToJMa5GZ7Q)
+### 🛠️ Need Assistance?
+
+Encountering installation issues? Our community is here to help.  
+[**Report an issue →**](https://github.com/Erruar/Saku-Overclock/issues/new)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
