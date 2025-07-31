@@ -28,101 +28,30 @@
 
 <!-- TABLE OF CONTENTS -->
 <div align="center">
-<p style="
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    text-align: center;
-    max-width: 100%;
-    margin: 0 auto;
-">
-    <a href="#about-the-project" style="
-        color: #e9e9e9; 
-        background: linear-gradient(138deg,rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%); 
-        padding: 10px; 
-        border-radius: 9px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        ">
+<p>
+    <a href="#about-the-project">
       <strong>⚡ Features</strong>
     </a>
-    <a href="https://github.com/Erruar/Saku-Overclock/releases" style="
-        color: #e9e9e9; 
-        background: linear-gradient(138deg,rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%); 
-        padding: 10px; 
-        border-radius: 9px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        ">
+    <a href="https://github.com/Erruar/Saku-Overclock/releases">
       <strong>📥 Download</strong>
     </a>
-    <a href="#pictures" style="
-        color: #e9e9e9; 
-        background: linear-gradient(138deg,rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%); 
-        padding: 10px; 
-        border-radius: 9px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        ">
+    <a href="#pictures">
       <strong>🎮 Gallery</strong>
     </a>
-    <a href="https://discord.com/invite/eFcP6TSjEZ" style="
-        color: #e9e9e9; 
-        background: linear-gradient(138deg,rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%); 
-        padding: 10px; 
-        border-radius: 9px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        ">
+    <a href="https://discord.com/invite/eFcP6TSjEZ">
       <strong>💬 Community</strong>
     </a>
-    <a href="https://github.com/Erruar/Saku-Overclock/wiki/FAQ" style="
-        color: #e9e9e9; 
-        background: linear-gradient(138deg,rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%); 
-        padding: 10px; 
-        border-radius: 9px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        ">
+    <a href="https://github.com/Erruar/Saku-Overclock/wiki/FAQ">
       <strong>📖 Docs</strong>
     </a>
   </p>
 </div>
 <div align="center">
-<p style="
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-    text-align: center;
-    max-width: 100%;
-    margin: 16px auto;
-    padding: 0 10px;
-">
-    <a href="https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md" 
-       style="
-          color: #e9e9e9;
-          background: linear-gradient(138deg, rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%);
-          padding: 8px 14px;
-          border-radius: 9px;
-          font-size: 0.95em;
-          font-weight: 500;
-          text-decoration: none;
-          white-space: nowrap;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-          min-width: auto;
-       ">
-       <strong>📄 License: GPL v3</strong>
+<p>
+    <a href="https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md">
+       <strong>📄 License: GPL v3 </strong>
     </a>
-    <a href="https://www.dmca.com/r/0l8wx4k" 
-       style="
-          color: #e9e9e9;
-          background: linear-gradient(138deg, rgba(45, 45, 45, 0.54) 0%, rgba(60, 60, 60, 0.45) 100%);
-          padding: 8px 14px;
-          border-radius: 9px;
-          font-size: 0.95em;
-          font-weight: 500;
-          text-decoration: none;
-          white-space: nowrap;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-          min-width: auto;
-       ">
+    <a href="https://www.dmca.com/r/0l8wx4k">
        <strong>🔨 Protected: DMCA</strong>
     </a>
 </p>
