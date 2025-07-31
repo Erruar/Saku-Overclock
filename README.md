@@ -471,7 +471,7 @@ Encountering installation issues? Our community is here to help.
 
 
 <!-- USAGE EXAMPLES -->
-## Usage
+## 🧠 Usage
 
 Using my program is pretty simple! Go to the premaded profiles page tab and apply the desired one. 
 Or if you have a special case (for example, 0.4 GHz issue) or you want to get the most out of your laptop, then the Overclock page is for you. 
@@ -479,7 +479,7 @@ On it, you can set the values that you want, and if you don't know what to do, t
 
 If you have found the perfect settings for yourself, just click on the apply button at the bottom right, it looks like a Play Music icon. But before that, I **RECOMMEND** going to the settings page and making sure that you have enabled "Reapply latest settings every (S)", after which, applying your settings, they will be updated every time, depending on what time you set, because some laptop manufacturers add a Power Limits self-healing protocol to the BIOS so that the laptop does not burn down in case of something. 
 
-### About burning
+### 🔥 About burning
 My program **will not** cause your processor to overheat if you **avoid** the following:
 - Setting the maximum temperature **above 90 degrees**,
 - Setting **very high Power Limits** while simultaneously setting **very low Time** for fast and slow frequency increases,
@@ -495,7 +495,7 @@ My program **will not** cause your processor to overheat if you **avoid** the fo
 
 
 <!-- ROADMAP -->
-## Roadmap
+## 📈 Roadmap
 
 - [x] Add Readme
 - [x] Add back to top links
@@ -514,7 +514,7 @@ See the [open issues](https://github.com/Erruar/Saku-Overclock/issues) for a ful
 
 
 <!-- CONTRIBUTING -->
-## Contributing
+## 👋 Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
@@ -533,7 +533,7 @@ Don't forget to give the project a star! Thanks again!
 
 
 <!-- LICENSE -->
-## License
+## 📄 License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_shield)
 
 Distributed under the GPL-3.0 License. See `LICENSE.md` for more information.
@@ -554,18 +554,18 @@ This application contains elements of [Collapse Launcher](https://github.com/Col
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->
-## Contact
+## 💬 Contact
 
-**Our Discord** - [Saku Overclock Community](https://discord.com/invite/eFcP6TSjEZ) - **erruarbrorder@gmail.com**
+You can contact our community on Discord using the provided link, or you can contact me directly via email.
 
-**Project Link:** [https://github.com/Erruar/Saku-Overclock/](https://github.com/Erruar/Saku-Overclock/)
+* **Our Discord** - [Saku Overclock Community](https://discord.com/invite/eFcP6TSjEZ)
+* **erruarbrorder@gmail.com**
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
 <!-- ACKNOWLEDGMENTS -->
-## Projects used:
+## 👓 Projects used:
 
 Here you can see links to everything that was used in the development of the project:
 * [Zen States Core](https://github.com/irusanov/ZenStates-Core)
