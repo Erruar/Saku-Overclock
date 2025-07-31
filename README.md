@@ -544,21 +544,40 @@ Don't forget to give the project a star! Thanks again!
 ## 📄 License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_shield)
 
-Distributed under the GPL-3.0 License. See `LICENSE.md` for more information.
+This project is distributed under the terms of the **GPL-3.0** license. For more information, see the file [`LICENSE.md `](./LICENSE.md ).
 
-This application contains elements of [Collapse Launcher](https://github.com/CollapseLauncher/Collapse), which is licensed by [MIT license](https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE), such elements **are marked** in the code as [Collapse Launcher](https://github.com/CollapseLauncher/Collapse) and **according to MIT license** contains full **MIT license** and code fragment authors and links.
+The application also contains **individual code elements** from the [Collapse Launcher project](https://github.com/CollapseLauncher/Collapse), distributed under the [MIT license](https://github.com/CollapseLauncher/Collapse/blob/main/LICENSE).
+All borrowed code fragments are properly **marked** as belonging to Collapse Launcher, and in accordance with the terms of the MIT license contain **the full text of the license**, as well as an indication of authorship and a link to the original source.
 
+
+## 🔒 Legal & Licensing
+
+For my part, I'll mention a few important points about publishing my app on third-party resources.:
+
+### 🎭 Copyright Policy
+
+You **have the right to distribute** builds of my application on third-party resources and platforms. However:
+
+* You can copy the source code of a project only as the license GPL-v3-only allows.
+* Copying the README **in full** or without modification to your website — **is not permitted without my consent**.
+
+If you want to share the program on a third-party site, please **be sure to include me as the author** of the project in the description. Just posting a link to the application **is not enough** — I have done a lot of work to create this tool, and I count on your respect for my work.
+
+### ☀️ How do I properly place my app on my website?
+
+The most correct way is to **install the app**, test it and create **your own screenshots**. You can write a **review** with your personal opinion about the functionality, convenience or features of the work. This is much better than mindlessly copying the Readme text.
+
+So, for example, they correctly applied to [Softpedia](https://www.softpedia.com/get/Tweak/System-Tweak/Saku-Overclock.shtml#download) and [Top4Downloads](https://www.top4download.com/saku-overclock/tuykfucn.html), for which I am sincerely grateful to them.
+
+When publishing, do not forget:
+
+* **Specify me as the author of the program** (Serzhik Sakurajima / Erruar),
+* Add a link to [our Discord community](https://discord.com/invite/eFcP6TSjEZ) — this will help new users to adapt faster.
+
+Thanks for understanding. I'm trying to make this tool better, including for you.
+
+### ✅ Fossa License Status
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_large)
-
-> [!IMPORTANT]
-> ## Copyright Policy
-> 
-> You are permitted to distribute releases of my application on external platforms and servers. However, I do not permit the complete copying of the source code to any location other than forks of my application on GitHub. Similarly, the README should not be fully copied and placed elsewhere without my consent. If you choose to share my product on other sites, please ensure that I am credited as the original author in the text. Any other use that does not comply with these guidelines may require removal or further action to resolve the issue.
-
-> [!NOTE]
-> ### What is the best way to copy my app to your site?
-> Please **install** my program, it's not difficult and take some **your screenshots** of my program. Rate app work and write a review. Your feedback. Instead of copying the Readme completely, write something from yourself or rephrase it, I won't mind seeing something like this, for example, it was done on [Softpedia](https://www.softpedia.com/get/Tweak/System-Tweak/Saku-Overclock.shtml#download) and on [Top4Downloads](https://www.top4download.com/saku-overclock/tuykfucn.html). And don't forget to specify me as the author of the program! Just links to the program are not enough, you need to specify me as the author, I am trying for you alone and I hope that you understand if I wrote this, then there have already been cases. It would be great if you also provided a link to our [discord community](https://discord.gg/WzgsFvgTuh). Thanks for understanding.
-
 
 <!-- CONTACT -->
 ## 💬 Contact
