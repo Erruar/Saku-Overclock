@@ -34,7 +34,7 @@
 * Customization
 * Huge supported hardware list
 
-    <a href="#about-the-project"><strong>👉 Explore full features list</strong></a>
+    <a href="#-about-the-project"><strong>👉 Explore full features list</strong></a>
 
 ## 🖥️ Interface Preview
 Here's how Saku Overclock looks in action:
