@@ -48,7 +48,7 @@ Here's how Saku Overclock looks in action:
       <strong>📥 Download</strong>
     </a>
      ·
-    <a href="#gallery">
+    <a href="#-gallery">
       <strong>🎮 Gallery</strong>
     </a>
      ·
@@ -99,7 +99,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Gallery
+### 🎮 Gallery
 <details>
   <summary>Main</summary>
   <ol>
