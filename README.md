@@ -38,7 +38,7 @@
       <strong>📥 Download</strong>
     </a>
      ·
-    <a href="#pictures">
+    <a href="#gallery">
       <strong>🎮 Gallery</strong>
     </a>
      ·
@@ -89,7 +89,7 @@ Use the `README.md` to get started.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Pictures
+### Gallery
 <details>
   <summary>Main</summary>
   <ol>
