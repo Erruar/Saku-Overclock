@@ -563,7 +563,7 @@ You **have the right to distribute** builds of my application on third-party res
 
 If you want to share the program on a third-party site, please **be sure to include me as the author** of the project in the description. Just posting a link to the application **is not enough** — I have done a lot of work to create this tool, and I count on your respect for my work.
 
-### ☀️ How do I properly place my app on my website?
+### ☀️ How do I properly place this app on my website?
 
 The most correct way is to **install the app**, test it and create **your own screenshots**. You can write a **review** with your personal opinion about the functionality, convenience or features of the work. This is much better than mindlessly copying the Readme text.
 
