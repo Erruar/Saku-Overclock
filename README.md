@@ -421,13 +421,20 @@ Switch between optimized configurations instantly. Share your perfect settings w
   </ol>
 </details>
 
-### Built With
+<br/>
 
-My program was built using Win UI 3 .NET 9.0 interface with UWP framework and is based on C#. Application uses custom version of **RyzenAdj**, created by me only for Saku Overclock for viewing information on information page. RyzenAdj is written on C++ programming language. Also program contains **Zen States Core**, **inpoutx64**, **winring0** and **Collapse launcher** elements.
-* [![Dotnet][Dotnet.com]][Dotnet-url]
-* [![Json][Json.org]][Json-url]
-* [![Csharp][Csharp.org]][Csharp-url]
-* [![Cplusplus][Cplusplus.com]][Cplusplus-url]
+## 🔨 Built With
+
+The program was developed using the Universal Windows Platform (UWP) framework and WinUI 3 interface based on the **C# programming language**.
+
+### ❓ What other components does Saku Overclock include?
+ - **ZenStates-Core (C#)**: Provides access to all hidden overclocking options through memory addresses and system management unit (SMU). 
+ - **Ryzenadj (C++)**: Custom version to display information about device sensors.
+ - **Saku RTSS CLI (C++)**: Library that helps to change the in-game overlay to display information about your device's sensors and FPS.
+ - **NBFC (C#)**: Executable to adjust cooler curves and speeds.
+ - **Collapse Launcher elements (C#)**: Some code elements to improve UI/UX.
+ - **inpoutx64.dll (C++)**: Library to obtain access to memory.
+ - **winring0.dll (C++)**: Library for writing CPU specific MSRs.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
