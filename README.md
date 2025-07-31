@@ -27,30 +27,37 @@
  </div>
 
 <!-- TABLE OF CONTENTS -->
+<br/>
 <div align="center">
 <p>
     <a href="#about-the-project">
       <strong>⚡ Features</strong>
     </a>
+     ·
     <a href="https://github.com/Erruar/Saku-Overclock/releases">
       <strong>📥 Download</strong>
     </a>
+     ·
     <a href="#pictures">
       <strong>🎮 Gallery</strong>
     </a>
+     ·
     <a href="https://discord.com/invite/eFcP6TSjEZ">
       <strong>💬 Community</strong>
     </a>
+     ·
     <a href="https://github.com/Erruar/Saku-Overclock/wiki/FAQ">
       <strong>📖 Docs</strong>
     </a>
   </p>
 </div>
+<br/>
 <div align="center">
 <p>
     <a href="https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md">
        <strong>📄 License: GPL v3 </strong>
     </a>
+     ·
     <a href="https://www.dmca.com/r/0l8wx4k">
        <strong>🔨 Protected: DMCA</strong>
     </a>
