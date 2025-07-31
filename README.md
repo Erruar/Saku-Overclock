@@ -469,24 +469,36 @@ Encountering installation issues? Our community is here to help.
 
 
 <!-- USAGE EXAMPLES -->
-## 🧠 Usage
+## 🧠 Easy setup. Advanced features. Maximum performance.
 
-Using my program is pretty simple! Go to the premaded profiles page tab and apply the desired one. 
-Or if you have a special case (for example, 0.4 GHz issue) or you want to get the most out of your laptop, then the Overclock page is for you. 
-On it, you can set the values that you want, and if you don't know what to do, there are tips and recommendations for balance and performance
+Saku Overclock provides a user-friendly experience for users. Navigate to the “Presets management” page and choose the one that best meets your needs, whether it's reducing temperature, improving performance, or addressing specific issues such as the 0.4GHz problem on AMD Ryzen processors.
 
-If you have found the perfect settings for yourself, just click on the apply button at the bottom right, it looks like a Play Music icon. But before that, I **RECOMMEND** going to the settings page and making sure that you have enabled "Reapply latest settings every (S)", after which, applying your settings, they will be updated every time, depending on what time you set, because some laptop manufacturers add a Power Limits self-healing protocol to the BIOS so that the laptop does not burn down in case of something. 
+Wishing to extract the full potential from your laptop? Access the “Overclock” page, where you can manually adjust the desired settings. If you are unsure where to start, the software offers intelligent suggestions and guidance to help you achieve optimal settings and maximum performance.
 
-### 🔥 About burning
-My program **will not** cause your processor to overheat if you **avoid** the following:
-- Setting the maximum temperature **above 90 degrees**,
-- Setting **very high Power Limits** while simultaneously setting **very low Time** for fast and slow frequency increases,
-- Using own SMU parameters **without proper understanding**, manuals, warnings, or by accident,
-- Creating an NBFC configuration file to control the cooler speed, as this **may stop the fan**. Be cautious! Only create such configurations when the Fan Service Control Status is set to Disabled or Read Only,
-- **Increasing the frequency beyond the maximum**. I do not guarantee the safety of such actions. All potentially dangerous parameters are marked with a special icon; hover over it and **read** what changes before making any adjustments.
+After finding the ideal settings, click the “Apply” button in the **lower right corner**, which looks like a **music playback icon**. Saku Overclock will then decide how and what adjustments to make. You can experiment with parameters or contact our Discord community for assistance if needed.
 
-<a href="https://github.com/Erruar/Saku-Overclock/issues/new"><strong>Seems like app isn't working for me »</strong></a>
-<!--_For more examples, please refer to the [Documentation](https://example.com)_-->
+Some laptop manufacturers have implemented an automatic power recovery mechanism in their firmware to address factory power limitations or specific operating modes. However, Saku Overclock prevents this by automatically reverting values set in the program, without placing additional stress on the system.
+
+### 🔥 Reliability and Temperature Issues:
+
+**Saku Overclock will not cause overheating** if certain risks are avoided. These include:
+- Setting maximum temperature limits above 90 degrees Celsius.
+- Simultaneously setting excessive power limits and using short time intervals for them.
+- Creating custom NBFC configurations to control fans, especially if the fan service is set to disabled or read-only mode especially **without proper knowledge**, as this may **stop the fan** operation. Be cautious.
+- Using obscure or random SMU commands in developer mode without proper understanding or warning.
+- Increasing the frequency or voltage **beyond the acceptable processor limits** is not guaranteed to be stable and may be dangerous.
+
+⚠️ All potentially dangerous parameters are indicated by special icons. Please hover the cursor over them to read important explanations before making any changes.
+
+### 🆘 Something went wrong after applying the settings
+
+If your laptop starts to behave abnormally or you experience freezes, blue screens, or a complete shutdown after applying overclock settings, please change the settings. Saku Overclock strives to provide a safe overclocking experience, and all settings are tested on real hardware before being released. If your laptop freezes or the screen goes blank, press and hold the power button for 5-10 seconds until it turns off. Then, you can reboot your laptop normally. Overclock settings will not function after reboot if you have not enabled autorun for Saku Overclock.
+If you experience any issues with the program, please do not hesitate to contact us.
+
+### 🛠️ Something get wrong?
+
+Encountering usage issues? Our community is here to help.  
+[**Report an issue →**](https://github.com/Erruar/Saku-Overclock/issues/new)
 
 
 
