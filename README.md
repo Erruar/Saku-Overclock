@@ -436,8 +436,6 @@ The program was developed using the Universal Windows Platform (UWP) framework a
  - **inpoutx64.dll (C++)**: Library to obtain access to memory.
  - **winring0.dll (C++)**: Library for writing CPU specific MSRs.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- GETTING STARTED -->
@@ -490,7 +488,6 @@ My program **will not** cause your processor to overheat if you **avoid** the fo
 <a href="https://github.com/Erruar/Saku-Overclock/issues/new"><strong>Seems like app isn't working for me »</strong></a>
 <!--_For more examples, please refer to the [Documentation](https://example.com)_-->
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -509,7 +506,6 @@ My program **will not** cause your processor to overheat if you **avoid** the fo
 
 See the [open issues](https://github.com/Erruar/Saku-Overclock/issues) for a full list of proposed features (and known issues).
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -551,7 +547,6 @@ This application contains elements of [Collapse Launcher](https://github.com/Col
 > ### What is the best way to copy my app to your site?
 > Please **install** my program, it's not difficult and take some **your screenshots** of my program. Rate app work and write a review. Your feedback. Instead of copying the Readme completely, write something from yourself or rephrase it, I won't mind seeing something like this, for example, it was done on [Softpedia](https://www.softpedia.com/get/Tweak/System-Tweak/Saku-Overclock.shtml#download) and on [Top4Downloads](https://www.top4download.com/saku-overclock/tuykfucn.html). And don't forget to specify me as the author of the program! Just links to the program are not enough, you need to specify me as the author, I am trying for you alone and I hope that you understand if I wrote this, then there have already been cases. It would be great if you also provided a link to our [discord community](https://discord.gg/WzgsFvgTuh). Thanks for understanding.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->
 ## 💬 Contact
@@ -561,7 +556,6 @@ You can contact our community on Discord using the provided link, or you can con
 * **Our Discord** - [Saku Overclock Community](https://discord.com/invite/eFcP6TSjEZ)
 * **erruarbrorder@gmail.com**
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- ACKNOWLEDGMENTS -->
