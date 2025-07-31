@@ -26,14 +26,24 @@
   <img alt="hero" src="https://raw.githubusercontent.com/Erruar/Saku-Overclock/refs/heads/master/Images/main/Saku-hero.svg"></img>
  </div>
 
+ 
+## ⚡ Features
+* Full overclock access with suggestions
+* Real-time system monitoring
+* Preset switching
+* Customization
+* Huge supported hardware list
+
+    <a href="#about-the-project"><strong>👉 Explore full features list</strong></a>
+
+## 🖥️ Interface Preview
+Here's how Saku Overclock looks in action:
+
+[![Product Name Screen Shot][product-screenshot]](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main.png)
+
 <!-- TABLE OF CONTENTS -->
-<br/>
 <div align="center">
 <p>
-    <a href="#about-the-project">
-      <strong>⚡ Features</strong>
-    </a>
-     ·
     <a href="https://github.com/Erruar/Saku-Overclock/releases">
       <strong>📥 Download</strong>
     </a>
@@ -52,24 +62,10 @@
   </p>
 </div>
 <br/>
-<div align="center">
-<p>
-    <a href="https://github.com/Erruar/Saku-Overclock/blob/master/LICENSE.md">
-       <strong>📄 License: GPL v3 </strong>
-    </a>
-     ·
-    <a href="https://www.dmca.com/r/0l8wx4k">
-       <strong>🔨 Protected: DMCA</strong>
-    </a>
-</p>
-</div>
 
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
-
-[![Product Name Screen Shot][product-screenshot]](https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main.png)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_shield)
 
 Saku Overclock is an incredible utility for Ryzen laptop overclocking, providing precise control over various parameters to enhance your device's performance. Our program offers:
 
@@ -519,6 +515,7 @@ Don't forget to give the project a star! Thanks again!
 
 <!-- LICENSE -->
 ## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FErruar%2FSaku-Overclock?ref=badge_shield)
 
 Distributed under the GPL-3.0 License. See `LICENSE.md` for more information.
 
