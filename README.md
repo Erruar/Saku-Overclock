@@ -96,6 +96,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
 - **Resource Efficient**: Maximum performance with minimal system overhead
 
 *Transform your laptop's potential. Experience the difference that precision tuning makes.*
+**This product is only for laptops with AMD processor*
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
