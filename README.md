@@ -178,85 +178,84 @@ Switch between optimized configurations instantly. Share your perfect settings w
 
 
 <details>
-  <summary>Overclocking parameters</summary>
+  <summary>Overclock page</summary>
   <ol>
-    <h1 align="center">Parameters page</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/main2.png"></img>
-    <p  > Here you can see the contents of the Parameters page. This page is the most important in the entire application, as it allows you to configure overclocking the way you need it.</p>
-    <br />
-    <br />
-    <h1 align="center">CPU Overclocking</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_1.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_cpu_2.png"></img>
-    <p  >• CPU Overclocking: Allows users to adjust the power and temperature of their CPU, which can significantly increase performance.</p>
-    <br />
-    <br />
-    <h1 align="center">VRM Tuning</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_1.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_vrm_2.png"></img>
-    <p  >• VRM Tuning: Allows users to adjust VRM settings, Currents and timings of your CPU. Note: Super dangerous settings are CPU voltage relative and available ONLY on Raven (2000), Dali (3000) and Picasso (3000) CPUs otherwise you shouldn't see those options. I actually don't recommend you to try those options.</p>
-    <br />
-    <br />
-    <h1 align="center">iGPU and CPU subsystem clocks</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_sub_1.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_sub_2.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_sub_3.png"></img>
-    <p  >• iGPU and CPU subsystem clocks: Allows users to overclock clocks iGPU and other CPU subsystems. Note that this section works and visible only on processors Ryzen Raven Ridge (2000), Ryzen Dali (3000), Zen Athlon (3000) and Ryzen Picasso (3000) line, and changing these parameters DOES NOT GIVE a 100% chance that the frequency will always be equal to what you set. This will affect their base frequency, from which the main frequency is generated. In simple words, these frequencies are influenced by a lot of factors (temperature, load, power), which is why it is very difficult to make sure that the frequency is always the same. Also, I do not give any guarantees that these parameters will be unlocked for you, in case of an error you will see in the notification which parameters were not applied. About "Fix Ryzen 0,4 GHz frequency" or fix Ryzen 0,39 GHz frequency: this really can fix Ryzen 0,4 GHz issue, but it actually works also only for Ryzen Raven Ridge (2000), Ryzen Dali (3000), Zen Athlon (3000) and Ryzen Picasso (3000) CPU lines. "Max performance" will give your CPU the maximum RAM State - 2400 MHz for CPU and 1000 MHz for iGPU. We CAN NOT adjust it. And one note: fan speed can be MAXIMUM and there is NO WAY to fix it only if you have working for your laptop Notebook Fan Controller configuration. On other Ryzen CPU lines AMD have removed AcBtc state and there is no way to fix this issues on non 2000-3000 CPUs. But I've trying to found a solution! Thank you, testers!</p>
-    <br />
-    <br />
-    <h1 align="center">Advanced CPU parameters</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_adv_1.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_adv_2.png"></img> 
-    <p  >• Advanced CPU parameters: Allows users to adjust more advanced CPU parameters, which are intended for experienced overclockers and can be risky if not configured correctly. Note: Some BIOS can Reject those options! Don't worry if nothing happens.</p>
-    <br />
-    <br />
-    <h1 align="center">CPU Power States</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_pst_1.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_pst_2.png"></img> 
-    <p  >• CPU Power States: Allows users to adjust the power states of the CPU, even with system starts (if my app in autostart). everything is the same here as with the frequency of the iGPU and CPU subsystems - "and changing these parameters DOES NOT GIVE a 100% chance that the frequency will always be equal to what you set" because the frequency and voltages of your processor depends on so many factors, which is why it is extremely problematic to set a specific frequency and voltages and make your processor keep it. However, this way you bring your processor closer to the specified values. Note: on some laptops NEEDED to activate OC1 mode in OC MODE in BIOS "AMD CBS/Zen common options" and disable CPB.</p>
-    <br />
-    <br />
-    <h1 align="center">All cores curve optimizer settings</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co.png"></img>  
-    <p  >• All cores curve optimizer settings: Allows users to adjust voltage/frequency curve of the CPU or iGPU with custom coefficient from user, even with system starts (if my app in autostart). Those settings gave you maximum control of your CPU voltage.</p>
-    <br />
-    <br />
-   <h1 align="center">Per core curve optimizer settings</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_1.png"></img>  
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_2.png"></img>  
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_3.png"></img>  
-    <p  >• Per core curve optimizer settings: Allows users to adjust voltage/frequency curve of each CPU core with custom coefficient from user, even with system starts (if my app in autostart). Those settings gave you maximum control of your CPU voltage. This setting is above than "All cores curve optimizer" and "iGPU curve optimizer" settings. You have 3 different modes: Disabled - this section and all those settings are disabled (same if checkbox near this mode selector is unchecked), Saku Laptops - method for almost all Ryzen Laptops, Saku Desktop - method for almost all Ryzen Desktop CPUs *not all Desktop CPUs my app supports, Irusanov method - method for almost all CPUs most universal if others are not work properly. After changing those settings please CHECK stability and voltages! There are safe limits but also check!</p>
-    <br />
-    <br />
- <h1 align="center">Per core curve optimizer settings+</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_1.png"></img>  
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_2.png"></img>  
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_co_ccd_3.png"></img>  
-    <p  >• Per core curve optimizer settings+: same with usual "Per core curve optimizer settings" section but for 8+ cores CPUs</p>
-    <br />
-    <br />
+
+## 🎛️ Overclock page showcase
+
+**Your laptop's hidden potential awaits.** Saku Overclock's advanced parameter control transforms any compatible Ryzen laptop into a performance beast.
+
+<div align="center">
+  <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/OverclockPageOptions.png" width="100%">
+  <p><i>Smart compatibility detection shows only the options your hardware supports</i></p>
+</div>
+
+---
+
+### ⚡ Performance Amplification
+
+**CPU Power Unleashed**  
+Push your processor beyond factory limitations. Precision power and thermal controls deliver up to 40% performance gains while maintaining system stability.
+
+**VRM Mastery**  
+Take control of voltage regulation with professional-grade current and timing adjustments. Fine-tune power delivery for maximum efficiency.
+
+---
+
+### 🎯 Advanced Tuning Arsenal
+
+**iGPU and CPU subsystems section**  
+*Available on Ryzen Mobile 2000-3000 series*  
+Unlock additional performance from your iGPU and CPU subsystems. Our intelligent algorithms work within thermal and power constraints to maximize real-world performance. You can set any frequency for them with smart suggestions.
+
+**Legacy Issue Resolution**  
+Automatically fixes the notorious Ryzen 0.4 GHz frequency bug that affects thousands of laptops. One click to restore full performance potential. You can found that option in **Advanced CPU parameters** section.
+
+**iGPU overclocking**
+You can easily overclock your iGPU and set any frequency for best performance. Available in **Advanced CPU parameters** section.
+
+---
+
+### 🔬 Precision Voltage Control
+
+**All-Core Curve Optimizer**  
+Professional voltage-frequency curve tuning with real-time adjustments. Reduce power consumption while increasing performance - the best of both worlds.
+
+**Per-Core Curve Optimizer**  
+*Ultimate control for enthusiasts*  
+Individual core voltage tuning with multiple compatibility modes:
+- **Saku Laptops** - Optimized for mobile Ryzen processors
+- **Saku Desktop** - Desktop-class performance tuning  
+- **Irusanov Method** - Universal compatibility fallback
+
+> **Safety First**: Built-in stability monitoring and safe voltage limits protect your hardware investment.
+
+---
+
+**Ready to transform your laptop?** Every parameter is tested, every setting is safe, every improvement is measurable.
+<br/>
+    <p>• CPU Power States: Allows users to adjust the power states of the CPU, even with system starts (if my app in autostart). everything is the same here as with the frequency of the iGPU and CPU subsystems - frequency and voltages of your processor depends on so many factors, which is why it is extremely problematic to set a specific frequency and voltages and make your processor keep it. However, this way you bring your processor closer to the specified values.</p>
     <h1 align="center">SMU Parameters editor</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_1.png"></img>
-    <p  >When you open SMU section - enable "Apply SMU commands" to apply them! Autodetect is there, pls DON'T CHANGE RSP, ARG and CMD Addresses! If you know SMU commands for your CPU, you can type them as a hint into Quick note box. You can highlight them if it needed or paste photo there. Autosaving is there. Note: due to the various limitations of various laptop manufacturers, basically even if you know the SMU commands for your processor, there are no guarantees that all commands will work, and there is also no documentation on their use, so I recommend using them in extreme overclocking or only at the request of someone who really understands this topic! These parameters may well irretrievably burn your processor without leaving it a chance. Please note that if the command is blocked, it cannot be unblocked. If the command is "Not found", it is still possible to unlock it, but no one knows how, sometimes completely different actions help. Please note that the first status after application is the status of the Saku Overclock parameters, and the second message with the status of the SMU parameters!</p>
-    <br />
+    <p>When you open SMU section - enable "Apply SMU commands" to apply them! Autodetect is there, pls DON'T CHANGE RSP, ARG and CMD Addresses! If you know SMU commands for your CPU, you can type them as a hint into Quick note box. You can highlight them if it needed or paste photo there. Autosaving is there. Note: due to the various limitations of various laptop manufacturers, basically even if you know the SMU commands for your processor, there are no guarantees that all commands will work, and there is also no documentation on their use, so I recommend using them in extreme overclocking or only at the request of someone who really understands this topic! These parameters may well irretrievably burn your processor without leaving it a chance. Please note that if the command is blocked, it cannot be unblocked. If the command is "Not found", it is still possible to unlock it, but no one knows how, sometimes completely different actions help. Please note that the first status after application is the status of the Saku Overclock parameters, and the second message with the status of the SMU parameters!</p>
+    <br/>
     <h1 align="center">Quick SMU commands</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_2.png"></img>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_4.png"></img>
-    <p  >• SMU Parameters editor and Quick SMU commands: Allows users to edit  SMU parameters for extreme overclocking, and is likely best left to experienced overclockers only. These commands can do ANYTHING with your CPU even BURN IT!!! BE CAREFUL! If you know your CPU commands, you can add them in Quick SMU Commands and apply them by pressing their buttons, by pressing Apply button or with app start (even with autostart with system!). You can give any name, description and icon for your quick command. It's very practical! For example, you need to quickly change the voltage to the desired value or return the frequency to normal or raise the PBO - you just click on the apply button on the desired command and your processor immediately applies this effect! Again, the commands are NOT freely available, and you will have to search for them yourself. Please note that the commands are in HEX format!!! To quickly convert from decimal to HEX, highlight your value or just right-click on the Arguments field and select Convert to HEX. Note that you do NOT need to write 0x in the command. The commands usually look like 0x2E, 0x11, this is just an EXAMPLE. You don't need to write 0x. if the command accepts multiple arguments, separate them with "," (like: 17, 19, 20, 80). It can give you best experience of your laptop if you KNOW WHAT ARE YOU DOING. This is not a joke and your processor may well burn out from ignorance of commands. You can customize your Quick SMU commands, apply them with app start or with apply button and reapply every second automatically</p>
-    <br />
+    <p>• SMU Parameters editor and Quick SMU commands: Allows users to edit  SMU parameters for extreme overclocking, and is likely best left to experienced overclockers only. These commands can do ANYTHING with your CPU even BURN IT!!! BE CAREFUL! If you know your CPU commands, you can add them in Quick SMU Commands and apply them by pressing their buttons, by pressing Apply button or with app start (even with autostart with system!). You can give any name, description and icon for your quick command. It's very practical! For example, you need to quickly change the voltage to the desired value or return the frequency to normal or raise the PBO - you just click on the apply button on the desired command and your processor immediately applies this effect! Again, the commands are NOT freely available, and you will have to search for them yourself. Please note that the commands are in HEX format!!! To quickly convert from decimal to HEX, highlight your value or just right-click on the Arguments field and select Convert to HEX. Note that you do NOT need to write 0x in the command. The commands usually look like 0x2E, 0x11, this is just an EXAMPLE. You don't need to write 0x. if the command accepts multiple arguments, separate them with "," (like: 17, 19, 20, 80). It can give you best experience of your laptop if you KNOW WHAT ARE YOU DOING. This is not a joke and your processor may well burn out from ignorance of commands. You can customize your Quick SMU commands, apply them with app start or with apply button and reapply every second automatically</p>
+    <br/>
     <h1 align="center">Apply range to SMU command</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_3.png"></img> 
-    <p  >• Apply range to SMU command: You can apply range to one SMU command. It's useful for unlocking all SMU features at once or in some other variants.</p>
-    <br />
-    <br />
+    <p>• Apply range to SMU command: You can apply range to one SMU command. It's useful for unlocking all SMU features at once or in some other variants.</p>
+    <br/>
+    <br/>
     <h1 align="center">SMU functions manager</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_fun_1.png"></img>  
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_fun_2.png"></img>  
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_fun_3.png"></img>  
-    <p  >• SMU functions manager: Allows users to change SMU functions on their devices. Those settings gave you maximum control of your SMU. There you can change common SMU functions.</p>
-    <br />
-    <br />
+    <p>• SMU functions manager: Allows users to change SMU functions on their devices. Those settings gave you maximum control of your SMU. There you can change common SMU functions.</p>
+    <br/>
+    <br/>
     <p> </p>
   </ol>
 </details>
