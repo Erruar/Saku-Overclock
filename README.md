@@ -134,9 +134,12 @@ Switch between optimized configurations instantly. Share your perfect settings w
     <br />
     <br />
     <h1 align="center">Profile Switcher</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-profiles.png"></img> 
+    <div align="center">
+      <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-profiles.gif" width="100%">
+      <p><i>*Animation will be smoother on your device</i></p>
+    </div>
     <p> </p>
-    <p  >let's say you are on the information page and want to switch the profile to see the difference in performance, but that's the problem! this can only be done on the page with your profiles. This is exactly what the quick profile switch was created for! Switch your settings comfortably or use the preset ones</p>
+    <p  >If you want to switch the profile to see the difference in performance, but that's the problem! This is exactly what the quick profile switch was created for! Switch your settings comfortably or use the preset ones with <strong>CTRL + ALT + W</strong> for custom profiles and <strong>CTRL + ALT + W</strong> for premade profiles.</p>
   </ol>
 </details>
 
