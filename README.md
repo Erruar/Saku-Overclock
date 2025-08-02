@@ -227,6 +227,7 @@ Individual core voltage tuning with multiple compatibility modes:
 - **Saku Laptops** - Optimized for mobile Ryzen processors
 - **Saku Desktop** - Desktop-class performance tuning  
 - **Irusanov Method** - Universal compatibility fallback
+<br/>
 
 > **Safety First**: Built-in stability monitoring and safe voltage limits protect your hardware investment.
 
@@ -234,27 +235,63 @@ Individual core voltage tuning with multiple compatibility modes:
 
 **Ready to transform your laptop?** Every parameter is tested, every setting is safe, every improvement is measurable.
 <br/>
-    <p>• CPU Power States: Allows users to adjust the power states of the CPU, even with system starts (if my app in autostart). everything is the same here as with the frequency of the iGPU and CPU subsystems - frequency and voltages of your processor depends on so many factors, which is why it is extremely problematic to set a specific frequency and voltages and make your processor keep it. However, this way you bring your processor closer to the specified values.</p>
-    <h1 align="center">SMU Parameters editor</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_1.png"></img>
-    <p>When you open SMU section - enable "Apply SMU commands" to apply them! Autodetect is there, pls DON'T CHANGE RSP, ARG and CMD Addresses! If you know SMU commands for your CPU, you can type them as a hint into Quick note box. You can highlight them if it needed or paste photo there. Autosaving is there. Note: due to the various limitations of various laptop manufacturers, basically even if you know the SMU commands for your processor, there are no guarantees that all commands will work, and there is also no documentation on their use, so I recommend using them in extreme overclocking or only at the request of someone who really understands this topic! These parameters may well irretrievably burn your processor without leaving it a chance. Please note that if the command is blocked, it cannot be unblocked. If the command is "Not found", it is still possible to unlock it, but no one knows how, sometimes completely different actions help. Please note that the first status after application is the status of the Saku Overclock parameters, and the second message with the status of the SMU parameters!</p>
-    <br/>
-    <h1 align="center">Quick SMU commands</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_2.png"></img>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_4.png"></img>
-    <p>• SMU Parameters editor and Quick SMU commands: Allows users to edit  SMU parameters for extreme overclocking, and is likely best left to experienced overclockers only. These commands can do ANYTHING with your CPU even BURN IT!!! BE CAREFUL! If you know your CPU commands, you can add them in Quick SMU Commands and apply them by pressing their buttons, by pressing Apply button or with app start (even with autostart with system!). You can give any name, description and icon for your quick command. It's very practical! For example, you need to quickly change the voltage to the desired value or return the frequency to normal or raise the PBO - you just click on the apply button on the desired command and your processor immediately applies this effect! Again, the commands are NOT freely available, and you will have to search for them yourself. Please note that the commands are in HEX format!!! To quickly convert from decimal to HEX, highlight your value or just right-click on the Arguments field and select Convert to HEX. Note that you do NOT need to write 0x in the command. The commands usually look like 0x2E, 0x11, this is just an EXAMPLE. You don't need to write 0x. if the command accepts multiple arguments, separate them with "," (like: 17, 19, 20, 80). It can give you best experience of your laptop if you KNOW WHAT ARE YOU DOING. This is not a joke and your processor may well burn out from ignorance of commands. You can customize your Quick SMU commands, apply them with app start or with apply button and reapply every second automatically</p>
-    <br/>
-    <h1 align="center">Apply range to SMU command</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_smu_3.png"></img> 
-    <p>• Apply range to SMU command: You can apply range to one SMU command. It's useful for unlocking all SMU features at once or in some other variants.</p>
-    <br/>
-    <br/>
-    <h1 align="center">SMU functions manager</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_fun_1.png"></img>  
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_fun_2.png"></img>  
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/params_fun_3.png"></img>  
-    <p>• SMU functions manager: Allows users to change SMU functions on their devices. Those settings gave you maximum control of your SMU. There you can change common SMU functions.</p>
-    <br/>
+## 😎 Overclock page: Developer options
+<div align="center">
+  <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/OverclockPageDeveloperOptions.png" width="100%">
+  <p><i>Smart compatibility detection shows only the options your hardware supports</i></p>
+</div>
+
+## 🔬 Expert-Level Controls
+
+*These advanced features are designed for experienced overclockers and developers who understand the risks involved.*
+
+---
+
+### ⚙️ CPU Power States Management
+
+**Dynamic Performance Scaling**  
+Fine-tune your processor's power states for optimal performance across different workloads. While hardware limitations prevent absolute frequency control, these settings guide your CPU toward your desired performance targets.
+
+> *Ideal for users who want granular control over performance scaling behavior*
+
+---
+
+### ⚠️ SMU Command Interface
+
+<div align="center">
+  <p><strong>🚨 EXPERT MODE ONLY</strong> - Requires advanced knowledge of AMD SMU architecture</p>
+</div>
+
+**Direct Hardware Communication**  
+Access AMD's System Management Unit for unprecedented control over your processor's behavior. This professional-grade interface allows custom command execution for extreme overclocking scenarios.
+
+**Smart Command Management**  
+- **Auto-detection** of compatible SMU addresses
+- **Quick Commands** - Save and execute custom command sequences  
+- **Batch Operations** - Apply command ranges for comprehensive unlocking
+- **Real-time Status** - Monitor command execution success
+<br/>
+
+**Built-in Safety Features:**
+- Automatic format conversion (DEC ↔ HEX)
+- Command validation and status reporting
+- Persistent command storage with custom naming
+
+---
+
+### 🛡️ Important Safety Notice
+
+> **⚠️ CRITICAL WARNING**  
+> SMU commands provide direct hardware access and can permanently damage your processor if used incorrectly. These features are intended for:
+> - Experienced overclockers with SMU knowledge
+> - Hardware developers and researchers  
+> - Users following specific expert guidance
+> 
+> **We strongly recommend using standard overclocking options unless you have extensive experience with AMD SMU protocols.**
+
+---
+
+**Ready for expert-level control?** These tools unlock the deepest levels of hardware customization available on any AMD processors.
     <br/>
     <p> </p>
   </ol>
