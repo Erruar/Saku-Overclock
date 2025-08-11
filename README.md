@@ -186,6 +186,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
 **Your laptop's hidden potential awaits.** Saku Overclock's advanced parameter control transforms any compatible Ryzen laptop into a performance beast.
 
 <div align="center">
+  <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/OverclockPageShowcase.png" width="100%">
   <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/OverclockPageOptions.png" width="100%">
   <p><i>Smart compatibility detection shows only the options your hardware supports</i></p>
 </div>
