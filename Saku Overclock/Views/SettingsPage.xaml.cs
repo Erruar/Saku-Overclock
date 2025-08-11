@@ -59,7 +59,7 @@ public sealed partial class SettingsPage
         ViewModel = App.GetService<SettingsViewModel>();
         InitializeComponent();
         InitVal();
-        Loaded += LoadedApp; //Приложение загружено - разрешить 
+        Loaded += LoadedApp; // Приложение загружено - разрешить изменения UI
     }
 
     #region JSON and Initialization
@@ -160,7 +160,7 @@ public sealed partial class SettingsPage
             catch
             {
                 AppSettings.ThemeType = 0;
-            } //Нельзя делить на ноль
+            } // Нельзя делить на ноль
 
             AppSettings.SaveSettings();
         }
@@ -318,276 +318,6 @@ public sealed partial class SettingsPage
             }
         }
     }
-    /*private void LoadAndFormatAdvancedCodeEditor()
-    {
-        // Загрузка строки из файла или иного источника
-        string advancedCode = rtssset.AdvancedCodeEditor;
-
-        // Переменная для хранения текущего цвета и размера
-        Windows.UI.Color currentColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
-        bool isSubscript = false;
-        bool isSuperscript = false;
-
-        // Очищаем текущее содержимое RichEditBox
-        RTSS_AdvancedCodeEditor_EditBox.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, "");
-
-        int currentIndex = 0;
-        while (currentIndex < advancedCode.Length)
-        {
-            // Ищем следующие управляющие символы
-            int nextIndex = advancedCode.IndexOfAny(new char[] { '<', '%', '$', '\\', '\n' }, currentIndex);
-
-            if (nextIndex == -1)
-            {
-                // Добавляем оставшуюся строку
-                AddFormattedText(advancedCode.Substring(currentIndex), currentColor, isSuperscript, isSubscript);
-                break;
-            }
-
-            // Добавляем текст перед управляющим символом
-            if (nextIndex > currentIndex)
-            {
-                AddFormattedText(advancedCode.Substring(currentIndex, nextIndex - currentIndex), currentColor, isSuperscript, isSubscript);
-                currentIndex = nextIndex;
-            }
-
-            // Обработка управляющих символов
-            if (advancedCode[nextIndex] == '<')
-            {
-                // Обрабатываем теги <C> и <S>
-                if (advancedCode[nextIndex + 1] == 'C')
-                {
-                    // Изменение цвета
-                    int closeIndex = advancedCode.IndexOf('>', nextIndex);
-                    if (closeIndex != -1)
-                    {
-                        string colorCode = advancedCode.Substring(nextIndex + 3, closeIndex - nextIndex - 3);
-                        currentColor = ParseColor(colorCode);
-                        currentIndex = closeIndex + 1;
-                    }
-                }
-                else if (advancedCode[nextIndex + 1] == 'S')
-                {
-                    // Обработка изменения размера текста
-                    int closeIndex = advancedCode.IndexOf('>', nextIndex);
-                    if (closeIndex != -1)
-                    {
-                        string sizeCode = advancedCode.Substring(nextIndex + 2, closeIndex - nextIndex - 2);
-                        int sizeValue = int.Parse(sizeCode);
-
-                        if (sizeValue > 0)
-                        {
-                            isSuperscript = true;
-                            isSubscript = false;
-                        }
-                        else
-                        {
-                            isSuperscript = false;
-                            isSubscript = true;
-                        }
-                        currentIndex = closeIndex + 1;
-                    }
-                }
-            }
-            else if (advancedCode[nextIndex] == '%')
-            {
-                // Обработка элементов с %...%
-                int endIndex = advancedCode.IndexOf('%', nextIndex + 1);
-                if (endIndex != -1)
-                {
-                    string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
-                    AddFormattedText(element, Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
-                    currentIndex = endIndex + 1;
-                }
-                else
-                {
-                    AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
-                    break;
-                }
-            }
-            else if (advancedCode[nextIndex] == '$')
-            {
-                // Обработка элементов с $...$
-                int endIndex = advancedCode.IndexOf('$', nextIndex + 1);
-                if (endIndex != -1)
-                {
-                    string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
-                    AddFormattedText(element, Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
-                    currentIndex = endIndex + 1;
-                }
-                else
-                {
-                    AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
-                    break;
-                }
-            }
-            else if (advancedCode[nextIndex] == '\\')
-            {
-                // Обработка перехода на новую строку
-                if (advancedCode[nextIndex + 1] == 'n')
-                {
-                    RTSS_AdvancedCodeEditor_EditBox.Document.Selection.TypeText("\n");
-                    currentIndex = nextIndex + 2;
-                }
-            }
-            else if (advancedCode[nextIndex] == '\n')
-            {
-                // Обработка символа новой строки
-                RTSS_AdvancedCodeEditor_EditBox.Document.Selection.TypeText("\n");
-                currentIndex++;
-            }
-        }
-    }*/
-    /*    private void LoadAndFormatAdvancedCodeEditor()
-        {
-            // Загрузка строки из файла или иного источника
-            string advancedCode = rtssset.AdvancedCodeEditor;
-
-            // Переменная для хранения текущего цвета и размера
-            Windows.UI.Color currentColor = Windows.UI.Color.FromArgb(255,255,255,255);
-            bool isSubscript = false;
-            bool isSuperscript = false;
-
-            // Очищаем текущее содержимое RichEditBox
-            RTSS_AdvancedCodeEditor_EditBox.Document.SetText(Microsoft.UI.Text.TextSetOptions.None, "");
-
-            int currentIndex = 0;
-            while (currentIndex < advancedCode.Length)
-            {
-                // Ищем следующие управляющие символы
-                int nextIndex = advancedCode.IndexOfAny(new char[] { '<', '%', '$', '\\', '\n' }, currentIndex);
-
-                if (nextIndex == -1)
-                {
-                    // Добавляем оставшуюся строку
-                    AddFormattedText(advancedCode.Substring(currentIndex), currentColor, isSuperscript, isSubscript);
-                    break;
-                }
-
-                // Добавляем текст перед управляющим символом
-                if (nextIndex > currentIndex)
-                {
-                    AddFormattedText(advancedCode.Substring(currentIndex, nextIndex - currentIndex), currentColor, isSuperscript, isSubscript);
-                    currentIndex = nextIndex;
-                }
-
-                // Обработка управляющих символов
-                if (advancedCode[nextIndex] == '<')
-                {
-                    // Обрабатываем теги <C> и <S>
-                    if (advancedCode[nextIndex + 1] == 'C')
-                    {
-                        // Изменение цвета
-                        int closeIndex = advancedCode.IndexOf('>', nextIndex);
-                        if (closeIndex != -1)
-                        {
-                            string colorCode = advancedCode.Substring(nextIndex + 3, closeIndex - nextIndex - 3);
-                            currentColor = ParseColor(colorCode);
-                            currentIndex = closeIndex + 1;
-                        }
-                    }
-                    else if (advancedCode[nextIndex + 1] == 'S')
-                    {
-                        // Обработка изменения размера текста
-                        int closeIndex = advancedCode.IndexOf('>', nextIndex);
-                        if (closeIndex != -1 && advancedCode[nextIndex + 2] == '=')
-                        {
-                            string sizeCode = advancedCode.Substring(nextIndex + 3, closeIndex - nextIndex - 3);
-                            if (int.TryParse(sizeCode, out int sizeValue))
-                            {
-                                if (sizeValue > 0)
-                                {
-                                    isSuperscript = true;
-                                    isSubscript = false;
-                                }
-                                else
-                                {
-                                    isSuperscript = false;
-                                    isSubscript = true;
-                                }
-                            }
-                            currentIndex = closeIndex + 1;
-                        }
-                    }
-                }
-                else if (advancedCode[nextIndex] == '%')
-                {
-                    // Обработка элементов с %...%
-                    int endIndex = advancedCode.IndexOf('%', nextIndex + 1);
-                    if (endIndex != -1)
-                    {
-                        string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
-                        AddFormattedText(element, Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
-                        currentIndex = endIndex + 1;
-                    }
-                    else
-                    {
-                        AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 255, 127, 80), isSuperscript, isSubscript);
-                        break;
-                    }
-                }
-                else if (advancedCode[nextIndex] == '$')
-                {
-                    // Обработка элементов с $...$
-                    int endIndex = advancedCode.IndexOf('$', nextIndex + 1);
-                    if (endIndex != -1)
-                    {
-                        string element = advancedCode.Substring(nextIndex, endIndex - nextIndex + 1);
-                        AddFormattedText(element, Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
-                        currentIndex = endIndex + 1;
-                    }
-                    else
-                    {
-                        AddFormattedText(advancedCode.Substring(nextIndex), Windows.UI.Color.FromArgb(255, 67, 182, 86), isSuperscript, isSubscript);
-                        break;
-                    }
-                }
-                else if (advancedCode[nextIndex] == '\\')
-                {
-                    // Обработка перехода на новую строку
-                    if (advancedCode[nextIndex + 1] == 'n')
-                    {
-                        RTSS_AdvancedCodeEditor_EditBox.Document.Selection.TypeText("\n");
-                        currentIndex = nextIndex + 2;
-                    }
-                }
-                else if (advancedCode[nextIndex] == '\n')
-                {
-                    // Обработка символа новой строки
-                    RTSS_AdvancedCodeEditor_EditBox.Document.Selection.TypeText("\n");
-                    currentIndex++;
-                }
-            }
-        }
-
-        private void AddFormattedText(string text, Windows.UI.Color color, bool isSuperscript, bool isSubscript)
-        {
-            var document = RTSS_AdvancedCodeEditor_EditBox.Document;
-            var selection = document.Selection;
-
-            selection.TypeText(text);
-            selection.CharacterFormat.ForegroundColor = color;
-
-            if (isSuperscript)
-            {
-                selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.Off;
-                selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.On;
-                selection.CharacterFormat.Size *= 0.5f;
-            }
-            else if (isSubscript)
-            {
-                selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.Off;
-                selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.On;
-                selection.CharacterFormat.Size *= 0.5f;
-            }
-            else
-            {
-                selection.CharacterFormat.Subscript = Microsoft.UI.Text.FormatEffect.Off;
-                selection.CharacterFormat.Superscript = Microsoft.UI.Text.FormatEffect.Off;
-            }
-        }
-
-         */
 
     private static Color ParseColor(string hex)
     {
@@ -624,9 +354,9 @@ public sealed partial class SettingsPage
                 GetFolderPath(SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json",
                 JsonConvert.SerializeObject(_niicons, Formatting.Indented));
         }
-        catch
+        catch (Exception ex)
         {
-            //
+            LogHelper.LogError(ex.ToString());
         }
     }
 
@@ -641,21 +371,6 @@ public sealed partial class SettingsPage
         {
             _niicons = new NiIconsSettings();
             NiSave();
-        }
-    }
-    private static void ProfileSave()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.Combine(GetFolderPath(SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                GetFolderPath(SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                JsonConvert.SerializeObject(_profile, Formatting.Indented));
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex.ToString());
         }
     }
 
@@ -803,9 +518,9 @@ public sealed partial class SettingsPage
             AppSettings.ReapplyOverclockTimer = nudAutoReapply.Value;
             AppSettings.SaveSettings();
         }
-        catch
+        catch (Exception ex)
         {
-            //
+            await LogHelper.LogError(ex.ToString());
         }
     }
 
@@ -823,9 +538,9 @@ public sealed partial class SettingsPage
             SendSmuCommand.GetSetSafeReapply(ReapplySafe.IsOn);
             AppSettings.SaveSettings();
         }
-        catch
+        catch (Exception ex)
         {
-            //
+            await LogHelper.LogError(ex.ToString());
         }
     }
 
@@ -1069,7 +784,7 @@ public sealed partial class SettingsPage
                     }
                 }
             };
-            //Открыть диалог с изменением 
+            // Открыть диалог с изменением 
             var bgDialog = new ContentDialog
             {
                 Title = "ThemeBgDialog".GetLocalized(),
@@ -1113,10 +828,6 @@ public sealed partial class SettingsPage
                 // Вызываем диалог выбора файла
                 if (OpenFileDialog.GetOpenFileNameApi(ofn))
                 {
-                    /*Console.WriteLine("Selected file with full path: {0}", ofn.file);
-                    Console.WriteLine("Selected file name: {0}", ofn.fileTitle);
-                    Console.WriteLine("Offset from file name: {0}", ofn.fileOffset);
-                    Console.WriteLine("Offset from file extension: {0}", ofn.fileExtension);*/
                     // Удаляем завершающие нулевые символы и получаем путь к выбранному файлу
                     var selectedFile = ofn.file.TrimEnd('\0');
                     fromFilePickedFile.Text = "ThemePickedFile".GetLocalized() + selectedFile;
@@ -1127,52 +838,7 @@ public sealed partial class SettingsPage
                     // Если диалог не открылся, можно получить код ошибки для диагностики:
                     var error = Marshal.GetLastWin32Error();
                     fromFilePickedFile.Text = "ThemeOpCancel".GetLocalized() + " (Error: " + error + ")";
-                }
-
-                /* // Создаём FileOpenPicker 
-                 var filePicker = new FileOpenPicker
-                 {
-                     SuggestedStartLocation = PickerLocationId.PicturesLibrary,
-                     ViewMode = PickerViewMode.List 
-                 };
-                 //var hwnd = WindowNative.GetWindowHandle(App.MainWindow); // App.MainWindow — Главный Window
-                 //var hwnd = ActivationInvokeHandler.FindMainWindowHWND(null, "Saku Overclock");
-                 //InitializeWithWindow.Initialize(filePicker, App.Hwnd);
-                 //filePicker.SetOwnerWindow(App.MainWindow);
-                 // Устанавливаем фильтры для поддерживаемых форматов
-                 Windows.Storage.Pickers.WindowsStoragePickersExtensions.SetOwnerWindow(filePicker, App.MainWindow);
-                 filePicker.FileTypeFilter.Add(".gif");
-                 filePicker.FileTypeFilter.Add(".png");
-                 filePicker.FileTypeFilter.Add(".jpg");
-                 filePicker.FileTypeFilter.Add(".jpeg");
-                 filePicker.FileTypeFilter.Add(".bmp");
-                 filePicker.ViewMode = PickerViewMode.Thumbnail;
-
-                 // Открываем диалог выбора файла 
-                 var file = await filePicker.PickSingleFileAsync();
-                 if (file != null)
-                 {
-                     // Проверяем, является ли файл поддерживаемым изображением
-                     fromFilePickedFile.Text = "ThemePickedFile".GetLocalized() + file.Path;
-                     endStringPath = file.Path;
-                 }
-                 else
-                 {
-                     fromFilePickedFile.Text = "ThemeOpCancel".GetLocalized();
-                 }
-
-                 // Переключение видимости элементов
-                 if (fromFilePickedFile.Visibility == Visibility.Collapsed)
-                 {
-                     fromFileWhy.Visibility = Visibility.Collapsed;
-                     fromFilePickedFile.Visibility = Visibility.Visible;
-                 }
-                 else
-                 {
-                     fromFileWhy.Visibility = Visibility.Visible;
-                     fromFilePickedFile.Visibility = Visibility.Collapsed;
-                 }*/
-
+                }  
             };
 
             fromLink.Click += (_, _) =>
@@ -1230,7 +896,7 @@ public sealed partial class SettingsPage
     {
         try
         {
-            //Отрыть редактор тем  
+            // Отрыть редактор тем  
             var themeLoaderPanel = new StackPanel
             {
                 Orientation = Orientation.Vertical,
@@ -1476,7 +1142,7 @@ public sealed partial class SettingsPage
                 }
 
                 themeLoaderPanel.Children.Add(newTheme);
-                //Добавить новую тему
+                // Добавить новую тему
                 newTheme.Click += (_, _) =>
                 {
                     var textBoxThemeName = new TextBox
@@ -1518,9 +1184,9 @@ public sealed partial class SettingsPage
                                 _themeSelectorService.SaveThemeInSettings();
                                 InitVal();
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                //
+                                LogHelper.LogError(ex.ToString());
                             }
                         }
                     };
@@ -1541,9 +1207,9 @@ public sealed partial class SettingsPage
 
             _ = await themerDialog.ShowAsync();
         }
-        catch
+        catch (Exception ex)
         {
-            //
+            await LogHelper.LogError(ex.ToString());
         }
     }
 
@@ -1665,7 +1331,7 @@ public sealed partial class SettingsPage
         }
         catch
         {
-            AppSettings.NiIconsType = -1; //Нет сохранённых
+            AppSettings.NiIconsType = -1; // Нет сохранённых
             AppSettings.SaveSettings();
         }
     }
@@ -1996,7 +1662,7 @@ public sealed partial class SettingsPage
                 }
 
                 niLoaderPanel.Children.Add(newNiIcon);
-                //Добавить новую тему
+                // Добавить новую тему
                 newNiIcon.Click += (_, _) =>
                 {
                     var niIconSelectedComboBox = new ComboBox
@@ -2143,9 +1809,9 @@ public sealed partial class SettingsPage
                                 NiSave();
                                 NiIcon_LoadValues();
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                //
+                                LogHelper.LogError(ex.ToString());
                             }
                         }
                     };
@@ -2625,7 +2291,7 @@ public sealed partial class SettingsPage
         "<C2>Framerate <C3><S0>%FRAMERATE% %FRAMETIME%";*/
 
         // 5.1 Первая строка с цветами и размерами
-        //Пример первой строки:
+        // Пример первой строки:
         // "<C0=FFA0A0><C1=A0FFA0><C2=FC89AC><C3=fa2363><S1=70><S2=-50>\n" +
         for (var i = 0; i < colorLib.Count; i++)
         {
@@ -2635,7 +2301,7 @@ public sealed partial class SettingsPage
         advancedCodeEditor.Append("<S1=70><S2=-50>\n");
 
         // 5.2 Вторая строка (Saku Overclock)
-        //Пример второй строки:
+        // Пример второй строки:
         // "<C0>Saku Overclock <C1>" + ViewModels.ГлавнаяViewModel.GetVersion() + ": <S0>$SelectedProfile$\n" +
         if (enableLib[2])
         {
@@ -2648,15 +2314,13 @@ public sealed partial class SettingsPage
             var compactMain = RtssSettings.RTSS_Elements[0].Enabled
                 ? (compactLib[0] ? "<S1>" : "<S0>")
                 : (compactLib[2] ? "<S1>" : "<S0>");
-            var compactSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? (compactLib[1] ? "<S2>" : "<S0>")
-                : (compactLib[2] ? "<S2>" : "<S0>");
+            var compactSecond = compactLib[2] ? "<S2>" : "<S0>";
             advancedCodeEditor.Append(
                 $"<C{colorIndexMain}>{compactMain}{textLib[0]} {ГлавнаяViewModel.GetVersion()}: <C{colorIndexSecond}>{compactSecond}<S0>$SelectedProfile$\n");
         }
 
         // 5.3 Третья строка (STAPM Fast Slow)
-        //Пример третьей строки:
+        // Пример третьей строки:
         // "<S1><C2>STAPM, Fast, Slow: <C3><S0>$stapm_value$<S2>W<S1>$stapm_limit$W <S0>$fast_value$<S2>W<S1>$fast_limit$W <S0>$slow_value$<S2>W<S1>$slow_limit$W\n" +
         if (enableLib[3])
         {
@@ -2669,9 +2333,7 @@ public sealed partial class SettingsPage
             var compactMain = RtssSettings.RTSS_Elements[0].Enabled
                 ? (compactLib[0] ? "<S1>" : "<S0>")
                 : (compactLib[3] ? "<S1>" : "<S0>");
-            var compactSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? (compactLib[1] ? "<S2>" : "<S0>")
-                : (compactLib[3] ? "<S2>" : "<S0>");
+            var compactSecond = compactLib[3] ? "<S2>" : "<S0>";
             var compactSign = RtssSettings.RTSS_Elements[1].Enabled
                 ? (compactLib[1] ? "" : "/")
                 : (compactLib[3] ? "" : "/");
@@ -2680,7 +2342,7 @@ public sealed partial class SettingsPage
         }
 
         // - Для EDC Therm CPU Usage
-        //Пример четвёртой строки:
+        // Пример четвёртой строки:
         // "<C2>EDC, Therm, CPU Usage: <C3><S0>$vrmedc_value$<S2>A<S1>$vrmedc_max$A <C3><S0>$cpu_temp_value$<S2>C<S1>$cpu_temp_max$C<C3><S0> $cpu_usage$<S2>%<S1>\n" +
         if (enableLib[4])
         {
@@ -2693,9 +2355,7 @@ public sealed partial class SettingsPage
             var compactMain = RtssSettings.RTSS_Elements[0].Enabled
                 ? (compactLib[0] ? "<S1>" : "<S0>")
                 : (compactLib[4] ? "<S1>" : "<S0>");
-            var compactSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? (compactLib[1] ? "<S2>" : "<S0>")
-                : (compactLib[4] ? "<S2>" : "<S0>");
+            var compactSecond = compactLib[4] ? "<S2>" : "<S0>";
             var compactSign = RtssSettings.RTSS_Elements[1].Enabled
                 ? (compactLib[1] ? "" : "/")
                 : (compactLib[4] ? "" : "/");
@@ -2704,7 +2364,7 @@ public sealed partial class SettingsPage
         }
 
         // - Для CPU Clocks
-        //Пример пятой строки:
+        // Пример пятой строки:
         // "<S1><C2>Clocks: $cpu_clock_cycle$<S1><C2>$currCore$:<S0><C3> $cpu_core_clock$<S2>GHz<S1>$cpu_core_voltage$V $cpu_clock_cycle_end$\n" +
         if (enableLib[5])
         {
@@ -2717,9 +2377,7 @@ public sealed partial class SettingsPage
             var compactMain = RtssSettings.RTSS_Elements[0].Enabled
                 ? (compactLib[0] ? "<S1>" : "<S0>")
                 : (compactLib[5] ? "<S1>" : "<S0>");
-            var compactSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? (compactLib[1] ? "<S2>" : "<S0>")
-                : (compactLib[5] ? "<S2>" : "<S0>");
+            var compactSecond = compactLib[5] ? "<S2>" : "<S0>";
             var compactSign = RtssSettings.RTSS_Elements[1].Enabled
                 ? (compactLib[1] ? "" : "/")
                 : (compactLib[5] ? "" : "/");
@@ -2728,7 +2386,7 @@ public sealed partial class SettingsPage
         }
 
         // - Для AVG Clock Volt
-        //Пример шестой строки:
+        // Пример шестой строки:
         // "<C2>AVG Clock, Volt: <C3><S0>$average_cpu_clock$<S2>GHz<S1>$average_cpu_voltage$V" +
         if (enableLib[6])
         {
@@ -2741,9 +2399,7 @@ public sealed partial class SettingsPage
             var compactMain = RtssSettings.RTSS_Elements[0].Enabled
                 ? (compactLib[0] ? "<S1>" : "<S0>")
                 : (compactLib[6] ? "<S1>" : "<S0>");
-            var compactSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? (compactLib[1] ? "<S2>" : "<S0>")
-                : (compactLib[6] ? "<S2>" : "<S0>");
+            var compactSecond = compactLib[6] ? "<S2>" : "<S0>";
             var compactSign = RtssSettings.RTSS_Elements[1].Enabled
                 ? (compactLib[1] ? "" : "/")
                 : (compactLib[6] ? "" : "/");
@@ -2752,7 +2408,7 @@ public sealed partial class SettingsPage
         }
 
         // - Для APU Clock Volt Temp
-        //Пример седьмой строки:
+        // Пример седьмой строки:
         // "<C2>APU Clock, Volt, Temp: <C3><S0>$gfx_clock$<S2>MHz<S1>$gfx_volt$V <S0>$gfx_temp$<S1>C\n" +
         if (enableLib[7])
         {
@@ -2765,9 +2421,7 @@ public sealed partial class SettingsPage
             var compactMain = RtssSettings.RTSS_Elements[0].Enabled
                 ? (compactLib[0] ? "<S1>" : "<S0>")
                 : (compactLib[7] ? "<S1>" : "<S0>");
-            var compactSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? (compactLib[1] ? "<S2>" : "<S0>")
-                : (compactLib[7] ? "<S2>" : "<S0>");
+            var compactSecond = compactLib[7] ? "<S2>" : "<S0>";
             var compactSign = RtssSettings.RTSS_Elements[1].Enabled
                 ? (compactLib[1] ? "" : "/")
                 : (compactLib[7] ? "" : "/");
@@ -2776,7 +2430,7 @@ public sealed partial class SettingsPage
         }
 
         // - Для Frame Rate
-        //Пример восьмой строки:
+        // Пример восьмой строки:
         // "<C2>Framerate <C3><S0>%FRAMERATE% %FRAMETIME%";*/
         if (enableLib[8])
         {
@@ -2786,14 +2440,12 @@ public sealed partial class SettingsPage
             var colorIndexSecond = RtssSettings.RTSS_Elements[1].Enabled
                 ? colorLib.IndexOf(RtssSettings.RTSS_Elements[1].Color.Replace("#", "")).ToString()
                 : colorLib.IndexOf(RtssSettings.RTSS_Elements[8].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RTSS_Elements[0].Enabled
-                ? (compactLib[0] ? "<S1>" : "<S0>")
-                : (compactLib[8] ? "<S1>" : "<S0>");
+            var compactMain = compactLib[8] ? "<S1>" : "<S0>";
             advancedCodeEditor.Append(
                 $"<C{colorIndexMain}>{compactMain}{textLib[6]}: <C{colorIndexSecond}><S0>%FRAMERATE% %FRAMETIME%");
         }
 
-        // Финальная строка присваивается в rtssset.AdvancedCodeEditor
+        // Финальная строка присваивается в AdvancedCodeEditor
         RtssSettings.AdvancedCodeEditor = advancedCodeEditor.ToString();
         LoadAndFormatAdvancedCodeEditor(RtssSettings.AdvancedCodeEditor);
         RtssHandler.ChangeOsdText(RtssSettings.AdvancedCodeEditor);

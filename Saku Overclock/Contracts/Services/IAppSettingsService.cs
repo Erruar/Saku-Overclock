@@ -171,6 +171,14 @@ public interface IAppSettingsService
         get;
         set;
     }  // Уровень оптимизации пресета: 0 - Базовый, 1 - Стандартный, 2 - Расширенный
+    bool AppFirstRun
+    {
+        get; set;
+    } // Первый запуск приложения
+    int AppFirstRunType
+    {
+        get; set;
+    } // Страница первого запуска (Поможет при закрытии приложения после первого запуска без настройки)
 
     // Страница управления кулером
     bool IsNbfcModeEnabled

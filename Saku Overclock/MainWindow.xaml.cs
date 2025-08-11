@@ -26,6 +26,7 @@ public sealed partial class MainWindow
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
+    private bool _isActivated = false;
 
     public MainWindow()
     {
@@ -37,6 +38,16 @@ public sealed partial class MainWindow
                 this.Hide();
             }
         };
+        Activated += (_, _) =>
+        {
+            if (SettingsService.AppFirstRun && !_isActivated)
+            {
+                _isActivated = true;
+                /*var navigationService = App.GetService<INavigationService>();
+                navigationService.NavigateTo(typeof(ОбучениеViewModel).FullName!);*/
+            }
+        };
+
         AppWindow.Closing += AppWindow_Closing;
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/WindowIcon.ico"));
         Content = null;
@@ -102,6 +113,10 @@ public sealed partial class MainWindow
         {
             args.Cancel = true; // Отменяем закрытие
             this.Hide(); // Скрываем в трей
+        }
+        else
+        {
+            App.BackgroundUpdater!.Stop();
         }
     }
     public static void Set_ContextMenu_Tray()
@@ -260,8 +275,10 @@ public sealed partial class MainWindow
     private async void Tray_Start() // Запустить все команды после запуска приложения если включен Автоприменять Разгон
     {
         SettingsService.LoadSettings();
-        OcFinder.LazyInitTdp();
-        if (SettingsService.ReapplyLatestSettingsOnAppLaunch)
+
+        OcFinder.LazyInitTdp(); 
+
+        if (SettingsService.ReapplyLatestSettingsOnAppLaunch && !SettingsService.AppFirstRun)
         {
             try
             { 
@@ -360,9 +377,8 @@ public sealed partial class MainWindow
                     }
                     catch
                     {
-                        await App.MainWindow.ShowMessageDialogAsync(
-                            "Время автообновления разгона некорректно и было исправлено на 3000 мс",
-                            "Критическая ошибка!");
+                        await LogHelper.TraceIt_TraceError(
+                            "Время автообновления разгона некорректно и было исправлено на 3000 мс");
                         reapplyOverclockTimer = 3000;
                         Timer.Interval = TimeSpan.FromMilliseconds(reapplyOverclockTimer);
                     }
@@ -385,9 +401,9 @@ public sealed partial class MainWindow
                                         1); // Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            //
+                            await LogHelper.LogError("[Mainwindow@Applyer]::Overclock_Settings_Reapply_FAIL - " + ex.ToString());
                         }
                     };
 
@@ -401,9 +417,9 @@ public sealed partial class MainWindow
 
                 await Process(ryzenAdJline, saveinfo);
             }
-            catch
+            catch (Exception ex)
             {
-                //
+                await LogHelper.LogError("[Mainwindow@Applyer]::Overclock_Settings_FirstApply_FAIL - " + ex.ToString());
             }
         }
 
@@ -416,9 +432,9 @@ public sealed partial class MainWindow
                     SendSmuCommand?.Translate(adjLine, saveinfo);
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignored
+                await LogHelper.LogError("[Mainwindow@Applyer]::Overclock_Settings_Apply_FAIL - " + ex.ToString());
             }
         }
     }

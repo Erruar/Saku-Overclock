@@ -3414,4 +3414,22 @@ Average power limit</value>
   <data name="Preset_MaxTemp.Text" xml:space="preserve">
     <value>Max temperature: </value>
   </data>
+  <data name="Settings_RTSS_Element_Color.Text" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="Settings_RTSS_Element_Compact.Text" xml:space="preserve">
+    <value>Compact</value>
+  </data>
+  <data name="Settings_RTSS_Element_Enabled.Text" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Settings_RTSS_Element_Sign.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Settings_RTSS_Main_Color.Text" xml:space="preserve">
+    <value>Main color</value>
+  </data>
+  <data name="Settings_RTSS_Second_Color.Text" xml:space="preserve">
+    <value>Second color</value>
+  </data>
 </root>

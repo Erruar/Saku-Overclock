@@ -1,12 +1,13 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System.Diagnostics;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media.Animation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.JsonContainers;
-using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
+using Windows.UI.Text;
 
 namespace Saku_Overclock.Views;
 
@@ -14,25 +15,15 @@ namespace Saku_Overclock.Views;
 public sealed partial class ОбучениеPage : Page
 {
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
+    private static readonly IAppSettingsService
+        AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
     public ОбучениеPage()
     {
         InitializeComponent();
-        HideNavbarAndControls();
         RunIntroSequence();
     }
-    private static void HideNavbarAndControls()
-    {
-        NotificationsService.Notifies ??= [];
-        NotificationsService.Notifies.Add(new Notify
-        {
-            Title = "FirstLaunch",
-            Msg = "DEBUG MESSAGE",
-            Type = InfoBarSeverity.Informational
-        });
-        NotificationsService.SaveNotificationsSettings();
-        MainWindow.Remove_ContextMenu_Tray();
-    }
+
     public static void ShowNavbarAndControls()
     {
         NotificationsService.Notifies ??= [];
@@ -46,11 +37,11 @@ public sealed partial class ОбучениеPage : Page
         MainWindow.Set_ContextMenu_Tray();
     }
     private void OpenLicenseSection()
-    { 
+    {
         Pager.SelectedPageIndex = 0;
         Pager.Visibility = Visibility.Visible;
 
-        LicenseSection.Opacity = 0;  
+        LicenseSection.Opacity = 0;
         LicenseSection.Visibility = Visibility.Visible;
 
         var showLicenseSection = new Storyboard();
@@ -66,7 +57,7 @@ public sealed partial class ОбучениеPage : Page
             Storyboard.SetTarget(fadeIn, LicenseSection);
             Storyboard.SetTargetProperty(fadeIn, "Opacity");
 
-            showLicenseSection.Children.Add(fadeIn); 
+            showLicenseSection.Children.Add(fadeIn);
         }
 
         var formattedText = ГлавнаяPage.ApplyMarkdownStyles("LicenseText".GetLocalized());
@@ -82,8 +73,6 @@ public sealed partial class ОбучениеPage : Page
         {
             await Task.Delay(1000);
             var logoAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
-            //CreateIntroWelcomeTextStack(WelcomeVCarouselGrid);
-
 
             var hideAnimationAndShowLogo = new Storyboard();
             {
@@ -370,8 +359,8 @@ public sealed partial class ОбучениеPage : Page
 
                 WelcomeLogoIntro.Visibility = Visibility.Collapsed;
                 LogoText.Visibility = Visibility.Collapsed;
-                LogoAnimation.Visibility = Visibility.Collapsed; 
-                AfterAnimationPanel.Visibility = Visibility.Collapsed; 
+                LogoAnimation.Visibility = Visibility.Collapsed;
+                AfterAnimationPanel.Visibility = Visibility.Collapsed;
             }
 
         }
@@ -423,8 +412,8 @@ public sealed partial class ОбучениеPage : Page
     {
         var SkipDialog = new ContentDialog
         {
-            Title = "Пропустить обучение?",
-            Content = "Вы не сможете вернуться к обучению в дальнейшем!",
+            Title = "Пропустить диагностику?",
+            Content = "Вы всегда сможете создать пресеты с OC Finder позже",
             CloseButtonText = "Cancel".GetLocalized(),
             PrimaryButtonText = "Да, пропустить",
             DefaultButton = ContentDialogButton.Close
@@ -444,28 +433,11 @@ public sealed partial class ОбучениеPage : Page
         }
     }
 
-    private async void AcceptTraining_Click(object sender, RoutedEventArgs e)
+    private void AcceptTraining_Click(object sender, RoutedEventArgs e)
     {
-        var SureDialog = new ContentDialog
-        {
-            Title = "Перед тем как начнём",
-            Content = "Обучение будет происходить не на вашем оборудовании, а на интерфейсе программы. Можно включать/выключать, применять, трогать любые параметры и изучать программу. Никакого влияения на ваше оборудование не будет до конца обучения",
-            CloseButtonText = "Всё-таки ещё подумаю",
-            PrimaryButtonText = "Приступим!",
-            DefaultButton = ContentDialogButton.Primary
-        };
-        // Use this code to associate the dialog to the appropriate AppWindow by setting
-        // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
-        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-        {
-            SureDialog.XamlRoot = XamlRoot;
-        }
-        var result = await SureDialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
+        
             ShowNavbarAndControls();
             var navigationService = App.GetService<INavigationService>();
             navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
-        }
     }
 }

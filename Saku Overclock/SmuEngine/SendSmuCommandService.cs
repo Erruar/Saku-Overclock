@@ -722,7 +722,8 @@ public class SendSmuCommandService : ISendSmuCommandService
                  codeName == CodeName.Phoenix || _cpuCodenameString.Contains("PHOENIX") ||
                  codeName == CodeName.Phoenix2 || _cpuCodenameString.Contains("HAWKPOINT") ||
                  codeName == CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") ||
-                 codeName == CodeName.StrixHalo || codeName == CodeName.KrackanPoint)
+                 codeName == CodeName.StrixHalo || codeName == CodeName.KrackanPoint 
+                 || codeName == CodeName.KrackanPoint2)
         {
             Socket_FT6_FP7_FP8_FP11();
         }

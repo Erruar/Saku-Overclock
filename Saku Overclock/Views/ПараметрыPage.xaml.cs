@@ -1593,7 +1593,7 @@ public sealed partial class ПараметрыPage
             {
                 FiltersButton.Style = ActionButton_Apply.Style;
                 FiltersButton.Translation = new System.Numerics.Vector3(0, 0, 20);
-                FiltersButton.CornerRadius = new CornerRadius(4);
+                FiltersButton.CornerRadius = new CornerRadius(14);
                 FiltersButton.Shadow = SharedShadow;
             }
             foreach (var button in buttons) // Добавить все, так как мы не скрываем параметры
@@ -6079,6 +6079,12 @@ public sealed partial class ПараметрыPage
         try
         {
             var cpu = CpuSingleton.GetInstance();
+
+            if (cpu.info.family < Cpu.Family.FAMILY_17H) 
+            {
+                return;
+            }
+
             ProfileLoad();
             PstatesDid[0] = _profile[AppSettings.Preset].did0;
             PstatesDid[1] = _profile[AppSettings.Preset].did1;
@@ -6095,8 +6101,6 @@ public sealed partial class ПараметрыPage
                 {
                     ReadPstate();
                     LogHelper.LogError("Corrupted P-States in config");
-                    App.GetService<IAppNotificationService>().Show(
-                        "<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Corrupted P-States in config</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                 }
 
                 // Установка стандартных значений
@@ -6104,8 +6108,6 @@ public sealed partial class ПараметрыPage
                 if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), ref eax, ref edx) == false)
                 {
                     LogHelper.LogError("Error reading P-States");
-                    App.GetService<IAppNotificationService>().Show(
-                        $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error reading P-State! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                     return;
                 }
 

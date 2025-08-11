@@ -3459,4 +3459,22 @@ Asus. Может не поддерживаться на
   <data name="Preset_MaxTemp.Text" xml:space="preserve">
     <value>Макс температура:</value>
   </data>
+  <data name="Settings_RTSS_Element_Color.Text" xml:space="preserve">
+    <value>Цвет</value>
+  </data>
+  <data name="Settings_RTSS_Element_Compact.Text" xml:space="preserve">
+    <value>Сжатый</value>
+  </data>
+  <data name="Settings_RTSS_Element_Enabled.Text" xml:space="preserve">
+    <value>В оверлее</value>
+  </data>
+  <data name="Settings_RTSS_Element_Sign.Text" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="Settings_RTSS_Main_Color.Text" xml:space="preserve">
+    <value>Основной цвет</value>
+  </data>
+  <data name="Settings_RTSS_Second_Color.Text" xml:space="preserve">
+    <value>Дополнительный цвет</value>
+  </data>
 </root>

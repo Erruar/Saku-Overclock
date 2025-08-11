@@ -6,8 +6,12 @@
     xmlns:local="using:Saku_Overclock.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:lottie="using:CommunityToolkit.WinUI.Lottie"
+    xmlns:lottie="using:CommunityToolkit.WinUI.Lottie" xmlns:local1="using:Saku_Overclock.ViewModels"
     mc:Ignorable="d">
+    <Page.Resources>
+        <ThemeShadow x:Name="SharedShadow"/>
+        <Button x:Name="HiddenButton" Visibility="Collapsed"/>
+    </Page.Resources>
 
     <Grid Margin="-56,-96,-56,0">  
 
@@ -84,43 +88,71 @@
                 <FontIcon Glyph="&#xE729;" FontWeight="Bold" FontSize="20" />
                 <TextBlock Text="Лицензия приложения" FontSize="24" FontWeight="Bold" Margin="5,3,0,0"/>
             </StackPanel>
-            <ScrollViewer Margin="40,0,40,0" Grid.Row="1" >
-                <StackPanel>
-                    <StackPanel x:Name="LicenseText"/>
-                    <CheckBox x:Name="LicenseAcceptButton" IsChecked="False">Я ознакомился с лицензионным соглашением и подтверждаю его соблюдение</CheckBox>
-                </StackPanel>
-            </ScrollViewer>
+            <FlipView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="40,0,40,0" Grid.Row="1">
+                <ScrollViewer CornerRadius="12">
+                    <StackPanel Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                        <StackPanel Margin="30,30,30,0" x:Name="LicenseText"/>
+                        <CheckBox Margin="30,5,30,20" x:Name="LicenseAcceptButton" IsChecked="False">Я ознакомился с лицензионным соглашением и подтверждаю его соблюдение</CheckBox>
+                    </StackPanel>
+                </ScrollViewer>
+                <ScrollViewer>
+                    <TextBlock>Second page of license</TextBlock>
+                </ScrollViewer>
+                <FlipView.ItemsPanel >
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </FlipView.ItemsPanel>
+            </FlipView>
             <TeachingTip IsOpen="False" Target="{x:Bind AcceptLicenseButton}" x:Name="AcceptErrTeachingTip" Subtitle="Вы не прочли лицензионное соглашение" Title="Вы уверены?">
                 <TeachingTip.IconSource>
                     <FontIconSource Glyph="&#xEB90;"/>
                 </TeachingTip.IconSource>
             </TeachingTip>
-            <Button Grid.Row="2" Content="Принять" x:Name="AcceptLicenseButton" Click="AcceptButton_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource AccentButtonStyle}" Margin="0,0,10,10" />
+            <Button Background="{ThemeResource SystemFillColorSuccessBrush}" Grid.Row="2" Width="250" CornerRadius="12" x:Name="AcceptLicenseButton" Click="AcceptButton_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource AccentButtonStyle}" Margin="0,0,40,10">
+                <StackPanel Margin="-5,0,0,0" Orientation="Horizontal">
+                    <FontIcon Margin="0,1,0,-1" Glyph="&#xE73E;"/>
+                    <TextBlock Margin="5,0,0,0" Text="Принять" FontWeight="Bold" FontSize="16"/>
+                </StackPanel>
+            </Button>
         </Grid>
         <Grid x:Name="TrainingSection" Visibility="Collapsed" Opacity="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
-            <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="40,20,0,0">
+            <StackPanel x:Name="FinderText" VerticalAlignment="Center" Orientation="Vertical" Margin="40,20,0,0">
                 <TextBlock Text="Saku Overclock" FontWeight="ExtraBlack" FontSize="48"/>
                 <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                    <FontIcon Glyph="&#xE721;" FontWeight="Bold" FontSize="20" />
-                    <TextBlock Text="Обучение" FontSize="25" FontWeight="Bold" Margin="5,-5,0,0"/>
+                    <FontIcon Glyph="&#xE713;" FontWeight="Bold" FontSize="20" />
+                    <TextBlock Text="Диагностика оборудования" FontSize="25" FontWeight="Bold" Margin="5,-5,0,0"/>
                 </StackPanel>
-                <Line Margin="3,20,0,0" X1="0" X2="50" Y1="0" Y2="0" Stroke="White" StrokeThickness="6"></Line>
+                <Line Margin="3,20,0,0" X1="0" X2="50" Y1="0" Y2="0" Stroke="{ThemeResource TextFillColorPrimary}" StrokeThickness="6"></Line>
 
                 <Grid Margin="0,15,0,0" x:Name="TrainingText">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" Text="Мы заботимся о наших пользователях и понимаем, что далеко не все наши пользователи знают как пользоваться программой, поэтому и предлагаем вам обучение. Вы можете пройти его или отказаться и сразу приступить к использованию"></TextBlock>
+                    <StackPanel Grid.Column="0" Orientation="Vertical">
+                        <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" Text="Мы заботимся о наших пользователях и понимаем, что далеко не все наши пользователи знают как пользоваться программой, поэтому предлагаем вам интеллектуальный поиск разгона с технологией OC Finder. Ваше устройство будет протестировано под нагрузкой и программа автоматически сгенерирует готовые профили разгона — просто выберите лучшие."></TextBlock>
+                        <TextBlock Margin="0,5,0,0" Foreground="{ThemeResource TextFillColorSecondary}" Text="К этому экрану можно вернуться позже"/>
+                    </StackPanel>
                 </Grid>
-            </StackPanel> 
-            <FontIcon Grid.Row="0" Glyph="&#xE7BE;" FontWeight="Black" FontSize="300" Margin="0,0,40, 0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <Button Grid.Row="1" Content="Принять" Click="AcceptTraining_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource AccentButtonStyle}" Margin="0,0,10,10" />
-            <Button Grid.Row="1" Content="Отказаться" Foreground="Black" Background="MediumVioletRed" Click="DisagreeTraining_Click"  VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="40,0,0,10" />
+            </StackPanel>
+            <FontIcon x:Name="FinderGlyph" Grid.Row="0" Glyph="&#xE71E;" FontWeight="Black" FontSize="300" Margin="0,0,40, 0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <Button x:Name="FinderButtonAccept" Width="250" CornerRadius="12" Grid.Row="1" Click="AcceptTraining_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{ThemeResource SystemFillColorSuccessBrush}" Style="{StaticResource AccentButtonStyle}" Margin="0,0,40,10">
+                <StackPanel Margin="-5,0,0,0" Orientation="Horizontal">
+                    <FontIcon Margin="0,1,0,-1" Glyph="&#xE73E;"/>
+                    <TextBlock Margin="5,0,0,0" Text="Принять" FontWeight="Bold" FontSize="16"/>
+                </StackPanel>
+            </Button>
+            <Button x:Name="FinderButtonDecline" Width="250" CornerRadius="12" Grid.Row="1" Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" Background="{ThemeResource SystemFillColorCriticalBrush}" Click="DisagreeTraining_Click" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="40,0,0,10">
+                <StackPanel Margin="-5,0,0,0" Orientation="Horizontal">
+                    <FontIcon Margin="0,1,0,-1" Glyph="&#xE711;" />
+                    <TextBlock Margin="5,0,0,0" Text="Отказаться" FontWeight="Bold" FontSize="16"/>
+                </StackPanel>
+            </Button>
         </Grid>
     </Grid>
 </Page>

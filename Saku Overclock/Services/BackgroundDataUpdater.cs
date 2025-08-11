@@ -185,6 +185,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         {
             _cts.Cancel();
             DisposeAllNotifyIcons();
+            RtssHandler.ResetOsdText();
         }
     }
 
@@ -852,7 +853,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         var hasTemplate = !string.IsNullOrEmpty(template);
 
         // Проход по всем ядрам
-        sb.Append("<Br><S0>е<S1>");
+        var compactSizing = hasTemplate && template.Contains("<S1>") ? "<S1>" : string.Empty;
+        sb.Append("<Br><S0>е" + compactSizing);
         for (uint f = 0; f < topologyCores; f++)
         {
             var clk = GetSafeCoreValue(sensorsInformation.CpuFrequencyPerCore!, f);
@@ -870,13 +872,12 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
             {
                 if (f > 0 && f % 4 == 0)
                 {
-                    sb.Append("<Br><S0>е<S1>");
+                    sb.Append("<Br><S0>е" + compactSizing);
                 }
-
                 var coreLine = template
                     .Replace("$currCore$", f.ToString())
                     .Replace("$cpu_core_clock$", $"{clk:F3}")
-                    .Replace("$cpu_core_voltage$", $"{volt:F2}");
+                    .Replace("$cpu_core_voltage$", $"{volt:G3}");
 
                 sb.Append(coreLine);
             }

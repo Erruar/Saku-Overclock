@@ -217,7 +217,6 @@ Stretch="Uniform" />
                                                     <ComboBoxItem x:Uid="Cooler_Curve_CuFx">Кулер 1: Кривая, Кулер 2: Фиксированный</ComboBoxItem>
                                                     <ComboBoxItem x:Uid="Cooler_Curve_Fixed_Range">Различный фиксированный</ComboBoxItem>
                                                     <ComboBoxItem x:Uid="Cooler_Curve_Fixed">Полностью фиксированный</ComboBoxItem>
-                                                    <ComboBoxItem x:Uid="Cooler_Curve_Smart">Умная кривая (Beta)</ComboBoxItem> 
                                                 </ComboBox>
                                                 <Border CornerRadius="9" VerticalAlignment="Top" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Stretch" Margin="-1,0,-1,0" Height="32" />
                                             </Grid>

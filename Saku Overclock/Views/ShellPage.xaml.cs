@@ -123,6 +123,13 @@ public sealed partial class ShellPage
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        /*if (AppSettings.AppFirstRun) 
+        {
+            HideNavBar();
+            Icon.Visibility = Visibility.Collapsed;
+            RingerNotifGrid.Visibility = Visibility.Collapsed;
+        }*/
+
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));

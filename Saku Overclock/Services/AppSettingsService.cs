@@ -49,12 +49,14 @@ public class AppSettingsService : IAppSettingsService
     public bool PremadeSpeedActivated { get; set; } = false;
     public bool PremadeMaxActivated { get; set; } = true;
     public int PremadeOptimizationLevel { get; set; } = 0; // Уровень оптимизации пресета: 0 - Базовый, 1 - Стандартный, 2 - Расширенный
+    public bool AppFirstRun { get; set; } = true; // Первый запуск приложения
+    public int AppFirstRunType { get; set; } = 0; // Страница первого запуска (Поможет при закрытии приложения после первого запуска без настройки)
 
     // Страница управления кулером
     public bool IsNbfcModeEnabled { get; set; } = true; // Выбранная конфигурация страницы управления кулером
     public string NbfcConfigXmlName { get; set; } = string.Empty; // Имя выбранного файла NBFC конфига
     public bool NbfcAutoUpdateInformation { get; set; } = true; // Автообновление информации о скоростях кулеров
-    public int NbfcServiceType { get; set; } = 0; // Флаги использования NBFCq
+    public int NbfcServiceType { get; set; } = 0; // Флаги использования NBFC
     public double NbfcFan1UserFanSpeedRpm { get; set; } = 110.0; // Скорость первого кулера (>100 = авто)
     public double NbfcFan2UserFanSpeedRpm { get; set; } = 110.0; // Скорость второго кулера (>100 = авто)
     public bool NbfcFlagConsoleCheckSpeedRunning { get; set; } = false; // Флаг действий с консолью NBFC
