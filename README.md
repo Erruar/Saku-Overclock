@@ -104,9 +104,10 @@ Switch between optimized configurations instantly. Share your perfect settings w
 <details>
   <summary>Main</summary>
   <ol>
+    <h1>🖥️Main page showcase</h1>
+    <p>The main page of my application will greet you at launch</p>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/AppTheme.png"></img>
-    <p> </p>
-    <p  >The main page of my application will greet you at launch</p>
+    <p align="center"><i>*background of the application automatically adjusts to the color of your wallpaper.</i></p>
     <h1>🖌️Themes that you like</h1>
     <p  >My application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it or even change background to anything (including GIF)</p>
   </ol>
