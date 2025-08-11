@@ -376,7 +376,11 @@ Access AMD's System Management Unit for unprecedented control over your processo
 - **Download** and install NBFC in "C:/" drive or use <strong>Install NBFC</strong> button
 - **Click on suggest** button (button with question symbol) to see suggested configurations
 - **Choose configuration** from list
+<br/>
+<h3>The program has an automatic detection of non-installed NBFC</h3>
+Click on Download to download NBFC automatically
 
+<img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/2.png"></img>
 ---
 
 ### ☀️ Cooler page usage
@@ -400,13 +404,7 @@ Done! You set up Cooler tweaks page.
 
 ---
 
-**Ready for advanced coolers control?** Check out NBFC forks to get more configuration files!
-    <br/>
-    <h1 align="center">Suggest button</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/2.png"></img>
-    <p  >• Suggest button: It can help you find configs which will (NOT 100%!!!) work with your laptop</p>
-    <br />
-    <br />
+**Ready for advanced coolers control?** Check out NBFC forks to get more configuration files! Or go to **Advanced Cooler Tweaking** to create own configurations for NBFC and manage cooler curve
     <h1 align="center">Advanced Cooler Tweaking</h1>
     <h2 align="center">Readme</h2>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/3.png"></img>
