@@ -450,39 +450,39 @@ Done! You set up Cooler tweaks page.
 <details>
   <summary>Settings</summary>
   <ol>
-    <h1 align="center">Settings page</h1>
+    <h1 align="center">⚙️ Settings page</h1>
+    <h2>Behavior section</h2>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings.png"></img> 
-    <p  >There you can add app in autostart with windows, set close app to tray when it's opening, set auto-apply when opening, check for updates and I recommend to enable - Reapply latest setting every. Enable it and set to 3-7. This value is enough. Note: ROG Ally have issues with Power limits because this device has own app for tuning Powers, don’t enable this option if you are using ROG Ally (any revision).</p>
+
+**Avaiable options**
+- **Add application to the Windows autostart list:** No startup options, Hide to tray, Startup with OS, Startup & Tray
+- **Set application to close to the system tray:** Do not hide in tray, Hide by minimize button, Hide by close button
+- **Enable automatic apply overclocking options when the application is opened:** All the settings that were previously configured will be applied automatically upon starting Saku Overclock. No more need to manually click the "Apply" button
+- **Check for updates:** Display the availability of an update on a separate page as soon as it becomes available
+- **Reapply overclock settings every second:** Overrides the set overclocking parameters every few seconds in order to avoid conflicting with the vendor's software or BIOS settings
     <br />
-    <br />
-    <h1 align="center">Settings startup options</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_startup.png"></img> 
-    <p >You can choose preferred startup options</p> 
-    <p  >• No startup options: The application does not run with the system and does not hide from the user in the system tray when launched.</p>
-    <p  >• Hide to tray: When the application is launched from the user, it will immediately hide in the tray, without distracting you from your work.</p>
-    <p  >• Startup with OS: The application will run with the system, but will not hide in the tray.</p>
-    <p  >• Startup & Tray: The application will launch with the system and immediately hide in the tray, without distracting you from your work</p>
-    <br />
-    <br />
-    <h1 align="center">Application themes</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themes.png"></img> 
-    <p  >My application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it.</p> 
-    <h3  >PLEASE, AFTER APPLYING ANY THEME, CHANGE THE WINDOW SIZE SLIGHTLY, JUST ONCE IS ENOUGH AFTER APPLYING THEME, THIS IS IMPORTANT, BECAUSE THE THEME MAY NOT BE APPLIED ADEQUATELY!</h3>
-    <br />
-    <br />
-    <h1 align="center">Advanced theme settings</h1>
+    <h2>Theme section</h2>
+    <h3 align="center">Application themes</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_advancedthemes.png"></img> 
-    <p  >There you can adjust the transparency level of both the background image and the darkening mask after it and change theme background (only on custom themes).</p> 
-    <br />
-    <br />
-    <h1 align="center">Background theme settings</h1>
+    <p  >Application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it and change theme background</p> 
+    <h3 align="center">Background theme settings</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themebg.png"></img> 
-    <p  >There you can change theme background from file or from link to image. Note: on some Windows 10 build we have huge problems with this feature!</p> 
-    <br />
-    <br />
-    <h1 align="center">Theme manager</h1>
+    <p  >There you can change theme background from file or from link to image. GIF file type is supported</p> 
+    <h3 align="center">Theme manager</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_thememanager.png"></img> 
-    <p  >There you can manage all your custom themes or create a new one (New name...). You can change theme names or delete themes.</p> 
+    <p>Manage all your custom themes or create a new one (New name...). You can change theme names or delete themes.</p> 
+    <h2>TrayMon section</h2>
+    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_traymon.png"></img> 
+    <p>Always be aware of the data from your sensors in any application. TrayMon displays information from your selected sensors in the Windows system tray, with full customization, so you can always keep up to date with current temperatures, frequencies, power, and other information from the sensors available on your system.</p>
+    <h2>RTSS section</h2>
+    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_rtssoverlay.png"></img> 
+    <p>Do you like to play? So are we, so the application has monitoring of system indicators and their output as an overlay over the game using RTSS! You can completely customize which colors will have which setting, which sensors to display, and what size they should be. You can also use additional customization if you have the skills to work with RTSS, you can edit the applied overlay parameters to suit your needs.</p>
+    <h2>Keybinds section</h2>
+    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_keybinds.png"></img> 
+    <p>Check out application keybindings and enable or disable them all.</p>
+    <h2>About section</h2>
+    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_about.png"></img> 
+    <p>About up section with join our discord button.</p>
   </ol>
 </details>
 
