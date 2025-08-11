@@ -367,11 +367,41 @@ Access AMD's System Management Unit for unprecedented control over your processo
 <details>
   <summary>Cooler page</summary>
   <ol>
-    <h1 align="center">Cooler tweaks page</h1> 
+    <h1 align="center">🍃 Cooler tweaks page</h1> 
+    <p>There you can adjust your cooler spinning with Notebook fan controller app or natively on Asus laptops with ASUS System Control Interface</p>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/1.png"></img>
-    <p  >• Page: There you can adjust your cooler spinning, but only if you have Notebook fan controller app on your pc <strong>AND ONLY IF YOU HAVE WORKING CONFIGURATION FOR YOUR LAPTOP!</strong> Just download it and install in C:/ drive. Without it app will crash at these pages. Then in my app set your laptop model at which Notebook fan controller is working for you and you can see and change values! How to use it - simply click on suggest button (button with question symbol). Choose config from saved configs. Choose Enabled in Fan Control status, choose target speed or auto. Autosaving is there. If you wanna more - go to Advanced mode, where you can change whole all config and fan curve!</p>
-    <br />
-    <br />
+    <h2>⚙️ Easy to set up</h2>
+
+**Additional operations for NBFC Method**
+- **Download** and install NBFC in "C:/" drive or use <strong>Install NBFC</strong> button
+- **Click on suggest** button (button with question symbol) to see suggested configurations
+- **Choose configuration** from list
+
+---
+
+### ☀️ Cooler page usage
+- Set **Cooler management** option to **Enabled**
+- Set **Cooler control type** option to whatever you want. For example: **Completely fixed mode** if you want to control both coolers without curve
+- Set **Fixed rotation mode** option to whatever you want. For example: **Manual** and 70% setting
+
+Done! You set up Cooler tweaks page. 
+
+*If you are using the NBFC mode configured cooler management settings will apply and will persist after a system reboot, even if the Saku Overclock utility is not running*
+
+---
+
+### 🛡️ Important Safety Notice
+
+> **⚠️ CRITICAL WARNING**  
+> NBFC provide direct hardware access and can permanently damage your Embedded Controller (EC) if used incorrectly.
+> **Use configurations that are 100% tested on your laptop and fully compatible. Suggest button can suggest wrong configurations!**
+>
+> **We strongly recommend using vendor software to control coolers unless you have extensive experience with NBFC configurations.**
+
+---
+
+**Ready for advanced coolers control?** Check out NBFC forks to get more configuration files!
+    <br/>
     <h1 align="center">Suggest button</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/2.png"></img>
     <p  >• Suggest button: It can help you find configs which will (NOT 100%!!!) work with your laptop</p>
