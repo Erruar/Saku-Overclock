@@ -136,7 +136,8 @@ Switch between optimized configurations instantly. Share your perfect settings w
       <p><i>*Animation will be smoother on your device</i></p>
     </div>
     <p> </p>
-    <p  >If you want to switch the profile to see the difference in performance, but that's the problem! This is exactly what the quick profile switch was created for! Switch your settings comfortably or use the preset ones with <strong>CTRL + ALT + W</strong> for custom profiles and <strong>CTRL + ALT + W</strong> for premade profiles.</p>
+    <p  >If you want to switch the profile to see the difference in performance, but that's the problem! This is exactly what the quick profile switch was created for! Switch your settings comfortably or use the preset ones with <strong>CTRL + ALT + W</strong> for custom profiles and <strong>CTRL + ALT + P</strong> for premade profiles.</p>
+   <i>*You can see key bindings in application settings</i>
   </ol>
 </details>
 
