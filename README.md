@@ -104,15 +104,12 @@ Switch between optimized configurations instantly. Share your perfect settings w
 <details>
   <summary>Main</summary>
   <ol>
-    <h1 align="center">Dark theme main page</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main.png"></img>
-    <p> </p>
-    <p  >The main page of my application will greet you at launch</p>
-    <p> </p>
-    <h1 align="center">White theme main page</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-white.png"></img> 
-    <p> </p>
-    <p  >My application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it</p>
+    <h1>🖥️Main page showcase</h1>
+    <p>The main page of my application will greet you at launch</p>
+    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/AppTheme.png"></img>
+    <p align="center"><i>*background of the application automatically adjusts to the color of your wallpaper.</i></p>
+    <h1>🖌️Themes that you like</h1>
+    <p  >My application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it or even change background to anything (including GIF)</p>
   </ol>
 </details>
 
@@ -139,7 +136,8 @@ Switch between optimized configurations instantly. Share your perfect settings w
       <p><i>*Animation will be smoother on your device</i></p>
     </div>
     <p> </p>
-    <p  >If you want to switch the profile to see the difference in performance, but that's the problem! This is exactly what the quick profile switch was created for! Switch your settings comfortably or use the preset ones with <strong>CTRL + ALT + W</strong> for custom profiles and <strong>CTRL + ALT + W</strong> for premade profiles.</p>
+    <p  >If you want to switch the profile to see the difference in performance, but that's the problem! This is exactly what the quick profile switch was created for! Switch your settings comfortably or use the preset ones with <strong>CTRL + ALT + W</strong> for custom profiles and <strong>CTRL + ALT + P</strong> for premade profiles.</p>
+   <i>*You can see key bindings in application settings</i>
   </ol>
 </details>
 
@@ -189,6 +187,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
 **Your laptop's hidden potential awaits.** Saku Overclock's advanced parameter control transforms any compatible Ryzen laptop into a performance beast.
 
 <div align="center">
+  <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/OverclockPageShowcase.png" width="100%">
   <img alt="Overclock Interface" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/custom/OverclockPageOptions.png" width="100%">
   <p><i>Smart compatibility detection shows only the options your hardware supports</i></p>
 </div>
@@ -370,16 +369,44 @@ Access AMD's System Management Unit for unprecedented control over your processo
 <details>
   <summary>Cooler page</summary>
   <ol>
-    <h1 align="center">Cooler tweaks page</h1> 
+    <h1 align="center">🍃 Cooler tweaks page</h1> 
+    <p>There you can adjust your cooler spinning with Notebook fan controller app or natively on Asus laptops with ASUS System Control Interface</p>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/1.png"></img>
-    <p  >• Page: There you can adjust your cooler spinning, but only if you have Notebook fan controller app on your pc <strong>AND ONLY IF YOU HAVE WORKING CONFIGURATION FOR YOUR LAPTOP!</strong> Just download it and install in C:/ drive. Without it app will crash at these pages. Then in my app set your laptop model at which Notebook fan controller is working for you and you can see and change values! How to use it - simply click on suggest button (button with question symbol). Choose config from saved configs. Choose Enabled in Fan Control status, choose target speed or auto. Autosaving is there. If you wanna more - go to Advanced mode, where you can change whole all config and fan curve!</p>
-    <br />
-    <br />
-    <h1 align="center">Suggest button</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/2.png"></img>
-    <p  >• Suggest button: It can help you find configs which will (NOT 100%!!!) work with your laptop</p>
-    <br />
-    <br />
+    <h2>⚙️ Easy to set up</h2>
+
+**Additional operations for NBFC Method**
+- **Download** and install NBFC in "C:/" drive or use <strong>Install NBFC</strong> button
+- **Click on suggest** button (button with question symbol) to see suggested configurations
+- **Choose configuration** from list
+<br/>
+<h3>The program has an automatic detection of non-installed NBFC</h3>
+Click on Download to download NBFC automatically
+
+<img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/2.png"></img>
+---
+
+### ☀️ Cooler page usage
+- Set **Cooler management** option to **Enabled**
+- Set **Cooler control type** option to whatever you want. For example: **Completely fixed mode** if you want to control both coolers without curve
+- Set **Fixed rotation mode** option to whatever you want. For example: **Manual** and 70% setting
+
+Done! You set up Cooler tweaks page. 
+
+*If you are using the NBFC mode configured cooler management settings will apply and will persist after a system reboot, even if the Saku Overclock utility is not running*
+
+---
+
+### 🛡️ Important Safety Notice
+
+> **⚠️ CRITICAL WARNING**  
+> NBFC provide direct hardware access and can permanently damage your Embedded Controller (EC) if used incorrectly.
+> **Use configurations that are 100% tested on your laptop and fully compatible. Suggest button can suggest wrong configurations!**
+>
+> **We strongly recommend using vendor software to control coolers unless you have extensive experience with NBFC configurations.**
+
+---
+
+**Ready for advanced coolers control?** Check out NBFC forks to get more configuration files! Or go to **Advanced Cooler Tweaking** to create own configurations for NBFC and manage cooler curve
     <h1 align="center">Advanced Cooler Tweaking</h1>
     <h2 align="center">Readme</h2>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/cooler/3.png"></img>
@@ -425,39 +452,39 @@ Access AMD's System Management Unit for unprecedented control over your processo
 <details>
   <summary>Settings</summary>
   <ol>
-    <h1 align="center">Settings page</h1>
+    <h1 align="center">⚙️ Settings page</h1>
+    <h2>Behavior section</h2>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings.png"></img> 
-    <p  >There you can add app in autostart with windows, set close app to tray when it's opening, set auto-apply when opening, check for updates and I recommend to enable - Reapply latest setting every. Enable it and set to 3-7. This value is enough. Note: ROG Ally have issues with Power limits because this device has own app for tuning Powers, don’t enable this option if you are using ROG Ally (any revision).</p>
+
+**Avaiable options**
+- **Add application to the Windows autostart list:** No startup options, Hide to tray, Startup with OS, Startup & Tray
+- **Set application to close to the system tray:** Do not hide in tray, Hide by minimize button, Hide by close button
+- **Enable automatic apply overclocking options when the application is opened:** All the settings that were previously configured will be applied automatically upon starting Saku Overclock. No more need to manually click the "Apply" button
+- **Check for updates:** Display the availability of an update on a separate page as soon as it becomes available
+- **Reapply overclock settings every second:** Overrides the set overclocking parameters every few seconds in order to avoid conflicting with the vendor's software or BIOS settings
     <br />
-    <br />
-    <h1 align="center">Settings startup options</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_startup.png"></img> 
-    <p >You can choose preferred startup options</p> 
-    <p  >• No startup options: The application does not run with the system and does not hide from the user in the system tray when launched.</p>
-    <p  >• Hide to tray: When the application is launched from the user, it will immediately hide in the tray, without distracting you from your work.</p>
-    <p  >• Startup with OS: The application will run with the system, but will not hide in the tray.</p>
-    <p  >• Startup & Tray: The application will launch with the system and immediately hide in the tray, without distracting you from your work</p>
-    <br />
-    <br />
-    <h1 align="center">Application themes</h1>
-    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themes.png"></img> 
-    <p  >My application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it.</p> 
-    <h3  >PLEASE, AFTER APPLYING ANY THEME, CHANGE THE WINDOW SIZE SLIGHTLY, JUST ONCE IS ENOUGH AFTER APPLYING THEME, THIS IS IMPORTANT, BECAUSE THE THEME MAY NOT BE APPLIED ADEQUATELY!</h3>
-    <br />
-    <br />
-    <h1 align="center">Advanced theme settings</h1>
+    <h2>Theme section</h2>
+    <h3 align="center">Application themes</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_advancedthemes.png"></img> 
-    <p  >There you can adjust the transparency level of both the background image and the darkening mask after it and change theme background (only on custom themes).</p> 
-    <br />
-    <br />
-    <h1 align="center">Background theme settings</h1>
+    <p  >Application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it and change theme background</p> 
+    <h3 align="center">Background theme settings</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_themebg.png"></img> 
-    <p  >There you can change theme background from file or from link to image. Note: on some Windows 10 build we have huge problems with this feature!</p> 
-    <br />
-    <br />
-    <h1 align="center">Theme manager</h1>
+    <p  >There you can change theme background from file or from link to image. GIF file type is supported</p> 
+    <h3 align="center">Theme manager</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_thememanager.png"></img> 
-    <p  >There you can manage all your custom themes or create a new one (New name...). You can change theme names or delete themes.</p> 
+    <p>Manage all your custom themes or create a new one (New name...). You can change theme names or delete themes.</p> 
+    <h2>TrayMon section</h2>
+    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_traymon.png"></img> 
+    <p>Always be aware of the data from your sensors in any application. TrayMon displays information from your selected sensors in the Windows system tray, with full customization, so you can always keep up to date with current temperatures, frequencies, power, and other information from the sensors available on your system.</p>
+    <h2>RTSS section</h2>
+    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_rtssoverlay.png"></img> 
+    <p>Do you like to play? So are we, so the application has monitoring of system indicators and their output as an overlay over the game using RTSS! You can completely customize which colors will have which setting, which sensors to display, and what size they should be. You can also use additional customization if you have the skills to work with RTSS, you can edit the applied overlay parameters to suit your needs.</p>
+    <h2>Keybinds section</h2>
+    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_keybinds.png"></img> 
+    <p>Check out application keybindings and enable or disable them all.</p>
+    <h2>About section</h2>
+    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/settings/settings_about.png"></img> 
+    <p>About up section with join our discord button.</p>
   </ol>
 </details>
 
