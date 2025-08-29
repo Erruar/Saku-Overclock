@@ -366,7 +366,7 @@ public class OcFinderService : IOcFinderService
     /// <summary>
     /// Получение кривой для конкретного типа пресета
     /// </summary>
-    private double[] GetCurveForPresetType(PresetType type, PresetCurves curves)
+    private static double[] GetCurveForPresetType(PresetType type, PresetCurves curves)
     {
         return type switch
         {
@@ -533,59 +533,159 @@ public class OcFinderService : IOcFinderService
 
     private PresetMetrics CalculateMetrics(PresetType type, OptimizationLevel level, double stapm, int tempLimit, ArchitectureProfile profile)
     {
-        var cacheKey = $"{type}_{level}_{(int)stapm:F1}_{tempLimit}";
+        var cacheKey = $"{type}_{level}_{stapm:F1}_{tempLimit}";
         if (_metricsCache.TryGetValue(cacheKey, out var cached))
         {
             return cached;
         }
 
-        var baseTemp = 80;
+        // Константы для настройки
+        const double BASE_TEMP = 85.0;  // Базовая температура для расчетов
+        const double PERFORMANCE_CURVE_POWER = 0.45; // Степень для кривой производительности (меньше 0.5 = более пологая кривая)
+        const double EFFICIENCY_SWEET_SPOT = 0.8; // Точка максимальной энергоэффективности (75% от базовой мощности)
 
-        // Производительность (-50 - +50) 
-        var val = (stapm / _validatedCpuPower * 100) - 100;
-        var performanceScore = Math.Min(50,
-                               Math.Pow(
-                               Math.Abs(val), 0.7)
-                               * profile.EfficiencyMultiplier
-                               * (val > 0 ? 1 : -1));
+        // Нормализованная мощность (0 = минимум, 1 = база, >1 = буст)
+        var powerRatio = stapm / _validatedCpuPower;
 
-        // Температуры (-50 - +50)  - чем ниже лимит, тем выше балл
-        var thermalScore = Math.Min(50, -0.5 * (int)(100 - tempLimit / (double)baseTemp * 100 * profile.ThermalMultiplier));
-
-        // Бонусы за уровень оптимизации
-        var isPresetEco = type == PresetType.Eco || type == PresetType.Min;
-        var levelBonus = level switch
+        // === ПРОИЗВОДИТЕЛЬНОСТЬ ===
+        // Используем корневую зависимость с убывающей отдачей
+        // При powerRatio = 1 (100% мощности) -> performanceBase = 0
+        // При powerRatio = 2 (200% мощности) -> performanceBase ≈ 32 (вместо 50 при линейной)
+        double performanceBase;
+        if (powerRatio >= 1.0)
         {
-            OptimizationLevel.Basic => isPresetEco ? 1 : -1,
-            OptimizationLevel.Standard => 0,
-            OptimizationLevel.Deep => isPresetEco ? -1 : 1,
-            _ => 0
-        };
-
-        // Эффективность (-50 - +50)  - обратная зависимость от потребления
-        var effScore = (int)performanceScore + thermalScore + levelBonus;
-        if (performanceScore < 0 && thermalScore < 0 && effScore < 0)
+            // Буст режим: убывающая отдача от повышения мощности
+            var boost = powerRatio - 1.0;
+            performanceBase = Math.Pow(boost, PERFORMANCE_CURVE_POWER) * 50;
+        }
+        else
         {
-            effScore *= -1;
+            // Эко режим: более резкое падение производительности
+            var reduction = 1.0 - powerRatio;
+            performanceBase = -Math.Pow(reduction, PERFORMANCE_CURVE_POWER * 0.8) * 50;
         }
 
-        if (!isPresetEco)
+        // === ТЕМПЕРАТУРЫ ===
+        // Чем ниже лимит температуры, тем лучше для системы
+        var tempRatio = tempLimit / BASE_TEMP;
+        double thermalScore;
+
+        if (tempRatio <= 0.85) // Агрессивное охлаждение (≤72°C)
         {
-            effScore = (int)performanceScore * thermalScore + levelBonus;
+            thermalScore = (tempRatio - 0.85) * 200; // Более холодная работа
+        }
+        else if (tempRatio <= 1.0) // Нормальное охлаждение (72-85°C)
+        {
+            thermalScore = (tempRatio - 1.0) * 100 - 15; // Слегка больше
+        }
+        else // Горячий режим (>85°C)
+        {
+            thermalScore = (tempRatio - 1.0) * 200; // Температура сильно больше 
         }
 
-        var efficiencyScore = Math.Min(50, (effScore - 0.5 * effScore * (2 - profile.EfficiencyMultiplier)));
+        // Применяем термальный множитель профиля
+        thermalScore *= profile.ThermalMultiplier;
 
+        // === ЭНЕРГОЭФФЕКТИВНОСТЬ ===
+        // Максимальная эффективность в "сладкой точке" около 75% мощности
+        double efficiencyBase;
+
+        // Расстояние от оптимальной точки
+        var distanceFromSweet = Math.Abs(powerRatio - EFFICIENCY_SWEET_SPOT);
+
+        // Базовая эффективность - колоколообразная кривая с центром в EFFICIENCY_SWEET_SPOT
+        efficiencyBase = 50 * Math.Exp(-Math.Pow(distanceFromSweet * 2, 2));
+
+        // Корректировка на основе EfficiencyMultiplier
+        // Высокий multiplier (1.25) = процессор эффективен на низких мощностях
+        // Низкий multiplier (0.8) = процессор менее эффективен, но лучше масштабируется
+        if (profile.EfficiencyMultiplier > 1.0)
+        {
+            // Эффективный процессор: лучше работает на низких мощностях
+            if (powerRatio < 1.0)
+            {
+                efficiencyBase *= profile.EfficiencyMultiplier;
+            }
+            else
+            {
+                // Меньше выигрыша от повышения мощности
+                efficiencyBase *= (2.0 - profile.EfficiencyMultiplier);
+            }
+        }
+        else
+        {
+            // Менее эффективный процессор: лучше масштабируется с мощностью
+            if (powerRatio > 1.0)
+            {
+                // Больше выигрыша от повышения мощности
+                efficiencyBase *= (1.0 + (1.0 - profile.EfficiencyMultiplier));
+            }
+            else
+            {
+                efficiencyBase *= profile.EfficiencyMultiplier;
+            }
+        }
+
+        // Учитываем температуру в эффективности
+        efficiencyBase -= Math.Max(0, -thermalScore) * 0.3; // Штраф за высокие температуры
+
+        // === БОНУСЫ ЗА УРОВЕНЬ ОПТИМИЗАЦИИ ===
+        var isEcoPreset = type == PresetType.Eco || type == PresetType.Min;
+
+        var performanceLevelBonus = 0;
+        var efficiencyLevelBonus = 0;
+        var thermalLevelBonus = 0;
+
+        switch (level)
+        {
+            case OptimizationLevel.Basic:
+                if (isEcoPreset)
+                {
+                    efficiencyLevelBonus = 5;
+                    thermalLevelBonus = 3;
+                    performanceLevelBonus = -2;
+                }
+                else
+                {
+                    performanceLevelBonus = 3;
+                    efficiencyLevelBonus = -2;
+                }
+                break;
+
+            case OptimizationLevel.Standard:
+                // Сбалансированный подход
+                performanceLevelBonus = 0;
+                efficiencyLevelBonus = 2;
+                thermalLevelBonus = 0;
+                break;
+
+            case OptimizationLevel.Deep:
+                if (isEcoPreset)
+                {
+                    efficiencyLevelBonus = -3; // Глубокая оптимизация может снизить эффективность
+                    thermalLevelBonus = -2;
+                    performanceLevelBonus = 5; // Но повысить производительность
+                }
+                else
+                {
+                    performanceLevelBonus = 5;
+                    efficiencyLevelBonus = 3;
+                    thermalLevelBonus = -3; // Может повысить температуры
+                }
+                break;
+        }
+
+        // === ФИНАЛЬНЫЕ ЗНАЧЕНИЯ ===
         var metrics = new PresetMetrics
         {
-            PerformanceScore = (int)Math.Max(-50, Math.Min(50, performanceScore + levelBonus)),
-            EfficiencyScore = (int)Math.Max(-50, Math.Min(50, efficiencyScore + levelBonus)),
-            ThermalScore = (int)Math.Max(-50, Math.Min(50, thermalScore + levelBonus))
+            PerformanceScore = Math.Clamp((int)Math.Round(performanceBase) + performanceLevelBonus, -50, 50),
+            EfficiencyScore = Math.Clamp((int)Math.Round(efficiencyBase) + efficiencyLevelBonus, -50, 50),
+            ThermalScore = Math.Clamp((int)Math.Round(thermalScore) + thermalLevelBonus, -50, 50)
         };
 
         _metricsCache[cacheKey] = metrics;
         return metrics;
-    }
+    } 
 
     // Публичные методы для теста андервольтинга
     public bool IsUndervoltingAvailable()

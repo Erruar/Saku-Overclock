@@ -50,7 +50,7 @@ internal static class VisualTreeHelper
         }
         return false;
     }
-    public static void SetAllChildrenVisibility(StackPanel parent, Visibility visibility)
+    public static void SetAllChildrenVisibility(FrameworkElement parent, Visibility visibility)
     {
         var stackPanels = FindVisualChildren<StackPanel>(parent);
         foreach (var stackPanel in stackPanels)

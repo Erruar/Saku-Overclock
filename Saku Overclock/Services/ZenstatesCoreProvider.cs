@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Buffers;
+using System.Runtime.InteropServices;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
@@ -13,7 +14,6 @@ public class ZenstatesCoreProvider : IDataProvider
     private int _globalCoreCounter = -1;
     private readonly Cpu Cpu = CpuSingleton.GetInstance();
     private readonly Dictionary<int, int> _coreToTableIndexMap = []; // Маппинг: ядро -> индекс в таблице
-    private float[]? _cachedTable;
     // Флаг для проверки готовности таблицы
     private bool _isInitialized;
     public async Task<SensorsInformation> GetDataAsync()
@@ -26,18 +26,18 @@ public class ZenstatesCoreProvider : IDataProvider
         return new SensorsInformation
         {
             CpuFamily = Cpu.info.codeName.ToString(),
-            CpuStapmLimit = _cachedTable?[0] ?? 0,
-            CpuStapmValue = _cachedTable?[1] ?? 0,
-            CpuFastLimit = _cachedTable?[2] ?? 0,
-            CpuFastValue = _cachedTable?[3] ?? 0,
-            CpuSlowLimit = _cachedTable?[4] ?? 0,
-            CpuSlowValue = _cachedTable?[5] ?? 0,
-            VrmTdcValue = _cachedTable != null ? (_cachedTable[6] != 0 ? _cachedTable[7] : _cachedTable[9]) : 0,
-            VrmEdcValue = _cachedTable != null ? (_cachedTable[6] != 0 ? _cachedTable[7] : _cachedTable[9]) : 0,
-            VrmTdcLimit = _cachedTable != null ? (_cachedTable[6] != 0 ? _cachedTable[6] : _cachedTable[8]) : 0,
-            VrmEdcLimit = _cachedTable != null ? (_cachedTable[6] != 0 ? _cachedTable[6] : _cachedTable[8]) : 0,
-            CpuTempValue = _cachedTable?[11] ?? Cpu.GetCpuTemperature() ?? 0d,
-            CpuTempLimit = _cachedTable?[10] ?? 100,
+            CpuStapmLimit = Cpu.powerTable?.Table?[0] ?? 0,
+            CpuStapmValue = Cpu.powerTable?.Table?[1] ?? 0,
+            CpuFastLimit = Cpu.powerTable?.Table?[2] ?? 0,
+            CpuFastValue = Cpu.powerTable?.Table?[3] ?? 0,
+            CpuSlowLimit = Cpu.powerTable?.Table?[4] ?? 0,
+            CpuSlowValue = Cpu.powerTable?.Table?[5] ?? 0,
+            VrmTdcValue = (Cpu.powerTable?.Table != null ? (Cpu.powerTable?.Table[6] != 0 ? Cpu.powerTable?.Table[7] : Cpu.powerTable?.Table[9]) : 0) ?? 0,
+            VrmEdcValue = (Cpu.powerTable?.Table != null ? (Cpu.powerTable?.Table[6] != 0 ? Cpu.powerTable?.Table[7] : Cpu.powerTable?.Table[9]) : 0) ?? 0,
+            VrmTdcLimit = (Cpu.powerTable?.Table != null ? (Cpu.powerTable?.Table[6] != 0 ? Cpu.powerTable?.Table[6] : Cpu.powerTable?.Table[8]) : 0) ?? 0,
+            VrmEdcLimit = (Cpu.powerTable?.Table != null ? (Cpu.powerTable?.Table[6] != 0 ? Cpu.powerTable?.Table[6] : Cpu.powerTable?.Table[8]) : 0) ?? 0,
+            CpuTempValue = Cpu.powerTable?.Table?[11] ?? Cpu.GetCpuTemperature() ?? 0d,
+            CpuTempLimit = Cpu.powerTable?.Table?[10] ?? 100,
             CpuUsage = GetCoreLoad(),
             MemFrequency = Cpu.powerTable?.MCLK ?? 0,
             FabricFrequency = Cpu.powerTable?.FCLK ?? 0,
@@ -54,10 +54,7 @@ public class ZenstatesCoreProvider : IDataProvider
     {
         try
         {
-
             Cpu.RefreshPowerTable();
-            _cachedTable = Cpu.powerTable?.Table;
-
         }
         catch
         {
@@ -129,7 +126,7 @@ public class ZenstatesCoreProvider : IDataProvider
     {
         _coreToTableIndexMap.Clear();
 
-        if (_cachedTable == null || _coreMultiplierCache.Count == 0)
+        if (Cpu.powerTable?.Table == null || _coreMultiplierCache.Count == 0)
         {
             return;
         }
@@ -165,7 +162,7 @@ public class ZenstatesCoreProvider : IDataProvider
 
     private List<(int startIndex, List<(int index, float frequency)> frequencies)> FindFrequencyGroupsInTable(List<int> disabledCores)
     {
-        if (_cachedTable == null)
+        if (Cpu.powerTable?.Table == null)
         {
             return [];
         }
@@ -178,7 +175,7 @@ public class ZenstatesCoreProvider : IDataProvider
         // Создаем шаблон позиций отключенных ядер относительно начала группы
         var disabledOffsets = disabledCores.OrderBy(x => x).ToList();
 
-        for (var i = 0; i < _cachedTable?.Length - maxCoresPerCcd; i++)
+        for (var i = 0; i < Cpu.powerTable?.Table?.Length - maxCoresPerCcd; i++)
         {
             // Проверяем, может ли здесь начинаться группа частот ядер
             if (!IsValidFrequencyGroupStart(i, disabledOffsets, maxCoresPerCcd))
@@ -209,14 +206,14 @@ public class ZenstatesCoreProvider : IDataProvider
         foreach (var offset in disabledOffsets)
         {
             var checkIndex = startIndex + offset;
-            if (checkIndex >= _cachedTable?.Length || _cachedTable?[checkIndex] != 0)
+            if (checkIndex >= Cpu.powerTable?.Table?.Length || Cpu.powerTable?.Table?[checkIndex] != 0)
             {
                 return false;
             }
         }
 
         // Проверяем, что остальные значения в пределах разумного диапазона частот
-        for (var i = 0; i < maxCoresPerCcd && (startIndex + i) < _cachedTable?.Length; i++)
+        for (var i = 0; i < maxCoresPerCcd && (startIndex + i) < Cpu.powerTable?.Table?.Length; i++)
         {
             // Пропускаем позиции отключенных ядер
             if (disabledOffsets.Contains(i))
@@ -224,7 +221,7 @@ public class ZenstatesCoreProvider : IDataProvider
                 continue;
             }
 
-            var value = _cachedTable[startIndex + i];
+            var value = Cpu.powerTable?.Table[startIndex + i];
             // Проверяем, что значение похоже на частоту процессора (0.5 - 6.0 ГГц)
             if (value != 0 && (value < 0.5f || value > 6.0f))
             {
@@ -239,10 +236,10 @@ public class ZenstatesCoreProvider : IDataProvider
     {
         var group = new List<(int index, float frequency)>();
 
-        for (var i = 0; i < maxCoresPerCcd && (startIndex + i) < _cachedTable?.Length; i++)
+        for (var i = 0; i < maxCoresPerCcd && (startIndex + i) < Cpu.powerTable?.Table?.Length; i++)
         {
             var currentIndex = startIndex + i;
-            var frequency = _cachedTable[currentIndex];
+            var frequency = Cpu.powerTable?.Table[currentIndex] ?? 0;
 
             // Добавляем все значения, кроме нулей от отключенных ядер
             if (frequency != 0 || disabledOffsets.Contains(i))
@@ -364,13 +361,13 @@ public class ZenstatesCoreProvider : IDataProvider
     {
         // Проверяем кэш маппинга к Power Table
         if (_coreToTableIndexMap.TryGetValue((int)core, out var tableIndex) &&
-            _cachedTable != null &&
-            tableIndex < _cachedTable?.Length)
+            Cpu.powerTable?.Table != null &&
+            tableIndex < Cpu.powerTable?.Table?.Length)
         {
-            var tableFreq = _cachedTable[tableIndex];
+            var tableFreq = Cpu.powerTable?.Table[tableIndex];
             if (tableFreq >= 0.38)
             {
-                return tableFreq;
+                return tableFreq ?? 0;
             }
         }
 
@@ -444,7 +441,7 @@ public class ZenstatesCoreProvider : IDataProvider
         }
 
         // Стандартный метод через SystemProcessorPerformanceInformation
-        var perfInfo = new Cpu_Performance_Information[64];
+        var perfInfo = ArrayPool<Cpu_Performance_Information>.Shared.Rent(64);
         var perfSize = Marshal.SizeOf<Cpu_Performance_Information>();
 
         if (NtQuerySystemInformation(
@@ -464,6 +461,7 @@ public class ZenstatesCoreProvider : IDataProvider
             total[i] = perfInfo[i].KernelTime + perfInfo[i].UserTime;
         }
 
+        ArrayPool<Cpu_Performance_Information>.Shared.Return(perfInfo);
         return true;
     }
 
@@ -472,9 +470,9 @@ public class ZenstatesCoreProvider : IDataProvider
         idle = [];
         total = [];
 
-        var perfInfo = new Cpu_Performance_Information[64];
+        var perfInfo = ArrayPool<Cpu_Performance_Information>.Shared.Rent(64);
         var perfSize = Marshal.SizeOf<Cpu_Performance_Information>();
-        var idleInfo = new Cpu_Idle_Information[64];
+        var idleInfo = ArrayPool<Cpu_Idle_Information>.Shared.Rent(64);
         var idleSize = Marshal.SizeOf<Cpu_Idle_Information>();
 
         // Получаем idle информацию
@@ -508,6 +506,8 @@ public class ZenstatesCoreProvider : IDataProvider
             total[i] = perfInfo[i].KernelTime + perfInfo[i].UserTime;
         }
 
+        ArrayPool<Cpu_Performance_Information>.Shared.Return(perfInfo);
+        ArrayPool<Cpu_Idle_Information>.Shared.Return(idleInfo);
         return true;
     }
 

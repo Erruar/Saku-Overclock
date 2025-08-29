@@ -756,8 +756,8 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         return commandName switch
         {
-            "enable-feature" => (AppSettings.Preset > -1 && _profile[AppSettings.Preset].gpu16) ? "Param_GPU_g16/Text".GetLocalized() : "Param_SMU_Func_Text/Text".GetLocalized(),
-            "disable-feature" => (AppSettings.Preset > -1 && _profile[AppSettings.Preset].gpu16) ? "Param_GPU_g16/Text".GetLocalized() : "Param_SMU_Func_Text/Text".GetLocalized(),
+            "enable-feature" => (AppSettings.Preset > -1 && _profile[AppSettings.Preset] != null && _profile[AppSettings.Preset].gpu16) ? "Param_GPU_g16/Text".GetLocalized() : "Param_SMU_Func_Text/Text".GetLocalized(),
+            "disable-feature" => (AppSettings.Preset > -1 && _profile[AppSettings.Preset] != null && _profile[AppSettings.Preset].gpu16) ? "Param_GPU_g16/Text".GetLocalized() : "Param_SMU_Func_Text/Text".GetLocalized(),
             "stapm-limit" => "Param_CPU_c2/Text".GetLocalized(),
             "vrm-current" => "Param_VRM_v2/Text".GetLocalized(),
             "vrmmax-current" => "Param_VRM_v1/Text".GetLocalized(),

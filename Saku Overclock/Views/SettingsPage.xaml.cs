@@ -1915,9 +1915,9 @@ public sealed partial class SettingsPage
         try
         {
             NiLoad();
-            _niicons.Elements.RemoveAt(AppSettings.ThemeType);
+            _niicons.Elements.RemoveAt(AppSettings.NiIconsType);
             NiSave();
-            AppSettings.ThemeType = -1;
+            AppSettings.NiIconsType = -1;
             AppSettings.SaveSettings();
             NiIcon_LoadValues();
 

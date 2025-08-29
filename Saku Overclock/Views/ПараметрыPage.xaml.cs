@@ -322,8 +322,14 @@ public sealed partial class ПараметрыPage
         {
             if (AppSettings.Preset == -1)
             {
+                if (_profile.Length == 0)
+                {
+                    _profile = new Profile[1];
+                }
+
                 _indexprofile = 0;
-                ProfileCOM.SelectedIndex = 0;
+                ProfileCOM.SelectedIndex = 1;
+                AppSettings.SaveSettings();
             }
             else
             {
@@ -1614,6 +1620,7 @@ public sealed partial class ПараметрыPage
             var stackPanels = VisualTreeHelper.FindVisualChildren<StackPanel>(expander);
             var arrayStackPanels = stackPanels as StackPanel[] ?? [.. stackPanels];
             var anyVisible = false;
+            var savedArray = new List<int>();
 
             foreach (var stackPanel in arrayStackPanels)
             {
@@ -1627,6 +1634,7 @@ public sealed partial class ПараметрыPage
                 {
                     stackPanel.Visibility = Visibility.Visible;
                     anyVisible = true;
+                    savedArray.Add(Grid.GetRow(stackPanel));
 
                     // Второй проход: делаем видимыми все дочерние элементы
                     VisualTreeHelper.SetAllChildrenVisibility(stackPanel, Visibility.Visible);
@@ -1647,6 +1655,18 @@ public sealed partial class ПараметрыPage
                 if (secondStackPanel.Visibility == Visibility.Visible)
                 {
                     VisualTreeHelper.SetAllChildrenVisibility(secondStackPanel, Visibility.Visible);
+                }
+            }
+
+            // Текущий подход некорректный, делает видимыми все элементы Grid, включая те что в StackPanel, хотя их должен игнорировать
+            var helperGrids = VisualTreeHelper.FindVisualChildren<Grid>(expander);
+            var arrayHelperGrids = helperGrids as Grid[] ?? [.. helperGrids];
+            foreach (var grid in arrayHelperGrids)
+            {
+                if (savedArray.Contains(Grid.GetRow(grid)) && Grid.GetColumn(grid) == 1 && grid.HorizontalAlignment == HorizontalAlignment.Center)
+                {
+                    grid.Visibility = Visibility.Visible;
+                    VisualTreeHelper.SetAllChildrenVisibility(grid, Visibility.Visible);
                 }
             }
 

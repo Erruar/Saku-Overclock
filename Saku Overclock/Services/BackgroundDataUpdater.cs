@@ -1,7 +1,7 @@
-﻿using System.Drawing;
+﻿using System.Buffers;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using H.NotifyIcon;
 using Newtonsoft.Json;
@@ -26,8 +26,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     private readonly IRtssSettingsService
         _rtssSettings = App.GetService<IRtssSettingsService>(); // Конфиг с настройками модуля RTSS
 
-    private string? _rtssLine; // Строка для вывода в модуль RTSS
-    private string? _cachedSelectedProfileReplacement; // Кешированная замена имени профиля
     private readonly string _cachedAppVersion = ГлавнаяViewModel.GetVersion(); // Кешированная версия приложения
     private bool _isIconsCreated;
 
@@ -52,7 +50,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     private NiIconsSettings _niicons = new(); // Конфиг с настройками Ni-Icons
 
     // Кеш для иконок чтобы не создавать заново каждый раз
-    private readonly Dictionary<string, (Icon icon, IntPtr handle)> _iconCache = new();
+    private readonly Dictionary<string, (Icon icon, IntPtr handle)> _iconCache = [];
     private readonly Lock _cacheLock = new();
 
     private bool _batteryCached;
@@ -113,9 +111,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                     var info = await _dataProvider.GetDataAsync();
                     try
                     {
-                        var batteryInfo = await GetBatInfoAsync();
                         var (batteryName, batteryPercent, batteryState, batteryHealth, batteryCycles, batteryCapacity,
-                            chargeRate, notTrack, batteryLifeTime) = batteryInfo;
+                            chargeRate, notTrack, batteryLifeTime) = await GetBatInfoAsync();
 
                         info.BatteryName = batteryName;
                         info.BatteryUnavailable = notTrack;
@@ -133,19 +130,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                         await LogHelper.LogError($"Данные батареи не обновлены: {ex}");
                     }
 
-                    try
-                    {
-                        var ramInfo = GetRamInfo();
-                        var (totalRamGb, busyRamGb, usagePercent, usageString) = ramInfo;
-                        info.RamTotal = totalRamGb;
-                        info.RamBusy = busyRamGb;
-                        info.RamUsagePercent = usagePercent;
-                        info.RamUsage = usageString;
-                    }
-                    catch (Exception ex)
-                    {
-                        await LogHelper.LogError($"Данные оперативной памяти не обновлены: {ex}");
-                    }
+                    (info.RamTotal, info.RamBusy, info.RamUsagePercent, info.RamUsage) = GetRamInfo();
 
                     DataUpdated?.Invoke(this, info);
 
@@ -215,12 +200,12 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
             bool notTrack;
             var batteryInfo = await Task.Run(() =>
             {
-                // Получаем динамические (часто меняющиеся) параметры
+                // Получаем часто меняющиеся параметры
                 var batteryPercent = GetSystemInfo.GetBatteryPercent() + "%";
                 var batteryState = GetSystemInfo.GetBatteryStatus().ToString();
                 var chargeRate = $"{GetSystemInfo.GetBatteryRate() / 1000:0.##}W";
 
-                // Получаем время работы батареи (не кэшируется)
+                // Время работы батареи
                 var batteryLifeTime = GetSystemInfo.GetBatteryLifeTime();
 
                 // Переменные для кэшируемых значений
@@ -231,17 +216,16 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
                 if (!_batteryCached)
                 {
-                    // Медленные операции – выполняются только при первом вызове
+                    // Кешируем все необязательные данные
                     batteryHealth = $"{100 - GetSystemInfo.GetBatteryHealth() * 100:0.##}%";
                     batteryCycles = GetSystemInfo.GetBatteryCycle().ToString();
 
                     var fullChargeCapacity = GetSystemInfo.ReadFullChargeCapacity();
                     var designCapacity = GetSystemInfo.ReadDesignCapacity(out notTrack);
-                    batteryCapacity = $"{fullChargeCapacity}mAh/{designCapacity}mAh";
+                    batteryCapacity = $"{fullChargeCapacity}mWh/{designCapacity}mWh";
 
                     batteryName = GetSystemInfo.GetBatteryName() ?? "Unknown";
 
-                    // Сохраняем результаты для будущих вызовов
                     _cachedBatteryName = batteryName;
                     _cachedBatteryHealth = batteryHealth;
                     _cachedBatteryCycles = batteryCycles;
@@ -251,7 +235,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 }
                 else
                 {
-                    // Используем ранее сохранённые данные
                     batteryName = _cachedBatteryName ?? "Unknown";
                     batteryHealth = _cachedBatteryHealth!;
                     batteryCycles = _cachedBatteryCycles!;
@@ -267,7 +250,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         }
         catch
         {
-            // В случае ошибки возвращаем пустые строки и флаг недоступности true
+            // Батарея недоступна
             return (string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
                 true, 0);
         }
@@ -293,17 +276,14 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
             }
 
             // Преобразуем из байтов в гигабайты
-            var totalRamGb = memStatus.ullTotalPhys / (1024.0 * 1024 * 1024);
-            var availRamGb = memStatus.ullAvailPhys / (1024.0 * 1024 * 1024);
+            var totalRamGb = memStatus.ullTotalPhys / 1073741824.0;
+            var availRamGb = memStatus.ullAvailPhys / 1073741824.0;
             var busyRamGb = totalRamGb - availRamGb;
 
-            var usagePercent = (int)memStatus.dwMemoryLoad; // Уже готовый процент от WinAPI
-
-            var totalRamStr = $"{totalRamGb:F1}GB";
-            var busyRamStr = $"{busyRamGb:F1}GB";
-            var usageString = $"{usagePercent}%\n{busyRamStr}/{totalRamStr}";
-
-            return (totalRamStr, busyRamStr, usagePercent, usageString);
+            return ($"{totalRamGb:F1}GB",
+                    $"{busyRamGb:F1}GB",
+                    (int)memStatus.dwMemoryLoad, 
+                    $"{(int)memStatus.dwMemoryLoad}%\n{busyRamGb:F1}GB/{totalRamGb:F1}GB");
         }
         catch
         {
@@ -437,100 +417,459 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         }
     }
 
+
+    private void TryCleanupResources()
+    {
+        try
+        {
+            if (_isRtssUpdated)
+            {
+                RtssHandler.ResetOsdText();
+                _isRtssUpdated = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogWarn($"Не удалось очистить RTSS ресурсы: {ex.Message}");
+        }
+
+        try
+        {
+            if (_isIconsUpdated)
+            {
+                DisposeAllNotifyIcons();
+                _isIconsUpdated = false;
+                _isIconsCreated = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogWarn($"Не удалось очистить иконки: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Update RTSS Line information voids
+
+
     private void UpdateRtssMetrics(SensorsInformation sensorsInformation)
     {
         try
         {
-            _isRtssUpdated = true; // Фиксируем попытку обновления
+            _isRtssUpdated = true;
 
-            var (avgCoreClk, avgCoreVolt, endClkString) = CalculateCoreMetrics(sensorsInformation);
-            var replacements = GetReplacements(avgCoreClk, avgCoreVolt, sensorsInformation);
-
-            var editorText = _rtssSettings.AdvancedCodeEditor;
-            if (string.IsNullOrEmpty(editorText))
+            if (string.IsNullOrEmpty(_rtssSettings.AdvancedCodeEditor))
             {
-                LogHelper.LogWarn("RTSS AdvancedCodeEditor is empty or null");
+                LogHelper.LogWarn("Строка RTSS@AdvancedCodeEditor пустая");
                 return;
             }
 
-            _rtssLine = ProcessRtssTemplate(editorText, endClkString, replacements);
-
-            if (!string.IsNullOrEmpty(_rtssLine))
-            {
-                RtssHandler.ChangeOsdText(_rtssLine);
-            }
+            ProcessAndSendRtssTemplate(_rtssSettings.AdvancedCodeEditor, sensorsInformation);
         }
         catch (Exception ex)
         {
             LogHelper.LogError($"Ошибка обновления RTSS метрик: {ex}");
-            _isRtssUpdated = false; // Сбрасываем флаг при ошибке
+            _isRtssUpdated = false;
         }
     }
 
-    private static string ProcessRtssTemplate(string editorText, string endClkString,
-        Dictionary<string, string> replacements)
+    private void ProcessAndSendRtssTemplate(string editorText, SensorsInformation sensorsInformation)
     {
-        const string startTag = "$cpu_clock_cycle$";
-        const string endTag = "$cpu_clock_cycle_end$";
+        var startIndex = editorText.IndexOf("$cpu_clock_cycle$", StringComparison.Ordinal);
+        var endIndex = editorText.IndexOf("$cpu_clock_cycle_end$", StringComparison.Ordinal);
 
-        var startIndex = editorText.IndexOf(startTag, StringComparison.Ordinal);
-        var endIndex = editorText.IndexOf(endTag, StringComparison.Ordinal);
-
-        // Проверяем корректность тегов
-        if (startIndex == -1 || endIndex == -1 || endIndex <= startIndex + startTag.Length)
+        // Если теги отсутствуют или некорректны, обрабатываем простые плейсхолдеры
+        if (startIndex == -1 || endIndex == -1 || endIndex <= startIndex + 17)
         {
-            // Если теги отсутствуют или некорректны, просто заменяем плейсхолдеры
-            return ReplacePlaceholders(editorText, replacements);
+            ProcessSimpleTemplate(editorText, sensorsInformation);
+            return;
         }
 
         try
         {
-            // Span для максимальной производительности
-            var textSpan = editorText.AsSpan();
-
-            var prefix = textSpan[..startIndex];
-            var suffix = textSpan[(endIndex + endTag.Length)..];
-
-            // Точный расчет длины с учетом замены имён
-            var estimatedReplacementsLength = EstimateReplacementsLength(replacements, prefix.Length + suffix.Length);
-            var estimatedLength = prefix.Length + endClkString.Length + suffix.Length + estimatedReplacementsLength;
-            var sb = new StringBuilder(Math.Max(estimatedLength,
-                256)); // Минимум 256 для избежания утечек памяти и крашей
-
-            sb.Append(ReplacePlaceholders(prefix.ToString(), replacements));
-
-            if (!string.IsNullOrEmpty(endClkString))
-            {
-                sb.Append(endClkString);
-            }
-
-            sb.Append(ReplacePlaceholders(suffix.ToString(), replacements));
-
-            return sb.ToString();
+            ProcessComplexTemplate(editorText, sensorsInformation, startIndex, endIndex);
         }
         catch (Exception ex)
         {
             LogHelper.LogWarn($"Ошибка обработки RTSS шаблона: {ex.Message}");
-            return ReplacePlaceholders(editorText, replacements);
+            ProcessSimpleTemplate(editorText, sensorsInformation);
         }
     }
 
-    private static int EstimateReplacementsLength(Dictionary<string, string>? replacements, int originalTextLength)
+    private void ProcessSimpleTemplate(string editorText, SensorsInformation sensorsInformation)
     {
-        if (replacements == null || replacements.Count == 0)
+        var estimatedLength = EstimateResultLength(editorText);
+        var buffer = ArrayPool<char>.Shared.Rent(estimatedLength);
+
+        try
+        {
+            var length = ReplaceAllPlaceholders(editorText.AsSpan(), buffer, sensorsInformation);
+            RtssHandler.ChangeOsdTextSpan(buffer.AsSpan(0, length));
+        }
+        finally
+        {
+            ArrayPool<char>.Shared.Return(buffer);
+        }
+    }
+
+    private void ProcessComplexTemplate(string editorText, SensorsInformation sensorsInformation,
+        int startIndex, int endIndex)
+    {
+        var estimatedLength = EstimateResultLength(editorText) +
+            (int)(CpuSingleton.GetInstance().info.topology.cores * 50); 
+
+        var buffer = ArrayPool<char>.Shared.Rent(estimatedLength);
+
+        try
+        {
+            var currentPos = 0;
+
+            // Начало
+            currentPos += ReplaceAllPlaceholders(
+                editorText.AsSpan(0, startIndex),
+                buffer.AsSpan(currentPos),
+                sensorsInformation);
+
+            // Середина - ядра процессора
+            currentPos += CalculateCoreMetricsToSpan(
+                buffer.AsSpan(currentPos),
+                sensorsInformation.CpuFrequencyPerCore,
+                sensorsInformation.CpuVoltagePerCore);
+
+            // Конец
+            currentPos += ReplaceAllPlaceholders(
+                editorText.AsSpan(endIndex + 21),
+                buffer.AsSpan(currentPos),
+                sensorsInformation);
+
+            RtssHandler.ChangeOsdTextSpan(buffer.AsSpan(0, currentPos));
+        }
+        finally
+        {
+            ArrayPool<char>.Shared.Return(buffer);
+        }
+    }
+
+    private int ReplaceAllPlaceholders(ReadOnlySpan<char> input, Span<char> output,
+        SensorsInformation sensorsInformation)
+    {
+        var current = input;
+        var outputPos = 0;
+
+        while (!current.IsEmpty)
+        {
+            var dollarIndex = current.IndexOf('$');
+            if (dollarIndex == -1)
+            {
+                // Нет больше плейсхолдеров, копируем остаток
+                current.CopyTo(output[outputPos..]);
+                outputPos += current.Length;
+                break;
+            }
+
+            // Копируем текст до плейсхолдера
+            current[..dollarIndex].CopyTo(output[outputPos..]);
+            outputPos += dollarIndex;
+
+            var remaining = current[dollarIndex..];
+            var endDollarIndex = remaining[1..].IndexOf('$');
+
+            if (endDollarIndex == -1)
+            {
+                // Нет закрывающего $, копируем остаток
+                remaining.CopyTo(output[outputPos..]);
+                outputPos += remaining.Length;
+                break;
+            }
+
+            var placeholder = remaining[..(endDollarIndex + 2)];
+            var replacementLength = TryReplacePlaceholder(placeholder, output[outputPos..], sensorsInformation);
+
+            if (replacementLength > 0)
+            {
+                outputPos += replacementLength;
+                current = remaining[(endDollarIndex + 2)..];
+            }
+            else
+            {
+                // Плейсхолдер не найден, копируем как есть
+                placeholder.CopyTo(output[outputPos..]);
+                outputPos += placeholder.Length;
+                current = remaining[(endDollarIndex + 2)..];
+            }
+        }
+
+        return outputPos;
+    }
+
+    private int TryReplacePlaceholder(ReadOnlySpan<char> placeholder, Span<char> output,
+        SensorsInformation sensorsInformation)
+    {
+        // Быстрая проверка по первым символам для оптимизации
+        if (placeholder.Length < 3)
         {
             return 0;
         }
 
-        // В среднем каждое имя заменяется на строку длиной 5-15 символов
-        // Имена составляют около 20% от текста
-        var estimatedPlaceholderCount = Math.Max(1, originalTextLength / 50); // Оценка количества имён
-        var avgReplacementLength = replacements.Values.Count != 0
-            ? (int)replacements.Values.Average(v => v.Length)
-            : 10;
+        if (placeholder.SequenceEqual("$AppVersion$"))
+        {
+            return WriteToSpan(_cachedAppVersion, output);
+        }
 
-        return (int)(estimatedPlaceholderCount * avgReplacementLength * 1.25); // Добавляем буффер в +25%
+        if (placeholder.SequenceEqual("$SelectedProfile$"))
+        {
+            return WriteTransliteratedProfile(output);
+        }
+
+        // Числовые значения с форматированием
+        if (placeholder.SequenceEqual("$stapm_value$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.CpuStapmValue, output);
+        }
+
+        if (placeholder.SequenceEqual("$stapm_limit$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.CpuStapmLimit, output);
+        }
+
+        if (placeholder.SequenceEqual("$fast_value$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.CpuFastValue, output);
+        }
+
+        if (placeholder.SequenceEqual("$fast_limit$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.CpuFastLimit, output);
+        }
+
+        if (placeholder.SequenceEqual("$slow_value$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.CpuSlowValue, output);
+        }
+
+        if (placeholder.SequenceEqual("$slow_limit$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.CpuSlowLimit, output);
+        }
+
+        if (placeholder.SequenceEqual("$vrmedc_value$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.VrmEdcValue, output);
+        }
+
+        if (placeholder.SequenceEqual("$vrmedc_max$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.VrmEdcLimit, output);
+        }
+
+        if (placeholder.SequenceEqual("$cpu_temp_value$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.CpuTempValue, output);
+        }
+
+        if (placeholder.SequenceEqual("$cpu_temp_max$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.CpuTempLimit, output);
+        }
+
+        if (placeholder.SequenceEqual("$cpu_usage$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.CpuUsage, output);
+        }
+
+        if (placeholder.SequenceEqual("$gfx_clock$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.ApuFrequency, output);
+        }
+
+        if (placeholder.SequenceEqual("$gfx_volt$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.ApuVoltage, output);
+        }
+
+        if (placeholder.SequenceEqual("$gfx_temp$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.ApuTemperature, output);
+        }
+
+        if (placeholder.SequenceEqual("$average_cpu_clock$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.CpuFrequency, output);
+        }
+
+        if (placeholder.SequenceEqual("$average_cpu_voltage$"))
+        {
+            return WriteFormattedDouble(sensorsInformation.CpuVoltage, output);
+        }
+
+        return 0;
     }
+
+    private static int WriteToSpan(string text, Span<char> output)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return 0;
+        }
+
+        var span = text.AsSpan();
+        span.CopyTo(output);
+        return span.Length;
+    }
+
+    private static int WriteFormattedDouble(double value, Span<char> output) => value.TryFormat(output, out var written, "0.###") ? written : 0;
+
+    private static int WriteTransliteratedProfile(Span<char> output)
+    {
+        var profile = ShellPage.SelectedProfile;
+        if (string.IsNullOrEmpty(profile))
+        {
+            return 0;
+        }
+
+        var written = 0;
+        foreach (var c in profile)
+        {
+            if (TransliterationMap.TryGetValue(c, out var transliterated))
+            {
+                var span = transliterated.AsSpan();
+                if (written + span.Length <= output.Length)
+                {
+                    span.CopyTo(output[written..]);
+                    written += span.Length;
+                }
+            }
+            else if (written < output.Length)
+            {
+                output[written++] = c;
+            }
+        }
+
+        return written;
+    }
+
+    private int CalculateCoreMetricsToSpan(Span<char> output, double[]? cpuFrequencyPerCore,
+        double[]? cpuVoltagePerCore)
+    {
+        var template = GetCoreTemplate();
+        if (string.IsNullOrEmpty(template))
+        {
+            return 0;
+        }
+
+        var cores = CpuSingleton.GetInstance().info.topology.cores;
+        var compactSizing = "<Br><S0>е" + (template.Contains("<S1>") ? "<S1>" : string.Empty);
+        var outputPos = 0;
+
+        // Начальный compactSizing для нормального отображения компактности
+        outputPos += WriteToSpan(compactSizing, output[outputPos..]);
+
+        for (uint f = 0; f < cores; f++)
+        {
+            if (f > 0 && f % 4 == 0)
+            {
+                outputPos += WriteToSpan(compactSizing, output[outputPos..]);
+            }
+
+            outputPos += ProcessCoreTemplate(template, f, cpuFrequencyPerCore, cpuVoltagePerCore,
+                output[outputPos..]);
+        }
+
+        return outputPos;
+    }
+
+    private int ProcessCoreTemplate(string template, uint coreIndex, double[]? frequencies,
+        double[]? voltages, Span<char> output)
+    {
+        var clk = GetSafeCoreValue(frequencies, coreIndex);
+        var volt = GetSafeCoreValue(voltages, coreIndex);
+
+        var templateSpan = template.AsSpan();
+        var outputPos = 0;
+
+        while (!templateSpan.IsEmpty)
+        {
+            var dollarIndex = templateSpan.IndexOf('$');
+            if (dollarIndex == -1)
+            {
+                templateSpan.CopyTo(output[outputPos..]);
+                outputPos += templateSpan.Length;
+                break;
+            }
+
+            // Текст до плейсхолдера
+            templateSpan[..dollarIndex].CopyTo(output[outputPos..]);
+            outputPos += dollarIndex;
+
+            var remaining = templateSpan[dollarIndex..];
+            if (remaining.StartsWith("$currCore$"))
+            {
+                outputPos += coreIndex.TryFormat(output[outputPos..], out var written) ? written : 0;
+                templateSpan = remaining[10..];
+            }
+            else if (remaining.StartsWith("$cpu_core_clock$"))
+            {
+                outputPos += clk.TryFormat(output[outputPos..], out var written, "F3") ? written : 0;
+                templateSpan = remaining[16..];
+            }
+            else if (remaining.StartsWith("$cpu_core_voltage$"))
+            {
+                outputPos += volt.TryFormat(output[outputPos..], out var written, "G3") ? written : 0;
+                templateSpan = remaining[18..];
+            }
+            else
+            {
+                // Неизвестный - копируем $
+                output[outputPos++] = '$';
+                templateSpan = remaining[1..];
+            }
+        }
+
+        return outputPos;
+    }
+
+    private string GetCoreTemplate()
+    {
+        var match = ClockCycleRegex().Match(_rtssSettings.AdvancedCodeEditor);
+        return match is { Success: true, Groups.Count: > 1 } ? match.Groups[1].Value : string.Empty;
+    }
+
+    private static int EstimateResultLength(string input) => Math.Max(input.Length + input.Length / 2, 1024);
+
+    private static double GetSafeCoreValue(double[]? array, uint index)
+    {
+        return array != null && index < array.Length ? array[index] : 0f;
+    }
+
+    private static readonly Dictionary<char, string> TransliterationMap = new()
+    {
+        { 'а', "a"  }, { 'б', "b"   }, { 'в', "v"  }, { 'г', "g"  }, { 'д', "d"  },
+        { 'е', "e"  }, { 'ё', "yo"  }, { 'ж', "zh" }, { 'з', "z"  }, { 'и', "i"  },
+        { 'й', "y"  }, { 'к', "k"   }, { 'л', "l"  }, { 'м', "m"  }, { 'н', "n"  },
+        { 'о', "o"  }, { 'п', "p"   }, { 'р', "r"  }, { 'с', "s"  }, { 'т', "t"  },
+        { 'у', "u"  }, { 'ф', "f"   }, { 'х', "h"  }, { 'ц', "ts" }, { 'ч', "ch" },
+        { 'ш', "sh" }, { 'щ', "sch" }, { 'ъ', "'"  }, { 'ы', "i"  }, { 'ь', "'"  },
+        { 'э', "e"  }, { 'ю', "yu"  }, { 'я', "ya" },
+
+        // Прописные буквы
+        { 'А', "A"  }, { 'Б', "B"   }, { 'В', "V"  }, { 'Г', "G"  }, { 'Д', "D"  },
+        { 'Е', "E"  }, { 'Ё', "Yo"  }, { 'Ж', "Zh" }, { 'З', "Z"  }, { 'И', "I"  },
+        { 'Й', "Y"  }, { 'К', "K"   }, { 'Л', "L"  }, { 'М', "M"  }, { 'Н', "N"  },
+        { 'О', "O"  }, { 'П', "P"   }, { 'Р', "R"  }, { 'С', "S"  }, { 'Т', "T"  },
+        { 'У', "U"  }, { 'Ф', "F"   }, { 'Х', "H"  }, { 'Ц', "Ts" }, { 'Ч', "Ch" },
+        { 'Ш', "Sh" }, { 'Щ', "Sch" }, { 'Ъ', "'"  }, { 'Ы', "I"  }, { 'Ь', "'"  },
+        { 'Э', "E"  }, { 'Ю', "Yu"  }, { 'Я', "Ya" }
+    };
+
+
+
+    [GeneratedRegex(@"\$cpu_clock_cycle\$(.*?)\$cpu_clock_cycle_end\$")]
+    private static partial Regex ClockCycleRegex();
+
+    #endregion
+
+    #region Update Ni-Icons voids
 
     private void UpdateNotifyIcons(SensorsInformation sensorsInformation)
     {
@@ -543,7 +882,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 CreateNotifyIcons();
             }
 
-            // Пакетное обновление min/max значений для лучшей производительности
             var sensorValues = new[]
             {
                 sensorsInformation.CpuStapmValue,
@@ -559,7 +897,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 sensorsInformation.ApuVoltage
             };
 
-            // Обновляем все min/max значения в одном цикле
             for (var i = 0; i < sensorValues.Length && i < _niiconsMinMaxValues.Count; i++)
             {
                 UpdateMinMaxValues(_niiconsMinMaxValues, i, sensorValues[i]);
@@ -623,39 +960,9 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         }
     }
 
-    private void TryCleanupResources()
-    {
-        try
-        {
-            if (_isRtssUpdated)
-            {
-                RtssHandler.ResetOsdText();
-                _isRtssUpdated = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogWarn($"Не удалось очистить RTSS ресурсы: {ex.Message}");
-        }
-
-        try
-        {
-            if (_isIconsUpdated)
-            {
-                DisposeAllNotifyIcons();
-                _isIconsUpdated = false;
-                _isIconsCreated = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogWarn($"Не удалось очистить иконки: {ex.Message}");
-        }
-    }
-
     private static void
-        UpdateMinMaxValues(List<MinMax> minMaxValues, int index,
-            double currentValue)
+       UpdateMinMaxValues(List<MinMax> minMaxValues, int index,
+           double currentValue)
     {
         // Проверяем, что индекс не выходит за пределы списка.
         if (index >= 0 && index < minMaxValues.Count)
@@ -694,210 +1001,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
         Change_Ni_Icons_Text(key, currentValueText, tooltip, extendedTooltip);
     }
-
-    #endregion
-
-    #region Update RTSS Line information voids
-
-    private static string
-        ReplacePlaceholders(string input,
-            Dictionary<string, string> replacements) // Меняет заголовки в соответствии со словарём
-        =>
-            replacements.Aggregate(input,
-                (current, replacement) => current.Replace(replacement.Key, replacement.Value));
-
-    private static readonly Dictionary<char, string> TransliterationMap = new()
-    {
-        { 'а', "a"  }, { 'б', "b"   }, { 'в', "v"  }, { 'г', "g"  }, { 'д', "d"  },
-        { 'е', "e"  }, { 'ё', "yo"  }, { 'ж', "zh" }, { 'з', "z"  }, { 'и', "i"  },
-        { 'й', "y"  }, { 'к', "k"   }, { 'л', "l"  }, { 'м', "m"  }, { 'н', "n"  },
-        { 'о', "o"  }, { 'п', "p"   }, { 'р', "r"  }, { 'с', "s"  }, { 'т', "t"  },
-        { 'у', "u"  }, { 'ф', "f"   }, { 'х', "h"  }, { 'ц', "ts" }, { 'ч', "ch" },
-        { 'ш', "sh" }, { 'щ', "sch" }, { 'ъ', "'"  }, { 'ы', "i"  }, { 'ь', "'"  },
-        { 'э', "e"  }, { 'ю', "yu"  }, { 'я', "ya" },
-
-        // Прописные буквы
-        { 'А', "A"  }, { 'Б', "B"   }, { 'В', "V"  }, { 'Г', "G"  }, { 'Д', "D"  },
-        { 'Е', "E"  }, { 'Ё', "Yo"  }, { 'Ж', "Zh" }, { 'З', "Z"  }, { 'И', "I"  },
-        { 'Й', "Y"  }, { 'К', "K"   }, { 'Л', "L"  }, { 'М', "M"  }, { 'Н', "N"  },
-        { 'О', "O"  }, { 'П', "P"   }, { 'Р', "R"  }, { 'С', "S"  }, { 'Т', "T"  },
-        { 'У', "U"  }, { 'Ф', "F"   }, { 'Х', "H"  }, { 'Ц', "Ts" }, { 'Ч', "Ch" },
-        { 'Ш', "Sh" }, { 'Щ', "Sch" }, { 'Ъ', "'"  }, { 'Ы', "I"  }, { 'Ь', "'"  },
-        { 'Э', "E"  }, { 'Ю', "Yu"  }, { 'Я', "Ya" }
-    };
-
-    private static string Transliterate(string input)
-    {
-        if (string.IsNullOrEmpty(input))
-        {
-            return input;
-        }
-
-        var sb = new StringBuilder(input.Length * 2);
-        foreach (var c in input)
-        {
-            sb.Append(TransliterationMap.TryGetValue(c, out var replacement) ? replacement : c);
-        }
-
-        return sb.ToString();
-    }
-
-    private Dictionary<string, string> GetReplacements(double avgCoreClk, double avgCoreVolt,
-        SensorsInformation sensorsInformation) // Словарь с элементами, которые нужно заменить
-    {
-        var profileName = Transliterate(ShellPage.SelectedProfile);
-
-        // Если кэшированное значение отсутствует, вычислить его
-        _cachedSelectedProfileReplacement = profileName;
-
-        return new Dictionary<string, string>
-        {
-            {
-                "$AppVersion$",
-                _cachedAppVersion
-            },
-            {
-                "$SelectedProfile$",
-                _cachedSelectedProfileReplacement
-            },
-            {
-                "$stapm_value$",
-                $"{sensorsInformation.CpuStapmValue:0.###}"
-            },
-            {
-                "$stapm_limit$",
-                $"{sensorsInformation.CpuStapmLimit:0.###}"
-            },
-            {
-                "$fast_value$",
-                $"{sensorsInformation.CpuFastValue:0.###}"
-            },
-            {
-                "$fast_limit$",
-                $"{sensorsInformation.CpuFastLimit:0.###}"
-            },
-            {
-                "$slow_value$",
-                $"{sensorsInformation.CpuSlowValue:0.###}"
-            },
-            {
-                "$slow_limit$",
-                $"{sensorsInformation.CpuSlowLimit:0.###}"
-            },
-            {
-                "$vrmedc_value$",
-                $"{sensorsInformation.VrmEdcValue:0.###}"
-            },
-            {
-                "$vrmedc_max$",
-                $"{sensorsInformation.VrmEdcLimit:0.###}"
-            },
-            {
-                "$cpu_temp_value$",
-                $"{sensorsInformation.CpuTempValue:0.###}"
-            },
-            {
-                "$cpu_temp_max$",
-                $"{sensorsInformation.CpuTempLimit:0.###}"
-            },
-            {
-                "$cpu_usage$",
-                $"{sensorsInformation.CpuUsage:0.###}"
-            },
-            {
-                "$gfx_clock$",
-                $"{sensorsInformation.ApuFrequency:0.###}"
-            },
-            {
-                "$gfx_volt$",
-                $"{sensorsInformation.ApuVoltage:0.###}"
-            },
-            {
-                "$gfx_temp$",
-                $"{sensorsInformation.ApuTemperature:0.###}"
-            },
-            {
-                "$average_cpu_clock$",
-                $"{avgCoreClk:0.###}"
-            },
-            {
-                "$average_cpu_voltage$",
-                $"{avgCoreVolt:0.###}"
-            }
-        };
-    }
-
-    private (double avgCoreClk, double avgCoreVolt, string endClkString) CalculateCoreMetrics(
-        SensorsInformation sensorsInformation)
-    {
-        double sumCoreClk = 0;
-        double sumCoreVolt = 0;
-        var validCoreCount = 0;
-
-        var sb = new StringBuilder();
-
-        var cpuInstance = CpuSingleton.GetInstance();
-        var topologyCores = cpuInstance.info.topology.cores;
-
-        // Получение шаблона
-        var template = string.Empty;
-        if (!string.IsNullOrEmpty(_rtssSettings.AdvancedCodeEditor))
-        {
-            var match = ClockCycleRegex().Match(_rtssSettings.AdvancedCodeEditor);
-            if (match is { Success: true, Groups.Count: > 1 })
-            {
-                template = match.Groups[1].Value;
-            }
-        }
-
-        var hasTemplate = !string.IsNullOrEmpty(template);
-
-        // Проход по всем ядрам
-        var compactSizing = hasTemplate && template.Contains("<S1>") ? "<S1>" : string.Empty;
-        sb.Append("<Br><S0>е" + compactSizing);
-        for (uint f = 0; f < topologyCores; f++)
-        {
-            var clk = GetSafeCoreValue(sensorsInformation.CpuFrequencyPerCore!, f);
-            var volt = GetSafeCoreValue(sensorsInformation.CpuVoltagePerCore!, f);
-
-            if (clk > 0 && !double.IsNaN(clk))
-            {
-                sumCoreClk += clk;
-                sumCoreVolt +=
-                    volt; // Если есть частота значит есть и напряжение, а вообще напряжения может и не быть! Просто без детекта и всё
-                validCoreCount++;
-            }
-
-            if (hasTemplate)
-            {
-                if (f > 0 && f % 4 == 0)
-                {
-                    sb.Append("<Br><S0>е" + compactSizing);
-                }
-                var coreLine = template
-                    .Replace("$currCore$", f.ToString())
-                    .Replace("$cpu_core_clock$", $"{clk:F3}")
-                    .Replace("$cpu_core_voltage$", $"{volt:G3}");
-
-                sb.Append(coreLine);
-            }
-        }
-
-        var avgCoreClk = validCoreCount > 0 ? sumCoreClk / validCoreCount : 0;
-        var avgCoreVolt = validCoreCount > 0 ? sumCoreVolt / validCoreCount : 0;
-
-        return (avgCoreClk, avgCoreVolt, sb.ToString());
-    }
-
-    private static double GetSafeCoreValue(double[]? array, uint index)
-    {
-        return array != null && index < array.Length ? array[index] : 0f;
-    }
-
-    [GeneratedRegex(@"\$cpu_clock_cycle\$(.*?)\$cpu_clock_cycle_end\$")]
-    private static partial Regex ClockCycleRegex();
-
-    #region Ni-Icons
 
     /// <summary> Внешний метод для обновления иконок после изменения их в настройках приложения </summary>
     public void UpdateNotifyIcons()
@@ -1164,43 +1267,39 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         }
     }
 
-    private static GraphicsPath? CreateRoundedRectanglePath(Rectangle rect, int radius)
+    /// <summary>Создаёт точную область скруглённого куба с учётом съедания пикселей GDI+</summary>
+    private static GraphicsPath CreateRoundedRectanglePath(Rectangle rect, int radius)
     {
-        // Проверка корректности значений
-        if (radius <= 0 || rect.Width <= 0 || rect.Height <= 0)
-        {
-            return null;
-        }
+        var path = new GraphicsPath();
+        var diameter = radius * 2;
+        var factor = 0.99f; // Компенсирует "съедание" пикселей GDI+
 
-        try
-        {
-            var path = new GraphicsPath();
-            var diameter = radius * 2;
-            var size = new Size(diameter, diameter);
-            var arc = new Rectangle(rect.Location, size);
+        // Верхний левый угол (без изменений)
+        path.AddArc(rect.Left, rect.Top, diameter, diameter, 180, 90);
 
-            // Верхний левый угол
-            path.AddArc(arc, 180, 90);
+        // Верхняя линия (с компенсацией)
+        path.AddLine(rect.Left + radius, rect.Top, rect.Right - radius - factor, rect.Top);
 
-            // Верхний правый угол
-            arc.X = rect.Right - diameter;
-            path.AddArc(arc, 270, 90);
+        // Верхний правый угол (с компенсацией)
+        path.AddArc(rect.Right - diameter - factor, rect.Top, diameter, diameter, 270, 90);
 
-            // Нижний правый угол
-            arc.Y = rect.Bottom - diameter;
-            path.AddArc(arc, 0, 90);
+        // Правая линия (с компенсацией)
+        path.AddLine(rect.Right, rect.Top + radius, rect.Right, rect.Bottom - radius - factor);
 
-            // Нижний левый угол
-            arc.X = rect.Left;
-            path.AddArc(arc, 90, 90);
+        // Нижний правый угол (с компенсацией)
+        path.AddArc(rect.Right - diameter - factor, rect.Bottom - diameter - factor, diameter, diameter, 0, 90);
 
-            path.CloseFigure();
-            return path;
-        }
-        catch
-        {
-            return null;
-        }
+        // Нижняя линия (с компенсацией)
+        path.AddLine(rect.Right - radius - factor, rect.Bottom, rect.Left + radius, rect.Bottom);
+
+        // Нижний левый угол (с компенсацией)
+        path.AddArc(rect.Left, rect.Bottom - diameter - factor, diameter, diameter, 90, 90);
+
+        // Левая линия (с компенсацией)
+        path.AddLine(rect.Left, rect.Bottom - radius - factor, rect.Left, rect.Top + radius);
+
+        path.CloseFigure();
+        return path;
     }
 
     private void Change_Ni_Icons_Text(string iconName, string? newText, string? tooltipText = null,
@@ -1354,7 +1453,14 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 (wholePartLength) // TrayMon© - Разработка от Erruar, поэтому вам не стоит разбираться в том, как она работает. Все значения были скомпилированы в функции при помощи NumPy
             {
                 case 1:
-                    var offset1 = (int)fontSize == 14 ? 3.3f : (int)fontSize == 13 ? -3.3f : 0f;
+                    var offset1 = (int)fontSize switch
+                    {
+                        14 => 3.3f,
+                        13 => -5f,
+                        12 => -1f,
+                        11 => 2f,
+                        _ => 0f
+                    };
                     xPos = -0.0715488215f * fontSize * fontSize * fontSize
                         + 2.83311688f * fontSize * fontSize
                         - 35.2581049f * fontSize + 135.071284f
@@ -1426,5 +1532,4 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
     #endregion
 
-    #endregion
 }

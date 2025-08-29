@@ -70,9 +70,10 @@ public abstract class UpdateChecker
             await App.MainWindow.ShowMessageDialogAsync("Main_NoReleases".GetLocalized(), "Error".GetLocalized());
             return;
         }
-        _updateNewVersion = latestRelease.Release;
         if (latestRelease.Version > CurrentVersion)
         {
+            _updateNewVersion = latestRelease.Release;
+
             if (AppSettings.CheckForUpdates)
             {
                 var navigationService = App.GetService<INavigationService>();
