@@ -14,8 +14,7 @@ public class ZenstatesCoreProvider : IDataProvider
     private int _globalCoreCounter = -1;
     private readonly Cpu Cpu = CpuSingleton.GetInstance();
     private readonly Dictionary<int, int> _coreToTableIndexMap = []; // Маппинг: ядро -> индекс в таблице
-    // Флаг для проверки готовности таблицы
-    private bool _isInitialized;
+    private bool _isInitialized; // Флаг для проверки готовности таблицы
     public async Task<SensorsInformation> GetDataAsync()
     {
         // Здесь реализация через Zenstates Core (с WMI, таблицами Power_Table и т.п.)

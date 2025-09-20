@@ -271,7 +271,7 @@ public sealed partial class КулерPage
             }
         };
 
-        var themerDialog = new ContentDialog
+        var nbfcDialog = new ContentDialog
         {
             Title = "Warning".GetLocalized(),
             Content = stackPanel,
@@ -283,7 +283,7 @@ public sealed partial class КулерPage
 
         if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            themerDialog.XamlRoot = XamlRoot;
+            nbfcDialog.XamlRoot = XamlRoot;
         }
 
         // Обработчик события нажатия на кнопку загрузки
@@ -347,15 +347,15 @@ public sealed partial class КулерPage
                 downloadButton.Opacity = 0.0;
                 progressBar.Opacity = 0.0;
                 // Изменение текста диалога и активация кнопки "Далее"
-                themerDialog.Content = new TextBlock
+                nbfcDialog.Content = new TextBlock
                 {
                     Text = "Cooler_DownloadNBFC_AfterDesc".GetLocalized(),
                     TextAlignment = TextAlignment.Center
                 };
-                themerDialog.IsPrimaryButtonEnabled = true;
+                nbfcDialog.IsPrimaryButtonEnabled = true;
             }
         };
-        var result = await themerDialog.ShowAsync();
+        var result = await nbfcDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
             PageService.ReloadPage(typeof(КулерViewModel).FullName!); // Вызов метода перезагрузки страницы
@@ -372,10 +372,10 @@ public sealed partial class КулерPage
                 var fanCount = AsusWinIOWrapper.HealthyTable_FanCounts();
                 if (fanCount == -1)
                 {
-                    /*_unavailableFlag = true;
+                    _unavailableFlag = true;
                     AsusOptions_Button.IsEnabled = false;
                     AsusUnavailable.Visibility = Visibility.Visible;
-                    ToolTipService.SetToolTip(AsusUnavailable, "Cooler_AsusModeUnsupportedSign".GetLocalized());*/
+                    ToolTipService.SetToolTip(AsusUnavailable, "Cooler_AsusModeUnsupportedSign".GetLocalized());
                 }
                 else
                 {

@@ -695,26 +695,26 @@ public sealed partial class ИнформацияPage
 
                     if (trueBatLifeTime < 0)
                     {
-                        tbBATTime.Text = "InfoBatteryAC".GetLocalized(); // Считаем, что устройство питается от сети
+                        tbBATTime.Text = "InfoBatteryAC".GetLocalized(); // Устройство от сети
                     }
                     else
                     {
-                        var ts = TimeSpan.FromSeconds(trueBatLifeTime); // Преобразуем секунды в TimeSpan
+                        var ts = TimeSpan.FromSeconds(trueBatLifeTime); // Секунды в TimeSpan
                         var parts = new List<string>();
                         if ((int)ts.TotalHours > 0)
                         {
-                            parts.Add($"{(int)ts.TotalHours}h"); // Добавляем часы, если они есть
+                            parts.Add($"{(int)ts.TotalHours}h"); // Часы, если они есть
                         }
 
                         if (ts.Minutes > 0)
                         {
-                            parts.Add($"{ts.Minutes}m"); // Добавляем минуты, если они есть
+                            parts.Add($"{ts.Minutes}m"); // Минуты, если они есть
                         }
 
                         if (ts.Seconds > 0 || parts.Count == 0)
                         {
                             parts.Add(
-                                $"{ts.Seconds}s"); // Добавляем секунды – если других компонент нет, или если секунды ненулевые
+                                $"{ts.Seconds}s"); // Секунды
                         }
 
                         tbBATTime.Text = string.Join(" ", parts);
@@ -1391,11 +1391,10 @@ public sealed partial class ИнформацияPage
     {
         try
         {
-            // Очищаем сетку перед построением
             InfoMainCPUFreqGrid.RowDefinitions.Clear();
             InfoMainCPUFreqGrid.ColumnDefinitions.Clear();
 
-            // Получаем список видеокарт с помощью WMI
+            // Список видеокарт из WMI
             _cachedGpuList ??= await Task.Run(() =>
             {
                 return new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
@@ -1408,13 +1407,12 @@ public sealed partial class ИнформацияPage
                         return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
                                !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
                     })
-                    .ToList(); // Преобразуем в список для удобства работы
+                    .ToList();
             });
 
             // Количество видеокарт
             var gpuCounter = _cachedGpuList.Count;
 
-            // Сохраняем текущее значение _numberOfLogicalProcessors для восстановления позже
             var backupNumberLogical = _numberOfLogicalProcessors;
 
             // Определяем количество элементов (coreCounter) в зависимости от выбранной секции
@@ -1424,7 +1422,7 @@ public sealed partial class ИнформацияPage
                 0 or 5 => _numberOfCores > 2
                     ? _numberOfCores // Если ядер больше 2, используем количество ядер
                     : infoCPUSectionComboBox.SelectedIndex == 0
-                        ? _numberOfLogicalProcessors // Если выбрано отображение частоты, используем логические процессоры
+                        ? backupNumberLogical // Если выбрано отображение частоты, используем логические процессоры
                         : _numberOfCores, // Иначе используем количество ядер
                 // Секция GFX
                 1 => gpuCounter, // Используем количество видеокарт
@@ -1436,15 +1434,15 @@ public sealed partial class ИнформацияPage
                 _ => 1 // По умолчанию 1 элемент
             };
 
-            // Если количество ядер больше 2, обновляем _numberOfLogicalProcessors
+            // Если количество ядер больше 2, обновляем backupNumberLogical
             if (_numberOfCores > 2)
             {
-                _numberOfLogicalProcessors = coreCounter;
+                backupNumberLogical = coreCounter;
             }
 
             // Определяем количество строк и столбцов для сетки
-            var rowCount = _numberOfLogicalProcessors / 2 > 4 ? 4 : _numberOfLogicalProcessors / 2;
-            if (_numberOfLogicalProcessors % 2 != 0 || _numberOfLogicalProcessors == 2)
+            var rowCount = backupNumberLogical / 2 > 4 ? 4 : backupNumberLogical / 2;
+            if (backupNumberLogical % 2 != 0 || backupNumberLogical == 2)
             {
                 rowCount++; // Добавляем дополнительную строку, если количество элементов нечётное или равно 2
             }
@@ -1455,9 +1453,6 @@ public sealed partial class ИнформацияPage
                 InfoMainCPUFreqGrid.RowDefinitions.Add(new RowDefinition());
                 InfoMainCPUFreqGrid.ColumnDefinitions.Add(new ColumnDefinition());
             }
-
-            // Восстанавливаем значение _numberOfLogicalProcessors
-            _numberOfLogicalProcessors = backupNumberLogical;
 
             // Заполняем сетку кнопками
             for (var j = 0; j < InfoMainCPUFreqGrid.RowDefinitions.Count; j++)

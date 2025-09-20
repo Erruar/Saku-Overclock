@@ -15,9 +15,9 @@
 	<UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <AssemblyVersion></AssemblyVersion>
-    <FileVersion>1.0.18.224</FileVersion>
+    <FileVersion>1.0.18.231</FileVersion>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>  
-    <Version>1.0.18.224</Version>
+    <Version>1.0.18.231</Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
     <UseWPF>False</UseWPF>
@@ -79,6 +79,7 @@
     <None Remove="Styles\CopyButton.xaml" />
     <None Remove="Styles\NavigationSelector.xaml" />
     <None Remove="Styles\OptionsVisualizer.xaml" />
+    <None Remove="Styles\PivotNavigation.xaml" />
     <None Remove="Styles\ProfileSelector.xaml" />
     <None Remove="Styles\ToggleButtonCollapseLauncher.xaml" />
     <None Remove="Views\AdvancedКулерPage.xaml" />
@@ -915,6 +916,9 @@
     <None Update="SakuRTSSCLI.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Styles\PivotNavigation.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\OptionsVisualizer.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -983,6 +987,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+
+  <PropertyGroup Label="Globals">
+    <WebView2EnableCsWinRTProjection>False</WebView2EnableCsWinRTProjection>
+  </PropertyGroup>
   
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
