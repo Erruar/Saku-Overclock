@@ -236,16 +236,24 @@ public sealed partial class MainWindow
 
     private void EcoMode_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
+        SettingsService.Preset = -1;
         SettingsService.PremadeEcoActivated = true;
         SettingsService.PremadeBalanceActivated = false;
         SettingsService.PremadeMaxActivated = false;
         SettingsService.PremadeMinActivated = false;
         SettingsService.PremadeSpeedActivated = false;
+
+        ShellPage.NextPremadeProfile_Activate("Eco");
+
+        var (_, _, _, settings, _) = ShellPage.PremadedProfiles["Eco"];
+
+        SettingsService.RyzenAdjLine = settings;
         SettingsService.SaveSettings();
-        var navigationService = App.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
-        App.MainWindow.Show();
-        App.MainWindow.BringToFront();
+
+        Applyer.ApplyWithoutAdjLine(true);
+
+        App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationEco".GetLocalized(),
+                AppContext.BaseDirectory));
     }
 
     private void GithubLink_ExecuteRequested(object? _, ExecuteRequestedEventArgs args) =>
