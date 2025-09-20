@@ -24,6 +24,11 @@ using Path = System.IO.Path;
 using TextConstants = Microsoft.UI.Text.TextConstants;
 using TextGetOptions = Microsoft.UI.Text.TextGetOptions;
 using TextSetOptions = Microsoft.UI.Text.TextSetOptions;
+using Octokit;
+using Saku_Overclock.Services;
+using System.Diagnostics;
+using Application = Microsoft.UI.Xaml.Application;
+using FileMode = System.IO.FileMode;
 
 namespace Saku_Overclock.Views;
 
@@ -34,13 +39,19 @@ public sealed partial class AdvancedКулерPage
 
     public AdvancedКулерPage()
     {
-        App.GetService<AdvancedКулерViewModel>(); // Инициализация ViewModel
         InitializeComponent();
-        Load_example(); // Загрузка примера из файла
+
         SettingsService.NbfcFlagConsoleCheckSpeedRunning =
             false; // Старые флаги для выключения автообновления информации в фоне программы
         SettingsService.FlagRyzenAdjConsoleTemperatureCheckRunning = false;
         SettingsService.SaveSettings();
+
+        Loaded += AdvancedКулерPage_Loaded;
+    }
+
+    private void AdvancedКулерPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        Load_example(); // Загрузка примера из файла
         LoadFanCurvesFromConfig(); // Загрузить кривые
         Init_Configs(); // Инициализация конфигов NBFC
     }
@@ -80,18 +91,19 @@ public sealed partial class AdvancedКулерPage
         }
     }
 
-    private void Load_example() // Загрузить пример
+    private void Load_example()
     {
-        var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
-        // Путь к папке с программой
-        var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
         // Путь к файлу конфига
-        var pathToConfig = Path.Combine(pathToProgramDirectory!,
-            @"C:\Program Files (x86)\NoteBook FanControl\Configs\ASUS Vivobook X580VD.xml");
+        var pathToConfig = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly()
+                                                              .Location)!,
+                                        @"C:\Program Files (x86)\NoteBook FanControl\Configs\ASUS Vivobook X580VD.xml"); 
         try
         {
-            ReadEx.Text = File.ReadAllText(pathToConfig);
-            ReadEx.Text = ReadEx.Text.Replace("<?xml version=\"1.0\"?>", "\n");
+            if (File.Exists(pathToConfig))
+            {
+                ReadEx.Text = File.ReadAllText(pathToConfig);
+                ReadEx.Text = ReadEx.Text.Replace("<?xml version=\"1.0\"?>", "\n");
+            }
         }
         catch (Exception ex)
         {
@@ -101,6 +113,8 @@ public sealed partial class AdvancedКулерPage
 
     private static string GetXmlFileContent(string filePath, TabViewItem newTab) // Получить текст файла
     {
+        if (!File.Exists(filePath)) { return "Failed to find file"; }
+
         try
         {
             return File.ReadAllText(filePath);
@@ -360,7 +374,10 @@ public sealed partial class AdvancedКулерPage
                 }
                 else
                 {
-                    await LogHelper.TraceIt_TraceError("File not found: " + configFilePath);
+                    AdvancedCooler_Curve_Tresholds.Visibility = Visibility.Collapsed;
+                    CurveDesc.Text = "AdvancedCooler_CurveDescUnavailable".GetLocalized();
+
+                    await ShowNbfcDialogAsync();
                 }
             }
             catch (Exception ex)
@@ -371,6 +388,145 @@ public sealed partial class AdvancedКулерPage
         catch (Exception e)
         {
             await LogHelper.TraceIt_TraceError(e.ToString());
+        }
+    }
+    private async Task ShowNbfcDialogAsync()
+    {
+        // Создаем элементы интерфейса, которые понадобятся в диалоге
+        var downloadButton = new Button
+        {
+            Margin = new Thickness(0, 12, 0, 0),
+            CornerRadius = new CornerRadius(15),
+            Style = (Style)Application.Current.Resources["AccentButtonStyle"],
+            Content = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Children =
+                {
+                    new FontIcon { Glyph = "\uE74B" }, // Иконка загрузки
+                    new TextBlock
+                    {
+                        Margin = new Thickness(10, 0, 0, 0), Text = "Cooler_DownloadNBFC_Title".GetLocalized(),
+                        FontWeight = new FontWeight(700)
+                    }
+                }
+            },
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+
+        var progressBar = new ProgressBar
+        {
+            IsIndeterminate = false,
+            Opacity = 0.0,
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+
+        var stackPanel = new StackPanel
+        {
+            Orientation = Orientation.Vertical,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text = "Cooler_DownloadNBFC_Desc".GetLocalized(),
+                    Width = 300,
+                    TextWrapping = TextWrapping.Wrap,
+                    TextAlignment = TextAlignment.Left
+                },
+                downloadButton,
+                progressBar
+            }
+        };
+
+        var nbfcDialog = new ContentDialog
+        {
+            Title = "Warning".GetLocalized(),
+            Content = stackPanel,
+            CloseButtonText = "Cancel".GetLocalized(),
+            PrimaryButtonText = "Next".GetLocalized(),
+            DefaultButton = ContentDialogButton.Close,
+            IsPrimaryButtonEnabled = false // Первоначально кнопка "Далее" неактивна
+        };
+
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+        {
+            nbfcDialog.XamlRoot = XamlRoot;
+        }
+
+        // Обработчик события нажатия на кнопку загрузки
+        downloadButton.Click += async (_, _) =>
+        {
+            downloadButton.IsEnabled = false;
+            progressBar.Opacity = 1.0;
+
+            var client = new GitHubClient(new ProductHeaderValue("SakuOverclock"));
+            var releases = await client.Repository.Release.GetAll("hirschmann", "nbfc");
+            var latestRelease = releases[0];
+
+            var downloadUrl = latestRelease.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe"))?.BrowserDownloadUrl;
+            if (downloadUrl != null)
+            {
+                var httpClient = new HttpClient();
+                var response = await httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
+
+                var totalBytes = response.Content.Headers.ContentLength ?? 1;
+                var downloadPath = Path.Combine(Path.GetTempPath(), "NBFC");
+
+                var fileStream = new FileStream(downloadPath, FileMode.Create, FileAccess.Write,
+                    FileShare.None);
+                var downloadStream = await response.Content.ReadAsStreamAsync();
+                var buffer = new byte[8192];
+                int bytesRead;
+                long totalRead = 0;
+
+                while ((bytesRead = await downloadStream.ReadAsync(buffer)) > 0)
+                {
+                    await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+                    totalRead += bytesRead;
+                    progressBar.Value = (double)totalRead / totalBytes * 100;
+                }
+
+                await Task.Delay(1000); // Задержка в 1 секунду
+                // Убедиться, что файл полностью закрыт перед запуском
+                if (File.Exists(downloadPath))
+                {
+                label_8:
+                    try
+                    {
+                        // Запуск загруженного установочного файла с правами администратора
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = downloadPath,
+                            Verb = "runas" // Запуск от имени администратора
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        await App.MainWindow.ShowMessageDialogAsync(
+                            "Cooler_DownloadNBFC_ErrorDesc".GetLocalized() + $": {ex.Message}", "Error".GetLocalized());
+                        await Task.Delay(2000);
+                        goto
+                            label_8; // Повторить задачу открытия автообновления приложения, в случае если возникла ошибка доступа
+                    }
+                }
+
+                downloadButton.Opacity = 0.0;
+                progressBar.Opacity = 0.0;
+                // Изменение текста диалога и активация кнопки "Далее"
+                nbfcDialog.Content = new TextBlock
+                {
+                    Text = "Cooler_DownloadNBFC_AfterDesc".GetLocalized(),
+                    TextAlignment = TextAlignment.Center
+                };
+                nbfcDialog.IsPrimaryButtonEnabled = true;
+            }
+        };
+        var result = await nbfcDialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            PageService.ReloadPage(typeof(AdvancedКулерViewModel).FullName!); // Вызов метода перезагрузки страницы
         }
     }
 
