@@ -38,8 +38,9 @@ public class AppSettingsService : IAppSettingsService
     public bool RtssMetricsEnabled { get; set; } = false; // Включены ли RTSS Метрики
     public int NiIconsType { get; set; } = -1; // Тип отображаемых иконок Треймона
     public bool StreamStabilizerEnabled { get; set; } = false; // Включен ли оптимизатор стрима
-    public bool CurveOptimizerOverallEnabled { get; set; } = false; // Включен ли глобальный андервольтинг
-    public int CurveOptimizerOverallLevel { get; set; } = 0; // Уровень глобального андервольтинга (0 - выкл, 1 - лёгкий, 2 - средний)
+    public int StreamStabilizerType { get; set; } = 0; // Тип оптимизатора стрима: 0 - базовая блокировка частоты, 1 - до максимальной частоты, 2 - до процента максимальной частоты
+    public int StreamStabilizerMaxMHz { get; set; } = 3000; // Максимальная частота процессора при использовании оптимизатора стрима
+    public int StreamStabilizerMaxPercentMHz { get; set; } = 80; // Максимальный процент частоты процессора при использовании оптимизатора стрима
     public bool ProfilespageViewModeBeginner { get; set; } = true; // Пресеты, готовые пресеты и параметры
     public int Preset { get; set; } = 0; // Выбранный пресет
     public string RyzenAdjLine { get; set; } = string.Empty; // RyzenADJline для применения параметров
@@ -49,6 +50,7 @@ public class AppSettingsService : IAppSettingsService
     public bool PremadeSpeedActivated { get; set; } = false;
     public bool PremadeMaxActivated { get; set; } = true;
     public int PremadeOptimizationLevel { get; set; } = 0; // Уровень оптимизации пресета: 0 - Базовый, 1 - Стандартный, 2 - Расширенный
+    public int PremadeCurveOptimizerOverrideLevel { get; set; } = -10; // Уровень андервольтинга для Расширенного режима оптимизации всех готовых пресетов
     public bool AppFirstRun { get; set; } = true; // Первый запуск приложения
     public int AppFirstRunType { get; set; } = 0; // Страница первого запуска (Поможет при закрытии приложения после первого запуска без настройки)
 

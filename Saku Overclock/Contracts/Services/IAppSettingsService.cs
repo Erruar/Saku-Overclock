@@ -104,18 +104,21 @@ public interface IAppSettingsService
         get;
         set;
     } // Включен ли оптимизатор стрима
-
-    bool CurveOptimizerOverallEnabled
+    int StreamStabilizerType
     {
         get;
         set;
-    } // Включен ли глобальный андервольтинг
-
-    int CurveOptimizerOverallLevel
+    } // Тип оптимизатора стрима: 0 - базовая блокировка частоты, 1 - до максимальной частоты, 2 - до процента максимальной частоты
+    int StreamStabilizerMaxMHz
     {
         get;
         set;
-    } // Уровень глобального андервольтинга (0 - выкл, 1 - лёгкий, 2 - средний)
+    } // Максимальная частота процессора при использовании оптимизатора стрима
+    int StreamStabilizerMaxPercentMHz
+    {
+        get;
+        set;
+    } // Максимальный процент частоты процессора при использовании оптимизатора стрима
 
     bool ProfilespageViewModeBeginner
     {
@@ -171,10 +174,17 @@ public interface IAppSettingsService
         get;
         set;
     }  // Уровень оптимизации пресета: 0 - Базовый, 1 - Стандартный, 2 - Расширенный
+
+    int PremadeCurveOptimizerOverrideLevel
+    {
+        get; set;
+    } // Уровень андервольтинга для Расширенного режима оптимизации всех готовых пресетов
+
     bool AppFirstRun
     {
         get; set;
     } // Первый запуск приложения
+
     int AppFirstRunType
     {
         get; set;
@@ -185,6 +195,7 @@ public interface IAppSettingsService
     {
         get; set;
     } // Выбранная конфигурация страницы управления кулером
+
     string NbfcConfigXmlName
     {
         get;
