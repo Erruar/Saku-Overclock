@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.SMUEngine;
 using ZenStates.Core;
@@ -112,10 +113,11 @@ public class SafetyLimits
     public int MaxStapmTime { get; set; } = 900;
 }
 
-public class OcFinderService : IOcFinderService
+public partial class OcFinderService : IOcFinderService
 {
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private readonly IDataProvider? _dataProvider = App.GetService<IDataProvider>();
+    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
     private Cpu _cpu;
 
     private const bool _forceTraining = false;
@@ -511,10 +513,11 @@ public class OcFinderService : IOcFinderService
             sb.Append($"--max-performance=0 "); // Включит Max Performance режим
             sb.Append($"--disable-feature=10 "); // Выключит Pkg-Pwr лимит
 
-            if (level == OptimizationLevel.Deep) 
+            if (level == OptimizationLevel.Deep)
             {
                 sb.Append($"--disable-feature=8 "); // Выключит TDC лимит
             }
+
         }
 
         sb.Append($"--prochot-deassertion-ramp={prochotRamp} ");
@@ -522,7 +525,13 @@ public class OcFinderService : IOcFinderService
         // Для глубокой оптимизации добавляем андервольтинг если доступен
         if (level == OptimizationLevel.Deep && _isUndervoltingAvailable)
         {
-            sb.Append(CurveOptimizerGenerateStringHelper(-10)); // Базовый андервольтинг
+            if (AppSettings.PremadeCurveOptimizerOverrideLevel <= -51 || AppSettings.PremadeCurveOptimizerOverrideLevel >= 1)
+            {
+                AppSettings.PremadeCurveOptimizerOverrideLevel = -10;
+                AppSettings.SaveSettings();
+            }
+
+            sb.Append(CurveOptimizerGenerateStringHelper(AppSettings.PremadeCurveOptimizerOverrideLevel)); // Андервольтинг
         }
 
         return sb.ToString().Trim();
@@ -725,10 +734,15 @@ public class OcFinderService : IOcFinderService
         var options = new PresetOptions()
         {
             ThermalOptions = values.GetValueOrDefault("--tctl-temp", 80).ToString() + "C",
-            PowerOptions = (values.GetValueOrDefault("--stapm-limit", 35000) / 1000).ToString() + "W, "
-            + (values.GetValueOrDefault("--fast-limit", 35000) / 1000).ToString() + "W, "
-            + (values.GetValueOrDefault("--slow-limit", 35000) / 1000).ToString() + "W",
-            CurrentOptions = (values.GetValueOrDefault("--vrmmax-current", 110000) / 1000).ToString() + "A, " + (values.GetValueOrDefault("--vrm-current", 90000) / 1000).ToString() + "A, " + (values.GetValueOrDefault("--vrmsocmax-current", 50000) / 1000).ToString() + "A"
+            PowerOptions = new[] 
+                         {
+                             values.GetValueOrDefault("--stapm-limit", 0),
+                             values.GetValueOrDefault("--fast-limit", 0),
+                             values.GetValueOrDefault("--slow-limit", 0)
+                         }.Select(v => (v / 1000).ToString() + "W")
+                          .Where(s => s != "0W").Distinct()
+                          .Aggregate("", (a, b) => string.IsNullOrEmpty(a) ? b : a + ", " + b),
+            CurrentOptions = (values.GetValueOrDefault("--vrmmax-current", 0) / 1000).ToString() + "A, " + (values.GetValueOrDefault("--vrm-current", 0) / 1000).ToString() + "A, " + (values.GetValueOrDefault("--vrmsocmax-current", 0) / 1000).ToString() + "A"
         };
 
         _optionsCache[cacheKey] = options;
@@ -781,7 +795,7 @@ public class OcFinderService : IOcFinderService
         );
     }
 
-    private (int TempLimit, int StapmLimit, int FastLimit, int SlowLimit, int SlowTime, int StapmTime, int ProchotRamp) ParseCommandString(string commandString)
+    private static (int TempLimit, int StapmLimit, int FastLimit, int SlowLimit, int SlowTime, int StapmTime, int ProchotRamp) ParseCommandString(string commandString)
     {
         // Простой парсер для извлечения значений из строки команд
         var parts = commandString.Split(' ');
