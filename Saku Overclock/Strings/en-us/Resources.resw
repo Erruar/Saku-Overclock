@@ -275,11 +275,11 @@
   <data name="Param_Preset.Text" xml:space="preserve">
     <value>Saved presets:</value>
   </data>
-  <data name="Settings_Apply_Start.Header" xml:space="preserve">
+  <data name="Settings_Apply_Start_Desc.Text" xml:space="preserve">
     <value>Autoapply latest settings when opening</value>
   </data>
-  <data name="Settings_Auto_Reapply.Header" xml:space="preserve">
-    <value>Reapply latest settings every (S)</value>
+  <data name="Settings_Auto_Reapply.Text" xml:space="preserve">
+    <value>Reapply latest applied settings every few seconds</value>
   </data>
   <data name="Settings_Name.Text" xml:space="preserve">
     <value>Settings page</value>
@@ -1456,12 +1456,6 @@ ARE DOING!!! IT CAN BURN YOUR CPU!</value>
   <data name="Settings_AppStart.Text" xml:space="preserve">
     <value>Startup options</value>
   </data>
-  <data name="Settings_Auto_Reapply.OffContent" xml:space="preserve">
-    <value>Off.</value>
-  </data>
-  <data name="Settings_Auto_Reapply.OnContent" xml:space="preserve">
-    <value>On.</value>
-  </data>
   <data name="Settings_Start_MiniBoot.Content" xml:space="preserve">
     <value>Startup &amp; tray</value>
   </data>
@@ -1510,35 +1504,23 @@ ARE DOING!!! IT CAN BURN YOUR CPU!</value>
   &lt;/actions&gt;
 &lt;/toast&gt;</value>
   </data>
-  <data name="ThemeAdvanced.Header" xml:space="preserve">
+  <data name="ThemeAdvanced.Text" xml:space="preserve">
     <value>Toggle advanced theme settings</value>
-  </data>
-  <data name="ThemeAdvanced.OffContent" xml:space="preserve">
-    <value>Off.</value>
-  </data>
-  <data name="ThemeAdvanced.OnContent" xml:space="preserve">
-    <value>On.</value>
   </data>
   <data name="ThemeChangeBgText.Text" xml:space="preserve">
     <value>Change background</value>
   </data>
-  <data name="ThemeCustomBg.Header" xml:space="preserve">
+  <data name="ThemeCustomBg.Text" xml:space="preserve">
     <value>Use custom background image</value>
-  </data>
-  <data name="ThemeCustomBg.OffContent" xml:space="preserve">
-    <value>Off.</value>
-  </data>
-  <data name="ThemeCustomBg.OnContent" xml:space="preserve">
-    <value>On.</value>
   </data>
   <data name="ThemeManager.Text" xml:space="preserve">
     <value>Theme manager</value>
   </data>
-  <data name="ThemeMaskOpacity.Header" xml:space="preserve">
-    <value>Background mask opacity</value>
+  <data name="ThemeMaskOpacity.Text" xml:space="preserve">
+    <value>Background blur intensity</value>
   </data>
-  <data name="ThemeOpacity.Header" xml:space="preserve">
-    <value>Background image opacity</value>
+  <data name="ThemeOpacity.Text" xml:space="preserve">
+    <value>Color intensity</value>
   </data>
   <data name="Theme_Clouds" xml:space="preserve">
     <value>Candy clouds</value>
@@ -1918,32 +1900,14 @@ heat without any limitations.
 Recommendation - enable
 AND DO NOT TOUCH IT!</value>
   </data>
-  <data name="Settings_Auto_Updates.Header" xml:space="preserve">
-    <value>Check for updates after start</value>
+  <data name="Settings_Auto_Updates.Text" xml:space="preserve">
+    <value>Check for updates</value>
   </data>
-  <data name="Settings_Auto_Updates.OffContent" xml:space="preserve">
-    <value>Off.</value>
-  </data>
-  <data name="Settings_Auto_Updates.OnContent" xml:space="preserve">
-    <value>On.</value>
-  </data>
-  <data name="Settings_Reapply_Safe.Header" xml:space="preserve">
+  <data name="Settings_Reapply_Safe.Text" xml:space="preserve">
     <value>Reapply only safe parameters</value>
   </data>
-  <data name="Settings_Reapply_Safe.OffContent" xml:space="preserve">
-    <value>Off.</value>
-  </data>
-  <data name="Settings_Reapply_Safe.OnContent" xml:space="preserve">
-    <value>On.</value>
-  </data>
-  <data name="ThemeLight.Header" xml:space="preserve">
-    <value>Theme type</value>
-  </data>
-  <data name="ThemeLight.OffContent" xml:space="preserve">
-    <value>Dark</value>
-  </data>
-  <data name="ThemeLight.OnContent" xml:space="preserve">
-    <value>Light</value>
+  <data name="ThemeLight.Text" xml:space="preserve">
+    <value>Light theme</value>
   </data>
   <data name="infoAFREQCPU.Text" xml:space="preserve">
     <value>Frequency</value>
@@ -2095,14 +2059,11 @@ to be installed and running</value>
   <data name="Settings_ni_Elements.Text" xml:space="preserve">
     <value>Selected element</value>
   </data>
-  <data name="Settings_ni_Fontsize.Header" xml:space="preserve">
-    <value>Font Size (px)</value>
+  <data name="Settings_ni_Fontsize.Text" xml:space="preserve">
+    <value>Font Size</value>
   </data>
   <data name="Settings_ni_Icon.Text" xml:space="preserve">
     <value>Metrics in system tray</value>
-  </data>
-  <data name="Settings_ni_Opacity.Header" xml:space="preserve">
-    <value>Background icon opacity</value>
   </data>
   <data name="Settings_ni_ShapeSelector.Text" xml:space="preserve">
     <value>Tray icon shape</value>
@@ -2125,13 +2086,7 @@ to be installed and running</value>
   <data name="Settings_ni_Shape_Star.Content" xml:space="preserve">
     <value>Star</value>
   </data>
-  <data name="Settings_ni_Traymon.OffContent" xml:space="preserve">
-    <value>Off.</value>
-  </data>
-  <data name="Settings_ni_Traymon.OnContent" xml:space="preserve">
-    <value>On.</value>
-  </data>
-  <data name="Settings_ni_Traymon.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="Settings_ni_Traymon_Desc.ToolTipService.ToolTip" xml:space="preserve">
     <value>TrayMon
 It's monitoring system that 
 displays real-time system 
@@ -2162,22 +2117,16 @@ without opening extra windows</value>
   <data name="Settings_ni_ResetDef.Text" xml:space="preserve">
     <value>Reset to defaults</value>
   </data>
-  <data name="Settings_ni_Traymon.Header" xml:space="preserve">
+  <data name="Settings_ni_Traymon.Text" xml:space="preserve">
     <value>TrayMon - metrics in your tray</value>
   </data>
   <data name="Settings_RTSS_Elements.Text" xml:space="preserve">
     <value>Showing elements</value>
   </data>
-  <data name="Settings_RTSS_AdvancedCode_Enable.Header" xml:space="preserve">
+  <data name="Settings_RTSS_AdvancedCode_Enable.Text" xml:space="preserve">
     <value>RTSS Overlay Code Editor</value>
   </data>
-  <data name="Settings_RTSS_AdvancedCode_Enable.OffContent" xml:space="preserve">
-    <value>Off.</value>
-  </data>
-  <data name="Settings_RTSS_AdvancedCode_Enable.OnContent" xml:space="preserve">
-    <value>On.</value>
-  </data>
-  <data name="Settings_RTSS_AdvancedCode_Enable.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="Settings_RTSS_AdvancedCode_Enable_Desc.ToolTipService.ToolTip" xml:space="preserve">
     <value>RTSS Overlay Code Editor
 It allows you to customize the overlay 
 display to your liking by adding more 
@@ -2189,7 +2138,7 @@ autosave functionality, ensuring your
 changes are always current and saved 
 automatically</value>
   </data>
-  <data name="Settings_RTSS_Enable.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="Settings_RTSS_Enable_Desc.ToolTipService.ToolTip" xml:space="preserve">
     <value>RTSS In-Game Overlay
 Allows you to monitor FPS, 
 temperature, CPU load, and 
@@ -2198,35 +2147,15 @@ without minimizing the game.
 Requires Rivatuner Statistics Server 
 to be installed and running</value>
   </data>
-  <data name="Settings_RTSS_Enable.Header" xml:space="preserve">
+  <data name="Settings_RTSS_Enable.Text" xml:space="preserve">
     <value>RTSS In-Game Overlay</value>
   </data>
-  <data name="Settings_RTSS_Enable.OffContent" xml:space="preserve">
-    <value>Off.</value>
-  </data>
-  <data name="Settings_RTSS_Enable.OnContent" xml:space="preserve">
-    <value>On.</value>
-  </data>
-  <data name="Settings_ni_EnabledElement.Header" xml:space="preserve">
+  <data name="Settings_ni_EnabledElement.Text" xml:space="preserve">
     <value>Show in tray</value>
   </data>
-  <data name="Settings_ni_EnabledElement.OffContent" xml:space="preserve">
-    <value>Off.</value>
-  </data>
-  <data name="Settings_ni_EnabledElement.OnContent" xml:space="preserve">
-    <value>On.</value>
-  </data>
-  <data name="Settings_ni_EnabledElement.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="Settings_ni_EnabledElement_Desc.ToolTipService.ToolTip" xml:space="preserve">
     <value>Show in tray
-You can add an item as soon 
-as you get bored or don't need 
-it for a certain time, you can 
-hide this item by disabling this 
-option. It will not be displayed 
-in the tray menu, but will 
-remain in the items with your 
-settings. In the future, you will 
-be able to turn it back on</value>
+You can hide this item by disabling this option. It will not be displayed in the tray menu but will remain in this settings</value>
   </data>
   <data name="Settings_ni_icon_dialog" xml:space="preserve">
     <value>Add element</value>
@@ -2373,14 +2302,8 @@ UPDATE</value>
   <data name="Settings_Keybinds_Elements_RTSS.Text" xml:space="preserve">
     <value>Switch RTSS Overlay state with overlay alert</value>
   </data>
-  <data name="Settings_Keybinds_Enable.Header" xml:space="preserve">
+  <data name="Settings_Keybinds_Enable.Text" xml:space="preserve">
     <value>Use Hotkeys</value>
-  </data>
-  <data name="Settings_Keybinds_Enable.OffContent" xml:space="preserve">
-    <value>Off.</value>
-  </data>
-  <data name="Settings_Keybinds_Enable.OnContent" xml:space="preserve">
-    <value>On.</value>
   </data>
   <data name="Main_Guide_Advanced_Title.Text" xml:space="preserve">
     <value>Advanced Features:</value>
@@ -3172,8 +3095,13 @@ All results are saved in notifications</value>
   <data name="Preset_SavedProfilesAddNew.Text" xml:space="preserve">
     <value>Add new </value>
   </data>
-  <data name="Preset_UndervoltingDesc.Text" xml:space="preserve">
-    <value>Reduces the voltage on your processor to make it work better without using more power.</value>
+  <data name="Preset_UndervoltingDesc.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Undervolting
+Reduces the voltage on your processor, for better performance at the same power consumption
+The value "0" completely disables the undervolting function. The recommended default value is "-10", however, you can experiment with more aggressive settings (for example, "-15", "-20"). In case of system instability, use values closer to zero (for example, set "-10" or "-5" instead of "-20")
+
+These parameters of your preset will be changed
+All cores Curve Optimizer</value>
   </data>
   <data name="Param_Profile_Delete_Profile.Content" xml:space="preserve">
     <value>Delete preset</value>
@@ -3195,7 +3123,7 @@ Time of slow frequency rise
 Time of fast frequency rise</value>
   </data>
   <data name="Preset_CurveOptions_Disabled.Text" xml:space="preserve">
-    <value>Disabled</value>
+    <value>Off</value>
   </data>
   <data name="Preset_CurveOptions_Effective.Text" xml:space="preserve">
     <value>Effective</value>
@@ -3286,7 +3214,7 @@ Average power limit</value>
     <value>Timings</value>
   </data>
   <data name="Preset_StreamStabilizer.Text" xml:space="preserve">
-    <value>Stream Stabilizer v3.0©</value>
+    <value>Stream Stabilizer v4.0©</value>
   </data>
   <data name="Preset_StreamStabilizer_Smart.Text" xml:space="preserve">
     <value>Smart</value>
@@ -3295,7 +3223,7 @@ Average power limit</value>
     <value>Monitoring FPS, temperature, and CPU usage in the game. Without minimizing windows. Requires RTSS</value>
   </data>
   <data name="Preset_RtssOverlay_Enabled.Text" xml:space="preserve">
-    <value>Enabled</value>
+    <value>On</value>
   </data>
   <data name="Preset_StreamStabilizerDesc.Text" xml:space="preserve">
     <value>Innovation for Ryzen: maximum FPS, without lags, freezes, overheating. Smart auto-overclocking during streaming</value>
@@ -3431,5 +3359,79 @@ Average power limit</value>
   </data>
   <data name="Settings_RTSS_Second_Color.Text" xml:space="preserve">
     <value>Second color</value>
+  </data>
+  <data name="Preset_UndervoltingLevel.Text" xml:space="preserve">
+    <value>Undervolting level</value>
+  </data>
+  <data name="Preset_UndervoltingLevelHelp.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Undervolting level
+Reduces the voltage on your processor, for better performance at the same power consumption
+Set up a personalized undervolting level that will be applied to all premade profiles. "0" value completely disables the undervolting function. Recommended default value is "-10", however, you can experiment with more aggressive settings (for example, "-15", "-20"). In case of instability of the system, you should reduce the intensity of undervolting, use values closer to zero (for example, instead of "-20" set "-10" or "-5")</value>
+  </data>
+  <data name="Preset_AppHideDesc.Text" xml:space="preserve">
+    <value>Hide the program in the tray when closing or minimizing, or not hide the program at all</value>
+  </data>
+  <data name="Preset_AppStartDesc.Text" xml:space="preserve">
+    <value>Run the program when power on device. The startup mode can be selected: in the tray, with a window, or not to start</value>
+  </data>
+  <data name="Preset_AutoApplyOptions.Text" xml:space="preserve">
+    <value>Auto Reapply</value>
+  </data>
+  <data name="Preset_AutoApplyOptionsDesc.Text" xml:space="preserve">
+    <value>Automatically apply last applied overclocking parameters after opening the program</value>
+  </data>
+  <data name="Preset_ReapplyOptions.Text" xml:space="preserve">
+    <value>Reapply options</value>
+  </data>
+  <data name="Preset_ReapplyOptionsDesc.Text" xml:space="preserve">
+    <value>Periodically restores your overclocking options every few seconds if changed by other apps</value>
+  </data>
+  <data name="Preset_StreamStabilizerBaseLock.Content" xml:space="preserve">
+    <value>Base Lock</value>
+  </data>
+  <data name="Preset_StreamStabilizerMode.Text" xml:space="preserve">
+    <value>Preferred mode</value>
+  </data>
+  <data name="Preset_StreamStabilizerTargetFreq.Text" xml:space="preserve">
+    <value>Target frequency</value>
+  </data>
+  <data name="Preset_StreamStabilizerTargetFreqPercent.Text" xml:space="preserve">
+    <value>Target % of max frequency</value>
+  </data>
+  <data name="Preset_StreamStabilizerTargetMHz.Content" xml:space="preserve">
+    <value>Target MHz</value>
+  </data>
+  <data name="Preset_StreamStabilizerTargetPercentMHz.Content" xml:space="preserve">
+    <value>Target % of Max</value>
+  </data>
+  <data name="AdvancedCooler_CurveDescUnavailable" xml:space="preserve">
+    <value>NBFC is not installed on your device. It is impossible to change the cooler curve</value>
+  </data>
+  <data name="Preset_AppHide.Text" xml:space="preserve">
+    <value>Hiding in the tray</value>
+  </data>
+  <data name="Settings_Hide_Close_Minimum.Content" xml:space="preserve">
+    <value>Close button</value>
+  </data>
+  <data name="Settings_Hide_Minimize_Minimum.Content" xml:space="preserve">
+    <value>Minimize button</value>
+  </data>
+  <data name="Settings_Hide_Nothing_Minimum.Content" xml:space="preserve">
+    <value>Do not hide</value>
+  </data>
+  <data name="Settings_Auto_Reapply_Set.Text" xml:space="preserve">
+    <value>Set the required reapply interval in seconds</value>
+  </data>
+  <data name="Settings_Keybinds_Combination.Text" xml:space="preserve">
+    <value>Combination</value>
+  </data>
+  <data name="Settings_Keybinds_Description.Text" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Settings_ni_Color_Picker_Desc.Text" xml:space="preserve">
+    <value>Change icon background</value>
+  </data>
+  <data name="Settings_RTSS_AdvancedOptions.Text" xml:space="preserve">
+    <value>Advanced options</value>
   </data>
 </root>

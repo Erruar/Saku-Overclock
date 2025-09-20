@@ -275,13 +275,11 @@
   <data name="Param_Preset.Text" xml:space="preserve">
     <value>Сохранённые пресеты:</value>
   </data>
-  <data name="Settings_Apply_Start.Header" xml:space="preserve">
-    <value>Автоприменять последние применённые 
-параметры после запуска приложения</value>
+  <data name="Settings_Apply_Start_Desc.Text" xml:space="preserve">
+    <value>Автоматически переприменять последние применённые параметры разгона после открытия программы</value>
   </data>
-  <data name="Settings_Auto_Reapply.Header" xml:space="preserve">
-    <value>Переприменять последние применённые 
-параметры каждые (с)</value>
+  <data name="Settings_Auto_Reapply.Text" xml:space="preserve">
+    <value>Переприменять последние применённые параметры каждые несколько секунд</value>
   </data>
   <data name="Settings_Name.Text" xml:space="preserve">
     <value>Настройки</value>
@@ -290,7 +288,7 @@
     <value>Автозапуск с ОС</value>
   </data>
   <data name="Settings_Start_Mini.Content" xml:space="preserve">
-    <value>В трей при открытии</value>
+    <value>Скрывать в трей</value>
   </data>
   <data name="Main_Disc.Text" xml:space="preserve">
     <value>Дискордик</value>
@@ -444,7 +442,7 @@
     <value>Минимум</value>
   </data>
   <data name="Preset_Name.Text" xml:space="preserve">
-    <value>Готовые пресеты</value>
+    <value>Управление пресетами</value>
   </data>
   <data name="Preset_Speed" xml:space="preserve">
     <value>Скорость</value>
@@ -1502,17 +1500,11 @@ CPU VID
   <data name="Settings_AppStart.Text" xml:space="preserve">
     <value>Параметры запуска</value>
   </data>
-  <data name="Settings_Auto_Reapply.OffContent" xml:space="preserve">
-    <value>Откл.</value>
-  </data>
-  <data name="Settings_Auto_Reapply.OnContent" xml:space="preserve">
-    <value>Вкл.</value>
-  </data>
   <data name="Settings_Start_MiniBoot.Content" xml:space="preserve">
     <value>Автозапуск в трее</value>
   </data>
   <data name="Settings_Start_Nothing.Content" xml:space="preserve">
-    <value>Без автостарта и трея</value>
+    <value>Без автозапуска</value>
   </data>
   <data name="Shell_Activate" xml:space="preserve">
     <value>Активировать</value>
@@ -1524,7 +1516,7 @@ CPU VID
     <value>Активен</value>
   </data>
   <data name="Shell_PremadedProfiles" xml:space="preserve">
-    <value>Готовые пресеты</value>
+    <value>Управление пресетами</value>
   </data>
   <data name="Shell_Preset_Balance" xml:space="preserve">
     <value>Баланс</value>
@@ -1556,35 +1548,23 @@ CPU VID
   &lt;/actions&gt;
 &lt;/toast&gt;</value>
   </data>
-  <data name="ThemeAdvanced.Header" xml:space="preserve">
+  <data name="ThemeAdvanced.Text" xml:space="preserve">
     <value>Расширенные параметры темы</value>
-  </data>
-  <data name="ThemeAdvanced.OffContent" xml:space="preserve">
-    <value>Откл.</value>
-  </data>
-  <data name="ThemeAdvanced.OnContent" xml:space="preserve">
-    <value>Вкл.</value>
   </data>
   <data name="ThemeChangeBgText.Text" xml:space="preserve">
     <value>Изменить фон</value>
   </data>
-  <data name="ThemeCustomBg.Header" xml:space="preserve">
+  <data name="ThemeCustomBg.Text" xml:space="preserve">
     <value>Использовать свой фон</value>
-  </data>
-  <data name="ThemeCustomBg.OffContent" xml:space="preserve">
-    <value>Откл.</value>
-  </data>
-  <data name="ThemeCustomBg.OnContent" xml:space="preserve">
-    <value>Вкл.</value>
   </data>
   <data name="ThemeManager.Text" xml:space="preserve">
     <value>Менеджер тем</value>
   </data>
-  <data name="ThemeMaskOpacity.Header" xml:space="preserve">
-    <value>Прозрачность маски</value>
+  <data name="ThemeMaskOpacity.Text" xml:space="preserve">
+    <value>Интенсивность размытия фона</value>
   </data>
-  <data name="ThemeOpacity.Header" xml:space="preserve">
-    <value>Прозрачность фона</value>
+  <data name="ThemeOpacity.Text" xml:space="preserve">
+    <value>Интенсивность цвета</value>
   </data>
   <data name="Theme_Clouds" xml:space="preserve">
     <value>Облака</value>
@@ -1983,32 +1963,14 @@ Overclock будут проигнорированы,
 Рекоммендация - включить
 И НЕ ТРОГАТЬ ЭТОТ ПАРАМЕТР</value>
   </data>
-  <data name="Settings_Auto_Updates.Header" xml:space="preserve">
-    <value>Автоматически проверять обновления на старте</value>
+  <data name="Settings_Auto_Updates.Text" xml:space="preserve">
+    <value>Проверять обновления при запуске</value>
   </data>
-  <data name="Settings_Auto_Updates.OffContent" xml:space="preserve">
-    <value>Откл.</value>
-  </data>
-  <data name="Settings_Auto_Updates.OnContent" xml:space="preserve">
-    <value>Вкл.</value>
-  </data>
-  <data name="Settings_Reapply_Safe.Header" xml:space="preserve">
+  <data name="Settings_Reapply_Safe.Text" xml:space="preserve">
     <value>Автоприменять только безопасные параметры</value>
   </data>
-  <data name="Settings_Reapply_Safe.OffContent" xml:space="preserve">
-    <value>Откл.</value>
-  </data>
-  <data name="Settings_Reapply_Safe.OnContent" xml:space="preserve">
-    <value>Вкл.</value>
-  </data>
-  <data name="ThemeLight.Header" xml:space="preserve">
-    <value>Тип темы</value>
-  </data>
-  <data name="ThemeLight.OffContent" xml:space="preserve">
-    <value>Тёмная</value>
-  </data>
-  <data name="ThemeLight.OnContent" xml:space="preserve">
-    <value>Светлая</value>
+  <data name="ThemeLight.Text" xml:space="preserve">
+    <value>Светлая тема</value>
   </data>
   <data name="infoAFREQCPU.Text" xml:space="preserve">
     <value>Частота</value>
@@ -2119,10 +2081,10 @@ Overclock будут проигнорированы,
     <value>МГц</value>
   </data>
   <data name="InfoGFX.Text" xml:space="preserve">
-    <value>ГПУ</value>
+    <value>ГП</value>
   </data>
   <data name="InfoGPUName" xml:space="preserve">
-    <value>ГПУ</value>
+    <value>ГП</value>
   </data>
   <data name="InfoPSTState" xml:space="preserve">
     <value>-Состояние</value>
@@ -2149,7 +2111,7 @@ Overclock будут проигнорированы,
     <value>Упс... кажется ваш процессор не поддерживается!</value>
   </data>
   <data name="Param_UnsignedProfile" xml:space="preserve">
-    <value>Мой профиль</value>
+    <value>Мой пресет</value>
   </data>
   <data name="Settings_ni_Add_Element.Text" xml:space="preserve">
     <value>Добавить элемент</value>
@@ -2175,20 +2137,17 @@ Overclock будут проигнорированы,
   <data name="Settings_ni_Elements.Text" xml:space="preserve">
     <value>Настраиваемый элемент</value>
   </data>
-  <data name="Settings_ni_Fontsize.Header" xml:space="preserve">
-    <value>Размер текста (px)</value>
+  <data name="Settings_ni_Fontsize.Text" xml:space="preserve">
+    <value>Размер текста</value>
   </data>
   <data name="Settings_ni_Icon.Text" xml:space="preserve">
     <value>Мониторинг в трее</value>
-  </data>
-  <data name="Settings_ni_Opacity.Header" xml:space="preserve">
-    <value>Прозрачность фона</value>
   </data>
   <data name="Settings_ni_ResetDef.Text" xml:space="preserve">
     <value>По умолчанию</value>
   </data>
   <data name="Settings_ni_ShapeSelector.Text" xml:space="preserve">
-    <value>Форма иконки</value>
+    <value>Форма иконки элемента</value>
   </data>
   <data name="Settings_ni_Shape_Circle.Content" xml:space="preserve">
     <value>Круг</value>
@@ -2208,16 +2167,10 @@ Overclock будут проигнорированы,
   <data name="Settings_ni_Shape_Star.Content" xml:space="preserve">
     <value>Звезда</value>
   </data>
-  <data name="Settings_ni_Traymon.Header" xml:space="preserve">
+  <data name="Settings_ni_Traymon.Text" xml:space="preserve">
     <value>TrayMon - датчики всегда под рукой</value>
   </data>
-  <data name="Settings_ni_Traymon.OffContent" xml:space="preserve">
-    <value>Откл.</value>
-  </data>
-  <data name="Settings_ni_Traymon.OnContent" xml:space="preserve">
-    <value>Вкл.</value>
-  </data>
-  <data name="Settings_ni_Traymon.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="Settings_ni_Traymon_Desc.ToolTipService.ToolTip" xml:space="preserve">
     <value>TrayMon 
 Система мониторинга, которая отображает 
 текущие показатели системы (температуру, 
@@ -2232,16 +2185,10 @@ Overclock будут проигнорированы,
   <data name="Settings_RTSS_Updater.Text" xml:space="preserve">
     <value>Показатели в играх</value>
   </data>
-  <data name="Settings_RTSS_AdvancedCode_Enable.Header" xml:space="preserve">
+  <data name="Settings_RTSS_AdvancedCode_Enable.Text" xml:space="preserve">
     <value>Редактор кода наложения RTSS</value>
   </data>
-  <data name="Settings_RTSS_AdvancedCode_Enable.OffContent" xml:space="preserve">
-    <value>Откл.</value>
-  </data>
-  <data name="Settings_RTSS_AdvancedCode_Enable.OnContent" xml:space="preserve">
-    <value>Вкл.</value>
-  </data>
-  <data name="Settings_RTSS_AdvancedCode_Enable.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="Settings_RTSS_AdvancedCode_Enable_Desc.ToolTipService.ToolTip" xml:space="preserve">
     <value>Редактор кода наложения RTSS
 Позволит  вам настроить отображение 
 оверлея по своему усмотрению, добавляя 
@@ -2253,7 +2200,7 @@ Overclock будут проигнорированы,
 чтобы ваши изменения всегда оставались 
 актуальными и сохранялись автоматически</value>
   </data>
-  <data name="Settings_RTSS_Enable.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="Settings_RTSS_Enable_Desc.ToolTipService.ToolTip" xml:space="preserve">
     <value>RTSS оверлей в игре
 Позволяет следить за FPS, температурой, 
 загрузкой процессора и другими 
@@ -2262,36 +2209,15 @@ Overclock будут проигнорированы,
 работы требуется установленный и 
 запущенный Rivatuner Statistics Server</value>
   </data>
-  <data name="Settings_RTSS_Enable.Header" xml:space="preserve">
+  <data name="Settings_RTSS_Enable.Text" xml:space="preserve">
     <value>RTSS оверлей в игре</value>
   </data>
-  <data name="Settings_RTSS_Enable.OffContent" xml:space="preserve">
-    <value>Откл.</value>
-  </data>
-  <data name="Settings_RTSS_Enable.OnContent" xml:space="preserve">
-    <value>Вкл.</value>
-  </data>
-  <data name="Settings_ni_EnabledElement.Header" xml:space="preserve">
+  <data name="Settings_ni_EnabledElement.Text" xml:space="preserve">
     <value>Отображать в трее</value>
   </data>
-  <data name="Settings_ni_EnabledElement.OffContent" xml:space="preserve">
-    <value>Откл.</value>
-  </data>
-  <data name="Settings_ni_EnabledElement.OnContent" xml:space="preserve">
-    <value>Вкл.</value>
-  </data>
-  <data name="Settings_ni_EnabledElement.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="Settings_ni_EnabledElement_Desc.ToolTipService.ToolTip" xml:space="preserve">
     <value>Отображать в трее
-Вы можете добавить элемент, 
-как только вам надоест или он 
-будет не нужен определённое 
-время, вы можете скрыть этот
-элемент, выключив этот 
-параметр. Он не будет 
-отображаться в трей меню, но
-останется в элементах с вашими
-настройками. В дальнейшем вы
-сможете его включить обратно</value>
+Вы можете скрыть этот элемент, выключив этот параметр. Он не будет отображаться в трей меню, но останется в элементах с вашими настройками</value>
   </data>
   <data name="Settings_ni_icon_dialog" xml:space="preserve">
     <value>Добавить элемент</value>
@@ -2437,14 +2363,8 @@ Overclock будут проигнорированы,
   <data name="Settings_Keybinds_Elements_RTSS.Text" xml:space="preserve">
     <value>Переключить состояние оверлея RTSS</value>
   </data>
-  <data name="Settings_Keybinds_Enable.Header" xml:space="preserve">
+  <data name="Settings_Keybinds_Enable.Text" xml:space="preserve">
     <value>Использовать комбинации клавиш</value>
-  </data>
-  <data name="Settings_Keybinds_Enable.OffContent" xml:space="preserve">
-    <value>Откл.</value>
-  </data>
-  <data name="Settings_Keybinds_Enable.OnContent" xml:space="preserve">
-    <value>Вкл.</value>
   </data>
   <data name="Main_Guide_Advanced_Title.Text" xml:space="preserve">
     <value>Дополнительно:</value>
@@ -2748,7 +2668,7 @@ Asus. Может не поддерживаться на
     <value>PowerMon Pro</value>
   </data>
   <data name="Tray_Profiles.Description" xml:space="preserve">
-    <value>Готовые пресеты на все случаи жизни</value>
+    <value>Управляйте готовыми и вашими пресетами</value>
   </data>
   <data name="Tray_Profiles.Label" xml:space="preserve">
     <value>Пресеты</value>
@@ -3200,13 +3120,18 @@ Asus. Может не поддерживаться на
     <value>Команда</value>
   </data>
   <data name="Preset_SavedProfiles.Text" xml:space="preserve">
-    <value>Сохранённые профили</value>
+    <value>Сохранённые пресеты</value>
   </data>
   <data name="Preset_SavedProfilesAddNew.Text" xml:space="preserve">
     <value>Добавить </value>
   </data>
-  <data name="Preset_UndervoltingDesc.Text" xml:space="preserve">
-    <value>Снижает напряжение на вашем процессоре, для лучшей производительности при том же потреблении</value>
+  <data name="Preset_UndervoltingDesc.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Андервольтинг
+Снижает напряжение на вашем процессоре, для лучшей производительности при том же потреблении
+Значение "0" полностью отключает функцию андервольтинга. Рекомендуемое значение по умолчанию составляет "-10", однако вы можете экспериментировать с более агрессивными настройками (например, "-15", "-20"). В случае возникновения нестабильности системы используйте значения ближе к нулю (например, вместо "-20" установить "-10" или "-5")
+
+Эти параметры вашего пресета будут изменены:
+Оптимизатор кривой для всех ядер</value>
   </data>
   <data name="Param_Profile_Delete_Profile.Content" xml:space="preserve">
     <value>Удалить пресет</value>
@@ -3320,7 +3245,7 @@ Asus. Может не поддерживаться на
     <value>Тайминги</value>
   </data>
   <data name="Preset_StreamStabilizer.Text" xml:space="preserve">
-    <value>Stream Stabilizer v3.0©</value>
+    <value>Stream Stabilizer v4.0©</value>
   </data>
   <data name="Preset_StreamStabilizerDesc.Text" xml:space="preserve">
     <value>Инновация для Ryzen: максимум FPS, без лагов, фризов, перегрева. Умный авторазгон во время стриминга</value>
@@ -3476,5 +3401,78 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Settings_RTSS_Second_Color.Text" xml:space="preserve">
     <value>Дополнительный цвет</value>
+  </data>
+  <data name="Preset_UndervoltingLevel.Text" xml:space="preserve">
+    <value>Уровень андервольтинга</value>
+  </data>
+  <data name="Preset_UndervoltingLevelHelp.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Уровень андервольтинга
+Настройте персональный уровень снижения напряжения, который будет автоматически применяться ко всем предустановленным пресетам. Значение "0" полностью отключает функцию андервольтинга. Рекомендуемое значение по умолчанию составляет "-10", однако вы можете экспериментировать с более агрессивными настройками (например, "-15", "-20"). В случае возникновения нестабильности системы используйте значения ближе к нулю (например, вместо "-20" установить "-10" или "-5")</value>
+  </data>
+  <data name="Preset_AppHideDesc.Text" xml:space="preserve">
+    <value>Скрывать программу в трей при закрытии или сворачивании или не скрывать программу вообще</value>
+  </data>
+  <data name="Preset_AppStartDesc.Text" xml:space="preserve">
+    <value>Запускать программу при входе в систему. Режим запуска можно выбрать: в трее, с окном или не запускаться</value>
+  </data>
+  <data name="Preset_AutoApplyOptions.Text" xml:space="preserve">
+    <value>Применение при запуске</value>
+  </data>
+  <data name="Preset_AutoApplyOptionsDesc.Text" xml:space="preserve">
+    <value>Автоматически переприменять последние применённые параметры разгона после открытия программы</value>
+  </data>
+  <data name="Preset_ReapplyOptions.Text" xml:space="preserve">
+    <value>Переприменение разгона</value>
+  </data>
+  <data name="Preset_ReapplyOptionsDesc.Text" xml:space="preserve">
+    <value>Переприменять последние применённые параметры для избежания перезаписи другими приложениями</value>
+  </data>
+  <data name="Preset_StreamStabilizerBaseLock.Content" xml:space="preserve">
+    <value>Базовый</value>
+  </data>
+  <data name="Preset_StreamStabilizerMode.Text" xml:space="preserve">
+    <value>Предпочтительный режим</value>
+  </data>
+  <data name="Preset_StreamStabilizerTargetFreq.Text" xml:space="preserve">
+    <value>Целевая частота</value>
+  </data>
+  <data name="Preset_StreamStabilizerTargetFreqPercent.Text" xml:space="preserve">
+    <value>Целевой % от частоты</value>
+  </data>
+  <data name="Preset_StreamStabilizerTargetMHz.Content" xml:space="preserve">
+    <value>Целевая MHz</value>
+  </data>
+  <data name="Preset_StreamStabilizerTargetPercentMHz.Content" xml:space="preserve">
+    <value>Целевой % от MHz</value>
+  </data>
+  <data name="AdvancedCooler_CurveDescUnavailable" xml:space="preserve">
+    <value>На вашем устройстве не установлен NBFC. Невозможно изменить кривую кулера</value>
+  </data>
+  <data name="Preset_AppHide.Text" xml:space="preserve">
+    <value>Скрытие в трей</value>
+  </data>
+  <data name="Settings_Hide_Close_Minimum.Content" xml:space="preserve">
+    <value>При закрытии</value>
+  </data>
+  <data name="Settings_Hide_Minimize_Minimum.Content" xml:space="preserve">
+    <value>При сворачивании</value>
+  </data>
+  <data name="Settings_Hide_Nothing_Minimum.Content" xml:space="preserve">
+    <value>Не сворачивать</value>
+  </data>
+  <data name="Settings_Auto_Reapply_Set.Text" xml:space="preserve">
+    <value>Установите необходимый интервал повторного переприменения в секундах</value>
+  </data>
+  <data name="Settings_Keybinds_Combination.Text" xml:space="preserve">
+    <value>Комбинация</value>
+  </data>
+  <data name="Settings_Keybinds_Description.Text" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="Settings_ni_Color_Picker_Desc.Text" xml:space="preserve">
+    <value>Изменить цвет иконки элемента</value>
+  </data>
+  <data name="Settings_RTSS_AdvancedOptions.Text" xml:space="preserve">
+    <value>Расширенные параметры</value>
   </data>
 </root>
