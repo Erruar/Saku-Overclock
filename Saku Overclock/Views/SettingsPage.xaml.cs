@@ -25,6 +25,7 @@ using static System.Environment;
 using Task = System.Threading.Tasks.Task;
 using TextGetOptions = Microsoft.UI.Text.TextGetOptions;
 using TextSetOptions = Microsoft.UI.Text.TextSetOptions;
+using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
 
@@ -87,18 +88,29 @@ public sealed partial class SettingsPage
 
             CbApplyStart.IsOn = AppSettings.ReapplyLatestSettingsOnAppLaunch;
             CbAutoReapply.IsOn = AppSettings.ReapplyOverclock;
+            if (CbAutoReapply.IsOn)
+            {
+                AutoReapplyNumberboxPanel.Visibility = Visibility.Visible;
+                AppSettings.ReapplyOverclock = true;
+                AppSettings.ReapplyOverclockTimer = nudAutoReapply.Value;
+            }
+            else
+            {
+                AutoReapplyNumberboxPanel.Visibility = Visibility.Collapsed;
+                AppSettings.ReapplyOverclock = false;
+                AppSettings.ReapplyOverclockTimer = 3;
+            }
             nudAutoReapply.Value = AppSettings.ReapplyOverclockTimer;
             CbAutoCheck.IsOn = AppSettings.CheckForUpdates;
             ReapplySafe.IsOn = AppSettings.ReapplySafeOverclock;
             ThemeLight.Visibility = AppSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
-            ThemeCustomBg.IsEnabled = AppSettings.ThemeType > 7;
+            ThemeCustomBg.Visibility = AppSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
             Settings_RTSS_Enable.IsOn = AppSettings.RtssMetricsEnabled;
             Settings_Keybinds_Enable.IsOn = AppSettings.HotkeysEnabled;
             RTSS_LoadAndApply();
             UpdateTheme_ComboBox();
             NiIcon_LoadValues(); 
             LoadProfiles();
-            await Task.Delay(390);
         }
         catch (Exception e)
         {
@@ -182,8 +194,7 @@ public sealed partial class SettingsPage
             ThemeOpacity.Visibility = Visibility.Visible;
             ThemeMaskOpacity.Visibility = Visibility.Visible;
             ThemeMaskOpacity.Visibility = Visibility.Visible;
-            ThemeCustomBg.IsEnabled = AppSettings.ThemeType > 7;
-            ThemeCustomBg.Visibility = Visibility.Visible;
+            ThemeCustomBg.Visibility = AppSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
             ThemeLight.Visibility = Visibility.Visible;
             ThemeBgButton.Visibility = Visibility.Visible;
             ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
@@ -205,6 +216,7 @@ public sealed partial class SettingsPage
             Settings_RTSS_Enable.IsOn ? Visibility.Visible : Visibility.Collapsed;
         LoadAndFormatAdvancedCodeEditor(RtssSettings.AdvancedCodeEditor);
         RTSS_AdvancedCodeEditor_ToggleSwitch.IsOn = RtssSettings.IsAdvancedCodeEditorEnabled;
+        RTSS_AdvancedCodeEditor_Grid.CornerRadius = RTSS_AdvancedCodeEditor_ToggleSwitch.IsOn ? new CornerRadius(15, 15, 0, 0) : new CornerRadius(15);
 
         // Проход по элементам RTSS_Elements
         for (var i = 0; i <= 8; i++)
@@ -436,11 +448,17 @@ public sealed partial class SettingsPage
         {
             try
             {
-                autoruns.RootFolder.DeleteTask("Saku Overclock");
+                foreach (var task in autoruns.RootFolder.Tasks)
+                {
+                    if (task.Name.Contains("Saku Overclock"))
+                    {
+                        autoruns.RootFolder.DeleteTask("Saku Overclock");
+                    }
+                }
             }
-            catch (Exception exception)
+            catch
             {
-                LogHelper.TraceIt_TraceError(exception.ToString());
+                //
             }
         }
 
@@ -513,7 +531,6 @@ public sealed partial class SettingsPage
                 return;
             }
 
-            await Task.Delay(20);
             AppSettings.ReapplyOverclock = true;
             AppSettings.ReapplyOverclockTimer = nudAutoReapply.Value;
             AppSettings.SaveSettings();
@@ -521,6 +538,28 @@ public sealed partial class SettingsPage
         catch (Exception ex)
         {
             await LogHelper.LogError(ex.ToString());
+        }
+    }
+
+    private void NudAutoReapply_Loaded(object sender, RoutedEventArgs e)
+    {
+        var texts = VisualTreeHelper.FindVisualChildren<ScrollContentPresenter>(nudAutoReapply);
+        foreach (var text in texts)
+        {
+            text.Margin = new Thickness(12, 7, 0, 0);
+        }
+        var contents = VisualTreeHelper.FindVisualChildren<ContentControl>(nudAutoReapply);
+        foreach (var content in contents)
+        {
+            var presents = VisualTreeHelper.FindVisualChildren<ContentPresenter>(content);
+            foreach (var present in presents)
+            {
+                var texts1 = VisualTreeHelper.FindVisualChildren<TextBlock>(present);
+                foreach (var text in texts1)
+                {
+                    text.Margin = new Thickness(0, 2, 0, 0);
+                }
+            }
         }
     }
 
@@ -533,7 +572,6 @@ public sealed partial class SettingsPage
                 return;
             }
 
-            await Task.Delay(20);
             AppSettings.ReapplySafeOverclock = ReapplySafe.IsOn;
             SendSmuCommand.GetSetSafeReapply(ReapplySafe.IsOn);
             AppSettings.SaveSettings();
@@ -576,7 +614,7 @@ public sealed partial class SettingsPage
             ThemeOpacity.Value = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeOpacity;
             ThemeMaskOpacity.Value = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeMaskOpacity;
             ThemeCustomBg.IsOn = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustomBg;
-            ThemeCustomBg.IsEnabled = ThemeCombobox.SelectedIndex > 7;
+            ThemeCustomBg.Visibility = ThemeCombobox.SelectedIndex > 7 ? Visibility.Visible : Visibility.Collapsed;
             ThemeLight.IsOn = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeLight;
             ThemeLight.Visibility = ThemeCombobox.SelectedIndex > 7 ? Visibility.Visible : Visibility.Collapsed;
             ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
@@ -604,7 +642,7 @@ public sealed partial class SettingsPage
         _themeSelectorService.SaveThemeInSettings();
     }
 
-    private void ThemeOpacity_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    private void ThemeOpacity_ValueChanged(object sender, object args)
     {
         if (!_isLoaded)
         {
@@ -623,7 +661,7 @@ public sealed partial class SettingsPage
         NotificationsService.SaveNotificationsSettings();
     }
 
-    private void ThemeMaskOpacity_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    private void ThemeMaskOpacity_ValueChanged(object sender, object args)
     {
         if (!_isLoaded)
         {
@@ -1249,6 +1287,20 @@ public sealed partial class SettingsPage
         }
     }
 
+    private void ToggleByTag(object sender, object e)
+    {
+        if (sender is FrameworkElement element && element.Tag is string targetName)
+        {
+            // Ищем элемент по имени на текущей странице и меняем его состояние
+            var targetToggle = FindName(targetName) as ToggleSwitch;
+            if (targetToggle != null)
+            {
+                targetToggle.IsOn = !targetToggle.IsOn;
+            }
+        }
+    }
+
+
     #endregion
 
     #region Ni Icons (tray icons) Related Section
@@ -1259,6 +1311,8 @@ public sealed partial class SettingsPage
         try
         {
             Settings_ni_Icons.IsOn = AppSettings.NiIconsEnabled;
+            Settings_ni_Icons_Grid.CornerRadius = Settings_ni_Icons.IsOn ? new CornerRadius(15, 15, 0, 0) : new CornerRadius(15);
+
             NiIconComboboxElements.Items.Clear();
             if (_niicons.Elements.Count != 0)
             {
@@ -1279,12 +1333,12 @@ public sealed partial class SettingsPage
                 {
                     NiIcon_Stackpanel.Visibility = Visibility.Visible;
                     Settings_ni_ContextMenu.Visibility = Visibility.Visible;
-                    Settings_NiIconComboboxElements.Visibility = Visibility.Visible;
                     Settings_ni_EnabledElement.Visibility = Visibility.Visible;
                 }
                 if (AppSettings.NiIconsType >= 0 && _niicons.Elements.Count >= AppSettings.NiIconsType)
                 {
                     Settings_ni_EnabledElement.IsOn = _niicons.Elements[AppSettings.NiIconsType].IsEnabled;
+                    Settings_ni_EnabledElement_Grid.CornerRadius = Settings_ni_EnabledElement.IsOn ? new CornerRadius(0) : new CornerRadius(0, 0, 15, 15);
                     if (!_niicons.Elements[AppSettings.NiIconsType].IsEnabled)
                     {
                         NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
@@ -1305,9 +1359,10 @@ public sealed partial class SettingsPage
             if (Settings_ni_Icons.IsOn)
             {
                 Settings_ni_Icons_Element.Visibility = Visibility.Visible;
-                Settings_NiIconComboboxElements.Visibility = Visibility.Visible;
                 Settings_ni_Add_Element.Visibility = Visibility.Visible;
                 Settings_ni_EnabledElement.Visibility = Visibility.Visible;
+                NiIconComboboxElements.Visibility = Visibility.Visible;
+
                 if (NiIconComboboxElements.SelectedIndex >= 0 && Settings_ni_EnabledElement.IsOn)
                 {
                     NiIcon_Stackpanel.Visibility = Visibility.Visible;
@@ -1317,17 +1372,20 @@ public sealed partial class SettingsPage
                 {
                     NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
                     Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
+                    Settings_ni_EnabledElement_Grid.CornerRadius = Settings_ni_EnabledElement.IsOn ? new CornerRadius(0) : new CornerRadius(0, 0, 15, 15);
                 }
             }
             else
             {
+                NiIconComboboxElements.Visibility = Visibility.Collapsed;
                 Settings_ni_Icons_Element.Visibility = Visibility.Collapsed;
                 NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
                 Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
-                Settings_NiIconComboboxElements.Visibility = Visibility.Collapsed;
                 Settings_ni_Add_Element.Visibility = Visibility.Collapsed;
                 Settings_ni_EnabledElement.Visibility = Visibility.Collapsed;
+                Settings_ni_EnabledElement_Grid.CornerRadius = Settings_ni_EnabledElement.IsOn ? new CornerRadius(0) : new CornerRadius(0, 0, 15, 15);
             }
+            Settings_ni_Icons_Grid.CornerRadius = Settings_ni_Icons.IsOn ? new CornerRadius(15,15,0,0) : new CornerRadius(15);
         }
         catch
         {
@@ -1336,7 +1394,7 @@ public sealed partial class SettingsPage
         }
     }
 
-    private void NiIconComboboxElements_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void NiIconComboboxElements_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
     {
         if (!_isLoaded)
         {
@@ -1352,11 +1410,12 @@ public sealed partial class SettingsPage
             {
                 NiIcon_Stackpanel.Visibility = Visibility.Visible;
                 Settings_ni_ContextMenu.Visibility = Visibility.Visible;
-                Settings_NiIconComboboxElements.Visibility = Visibility.Visible;
                 Settings_ni_EnabledElement.Visibility = Visibility.Visible;
             }
 
             Settings_ni_EnabledElement.IsOn = _niicons.Elements[AppSettings.NiIconsType].IsEnabled;
+            Settings_ni_EnabledElement_Grid.CornerRadius = Settings_ni_EnabledElement.IsOn ? new CornerRadius(0) : new CornerRadius(0, 0, 15, 15);
+
             if (!_niicons.Elements[AppSettings.NiIconsType].IsEnabled)
             {
                 NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
@@ -1398,8 +1457,8 @@ public sealed partial class SettingsPage
         AppSettings.SaveSettings();
         if (Settings_ni_Icons.IsOn)
         {
+            NiIconComboboxElements.Visibility = Visibility.Visible;
             Settings_ni_Icons_Element.Visibility = Visibility.Visible;
-            Settings_NiIconComboboxElements.Visibility = Visibility.Visible;
             Settings_ni_Add_Element.Visibility = Visibility.Visible;
             Settings_ni_EnabledElement.Visibility = Visibility.Visible;
             if (NiIconComboboxElements.SelectedIndex >= 0 && Settings_ni_EnabledElement.IsOn)
@@ -1411,17 +1470,20 @@ public sealed partial class SettingsPage
             {
                 NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
                 Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
+                Settings_ni_EnabledElement_Grid.CornerRadius = Settings_ni_EnabledElement.IsOn ? new CornerRadius(0) : new CornerRadius(0, 0, 15, 15);
             }
         }
         else
         {
+            NiIconComboboxElements.Visibility = Visibility.Collapsed;
             Settings_ni_Icons_Element.Visibility = Visibility.Collapsed;
             NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
             Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
-            Settings_NiIconComboboxElements.Visibility = Visibility.Collapsed;
             Settings_ni_Add_Element.Visibility = Visibility.Collapsed;
             Settings_ni_EnabledElement.Visibility = Visibility.Collapsed;
+            Settings_ni_EnabledElement_Grid.CornerRadius = Settings_ni_EnabledElement.IsOn ? new CornerRadius(0) : new CornerRadius(0, 0, 15, 15);
         }
+        Settings_ni_Icons_Grid.CornerRadius = Settings_ni_Icons.IsOn ? new CornerRadius(15, 15, 0, 0) : new CornerRadius(15);
 
         App.BackgroundUpdater?.UpdateNotifyIcons();
     }
@@ -1446,11 +1508,12 @@ public sealed partial class SettingsPage
             NiIcon_Stackpanel.Visibility = Visibility.Collapsed;
             Settings_ni_ContextMenu.Visibility = Visibility.Collapsed;
         }
+        Settings_ni_EnabledElement_Grid.CornerRadius = Settings_ni_EnabledElement.IsOn ? new CornerRadius(0) : new CornerRadius(0, 0, 15, 15);
 
         App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
-    private void Settings_ni_Fontsize_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    private void Settings_ni_Fontsize_ValueChanged(object sender, object args)
     {
         if (!_isLoaded)
         {
@@ -1465,7 +1528,7 @@ public sealed partial class SettingsPage
         App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
-    private void Settings_ni_Opacity_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    private void Settings_ni_Opacity_ValueChanged(object sender, object args)
     {
         if (!_isLoaded)
         {
@@ -1479,7 +1542,7 @@ public sealed partial class SettingsPage
         App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
-    private async void Settings_ni_Add_Element_Click(object sender, RoutedEventArgs e)
+    private async void Settings_ni_Add_Element_Click(object sender, object e)
     {
         try
         {
@@ -1905,7 +1968,7 @@ public sealed partial class SettingsPage
         App.BackgroundUpdater?.UpdateNotifyIcons();
     }
 
-    private void Settings_ni_Delete_Click(object sender, RoutedEventArgs e)
+    private void Settings_ni_Delete_Click(object sender, object e)
     {
         if (!_isLoaded)
         {
@@ -1929,7 +1992,7 @@ public sealed partial class SettingsPage
         }
     }
 
-    private void Settings_ni_ResetDef_Click(object sender, RoutedEventArgs e)
+    private void Settings_ni_ResetDef_Click(object sender, object e)
     {
         if (!_isLoaded)
         {
@@ -1944,7 +2007,7 @@ public sealed partial class SettingsPage
         _niicons.Elements[AppSettings.NiIconsType].FontSize = 9;
         _niicons.Elements[AppSettings.NiIconsType].BgOpacity = 0.5d;
         NiSave();
-        NiIconComboboxElements_SelectionChanged(NiIconComboboxElements, SelectionChangedEventArgs.FromAbi(0));
+        NiIconComboboxElements_SelectionChanged(null, null);
 
         App.BackgroundUpdater?.UpdateNotifyIcons();
     }
@@ -1961,6 +2024,11 @@ public sealed partial class SettingsPage
         NiSave();
 
         App.BackgroundUpdater?.UpdateNotifyIcons();
+    }
+
+    private void Settings_ni_Color_Picker_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        Settings_ni_Color_Picker.Flyout.ShowAt(Settings_ni_Color_Picker);
     }
 
     #endregion
@@ -2472,12 +2540,14 @@ public sealed partial class SettingsPage
 
     private void RTSS_AdvancedCodeEditor_ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        RTSS_AdvancedCodeEditor_EditBox.Visibility =
+        RTSS_AdvancedCodeEditor_EditBox_Scroll.Visibility =
             RTSS_AdvancedCodeEditor_ToggleSwitch.IsOn ? Visibility.Visible : Visibility.Collapsed;
         if (!_isLoaded)
         {
             return;
         }
+
+        RTSS_AdvancedCodeEditor_Grid.CornerRadius = RTSS_AdvancedCodeEditor_ToggleSwitch.IsOn ? new CornerRadius(15, 15, 0, 0) : new CornerRadius(15);
 
         RtssSettings.IsAdvancedCodeEditorEnabled = RTSS_AdvancedCodeEditor_ToggleSwitch.IsOn;
         RtssSettings.SaveSettings();
@@ -2490,5 +2560,5 @@ public sealed partial class SettingsPage
         RtssSettings.SaveSettings();
     }
 
-    #endregion 
+    #endregion
 }
