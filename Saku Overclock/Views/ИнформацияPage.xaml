@@ -527,7 +527,7 @@ StrokeThickness="1.5" >
                             <StackPanel Margin="0,7,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
                                 <StackPanel MinWidth="111" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                     <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoACPUTEMPL" Text="CPU Temperature" FontWeight="Light"/>
-                                    <TextBlock Margin="6,-2,7,4" x:Name="tbCPUMaxL" Text="?C/?C" FontWeight="Medium"/>
+                                    <TextBlock Margin="6,-2,7,4" HorizontalAlignment="Left" Width="94" x:Name="tbCPUMaxL" Text="?C/?C" FontWeight="Medium"/>
                                 </StackPanel>
                                 <StackPanel MinWidth="111" Margin="5,0,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                     <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoAActualL" Text="Real Power" FontWeight="Light"/>
@@ -568,26 +568,26 @@ StrokeThickness="1.5" >
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
-                                <StackPanel MinWidth="111" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
+                                <StackPanel MinWidth="122" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                     <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoAActualL" Text="Real Power" FontWeight="Light"/>
                                     <TextBlock Margin="6,-2,7,4" x:Name="tbAclualPowerL" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
-                                <StackPanel MinWidth="112" Margin="5,0,0,0" x:Name="infoAPUPowerMetric" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
+                                <StackPanel MinWidth="122" Margin="5,0,0,0" x:Name="infoAPUPowerMetric" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                     <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoAAPUPower" Text="APU Power" FontWeight="Light"/>
                                     <TextBlock Margin="6,-2,7,4" x:Name="tbAPUL" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel MinWidth="227" Margin="0,7,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoADGPUTemp" Text="dGPU Temperature" FontWeight="Light"/>
-                                <TextBlock Margin="6,-2,7,4" x:Name="tbDGPUMaxL" Text="?C/?C" FontWeight="Medium"/>
+                                <TextBlock Margin="6,-2,7,4" Width="200" x:Name="tbDGPUMaxL" Text="?C/?C" FontWeight="Medium"/>
                             </StackPanel>
                             <StackPanel MinWidth="227" Margin="0,7,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoAAPUTemp" Text="APU Temperature" FontWeight="Light"/>
-                                <TextBlock Margin="6,-2,7,4" x:Name="tbAPUMaxL" Text="?C/?C" FontWeight="Medium"/>
+                                <TextBlock Margin="6,-2,7,4" Width="200" x:Name="tbAPUMaxL" Text="?C/?C" FontWeight="Medium"/>
                             </StackPanel>
                             <StackPanel MinWidth="227" Margin="0,7,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoACPUTEMPL" Text="CPU Temperature" FontWeight="Light"/>
-                                <TextBlock HorizontalAlignment="Left" Margin="6,-2,7,4" Width="84" x:Name="tbCPUMaxTempL" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
+                                <TextBlock HorizontalAlignment="Left" Margin="6,-2,7,4" Width="200" x:Name="tbCPUMaxTempL" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
                             </StackPanel>
                             
                         </StackPanel>
