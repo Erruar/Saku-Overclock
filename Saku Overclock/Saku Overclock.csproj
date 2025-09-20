@@ -79,7 +79,6 @@
     <None Remove="Styles\CopyButton.xaml" />
     <None Remove="Styles\NavigationSelector.xaml" />
     <None Remove="Styles\OptionsVisualizer.xaml" />
-    <None Remove="Styles\PivotNavigation.xaml" />
     <None Remove="Styles\ProfileSelector.xaml" />
     <None Remove="Styles\ToggleButtonCollapseLauncher.xaml" />
     <None Remove="Views\AdvancedКулерPage.xaml" />
@@ -916,9 +915,6 @@
     <None Update="SakuRTSSCLI.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Page Update="Styles\PivotNavigation.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Update="Styles\OptionsVisualizer.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

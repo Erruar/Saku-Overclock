@@ -23,11 +23,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Styles\PivotNavigation.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
     <Page Update="Styles\OptionsVisualizer.xaml">
       <SubType>Designer</SubType>
     </Page>
