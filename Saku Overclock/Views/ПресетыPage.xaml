@@ -6,13 +6,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="using:Saku_Overclock.Styles" xmlns:local1="using:Saku_Overclock.Helpers"
     mc:Ignorable="d">
     <Page.Resources>
-        <ThemeShadow x:Name="SharedShadow" />
+        <ThemeShadow x:Name="SharedShadow"/>
         <local1:DoubleToPercentConverter x:Key="DoubleToPercent"/>
     </Page.Resources>
     <Grid x:Name="ContentArea" Margin="-48,0,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
         <Button x:Name="HiddenAccentButton" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed"/>
-        <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="30" Margin="0,-95,0,0"></TextBlock>
+        <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="30" Margin="0,-95,0,0"/>
         <Grid HorizontalAlignment="Stretch" Margin="0,-44,0,0" CornerRadius="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -26,7 +26,7 @@
                         <RowDefinition MaxHeight="50"/>
                         <RowDefinition MaxHeight="5"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" MaxHeight="190" Margin="0,10,0,0" CornerRadius="8" >
+                    <Grid Grid.Row="0" MaxHeight="190" Margin="0,10,0,0" CornerRadius="8">
                         <Grid.RowDefinitions>
                             <RowDefinition MinHeight="45"/>
                             <RowDefinition Height="3*"/>
@@ -42,7 +42,7 @@
                                         <StackPanel Margin="15,0,0,0"> 
                                             <TextBox Shadow="{StaticResource SharedShadow}" Translation="0,0,10" x:Uid="Param_Profile_New_Name_Add" x:Name="SaveProfileN" PlaceholderText="Enter new name" CornerRadius="9" Width="250"></TextBox>
                                             <TextBox Shadow="{StaticResource SharedShadow}" Translation="0,0,10" Margin="0,6,0,0" x:Uid="Param_Profile_New_Desc_Add" x:Name="SaveProfileD" PlaceholderText="Enter new description" CornerRadius="9" Width="250"></TextBox>
-                                            <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,14" Margin="0,6,0,0" HorizontalAlignment="Right" x:Uid="Param_Profile_New_Name" Click="AddProfileButton_Click" Style="{StaticResource AccentButtonStyle}" CornerRadius="9" Width="{Binding ElementName=SaveProfileN, Path=ActualWidth}" Content="Edit name" />
+                                            <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,14" Margin="0,6,0,0" HorizontalAlignment="Right" x:Uid="Param_Profile_New_Name" Click="AddProfileButton_Click" Style="{StaticResource AccentButtonStyle}" CornerRadius="9" Width="{Binding ElementName=SaveProfileN, Path=ActualWidth}" Content="Edit name"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </Flyout>
@@ -66,49 +66,7 @@
                         <TextBlock x:Uid="Preset_AdvancedFeatures" VerticalAlignment="Top" HorizontalAlignment="Left" Text="Киллер-фичи" Grid.Row="0" FontWeight="SemiBold" FontSize="16"/>
                         <Grid Grid.Column="1" Margin="0,32,0,12" CornerRadius="16" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{ThemeResource ControlStrokeColorDefaultBrush}" BorderBrush="{Binding ElementName=Discrd, Path=BorderBrush}" BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
                             <FlipView x:Name="AdvancedFlipView" Background="Transparent" Margin="8,0,8,0">
-                                <FlipViewItem Margin="-8,0,-8,0" x:Name="UndervoltingFlip">
-                                    <ScrollViewer>
-                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" Margin="23,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Vertical">
-                                                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                                                        <TextBlock FontWeight="SemiBold" FontSize="17" x:Uid="Preset_Undervolting" Text="Андервольтинг"/>
-                                                        <FontIcon Margin="5,7.5,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ce;">
-                                                            <FontIcon.RenderTransform>
-                                                                <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                            </FontIcon.RenderTransform>
-                                                        </FontIcon>
-                                                    </StackPanel>
-                                                    <TextBlock TextWrapping="Wrap" MaxWidth="170" x:Uid="Preset_UndervoltingDesc" Text="Андервольтинг это возможность снизить напряжение на вашем процессоре"/>
-                                                </StackPanel>
-                                                <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"/>
-                                                <Border Grid.Column="2" Height="32" HorizontalAlignment="Center" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}" 
-                                                        CornerRadius="10" Margin="-14,4,10,-4"
-                                                        Shadow="{ThemeResource SharedShadow}" 
-                                                        Translation="0,0,10">
-                                                    <StackPanel Margin="0,-9,0,-9" Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <ToggleButton Click="CurveOptions_Disabled_Click" x:Name="CurveOptions_Disabled" Background="Transparent" BorderBrush="Transparent" CornerRadius="10" IsChecked="True">
-                                                            <TextBlock Margin="0,-2,0,-2" Text="Выкл" x:Uid="Preset_CurveOptions_Disabled" FontWeight="SemiBold"/>
-                                                        </ToggleButton>
-                                                        <ToggleButton Click="CurveOptions_Disabled_Click" x:Name="CurveOptions_Light" Background="Transparent" BorderBrush="Transparent" CornerRadius="10" Margin="4,0,0,0">
-                                                            <TextBlock Margin="0,-2,0,-2" Text="Лёгкий" x:Uid="Preset_CurveOptions_Light" FontWeight="SemiBold"/>
-                                                        </ToggleButton>
-                                                        <ToggleButton Click="CurveOptions_Disabled_Click" x:Name="CurveOptions_Effective" Background="Transparent" BorderBrush="Transparent" CornerRadius="10" Margin="4,0,0,0">
-                                                            <TextBlock Margin="0,-2,0,-2" Text="Средний" x:Uid="Preset_CurveOptions_Effective" FontWeight="SemiBold"/>
-                                                        </ToggleButton>
-                                                    </StackPanel>
-                                                </Border>
-                                                <Border Height="10" Background="Transparent"/>
-                                            </Grid>
-                                        </Grid>
-                                    </ScrollViewer>
-                                </FlipViewItem>
-                                <FlipViewItem Margin="-8,0,-8,0" Visibility="Collapsed">
+                                <FlipViewItem Margin="-8,0,-8,0">
                                     <ScrollViewer>
                                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -118,15 +76,8 @@
                                                     <ColumnDefinition Width="0.53*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" Margin="23,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Vertical">
-                                                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                                                        <TextBlock FontWeight="SemiBold" FontSize="17" x:Uid="Preset_StreamStabilizer" Text="Stream Stabilizer v3.0"/>
-                                                        <FontIcon x:Uid="Preset_StreamStabilizerTooltip" Margin="5,5.5,-11,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ce;">
-                                                            <FontIcon.RenderTransform>
-                                                                <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
-                                                            </FontIcon.RenderTransform>
-                                                        </FontIcon>
-                                                    </StackPanel>
-                                                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" MaxWidth="170" x:Uid="Preset_StreamStabilizerDesc" Text="Фиксирует оптимальные уровни работы видеокарты и процессора, адаптивно подбирая параметры разгона под систему"/>
+                                                    <TextBlock HorizontalAlignment="Left" FontWeight="SemiBold" FontSize="17" x:Uid="Preset_ReapplyOptions" Text="Переприменение разгона"/>
+                                                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" MaxWidth="170" x:Uid="Preset_ReapplyOptionsDesc" Text="Переприменять последние применённые параметры для избежания перезаписи другими приложениями"/>
                                                 </StackPanel>
                                                 <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"/>
                                                 <Border Grid.Column="2" Height="32" HorizontalAlignment="Center" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}" 
@@ -134,11 +85,11 @@
                                                         Shadow="{ThemeResource SharedShadow}" 
                                                         Translation="0,0,10">
                                                     <StackPanel Margin="0,-9,0,-9" Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <ToggleButton Click="StreamStabilizerSwitch_Toggled" x:Name="StreamStabilizer_Disabled" Background="Transparent" BorderBrush="Transparent" CornerRadius="10" IsChecked="True">
+                                                        <ToggleButton Click="ReapplyOptions_Toggled" x:Name="ReapplyOptions_Disabled" Background="Transparent" BorderBrush="Transparent" CornerRadius="10" IsChecked="True">
                                                             <TextBlock Margin="0,-2,0,-2" Text="Выкл" x:Uid="Preset_CurveOptions_Disabled" FontWeight="SemiBold"/>
                                                         </ToggleButton>
-                                                        <ToggleButton Click="StreamStabilizerSwitch_Toggled" x:Name="StreamStabilizer_Smart" Background="Transparent" BorderBrush="Transparent" CornerRadius="10" Margin="4,0,0,0">
-                                                            <TextBlock Margin="0,-2,0,-2" Text="Умный" x:Uid="Preset_StreamStabilizer_Smart" FontWeight="SemiBold"/>
+                                                        <ToggleButton Click="ReapplyOptions_Toggled" x:Name="ReapplyOptions_Enabled" Background="Transparent" BorderBrush="Transparent" CornerRadius="10" Margin="4,0,0,0">
+                                                            <TextBlock Margin="0,-2,0,-2" Text="Вкл" x:Uid="Preset_RtssOverlay_Enabled" FontWeight="SemiBold"/>
                                                         </ToggleButton>
                                                     </StackPanel>
                                                 </Border>
@@ -161,7 +112,7 @@
                                                         <TextBlock FontWeight="SemiBold" FontSize="17" x:Uid="Preset_RtssOverlay" Text="RTSS Оверлей"/>
                                                         <FontIcon x:Uid="InfoARTSSTooltip" Margin="5,5.5,-11,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ce;">
                                                             <FontIcon.RenderTransform>
-                                                                <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                                <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                             </FontIcon.RenderTransform>
                                                         </FontIcon>
                                                     </StackPanel>
@@ -197,10 +148,10 @@
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" Margin="23,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Vertical">
                                                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                                                        <TextBlock FontWeight="SemiBold" FontSize="17" Text="TrayMon©"/>
+                                                        <TextBlock FontWeight="SemiBold" FontSize="17" Text="TrayMon"/>
                                                         <FontIcon x:Uid="InfoANiIcons" Margin="5,5.5,-11,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ce;">
                                                             <FontIcon.RenderTransform>
-                                                                <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                                <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                             </FontIcon.RenderTransform>
                                                         </FontIcon>
                                                     </StackPanel>
@@ -225,6 +176,101 @@
                                         </Grid>
                                     </ScrollViewer>
                                 </FlipViewItem>
+                                <FlipViewItem Margin="-8,0,-8,0">
+                                    <ScrollViewer>
+                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="0.53*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" Margin="23,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Vertical">
+                                                    <TextBlock HorizontalAlignment="Left" FontWeight="SemiBold" FontSize="17" x:Uid="Preset_AutoApplyOptions" Text="Применение при запуске"/>
+                                                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" MaxWidth="170" x:Uid="Preset_AutoApplyOptionsDesc" Text="Автоматически переприменять последние применённые параметры разгона после открытия программы"/>
+                                                </StackPanel>
+                                                <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"/>
+                                                <Border Grid.Column="2" Height="32" HorizontalAlignment="Center" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}" 
+                                                        CornerRadius="10" Margin="0,4,10,-4"
+                                                        Shadow="{ThemeResource SharedShadow}" 
+                                                        Translation="0,0,10">
+                                                    <StackPanel Margin="0,-9,0,-9" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <ToggleButton Click="AutoApplyOptions_Toggled" x:Name="AutoApplyOptions_Disabled" Background="Transparent" BorderBrush="Transparent" CornerRadius="10" IsChecked="True">
+                                                            <TextBlock Margin="0,-2,0,-2" Text="Выкл" x:Uid="Preset_CurveOptions_Disabled" FontWeight="SemiBold"/>
+                                                        </ToggleButton>
+                                                        <ToggleButton Click="AutoApplyOptions_Toggled" x:Name="AutoApplyOptions_Enabled" Background="Transparent" BorderBrush="Transparent" CornerRadius="10" Margin="4,0,0,0">
+                                                            <TextBlock Margin="0,-2,0,-2" Text="Вкл" x:Uid="Preset_RtssOverlay_Enabled" FontWeight="SemiBold"/>
+                                                        </ToggleButton>
+                                                    </StackPanel>
+                                                </Border>
+                                                <Border Height="10" Background="Transparent"/>
+                                            </Grid>
+                                        </Grid>
+                                    </ScrollViewer>
+                                </FlipViewItem>
+                                <FlipViewItem Margin="-8,0,-8,0">
+                                    <ScrollViewer>
+                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="0.53*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" Margin="23,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Vertical">
+                                                    <TextBlock HorizontalAlignment="Left" FontWeight="SemiBold" FontSize="17" x:Uid="Settings_AppStart" Text="Параметры запуска"/>
+                                                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" MaxWidth="170" x:Uid="Preset_AppStartDesc" Text="Запускать программу при входе в систему. Режим запуска можно выбрать: в трее, с окном или не запускаться"/>
+                                                </StackPanel>
+                                                <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"/>
+                                                <Border Grid.Column="2" Height="32" HorizontalAlignment="Center" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}" 
+                                                        CornerRadius="10" Margin="0,4,10,-4"
+                                                        Shadow="{ThemeResource SharedShadow}" 
+                                                        Translation="0,0,10">
+                                                    <Grid Margin="0,-9,0,-9" HorizontalAlignment="Center">
+                                                        <ComboBox MinWidth="130" Style="{ThemeResource AcrylicComboBoxStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="10" SelectedIndex="0" x:Name="AutostartCom" SelectionChanged="AutostartCom_SelectionChanged">
+                                                            <ComboBoxItem x:Uid="Settings_Start_Nothing" Content="Ничего не делать"/>
+                                                            <ComboBoxItem x:Uid="Settings_Start_Mini" Content="Скрываться в трей"/>
+                                                            <ComboBoxItem x:Uid="Settings_Start_Boot" Content="Автостарт с ситемой"/>
+                                                            <ComboBoxItem x:Uid="Settings_Start_MiniBoot" Content="Автостарт в трее"/>
+                                                        </ComboBox>
+                                                    </Grid>
+                                                </Border>
+                                                <Border Height="10" Background="Transparent"/>
+                                            </Grid>
+                                        </Grid>
+                                    </ScrollViewer>
+                                </FlipViewItem>
+                                <FlipViewItem Margin="-8,0,-8,0">
+                                    <ScrollViewer>
+                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="0.53*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" Margin="23,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Vertical">
+                                                    <TextBlock HorizontalAlignment="Left" FontWeight="SemiBold" FontSize="17" x:Uid="Preset_AppHide" Text="Параметры скрытия"/>
+                                                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" MaxWidth="170" x:Uid="Preset_AppHideDesc" Text="Скрывать программу в трей при закрытии или сворачивании или не скрывать программу вообще"/>
+                                                </StackPanel>
+                                                <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"/>
+                                                <Border Grid.Column="2" Height="32" HorizontalAlignment="Center" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}" 
+                                                        CornerRadius="10" Margin="0,4,10,-4"
+                                                        Shadow="{ThemeResource SharedShadow}" 
+                                                        Translation="0,0,10">
+                                                    <Grid Margin="0,-9,0,-9" HorizontalAlignment="Center">
+                                                        <ComboBox Style="{ThemeResource AcrylicComboBoxStyle}" Margin="{StaticResource XSmallTopMargin}" CornerRadius="10" SelectedIndex="0" x:Name="HideCom" SelectionChanged="HideCom_SelectionChanged">
+                                                            <ComboBoxItem x:Uid="Settings_Hide_Nothing_Minimum" Content="Не скрываться"/>
+                                                            <ComboBoxItem x:Uid="Settings_Hide_Minimize_Minimum" Content="При сворачивании"/>
+                                                            <ComboBoxItem x:Uid="Settings_Hide_Close_Minimum" Content="При закрытии"/>
+                                                        </ComboBox>
+                                                    </Grid>
+                                                </Border>
+                                                <Border Height="10" Background="Transparent"/>
+                                            </Grid>
+                                        </Grid>
+                                    </ScrollViewer>
+                                </FlipViewItem>
                             </FlipView>
                         </Grid>
                     </Grid>
@@ -243,7 +289,7 @@
                         </StackPanel>
                         <Button Grid.Column="1" HorizontalAlignment="Stretch" x:Name="TryAdvancedButton" CornerRadius="16" Margin="10,0,23,0" Click="TryAdvancedButton_Click"
                                 Shadow="{ThemeResource SharedShadow}" 
-                                Translation="0,0,20" >
+                                Translation="0,0,20">
                             <TextBlock x:Uid="Preset_AdvancedModeTry" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Попробовать" FontWeight="SemiBold"/>
                         </Button>
                     </Grid>
@@ -262,7 +308,7 @@
                       BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="42"/>
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0">
                         <Grid Margin="23,17,23,10" VerticalAlignment="Top">
@@ -296,8 +342,8 @@
                                                                     <ColumnDefinition/>
                                                                     <ColumnDefinition/>
                                                                 </Grid.ColumnDefinitions>
-                                                                <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,14" Grid.Column="0" Margin="0,0,3,0" HorizontalAlignment="Stretch" x:Uid="Param_Profile_Delete_Profile" Click="DeleteProfileButton_Click"  CornerRadius="9" Content="Delete profile" />
-                                                                <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,14" Grid.Column="1" Margin="3,0,0,0" HorizontalAlignment="Stretch" x:Uid="Param_Profile_Edit_Name" Click="EditProfileButton_Click" Style="{StaticResource AccentButtonStyle}" CornerRadius="9" Content="Edit name" />
+                                                                <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,14" Grid.Column="0" Margin="0,0,3,0" HorizontalAlignment="Stretch" x:Uid="Param_Profile_Delete_Profile" Click="DeleteProfileButton_Click"  CornerRadius="9" Content="Delete profile"/>
+                                                                <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,14" Grid.Column="1" Margin="3,0,0,0" HorizontalAlignment="Stretch" x:Uid="Param_Profile_Edit_Name" Click="EditProfileButton_Click" Style="{StaticResource AccentButtonStyle}" CornerRadius="9" Content="Edit name"/>
                                                             </Grid>
                                                         </StackPanel>
                                                     </StackPanel>
@@ -365,15 +411,15 @@
                                                     <FontIcon Glyph="&#xE9CA;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AAADD8E6" Offset="0.0" />
-                                                            <GradientStop Color="#AAFFC0CB" Offset="0.10" />
+                                                            <GradientStop Color="#AAADD8E6" Offset="0.0"/>
+                                                            <GradientStop Color="#AAFFC0CB" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock x:Uid="Param_CPU_c1" Margin="5,0,0,0" Text="Максимальная температура CPU" FontSize="15"></TextBlock>
+                                                <TextBlock x:Uid="Param_CPU_c1" Margin="5,0,0,0" Text="Максимальная температура CPU" FontSize="15"/>
                                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c1_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -389,15 +435,15 @@
                                                     <FontIcon Glyph="&#xE945;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AAfdb640" Offset="0.0" />
-                                                            <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                                            <GradientStop Color="#AAfdb640" Offset="0.0"/>
+                                                            <GradientStop Color="#AAbc7838" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c2" Text="Лимит мощности CPU" FontSize="15"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c2" Text="Лимит мощности CPU" FontSize="15"/>
                                                 <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c2_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -412,15 +458,15 @@
                                                     <FontIcon Glyph="&#xE945;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AAfdb640" Offset="0.0" />
-                                                            <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                                            <GradientStop Color="#AAfdb640" Offset="0.0"/>
+                                                            <GradientStop Color="#AAbc7838" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c3" Text="Реальная мощность CPU" FontSize="15"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c3" Text="Реальная мощность CPU" FontSize="15"/>
                                                 <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c3_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -435,15 +481,15 @@
                                                     <FontIcon Glyph="&#xE945;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AAfdb640" Offset="0.0" />
-                                                            <GradientStop Color="#AAbc7838" Offset="0.10" />
+                                                            <GradientStop Color="#AAfdb640" Offset="0.0"/>
+                                                            <GradientStop Color="#AAbc7838" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c4" Text="Средняя мощность CPU" FontSize="15"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c4" Text="Средняя мощность CPU" FontSize="15"/>
                                                 <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c4_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -458,15 +504,15 @@
                                                     <FontIcon Glyph="&#xE916;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AAa217e3" Offset="0.0" />
-                                                            <GradientStop Color="#AA2f2f70" Offset="0.10" />
+                                                            <GradientStop Color="#AAa217e3" Offset="0.0"/>
+                                                            <GradientStop Color="#AA2f2f70" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c5" Text="Время быстрого разгона" FontSize="15"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c5" Text="Время быстрого разгона" FontSize="15"/>
                                                 <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c5_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -481,15 +527,15 @@
                                                     <FontIcon Glyph="&#xE916;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AAa217e3" Offset="0.0" />
-                                                            <GradientStop Color="#AA2f2f70" Offset="0.10" />
+                                                            <GradientStop Color="#AAa217e3" Offset="0.0"/>
+                                                            <GradientStop Color="#AA2f2f70" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c6" Text="Время медленного разгона" FontSize="15"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_CPU_c6" Text="Время медленного разгона" FontSize="15"/>
                                                 <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_c6_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -504,15 +550,15 @@
                                                     <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AAb3100c" Offset="0.0" />
-                                                            <GradientStop Color="#AAbf80ff" Offset="0.10" />
+                                                            <GradientStop Color="#AAb3100c" Offset="0.0"/>
+                                                            <GradientStop Color="#AAbf80ff" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v1" Text="Максимальный ток VRM (A)" FontSize="15"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v1" Text="Максимальный ток VRM (A)" FontSize="15"/>
                                                 <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v1_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -527,15 +573,15 @@
                                                     <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AAb3100c" Offset="0.0" />
-                                                            <GradientStop Color="#AAbf80ff" Offset="0.10" />
+                                                            <GradientStop Color="#AAb3100c" Offset="0.0"/>
+                                                            <GradientStop Color="#AAbf80ff" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v2" Text="Лимит по току VRM (A)" FontSize="15"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v2" Text="Лимит по току VRM (A)" FontSize="15"/>
                                                 <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v2_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -550,15 +596,15 @@
                                                     <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AAb3100c" Offset="0.0" />
-                                                            <GradientStop Color="#AAbf80ff" Offset="0.10" />
+                                                            <GradientStop Color="#AAb3100c" Offset="0.0"/>
+                                                            <GradientStop Color="#AAbf80ff" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v3" Text="Максимальный ток SoC (A)" FontSize="15"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v3" Text="Максимальный ток SoC (A)" FontSize="15"/>
                                                 <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v3_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -573,15 +619,15 @@
                                                     <FontIcon Glyph="&#xF7B0;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AAb3100c" Offset="0.0" />
-                                                            <GradientStop Color="#AAbf80ff" Offset="0.10" />
+                                                            <GradientStop Color="#AAb3100c" Offset="0.0"/>
+                                                            <GradientStop Color="#AAbf80ff" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v4" Text="Лимит по току SoC (A)" FontSize="15"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_VRM_v4" Text="Лимит по току SoC (A)" FontSize="15"/>
                                                 <FontIcon Margin="5,4,0,-4" FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_v4_Help" HorizontalAlignment="Left" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -596,15 +642,15 @@
                                                     <FontIcon Glyph="&#xEC4A;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AA4de2d1" Offset="0.0" />
-                                                            <GradientStop Color="#AA09a22b" Offset="0.10" />
+                                                            <GradientStop Color="#AA4de2d1" Offset="0.0"/>
+                                                            <GradientStop Color="#AA09a22b" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_GPU_g9" Text="Минимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_GPU_g9" Text="Минимальная частота iGPU (MHz)" FontSize="15"/>
                                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g9_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -619,15 +665,15 @@
                                                     <FontIcon Glyph="&#xEC4A;" FontSize="15"/>
                                                     <Border.Background>
                                                         <LinearGradientBrush StartPoint="0.3,0.5" EndPoint="1.3,1.5">
-                                                            <GradientStop Color="#AA4de2d1" Offset="0.0" />
-                                                            <GradientStop Color="#AA09a22b" Offset="0.10" />
+                                                            <GradientStop Color="#AA4de2d1" Offset="0.0"/>
+                                                            <GradientStop Color="#AA09a22b" Offset="0.10"/>
                                                         </LinearGradientBrush>
                                                     </Border.Background>
                                                 </Border>
-                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_GPU_g10" Text="Максимальная частота iGPU (MHz)" FontSize="15"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" x:Uid="Param_GPU_g10" Text="Максимальная частота iGPU (MHz)" FontSize="15"/>
                                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" x:Uid="Param_g10_Help" HorizontalAlignment="Left" Margin="5,4,0,-4" Glyph="&#xe9ce;">
                                                     <FontIcon.RenderTransform>
-                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7" />
+                                                        <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
                                                     </FontIcon.RenderTransform>
                                                 </FontIcon>
                                             </StackPanel>
@@ -682,14 +728,14 @@
                                                     </FontIcon>
                                                 </StackPanel>
                                                 <Grid Margin="-15,0,-15,0">
-                                                    <Slider x:Name="BaseTdp_Slider" Margin="35,0,35,0" Style="{ThemeResource FatSliderStyle}" ValueChanged="BaseTdp_Slider_ValueChanged" 
+                                                    <Slider x:Name="BaseTdp_Slider" Margin="35,0,35,0"  ValueChanged="BaseTdp_Slider_ValueChanged" 
                                                             HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
                                                 </Grid>
                                                 <Grid Margin="0,-1,0,0" HorizontalAlignment="Stretch" Background="Transparent" PointerPressed="SmartTdp_PointerPressed">
                                                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                                                         <TextBlock Text="Умная оптимизация TDP" x:Uid="Preset_SmartTdp" VerticalAlignment="Center"/>
                                                     </StackPanel>
-                                                    <ToggleSwitch HorizontalAlignment="Right" OffContent="" OnContent="" Margin="113,0,-113,0" x:Name="SmartTdp" Toggled="SmartTdp_Toggled"></ToggleSwitch>
+                                                    <ToggleSwitch HorizontalAlignment="Right" OffContent="" OnContent="" Margin="113,0,-113,0" x:Name="SmartTdp" Toggled="SmartTdp_Toggled"/>
                                                 </Grid>
                                                 <Border Margin="2,5,2,0" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/>
                                                 <Grid Margin="0,3,0,0" HorizontalAlignment="Stretch">
@@ -701,7 +747,7 @@
                                                             </FontIcon.RenderTransform>
                                                         </FontIcon>
                                                     </StackPanel>
-                                                    <ComboBox x:Name="IgpuEnchancementCombo" SelectionChanged="IgpuEnchancementCombo_SelectionChanged" 
+                                                    <ComboBox x:Name="IgpuEnchancementCombo" SelectionChanged="IgpuEnchancementCombo_SelectionChanged"
                                                               HorizontalAlignment="Right" Margin="0,0,-13,0" CornerRadius="0" SelectedIndex="0" Background="Transparent" BorderBrush="Transparent">
                                                         <ComboBoxItem x:Uid="Preset_IgpuAuto" Content="Авто"/>
                                                         <ComboBoxItem x:Uid="Preset_IgpuStable" Content="Стабильное"/>
@@ -712,7 +758,7 @@
                                                 <Grid Margin="0,3,0,0" HorizontalAlignment="Stretch">
                                                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                                                         <TextBlock Text="Усиление турбобуста" x:Uid="Preset_BetterTurbo" VerticalAlignment="Center"/>
-                                                        <FontIcon Margin="3,3,0,0" Glyph="&#xE9CE;" x:Uid="Preset_BetterTurboDesc">
+                                                        <FontIcon Margin="3,6,0,0" Glyph="&#xE9CE;" x:Uid="Preset_BetterTurboDesc">
                                                             <FontIcon.RenderTransform>
                                                                 <ScaleTransform CenterX="15" CenterY="15" ScaleX="0.7" ScaleY="0.7"/>
                                                             </FontIcon.RenderTransform>
@@ -737,6 +783,74 @@
                                                             </ToggleButton>
                                                         </StackPanel>
                                                     </Border>
+                                                </Grid>
+                                                <Border Margin="2,5,2,0" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/>
+                                                <Grid x:Name="CurveOptimizerCustom_Grid" Margin="0,-1,0,0" HorizontalAlignment="Stretch" Background="Transparent" PointerPressed="CurveOptimizerCustom_PointerPressed">
+                                                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                                                        <TextBlock Text="Андервольтинг" x:Uid="Preset_Undervolting" VerticalAlignment="Center"/>
+                                                        <FontIcon Margin="3,7,0,0" Glyph="&#xE9CE;" x:Uid="Preset_UndervoltingDesc">
+                                                            <FontIcon.RenderTransform>
+                                                                <ScaleTransform CenterX="15" CenterY="15" ScaleX="0.7" ScaleY="0.7"/>
+                                                            </FontIcon.RenderTransform>
+                                                        </FontIcon>
+                                                    </StackPanel>
+                                                    <ToggleSwitch HorizontalAlignment="Right" OffContent="" OnContent="" Margin="113,0,-113,0" x:Name="CurveOptimizerCustom" Toggled="CurveOptimizerCustom_Toggled"/>
+                                                </Grid>
+                                                <Grid Margin="-15,0,-15,0" Visibility="{Binding ElementName=CurveOptimizerCustom, Path=IsOn}">
+                                                    <Slider IsEnabled="{Binding ElementName=CurveOptimizerCustom, Path=IsOn}" x:Name="CurveOptimizerLevelCustom_Slider" Margin="35,0,35,0" ValueChanged="CurveOptimizerLevelCustom_Slider_ValueChanged"
+                                                            HorizontalAlignment="Stretch" Minimum="-50" Maximum="30" Value="0" VerticalAlignment="Center"/>
+                                                </Grid>
+                                                <Border Margin="2,5,2,0" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/>
+                                                <Grid Margin="0,3,0,0" HorizontalAlignment="Stretch">
+                                                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                                                        <TextBlock Text="Stream Stabilizer v4.0" x:Uid="Preset_StreamStabilizer" VerticalAlignment="Center"/>
+                                                        <FontIcon Margin="3,3.5,0,0" Glyph="&#xE9CE;" x:Uid="Preset_StreamStabilizerTooltip">
+                                                            <FontIcon.RenderTransform>
+                                                                <ScaleTransform CenterX="15" CenterY="15" ScaleX="0.7" ScaleY="0.7"/>
+                                                            </FontIcon.RenderTransform>
+                                                        </FontIcon>
+                                                    </StackPanel>
+                                                    <Border Height="32" HorizontalAlignment="Right" 
+                                                            Background="{Binding ElementName=HiddenButton, Path=Background}" 
+                                                            BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" 
+                                                            BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}" 
+                                                            CornerRadius="10" Margin="0,5,0,4"
+                                                            Shadow="{ThemeResource SharedShadow}" 
+                                                            Translation="0,0,10">
+                                                        <StackPanel Margin="0,-9,0,-9" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                            <ToggleButton Click="StreamStabilizerSwitch_Toggled" x:Name="StreamStabilizer_Disabled" Background="Transparent" BorderBrush="Transparent" CornerRadius="10" IsChecked="True">
+                                                                <TextBlock Margin="0,-2,0,-2" Text="Выкл" x:Uid="Preset_CurveOptions_Disabled" FontWeight="SemiBold"/>
+                                                            </ToggleButton>
+                                                            <ToggleButton Click="StreamStabilizerSwitch_Toggled" x:Name="StreamStabilizer_Smart" Background="Transparent" BorderBrush="Transparent" CornerRadius="10" Margin="4,0,0,0">
+                                                                <TextBlock Margin="0,-2,0,-2" Text="Умный" x:Uid="Preset_StreamStabilizer_Smart" FontWeight="SemiBold"/>
+                                                            </ToggleButton>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </Grid>
+                                                <Grid Visibility="{Binding ElementName=StreamStabilizer_Smart, Path=IsChecked}" Margin="0,3,0,0" HorizontalAlignment="Stretch">
+                                                    <TextBlock HorizontalAlignment="Left" Text="Preferred mode" x:Uid="Preset_StreamStabilizerMode" VerticalAlignment="Center"/>
+                                                    <ComboBox x:Name="StreamStabilizerModeCombo" SelectionChanged="StreamStabilizerModeCombo_SelectionChanged" MinWidth="138"
+                                                              HorizontalAlignment="Right" Margin="0,0,-13,0" CornerRadius="0" SelectedIndex="0" Background="Transparent" BorderBrush="Transparent">
+                                                        <ComboBoxItem x:Uid="Preset_StreamStabilizerBaseLock" Content="Base Lock"/>
+                                                        <ComboBoxItem x:Uid="Preset_StreamStabilizerTargetMHz" Content="Target MHz"/>
+                                                        <ComboBoxItem x:Uid="Preset_StreamStabilizerTargetPercentMHz" Content="Target % of Max"/>
+                                                    </ComboBox>
+                                                </Grid>
+                                                <Grid x:Name="StreamStabilizerTargetMHzGrid" Visibility="Collapsed" Margin="0,3,0,0" HorizontalAlignment="Stretch">
+                                                    <TextBlock HorizontalAlignment="Left" x:Uid="Preset_StreamStabilizerTargetFreq" Text="Target frequency" VerticalAlignment="Center"/>
+                                                    <Grid Shadow="{ThemeResource SharedShadow}" 
+                                                          Translation="0,0,10" HorizontalAlignment="Right" Margin="0,1,0,0">
+                                                        <NumberBox x:Name="StreamStabilizerTargetMhz" ValueChanged="StreamStabilizerTargetMhz_ValueChanged" Minimum="400" Maximum="7000" Value="3000" SmallChange="100" LargeChange="500" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"  BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" 
+                                                                   CornerRadius="10" SpinButtonPlacementMode="Inline"/>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid x:Name="StreamStabilizerTargetPercentOfMHzGrid" Visibility="Collapsed" Margin="0,3,0,0" HorizontalAlignment="Stretch">
+                                                    <TextBlock HorizontalAlignment="Left" x:Uid="Preset_StreamStabilizerTargetFreqPercent" Text="Target % of max frequency" VerticalAlignment="Center"/>
+                                                    <Grid Shadow="{ThemeResource SharedShadow}" 
+                                                          Translation="0,0,10" HorizontalAlignment="Right" Margin="0,1,0,0">
+                                                        <NumberBox x:Name="StreamStabilizerTargetPercent" ValueChanged="StreamStabilizerTargetPercent_ValueChanged" Minimum="5" Maximum="100" Value="80" SmallChange="5" LargeChange="10" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"  BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" 
+                                                                   CornerRadius="10" SpinButtonPlacementMode="Inline"/>
+                                                    </Grid>
                                                 </Grid>
                                                 <TextBlock HorizontalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondary}" Margin="0,-1,0,0" FontSize="12" x:Uid="Preset_AppliedAllSettings" Text="Применяются все настройки пресета"/>
                                                 <Border Background="Transparent" Height="77"/>
@@ -782,20 +896,34 @@
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <ComboBox x:Name="Premade_OptimizationLevel" SelectionChanged="Premade_OptimizationLevel_SelectionChanged" SelectedValuePath="Content" VerticalAlignment="Center" Width="110" Grid.Column="0" SelectedIndex="0" CornerRadius="10">
+                                                <ComboBox Shadow="{ThemeResource SharedShadow}" Translation="0,0,12" x:Name="Premade_OptimizationLevel" SelectionChanged="Premade_OptimizationLevel_SelectionChanged" SelectedValuePath="Content" VerticalAlignment="Center" Width="135" Grid.Column="0" SelectedIndex="0" CornerRadius="10">
                                                     <ComboBoxItem x:Uid="Preset_OptimizationLevel_Base" Content="Базовый"/>
                                                     <ComboBoxItem x:Uid="Preset_OptimizationLevel_Average" Content="Средний"/>
                                                     <ComboBoxItem x:Uid="Preset_OptimizationLevel_Strong" Content="Сильный"/>
                                                 </ComboBox>
                                                 <TextBlock x:Name="Premade_OptimizationLevelDesc" Margin="10,-2,0,0" Grid.Column="1" FontWeight="Light" TextWrapping="Wrap" Text="Позволит пресету применять только самые безопасные настройки. Пресет может работать не так эффективно как задумано"/>
                                             </Grid>
+                                            <StackPanel Visibility="Collapsed" x:Name="Premade_PremadeCurveOptimizer_StackPanel" Orientation="Vertical">
+                                                <StackPanel Orientation="Horizontal" Margin="0,7,0,0">
+                                                    <TextBlock Text="Уровень андервольтинга" x:Uid="Preset_UndervoltingLevel" VerticalAlignment="Center"/>
+                                                    <FontIcon Margin="3,0,0,0" Glyph="&#xE9CE;" x:Uid="Preset_UndervoltingLevelHelp">
+                                                        <FontIcon.RenderTransform>
+                                                            <ScaleTransform CenterX="15" CenterY="15" ScaleX="0.7" ScaleY="0.7"/>
+                                                        </FontIcon.RenderTransform>
+                                                    </FontIcon>
+                                                </StackPanel>
+                                                <Grid Margin="-15,0,-15,0">
+                                                    <Slider Value="-10" Minimum="-50" Maximum="0" x:Name="CurveOptimizerLevel_Slider" Margin="35,0,35,0"  ValueChanged="CurveOptimizerLevel_Slider_ValueChanged" 
+                                                            HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </StackPanel>
                                             <Border Margin="2,5,2,4" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/>
                                             <TextBlock x:Uid="Preset_HelpWith" Text="Для чего подходит этот пресет?"/>
                                             <StackPanel Margin="0,5,0,7" Orientation="Vertical" HorizontalAlignment="Stretch">
                                                 <Grid HorizontalAlignment="Stretch">
                                                     <Grid.ChildrenTransitions>
                                                         <TransitionCollection>
-                                                            <RepositionThemeTransition />
+                                                            <RepositionThemeTransition/>
                                                         </TransitionCollection>
                                                     </Grid.ChildrenTransitions>
                                                     <Grid.ColumnDefinitions>
@@ -803,14 +931,14 @@
                                                         <ColumnDefinition/>
                                                         <ColumnDefinition x:Name="Preset_HW_ColumnHelper1"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <Button Grid.Column="0" HorizontalAlignment="Stretch" CornerRadius="9" x:Name="Preset_HW_Gaming" x:Uid="Preset_HelpWith_Gaming">Тяжёлые игры</Button>
-                                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,0,0,0" CornerRadius="9" x:Name="Preset_HW_Striming" x:Uid="Preset_HelpWith_Striming">Стриминг</Button>
-                                                    <Button Grid.Column="2" HorizontalAlignment="Stretch" Margin="5,0,0,0" CornerRadius="9" x:Name="Preset_HW_HardWorkload" x:Uid="Preset_HelpWith_HardWorkload">Тяжёлая работа</Button>
+                                                    <Button Shadow="{ThemeResource SharedShadow}" Translation="0,0,8" Grid.Column="0" HorizontalAlignment="Stretch" CornerRadius="9" x:Name="Preset_HW_Gaming" x:Uid="Preset_HelpWith_Gaming">Тяжёлые игры</Button>
+                                                    <Button Shadow="{ThemeResource SharedShadow}" Translation="0,0,8" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,0,0,0" CornerRadius="9" x:Name="Preset_HW_Striming" x:Uid="Preset_HelpWith_Striming">Стриминг</Button>
+                                                    <Button Shadow="{ThemeResource SharedShadow}" Translation="0,0,8" Grid.Column="2" HorizontalAlignment="Stretch" Margin="5,0,0,0" CornerRadius="9" x:Name="Preset_HW_HardWorkload" x:Uid="Preset_HelpWith_HardWorkload">Тяжёлая работа</Button>
                                                 </Grid>
                                                 <Grid Margin="0,5,0,0" HorizontalAlignment="Stretch">
                                                     <Grid.ChildrenTransitions>
                                                         <TransitionCollection>
-                                                            <RepositionThemeTransition />
+                                                            <RepositionThemeTransition/>
                                                         </TransitionCollection>
                                                     </Grid.ChildrenTransitions>
                                                     <Grid.ColumnDefinitions>
@@ -818,48 +946,50 @@
                                                         <ColumnDefinition/>
                                                         <ColumnDefinition/>
                                                     </Grid.ColumnDefinitions>
-                                                    <Button Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,5,0" CornerRadius="9" x:Name="Preset_HW_LightGaming" x:Uid="Preset_HelpWith_LightGaming">Лёгкие игры</Button>
-                                                    <Button Grid.Column="1" HorizontalAlignment="Stretch" CornerRadius="9" x:Name="Preset_HW_OfficeWorkload" x:Uid="Preset_HelpWith_OfficeWorkload">Офисная работа</Button>
-                                                    <Button Grid.Column="2" HorizontalAlignment="Stretch" Margin="5,0,0,0" CornerRadius="9" x:Name="Preset_HW_Videos" x:Uid="Preset_HelpWith_Videos">Просмотр видео</Button>
+                                                    <Button Shadow="{ThemeResource SharedShadow}" Translation="0,0,8" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,5,0" CornerRadius="9" x:Name="Preset_HW_LightGaming" x:Uid="Preset_HelpWith_LightGaming">Лёгкие игры</Button>
+                                                    <Button Shadow="{ThemeResource SharedShadow}" Translation="0,0,8" Grid.Column="1" HorizontalAlignment="Stretch" CornerRadius="9" x:Name="Preset_HW_OfficeWorkload" x:Uid="Preset_HelpWith_OfficeWorkload">Офисная работа</Button>
+                                                    <Button Shadow="{ThemeResource SharedShadow}" Translation="0,0,8" Grid.Column="2" HorizontalAlignment="Stretch" Margin="5,0,0,0" CornerRadius="9" x:Name="Preset_HW_Videos" x:Uid="Preset_HelpWith_Videos">Просмотр видео</Button>
                                                 </Grid>
                                             </StackPanel>
                                             <Border Margin="2,0,2,4" Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" Height="1" HorizontalAlignment="Stretch"/>
                                             <TextBlock x:Uid="Preset_ApplicableSettings" Text="Применяемые настройки"/>
-                                            <Expander HorizontalContentAlignment="Stretch" CornerRadius="18" HorizontalAlignment="Stretch" Margin="0,8,0,8">
-                                                <Expander.Header>
-                                                    <StackPanel Margin="-3,7,0,7" Orientation="Vertical">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock x:Uid="Preset_MaxTemp" Text="Макс температура: "/>
-                                                            <TextBlock x:Name="Preset_Options_Temp" FontWeight="SemiBold" Margin="5,0,0,0" Text="90C"/>
+                                            <Grid Shadow="{ThemeResource SharedShadow}" Translation="0,0,8" Margin="0,8,0,13">
+                                                <Expander HorizontalContentAlignment="Stretch" CornerRadius="18" HorizontalAlignment="Stretch">
+                                                    <Expander.Header>
+                                                        <StackPanel Margin="-3,7,0,7" Orientation="Vertical">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock x:Uid="Preset_MaxTemp" Text="Макс температура: "/>
+                                                                <TextBlock x:Name="Preset_Options_Temp" FontWeight="SemiBold" Margin="5,0,0,0" Text="90C"/>
+                                                            </StackPanel>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock x:Uid="Preset_MaxPower" Text="Лимиты мощности: "/>
+                                                                <TextBlock x:Name="Preset_Options_Power" FontWeight="SemiBold" Margin="5,0,0,0" Text="40W, 45W, 42W"/>
+                                                            </StackPanel>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock x:Uid="Preset_MaxCurrent" Text="Ограничения по току: "/>
+                                                                <TextBlock x:Name="Preset_Options_Currents" FontWeight="SemiBold" Margin="5,0,0,0" Text="110A, 65A"/>
+                                                            </StackPanel>
+                                                            <TextBlock x:Uid="Preset_ExpandList" Foreground="{ThemeResource TextFillColorTertiary}" Text="Раскрыть список"/>
                                                         </StackPanel>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock x:Uid="Preset_MaxPower" Text="Лимиты мощности: "/>
-                                                            <TextBlock x:Name="Preset_Options_Power" FontWeight="SemiBold" Margin="5,0,0,0" Text="40W, 45W, 42W"/>
-                                                        </StackPanel>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock x:Uid="Preset_MaxCurrent" Text="Ограничения по току: "/>
-                                                            <TextBlock x:Name="Preset_Options_Currents" FontWeight="SemiBold" Margin="5,0,0,0" Text="110A, 65A"/>
-                                                        </StackPanel>
-                                                        <TextBlock x:Uid="Preset_ExpandList" Foreground="{ThemeResource TextFillColorTertiary}" Text="Раскрыть список"/>
-                                                    </StackPanel>
-                                                </Expander.Header>
-                                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-3,0,0,0">
-                                                    <RichTextBlock x:Name="Preset_Options_CommandLine">
-                                                        <Paragraph>
-                                                            Макс температура 90C
-                                                        </Paragraph>
-                                                        <Paragraph>
-                                                            Лимит мощности STAPM 40W
-                                                        </Paragraph>
-                                                        <Paragraph>
-                                                            Лимит средней мощности 42W
-                                                        </Paragraph>
-                                                    </RichTextBlock>
-                                                    <local:CopyButton AutomationProperties.Name="Copy link" 
-                                                                      Content="&#xE8C8;" VerticalAlignment="Top"
-                                                                      ToolTipService.ToolTip="Copy" HorizontalAlignment="Right"/>
-                                                </Grid>
-                                            </Expander>
+                                                    </Expander.Header>
+                                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-3,0,0,0">
+                                                        <RichTextBlock x:Name="Preset_Options_CommandLine">
+                                                            <Paragraph>
+                                                                Макс температура 90C
+                                                            </Paragraph>
+                                                            <Paragraph>
+                                                                Лимит мощности STAPM 40W
+                                                            </Paragraph>
+                                                            <Paragraph>
+                                                                Лимит средней мощности 42W
+                                                            </Paragraph>
+                                                        </RichTextBlock>
+                                                        <local:CopyButton AutomationProperties.Name="Copy link" 
+                                                                          Content="&#xE8C8;" VerticalAlignment="Top"
+                                                                          ToolTipService.ToolTip="Copy" HorizontalAlignment="Right"/>
+                                                    </Grid>
+                                                </Expander>
+                                            </Grid>
                                         </StackPanel>
                                     </StackPanel>
                                 </ScrollViewer>
@@ -867,7 +997,7 @@
                         </Grid>
                     </Grid>
                     <TeachingTip x:Name="ApplyTeach" IsOpen="False"/>
-                    <Grid Grid.Row="1" Margin="23,-10,23,6">
+                    <Grid Grid.Row="1" Margin="23,-10,23,10">
                         <Button x:Name="ApplyButton" Click="ApplyButton_Click" CornerRadius="16" MinHeight="20" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
                             <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                 <FontIcon Glyph="&#xE768;" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>

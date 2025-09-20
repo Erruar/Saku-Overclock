@@ -1,9 +1,10 @@
-﻿using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Reflection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -13,6 +14,7 @@ using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
 using static ZenStates.Core.Cpu;
+using Task = System.Threading.Tasks.Task;
 
 namespace Saku_Overclock.Views;
 
@@ -28,6 +30,7 @@ public sealed partial class ПресетыPage
     private CodeName? _codeName;
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
+    private static bool? _isPlatformPC = false;
     private string _doubleClickApply = string.Empty;
 
     public ПресетыPage()
@@ -49,14 +52,56 @@ public sealed partial class ПресетыPage
     {
         _waitforload = false;
         SelectedProfile_Description.Text = "Preset_Min_Desc/Text".GetLocalized();
+
+        try
+        {
+            _isPlatformPC = SendSmuCommand.IsPlatformPC(CpuSingleton.GetInstance());
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex.ToString());
+        }
+
         LoadProfiles();
 
         // Загрузить остальные UI элементы, функции блока "Дополнительно"
+        try
+        {
+            AutostartCom.SelectedIndex = AppSettings.AutostartType;
+        }
+        catch
+        {
+            AutostartCom.SelectedIndex = 0;
+        }
+        try
+        {
+            HideCom.SelectedIndex = AppSettings.HidingType;
+        }
+        catch
+        {
+            HideCom.SelectedIndex = 2;
+        }
+        ReapplyOptionsSetOnly(AppSettings.ReapplyOverclock ? ReapplyOptions_Enabled : ReapplyOptions_Disabled);
+        AutoApplyOptionsSetOnly(AppSettings.ReapplyLatestSettingsOnAppLaunch ? AutoApplyOptions_Enabled : AutoApplyOptions_Disabled);
         TrayMonSetOnly(AppSettings.NiIconsEnabled ? TrayMonFeat_Enabled : TrayMonFeat_Disabled);
         RtssOverlaySetOnly(AppSettings.RtssMetricsEnabled ? RtssOverlay_Enabled : RtssOverlay_Disabled);
         StreamStabilizerSetOnly(AppSettings.StreamStabilizerEnabled ? StreamStabilizer_Smart : StreamStabilizer_Disabled);
 
         Premade_OptimizationLevel.SelectedIndex = AppSettings.PremadeOptimizationLevel;
+        StreamStabilizerModeCombo.SelectedIndex = AppSettings.StreamStabilizerType;
+        StreamStabilizerTargetMhz.Value = AppSettings.StreamStabilizerMaxMHz;
+        StreamStabilizerTargetPercent.Value = AppSettings.StreamStabilizerMaxPercentMHz;
+
+        if (OcFinder.IsUndervoltingAvailable() && AppSettings.PremadeOptimizationLevel == 2)
+        {
+            Premade_PremadeCurveOptimizer_StackPanel.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            Premade_PremadeCurveOptimizer_StackPanel.Visibility = Visibility.Collapsed;
+        }
+        CurveOptimizerLevel_Slider.Value = AppSettings.PremadeCurveOptimizerOverrideLevel;
+
         Premade_OptimizationLevelDesc.Text = Premade_OptimizationLevel.SelectedIndex switch
         {
             0 => "Preset_OptimizationLevel_Base_Desc".GetLocalized(),
@@ -65,23 +110,10 @@ public sealed partial class ПресетыPage
             _ => "Preset_OptimizationLevel_Base_Desc".GetLocalized()
         };
 
-        UndervoltingFlip.Visibility = OcFinder.IsUndervoltingAvailable() ? Visibility.Visible : Visibility.Collapsed;
-
-        if (AppSettings.CurveOptimizerOverallEnabled)
+        CurveOptimizerCustom_Grid.Visibility = OcFinder.IsUndervoltingAvailable() ? Visibility.Visible : Visibility.Collapsed;
+        if (CurveOptimizerCustom_Grid.Visibility == Visibility.Collapsed)
         {
-            switch (AppSettings.CurveOptimizerOverallLevel)
-            {
-                case 0:
-                default:
-                    CurveSetOnly(CurveOptions_Disabled);
-                    break;
-                case 1:
-                    CurveSetOnly(CurveOptions_Light);
-                    break;
-                case 2:
-                    CurveSetOnly(CurveOptions_Effective);
-                    break;
-            }
+            CurveOptimizerCustom.IsOn = false;
         }
 
         if (AppSettings.ProfilespageViewModeBeginner)
@@ -154,28 +186,28 @@ public sealed partial class ПресетыPage
         });
         ProfilesControl.Items.Add(new ProfileItem
         {
-            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeMaxActivated,
+            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeSpeedActivated,
             IconGlyph = "\ue945",
             Text = "Preset_Speed_Name/Text".GetLocalized(), // Speed
             Description = "Preset_Speed_Desc/Text".GetLocalized()
         });
         ProfilesControl.Items.Add(new ProfileItem
         {
-            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeMaxActivated,
+            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeBalanceActivated,
             IconGlyph = "\uec49",
             Text = "Preset_Balance_Name/Text".GetLocalized(), // Balance
             Description = "Preset_Balance_Desc/Text".GetLocalized()
         });
         ProfilesControl.Items.Add(new ProfileItem
         {
-            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeMaxActivated,
+            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeEcoActivated,
             IconGlyph = "\uec0a",
             Text = "Preset_Eco_Name/Text".GetLocalized(), // Eco
             Description = "Preset_Eco_Desc/Text".GetLocalized()
         });
         ProfilesControl.Items.Add(new ProfileItem
         {
-            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeMaxActivated,
+            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeMinActivated,
             IconGlyph = "\uebc0",
             Text = "Preset_Min_Name/Text".GetLocalized(), // Minimum
             Description = "Preset_Min_Desc/Text".GetLocalized()
@@ -236,7 +268,6 @@ public sealed partial class ПресетыPage
                     };
 
                     Services.PresetMetrics metrics;
-                    Services.PresetOptions options;
 
                     if (item.Text == "Preset_Max_Name/Text".GetLocalized())
                     {
@@ -444,7 +475,7 @@ public sealed partial class ПресетыPage
             }
             else
             {
-                if (SendSmuCommand.IsPlatformPC(CpuSingleton.GetInstance()) != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
+                if (_isPlatformPC != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
                 {
                     // Так как на компьютерах невозможно выставить другие Power лимиты
                     if (!_profile[index].cpu2 && !_profile[index].cpu4 && _profile[index].cpu3value == fineTunedTdp)
@@ -537,21 +568,15 @@ public sealed partial class ПресетыPage
                     TurboSetOnly(Turbo_LightModeToggle);
                 }
             }
-            if (AppSettings.CurveOptimizerOverallEnabled)
+
+            if (_profile[index].coall)
             {
-                switch (AppSettings.CurveOptimizerOverallLevel)
-                {
-                    case 0:
-                    default:
-                        CurveSetOnly(CurveOptions_Disabled);
-                        break;
-                    case 1:
-                        CurveSetOnly(CurveOptions_Light);
-                        break;
-                    case 2:
-                        CurveSetOnly(CurveOptions_Effective);
-                        break;
-                }
+                CurveOptimizerCustom.IsOn = true;
+                CurveOptimizerLevelCustom_Slider.Value = _profile[index].coallvalue;
+            }
+            else
+            {
+                CurveOptimizerCustom.IsOn = false;
             }
 
             V1.IsChecked = _profile[index].vrm1;
@@ -598,25 +623,7 @@ public sealed partial class ПресетыPage
                 break;
         }
     }
-    private void CurveSetOnly(ToggleButton button)
-    {
-        CurveOptions_Disabled.IsChecked = false;
-        CurveOptions_Light.IsChecked = false;
-        CurveOptions_Effective.IsChecked = false;
 
-        switch (button.Name)
-        {
-            case "CurveOptions_Disabled":
-                CurveOptions_Disabled.IsChecked = true;
-                break;
-            case "CurveOptions_Light":
-                CurveOptions_Light.IsChecked = true;
-                break;
-            case "CurveOptions_Effective":
-                CurveOptions_Effective.IsChecked = true;
-                break;
-        }
-    }
     private void StreamStabilizerSetOnly(ToggleButton button)
     {
         StreamStabilizer_Disabled.IsChecked = false;
@@ -629,6 +636,21 @@ public sealed partial class ПресетыPage
                 break;
             case "StreamStabilizer_Smart":
                 StreamStabilizer_Smart.IsChecked = true;
+                break;
+        }
+    }
+    private void ReapplyOptionsSetOnly(ToggleButton button)
+    {
+        ReapplyOptions_Disabled.IsChecked = false;
+        ReapplyOptions_Enabled.IsChecked = false;
+
+        switch (button.Name)
+        {
+            case "ReapplyOptions_Disabled":
+                ReapplyOptions_Disabled.IsChecked = true;
+                break;
+            case "ReapplyOptions_Enabled":
+                ReapplyOptions_Enabled.IsChecked = true;
                 break;
         }
     }
@@ -659,6 +681,21 @@ public sealed partial class ПресетыPage
                 break;
             case "TrayMonFeat_Enabled":
                 TrayMonFeat_Enabled.IsChecked = true;
+                break;
+        }
+    }
+    private void AutoApplyOptionsSetOnly(ToggleButton button)
+    {
+        AutoApplyOptions_Disabled.IsChecked = false;
+        AutoApplyOptions_Enabled.IsChecked = false;
+
+        switch (button.Name)
+        {
+            case "AutoApplyOptions_Disabled":
+                AutoApplyOptions_Disabled.IsChecked = true;
+                break;
+            case "AutoApplyOptions_Enabled":
+                AutoApplyOptions_Enabled.IsChecked = true;
                 break;
         }
     }
@@ -765,6 +802,32 @@ public sealed partial class ПресетыPage
     #region Event Handlers
 
     #region Additional Functions
+    private void ReapplyOptions_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (!_isLoaded || _waitforload) { return; }
+
+        var toggle = sender as ToggleButton;
+        if (ReapplyOptions_Disabled.IsChecked == false
+            && ReapplyOptions_Enabled.IsChecked == false)
+        {
+            toggle!.IsChecked = true;
+        }
+        else
+        {
+            if (toggle!.Name == "ReapplyOptions_Disabled")
+            {
+                ReapplyOptionsSetOnly(ReapplyOptions_Disabled);
+                AppSettings.ReapplyOverclock = false;
+            }
+            else if (toggle.Name == "ReapplyOptions_Enabled")
+            {
+                ReapplyOptionsSetOnly(ReapplyOptions_Enabled);
+                AppSettings.ReapplyOverclock = true;
+            }
+        }
+
+        AppSettings.SaveSettings();
+    }
     private void RtssOverlaySwitch_Toggled(object sender, RoutedEventArgs e)
     {
         if (!_isLoaded || _waitforload) { return; }
@@ -819,6 +882,33 @@ public sealed partial class ПресетыPage
         AppSettings.SaveSettings();
     }
 
+    private void AutoApplyOptions_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (!_isLoaded || _waitforload) { return; }
+
+        var toggle = sender as ToggleButton;
+        if (AutoApplyOptions_Disabled.IsChecked == false
+            && AutoApplyOptions_Enabled.IsChecked == false)
+        {
+            toggle!.IsChecked = true;
+        }
+        else
+        {
+            if (toggle!.Name == "AutoApplyOptions_Disabled")
+            {
+                AutoApplyOptionsSetOnly(AutoApplyOptions_Disabled);
+                AppSettings.ReapplyLatestSettingsOnAppLaunch = false;
+            }
+            else if (toggle.Name == "AutoApplyOptions_Enabled")
+            {
+                AutoApplyOptionsSetOnly(AutoApplyOptions_Enabled);
+                AppSettings.ReapplyLatestSettingsOnAppLaunch = true;
+            }
+        }
+
+        AppSettings.SaveSettings();
+    }
+
     private void StreamStabilizerSwitch_Toggled(object sender, RoutedEventArgs e)
     {
         if (!_isLoaded || _waitforload) { return; }
@@ -835,14 +925,79 @@ public sealed partial class ПресетыPage
             {
                 StreamStabilizerSetOnly(StreamStabilizer_Disabled);
                 AppSettings.StreamStabilizerEnabled = false;
+
+                StreamStabilizerTargetMHzGrid.Visibility = Visibility.Collapsed;
+                StreamStabilizerTargetPercentOfMHzGrid.Visibility = Visibility.Collapsed;
+
+                SetPowerConfig("PROCTHROTTLEMIN 100");
+                SetPowerConfig("PROCTHROTTLEMAX 100");
+                SetPowerConfig($"PROCFREQMAX 0");
+                SavePowerConfig();
             }
             else if (toggle.Name == "StreamStabilizer_Smart")
             {
                 StreamStabilizerSetOnly(StreamStabilizer_Smart);
                 AppSettings.StreamStabilizerEnabled = true;
+
+                StreamStabilizerModeCombo_SelectionChanged(null, null);
             }
         }
 
+        AppSettings.SaveSettings();
+    }
+    private void AutostartCom_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_isLoaded)
+        {
+            return;
+        }
+
+        AppSettings.AutostartType = AutostartCom.SelectedIndex;
+        var autoruns = new TaskService();
+        if (AutostartCom.SelectedIndex == 2 || AutostartCom.SelectedIndex == 3)
+        {
+            var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
+            var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
+            var pathToStartupLnk = Path.Combine(pathToProgramDirectory!, "Saku Overclock.exe");
+            // Добавить программу в автозагрузку
+            var sakuTask = autoruns.NewTask();
+            sakuTask.RegistrationInfo.Description =
+                "An awesome ryzen laptop overclock utility for those who want real performance! Autostart Saku Overclock application task";
+            sakuTask.RegistrationInfo.Author = "Sakura Serzhik";
+            sakuTask.RegistrationInfo.Version = new Version("1.0.0");
+            sakuTask.Principal.RunLevel = TaskRunLevel.Highest;
+            sakuTask.Triggers.Add(new LogonTrigger { Enabled = true });
+            sakuTask.Actions.Add(new ExecAction(pathToStartupLnk));
+            autoruns.RootFolder.RegisterTaskDefinition(@"Saku Overclock", sakuTask);
+        }
+        else
+        {
+            try
+            {
+                foreach (var task in autoruns.RootFolder.Tasks) 
+                {
+                    if (task.Name.Contains("Saku Overclock"))
+                    {
+                        autoruns.RootFolder.DeleteTask("Saku Overclock");
+                    }
+                }
+            }
+            catch 
+            {
+                //
+            }
+        }
+
+        AppSettings.SaveSettings();
+    }
+
+    private void HideCom_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_isLoaded)
+        {
+            return;
+        }
+        AppSettings.HidingType = HideCom.SelectedIndex;
         AppSettings.SaveSettings();
     }
 
@@ -878,10 +1033,7 @@ public sealed partial class ПресетыPage
         ChangedBaseTdp_Value();
     }
 
-    private void SmartTdp_Toggled(object sender, RoutedEventArgs e)
-    {
-        ChangedBaseTdp_Value();
-    }
+    private void SmartTdp_Toggled(object sender, RoutedEventArgs e) => ChangedBaseTdp_Value();
 
     private void ChangedBaseTdp_Value()
     {
@@ -921,7 +1073,7 @@ public sealed partial class ПресетыPage
             c3v.Value = BaseTdp_Slider.Value;
             _profile[index].cpu3value = BaseTdp_Slider.Value;
         }
-        if (SendSmuCommand.IsPlatformPC(CpuSingleton.GetInstance()) != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
+        if (_isPlatformPC != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
         {
             // Так как на компьютерах невозможно выставить другие Power лимиты
             c2.IsChecked = false; // Отключить STAPM
@@ -933,10 +1085,7 @@ public sealed partial class ПресетыPage
     }
 
     // Grid-помощник, который активирует переключатель когда пользователь нажал на область возле него
-    private void SmartTdp_PointerPressed(object sender, object e)
-    {
-        SmartTdp.IsOn = SmartTdp.IsOn == false;
-    }
+    private void SmartTdp_PointerPressed(object sender, object e) => SmartTdp.IsOn = !SmartTdp.IsOn;
 
     // Выбора режима усиления Турбобуста процессора: Авто, Умный, Сильный. Устанавливает параметры времени разгона процессора в зависимости от выбранной настройки
     private void Turbo_OtherModeToggle_Click(object sender, RoutedEventArgs e)
@@ -1001,58 +1150,6 @@ public sealed partial class ПресетыPage
 
         ProfileSave();
     }
-
-    private void CurveOptions_Disabled_Click(object sender, RoutedEventArgs e)
-    {
-        if (!_isLoaded || _waitforload) { return; }
-
-        var toggle = sender as ToggleButton;
-        if (CurveOptions_Disabled.IsChecked == false
-            && CurveOptions_Effective.IsChecked == false
-            && CurveOptions_Light.IsChecked == false)
-        {
-            toggle!.IsChecked = true;
-        }
-        else
-        {
-            if (toggle!.Name == "CurveOptions_Disabled")
-            {
-                CurveSetOnly(CurveOptions_Disabled);
-                AppSettings.CurveOptimizerOverallEnabled = false;
-                AppSettings.CurveOptimizerOverallLevel = 0;
-
-                MainWindow.Applyer.Apply(OcFinder.CurveOptimizerGenerateStringHelper(0), false, false, 0d);
-                if (AppSettings.Preset > -1)
-                {
-                    ShellPage.MandarinSparseUnitProfile(_profile[AppSettings.Preset]);
-                }
-            }
-            else if (toggle.Name == "CurveOptions_Light")
-            {
-                CurveSetOnly(CurveOptions_Light);
-                AppSettings.CurveOptimizerOverallEnabled = true;
-                AppSettings.CurveOptimizerOverallLevel = 1;
-                MainWindow.Applyer.Apply(OcFinder.CurveOptimizerGenerateStringHelper(-15), false, false, 0d);
-                if (AppSettings.Preset > -1)
-                {
-                    ShellPage.MandarinSparseUnitProfile(_profile[AppSettings.Preset]);
-                }
-            }
-            else if (toggle.Name == "CurveOptions_Effective")
-            {
-                CurveSetOnly(CurveOptions_Effective);
-                AppSettings.CurveOptimizerOverallEnabled = true;
-                AppSettings.CurveOptimizerOverallLevel = 2;
-                MainWindow.Applyer.Apply(OcFinder.CurveOptimizerGenerateStringHelper(-25), false, false, 0d);
-                if (AppSettings.Preset > -1)
-                {
-                    ShellPage.MandarinSparseUnitProfile(_profile[AppSettings.Preset]);
-                }
-            }
-        }
-
-        AppSettings.SaveSettings();
-    } 
 
     private void IgpuEnchancementCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -1606,8 +1703,10 @@ public sealed partial class ПресетыPage
     private void Premade_OptimizationLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (!_isLoaded) { return; }
+
         AppSettings.PremadeOptimizationLevel = Premade_OptimizationLevel.SelectedIndex;
         AppSettings.SaveSettings();
+
         Premade_OptimizationLevelDesc.Text = Premade_OptimizationLevel.SelectedIndex switch
         {
             0 => "Preset_OptimizationLevel_Base_Desc".GetLocalized(),
@@ -1615,8 +1714,156 @@ public sealed partial class ПресетыPage
             2 => "Preset_OptimizationLevel_Strong_Desc".GetLocalized(),
             _ => "Preset_OptimizationLevel_Base_Desc".GetLocalized()
         };
+
+        if (OcFinder.IsUndervoltingAvailable() && Premade_OptimizationLevel.SelectedIndex == 2)
+        {
+            Premade_PremadeCurveOptimizer_StackPanel.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            Premade_PremadeCurveOptimizer_StackPanel.Visibility = Visibility.Collapsed;
+        }
+
         ProfilesControl_SelectionChanged(ProfilesControl, null);
     }
+
+    private void CurveOptimizerLevel_Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (!_isLoaded) { return; }
+
+        AppSettings.PremadeCurveOptimizerOverrideLevel = (int)CurveOptimizerLevel_Slider.Value;
+        AppSettings.SaveSettings();
+    }
+
+    private void CurveOptimizerLevelCustom_Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (_waitforload) { return; }
+        ProfileLoad();
+        var index = _indexprofile == -1 ? 0 : _indexprofile;
+
+        _profile[index].coallvalue = CurveOptimizerLevelCustom_Slider.Value;
+        ProfileSave();
+    }
+
+    private void CurveOptimizerCustom_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_waitforload) { return; }
+        ProfileLoad();
+        var index = _indexprofile == -1 ? 0 : _indexprofile;
+
+        _profile[index].coall = CurveOptimizerCustom.IsOn;
+        ProfileSave();
+    }
+
+    private void StreamStabilizerModeCombo_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
+    {
+        if (!_isLoaded) { return; }
+
+        AppSettings.StreamStabilizerType = StreamStabilizerModeCombo.SelectedIndex;
+
+        switch (StreamStabilizerModeCombo.SelectedIndex)
+        {
+            case 1:
+                StreamStabilizerTargetMHzGrid.Visibility = Visibility.Visible;
+                StreamStabilizerTargetPercentOfMHzGrid.Visibility = Visibility.Collapsed;
+
+                SetPowerConfig("PROCTHROTTLEMIN 100");
+                SetPowerConfig("PROCTHROTTLEMAX 100");
+                SetPowerConfig($"PROCFREQMAX {(int)StreamStabilizerTargetMhz.Value}");
+                SavePowerConfig();
+
+                AppSettings.StreamStabilizerMaxMHz = (int)StreamStabilizerTargetMhz.Value;
+
+                break;// Target MHz
+            case 2:
+                StreamStabilizerTargetMHzGrid.Visibility = Visibility.Collapsed;
+                StreamStabilizerTargetPercentOfMHzGrid.Visibility = Visibility.Visible;
+
+                SetPowerConfig($"PROCTHROTTLEMIN {(int)StreamStabilizerTargetPercent.Value}");
+                SetPowerConfig($"PROCTHROTTLEMAX {(int)StreamStabilizerTargetPercent.Value}");
+                SetPowerConfig($"PROCFREQMAX 0");
+                SavePowerConfig();
+
+                AppSettings.StreamStabilizerMaxPercentMHz = (int)StreamStabilizerTargetPercent.Value;
+
+                break;// Target % of MHz
+            default:
+                StreamStabilizerTargetMHzGrid.Visibility = Visibility.Collapsed;
+                StreamStabilizerTargetPercentOfMHzGrid.Visibility = Visibility.Collapsed;
+
+                SetPowerConfig("PROCTHROTTLEMIN 99");
+                SetPowerConfig("PROCTHROTTLEMAX 99");
+                SetPowerConfig($"PROCFREQMAX 0");
+                SavePowerConfig();
+
+                break;// Base lock
+        }
+
+        AppSettings.SaveSettings();
+    }
+
+
+    private void StreamStabilizerTargetMhz_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        if (!_isLoaded) { return; }
+
+        SetPowerConfig("PROCTHROTTLEMIN 100");
+        SetPowerConfig("PROCTHROTTLEMAX 100");
+        SetPowerConfig($"PROCFREQMAX {(int)StreamStabilizerTargetMhz.Value}");
+        SavePowerConfig();
+
+        AppSettings.StreamStabilizerMaxMHz = (int)StreamStabilizerTargetMhz.Value;
+        AppSettings.SaveSettings();
+    }
+
+    private void StreamStabilizerTargetPercent_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    {
+        if (!_isLoaded) { return; }
+
+        SetPowerConfig($"PROCTHROTTLEMIN {(int)StreamStabilizerTargetPercent.Value}");
+        SetPowerConfig($"PROCTHROTTLEMAX {(int)StreamStabilizerTargetPercent.Value}");
+        SetPowerConfig($"PROCFREQMAX 0");
+        SavePowerConfig();
+
+        AppSettings.StreamStabilizerMaxPercentMHz = (int)StreamStabilizerTargetPercent.Value;
+        AppSettings.SaveSettings();
+    }
+
+    #region PowerConfig Helpers
+
+    public static void SetPowerConfig(string arguments)
+    {
+        _ = Task.Run(() =>
+        {
+            using var process = new Process();
+            process.StartInfo.FileName = "powercfg";
+            process.StartInfo.Arguments = $"/SETACVALUEINDEX SCHEME_CURRENT SUB_PROCESSOR {arguments}";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.Verb = "runas";
+            process.Start();
+            process.WaitForExit();
+        });
+    }
+
+    public static void SavePowerConfig()
+    {
+        _ = Task.Run(() =>
+        {
+            using var process = new Process();
+            process.StartInfo.FileName = "powercfg";
+            process.StartInfo.Arguments = "-S SCHEME_CURRENT";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.Verb = "runas";
+            process.Start();
+            process.WaitForExit();
+        });
+    }
+
+    #endregion
+
+    private void CurveOptimizerCustom_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => CurveOptimizerCustom.IsOn = !CurveOptimizerCustom.IsOn;
 
     #region Advanced View Page Controllers
 
