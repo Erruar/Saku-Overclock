@@ -40,14 +40,16 @@ public interface IAppSettingsService
         get;
         set;
     } // Флаг включены ли горячие клавиши в приложении или нет
+
     string HotkeysSwitchingCustomProfiles
     {
-        get; 
+        get;
         set;
     } // Список избранных переключаемых кастомных пресетов
+
     string HotkeysSwitchingPremadeProfiles
     {
-        get; 
+        get;
         set;
     } // Список переключаемых готовых пресетов
 
@@ -104,16 +106,19 @@ public interface IAppSettingsService
         get;
         set;
     } // Включен ли оптимизатор стрима
+
     int StreamStabilizerType
     {
         get;
         set;
     } // Тип оптимизатора стрима: 0 - базовая блокировка частоты, 1 - до максимальной частоты, 2 - до процента максимальной частоты
+
     int StreamStabilizerMaxMHz
     {
         get;
         set;
     } // Максимальная частота процессора при использовании оптимизатора стрима
+
     int StreamStabilizerMaxPercentMHz
     {
         get;
@@ -173,27 +178,31 @@ public interface IAppSettingsService
     {
         get;
         set;
-    }  // Уровень оптимизации пресета: 0 - Базовый, 1 - Стандартный, 2 - Расширенный
+    } // Уровень оптимизации пресета: 0 - Базовый, 1 - Стандартный, 2 - Расширенный
 
     int PremadeCurveOptimizerOverrideLevel
     {
-        get; set;
+        get;
+        set;
     } // Уровень андервольтинга для Расширенного режима оптимизации всех готовых пресетов
 
     bool AppFirstRun
     {
-        get; set;
+        get;
+        set;
     } // Первый запуск приложения
 
     int AppFirstRunType
     {
-        get; set;
+        get;
+        set;
     } // Страница первого запуска (Поможет при закрытии приложения после первого запуска без настройки)
 
     // Страница управления кулером
     bool IsNbfcModeEnabled
     {
-        get; set;
+        get;
+        set;
     } // Выбранная конфигурация страницы управления кулером
 
     string NbfcConfigXmlName
@@ -261,6 +270,7 @@ public interface IAppSettingsService
         get;
         set;
     } // Тип управления кулерами Asus: выключено, только чтение, включено
+
     int AsusModeSelectedMode
     {
         get;
@@ -272,7 +282,7 @@ public interface IAppSettingsService
         get;
         set;
     } // Скорость первого кулера Asus (>100 = авто)
-    
+
     double AsusModeFan2UserFanSpeedRpm
     {
         get;

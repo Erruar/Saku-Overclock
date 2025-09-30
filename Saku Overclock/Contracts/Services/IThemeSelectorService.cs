@@ -9,18 +9,18 @@ public interface IThemeSelectorService
     {
         get;
     }
+
     public List<ThemeClass> Themes
     {
         get;
-        set;
     }
-    
+
     Task InitializeAsync();
 
     Task SetThemeAsync(ElementTheme theme);
 
     Task SetRequestedThemeAsync();
-    
+
     void LoadThemeFromSettings();
     void SaveThemeInSettings();
 }

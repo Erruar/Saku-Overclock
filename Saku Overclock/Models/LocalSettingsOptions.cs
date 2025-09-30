@@ -4,11 +4,11 @@ public class LocalSettingsOptions
 {
     public string? ApplicationDataFolder
     {
-        get; set;
+        get; init;
     }
 
     public string? LocalSettingsFile
     {
-        get; set;
+        get; init;
     }
 }

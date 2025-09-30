@@ -13,6 +13,7 @@ using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using Windows.UI.ViewManagement;
+using Saku_Overclock.JsonContainers;
 using Icon = System.Drawing.Icon;
 
 namespace Saku_Overclock;
@@ -319,8 +320,8 @@ public sealed partial class MainWindow
                     if (SettingsService.Preset < profile.Length && SettingsService.Preset != -1)
                     {
                         ShellPage.MandarinSparseUnitProfile(profile[SettingsService.Preset]);
-                        if (profile[SettingsService.Preset].autoPstate &&
-                        profile[SettingsService.Preset].enablePstateEditor)
+                        if (profile[SettingsService.Preset].AutoPstate &&
+                        profile[SettingsService.Preset].EnablePstateEditor)
                         {
                             ПараметрыPage.WritePstates();
                         }

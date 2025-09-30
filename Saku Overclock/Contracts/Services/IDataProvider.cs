@@ -8,7 +8,7 @@ public interface IDataProvider
     /// <summary>
     /// Асинхронно получает обновлённые данные.
     /// </summary>
-    Task<SensorsInformation> GetDataAsync();
+    SensorsInformation GetDataAsync();
 
     float[]? GetPowerTable();
 }

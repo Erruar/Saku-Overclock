@@ -1,6 +1,8 @@
 namespace Saku_Overclock.JsonContainers.Helpers;
 
-/*This is a config for QuickSMU commands file*/
+/// <summary>
+///     Конфиг для команд QuickSMU
+/// </summary>
 public class CustomMailBoxes
 {
     public string Name

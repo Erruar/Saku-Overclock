@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using H.NotifyIcon;
@@ -52,6 +53,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     // Кеш для иконок чтобы не создавать заново каждый раз
     private readonly Dictionary<string, (Icon icon, IntPtr handle)> _iconCache = [];
     private readonly Lock _cacheLock = new();
+    private readonly Lock _trayIconsLock = new(); // Отдельный объект для синхронизационной блокировки
 
     private bool _batteryCached;
     private string? _cachedBatteryName;
@@ -108,11 +110,13 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                         return;
                     }
 
-                    var info = await _dataProvider.GetDataAsync();
+                    var info = _dataProvider.GetDataAsync();
                     try
                     {
-                        var (batteryName, batteryPercent, batteryState, batteryHealth, batteryCycles, batteryCapacity,
-                            chargeRate, notTrack, batteryLifeTime) = await GetBatInfoAsync();
+                        var (batteryName, batteryPercent, batteryState, 
+                            batteryHealth, batteryCycles, batteryCapacity,
+                            chargeRate, notTrack, batteryLifeTime) 
+                            = await GetBatInfoAsync();
 
                         info.BatteryName = batteryName;
                         info.BatteryUnavailable = notTrack;
@@ -191,7 +195,10 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         // Если данные о батарее помечены как недоступные, сразу возвращаем флаг и пустые строки
         if (_cachedBatteryUnavailable)
         {
-            return (string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
+            return (string.Empty, string.Empty,
+                string.Empty, string.Empty,
+                string.Empty, string.Empty,
+                string.Empty,
                 true, 0);
         }
 
@@ -242,7 +249,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                     notTrack = _cachedBatteryUnavailable;
                 }
 
-                return (batteryName, batteryPercent, batteryState, batteryHealth, batteryCycles, batteryCapacity,
+                return (batteryName, batteryPercent, batteryState, 
+                    batteryHealth, batteryCycles, batteryCapacity,
                     chargeRate, notTrack, batteryLifeTime);
             });
 
@@ -251,7 +259,10 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         catch
         {
             // Батарея недоступна
-            return (string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
+            return (string.Empty, string.Empty,
+                string.Empty, string.Empty,
+                string.Empty, string.Empty,
+                string.Empty,
                 true, 0);
         }
     }
@@ -269,21 +280,27 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     {
         try
         {
-            var memStatus = new MemoryInformation();
-            if (!GlobalMemoryStatusEx(memStatus))
+            var memStatus = new MemoryStatusEx
+            {
+                dwLength = (uint)Marshal.SizeOf<MemoryStatusEx>()
+            };
+
+            if (!GlobalMemoryStatusEx(ref memStatus))
             {
                 return ("Error", "Error", 0, "Error");
             }
 
             // Преобразуем из байтов в гигабайты
-            var totalRamGb = memStatus.ullTotalPhys / 1073741824.0;
-            var availRamGb = memStatus.ullAvailPhys / 1073741824.0;
+            var totalRamGb = memStatus.ullTotalPhys / (1024.0 * 1024 * 1024);
+            var availRamGb = memStatus.ullAvailPhys / (1024.0 * 1024 * 1024);
             var busyRamGb = totalRamGb - availRamGb;
 
-            return ($"{totalRamGb:F1}GB",
-                    $"{busyRamGb:F1}GB",
-                    (int)memStatus.dwMemoryLoad, 
-                    $"{(int)memStatus.dwMemoryLoad}%\n{busyRamGb:F1}GB/{totalRamGb:F1}GB");
+            return (
+                $"{totalRamGb:F1}GB",
+                $"{busyRamGb:F1}GB",
+                (int)memStatus.dwMemoryLoad,
+                $"{(int)memStatus.dwMemoryLoad}%\n{busyRamGb:F1}GB/{totalRamGb:F1}GB"
+            );
         }
         catch
         {
@@ -292,7 +309,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    private class MemoryInformation
+    private struct MemoryStatusEx
     {
         public uint dwLength;
         public uint dwMemoryLoad;
@@ -303,16 +320,11 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         public ulong ullTotalVirtual;
         public ulong ullAvailVirtual;
         public ulong ullAvailExtendedVirtual;
-
-        public MemoryInformation()
-        {
-            dwLength = (uint)Marshal.SizeOf<MemoryInformation>();
-        }
     }
 
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GlobalMemoryStatusEx([In, Out] MemoryInformation lpBuffer);
+    private static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx lpBuffer);
 
     #endregion
 
@@ -324,11 +336,15 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     {
         try
         {
-            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json",
-                JsonConvert.SerializeObject(_niicons, Formatting.Indented));
+            Directory.CreateDirectory(
+                Path.Combine(Environment.GetFolderPath(
+                        Environment.SpecialFolder.Personal),
+                    "SakuOverclock"));
+            File.WriteAllText(Environment.GetFolderPath(
+                                  Environment.SpecialFolder.Personal) +
+                              @"\SakuOverclock\niicons.json",
+                JsonConvert.SerializeObject(_niicons,
+                    Formatting.Indented));
         }
         catch
         {
@@ -341,7 +357,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         try
         {
             _niicons = JsonConvert.DeserializeObject<NiIconsSettings>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\SakuOverclock\\niicons.json"))!;
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\niicons.json"))!;
         }
         catch
         {
@@ -452,7 +468,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
     #region Update RTSS Line information voids
 
-
     private void UpdateRtssMetrics(SensorsInformation sensorsInformation)
     {
         try
@@ -517,7 +532,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         int startIndex, int endIndex)
     {
         var estimatedLength = EstimateResultLength(editorText) +
-            (int)(CpuSingleton.GetInstance().info.topology.cores * 50); 
+                              (int)(CpuSingleton.GetInstance().info.topology.cores * 50);
 
         var buffer = ArrayPool<char>.Shared.Rent(estimatedLength);
 
@@ -612,98 +627,29 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
             return 0;
         }
 
-        if (placeholder.SequenceEqual("$AppVersion$"))
+        return placeholder switch
         {
-            return WriteToSpan(_cachedAppVersion, output);
-        }
-
-        if (placeholder.SequenceEqual("$SelectedProfile$"))
-        {
-            return WriteTransliteratedProfile(output);
-        }
-
-        // Числовые значения с форматированием
-        if (placeholder.SequenceEqual("$stapm_value$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.CpuStapmValue, output);
-        }
-
-        if (placeholder.SequenceEqual("$stapm_limit$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.CpuStapmLimit, output);
-        }
-
-        if (placeholder.SequenceEqual("$fast_value$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.CpuFastValue, output);
-        }
-
-        if (placeholder.SequenceEqual("$fast_limit$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.CpuFastLimit, output);
-        }
-
-        if (placeholder.SequenceEqual("$slow_value$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.CpuSlowValue, output);
-        }
-
-        if (placeholder.SequenceEqual("$slow_limit$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.CpuSlowLimit, output);
-        }
-
-        if (placeholder.SequenceEqual("$vrmedc_value$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.VrmEdcValue, output);
-        }
-
-        if (placeholder.SequenceEqual("$vrmedc_max$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.VrmEdcLimit, output);
-        }
-
-        if (placeholder.SequenceEqual("$cpu_temp_value$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.CpuTempValue, output);
-        }
-
-        if (placeholder.SequenceEqual("$cpu_temp_max$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.CpuTempLimit, output);
-        }
-
-        if (placeholder.SequenceEqual("$cpu_usage$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.CpuUsage, output);
-        }
-
-        if (placeholder.SequenceEqual("$gfx_clock$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.ApuFrequency, output);
-        }
-
-        if (placeholder.SequenceEqual("$gfx_volt$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.ApuVoltage, output);
-        }
-
-        if (placeholder.SequenceEqual("$gfx_temp$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.ApuTemperature, output);
-        }
-
-        if (placeholder.SequenceEqual("$average_cpu_clock$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.CpuFrequency, output);
-        }
-
-        if (placeholder.SequenceEqual("$average_cpu_voltage$"))
-        {
-            return WriteFormattedDouble(sensorsInformation.CpuVoltage, output);
-        }
-
-        return 0;
+            "$AppVersion$" => WriteToSpan(_cachedAppVersion, output),
+            "$SelectedProfile$" => WriteTransliteratedProfile(output),
+            // Числовые значения с форматированием
+            "$stapm_value$" => WriteFormattedDouble(sensorsInformation.CpuStapmValue, output),
+            "$stapm_limit$" => WriteFormattedDouble(sensorsInformation.CpuStapmLimit, output),
+            "$fast_value$" => WriteFormattedDouble(sensorsInformation.CpuFastValue, output),
+            "$fast_limit$" => WriteFormattedDouble(sensorsInformation.CpuFastLimit, output),
+            "$slow_value$" => WriteFormattedDouble(sensorsInformation.CpuSlowValue, output),
+            "$slow_limit$" => WriteFormattedDouble(sensorsInformation.CpuSlowLimit, output),
+            "$vrmedc_value$" => WriteFormattedDouble(sensorsInformation.VrmEdcValue, output),
+            "$vrmedc_max$" => WriteFormattedDouble(sensorsInformation.VrmEdcLimit, output),
+            "$cpu_temp_value$" => WriteFormattedDouble(sensorsInformation.CpuTempValue, output),
+            "$cpu_temp_max$" => WriteFormattedDouble(sensorsInformation.CpuTempLimit, output),
+            "$cpu_usage$" => WriteFormattedDouble(sensorsInformation.CpuUsage, output),
+            "$gfx_clock$" => WriteFormattedDouble(sensorsInformation.ApuFrequency, output),
+            "$gfx_volt$" => WriteFormattedDouble(sensorsInformation.ApuVoltage, output),
+            "$gfx_temp$" => WriteFormattedDouble(sensorsInformation.ApuTemperature, output),
+            "$average_cpu_clock$" => WriteFormattedDouble(sensorsInformation.CpuFrequency, output),
+            "$average_cpu_voltage$" => WriteFormattedDouble(sensorsInformation.CpuVoltage, output),
+            _ => 0
+        };
     }
 
     private static int WriteToSpan(string text, Span<char> output)
@@ -718,7 +664,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         return span.Length;
     }
 
-    private static int WriteFormattedDouble(double value, Span<char> output) => value.TryFormat(output, out var written, "0.###") ? written : 0;
+    private static int WriteFormattedDouble(double value, Span<char> output) =>
+        value.TryFormat(output, out var written, "0.###") ? written : 0;
 
     private static int WriteTransliteratedProfile(Span<char> output)
     {
@@ -837,10 +784,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
     private static int EstimateResultLength(string input) => Math.Max(input.Length + input.Length / 2, 1024);
 
-    private static double GetSafeCoreValue(double[]? array, uint index)
-    {
-        return array != null && index < array.Length ? array[index] : 0f;
-    }
+    private static double GetSafeCoreValue(double[]? array, uint index) =>
+        array != null && index < array.Length ? array[index] : 0f;
 
     private static readonly Dictionary<char, string> TransliterationMap = new()
     {
@@ -861,7 +806,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         { 'Ш', "Sh" }, { 'Щ', "Sch" }, { 'Ъ', "'"  }, { 'Ы', "I"  }, { 'Ь', "'"  },
         { 'Э', "E"  }, { 'Ю', "Yu"  }, { 'Я', "Ya" }
     };
-
 
 
     [GeneratedRegex(@"\$cpu_clock_cycle\$(.*?)\$cpu_clock_cycle_end\$")]
@@ -899,23 +843,16 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
             for (var i = 0; i < sensorValues.Length && i < _niiconsMinMaxValues.Count; i++)
             {
-                UpdateMinMaxValues(_niiconsMinMaxValues, i, sensorValues[i]);
+                UpdateMinMaxValues(_niiconsMinMaxValues, i,
+                    sensorValues[i]); // Вносит новые минимальные и максимальные значения в переменные
             }
 
             // UI обновления только в UI потоке
-            var queue = App.MainWindow.DispatcherQueue;
-            if (queue != null)
-            {
-                queue.TryEnqueue(() => UpdateAllIconTexts(sensorsInformation));
-            }
-            else
-            {
-                LogHelper.LogWarn("DispatcherQueue недоступен для обновления иконок");
-            }
+            App.MainWindow.DispatcherQueue.TryEnqueue(() => UpdateAllIconTexts(sensorsInformation));
         }
         catch (Exception ex)
         {
-            LogHelper.LogError($"Ошибка обновления notify icons: {ex}");
+            LogHelper.LogError($"Ошибка обновления TrayMon иконок: {ex}");
             _isIconsUpdated = false;
         }
     }
@@ -924,7 +861,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     {
         try
         {
-            // Группируем все обновления UI в один метод для минимизации overhead'а диспетчера
+            // Группируем все обновления UI в один метод
             var iconUpdates = new[]
             {
                 ("Settings_ni_Values_STAPM", sensorsInformation.CpuStapmValue, "W", _niiconsMinMaxValues[0],
@@ -961,10 +898,10 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     }
 
     private static void
-       UpdateMinMaxValues(List<MinMax> minMaxValues, int index,
-           double currentValue)
+        UpdateMinMaxValues(List<MinMax> minMaxValues, int index,
+            double currentValue)
     {
-        // Проверяем, что индекс не выходит за пределы списка.
+        // Индекс не выходит за пределы списка.
         if (index >= 0 && index < minMaxValues.Count)
         {
             if (minMaxValues[index].Min == 0.0d)
@@ -1015,57 +952,83 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
     private void DisposeAllNotifyIcons()
     {
-        // Перебираем все иконки и вызываем Dispose для каждой из них
-        foreach (var icon in _trayIcons.Values)
+        TaskbarIcon[] iconsToDispose;
+
+        lock (_trayIconsLock)
         {
-            App.MainWindow.DispatcherQueue.TryEnqueue(icon.Dispose); // Действия с UI в UI потоке!
+            iconsToDispose = _trayIcons.Values.ToArray();
+            _trayIcons.Clear();
+        }
+
+        // Безопасно перебираем все иконки и вызываем Dispose для каждой из них
+        foreach (var icon in iconsToDispose)
+        {
+            App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+            {
+                if (!icon.IsDisposed)
+                {
+                    try
+                    {
+                        icon.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.LogError($"Ошибка при Dispose иконки: {ex.Message}");
+                    }
+                }
+            });
         }
 
         // Очищаем коллекцию иконок
-        _trayIcons.Clear();
+        lock (_trayIconsLock)
+        {
+            _trayIcons.Clear();
+        }
     }
 
     private void CreateNotifyIcons()
     {
+        var needsSave = false;
+        NiLoad(); // Сначала загрузить конфиг со всеми настройками
+
+        // Если нет элементов, не создаём иконки
+        if (_niicons.Elements.Count == 0 || AppSettings.NiIconsEnabled == false)
+        {
+            return;
+        }
+
         App.MainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             try
             {
-                NiLoad(); // Сначала загрузить конфиг со всеми настройками
-
-                // Если нет элементов, не создаём иконки
-                if (_niicons.Elements.Count == 0 || AppSettings.NiIconsEnabled == false)
-                {
-                    return;
-                }
-
                 foreach (var element in _niicons.Elements.Where(element => element.IsEnabled))
                 {
                     if (string.IsNullOrWhiteSpace(element.Guid) || !Guid.TryParse(element.Guid, out var parsedGuid))
                     {
                         parsedGuid = Guid.NewGuid();
                         element.Guid = parsedGuid.ToString();
-                        NiSave();
+                        needsSave = true;
                     }
 
                     // Проверяем есть ли уже TaskbarIcon с таким ID
                     TaskbarIcon? existingIcon;
-                    lock (_trayIcons)
+                    lock (_trayIconsLock)
                     {
                         _trayIcons.TryGetValue(element.Name, out existingIcon);
                     }
 
                     // Если иконка уже есть - удаляем
-                    if (existingIcon != null)
+                    if (existingIcon != null && !existingIcon.IsDisposed)
                     {
                         try
                         {
-                            existingIcon.Dispose(); // Это освободит и саму иконку внутри
+                            existingIcon.Icon?.Dispose(); // Освобождаем старую иконку
+                            existingIcon.Dispose();
                         }
                         catch (Exception disposeEx)
                         {
                             LogHelper.LogError(
-                                $"Ошибка при dispose существующей иконки {element.Name}: {disposeEx.Message}");
+                                $"Ошибка при удалении существующей иконки {element.Name}: {disposeEx.Message}");
                         }
                     }
 
@@ -1079,10 +1042,11 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                     // Создаём NotifyIcon
                     var notifyIcon = new TaskbarIcon
                     {
-                        // Генерация иконки
                         Icon = icon,
-                        Id = parsedGuid // Уникальный ID иконки ЕСЛИ ЕГО НЕТ - ПЕРЕЗАПИШЕТ ОСНОВНОЕ ТРЕЙ МЕНЮ ПРОГРАММЫ
+                        Id = parsedGuid, // Уникальный ID иконки ЕСЛИ ЕГО НЕТ - ПЕРЕЗАПИШЕТ ОСНОВНОЕ ТРЕЙ МЕНЮ ПРОГРАММЫ
+                        ToolTipText = element.ContextMenuType != 0 ? element.Name : ""
                     };
+
                     try
                     {
                         notifyIcon.ForceCreate();
@@ -1098,21 +1062,24 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                         return;
                     }
 
-                    if (element.ContextMenuType != 0)
+                    lock (_trayIconsLock)
                     {
-                        notifyIcon.ToolTipText = element.Name;
+                        _trayIcons[element.Name] = notifyIcon;
                     }
-
-                    _trayIcons[element.Name] = notifyIcon;
                 }
             }
             catch (Exception ex)
             {
                 LogHelper.LogError($"Критическая ошибка в CreateNotifyIcons: {ex.Message}");
             }
-
-            _isIconsCreated = true;
         });
+
+        if (needsSave)
+        {
+            NiSave();
+        }
+
+        _isIconsCreated = true;
     }
 
     private Icon? GetOrCreateIcon(NiIconsElements? element)
@@ -1123,7 +1090,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         }
 
         // Создаем ключ для кеша на основе параметров иконки
-        var cacheKey = $"{element.Color}_{element.SecondColor}_{element.FontSize}_{element.IconShape}_{element.BgOpacity}_Text";
+        var cacheKey =
+            $"{element.Color}_{element.SecondColor}_{element.FontSize}_{element.IconShape}_{element.BgOpacity}_Text";
 
         lock (_cacheLock)
         {
@@ -1134,137 +1102,42 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         }
 
         // Создаем новую иконку
-        var newIcon = CreateIconFromElement(element);
+        var newIcon = CreateIconFast(element);
 
-        if (newIcon != null)
+        lock (_cacheLock)
         {
-            lock (_cacheLock)
-            {
-                // Добавляем в кеш (handle нужен для правильного освобождения)
-                _iconCache[cacheKey] = (newIcon, newIcon.Handle);
-            }
+            // Добавляем в кеш (handle нужен для правильного освобождения)
+            _iconCache[cacheKey] = (newIcon, newIcon.Handle);
         }
 
         return newIcon;
     }
 
-    private static Icon? CreateIconFromElement(NiIconsElements? element)
+    private static Icon CreateIconFast(NiIconsElements element)
     {
-        // Создаётся виртуальный Grid и растрируется в Bitmap, затем обновляется иконка
-        // Создание иконки:
-        // 1. Создание формы (круг, квадрат, логотип и т.д.)
-        // 2. Заливка цвета с заданной прозрачностью
-        // 3. Наложение текста с указанным размером шрифта
+        using var bitmap = new Bitmap(32, 32, PixelFormat.Format32bppArgb);
+        using var g = Graphics.FromImage(bitmap);
+        g.Clear(Color.Transparent);
 
-        Bitmap? bitmap = null;
-        Graphics? g = null;
-        var hIcon = IntPtr.Zero;
+        g.CompositingQuality = CompositingQuality.HighSpeed;
 
-        try
-        {
-            if (element == null)
-            {
-                return null;
-            }
+        var color = ColorTranslator.FromHtml("#" + element.Color);
 
-            // Для простоты примера создадим пустую иконку
-            bitmap = new Bitmap(32, 32, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            g = Graphics.FromImage(bitmap);
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+        using var brush = new SolidBrush(Color.FromArgb((int)
+            (element.BgOpacity * 255),
+            color.R,
+            color.G,
+            color.B));
 
-            // Задаём цвет фона и форму
-            var bgColor = ColorTranslator.FromHtml("#" + element.Color);
-            Brush bgBrush;
+        g.FillRectangle(brush, 0, 0, 32, 32);
 
-            if (element.IsGradient && !string.IsNullOrEmpty(element.SecondColor))
-            {
-                var bgSecColor = ColorTranslator.FromHtml("#" + element.SecondColor);
-                bgBrush = new LinearGradientBrush(
-                    new Rectangle(0, 0, 32, 32),
-                    Color.FromArgb((int)(element.BgOpacity * 255), bgColor),
-                    Color.FromArgb((int)(element.BgOpacity * 255), bgSecColor),
-                    LinearGradientMode.Horizontal);
-            }
-            else
-            {
-                bgBrush = new SolidBrush(Color.FromArgb((int)(element.BgOpacity * 255), bgColor));
-            }
+        using var font = new Font(new FontFamily("Arial"), 22, FontStyle.Regular, GraphicsUnit.Pixel);
+        using var textBrush =
+            new SolidBrush(GetContrastColor(element.Color, element.IsGradient ? element.SecondColor : null));
 
-            switch (element.IconShape)
-            {
-                case 0: // Куб
-                    g.FillRectangle(bgBrush, 0, 0, 32, 32);
-                    break;
-                case 1: // Скруглённый куб
-                    var path = CreateRoundedRectanglePath(new Rectangle(0, 0, 32, 32), 7);
-                    if (path != null)
-                    {
-                        g.FillPath(bgBrush, path);
-                        path.Dispose();
-                    }
-                    else
-                    {
-                        g.FillRectangle(bgBrush, 0, 0, 32, 32);
-                    }
+        g.DrawString("Saku", font, textBrush, new PointF(-13.4f, 2.3f));
 
-                    break;
-                case 2: // Круг
-                    g.FillEllipse(bgBrush, 0, 0, 32, 32);
-                    break;
-                default:
-                    g.FillRectangle(bgBrush, 0, 0, 32, 32);
-                    break;
-            }
-
-            bgBrush.Dispose(); // Уничтожаем лишние кисти
-
-            // Добавляем текст
-            try
-            {
-                var font = new Font(new FontFamily("Arial"), element.FontSize * 2, FontStyle.Regular,
-                    GraphicsUnit.Pixel);
-                var textBrush =
-                    new SolidBrush(GetContrastColor(element.Color, element.IsGradient ? element.SecondColor : null));
-
-                const string sign = "Saku";
-                // Центруем текст
-                var textSize = g.MeasureString(sign, font);
-                var textPosition = new PointF(
-                    (bitmap.Width - textSize.Width) / 2,
-                    (bitmap.Height - textSize.Height) / 2
-                );
-                // Рисуем текст
-                g.DrawString(sign, font, textBrush, textPosition);
-
-                font.Dispose();
-                textBrush.Dispose();
-            }
-            catch (Exception textEx)
-            {
-                LogHelper.LogError($"Ошибка при добавлении текста: {textEx.Message}");
-            }
-
-            hIcon = bitmap.GetHicon();
-            return Icon.FromHandle(hIcon);
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError($"Ошибка при создании иконки: {ex.Message}");
-
-            // Освобождаем handle если что-то пошло не так
-            if (hIcon != IntPtr.Zero)
-            {
-                DestroyIcon(hIcon);
-            }
-
-            return null;
-        }
-        finally
-        {
-            g?.Dispose();
-            bitmap?.Dispose();
-        }
+        return Icon.FromHandle(bitmap.GetHicon());
     }
 
     /// <summary>Создаёт точную область скруглённого куба с учётом съедания пикселей GDI+</summary>
@@ -1274,28 +1147,28 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         var diameter = radius * 2;
         var factor = 0.99f; // Компенсирует "съедание" пикселей GDI+
 
-        // Верхний левый угол (без изменений)
+        // Верхний левый угол
         path.AddArc(rect.Left, rect.Top, diameter, diameter, 180, 90);
 
-        // Верхняя линия (с компенсацией)
+        // Верхняя линия
         path.AddLine(rect.Left + radius, rect.Top, rect.Right - radius - factor, rect.Top);
 
-        // Верхний правый угол (с компенсацией)
+        // Верхний правый угол
         path.AddArc(rect.Right - diameter - factor, rect.Top, diameter, diameter, 270, 90);
 
-        // Правая линия (с компенсацией)
+        // Правая линия
         path.AddLine(rect.Right, rect.Top + radius, rect.Right, rect.Bottom - radius - factor);
 
-        // Нижний правый угол (с компенсацией)
+        // Нижний правый угол
         path.AddArc(rect.Right - diameter - factor, rect.Bottom - diameter - factor, diameter, diameter, 0, 90);
 
-        // Нижняя линия (с компенсацией)
+        // Нижняя линия
         path.AddLine(rect.Right - radius - factor, rect.Bottom, rect.Left + radius, rect.Bottom);
 
-        // Нижний левый угол (с компенсацией)
+        // Нижний левый угол
         path.AddArc(rect.Left, rect.Bottom - diameter - factor, diameter, diameter, 90, 90);
 
-        // Левая линия (с компенсацией)
+        // Левая линия
         path.AddLine(rect.Left, rect.Bottom - radius - factor, rect.Left, rect.Top + radius);
 
         path.CloseFigure();
@@ -1313,7 +1186,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         try
         {
             TaskbarIcon? notifyIcon;
-            lock (_trayIcons)
+            lock (_trayIconsLock)
             {
                 _trayIcons.TryGetValue(iconName, out notifyIcon);
             }
@@ -1323,6 +1196,9 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 var element = _niicons.Elements.FirstOrDefault(e => e.Name == iconName);
                 if (element != null)
                 {
+                    // Сохраняем ссылку на старую иконку для правильного освобождения
+                    var oldIcon = notifyIcon.Icon;
+
                     // Создаем новую (с кешированием)
                     var newIcon = UpdateIconText(newText, element.Color,
                         element.IsGradient ? element.SecondColor : string.Empty,
@@ -1330,7 +1206,23 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
                     if (newIcon != null)
                     {
+                        // Устанавливаем новую иконку
                         notifyIcon.Icon = newIcon;
+
+                        // Только ПОСЛЕ установки новой иконки освобождаем старую
+                        if (oldIcon != null)
+                        {
+                            try
+                            {
+                                var handle = oldIcon.Handle;
+                                oldIcon.Dispose();
+                                DestroyIcon(handle); // Освобождаем Handle после Dispose
+                            }
+                            catch (Exception disposeEx)
+                            {
+                                LogHelper.LogError($"Ошибка освобождения старой иконки: {disposeEx.Message}");
+                            }
+                        }
 
                         // Обновляем tooltip
                         if (tooltipText != null)
@@ -1351,14 +1243,10 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     }
 
     private static Icon? UpdateIconText(string? newText, string newColor, string secondColor, int fontSize,
-        int iconShape, double opacity, Icon? oldIcon = null)
+        int iconShape, double opacity)
     {
-        // Уничтожаем старую иконку, если она существует
-        if (oldIcon != null)
-        {
-            DestroyIcon(oldIcon.Handle); // Освобождение старой иконки
-            oldIcon.Dispose(); // Освобождаем ресурсы иконки
-        }
+        GraphicsPath? path = null;
+        var hIcon = IntPtr.Zero;
 
         // Создаём новую иконку на основе существующей с новым текстом
         var bitmap = new Bitmap(32, 32);
@@ -1367,7 +1255,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
         // Цвет фона и кисть
         var bgColor = ColorTranslator.FromHtml("#" + newColor);
-        object bgBrush = new SolidBrush(Color.FromArgb((int)(opacity * 255), bgColor));
+        Brush bgBrush = new SolidBrush(Color.FromArgb((int)(opacity * 255), bgColor));
         if (secondColor != string.Empty)
         {
             var scColor = ColorTranslator.FromHtml("#" + secondColor);
@@ -1382,45 +1270,55 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         switch (iconShape)
         {
             case 0: // Куб
-                g.FillRectangle((Brush)bgBrush, 0, 0, 32, 32);
+                g.FillRectangle(bgBrush, 0, 0, 32, 32);
                 break;
             case 1: // Скруглённый куб
-                var path = CreateRoundedRectanglePath(new Rectangle(0, 0, 32, 32), 7);
-                if (path != null)
-                {
-                    g.FillPath((Brush)bgBrush, path);
-                }
-                else
-                {
-                    g.FillRectangle((Brush)bgBrush, 0, 0, 32, 32);
-                }
+                path = CreateRoundedRectanglePath(new Rectangle(0, 0, 32, 32), 7);
+                g.FillPath(bgBrush, path);
 
                 break;
             case 2: // Круг
-                g.FillEllipse((Brush)bgBrush, 0, 0, 32, 32);
+                g.FillEllipse(bgBrush, 0, 0, 32, 32);
                 break;
-            // Добавьте остальные фигуры и обработку ico при необходимости
             default:
-                g.FillRectangle((Brush)bgBrush, 0, 0, 32, 32);
+                g.FillRectangle(bgBrush, 0, 0, 32, 32);
                 break;
         }
 
         // Определение позиции текста
-
         var textBrush = new SolidBrush(GetContrastColor(newColor, secondColor != string.Empty ? secondColor : null));
         var textPosition = GetTextPosition(newText, fontSize, out var fontSizeT, out var newTextT);
-        var font = new Font(new FontFamily("Segoe UI"), fontSizeT * 2f, FontStyle.Bold,
-            GraphicsUnit.Pixel);
+        var font = new Font(new FontFamily("Segoe UI"), fontSizeT * 2f, FontStyle.Bold, GraphicsUnit.Pixel);
+
         // Рисуем текст
         g.DrawString(newTextT, font, textBrush, textPosition);
+
         // Создание иконки из Bitmap и освобождение ресурсов
         try
         {
             return Icon.FromHandle(bitmap.GetHicon());
         }
-        catch
+        catch (Exception ex)
         {
+            LogHelper.LogError($"Ошибка создания иконки: {ex.Message}");
+
+            // Освобождаем Handle в случае ошибки
+            if (hIcon != IntPtr.Zero)
+            {
+                DestroyIcon(hIcon);
+            }
+
             return null;
+        }
+        finally
+        {
+            // Освобождаем все ресурсы в правильном порядке
+            path?.Dispose();
+            font.Dispose();
+            textBrush.Dispose();
+            bgBrush.Dispose();
+            g.Dispose();
+            bitmap.Dispose();
         }
     }
 
@@ -1531,5 +1429,4 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     }
 
     #endregion
-
 }

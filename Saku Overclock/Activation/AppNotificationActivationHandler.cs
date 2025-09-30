@@ -5,18 +5,15 @@ using Saku_Overclock.Contracts.Services;
 
 namespace Saku_Overclock.Activation;
 
-public class AppNotificationActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
+public class AppNotificationActivationHandler(
+    INavigationService navigationService,
+    IAppNotificationService notificationService)
+    : ActivationHandler<LaunchActivatedEventArgs>
 {
-    private readonly INavigationService _navigationService;
-    private readonly IAppNotificationService _notificationService;
+    private readonly INavigationService _navigationService = navigationService;
+    private readonly IAppNotificationService _notificationService = notificationService;
 
-    public AppNotificationActivationHandler(INavigationService navigationService, IAppNotificationService notificationService)
-    {
-        _navigationService = navigationService;
-        _notificationService = notificationService;
-    }
-
-    protected override bool CanHandleInternal(LaunchActivatedEventArgs args)
+    protected override bool CanHandleInternal()
     {
         return AppInstance.GetCurrent().GetActivatedEventArgs()?.Kind == ExtendedActivationKind.AppNotification;
     }

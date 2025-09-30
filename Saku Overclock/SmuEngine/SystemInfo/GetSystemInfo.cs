@@ -37,7 +37,7 @@ internal class GetSystemInfo
         catch
         {
             return string.Empty;
-        } 
+        }
     }
 
     public enum BatteryStatus : ushort
@@ -77,7 +77,7 @@ internal class GetSystemInfo
         catch
         {
             return BatteryStatus.Undefined;
-        } 
+        }
     }
 
     public static decimal GetBatteryHealth()
@@ -94,40 +94,54 @@ internal class GetSystemInfo
         catch
         {
             return 100;
-        } 
+        }
     }
 
     public static decimal GetBatteryRate()
     {
+        if (!HasBattery())
+        {
+            DoNotTrackBattery = true;
+            return 0;
+        }
+
         try
         {
-            var scope = new ManagementScope("root\\WMI");
-            var query = new ObjectQuery("SELECT * FROM BatteryStatus");
+            using var searcher = new ManagementObjectSearcher("root\\WMI", "SELECT ChargeRate, DischargeRate FROM BatteryStatus");
+            using var results = searcher.Get();
 
-            var searcher = new ManagementObjectSearcher(scope, query);
-            var results = searcher.Get();
             foreach (var obj in results.OfType<ManagementObject>())
             {
                 var chargeRate = Convert.ToUInt32(obj["ChargeRate"]);
                 var dischargeRate = Convert.ToUInt32(obj["DischargeRate"]);
+
                 if (chargeRate > 0)
                 {
                     return chargeRate;
                 }
 
-                return -dischargeRate;
+                if (dischargeRate > 0)
+                {
+                    return -dischargeRate;
+                }
             }
-            return 0;
-        }
-        catch (ManagementException) 
-        {  
-            return 0;
+
+            return 0; // Батареи нет
         }
         catch
         {
             return 0;
         }
-    } 
+    }
+    public static bool HasBattery()
+    {
+        if (GetSystemPowerStatus(out var status))
+        {
+            // 0xFF означает "нет батареи"
+            return status.BatteryFlag != 0xFF && status.BatteryLifePercent != 0xFF;
+        }
+        return false;
+    }
 
     public static decimal ReadFullChargeCapacity()
     {
@@ -161,7 +175,17 @@ internal class GetSystemInfo
 
     public static decimal ReadDesignCapacity(out bool doNotTrack)
     {
-        if (DoNotTrackBattery) { doNotTrack = true; return 0; }
+        if (!HasBattery())
+        {
+            DoNotTrackBattery = true;
+        }
+
+        if (DoNotTrackBattery)
+        {
+            doNotTrack = true;
+            return 0;
+        }
+
         if (DesignCapacity == 0)
         {
             try
@@ -169,7 +193,13 @@ internal class GetSystemInfo
                 var scope = new ManagementScope("root\\WMI");
                 var query = new ObjectQuery("SELECT * FROM BatteryStaticData");
                 var searcher = new ManagementObjectSearcher(scope, query);
-                if (searcher == null) { doNotTrack = true; DoNotTrackBattery = true; return 0; }
+                if (searcher == null)
+                {
+                    doNotTrack = true;
+                    DoNotTrackBattery = true;
+                    return 0;
+                }
+
                 foreach (var obj in searcher.Get().Cast<ManagementObject>())
                 {
                     doNotTrack = false; DoNotTrackBattery = false;
@@ -177,24 +207,32 @@ internal class GetSystemInfo
                     DesignCapacity = returnCapacity;
                     return returnCapacity;
                 }
-                doNotTrack = true; DoNotTrackBattery = true;
+                doNotTrack = true;
+                DoNotTrackBattery = true;
                 return 0;
             }
             catch
             {
-                doNotTrack = true; DoNotTrackBattery = true;
+                doNotTrack = true;
+                DoNotTrackBattery = true;
                 return 0;
             }
         }
         else
         {
-            doNotTrack = false; DoNotTrackBattery = false;
+            doNotTrack = false;
+            DoNotTrackBattery = false;
             return DesignCapacity;
-        } 
+        }
     }
 
     public static int GetBatteryCycle()
     {
+        if (DoNotTrackBattery)
+        {
+            return 0;
+        }
+
         try
         {
             var searcher =
@@ -240,7 +278,7 @@ internal class GetSystemInfo
         catch
         {
             return 0;
-        } 
+        }
     }
 
     public static int GetBatteryLifeTime()

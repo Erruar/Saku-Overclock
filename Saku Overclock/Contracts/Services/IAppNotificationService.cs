@@ -7,7 +7,8 @@ public interface IAppNotificationService
 {
     List<Notify>? Notifies
     {
-        get; set;
+        get;
+        set;
     }
 
     void Initialize();

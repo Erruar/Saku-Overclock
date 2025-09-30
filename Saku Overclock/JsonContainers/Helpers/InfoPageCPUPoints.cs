@@ -1,6 +1,22 @@
-﻿namespace Saku_Overclock.SMUEngine;
-public class InfoPageCPUPoints
+﻿namespace Saku_Overclock.JsonContainers.Helpers;
+
+public class InfoPageCpuPoints
 {
-    public int X { get; set; } // Время (от 0 до 60)
-    public int Y { get; set; } // Инвертированное значение
+    /// <summary>
+    ///     Время (от 0 до 60)
+    /// </summary>
+    public int X
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    ///     Инвертированное значение
+    /// </summary>
+    public int Y
+    {
+        get;
+        set;
+    }
 }

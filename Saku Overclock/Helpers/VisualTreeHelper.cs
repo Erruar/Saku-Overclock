@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace Saku_Overclock.Helpers;
@@ -48,8 +43,10 @@ internal static class VisualTreeHelper
                 return true;
             }
         }
+
         return false;
     }
+
     public static void SetAllChildrenVisibility(FrameworkElement parent, Visibility visibility)
     {
         var stackPanels = FindVisualChildren<StackPanel>(parent);
@@ -58,5 +55,4 @@ internal static class VisualTreeHelper
             stackPanel.Visibility = visibility;
         }
     }
-
 }

@@ -967,7 +967,7 @@ CPU на приблизительно указанное
     <value>Текущая темп CPU</value>
   </data>
   <data name="infoACPUTEMPL.Text" xml:space="preserve">
-    <value>Температура</value>
+    <value>Температура ЦП</value>
   </data>
   <data name="infoACPUUSAGE.Text" xml:space="preserve">
     <value>Загрузка ЦП</value>

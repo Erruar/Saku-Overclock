@@ -77,9 +77,9 @@ public sealed partial class ГлавнаяPage
         foreach (var profile in _profile)
         {
             var isChecked = AppSettings.Preset != -1 &&
-                            _profile[AppSettings.Preset].profilename == profile.profilename &&
-                            _profile[AppSettings.Preset].profiledesc == profile.profiledesc &&
-                            _profile[AppSettings.Preset].profileicon == profile.profileicon;
+                            _profile[AppSettings.Preset].Profilename == profile.Profilename &&
+                            _profile[AppSettings.Preset].Profiledesc == profile.Profiledesc &&
+                            _profile[AppSettings.Preset].Profileicon == profile.Profileicon;
 
             var toggleButton = new ToggleButton
             {
@@ -100,7 +100,7 @@ public sealed partial class ГлавнаяPage
                         {
                             HorizontalAlignment = HorizontalAlignment.Left,
                             Margin = new Thickness(7, 0, 0, 0),
-                            Glyph = profile.profileicon == string.Empty ? "\uE718" : profile.profileicon
+                            Glyph = profile.Profileicon == string.Empty ? "\uE718" : profile.Profileicon
                         },
                         new StackPanel
                         {
@@ -112,13 +112,13 @@ public sealed partial class ГлавнаяPage
                                 new TextBlock
                                 {
                                     FontWeight = new FontWeight(700),
-                                    Text = profile.profilename
+                                    Text = profile.Profilename
                                 },
                                 new TextBlock
                                 {
                                     TextWrapping = TextWrapping.Wrap,
-                                    Text = profile.profiledesc,
-                                    Visibility = profile.profiledesc == string.Empty
+                                    Text = profile.Profiledesc,
+                                    Visibility = profile.Profiledesc == string.Empty
                                         ? Visibility.Collapsed
                                         : Visibility.Visible
                                 }
@@ -755,10 +755,10 @@ public sealed partial class ГлавнаяPage
                     for (var i = 0; i < _profile.Length; i++)
                     {
                         var profile = _profile[i];
-                        if (profile.profilename == name &&
-                            profile.profiledesc == desc &&
-                            (profile.profileicon == icon ||
-                             profile.profileicon == "\uE718"))
+                        if (profile.Profilename == name &&
+                            profile.Profiledesc == desc &&
+                            (profile.Profileicon == icon ||
+                             profile.Profileicon == "\uE718"))
                         {
                             AppSettings.Preset = i;
                             AppSettings.SaveSettings();

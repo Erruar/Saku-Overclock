@@ -11,7 +11,7 @@ internal interface IRtssSettingsService
     void SaveSettings();
     void LoadSettings();
 
-    List<RTSSElementsClass> RTSS_Elements
+    List<RtssElementsClass> RTSS_Elements
     {
         get; set;
     }

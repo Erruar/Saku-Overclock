@@ -123,7 +123,7 @@ public sealed partial class SettingsPage
         ProfileLoad();
         foreach (var profile in _profile)
         {
-            Presets.Add(profile.profilename);
+            Presets.Add(profile.Profilename);
         }
     }
     private void UpdateTheme_ComboBox()

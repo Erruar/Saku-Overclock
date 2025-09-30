@@ -1,50 +1,53 @@
 ﻿using System.Runtime.InteropServices;
-using Windows.ApplicationModel.Background;
-using Windows.ApplicationModel.AppService;
-using Windows.Foundation.Collections;
 
 namespace Saku_Overclock.Activation;
+
 internal static class ActivationInvokeHandler
 {
     #region DLL usings
-    [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    private static extern bool AllowSetForegroundWindowMethod(int dwProcessId);
 
-    [System.Runtime.InteropServices.DllImport("User32")]
+    [DllImport("User32")]
     private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-    [System.Runtime.InteropServices.DllImport("user32.dll")]
-    private static extern bool ShowWindowAsync(System.IntPtr hWnd, int cmdShow); // Показать текущее окно, вместо открытия второго экземпляра программы
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindowAsync(IntPtr hWnd, int cmdShow);
 
-    [System.Runtime.InteropServices.DllImport("user32.dll")]
-    private static extern bool ShowWindow(System.IntPtr hWnd, int cmdShow); // Второй метод для того, чтобы показать вообще все окна
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindow(IntPtr hWnd, int cmdShow);
 
-    [System.Runtime.InteropServices.DllImport("user32.dll")]
-    private static extern IntPtr FindWindow(string? lpClassName, string lpWindowName); // Метод для нахождения окна программы
+    [DllImport("user32.dll")]
+    private static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
 
-    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    [DllImport("user32.dll")]
     private static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
-    #endregion 
+
+    #endregion
+
     #region Public window state voids
-    public static bool BringToFrontWindow(IntPtr hWnd)
-    {
-        return SetForegroundWindow(hWnd);
-    } 
-    public static bool ChangeWindowState(IntPtr hWnd, int command)
-    {
-        return ShowWindowAsync(hWnd, command);
-    }
-    public static bool ChangeAllWindowState(IntPtr hWnd, int command)
-    {
-        return ShowWindow(hWnd, command);
-    }
-    public static IntPtr FindMainWindowHWND(string? lpClassName, string lpWindowName)
-    {
-        return FindWindow(lpClassName, lpWindowName);
-    }
-    public static void SwitchToMainWindow(IntPtr hWnd, bool fAltTab)
-    {
-        SwitchToThisWindow(hWnd, fAltTab);
-    }
+
+    /// <summary>
+    ///     Сфокусироваться на текущем окне
+    /// </summary>
+    public static void BringToFrontWindow(IntPtr hWnd) => SetForegroundWindow(hWnd);
+
+    /// <summary>
+    ///     Показать текущее окно, вместо открытия второго экземпляра программы
+    /// </summary>
+    public static void ChangeWindowState(IntPtr hWnd, int command) => ShowWindowAsync(hWnd, command);
+
+    /// <summary>
+    ///     Второй метод для того, чтобы показать вообще все окна
+    /// </summary>
+    public static void ChangeAllWindowState(IntPtr hWnd, int command) => ShowWindow(hWnd, command);
+
+    /// <summary>
+    ///     Метод для нахождения окна программы
+    /// </summary>
+    /// <returns>IntPtr главного окна</returns>
+    public static IntPtr FindMainWindowHwnd(string? lpClassName, string lpWindowName) =>
+        FindWindow(lpClassName, lpWindowName);
+
+    public static void SwitchToMainWindow(IntPtr hWnd, bool fAltTab) => SwitchToThisWindow(hWnd, fAltTab);
+
     #endregion
 }

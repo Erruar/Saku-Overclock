@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Contracts.ViewModels;
 using Saku_Overclock.Helpers;
@@ -11,9 +9,8 @@ namespace Saku_Overclock.Services;
 
 // For more information on navigation between pages see
 // https://github.com/microsoft/TemplateStudio/blob/main/docs/WinUI/navigation.md
-public class NavigationService : INavigationService
+public class NavigationService(IPageService pageService) : INavigationService
 {
-    private readonly IPageService _pageService;
     private object? _lastParameterUsed;
     private Frame? _frame;
 
@@ -42,11 +39,6 @@ public class NavigationService : INavigationService
 
     [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]
     public bool CanGoBack => Frame != null && Frame.CanGoBack;
-
-    public NavigationService(IPageService pageService)
-    {
-        _pageService = pageService;
-    }
 
     private void RegisterFrameEvents()
     {
@@ -83,9 +75,10 @@ public class NavigationService : INavigationService
 
     public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false)
     {
-        var pageType = _pageService.GetPageType(pageKey);
+        var pageType = pageService.GetPageType(pageKey);
 
-        if (_frame != null && (_frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameterUsed))))
+        if (_frame != null && (_frame.Content?.GetType() != pageType ||
+                               (parameter != null && !parameter.Equals(_lastParameterUsed))))
         {
             _frame.Tag = clearNavigation;
             var vmBeforeNavigation = _frame.GetPageViewModel();

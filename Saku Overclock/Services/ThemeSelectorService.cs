@@ -1,31 +1,26 @@
 ﻿using Microsoft.UI.Xaml;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Models;
 using Saku_Overclock.Styles;
 
 namespace Saku_Overclock.Services;
 
-public class ThemeSelectorService : IThemeSelectorService
+public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsService) : IThemeSelectorService
 {
     public ElementTheme Theme
     {
         get;
-        set;
+        private set;
     } = ElementTheme.Default;
-
-    private readonly ILocalThemeSettingsService _localThemeSettingsService;
 
     public List<ThemeClass> Themes
     {
         get;
         set;
-    }
-
-    public ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsService)
-    {
-        _localThemeSettingsService = localThemeSettingsService;
-        Themes = [
-        new ()
+    } =
+    [
+        new()
         {
             ThemeName = "Theme_Default",
             ThemeLight = false,
@@ -35,7 +30,7 @@ public class ThemeSelectorService : IThemeSelectorService
             ThemeCustomBg = false,
             ThemeBackground = ""
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Light",
             ThemeLight = true,
@@ -45,7 +40,7 @@ public class ThemeSelectorService : IThemeSelectorService
             ThemeCustomBg = false,
             ThemeBackground = ""
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Dark",
             ThemeLight = false,
@@ -55,7 +50,7 @@ public class ThemeSelectorService : IThemeSelectorService
             ThemeCustomBg = false,
             ThemeBackground = ""
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Clouds",
             ThemeLight = true,
@@ -65,7 +60,7 @@ public class ThemeSelectorService : IThemeSelectorService
             ThemeCustomBg = false,
             ThemeBackground = "ms-appx:///Assets/Themes/DuwlKmK.png"
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Neon",
             ThemeLight = false,
@@ -75,7 +70,7 @@ public class ThemeSelectorService : IThemeSelectorService
             ThemeCustomBg = false,
             ThemeBackground = "ms-appx:///Assets/Themes/DuwlKmK.png"
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Raspberry",
             ThemeLight = true,
@@ -85,7 +80,7 @@ public class ThemeSelectorService : IThemeSelectorService
             ThemeCustomBg = false,
             ThemeBackground = "ms-appx:///Assets/Themes/fw41KXN.png"
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Sand",
             ThemeLight = true,
@@ -95,7 +90,7 @@ public class ThemeSelectorService : IThemeSelectorService
             ThemeCustomBg = false,
             ThemeBackground = "ms-appx:///Assets/Themes/ZqjqlOs.png"
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Coffee",
             ThemeLight = false,
@@ -106,7 +101,6 @@ public class ThemeSelectorService : IThemeSelectorService
             ThemeBackground = "ms-appx:///Assets/Themes/ZqjqlOs.png"
         }
     ];
-    }
 
     public async Task InitializeAsync()
     {
@@ -133,13 +127,14 @@ public class ThemeSelectorService : IThemeSelectorService
 
         await Task.CompletedTask;
     }
-    
+
     public void LoadThemeFromSettings()
     {
-        Themes = _localThemeSettingsService.LoadThemeSettings().CustomThemes;
+        Themes = localThemeSettingsService.LoadThemeSettings().CustomThemes;
         try
         {
-            if (Enum.TryParse(_localThemeSettingsService.LoadThemeSettings().AppBackgroundRequestedTheme, out ElementTheme cacheTheme))
+            if (Enum.TryParse(localThemeSettingsService.LoadThemeSettings().AppBackgroundRequestedTheme,
+                    out ElementTheme cacheTheme))
             {
                 Theme = cacheTheme;
             }
@@ -148,11 +143,11 @@ public class ThemeSelectorService : IThemeSelectorService
         {
             Theme = ElementTheme.Default;
         }
-        
     }
 
     public void SaveThemeInSettings()
     {
-        _localThemeSettingsService.SaveThemeSettings(new Models.LocalThemeSettingsOptions() { CustomThemes = Themes, AppBackgroundRequestedTheme = Theme.ToString()});
-    } 
+        localThemeSettingsService.SaveThemeSettings(new LocalThemeSettingsOptions
+            { CustomThemes = Themes, AppBackgroundRequestedTheme = Theme.ToString() });
+    }
 }

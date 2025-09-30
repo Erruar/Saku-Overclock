@@ -1,11 +1,7 @@
 ﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts.Services;
-using Saku_Overclock.Core.Helpers;
-using Saku_Overclock.Helpers; 
-using Windows.Storage;
-using Saku_Overclock.Styles;
-using Microsoft.UI.System;
 using Saku_Overclock.Models;
+using Saku_Overclock.Styles;
 
 namespace Saku_Overclock.Services;
 
@@ -16,7 +12,9 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
 
     private readonly IFileService _fileService;
 
-    private readonly string _localApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    private readonly string _localApplicationData =
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
     private readonly string _applicationDataFolder;
     private readonly string _themeSettingsFile;
 
@@ -27,19 +25,13 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
 
         _applicationDataFolder = Path.Combine(_localApplicationData, DefaultApplicationDataFolder);
         _themeSettingsFile = ThemeSettingsFile;
-
-    } 
+    }
 
     public LocalThemeSettingsOptions LoadThemeSettings()
     {
         try
         {
-            return _fileService.Read<LocalThemeSettingsOptions>(_applicationDataFolder, _themeSettingsFile)
-                ?? new LocalThemeSettingsOptions
-                {
-                    AppBackgroundRequestedTheme = "Default",
-                    CustomThemes = DefaultThemes
-                };
+            return _fileService.Read<LocalThemeSettingsOptions>(_applicationDataFolder, _themeSettingsFile);
         }
         catch
         {
@@ -51,13 +43,12 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
         }
     }
 
-    public void SaveThemeSettings(LocalThemeSettingsOptions themeSettings)
-    {
+    public void SaveThemeSettings(LocalThemeSettingsOptions themeSettings) =>
         _fileService.Save(_applicationDataFolder, _themeSettingsFile, themeSettings);
-    } 
 
-    private static List<ThemeClass> DefaultThemes => [
-        new ()
+    private static List<ThemeClass> DefaultThemes =>
+    [
+        new()
         {
             ThemeName = "Theme_Default",
             ThemeLight = false,
@@ -67,7 +58,7 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
             ThemeCustomBg = false,
             ThemeBackground = ""
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Light",
             ThemeLight = true,
@@ -77,7 +68,7 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
             ThemeCustomBg = false,
             ThemeBackground = ""
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Dark",
             ThemeLight = false,
@@ -87,7 +78,7 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
             ThemeCustomBg = false,
             ThemeBackground = ""
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Clouds",
             ThemeLight = true,
@@ -97,7 +88,7 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
             ThemeCustomBg = false,
             ThemeBackground = "ms-appx:///Assets/Themes/DuwlKmK.png"
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Neon",
             ThemeLight = false,
@@ -107,7 +98,7 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
             ThemeCustomBg = false,
             ThemeBackground = "ms-appx:///Assets/Themes/DuwlKmK.png"
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Raspberry",
             ThemeLight = true,
@@ -117,7 +108,7 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
             ThemeCustomBg = false,
             ThemeBackground = "ms-appx:///Assets/Themes/fw41KXN.png"
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Sand",
             ThemeLight = true,
@@ -127,7 +118,7 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
             ThemeCustomBg = false,
             ThemeBackground = "ms-appx:///Assets/Themes/ZqjqlOs.png"
         },
-        new ()
+        new()
         {
             ThemeName = "Theme_Coffee",
             ThemeLight = false,

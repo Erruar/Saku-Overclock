@@ -30,14 +30,14 @@ public partial class ГлавнаяViewModel : ObservableRecipient
     {
         Version version;
 
-        if (RuntimeHelper.IsMSIX)
+        if (RuntimeHelper.IsMsix)
         {
             var packageVersion = Package.Current.Id.Version;
             version = new Version(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
         }
         else
         {
-            version = Assembly.GetExecutingAssembly().GetName().Version!;
+            version = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1,0,1,0);
         }
         return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
     }

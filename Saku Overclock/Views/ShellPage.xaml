@@ -2,45 +2,40 @@
     x:Class="Saku_Overclock.Views.ShellPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
     xmlns:helpers="using:Saku_Overclock.Helpers"
-    xmlns:behaviors="using:Saku_Overclock.Behaviors"
-    xmlns:i="using:Microsoft.Xaml.Interactivity" xmlns:local="using:Saku_Overclock.ViewModels"
+    xmlns:local="using:Saku_Overclock.ViewModels"
     Loaded="OnLoaded">
     <Page.Resources>
-        <ThemeShadow x:Name="SharedShadow" />
+        <ThemeShadow x:Name="SharedShadow"/>
         <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
         <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
-        <ListView x:Name="KeyboardHandler" />
     </Page.Resources>
-    <Grid  Canvas.ZIndex="4"> 
+    <Grid Canvas.ZIndex="4">
         <Grid>
             <Border x:Name="ThemeOpacity"
-       MinHeight="325" Opacity="0.0"
-       CornerRadius="8" Margin="0,-180,0,0">
+                    MinHeight="325" Opacity="0.0"
+                    CornerRadius="8" Margin="0,-180,0,0">
                 <Border.Background>
                     <ImageBrush x:Name="ThemeBackground"
-                   ImageSource="https://i.imgur.com/fw41KXN.png"
-                   Stretch="UniformToFill"/>
-                </Border.Background> 
+                                ImageSource="https://i.imgur.com/fw41KXN.png"
+                                Stretch="UniformToFill"/>
+                </Border.Background>
             </Border>
-            <Grid x:Name="ThemeMaskOpacity" Opacity="0.0" Background="{ThemeResource BackgroundImageMaskAcrylicBrush}"></Grid>
+            <Grid x:Name="ThemeMaskOpacity" Opacity="0.0" Background="{ThemeResource BackgroundImageMaskAcrylicBrush}"/>
         </Grid>
-        <Grid  Canvas.ZIndex="4">
+        <Grid Canvas.ZIndex="4">
             <NavigationView
-    x:Name="NavigationViewControl"
-    Canvas.ZIndex="0"
-    PaneOpened="NavigationViewControl_PaneOpened"
-    PaneClosed="NavigationViewControl_PaneClosed"
-    IsBackButtonVisible="Visible"
-    IsBackEnabled="{x:Bind ViewModel.IsBackEnabled, Mode=OneWay}"
-    SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
-    IsSettingsVisible="True"
-    ExpandedModeThresholdWidth="1280"
-    DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
-    Header="{x:Bind ((ContentControl)ViewModel.Selected).Content, Mode=OneWay}">
+                x:Name="NavigationViewControl"
+                Canvas.ZIndex="0"
+                PaneOpened="NavigationViewControl_PaneOpened"
+                PaneClosed="NavigationViewControl_PaneClosed"
+                IsBackButtonVisible="Visible"
+                IsBackEnabled="{x:Bind ViewModel.IsBackEnabled, Mode=OneWay}"
+                SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
+                IsSettingsVisible="True"
+                ExpandedModeThresholdWidth="1280"
+                DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
+                Header="  ">
                 <NavigationView.MenuItems>
                     <!--
         TODO: Update item titles by updating <x:Uid>.Content entries in Strings/en-us/Resources.resw.
@@ -49,32 +44,39 @@
         TODO: Update item icons by updating FontIcon.Glyph properties.
         https://docs.microsoft.com/windows/apps/design/style/segoe-fluent-icons-font#icon-list
         -->
-                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Главная" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ГлавнаяViewModel">
+                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Главная"
+                                        helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ГлавнаяViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xf157;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Пресеты" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ПресетыViewModel">
+                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Пресеты"
+                                        helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ПресетыViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xeadf;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Параметры" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ПараметрыViewModel">
+                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Параметры"
+                                        helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ПараметрыViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe945;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Информация" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ИнформацияViewModel">
+                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Информация"
+                                        helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ИнформацияViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe950;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Кулер" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.КулерViewModel">
+                    <NavigationViewItem CornerRadius="9" x:Uid="Shell_Кулер"
+                                        helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.КулерViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe9ca;"/>
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>
-                    <NavigationViewItem Visibility="Collapsed" CornerRadius="9" ToolTipService.ToolTip="DEBUG @ Enter first setup mode page" helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ОбучениеViewModel">
+                    <NavigationViewItem Visibility="Collapsed" CornerRadius="9"
+                                        ToolTipService.ToolTip="DEBUG @ Enter first setup mode page"
+                                        helpers:NavigationHelper.NavigateTo="Saku_Overclock.ViewModels.ОбучениеViewModel">
                         <NavigationViewItem.Icon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82F;"/>
                         </NavigationViewItem.Icon>
@@ -84,47 +86,34 @@
                     <DataTemplate>
                         <Grid>
                             <TextBlock
-                    Text="{Binding}"
-                    Style="{ThemeResource TitleTextBlockStyle}" />
+                                Text="{Binding}"
+                                Style="{ThemeResource TitleTextBlockStyle}"/>
                         </Grid>
                     </DataTemplate>
                 </NavigationView.HeaderTemplate>
-                <i:Interaction.Behaviors>
-                    <behaviors:NavigationViewHeaderBehavior
-            DefaultHeader="{x:Bind ((ContentControl)ViewModel.Selected).Content, Mode=OneWay}">
-                        <behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <TextBlock
-                            Text=" "
-                            Style="{ThemeResource TitleTextBlockStyle}" />
-
-                                </Grid>
-                            </DataTemplate>
-                        </behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
-                    </behaviors:NavigationViewHeaderBehavior>
-                </i:Interaction.Behaviors>
                 <Grid Margin="{StaticResource NavigationViewPageContentMargin}">
-                    <Frame x:Name="NavigationFrame" />
+                    <Frame x:Name="NavigationFrame"/>
 
                 </Grid>
             </NavigationView>
-            <Grid x:Name="AppTitleBar" Canvas.ZIndex="0" Height="50" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <Grid x:Name="AppTitleBar" Canvas.ZIndex="0" Height="50" VerticalAlignment="Top"
+                  HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
                     <ColumnDefinition x:Name="IconColumn" Width="120"/>
-                    <ColumnDefinition x:Name="LeftDragColumn" Width="*"/>
-                    <ColumnDefinition x:Name="SearchColumn" Width="4*" MinWidth="220"/>
-                    <ColumnDefinition x:Name="RightDragColumn" Width="*" MinWidth="38"/>
-                    <ColumnDefinition x:Name="RingerNotif" Width="32"/>
-                    <ColumnDefinition x:Name="RightRDragColumn" Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="4*" MinWidth="220"/>
+                    <ColumnDefinition Width="*" MinWidth="38"/>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="10"/>
                     <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="1" PointerEntered="TitleIcon_PointerEntered" x:Name="TitleIcon"  PointerExited="TitleIcon_PointerExited" Margin="0,0,0,0"   
-      Canvas.ZIndex="4"
-      Height="{Binding ElementName=NavigationViewControl, Path=CompactPaneLength}"
-      IsHitTestVisible="True"
-      VerticalAlignment="Top"> 
+                <Grid Grid.Column="1" PointerEntered="TitleIcon_PointerEntered" x:Name="TitleIcon"
+                      PointerExited="TitleIcon_PointerExited" Margin="0,0,0,0"
+                      Canvas.ZIndex="4"
+                      Height="{Binding ElementName=NavigationViewControl, Path=CompactPaneLength}"
+                      IsHitTestVisible="True"
+                      VerticalAlignment="Top">
                     <Button x:Name="Icon"
                             Grid.Column="0"
                             Height="33"
@@ -133,77 +122,75 @@
                             VerticalAlignment="Top"
                             CornerRadius="12"
                             Click="Icon_Click"
-                            PointerEntered="TitleIcon_PointerEntered" 
+                            PointerEntered="TitleIcon_PointerEntered"
                             Shadow="{ThemeResource SharedShadow}"
                             Translation="0,0,12">
                         <Button.Transitions>
-                            <RepositionThemeTransition />
+                            <RepositionThemeTransition/>
                         </Button.Transitions>
                         <Button.ContentTransitions>
-                            <RepositionThemeTransition />
+                            <RepositionThemeTransition/>
                         </Button.ContentTransitions>
                         <StackPanel Margin="-5,-5,-5,-5"
-        HorizontalAlignment="Left"
-        VerticalAlignment="Center"
-        Orientation="Horizontal"
-                    PointerEntered="TitleIcon_PointerEntered">
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    PointerEntered="TitleIcon_PointerEntered">
                             <Image x:Name="IconImg"
-                   PointerEntered="TitleIcon_PointerEntered"
-       Width="24"
-       Height="21"
-       Margin="0,1,0,0"
-       Opacity="0.8"
-       Source="ms-appx:///Assets/WindowIcon.ico">
+                                   PointerEntered="TitleIcon_PointerEntered"
+                                   Width="24"
+                                   Height="21"
+                                   Margin="0,1,0,0"
+                                   Opacity="0.8"
+                                   Source="ms-appx:///Assets/WindowIcon.ico">
                                 <Image.OpacityTransition>
-                                    <ScalarTransition />
+                                    <ScalarTransition/>
                                 </Image.OpacityTransition>
                             </Image>
                             <StackPanel Name="IconTitle"
-                        PointerEntered="TitleIcon_PointerEntered"
-                        Width="0"
-                        Margin="8,-8,0,0"
-                        VerticalAlignment="Center"
-                        Opacity="0">
+                                        PointerEntered="TitleIcon_PointerEntered"
+                                        Width="0"
+                                        Margin="8,-8,0,0"
+                                        VerticalAlignment="Center"
+                                        Opacity="0">
                                 <StackPanel.OpacityTransition>
-                                    <ScalarTransition />
+                                    <ScalarTransition/>
                                 </StackPanel.OpacityTransition>
                                 <TextBlock Margin="-6,0,0,0"
-               HorizontalAlignment="Left"
-                           PointerEntered="TitleIcon_PointerEntered"
-               FontSize="10"
-               FontWeight="Medium"
-               Text="Saku"
-               Visibility="Visible" />
+                                           HorizontalAlignment="Left"
+                                           PointerEntered="TitleIcon_PointerEntered"
+                                           FontSize="10"
+                                           FontWeight="Medium"
+                                           Text="Saku"
+                                           Visibility="Visible"/>
                                 <TextBlock Margin="0,-3,0,-8"
-               HorizontalAlignment="Left"
-                           PointerEntered="TitleIcon_PointerEntered"
-               FontSize="12"
-               FontWeight="Bold"
-               Foreground="{ThemeResource AccentColor}"
-               Text="Overclock"
-               Visibility="Visible" />
+                                           HorizontalAlignment="Left"
+                                           PointerEntered="TitleIcon_PointerEntered"
+                                           FontSize="12"
+                                           FontWeight="Bold"
+                                           Foreground="{ThemeResource AccentColor}"
+                                           Text="Overclock"
+                                           Visibility="Visible"/>
                             </StackPanel>
-                            <StackPanel x:Name="PreviewBuildIndicator"
-            Grid.Column="4"
-                        PointerEntered="TitleIcon_PointerEntered"
-            Grid.ColumnSpan="2"
-            Margin="-16,-12,0,0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Center"
-            Background="{ThemeResource AccentColor}"
-            CornerRadius="3"
-            Visibility="Visible">
+                            <StackPanel
+                                PointerEntered="TitleIcon_PointerEntered"
+                                Margin="-16,-12,0,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Background="{ThemeResource AccentColor}"
+                                CornerRadius="3"
+                                Visibility="Visible">
                                 <StackPanel.Transitions>
-                                    <RepositionThemeTransition />
+                                    <RepositionThemeTransition/>
                                 </StackPanel.Transitions>
                                 <TextBlock x:Name="VersionNumberIndicator"
-                           PointerEntered="TitleIcon_PointerEntered"
-               Padding="3,0,3,0"
-               VerticalAlignment="Center"
-               FontSize="8"
-               FontWeight="Bold"
-               Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-               Text="{Binding Version}" >
+                                           PointerEntered="TitleIcon_PointerEntered"
+                                           Padding="3,0,3,0"
+                                           VerticalAlignment="Center"
+                                           FontSize="8"
+                                           FontWeight="Bold"
+                                           Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                                           Text="{Binding Version}">
                                     <TextBlock.DataContext>
                                         <local:ГлавнаяViewModel/>
                                     </TextBlock.DataContext>
@@ -211,147 +198,148 @@
                             </StackPanel>
                         </StackPanel>
                     </Button>
-                </Grid> 
-                <Grid Name="RingerNotifGrid"
-      Grid.Column="5" Canvas.ZIndex="4"
-      Width="32"
-      Height="32"
-      Margin="0,-1,0,0"
-      HorizontalAlignment="Right"
-      VerticalAlignment="Stretch"
-      CornerRadius="0,0,0,0">
+                </Grid>
+                <Grid Name="RingerNotificationGrid"
+                      Grid.Column="5" Canvas.ZIndex="4"
+                      Width="32"
+                      Height="32"
+                      Margin="0,-1,0,0"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Stretch"
+                      CornerRadius="0,0,0,0">
                     <ToggleButton x:Name="ToggleNotificationPanelBtn"
-                  Padding="0" CornerRadius="9"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch" Click="ToggleNotificationPanelBtn_Click"
-                  Shadow="{ThemeResource SharedShadow}" Translation="0,0,12"
-                  Style="{ThemeResource AcrylicToggleButtonStyle}">
-                        <FontIcon   
-                  Glyph="&#xea8f;" />
+                                  Padding="0" CornerRadius="9"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch" Click="ToggleNotificationPanelBtn_Click"
+                                  Shadow="{ThemeResource SharedShadow}" Translation="0,0,12"
+                                  Style="{ThemeResource AcrylicToggleButtonStyle}">
+                        <FontIcon
+                            Glyph="&#xea8f;"/>
                     </ToggleButton>
                     <InfoBadge x:Name="NewNotificationCountBadge"
-               Margin="0,-4,-4,0"
-               HorizontalAlignment="Right"
-               VerticalAlignment="Top"
-               Style="{StaticResource AttentionValueInfoBadgeStyle}"
-               Visibility="Collapsed"
-               Value="0" />
+                               Margin="0,-4,-4,0"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Top"
+                               Style="{ThemeResource AttentionValueInfoBadgeStyle}"
+                               Visibility="Collapsed"
+                               Value="0"/>
                 </Grid>
             </Grid>
             <Grid x:Name="NotificationLostFocusBackground"
-       VerticalAlignment="Stretch"
-       Opacity="0"
-       PointerPressed="NotificationContainerBackground_PointerPressed"
-       Visibility="Collapsed">
+                  VerticalAlignment="Stretch"
+                  Opacity="0"
+                  PointerPressed="NotificationContainerBackground_PointerPressed"
+                  Visibility="Collapsed">
                 <Grid.OpacityTransition>
-                    <ScalarTransition />
+                    <ScalarTransition/>
                 </Grid.OpacityTransition>
                 <Grid Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}"
-           Opacity="0.00000001" />
-                <Grid Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}" />
+                      Opacity="0.00000001"/>
+                <Grid Background="{ThemeResource NotificationLostFocusBackgroundGradientBrush}"/>
             </Grid>
             <Grid x:Name="NotificationPanel"
-       Margin="0,48,-700,0"
-       HorizontalAlignment="Right"
-       Background="{ThemeResource NotificationPanelBrush}"
-       CornerRadius="8,0,0,8"
-       Shadow="{ThemeResource SharedShadow}">
+                  Margin="0,48,-700,0"
+                  HorizontalAlignment="Right"
+                  Background="{ThemeResource NotificationPanelBrush}"
+                  CornerRadius="8,0,0,8"
+                  Shadow="{ThemeResource SharedShadow}">
                 <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.Transitions>
-                    <RepositionThemeTransition />
+                    <RepositionThemeTransition/>
                 </Grid.Transitions>
                 <Grid>
-                    <ScrollViewer x:Name="NotificationPanelScrollViewer"
-                       CanContentRenderOutsideBounds="True"
-                       HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer
+                        CanContentRenderOutsideBounds="True"
+                        HorizontalScrollBarVisibility="Disabled">
                         <Grid MinWidth="608" MinHeight="200">
-                            <Pivot HorizontalContentAlignment="Center" SelectedIndex="0" x:Name="NotificationsPivot" SelectionChanged="Notif_SelectionChanged" Width="600">
+                            <Pivot HorizontalContentAlignment="Center" SelectedIndex="0" x:Name="NotificationsPivot"
+                                   SelectionChanged="Notif_SelectionChanged" Width="600">
                                 <PivotItem Width="600">
                                     <PivotItem.Header>
                                         <TextBlock x:Uid="Shell_Notifications" Text="Notifications" FontWeight="Bold"/>
                                     </PivotItem.Header>
                                 </PivotItem>
                                 <PivotItem Width="570">
-                                    <StackPanel x:Name="NotifChangelogTexts"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          Orientation="Vertical">
+                                    <StackPanel x:Name="NotificationChangelogTexts"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Orientation="Vertical">
                                         <StackPanel.OpacityTransition>
-                                            <ScalarTransition />
+                                            <ScalarTransition/>
                                         </StackPanel.OpacityTransition>
                                         <Grid Width="200"
-                                         Margin="0,0,0,16"
-                                         HorizontalAlignment="Center"
-                                         VerticalAlignment="Center"
-                                         Opacity="0.7" >
-                                            <FontIcon FontSize="40" Glyph="&#xEA6A;" />
+                                              Margin="0,0,0,16"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Opacity="0.7">
+                                            <FontIcon FontSize="40" Glyph="&#xEA6A;"/>
                                         </Grid>
                                         <Grid Padding="24,8"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        CornerRadius="16">
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              CornerRadius="16">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition />
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="2"
-                                                 VerticalAlignment="Center"
-                                                 FontSize="20"
-                                                 FontWeight="SemiBold"
-                                                 Opacity="0.50"
-                                                 TextWrapping="Wrap"
-                                                 x:Uid="Shell_No_Changelog" 
-                                                 Text="Unable to fetch changelog"
-                                                 TextAlignment="Center" />
+                                            <TextBlock Grid.Column="1"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="20"
+                                                       FontWeight="SemiBold"
+                                                       Opacity="0.50"
+                                                       TextWrapping="Wrap"
+                                                       x:Uid="Shell_No_Changelog"
+                                                       Text="Unable to fetch changelog"
+                                                       TextAlignment="Center"/>
                                         </Grid>
-                                    </StackPanel>  
+                                    </StackPanel>
                                     <PivotItem.Header>
                                         <TextBlock x:Uid="Shell_Changelog" Text="Changelog" FontWeight="Bold"/>
                                     </PivotItem.Header>
                                 </PivotItem>
                             </Pivot>
                             <StackPanel x:Name="NoNotificationIndicator"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             Orientation="Vertical">
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Orientation="Vertical">
                                 <StackPanel.OpacityTransition>
-                                    <ScalarTransition />
+                                    <ScalarTransition/>
                                 </StackPanel.OpacityTransition>
                                 <Grid Width="200"
-                            Margin="0,0,0,16"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Opacity="0.7" >
-                                    <FontIcon FontSize="40" Glyph="&#xE7ED;" />
+                                      Margin="0,0,0,16"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Opacity="0.7">
+                                    <FontIcon FontSize="40" Glyph="&#xE7ED;"/>
                                 </Grid>
                                 <Grid Padding="24,8"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           CornerRadius="16">
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      CornerRadius="16">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="2"
-                                    VerticalAlignment="Center"
-                                    FontSize="20"
-                                    FontWeight="SemiBold"
-                                    Opacity="0.50"
-                                    x:Uid="Shell_No_Notifications"
-                                    Text="No notifications "
-                                    TextAlignment="Center" />
+                                    <TextBlock Grid.Column="1"
+                                               VerticalAlignment="Center"
+                                               FontSize="20"
+                                               FontWeight="SemiBold"
+                                               Opacity="0.50"
+                                               x:Uid="Shell_No_Notifications"
+                                               Text="No notifications "
+                                               TextAlignment="Center"/>
                                 </Grid>
                             </StackPanel>
                             <StackPanel x:Name="NotificationContainer"
-                             Margin="0,46,0,7">
-                                
+                                        Margin="0,46,0,7">
+
                                 <StackPanel.ChildrenTransitions>
                                     <TransitionCollection>
-                                        <PopupThemeTransition />
-                                        <RepositionThemeTransition />
+                                        <PopupThemeTransition/>
+                                        <RepositionThemeTransition/>
                                     </TransitionCollection>
                                 </StackPanel.ChildrenTransitions>
                             </StackPanel>
@@ -359,33 +347,33 @@
                     </ScrollViewer>
                 </Grid>
                 <Grid x:Name="NotificationPanelClearAllGrid"
-           Grid.Row="1"
-           Padding="8"
-           VerticalAlignment="Bottom"
-           Background="{ThemeResource NotificationPanelBrush}"
-           Visibility="Collapsed">
+                      Grid.Row="1"
+                      Padding="8"
+                      VerticalAlignment="Bottom"
+                      Background="{ThemeResource NotificationPanelBrush}"
+                      Visibility="Collapsed">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Button x:Name="NotificationPanelClearAllBtn"
-                 Grid.Column="1"
-                 HorizontalAlignment="Right"
-                 Click="ClearAllNotification"
-                 CornerRadius="15,15,15,15" >
+                            Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            Click="ClearAllNotification"
+                            CornerRadius="15,15,15,15">
                         <StackPanel Margin="4,0"
-                         Orientation="Horizontal">
+                                    Orientation="Horizontal">
                             <TextBlock Margin="0,-1,8,1"
-                            FontWeight="Medium"
-                            x:Uid="Shell_Clear_Notifications"
-                            Text="Clear All" />
-                            <FontIcon  
-                           FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}"
-                           Glyph="&#xe7ed;" Margin="0,-2,0,0" />
+                                       FontWeight="Medium"
+                                       x:Uid="Shell_Clear_Notifications"
+                                       Text="Clear All"/>
+                            <FontIcon
+                                FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                Glyph="&#xe7ed;" Margin="0,-2,0,0"/>
                         </StackPanel>
                     </Button>
                 </Grid>
             </Grid>
         </Grid>
-    </Grid> 
+    </Grid>
 </Page>

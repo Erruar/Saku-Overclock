@@ -7,7 +7,6 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
 using Saku_Overclock.ViewModels;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Application = Microsoft.UI.Xaml.Application;
 using FileMode = System.IO.FileMode;
 using Package = Windows.ApplicationModel.Package;
@@ -17,7 +16,7 @@ public abstract class UpdateChecker
 {
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
-    private static readonly Version CurrentVersion = RuntimeHelper.IsMSIX ?
+    private static readonly Version CurrentVersion = RuntimeHelper.IsMsix ?
         new Version(Package.Current.Id.Version.Major,
             Package.Current.Id.Version.Minor,
             Package.Current.Id.Version.Build,
@@ -47,7 +46,7 @@ public abstract class UpdateChecker
     {
         if (_apiRateLimited) { return; }
         var client = new GitHubClient(new ProductHeaderValue("Saku-Overclock-Updater"));
-        IReadOnlyList<Release>? releases = null;
+        IReadOnlyList<Release>? releases;
         try
         {
            releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
@@ -108,7 +107,7 @@ public abstract class UpdateChecker
         {
 
             var client = new GitHubClient(new ProductHeaderValue("Saku-Overclock-Updater"));
-            IReadOnlyList<Release>? releases = null;
+            IReadOnlyList<Release>? releases;
             try
             {
                 if (_apiRateLimited)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Data;
 
 namespace Saku_Overclock.Helpers;
+
 public partial class BooleanInvertorConverter : IValueConverter
 {
     public object? Convert(object value, Type targetType, object parameter, string language)
@@ -9,6 +10,7 @@ public partial class BooleanInvertorConverter : IValueConverter
         {
             return !boolean;
         }
+
         return null;
     }
 
@@ -18,6 +20,7 @@ public partial class BooleanInvertorConverter : IValueConverter
         {
             return !boolean;
         }
+
         return null;
     }
 }

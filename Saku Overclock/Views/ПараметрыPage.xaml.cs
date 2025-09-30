@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -19,7 +20,6 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
 using Windows.UI;
 using ZenStates.Core;
-using static System.Net.Mime.MediaTypeNames;
 using Application = Microsoft.UI.Xaml.Application;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using CheckBox = Microsoft.UI.Xaml.Controls.CheckBox;
@@ -42,9 +42,9 @@ public sealed partial class ПараметрыPage
     private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
     private int _indexprofile; // Выбранный профиль
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Все настройки приложения
-    private bool _isSearching; // Флаг, выполняется ли поиск, чтобы не сканировать адреса SMU
+    private bool _isSearching; // Флаг выполнения поиска чтобы не сканировать адреса SMU
     private readonly List<string> _searchItems = [];
-    private bool _isStapmTuneRequired = false;
+    private bool _isStapmTuneRequired;
     private string
         _smuSymbol =
             "\uE8C8"; // Изначальный символ копирования, для секции Редактор параметров SMU. Используется для быстрых команд SMU
@@ -56,9 +56,10 @@ public sealed partial class ПараметрыPage
     private string? _adjline; // Команды RyzenADJ для применения
     private readonly Mailbox _testMailbox = new(); // Новый адрес SMU
     private bool _commandReturnedValue; // Флаг если команда вернула значение
+    private readonly bool _isPremadePresetApplied; // Флаг применённого готового пресета для его восстановления после покидания страницы Разгон
 
     private static string?
-        _equalvid; // Преобразование из напряжения в его ID. Используется в секции Состояния CPU для указания напряжения PState
+        _equalvid; // Преобразование из напряжения в его ID. Используется в секции Состояния CPU для указания напряжения P-State
 
     private static readonly List<double> PstatesFid = [0, 0, 0];
     private static readonly List<double> PstatesDid = [0, 0, 0];
@@ -72,13 +73,20 @@ public sealed partial class ПараметрыPage
 
     public ПараметрыPage()
     {
-        App.GetService<ПараметрыViewModel>();
         InitializeComponent();
+
         ProfileLoad();
+
         _indexprofile = AppSettings.Preset;
         AppSettings.NbfcFlagConsoleCheckSpeedRunning = false;
         AppSettings.FlagRyzenAdjConsoleTemperatureCheckRunning = false;
         AppSettings.SaveSettings();
+
+        if (AppSettings.Preset == -1)
+        {
+            _isPremadePresetApplied = true;
+        }
+
         try
         {
             _cpu ??= CpuSingleton.GetInstance();
@@ -98,40 +106,31 @@ public sealed partial class ПараметрыPage
 
     #region Page Load 
 
-    private async void ПараметрыPage_Loaded(object sender, RoutedEventArgs e)
+    private void ПараметрыPage_Loaded(object sender, RoutedEventArgs e)
     {
         try
         {
             _isLoaded = true;
 
-            try
-            {
-                ProfileLoad();
-                CollectSearchItems();
-                SlidersInit();
-                RecommendationsInit();
-            }
-            catch (Exception ex)
-            {
-                await LogHelper.TraceIt_TraceError(ex.ToString());
-                try
-                {
-                    AppSettings.Preset = -1;
-                    AppSettings.SaveSettings();
-                    _indexprofile = -1;
-                    SlidersInit();
-                }
-                catch (Exception ex1)
-                {
-                    await LogHelper.TraceIt_TraceError(ex1.ToString());
-                    await Send_Message("Critical Error!", "Can't load profiles. Tell this to developer",
-                        Symbol.Bookmarks);
-                }
-            }
+            ProfileLoad();
+            CollectSearchItems();
+            SlidersInit();
+            RecommendationsInit();
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            LogHelper.TraceIt_TraceError(exception.ToString());
+        }
+    }
+    
+    protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+    {
+        base.OnNavigatingFrom(e);
+
+        if (_isPremadePresetApplied && _isLoaded)
+        {
+            AppSettings.Preset = -1;
+            AppSettings.SaveSettings();
         }
     }
 
@@ -270,22 +269,22 @@ public sealed partial class ПараметрыPage
     private void RecommendationsInit()
     {
         var data = OcFinder.GetPerformanceRecommendationData();
-        TempRecommend_0.Text = $"{data.Item1[0]}С";
-        TempRecommend_1.Text = $"{data.Item1[1]}С";
-        StapmRecommend_0.Text = $"{data.Item2[0]}W";
-        StapmRecommend_1.Text = $"{data.Item2[1]}W";
-        FastRecommend_0.Text = $"{data.Item3[0]}W";
-        FastRecommend_1.Text = $"{data.Item3[1]}W";
-        SlowRecommend_0.Text = FastRecommend_0.Text;
-        SlowRecommend_1.Text = FastRecommend_1.Text;
-        SttRecommend_0.Text = $"{data.Item4[0]}W";
-        SttRecommend_1.Text = $"{data.Item4[1]}W";
-        SlowTimeRecommend_0.Text = $"{data.Item5[0]}S";
-        SlowTimeRecommend_1.Text = $"{data.Item5[1]}S";
-        StapmTimeRecommend_0.Text = $"{data.Item6[0]}S";
-        StapmTimeRecommend_1.Text = $"{data.Item6[1]}S";
-        BdProchotTimeRecommend_0.Text = $"{data.Item7[0]}mS";
-        BdProchotTimeRecommend_0.Text = $"{data.Item7[1]}mS";
+        TempRecommend0.Text = $"{data.Item1[0]}С";
+        TempRecommend1.Text = $"{data.Item1[1]}С";
+        StapmRecommend0.Text = $"{data.Item2[0]}W";
+        StapmRecommend1.Text = $"{data.Item2[1]}W";
+        FastRecommend0.Text = $"{data.Item3[0]}W";
+        FastRecommend1.Text = $"{data.Item3[1]}W";
+        SlowRecommend0.Text = FastRecommend0.Text;
+        SlowRecommend1.Text = FastRecommend1.Text;
+        SttRecommend0.Text = $"{data.Item4[0]}W";
+        SttRecommend1.Text = $"{data.Item4[1]}W";
+        SlowTimeRecommend0.Text = $"{data.Item5[0]}S";
+        SlowTimeRecommend1.Text = $"{data.Item5[1]}S";
+        StapmTimeRecommend0.Text = $"{data.Item6[0]}S";
+        StapmTimeRecommend1.Text = $"{data.Item6[1]}S";
+        BdProchotTimeRecommend0.Text = $"{data.Item7[0]}mS";
+        BdProchotTimeRecommend0.Text = $"{data.Item7[1]}mS";
     }
     private void SlidersInit()
     {
@@ -296,9 +295,11 @@ public sealed partial class ПараметрыPage
         }
 
         _waitforload = true;
+
         ProfileLoad();
-        ProfileCOM.Items.Clear();
-        ProfileCOM.Items.Add(new ComboBoxItem
+
+        ProfileCom.Items.Clear();
+        ProfileCom.Items.Add(new ComboBoxItem
         {
             Content = new TextBlock
             {
@@ -307,11 +308,12 @@ public sealed partial class ПараметрыPage
             },
             IsEnabled = false
         });
+
         foreach (var currProfile in _profile)
         {
-            if (currProfile.profilename != string.Empty)
+            if (currProfile.Profilename != string.Empty)
             {
-                ProfileCOM.Items.Add(currProfile.profilename);
+                ProfileCom.Items.Add(currProfile.Profilename);
             }
         }
 
@@ -327,119 +329,123 @@ public sealed partial class ПараметрыPage
                 if (_profile.Length == 0)
                 {
                     _profile = new Profile[1];
+                    _profile[0] = new Profile();
+                    ProfileCom.Items.Add(_profile[0].Profilename);
                 }
 
+
                 _indexprofile = 0;
-                ProfileCOM.SelectedIndex = 1;
+                ProfileCom.SelectedIndex = 1;
                 AppSettings.SaveSettings();
             }
             else
             {
                 _indexprofile = AppSettings.Preset;
-                if (ProfileCOM.Items.Count >= _indexprofile + 1)
+                if (ProfileCom.Items.Count >= _indexprofile + 1)
                 {
-                    ProfileCOM.SelectedIndex = _indexprofile + 1;
+                    ProfileCom.SelectedIndex = _indexprofile + 1;
                 }
             }
         }
         _waitforload = false;
     }
+
+    //Убрать параметры для ноутбуков
     private void LaptopCpu_FP5_HideUnavailableParameters()
     {
-        ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed;
-        ADV_Laptop_AplusA_Limit_Desc.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Limit.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Limit_Desc.Visibility = Visibility.Collapsed;
-        Laptops_HTC_Temp.Visibility = Visibility.Collapsed;
-        Laptops_HTC_Temp_Desc.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Temp.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Temp_Desc.Visibility = Visibility.Collapsed;
-        ADV_Laptop_dGPU_Temp.Visibility = Visibility.Collapsed;
-        ADV_Laptop_dGPU_Temp_Desc.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_Cpu.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_Cpu_Desc.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_iGpu.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_iGpu_Desc.Visibility = Visibility.Collapsed;
+        AdvLaptopAplusALimit.Visibility = Visibility.Collapsed;
+        AdvLaptopAplusALimitDesc.Visibility = Visibility.Collapsed;
+        AdvLaptopIGpuLimit.Visibility = Visibility.Collapsed;
+        AdvLaptopIGpuLimitDesc.Visibility = Visibility.Collapsed;
+        LaptopsHtcTemp.Visibility = Visibility.Collapsed;
+        LaptopsHtcTempDesc.Visibility = Visibility.Collapsed;
+        AdvLaptopIGpuTemp.Visibility = Visibility.Collapsed;
+        AdvLaptopIGpuTempDesc.Visibility = Visibility.Collapsed;
+        AdvLaptopDGpuTemp.Visibility = Visibility.Collapsed;
+        AdvLaptopDGpuTempDesc.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiCpu.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiCpuDesc.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiIGpu.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiIGpuDesc.Visibility = Visibility.Collapsed;
     }
 
     private void DesktopCpu_AM4_HideUnavailableParameters()
     {
-        //Убрать параметры для ноутбуков
-        Laptops_Avg_Wattage.Visibility = Visibility.Collapsed;
-        Laptops_Avg_Wattage_Desc.Visibility = Visibility.Collapsed;
-        Laptops_Fast_Speed.Visibility = Visibility.Collapsed;
-        Laptops_Fast_Speed_Desc.Visibility = Visibility.Collapsed;
-        Laptops_slow_Speed.Visibility = Visibility.Collapsed;
-        Laptops_slow_Speed_Desc.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Limit.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Limit_Desc.Visibility = Visibility.Collapsed;
-        ADV_Laptop_AplusA_Limit.Visibility = Visibility.Collapsed;
-        ADV_Laptop_AplusA_Limit_Desc.Visibility = Visibility.Collapsed;
+        LaptopsAvgWattage.Visibility = Visibility.Collapsed;
+        LaptopsAvgWattageDesc.Visibility = Visibility.Collapsed;
+        LaptopsFastSpeed.Visibility = Visibility.Collapsed;
+        LaptopsFastSpeedDesc.Visibility = Visibility.Collapsed;
+        LaptopsSlowSpeed.Visibility = Visibility.Collapsed;
+        LaptopsSlowSpeedDesc.Visibility = Visibility.Collapsed;
+        AdvLaptopIGpuLimit.Visibility = Visibility.Collapsed;
+        AdvLaptopIGpuLimitDesc.Visibility = Visibility.Collapsed;
+        AdvLaptopAplusALimit.Visibility = Visibility.Collapsed;
+        AdvLaptopAplusALimitDesc.Visibility = Visibility.Collapsed;
         DesktopCpu_AM5_HideUnavailableParameters();
     }
+
     private void DesktopCpu_AM5_HideUnavailableParameters()
     {
-        //Убрать параметры для ноутбуков
-        Laptops_Stapm_Limit.Visibility = Visibility.Collapsed;
-        Laptops_Stapm_Limit_Desc.Visibility = Visibility.Collapsed;
-        VRM_Laptops_Prochot_Time.Visibility = Visibility.Collapsed;
-        VRM_Laptops_Prochot_Time_Desc.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_SoC.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_SoC_Desc.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_VDD.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_VDD_Desc.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_Cpu.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_Cpu_Desc.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_iGpu.Visibility = Visibility.Collapsed;
-        VRM_Laptops_PSI_iGpu_Desc.Visibility = Visibility.Collapsed;
-        VRM_Laptops_SoC_Limit.Visibility = Visibility.Collapsed;
-        VRM_Laptops_SoC_Limit_Desc.Visibility = Visibility.Collapsed;
-        VRM_Laptops_SoC_Max.Visibility = Visibility.Collapsed;
-        VRM_Laptops_SoC_Max_Desc.Visibility = Visibility.Collapsed;
-        ADV_Laptop_dGPU_Temp.Visibility = Visibility.Collapsed;
-        ADV_Laptop_dGPU_Temp_Desc.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Freq.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Freq_Desc.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Temp.Visibility = Visibility.Collapsed;
-        ADV_Laptop_iGPU_Temp_Desc.Visibility = Visibility.Collapsed;
-        ADV_Laptop_Pref_Mode.Visibility = Visibility.Collapsed;
-        ADV_Laptop_Pref_Mode_Desc.Visibility = Visibility.Collapsed;
+        LaptopsStapmLimit.Visibility = Visibility.Collapsed;
+        LaptopsStapmLimitDesc.Visibility = Visibility.Collapsed;
+        VrmLaptopsProchotTime.Visibility = Visibility.Collapsed;
+        VrmLaptopsProchotTimeDesc.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiSoC.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiSoCDesc.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiVdd.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiVddDesc.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiCpu.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiCpuDesc.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiIGpu.Visibility = Visibility.Collapsed;
+        VrmLaptopsPsiIGpuDesc.Visibility = Visibility.Collapsed;
+        VrmLaptopsSoCLimit.Visibility = Visibility.Collapsed;
+        VrmLaptopsSoCLimitDesc.Visibility = Visibility.Collapsed;
+        VrmLaptopsSoCMax.Visibility = Visibility.Collapsed;
+        VrmLaptopsSoCMaxDesc.Visibility = Visibility.Collapsed;
+        AdvLaptopDGpuTemp.Visibility = Visibility.Collapsed;
+        AdvLaptopDGpuTempDesc.Visibility = Visibility.Collapsed;
+        AdvLaptopIGpuFreq.Visibility = Visibility.Collapsed;
+        AdvLaptopIGpuFreqDesc.Visibility = Visibility.Collapsed;
+        AdvLaptopIGpuTemp.Visibility = Visibility.Collapsed;
+        AdvLaptopIGpuTempDesc.Visibility = Visibility.Collapsed;
+        AdvLaptopPrefMode.Visibility = Visibility.Collapsed;
+        AdvLaptopPrefModeDesc.Visibility = Visibility.Collapsed;
     }
 
     private void HideDisabledCurveOptimizedParameters(bool locks)
     {
-        CCD1_1.IsEnabled = locks;
-        CCD1_1v.IsEnabled = locks;
-        CCD1_2.IsEnabled = locks;
-        CCD1_2v.IsEnabled = locks;
-        CCD1_3.IsEnabled = locks;
-        CCD1_3v.IsEnabled = locks;
-        CCD1_4.IsEnabled = locks;
-        CCD1_4v.IsEnabled = locks;
-        CCD1_5.IsEnabled = locks;
-        CCD1_5v.IsEnabled = locks;
-        CCD1_6.IsEnabled = locks;
-        CCD1_6v.IsEnabled = locks;
-        CCD1_7.IsEnabled = locks;
-        CCD1_7v.IsEnabled = locks;
-        CCD1_8.IsEnabled = locks;
-        CCD1_8v.IsEnabled = locks;
-        CCD2_1.IsEnabled = locks;
-        CCD2_1v.IsEnabled = locks;
-        CCD2_2.IsEnabled = locks;
-        CCD2_2v.IsEnabled = locks;
-        CCD2_3.IsEnabled = locks;
-        CCD2_3v.IsEnabled = locks;
-        CCD2_4.IsEnabled = locks;
-        CCD2_4v.IsEnabled = locks;
-        CCD2_5.IsEnabled = locks;
-        CCD2_5v.IsEnabled = locks;
-        CCD2_6.IsEnabled = locks;
-        CCD2_6v.IsEnabled = locks;
-        CCD2_7.IsEnabled = locks;
-        CCD2_7v.IsEnabled = locks;
-        CCD2_8.IsEnabled = locks;
-        CCD2_8v.IsEnabled = locks;
+        Ccd11.IsEnabled = locks;
+        Ccd11V.IsEnabled = locks;
+        Ccd12.IsEnabled = locks;
+        Ccd12V.IsEnabled = locks;
+        Ccd13.IsEnabled = locks;
+        Ccd13V.IsEnabled = locks;
+        Ccd14.IsEnabled = locks;
+        Ccd14V.IsEnabled = locks;
+        Ccd15.IsEnabled = locks;
+        Ccd15V.IsEnabled = locks;
+        Ccd16.IsEnabled = locks;
+        Ccd16V.IsEnabled = locks;
+        Ccd17.IsEnabled = locks;
+        Ccd17V.IsEnabled = locks;
+        Ccd18.IsEnabled = locks;
+        Ccd18V.IsEnabled = locks;
+        Ccd21.IsEnabled = locks;
+        Ccd21V.IsEnabled = locks;
+        Ccd22.IsEnabled = locks;
+        Ccd22V.IsEnabled = locks;
+        Ccd23.IsEnabled = locks;
+        Ccd23V.IsEnabled = locks;
+        Ccd24.IsEnabled = locks;
+        Ccd24V.IsEnabled = locks;
+        Ccd25.IsEnabled = locks;
+        Ccd25V.IsEnabled = locks;
+        Ccd26.IsEnabled = locks;
+        Ccd26V.IsEnabled = locks;
+        Ccd27.IsEnabled = locks;
+        Ccd27V.IsEnabled = locks;
+        Ccd28.IsEnabled = locks;
+        Ccd28V.IsEnabled = locks;
     }
 
     private async void MainInit(int index)
@@ -453,25 +459,25 @@ public sealed partial class ПараметрыPage
                 {
                     LaptopCpu_FP5_HideUnavailableParameters();
 
-                    Laptops_Avg_Wattage.Visibility = Visibility.Collapsed;
-                    Laptops_Avg_Wattage_Desc.Visibility = Visibility.Collapsed;
-                    Laptops_slow_Speed.Visibility = Visibility.Collapsed;
-                    Laptops_slow_Speed_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Fix04.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Fix04_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Oc_Mode.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Oc_Mode_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Pbo_Scalar.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Pbo_Scalar_Desc.Visibility = Visibility.Collapsed;
+                    LaptopsAvgWattage.Visibility = Visibility.Collapsed;
+                    LaptopsAvgWattageDesc.Visibility = Visibility.Collapsed;
+                    LaptopsSlowSpeed.Visibility = Visibility.Collapsed;
+                    LaptopsSlowSpeedDesc.Visibility = Visibility.Collapsed;
+                    AdvLaptopFix04.Visibility = Visibility.Collapsed;
+                    AdvLaptopFix04Desc.Visibility = Visibility.Collapsed;
+                    AdvLaptopOcMode.Visibility = Visibility.Collapsed;
+                    AdvLaptopOcModeDesc.Visibility = Visibility.Collapsed;
+                    AdvLaptopPboScalar.Visibility = Visibility.Collapsed;
+                    AdvLaptopPboScalarDesc.Visibility = Visibility.Collapsed;
                     SmuFunctionsGrid.Visibility = Visibility.Collapsed;
                     CpuPowerStateOptionsGrid.Visibility = Visibility.Collapsed;
                     AdvancedFreqOptionsGrid.Visibility = Visibility.Collapsed;
-                    CO_Expander.Visibility = Visibility.Collapsed;
-                    CCD1_Expander.Visibility = Visibility.Collapsed;
-                    CCD2_Expander.Visibility = Visibility.Collapsed;
-                    ActionButton_Mon.Visibility = Visibility.Collapsed;
+                    CoExpander.Visibility = Visibility.Collapsed;
+                    Ccd1Expander.Visibility = Visibility.Collapsed;
+                    Ccd2Expander.Visibility = Visibility.Collapsed;
+                    ActionButtonMon.Visibility = Visibility.Collapsed;
 
-                    Param_ADV_Pdesc.Text = "Param_ADV_PdescBristol".GetLocalized();
+                    ParamAdvParametersBlock.Text = "Param_ADV_PdescBristol".GetLocalized();
 
                     var elements = VisualTreeHelper.FindVisualChildren<TextBlock>(VrmOptionsGrid);
                     foreach (var element in elements)
@@ -480,31 +486,31 @@ public sealed partial class ПараметрыPage
                     }
                 }
                 /*                 F P 5    C P U                    */
-                if (_cpu?.info.codeName == Cpu.CodeName.RavenRidge ||
-                    _cpu?.info.codeName == Cpu.CodeName.FireFlight ||
-                    _cpu?.info.codeName == Cpu.CodeName.Dali ||
-                    _cpu?.info.codeName == Cpu.CodeName.Picasso)
+                if (_cpu?.info.codeName is Cpu.CodeName.RavenRidge 
+                    or Cpu.CodeName.FireFlight 
+                    or Cpu.CodeName.Dali 
+                    or Cpu.CodeName.Picasso)
                 {
                     LaptopCpu_FP5_HideUnavailableParameters();
                 }
                 else
                 {
-                    iGPU_Subsystems.Visibility = Visibility.Collapsed;
+                    IGpuSubsystems.Visibility = Visibility.Collapsed;
                 }
 
                 /*                 F P 6    C P U                    */
-                if (_cpu?.info.codeName == Cpu.CodeName.Renoir  ||
-                    _cpu?.info.codeName == Cpu.CodeName.Cezanne ||
-                    _cpu?.info.codeName == Cpu.CodeName.Lucienne)
+                if (_cpu?.info.codeName is Cpu.CodeName.Renoir 
+                    or Cpu.CodeName.Cezanne 
+                    or Cpu.CodeName.Lucienne)
                 {
-                    Laptops_Stapm_Limit.Visibility = Visibility.Collapsed;
-                    Laptops_Stapm_Limit_Desc.Visibility = Visibility.Collapsed;
-                    Laptops_HTC_Temp.Visibility = Visibility.Collapsed;
-                    Laptops_HTC_Temp_Desc.Visibility = Visibility.Collapsed;
-                    VRM_Laptops_PSI_Cpu.Visibility = Visibility.Collapsed;
-                    VRM_Laptops_PSI_Cpu_Desc.Visibility = Visibility.Collapsed;
-                    VRM_Laptops_PSI_iGpu.Visibility = Visibility.Collapsed;
-                    VRM_Laptops_PSI_iGpu_Desc.Visibility = Visibility.Collapsed;
+                    LaptopsStapmLimit.Visibility = Visibility.Collapsed;
+                    LaptopsStapmLimitDesc.Visibility = Visibility.Collapsed;
+                    LaptopsHtcTemp.Visibility = Visibility.Collapsed;
+                    LaptopsHtcTempDesc.Visibility = Visibility.Collapsed;
+                    VrmLaptopsPsiCpu.Visibility = Visibility.Collapsed;
+                    VrmLaptopsPsiCpuDesc.Visibility = Visibility.Collapsed;
+                    VrmLaptopsPsiIGpu.Visibility = Visibility.Collapsed;
+                    VrmLaptopsPsiIGpuDesc.Visibility = Visibility.Collapsed;
 
                     _isStapmTuneRequired = true;
                 }
@@ -512,83 +518,85 @@ public sealed partial class ПараметрыPage
                 /*                 F F 3    C P U                    */
                 if (_cpu?.info.codeName == Cpu.CodeName.VanGogh)
                 {
-                    Laptops_Stapm_Limit.Visibility = Visibility.Collapsed;
-                    Laptops_Stapm_Limit_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_dGPU_Temp.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_dGPU_Temp_Desc.Visibility = Visibility.Collapsed;
-                    Laptops_HTC_Temp.Visibility = Visibility.Collapsed;
-                    Laptops_HTC_Temp_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Oc_Mode.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Oc_Mode_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Pbo_Scalar.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Pbo_Scalar_Desc.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Cpu_Volt.Visibility = Visibility.Collapsed;
-                    ADV_Laptop_Cpu_Volt_Desc.Visibility = Visibility.Collapsed;
+                    LaptopsStapmLimit.Visibility = Visibility.Collapsed;
+                    LaptopsStapmLimitDesc.Visibility = Visibility.Collapsed;
+                    AdvLaptopDGpuTemp.Visibility = Visibility.Collapsed;
+                    AdvLaptopDGpuTempDesc.Visibility = Visibility.Collapsed;
+                    LaptopsHtcTemp.Visibility = Visibility.Collapsed;
+                    LaptopsHtcTempDesc.Visibility = Visibility.Collapsed;
+                    AdvLaptopOcMode.Visibility = Visibility.Collapsed;
+                    AdvLaptopOcModeDesc.Visibility = Visibility.Collapsed;
+                    AdvLaptopPboScalar.Visibility = Visibility.Collapsed;
+                    AdvLaptopPboScalarDesc.Visibility = Visibility.Collapsed;
+                    AdvLaptopCpuVolt.Visibility = Visibility.Collapsed;
+                    AdvLaptopCpuVoltDesc.Visibility = Visibility.Collapsed;
 
                     _isStapmTuneRequired = true;
                 }
 
                 /*     F T 6   F P 7   F P 8   F P 11    C P U       */
-                if (_cpu?.info.codeName == Cpu.CodeName.Mendocino ||
-                    _cpu?.info.codeName == Cpu.CodeName.Rembrandt ||
-                    _cpu?.info.codeName == Cpu.CodeName.Phoenix ||
-                    _cpu?.info.codeName == Cpu.CodeName.Phoenix2 ||
-                    _cpu?.info.codeName == Cpu.CodeName.HawkPoint ||
-                    _cpu?.info.codeName == Cpu.CodeName.StrixPoint ||
-                    _cpu?.info.codeName == Cpu.CodeName.StrixHalo ||
-                    _cpu?.info.codeName == Cpu.CodeName.KrackanPoint||
-                    _cpu?.info.codeName == Cpu.CodeName.KrackanPoint2)
+                if (_cpu?.info.codeName is Cpu.CodeName.Mendocino 
+                    or Cpu.CodeName.Rembrandt 
+                    or Cpu.CodeName.Phoenix 
+                    or Cpu.CodeName.Phoenix2 
+                    or Cpu.CodeName.HawkPoint 
+                    or Cpu.CodeName.StrixPoint 
+                    or Cpu.CodeName.StrixHalo 
+                    or Cpu.CodeName.KrackanPoint 
+                    or Cpu.CodeName.KrackanPoint2)
                 {
-                    Laptops_Stapm_Limit.Visibility = Visibility.Collapsed;
-                    Laptops_Stapm_Limit_Desc.Visibility = Visibility.Collapsed;
-                    Laptops_HTC_Temp.Visibility = Visibility.Collapsed;
-                    Laptops_HTC_Temp_Desc.Visibility = Visibility.Collapsed;
+                    LaptopsStapmLimit.Visibility = Visibility.Collapsed;
+                    LaptopsStapmLimitDesc.Visibility = Visibility.Collapsed;
+                    LaptopsHtcTemp.Visibility = Visibility.Collapsed;
+                    LaptopsHtcTempDesc.Visibility = Visibility.Collapsed;
 
                     _isStapmTuneRequired = true;
                 }
 
                 /*              A M 4  v 1    C P U                  */
-                if (_cpu?.info.codeName == Cpu.CodeName.PinnacleRidge ||
-                    _cpu?.info.codeName == Cpu.CodeName.SummitRidge)
+                if (_cpu?.info.codeName is Cpu.CodeName.PinnacleRidge 
+                    or Cpu.CodeName.SummitRidge)
                 {
-                    CCD1_Expander.Visibility = Visibility.Collapsed; //Убрать Оптимизатор кривой
-                    CCD2_Expander.Visibility = Visibility.Collapsed;
-                    CO_Expander.Visibility = Visibility.Collapsed;
+                    Ccd1Expander.Visibility = Visibility.Collapsed; //Убрать Оптимизатор кривой
+                    Ccd2Expander.Visibility = Visibility.Collapsed;
+                    CoExpander.Visibility = Visibility.Collapsed;
                     DesktopCpu_AM4_HideUnavailableParameters();
                 }
 
                 /*              A M 4  v 2    C P U                  */
-                if (_cpu?.info.codeName == Cpu.CodeName.Matisse ||
-                    _cpu?.info.codeName == Cpu.CodeName.Vermeer)
+                if (_cpu?.info.codeName is Cpu.CodeName.Matisse 
+                    or Cpu.CodeName.Vermeer)
                 {
                     DesktopCpu_AM4_HideUnavailableParameters();
                 }
                 /*                 A M 5    C P U                    */
-                if (_cpu?.info.codeName == Cpu.CodeName.Raphael      ||
-                    _cpu?.info.codeName == Cpu.CodeName.Genoa        ||
-                    _cpu?.info.codeName == Cpu.CodeName.GraniteRidge ||
-                    _cpu?.info.codeName == Cpu.CodeName.StormPeak    ||
-                    _cpu?.info.codeName == Cpu.CodeName.DragonRange  ||
-                    _cpu?.info.codeName == Cpu.CodeName.Bergamo)
+                if (_cpu?.info.codeName is Cpu.CodeName.Raphael 
+                    or Cpu.CodeName.Genoa 
+                    or Cpu.CodeName.GraniteRidge 
+                    or Cpu.CodeName.StormPeak 
+                    or Cpu.CodeName.DragonRange 
+                    or Cpu.CodeName.Bergamo)
                 {
                     DesktopCpu_AM5_HideUnavailableParameters();
+
+                    _isStapmTuneRequired = true;
                 }
 
 
                 if (_cpu == null || _cpu?.info.codeName == Cpu.CodeName.Unsupported)
                 {
                     MainScroll.Visibility = Visibility.Collapsed;
-                    ActionButton_Apply.Visibility = Visibility.Collapsed;
-                    ActionButton_Delete.Visibility = Visibility.Collapsed;
-                    ActionButton_Mon.Visibility = Visibility.Collapsed;
-                    ActionButton_Save.Visibility = Visibility.Collapsed;
-                    ActionButton_Share.Visibility = Visibility.Collapsed;
+                    ActionButtonApply.Visibility = Visibility.Collapsed;
+                    ActionButtonDelete.Visibility = Visibility.Collapsed;
+                    ActionButtonMon.Visibility = Visibility.Collapsed;
+                    ActionButtonSave.Visibility = Visibility.Collapsed;
+                    ActionButtonShare.Visibility = Visibility.Collapsed;
                     EditProfileButton.Visibility = Visibility.Collapsed;
                     SuggestBox.Visibility = Visibility.Collapsed;
                     FiltersButton.Visibility = Visibility.Collapsed;
                     ProfilesGrid.Visibility = Visibility.Collapsed;
-                    Action_IncompatibleProfile.IsOpen = false;
-                    Action_IncompatibleCPU.Visibility = Visibility.Visible;
+                    ActionIncompatibleProfile.IsOpen = false;
+                    ActionIncompatibleCpu.Visibility = Visibility.Visible;
 
                     return; // Остановить загрузку страницы
                 }
@@ -608,24 +616,24 @@ public sealed partial class ПараметрыPage
                         try
                         {
                             var checkbox = i < 8
-                        ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i + 1}")
-                        : (CheckBox)CCD2_Grid.FindName($"CCD2_{i - 8}");
+                        ? (CheckBox)Ccd1Grid.FindName($"Ccd1{i + 1}")
+                        : (CheckBox)Ccd2Grid.FindName($"Ccd2{i - 8}");
                             if (checkbox != null && checkbox.IsChecked == true)
                             {
                                 var setVal = i < 8
-                                    ? (Slider)CCD1_Grid.FindName($"CCD1_{i + 1}v")
-                                    : (Slider)CCD2_Grid.FindName($"CCD2_{i - 8}v");
+                                    ? (Slider)Ccd1Grid.FindName($"Ccd1{i + 1}V")
+                                    : (Slider)Ccd2Grid.FindName($"Ccd2{i - 8}V");
                                 setVal.IsEnabled = false;
                                 setVal.Opacity = 0.4;
                                 checkbox.IsEnabled = false;
                                 checkbox.IsChecked = false;
                             }
                             var setGrid1 = i < 8
-                        ? (StackPanel)CCD1_Grid.FindName($"CCD1_Grid{i + 1}_1")
-                        : (StackPanel)CCD2_Grid.FindName($"CCD2_Grid{i - 8}_1");
+                        ? (StackPanel)Ccd1Grid.FindName($"Ccd1Grid{i + 1}1")
+                        : (StackPanel)Ccd2Grid.FindName($"Ccd2Grid{i - 8}1");
                             var setGrid2 = i < 8
-                        ? (Grid)CCD1_Grid.FindName($"CCD1_Grid{i + 1}_2")
-                        : (Grid)CCD2_Grid.FindName($"CCD2_Grid{i - 8}_2");
+                        ? (Grid)Ccd1Grid.FindName($"Ccd1Grid{i + 1}2")
+                        : (Grid)Ccd2Grid.FindName($"Ccd2Grid{i - 8}2");
                             if (setGrid1 != null)
                             {
                                 setGrid1.Visibility = Visibility.Collapsed;
@@ -644,337 +652,329 @@ public sealed partial class ПараметрыPage
                     }
                 }
 
-                if (CCD1_Grid1_1.Visibility == Visibility.Collapsed &&
-                    CCD1_Grid2_1.Visibility == Visibility.Collapsed &&
-                    CCD1_Grid3_1.Visibility == Visibility.Collapsed &&
-                    CCD1_Grid4_1.Visibility == Visibility.Collapsed &&
-                    CCD1_Grid5_1.Visibility == Visibility.Collapsed &&
-                    CCD1_Grid6_1.Visibility == Visibility.Collapsed &&
-                    CCD1_Grid7_1.Visibility == Visibility.Collapsed &&
-                    CCD1_Grid8_1.Visibility == Visibility.Collapsed &&
-                    CCD2_Grid0_1.Visibility == Visibility.Collapsed &&
-                    CCD2_Grid1_1.Visibility == Visibility.Collapsed &&
-                    CCD2_Grid2_1.Visibility == Visibility.Collapsed &&
-                    CCD2_Grid3_1.Visibility == Visibility.Collapsed &&
-                    CCD2_Grid4_1.Visibility == Visibility.Collapsed &&
-                    CCD2_Grid5_1.Visibility == Visibility.Collapsed &&
-                    CCD2_Grid6_1.Visibility == Visibility.Collapsed &&
-                    CCD2_Grid7_1.Visibility == Visibility.Collapsed)
+                if (Ccd1Grid11.Visibility == Visibility.Collapsed &&
+                    Ccd1Grid21.Visibility == Visibility.Collapsed &&
+                    Ccd1Grid31.Visibility == Visibility.Collapsed &&
+                    Ccd1Grid41.Visibility == Visibility.Collapsed &&
+                    Ccd1Grid51.Visibility == Visibility.Collapsed &&
+                    Ccd1Grid61.Visibility == Visibility.Collapsed &&
+                    Ccd1Grid71.Visibility == Visibility.Collapsed &&
+                    Ccd1Grid81.Visibility == Visibility.Collapsed &&
+                    Ccd2Grid01.Visibility == Visibility.Collapsed &&
+                    Ccd2Grid11.Visibility == Visibility.Collapsed &&
+                    Ccd2Grid21.Visibility == Visibility.Collapsed &&
+                    Ccd2Grid31.Visibility == Visibility.Collapsed &&
+                    Ccd2Grid41.Visibility == Visibility.Collapsed &&
+                    Ccd2Grid51.Visibility == Visibility.Collapsed &&
+                    Ccd2Grid61.Visibility == Visibility.Collapsed &&
+                    Ccd2Grid71.Visibility == Visibility.Collapsed)
                 {
                     await LogHelper.LogWarn("Curve Optimizer Disabled cores detection incorrect on that CPU. Using standart disabled cores detection method.");
-                    CCD1_Grid1_1.Visibility = Visibility.Visible;
-                    CCD1_Grid2_1.Visibility = Visibility.Visible;
-                    CCD1_Grid3_1.Visibility = Visibility.Visible;
-                    CCD1_Grid4_1.Visibility = Visibility.Visible;
-                    CCD1_Grid5_1.Visibility = Visibility.Visible;
-                    CCD1_Grid6_1.Visibility = Visibility.Visible;
-                    CCD1_Grid7_1.Visibility = Visibility.Visible;
-                    CCD1_Grid8_1.Visibility = Visibility.Visible;
-                    CCD2_Grid0_1.Visibility = Visibility.Visible;
-                    CCD2_Grid1_1.Visibility = Visibility.Visible;
-                    CCD2_Grid2_1.Visibility = Visibility.Visible;
-                    CCD2_Grid3_1.Visibility = Visibility.Visible;
-                    CCD2_Grid4_1.Visibility = Visibility.Visible;
-                    CCD2_Grid5_1.Visibility = Visibility.Visible;
-                    CCD2_Grid6_1.Visibility = Visibility.Visible;
-                    CCD2_Grid7_1.Visibility = Visibility.Visible;
+                    Ccd1Grid11.Visibility = Visibility.Visible;
+                    Ccd1Grid21.Visibility = Visibility.Visible;
+                    Ccd1Grid31.Visibility = Visibility.Visible;
+                    Ccd1Grid41.Visibility = Visibility.Visible;
+                    Ccd1Grid51.Visibility = Visibility.Visible;
+                    Ccd1Grid61.Visibility = Visibility.Visible;
+                    Ccd1Grid71.Visibility = Visibility.Visible;
+                    Ccd1Grid81.Visibility = Visibility.Visible;
+                    Ccd2Grid01.Visibility = Visibility.Visible;
+                    Ccd2Grid11.Visibility = Visibility.Visible;
+                    Ccd2Grid21.Visibility = Visibility.Visible;
+                    Ccd2Grid31.Visibility = Visibility.Visible;
+                    Ccd2Grid41.Visibility = Visibility.Visible;
+                    Ccd2Grid51.Visibility = Visibility.Visible;
+                    Ccd2Grid61.Visibility = Visibility.Visible;
+                    Ccd2Grid71.Visibility = Visibility.Visible;
 
                     cores = _cpu?.info.topology.cores ?? 8;
                     if (cores > 8)
                     {
                         if (cores <= 15)
                         {
-                            CCD2_Grid7_2.Visibility = Visibility.Collapsed;
-                            CCD2_Grid7_1.Visibility = Visibility.Collapsed;
+                            Ccd2Grid72.Visibility = Visibility.Collapsed;
+                            Ccd2Grid71.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 14)
                         {
-                            CCD2_Grid6_2.Visibility = Visibility.Collapsed;
-                            CCD2_Grid6_1.Visibility = Visibility.Collapsed;
+                            Ccd2Grid62.Visibility = Visibility.Collapsed;
+                            Ccd2Grid61.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 13)
                         {
-                            CCD2_Grid5_2.Visibility = Visibility.Collapsed;
-                            CCD2_Grid5_1.Visibility = Visibility.Collapsed;
+                            Ccd2Grid52.Visibility = Visibility.Collapsed;
+                            Ccd2Grid51.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 12)
                         {
-                            CCD2_Grid4_2.Visibility = Visibility.Collapsed;
-                            CCD2_Grid4_1.Visibility = Visibility.Collapsed;
+                            Ccd2Grid42.Visibility = Visibility.Collapsed;
+                            Ccd2Grid41.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 11)
                         {
-                            CCD2_Grid3_2.Visibility = Visibility.Collapsed;
-                            CCD2_Grid3_1.Visibility = Visibility.Collapsed;
+                            Ccd2Grid32.Visibility = Visibility.Collapsed;
+                            Ccd2Grid31.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 10)
                         {
-                            CCD2_Grid2_2.Visibility = Visibility.Collapsed;
-                            CCD2_Grid2_1.Visibility = Visibility.Collapsed;
+                            Ccd2Grid22.Visibility = Visibility.Collapsed;
+                            Ccd2Grid21.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 9)
                         {
-                            CCD2_Grid1_2.Visibility = Visibility.Collapsed;
-                            CCD2_Grid1_1.Visibility = Visibility.Collapsed;
+                            Ccd2Grid12.Visibility = Visibility.Collapsed;
+                            Ccd2Grid11.Visibility = Visibility.Collapsed;
                         }
                     }
                     else
                     {
-                        CO_Cores_Text.Text = CO_Cores_Text.Text.Replace("7", $"{cores - 1}");
-                        CCD2_Expander.Visibility = Visibility.Collapsed;
+                        CoCoresText.Text = CoCoresText.Text.Replace("7", $"{cores - 1}");
+                        Ccd2Expander.Visibility = Visibility.Collapsed;
                         if (cores <= 7)
                         {
-                            CCD1_Grid8_2.Visibility = Visibility.Collapsed;
-                            CCD1_Grid8_1.Visibility = Visibility.Collapsed;
+                            Ccd1Grid82.Visibility = Visibility.Collapsed;
+                            Ccd1Grid81.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 6)
                         {
-                            CCD1_Grid7_2.Visibility = Visibility.Collapsed;
-                            CCD1_Grid7_1.Visibility = Visibility.Collapsed;
+                            Ccd1Grid72.Visibility = Visibility.Collapsed;
+                            Ccd1Grid71.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 5)
                         {
-                            CCD1_Grid6_2.Visibility = Visibility.Collapsed;
-                            CCD1_Grid6_1.Visibility = Visibility.Collapsed;
+                            Ccd1Grid62.Visibility = Visibility.Collapsed;
+                            Ccd1Grid61.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 4)
                         {
-                            CCD1_Grid5_2.Visibility = Visibility.Collapsed;
-                            CCD1_Grid5_1.Visibility = Visibility.Collapsed;
+                            Ccd1Grid52.Visibility = Visibility.Collapsed;
+                            Ccd1Grid51.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 3)
                         {
-                            CCD1_Grid4_2.Visibility = Visibility.Collapsed;
-                            CCD1_Grid4_1.Visibility = Visibility.Collapsed;
+                            Ccd1Grid42.Visibility = Visibility.Collapsed;
+                            Ccd1Grid41.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 2)
                         {
-                            CCD1_Grid3_2.Visibility = Visibility.Collapsed;
-                            CCD1_Grid3_1.Visibility = Visibility.Collapsed;
+                            Ccd1Grid32.Visibility = Visibility.Collapsed;
+                            Ccd1Grid31.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores <= 1)
                         {
-                            CCD1_Grid2_2.Visibility = Visibility.Collapsed;
-                            CCD1_Grid2_1.Visibility = Visibility.Collapsed;
+                            Ccd1Grid22.Visibility = Visibility.Collapsed;
+                            Ccd1Grid21.Visibility = Visibility.Collapsed;
                         }
 
                         if (cores == 0)
                         {
-                            CCD1_Expander.Visibility = Visibility.Collapsed;
+                            Ccd1Expander.Visibility = Visibility.Collapsed;
                         }
                     }
                 }
             }
 
+            ProfileLoad();
+
             _waitforload = true;
-            if (AppSettings.Preset == -1 || index == -1) //Load from unsaved
+            if (AppSettings.Preset == -1 || index == -1 || _profile.Length == 0) // Создать новый пресет
             {
                 AppSettings.Preset = 0;
                 index = 0;
 
-                if (_profile.Length <= 0) 
+                if (_profile.Length == 0) 
                 {
-                    _profile = [];
+                    _profile = new Profile[1];
                     _profile[0] = new Profile();
                     ProfileSave();
                 }
             }
 
-            ActionButton_Save.BorderBrush = ActionButton_Delete.BorderBrush;
-            ActionButton_Save.BorderThickness = ActionButton_Delete.BorderThickness;
-            MainScroll.IsEnabled = true;
-            ActionButton_Apply.IsEnabled = true;
-            ActionButton_Delete.IsEnabled = true;
-            ActionButton_Mon.IsEnabled = true;
-            ActionButton_Save.IsEnabled = true;
-            ActionButton_Share.IsEnabled = true;
-            EditProfileButton.IsEnabled = true;
-            Action_IncompatibleProfile.IsOpen = false;
+            ActionIncompatibleProfile.IsOpen = false;
 
-            ProfileLoad();
 
             try
             {
-                if (_profile[index].cpu1value > c1v.Maximum)
+                if (_profile[index].Cpu1Value > C1V.Maximum)
                 {
-                    c1v.Maximum = FromValueToUpperFive(_profile[index].cpu1value);
+                    C1V.Maximum = FromValueToUpperFive(_profile[index].Cpu1Value);
                 }
 
-                if (_profile[index].cpu2value > c2v.Maximum)
+                if (_profile[index].Cpu2Value > C2V.Maximum)
                 {
-                    c2v.Maximum = FromValueToUpperFive(_profile[index].cpu2value);
+                    C2V.Maximum = FromValueToUpperFive(_profile[index].Cpu2Value);
                 }
 
-                if (_profile[index].cpu3value > c3v.Maximum)
+                if (_profile[index].Cpu3Value > C3V.Maximum)
                 {
-                    c3v.Maximum = FromValueToUpperFive(_profile[index].cpu3value);
+                    C3V.Maximum = FromValueToUpperFive(_profile[index].Cpu3Value);
                 }
 
-                if (_profile[index].cpu4value > c4v.Maximum)
+                if (_profile[index].Cpu4Value > C4V.Maximum)
                 {
-                    c4v.Maximum = FromValueToUpperFive(_profile[index].cpu4value);
+                    C4V.Maximum = FromValueToUpperFive(_profile[index].Cpu4Value);
                 }
 
-                if (_profile[index].cpu5value > c5v.Maximum)
+                if (_profile[index].Cpu5Value > C5V.Maximum)
                 {
-                    c5v.Maximum = FromValueToUpperFive(_profile[index].cpu5value);
+                    C5V.Maximum = FromValueToUpperFive(_profile[index].Cpu5Value);
                 }
 
-                if (_profile[index].cpu6value > c6v.Maximum)
+                if (_profile[index].Cpu6Value > C6V.Maximum)
                 {
-                    c6v.Maximum = FromValueToUpperFive(_profile[index].cpu6value);
+                    C6V.Maximum = FromValueToUpperFive(_profile[index].Cpu6Value);
                 }
 
-                if (_profile[index].cpu7value > c7v.Maximum)
+                if (_profile[index].Cpu7Value > C7V.Maximum)
                 {
-                    c7v.Maximum = FromValueToUpperFive(_profile[index].cpu7value);
+                    C7V.Maximum = FromValueToUpperFive(_profile[index].Cpu7Value);
                 }
 
-                if (_profile[index].vrm1value > V1V.Maximum)
+                if (_profile[index].Vrm1Value > V1V.Maximum)
                 {
-                    V1V.Maximum = FromValueToUpperFive(_profile[index].vrm1value);
+                    V1V.Maximum = FromValueToUpperFive(_profile[index].Vrm1Value);
                 }
 
-                if (_profile[index].vrm2value > V2V.Maximum)
+                if (_profile[index].Vrm2Value > V2V.Maximum)
                 {
-                    V2V.Maximum = FromValueToUpperFive(_profile[index].vrm2value);
+                    V2V.Maximum = FromValueToUpperFive(_profile[index].Vrm2Value);
                 }
 
-                if (_profile[index].vrm3value > V3V.Maximum)
+                if (_profile[index].Vrm3Value > V3V.Maximum)
                 {
-                    V3V.Maximum = FromValueToUpperFive(_profile[index].vrm3value);
+                    V3V.Maximum = FromValueToUpperFive(_profile[index].Vrm3Value);
                 }
 
-                if (_profile[index].vrm4value > V4V.Maximum)
+                if (_profile[index].Vrm4Value > V4V.Maximum)
                 {
-                    V4V.Maximum = FromValueToUpperFive(_profile[index].vrm4value);
+                    V4V.Maximum = FromValueToUpperFive(_profile[index].Vrm4Value);
                 }
 
-                if (_profile[index].vrm5value > V5V.Maximum)
+                if (_profile[index].Vrm5Value > V5V.Maximum)
                 {
-                    V5V.Maximum = FromValueToUpperFive(_profile[index].vrm5value);
+                    V5V.Maximum = FromValueToUpperFive(_profile[index].Vrm5Value);
                 }
 
-                if (_profile[index].vrm6value > V6V.Maximum)
+                if (_profile[index].Vrm6Value > V6V.Maximum)
                 {
-                    V6V.Maximum = FromValueToUpperFive(_profile[index].vrm6value);
+                    V6V.Maximum = FromValueToUpperFive(_profile[index].Vrm6Value);
                 }
 
-                if (_profile[index].vrm7value > V7V.Maximum)
+                if (_profile[index].Vrm7Value > V7V.Maximum)
                 {
-                    V7V.Maximum = FromValueToUpperFive(_profile[index].vrm7value);
+                    V7V.Maximum = FromValueToUpperFive(_profile[index].Vrm7Value);
                 }
 
-                if (_profile[index].gpu1value > g1v.Maximum)
+                if (_profile[index].Gpu1Value > G1V.Maximum)
                 {
-                    g1v.Maximum = FromValueToUpperFive(_profile[index].gpu1value);
+                    G1V.Maximum = FromValueToUpperFive(_profile[index].Gpu1Value);
                 }
 
-                if (_profile[index].gpu2value > g2v.Maximum)
+                if (_profile[index].Gpu2Value > G2V.Maximum)
                 {
-                    g2v.Maximum = FromValueToUpperFive(_profile[index].gpu2value);
+                    G2V.Maximum = FromValueToUpperFive(_profile[index].Gpu2Value);
                 }
 
-                if (_profile[index].gpu3value > g3v.Maximum)
+                if (_profile[index].Gpu3Value > G3V.Maximum)
                 {
-                    g3v.Maximum = FromValueToUpperFive(_profile[index].gpu3value);
+                    G3V.Maximum = FromValueToUpperFive(_profile[index].Gpu3Value);
                 }
 
-                if (_profile[index].gpu4value > g4v.Maximum)
+                if (_profile[index].Gpu4Value > G4V.Maximum)
                 {
-                    g4v.Maximum = FromValueToUpperFive(_profile[index].gpu4value);
+                    G4V.Maximum = FromValueToUpperFive(_profile[index].Gpu4Value);
                 }
 
-                if (_profile[index].gpu5value > g5v.Maximum)
+                if (_profile[index].Gpu5Value > G5V.Maximum)
                 {
-                    g5v.Maximum = FromValueToUpperFive(_profile[index].gpu5value);
+                    G5V.Maximum = FromValueToUpperFive(_profile[index].Gpu5Value);
                 }
 
-                if (_profile[index].gpu6value > g6v.Maximum)
+                if (_profile[index].Gpu6Value > G6V.Maximum)
                 {
-                    g6v.Maximum = FromValueToUpperFive(_profile[index].gpu6value);
+                    G6V.Maximum = FromValueToUpperFive(_profile[index].Gpu6Value);
                 }
 
-                if (_profile[index].gpu7value > g7v.Maximum)
+                if (_profile[index].Gpu7Value > G7V.Maximum)
                 {
-                    g7v.Maximum = FromValueToUpperFive(_profile[index].gpu7value);
+                    G7V.Maximum = FromValueToUpperFive(_profile[index].Gpu7Value);
                 }
 
-                if (_profile[index].gpu8value > g8v.Maximum)
+                if (_profile[index].Gpu8Value > G8V.Maximum)
                 {
-                    g8v.Maximum = FromValueToUpperFive(_profile[index].gpu8value);
+                    G8V.Maximum = FromValueToUpperFive(_profile[index].Gpu8Value);
                 }
 
-                if (_profile[index].gpu9value > g9v.Maximum)
+                if (_profile[index].Gpu9Value > G9V.Maximum)
                 {
-                    g9v.Maximum = FromValueToUpperFive(_profile[index].gpu9value);
+                    G9V.Maximum = FromValueToUpperFive(_profile[index].Gpu9Value);
                 }
 
-                if (_profile[index].gpu10value > g10v.Maximum)
+                if (_profile[index].Gpu10Value > G10V.Maximum)
                 {
-                    g10v.Maximum = FromValueToUpperFive(_profile[index].gpu10value);
+                    G10V.Maximum = FromValueToUpperFive(_profile[index].Gpu10Value);
                 }
 
-                if (_profile[index].advncd4value > a4v.Maximum)
+                if (_profile[index].Advncd4Value > A4V.Maximum)
                 {
-                    a4v.Maximum = FromValueToUpperFive(_profile[index].advncd4value);
+                    A4V.Maximum = FromValueToUpperFive(_profile[index].Advncd4Value);
                 }
 
-                if (_profile[index].advncd5value > a5v.Maximum)
+                if (_profile[index].Advncd5Value > A5V.Maximum)
                 {
-                    a5v.Maximum = FromValueToUpperFive(_profile[index].advncd5value);
+                    A5V.Maximum = FromValueToUpperFive(_profile[index].Advncd5Value);
                 }
 
-                if (_profile[index].advncd6value > a6v.Maximum)
+                if (_profile[index].Advncd6Value > A6V.Maximum)
                 {
-                    a6v.Maximum = FromValueToUpperFive(_profile[index].advncd6value);
+                    A6V.Maximum = FromValueToUpperFive(_profile[index].Advncd6Value);
                 }
 
-                if (_profile[index].advncd7value > a7v.Maximum)
+                if (_profile[index].Advncd7Value > A7V.Maximum)
                 {
-                    a7v.Maximum = FromValueToUpperFive(_profile[index].advncd7value);
+                    A7V.Maximum = FromValueToUpperFive(_profile[index].Advncd7Value);
                 }
 
-                if (_profile[index].advncd8value > a8v.Maximum)
+                if (_profile[index].Advncd8Value > A8V.Maximum)
                 {
-                    a8v.Maximum = FromValueToUpperFive(_profile[index].advncd8value);
+                    A8V.Maximum = FromValueToUpperFive(_profile[index].Advncd8Value);
                 }
 
-                if (_profile[index].advncd9value > a9v.Maximum)
+                if (_profile[index].Advncd9Value > A9V.Maximum)
                 {
-                    a9v.Maximum = FromValueToUpperFive(_profile[index].advncd9value);
+                    A9V.Maximum = FromValueToUpperFive(_profile[index].Advncd9Value);
                 }
 
-                if (_profile[index].advncd10value > a10v.Maximum)
+                if (_profile[index].Advncd10Value > A10V.Maximum)
                 {
-                    a10v.Maximum = FromValueToUpperFive(_profile[index].advncd10value);
+                    A10V.Maximum = FromValueToUpperFive(_profile[index].Advncd10Value);
                 }
 
-                if (_profile[index].advncd11value > a11v.Maximum)
+                if (_profile[index].Advncd11Value > A11V.Maximum)
                 {
-                    a11v.Maximum = FromValueToUpperFive(_profile[index].advncd11value);
+                    A11V.Maximum = FromValueToUpperFive(_profile[index].Advncd11Value);
                 }
 
-                if (_profile[index].advncd12value > a12v.Maximum)
+                if (_profile[index].Advncd12Value > A12V.Maximum)
                 {
-                    a12v.Maximum = FromValueToUpperFive(_profile[index].advncd12value);
+                    A12V.Maximum = FromValueToUpperFive(_profile[index].Advncd12Value);
                 }
 
-                if (_profile[index].advncd15value > a15v.Maximum)
+                if (_profile[index].Advncd15Value > A15V.Maximum)
                 {
-                    a15v.Maximum = FromValueToUpperFive(_profile[index].advncd15value);
+                    A15V.Maximum = FromValueToUpperFive(_profile[index].Advncd15Value);
                 }
             }
             catch (Exception ex)
@@ -984,167 +984,167 @@ public sealed partial class ПараметрыPage
 
             try
             {
-                c1.IsChecked = _profile[index].cpu1;
-                c1v.Value = _profile[index].cpu1value;
-                c2.IsChecked = _profile[index].cpu2;
-                c2v.Value = _profile[index].cpu2value;
-                c3.IsChecked = _profile[index].cpu3;
-                c3v.Value = _profile[index].cpu3value;
-                c4.IsChecked = _profile[index].cpu4;
-                c4v.Value = _profile[index].cpu4value;
-                c5.IsChecked = _profile[index].cpu5;
-                c5v.Value = _profile[index].cpu5value;
-                c6.IsChecked = _profile[index].cpu6;
-                c6v.Value = _profile[index].cpu6value;
-                c7.IsChecked = _profile[index].cpu7;
-                c7v.Value = _profile[index].cpu7value;
-                V1.IsChecked = _profile[index].vrm1;
-                V1V.Value = _profile[index].vrm1value;
-                V2.IsChecked = _profile[index].vrm2;
-                V2V.Value = _profile[index].vrm2value;
-                V3.IsChecked = _profile[index].vrm3;
-                V3V.Value = _profile[index].vrm3value;
-                V4.IsChecked = _profile[index].vrm4;
-                V4V.Value = _profile[index].vrm4value;
-                V5.IsChecked = _profile[index].vrm5;
-                V5V.Value = _profile[index].vrm5value;
-                V6.IsChecked = _profile[index].vrm6;
-                V6V.Value = _profile[index].vrm6value;
-                V7.IsChecked = _profile[index].vrm7;
-                V7V.Value = _profile[index].vrm7value;
-                g1.IsChecked = _profile[index].gpu1;
-                g1v.Value = _profile[index].gpu1value;
-                g2.IsChecked = _profile[index].gpu2;
-                g2v.Value = _profile[index].gpu2value;
-                g3.IsChecked = _profile[index].gpu3;
-                g3v.Value = _profile[index].gpu3value;
-                g4.IsChecked = _profile[index].gpu4;
-                g4v.Value = _profile[index].gpu4value;
-                g5.IsChecked = _profile[index].gpu5;
-                g5v.Value = _profile[index].gpu5value;
-                g6.IsChecked = _profile[index].gpu6;
-                g6v.Value = _profile[index].gpu6value;
-                g7.IsChecked = _profile[index].gpu7;
-                g7v.Value = _profile[index].gpu7value;
-                g8v.Value = _profile[index].gpu8value;
-                g8.IsChecked = _profile[index].gpu8;
-                g9v.Value = _profile[index].gpu9value;
-                g9.IsChecked = _profile[index].gpu9;
-                g10v.Value = _profile[index].gpu10value;
-                g10.IsChecked = _profile[index].gpu10;
-                g16.IsChecked = _profile[index].gpu16;
-                g16m.SelectedIndex = _profile[index].gpu16value;
-                a4.IsChecked = _profile[index].advncd4;
-                a4v.Value = _profile[index].advncd4value;
-                a5.IsChecked = _profile[index].advncd5;
-                a5v.Value = _profile[index].advncd5value;
-                a6.IsChecked = _profile[index].advncd6;
-                a6v.Value = _profile[index].advncd6value;
-                a7.IsChecked = _profile[index].advncd7;
-                a7v.Value = _profile[index].advncd7value;
-                a8v.Value = _profile[index].advncd8value;
-                a8.IsChecked = _profile[index].advncd8;
-                a9v.Value = _profile[index].advncd9value;
-                a9.IsChecked = _profile[index].advncd9;
-                a10v.Value = _profile[index].advncd10value;
-                a10.IsChecked = _profile[index].advncd10;
-                a11v.Value = _profile[index].advncd11value;
-                a11.IsChecked = _profile[index].advncd11;
-                a12v.Value = _profile[index].advncd12value;
-                a12.IsChecked = _profile[index].advncd12;
-                a13.IsChecked = _profile[index].advncd13;
-                a13m.SelectedIndex = _profile[index].advncd13value;
-                a14.IsChecked = _profile[index].advncd14;
-                a14m.SelectedIndex = _profile[index].advncd14value;
-                a15.IsChecked = _profile[index].advncd15;
-                a15v.Value = _profile[index].advncd15value;
-                CCD_CO_Mode_Sel.IsChecked = _profile[index].comode;
-                CCD_CO_Mode.SelectedIndex = _profile[index].coprefmode;
-                O1.IsChecked = _profile[index].coall;
-                O1v.Value = _profile[index].coallvalue;
-                O2.IsChecked = _profile[index].cogfx;
-                O2v.Value = _profile[index].cogfxvalue;
-                CCD1_1.IsChecked = _profile[index].coper0;
-                CCD1_1v.Value = _profile[index].coper0value;
-                CCD1_2.IsChecked = _profile[index].coper1;
-                CCD1_2v.Value = _profile[index].coper1value;
-                CCD1_3.IsChecked = _profile[index].coper2;
-                CCD1_3v.Value = _profile[index].coper2value;
-                CCD1_4.IsChecked = _profile[index].coper3;
-                CCD1_4v.Value = _profile[index].coper3value;
-                CCD1_5.IsChecked = _profile[index].coper4;
-                CCD1_5v.Value = _profile[index].coper4value;
-                CCD1_6.IsChecked = _profile[index].coper5;
-                CCD1_6v.Value = _profile[index].coper5value;
-                CCD1_7.IsChecked = _profile[index].coper6;
-                CCD1_7v.Value = _profile[index].coper6value;
-                CCD1_8.IsChecked = _profile[index].coper7;
-                CCD1_8v.Value = _profile[index].coper7value;
-                CCD2_1.IsChecked = _profile[index].coper8;
-                CCD2_1v.Value = _profile[index].coper8value;
-                CCD2_2.IsChecked = _profile[index].coper9;
-                CCD2_2v.Value = _profile[index].coper9value;
-                CCD2_3.IsChecked = _profile[index].coper10;
-                CCD2_3v.Value = _profile[index].coper10value;
-                CCD2_4.IsChecked = _profile[index].coper11;
-                CCD2_4v.Value = _profile[index].coper11value;
-                CCD2_5.IsChecked = _profile[index].coper12;
-                CCD2_5v.Value = _profile[index].coper12value;
-                CCD2_6.IsChecked = _profile[index].coper13;
-                CCD2_6v.Value = _profile[index].coper13value;
-                CCD2_7.IsChecked = _profile[index].coper14;
-                CCD2_7v.Value = _profile[index].coper14value;
-                CCD2_8.IsChecked = _profile[index].coper15;
-                CCD2_8v.Value = _profile[index].coper15value;
-                EnablePstates.IsOn = _profile[index].enablePstateEditor;
-                Turbo_boost.IsOn = _profile[index].turboBoost;
-                Autoapply_1.IsOn = _profile[index].autoPstate;
-                IgnoreWarn.IsOn = _profile[index].ignoreWarn;
-                Without_P0.IsOn = _profile[index].p0Ignorewarn;
-                DID_0.Value = _profile[index].did0;
-                DID_1.Value = _profile[index].did1;
-                DID_2.Value = _profile[index].did2;
-                FID_0.Value = _profile[index].fid0;
-                FID_1.Value = _profile[index].fid1;
-                FID_2.Value = _profile[index].fid2;
-                VID_0.Value = _profile[index].vid0;
-                VID_1.Value = _profile[index].vid1;
-                VID_2.Value = _profile[index].vid2;
-                EnableSMU.IsOn = _profile[index].smuEnabled;
-                SMU_Func_Enabl.IsOn = _profile[index].smuFunctionsEnabl;
-                Bit_0_FEATURE_CCLK_CONTROLLER.IsOn = _profile[index].smuFeatureCCLK;
-                Bit_2_FEATURE_DATA_CALCULATION.IsOn = _profile[index].smuFeatureData;
-                Bit_3_FEATURE_PPT.IsOn = _profile[index].smuFeaturePPT;
-                Bit_4_FEATURE_TDC.IsOn = _profile[index].smuFeatureTDC;
-                Bit_5_FEATURE_THERMAL.IsOn = _profile[index].smuFeatureThermal;
-                Bit_8_FEATURE_PLL_POWER_DOWN.IsOn = _profile[index].smuFeaturePowerDown;
-                Bit_37_FEATURE_PROCHOT.IsOn = _profile[index].smuFeatureProchot;
-                Bit_39_FEATURE_STAPM.IsOn = _profile[index].smuFeatureSTAPM;
-                Bit_40_FEATURE_CORE_CSTATES.IsOn = _profile[index].smuFeatureCStates;
-                Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn = _profile[index].smuFeatureGfxDutyCycle;
-                Bit_42_FEATURE_AA_MODE.IsOn = _profile[index].smuFeatureAplusA;
+                C1.IsChecked = _profile[index].Cpu1;
+                C1V.Value = _profile[index].Cpu1Value;
+                C2.IsChecked = _profile[index].Cpu2;
+                C2V.Value = _profile[index].Cpu2Value;
+                C3.IsChecked = _profile[index].Cpu3;
+                C3V.Value = _profile[index].Cpu3Value;
+                C4.IsChecked = _profile[index].Cpu4;
+                C4V.Value = _profile[index].Cpu4Value;
+                C5.IsChecked = _profile[index].Cpu5;
+                C5V.Value = _profile[index].Cpu5Value;
+                C6.IsChecked = _profile[index].Cpu6;
+                C6V.Value = _profile[index].Cpu6Value;
+                C7.IsChecked = _profile[index].Cpu7;
+                C7V.Value = _profile[index].Cpu7Value;
+                V1.IsChecked = _profile[index].Vrm1;
+                V1V.Value = _profile[index].Vrm1Value;
+                V2.IsChecked = _profile[index].Vrm2;
+                V2V.Value = _profile[index].Vrm2Value;
+                V3.IsChecked = _profile[index].Vrm3;
+                V3V.Value = _profile[index].Vrm3Value;
+                V4.IsChecked = _profile[index].Vrm4;
+                V4V.Value = _profile[index].Vrm4Value;
+                V5.IsChecked = _profile[index].Vrm5;
+                V5V.Value = _profile[index].Vrm5Value;
+                V6.IsChecked = _profile[index].Vrm6;
+                V6V.Value = _profile[index].Vrm6Value;
+                V7.IsChecked = _profile[index].Vrm7;
+                V7V.Value = _profile[index].Vrm7Value;
+                G1.IsChecked = _profile[index].Gpu1;
+                G1V.Value = _profile[index].Gpu1Value;
+                G2.IsChecked = _profile[index].Gpu2;
+                G2V.Value = _profile[index].Gpu2Value;
+                G3.IsChecked = _profile[index].Gpu3;
+                G3V.Value = _profile[index].Gpu3Value;
+                G4.IsChecked = _profile[index].Gpu4;
+                G4V.Value = _profile[index].Gpu4Value;
+                G5.IsChecked = _profile[index].Gpu5;
+                G5V.Value = _profile[index].Gpu5Value;
+                G6.IsChecked = _profile[index].Gpu6;
+                G6V.Value = _profile[index].Gpu6Value;
+                G7.IsChecked = _profile[index].Gpu7;
+                G7V.Value = _profile[index].Gpu7Value;
+                G8V.Value = _profile[index].Gpu8Value;
+                G8.IsChecked = _profile[index].Gpu8;
+                G9V.Value = _profile[index].Gpu9Value;
+                G9.IsChecked = _profile[index].Gpu9;
+                G10V.Value = _profile[index].Gpu10Value;
+                G10.IsChecked = _profile[index].Gpu10;
+                G16.IsChecked = _profile[index].Gpu16;
+                G16M.SelectedIndex = _profile[index].Gpu16Value;
+                A4.IsChecked = _profile[index].Advncd4;
+                A4V.Value = _profile[index].Advncd4Value;
+                A5.IsChecked = _profile[index].Advncd5;
+                A5V.Value = _profile[index].Advncd5Value;
+                A6.IsChecked = _profile[index].Advncd6;
+                A6V.Value = _profile[index].Advncd6Value;
+                A7.IsChecked = _profile[index].Advncd7;
+                A7V.Value = _profile[index].Advncd7Value;
+                A8V.Value = _profile[index].Advncd8Value;
+                A8.IsChecked = _profile[index].Advncd8;
+                A9V.Value = _profile[index].Advncd9Value;
+                A9.IsChecked = _profile[index].Advncd9;
+                A10V.Value = _profile[index].Advncd10Value;
+                A10.IsChecked = _profile[index].Advncd10;
+                A11V.Value = _profile[index].Advncd11Value;
+                A11.IsChecked = _profile[index].Advncd11;
+                A12V.Value = _profile[index].Advncd12Value;
+                A12.IsChecked = _profile[index].Advncd12;
+                A13.IsChecked = _profile[index].Advncd13;
+                A13M.SelectedIndex = _profile[index].Advncd13Value;
+                A14.IsChecked = _profile[index].Advncd14;
+                A14M.SelectedIndex = _profile[index].Advncd14Value;
+                A15.IsChecked = _profile[index].Advncd15;
+                A15V.Value = _profile[index].Advncd15Value;
+                CcdCoModeSel.IsChecked = _profile[index].Comode;
+                CcdCoMode.SelectedIndex = _profile[index].Coprefmode;
+                O1.IsChecked = _profile[index].Coall;
+                O1V.Value = _profile[index].Coallvalue;
+                O2.IsChecked = _profile[index].Cogfx;
+                O2V.Value = _profile[index].Cogfxvalue;
+                Ccd11.IsChecked = _profile[index].Coper0;
+                Ccd11V.Value = _profile[index].Coper0Value;
+                Ccd12.IsChecked = _profile[index].Coper1;
+                Ccd12V.Value = _profile[index].Coper1Value;
+                Ccd13.IsChecked = _profile[index].Coper2;
+                Ccd13V.Value = _profile[index].Coper2Value;
+                Ccd14.IsChecked = _profile[index].Coper3;
+                Ccd14V.Value = _profile[index].Coper3Value;
+                Ccd15.IsChecked = _profile[index].Coper4;
+                Ccd15V.Value = _profile[index].Coper4Value;
+                Ccd16.IsChecked = _profile[index].Coper5;
+                Ccd16V.Value = _profile[index].Coper5Value;
+                Ccd17.IsChecked = _profile[index].Coper6;
+                Ccd17V.Value = _profile[index].Coper6Value;
+                Ccd18.IsChecked = _profile[index].Coper7;
+                Ccd18V.Value = _profile[index].Coper7Value;
+                Ccd21.IsChecked = _profile[index].Coper8;
+                Ccd21V.Value = _profile[index].Coper8Value;
+                Ccd22.IsChecked = _profile[index].Coper9;
+                Ccd22V.Value = _profile[index].Coper9Value;
+                Ccd23.IsChecked = _profile[index].Coper10;
+                Ccd23V.Value = _profile[index].Coper10Value;
+                Ccd24.IsChecked = _profile[index].Coper11;
+                Ccd24V.Value = _profile[index].Coper11Value;
+                Ccd25.IsChecked = _profile[index].Coper12;
+                Ccd25V.Value = _profile[index].Coper12Value;
+                Ccd26.IsChecked = _profile[index].Coper13;
+                Ccd26V.Value = _profile[index].Coper13Value;
+                Ccd27.IsChecked = _profile[index].Coper14;
+                Ccd27V.Value = _profile[index].Coper14Value;
+                Ccd28.IsChecked = _profile[index].Coper15;
+                Ccd28V.Value = _profile[index].Coper15Value;
+                EnablePstates.IsOn = _profile[index].EnablePstateEditor;
+                TurboBoostToggle.IsOn = _profile[index].TurboBoost;
+                AutoApplyPstates.IsOn = _profile[index].AutoPstate;
+                IgnoreWarn.IsOn = _profile[index].IgnoreWarn;
+                WithoutP0State.IsOn = _profile[index].P0Ignorewarn;
+                Did0.Value = _profile[index].Did0;
+                Did1.Value = _profile[index].Did1;
+                Did2.Value = _profile[index].Did2;
+                Fid0.Value = _profile[index].Fid0;
+                Fid1.Value = _profile[index].Fid1;
+                Fid2.Value = _profile[index].Fid2;
+                Vid0.Value = _profile[index].Vid0;
+                Vid1.Value = _profile[index].Vid1;
+                Vid2.Value = _profile[index].Vid2;
+                EnableSmu.IsOn = _profile[index].SmuEnabled;
+                SmuFuncEnableToggle.IsOn = _profile[index].SmuFunctionsEnabl;
+                Bit0FeatureCclkController.IsOn = _profile[index].SmuFeatureCclk;
+                Bit2FeatureDataCalculation.IsOn = _profile[index].SmuFeatureData;
+                Bit3FeaturePpt.IsOn = _profile[index].SmuFeaturePpt;
+                Bit4FeatureTdc.IsOn = _profile[index].SmuFeatureTdc;
+                Bit5FeatureThermal.IsOn = _profile[index].SmuFeatureThermal;
+                Bit8FeaturePllPowerDown.IsOn = _profile[index].SmuFeaturePowerDown;
+                Bit37FeatureProchot.IsOn = _profile[index].SmuFeatureProchot;
+                Bit39FeatureStapm.IsOn = _profile[index].SmuFeatureStapm;
+                Bit40FeatureCoreCstates.IsOn = _profile[index].SmuFeatureCStates;
+                Bit41FeatureGfxDutyCycle.IsOn = _profile[index].SmuFeatureGfxDutyCycle;
+                Bit42FeatureAaMode.IsOn = _profile[index].SmuFeatureAplusA;
             }
             catch
             {
                 await LogHelper.LogError("Profile contains errors. Creating a new profile.");
 
-                _profile = [];
+                _profile = new Profile[1];
                 _profile[0] = new Profile();
                 ProfileSave();
             }
 
             try
             {
-                Mult_0.SelectedIndex = (int)(FID_0.Value * 25 / (DID_0.Value * 12.5)) - 4;
-                P0_Freq.Content = FID_0.Value * 25 / (DID_0.Value * 12.5) * 100;
-                Mult_1.SelectedIndex = (int)(FID_1.Value * 25 / (DID_1.Value * 12.5)) - 4;
-                P1_Freq.Content = FID_1.Value * 25 / (DID_1.Value * 12.5) * 100;
-                P2_Freq.Content = FID_2.Value * 25 / (DID_2.Value * 12.5) * 100;
-                Mult_2.SelectedIndex = (int)(FID_2.Value * 25 / (DID_2.Value * 12.5)) - 4;
+                Mult0.SelectedIndex = (int)(Fid0.Value * 25 / (Did0.Value * 12.5)) - 4;
+                P0Freq.Content = Fid0.Value * 25 / (Did0.Value * 12.5) * 100;
+                Mult1.SelectedIndex = (int)(Fid1.Value * 25 / (Did1.Value * 12.5)) - 4;
+                P1Freq.Content = Fid1.Value * 25 / (Did1.Value * 12.5) * 100;
+                P2Freq.Content = Fid2.Value * 25 / (Did2.Value * 12.5) * 100;
+                Mult2.SelectedIndex = (int)(Fid2.Value * 25 / (Did2.Value * 12.5)) - 4;
             }
             catch (Exception ex)
             {
-                await LogHelper.TraceIt_TraceError("Loading P-States settings failed: " + ex.ToString());
+                await LogHelper.TraceIt_TraceError("Loading P-States settings failed: " + ex);
             }
 
             _waitforload = false;
@@ -1152,8 +1152,8 @@ public sealed partial class ПараметрыPage
             SmuSettingsLoad();
             if (_smusettings.Note != string.Empty)
             {
-                SMUNotes.Document.SetText(TextSetOptions.FormatRtf, _smusettings.Note.TrimEnd());
-                ChangeRichEditBoxTextColor(SMUNotes, GetColorFromBrush(TextColor.Foreground));
+                SmuNotes.Document.SetText(TextSetOptions.FormatRtf, _smusettings.Note.TrimEnd());
+                ChangeRichEditBoxTextColor(SmuNotes, GetColorFromBrush(TextColor.Foreground));
             }
 
             try
@@ -1162,7 +1162,7 @@ public sealed partial class ПараметрыPage
             }
             catch (Exception ex)
             {
-                await LogHelper.TraceIt_TraceError("Loading user SMU settings failed: " + ex.ToString());
+                await LogHelper.TraceIt_TraceError("Loading user SMU settings failed: " + ex);
             }
         }
         catch (Exception e)
@@ -1179,8 +1179,8 @@ public sealed partial class ПараметрыPage
             return;
         }
 
-        QuickSMU.Children.Clear();
-        QuickSMU.RowDefinitions.Clear();
+        QuickSmu.Children.Clear();
+        QuickSmu.RowDefinitions.Clear();
         for (var i = 0; i < _smusettings.QuickSmuCommands.Count; i++)
         {
             var grid = new Grid
@@ -1195,10 +1195,10 @@ public sealed partial class ПараметрыPage
             };
 
             // Подготовка перед добавлением нового элемента
-            QuickSMU.RowDefinitions.Add(rowDef);
-            var rowIndex = QuickSMU.RowDefinitions.Count - 1;
+            QuickSmu.RowDefinitions.Add(rowDef);
+            var rowIndex = QuickSmu.RowDefinitions.Count - 1;
 
-            QuickSMU.Children.Add(grid); // Добавить в секцию грид быстрой команды
+            QuickSmu.Children.Add(grid); // Добавить в секцию грид быстрой команды
             Grid.SetRow(grid, rowIndex);
 
             var button = new Button // Основная кнопка быстрой команды. В ней всё содержимое
@@ -1383,15 +1383,14 @@ public sealed partial class ПараметрыPage
         var ccd = Convert.ToUInt32(coreIndex / 8);
         var ccx = Convert.ToUInt32(coreIndex / coresInCcx - ccxInCcd * ccd);
         var core = Convert.ToUInt32(coreIndex % coresInCcx);
-        var coreMask = _cpu!.MakeCoreMask(core, ccd, ccx);
-        return coreMask;
+        return _cpu!.MakeCoreMask(core, ccd, ccx);
     }
 
     #endregion
 
     #region Suggestion Engine
 
-    // Collecting Search Items
+    // Сбор элементов для отображения подсказок в поиске
     private void CollectSearchItems()
     {
         _searchItems.Clear();
@@ -1443,36 +1442,50 @@ public sealed partial class ПараметрыPage
     private void SuggestBox_OnTextChanged(AutoSuggestBox? sender, AutoSuggestBoxTextChangedEventArgs? args)
     {
         if (!_isLoaded) { return; }
+
         _isSearching = true;
+
         if (args?.Reason == AutoSuggestionBoxTextChangeReason.UserInput ||
             args?.Reason == AutoSuggestionBoxTextChangeReason.SuggestionChosen ||
             args == null)
         {
             var suitableItems = new List<TextBlock>();
             var splitText = SuggestBox.Text.ToLower().Split(" ");
-            if (_searchItems.Count == 0) { CollectSearchItems(); }
+
+            if (_searchItems.Count == 0) 
+            { 
+                CollectSearchItems(); 
+            }
+
             foreach (var searchItem in _searchItems)
             {
-                var found = splitText.All(key => searchItem.Contains(key, StringComparison.CurrentCultureIgnoreCase));
-                if (found)
+                if (splitText.All(key => searchItem.Contains(key, StringComparison.CurrentCultureIgnoreCase)))
                 {
-                    var textBlock = new TextBlock { Text = searchItem, Margin = new Thickness(-10, 0, -10, 0), Foreground = Param_Name.Foreground };
+                    var textBlock = new TextBlock 
+                    { 
+                        Text = searchItem, 
+                        Margin = new Thickness(-10, 0, -10, 0), 
+                        Foreground = ParamName.Foreground 
+                    };
+
                     ToolTipService.SetToolTip(textBlock, searchItem);
                     suitableItems.Add(textBlock);
                 }
             }
+
             if (suitableItems.Count == 0)
             {
-                suitableItems.Add(new TextBlock { Text = "No results found", Foreground = Param_Name.Foreground });
+                suitableItems.Add(new TextBlock { Text = "No results found", Foreground = ParamName.Foreground });
             }
+
             SuggestBox.ItemsSource = suitableItems;
 
 
-            var searchText = SuggestBox.Text.ToLower();
             if (SuggestBox.Text == string.Empty)
             {
                 FilterButtons_ResetButton_Click(null, null);
             }
+
             // Сбросить скрытое
             ResetVisibility();
 
@@ -1486,7 +1499,7 @@ public sealed partial class ПараметрыPage
                 foreach (var stackPanel in arrayStackPanels)
                 {
                     var textBlocks = VisualTreeHelper.FindVisualChildren<TextBlock>(stackPanel).Where(tb => tb.FontSize - 15 == 0);
-                    var containsText = textBlocks.Any(tb => tb.Text.Contains(searchText, StringComparison.CurrentCultureIgnoreCase));
+                    var containsText = textBlocks.Any(tb => tb.Text.Contains(SuggestBox.Text.ToLower(), StringComparison.CurrentCultureIgnoreCase));
 
                     var containsControl = VisualTreeHelper.FindVisualChildren<CheckBox>(stackPanel).Any();
 
@@ -1531,16 +1544,20 @@ public sealed partial class ПараметрыPage
     private void FilterButton_Checked(object sender, RoutedEventArgs e)
     {
         if (!_isLoaded) { return; }
+
         _isSearching = true;
+
         List<(string, ToggleButton)> buttons = [
-            ("", FilterButtons_Freq),
-            ("", FilterButtons_Current),
-            ("", FilterButtons_Power),
-            ("", FilterButtons_Temp),
-            ("", FilterButtons_Other),
-            ("", FilterButtons_Time),
-            ("\uE7B3",FilterButtons_Hide)];
+            ("", FilterButtonsFreq),
+            ("", FilterButtonsCurrent),
+            ("", FilterButtonsPower),
+            ("", FilterButtonsTemp),
+            ("", FilterButtonsOther),
+            ("", FilterButtonsTime),
+            ("\uE7B3",FilterButtonsHide)];
+
         List<string> glyphs = [];
+
         foreach (var button in buttons) // Первый проход
         {
             if (button.Item2.IsChecked == true)
@@ -1552,27 +1569,31 @@ public sealed partial class ПараметрыPage
                 glyphs.Add(button.Item1);
             }
         }
+
         if (glyphs.Count == 0)
         {
-            if (FiltersButton.Style != ActionButton_Apply.Style)
+            if (FiltersButton.Style != ActionButtonApply.Style)
             {
-                FiltersButton.Style = ActionButton_Apply.Style;
+                FiltersButton.Style = ActionButtonApply.Style;
                 FiltersButton.Translation = new System.Numerics.Vector3(0, 0, 20);
                 FiltersButton.CornerRadius = new CornerRadius(14);
                 FiltersButton.Shadow = SharedShadow;
             }
+
             foreach (var button in buttons) // Добавить все, так как мы не скрываем параметры
             {
-                if (button.Item2 != FilterButtons_Hide)
+                if (button.Item2 != FilterButtonsHide)
                 {
                     glyphs.Add(button.Item1);
                 }
             }
         }
+
         if (SuggestBox.Text == string.Empty)
         {
             ResetVisibility();
         }
+
         var expanders = VisualTreeHelper.FindVisualChildren<Expander>(MainScroll);
         foreach (var expander in expanders)
         {
@@ -1641,18 +1662,21 @@ public sealed partial class ПараметрыPage
     private void FilterButtons_ResetButton_Click(object? sender, RoutedEventArgs? e)
     {
         _isSearching = true;
-        FilterButtons_Freq.IsChecked = false;
-        FilterButtons_Current.IsChecked = false;
-        FilterButtons_Power.IsChecked = false;
-        FilterButtons_Temp.IsChecked = false;
-        FilterButtons_Other.IsChecked = false;
-        FilterButtons_Time.IsChecked = false;
-        FilterButtons_Hide.IsChecked = false;
+
+        FilterButtonsFreq.IsChecked = false;
+        FilterButtonsCurrent.IsChecked = false;
+        FilterButtonsPower.IsChecked = false;
+        FilterButtonsTemp.IsChecked = false;
+        FilterButtonsOther.IsChecked = false;
+        FilterButtonsTime.IsChecked = false;
+        FilterButtonsHide.IsChecked = false;
+
         if (SuggestBox.Text != string.Empty)
         {
             ResetVisibility();
             SuggestBox_OnTextChanged(null, null);
         }
+
         _isSearching = false;
     }
 
@@ -1686,25 +1710,25 @@ public sealed partial class ПараметрыPage
     }
 
     private void AddMailboxToList(string label, SmuAddressSet addressSet) =>
-        comboBoxMailboxSelect.Items.Add(new MailboxListItem(label, addressSet));
+        ComboBoxMailboxSelect.Items.Add(new MailboxListItem(label, addressSet));
 
     private async void SmuScan_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
     {
         try
         {
-            var index = comboBoxMailboxSelect.SelectedIndex;
-            PopulateMailboxesList(comboBoxMailboxSelect.Items);
+            var index = ComboBoxMailboxSelect.SelectedIndex;
+            PopulateMailboxesList(ComboBoxMailboxSelect.Items);
             for (var i = 0; i < _matches?.Count; i++)
             {
                 AddMailboxToList($"Mailbox {i + 1}", _matches[i]);
             }
 
-            if (index > comboBoxMailboxSelect.Items.Count)
+            if (index > ComboBoxMailboxSelect.Items.Count)
             {
                 index = 0;
             }
 
-            comboBoxMailboxSelect.SelectedIndex = index;
+            ComboBoxMailboxSelect.SelectedIndex = index;
             QuickCommand.IsEnabled = true;
             await Send_Message("SMUScanText".GetLocalized(), "SMUScanDesc".GetLocalized(), Symbol.Message);
         }
@@ -1870,9 +1894,9 @@ public sealed partial class ПараметрыPage
 
     private void ResetSmuAddresses()
     {
-        textBoxCMDAddress.Text = $@"0x{Convert.ToString(_testMailbox.SMU_ADDR_MSG, 16).ToUpper()}";
-        textBoxRSPAddress.Text = $@"0x{Convert.ToString(_testMailbox.SMU_ADDR_RSP, 16).ToUpper()}";
-        textBoxARGAddress.Text = $@"0x{Convert.ToString(_testMailbox.SMU_ADDR_ARG, 16).ToUpper()}";
+        TextBoxCmdAddress.Text = $@"0x{Convert.ToString(_testMailbox.SMU_ADDR_MSG, 16).ToUpper()}";
+        TextBoxRspAddress.Text = $@"0x{Convert.ToString(_testMailbox.SMU_ADDR_RSP, 16).ToUpper()}";
+        TextBoxArgAddress.Text = $@"0x{Convert.ToString(_testMailbox.SMU_ADDR_ARG, 16).ToUpper()}";
     }
 
     private void PlayButton_Click(object sender, RoutedEventArgs e)
@@ -1915,11 +1939,11 @@ public sealed partial class ПараметрыPage
             else
             {
                 args = Utils.MakeCmdArgs();
-                userArgs = textBoxARG0.Text.Trim().Split(',');
-                TryConvertToUint(textBoxCMDAddress.Text, out addrMsg);
-                TryConvertToUint(textBoxRSPAddress.Text, out addrRsp);
-                TryConvertToUint(textBoxARGAddress.Text, out addrArg);
-                TryConvertToUint(textBoxCMD.Text, out command);
+                userArgs = TextBoxArg0.Text.Trim().Split(',');
+                TryConvertToUint(TextBoxCmdAddress.Text, out addrMsg);
+                TryConvertToUint(TextBoxRspAddress.Text, out addrRsp);
+                TryConvertToUint(TextBoxArgAddress.Text, out addrArg);
+                TryConvertToUint(TextBoxCmd.Text, out command);
             }
 
             _testMailbox.SMU_ADDR_MSG = addrMsg;
@@ -1948,11 +1972,11 @@ public sealed partial class ПараметрыPage
             if (status != SMU.Status.OK)
             {
                 ApplyInfo += "\n" + "SMUErrorText".GetLocalized() + ": " +
-                             (textBoxCMD.Text.Contains("0x") ? textBoxCMD.Text : "0x" + textBoxCMD.Text)
-                             + "Param_SMU_Args_From".GetLocalized() + comboBoxMailboxSelect.SelectedValue
-                             + "Param_SMU_Args".GetLocalized() + (textBoxARG0.Text.Contains("0x")
-                                 ? textBoxARG0.Text
-                                 : "0x" + textBoxARG0.Text);
+                             (TextBoxCmd.Text.Contains("0x") ? TextBoxCmd.Text : "0x" + TextBoxCmd.Text)
+                             + "Param_SMU_Args_From".GetLocalized() + ComboBoxMailboxSelect.SelectedValue
+                             + "Param_SMU_Args".GetLocalized() + (TextBoxArg0.Text.Contains("0x")
+                                 ? TextBoxArg0.Text
+                                 : "0x" + TextBoxArg0.Text);
                 if (status == SMU.Status.CMD_REJECTED_PREREQ)
                 {
                     ApplyInfo += "\n" + "SMUErrorRejected".GetLocalized();
@@ -1965,7 +1989,7 @@ public sealed partial class ПараметрыPage
             if (args[0] != argsBefore[0] || args[1] != argsBefore[1] || args[2] != argsBefore[2])
             {
                 _commandReturnedValue = true;
-                ApplyInfo += "Param_DeveloperOptions_SmuCommand".GetLocalized() + $" {comboBoxMailboxSelect.SelectedValue} 0x{command:X} " + "Param_DeveloperOptions_CommandResult".GetLocalized() + $"0x{args[0]:X}({args[0]}) 0x{args[1]:X}({args[1]}) 0x{args[2]:X}({args[2]})" + "Param_DeveloperOptions_ResultSaved".GetLocalized();
+                ApplyInfo += "Param_DeveloperOptions_SmuCommand".GetLocalized() + $" {ComboBoxMailboxSelect.SelectedValue} 0x{command:X} " + "Param_DeveloperOptions_CommandResult".GetLocalized() + $"0x{args[0]:X}({args[0]}) 0x{args[1]:X}({args[1]}) 0x{args[2]:X}({args[2]})" + "Param_DeveloperOptions_ResultSaved".GetLocalized();
             }
             Task.Run(async () => await LogHelper.Log($"Get status: {status}"));
         }
@@ -1995,7 +2019,7 @@ public sealed partial class ПараметрыPage
 
     private void ComboBoxMailboxSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (comboBoxMailboxSelect.SelectedItem is MailboxListItem item)
+        if (ComboBoxMailboxSelect.SelectedItem is MailboxListItem item)
         {
             InitTestMailbox(item.MsgAddr, item.RspAddr, item.ArgAddr);
         }
@@ -2030,7 +2054,7 @@ public sealed partial class ПараметрыPage
 
     private void SMUEnabl_Click(object sender, RoutedEventArgs e)
     {
-        EnableSMU.IsOn = !EnableSMU.IsOn;
+        EnableSmu.IsOn = !EnableSmu.IsOn;
         SmuEnabl();
     }
 
@@ -2038,14 +2062,14 @@ public sealed partial class ПараметрыPage
 
     private void SmuEnabl()
     {
-        if (EnableSMU.IsOn)
+        if (EnableSmu.IsOn)
         {
-            _profile[_indexprofile].smuEnabled = true;
+            _profile[_indexprofile].SmuEnabled = true;
             ProfileSave();
         }
         else
         {
-            _profile[_indexprofile].smuEnabled = false;
+            _profile[_indexprofile].SmuEnabled = false;
             ProfileSave();
         }
     }
@@ -2145,12 +2169,12 @@ public sealed partial class ПараметрыPage
             };
             try
             {
-                foreach (var item in comboBoxMailboxSelect.Items)
+                foreach (var item in ComboBoxMailboxSelect.Items)
                 {
                     comboSelSmu.Items.Add(item);
                 }
 
-                comboSelSmu.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
+                comboSelSmu.SelectedIndex = ComboBoxMailboxSelect.SelectedIndex;
                 comboSelSmu.SelectionChanged += ComboSelSMU_SelectionChanged;
                 symbolButton.Click += SymbolButton_Click;
                 if (destination != 0)
@@ -2261,9 +2285,9 @@ public sealed partial class ПараметрыPage
                                     new CustomMailBoxes
                                     {
                                         Name = comboSelSmu.SelectedItem.ToString()!,
-                                        Cmd = textBoxCMDAddress.Text,
-                                        Rsp = textBoxRSPAddress.Text,
-                                        Arg = textBoxARGAddress.Text
+                                        Cmd = TextBoxCmdAddress.Text,
+                                        Rsp = TextBoxRspAddress.Text,
+                                        Arg = TextBoxArgAddress.Text
                                     }
                                 ];
                             }
@@ -2284,9 +2308,9 @@ public sealed partial class ПараметрыPage
                                     _smusettings?.MailBoxes?.Add(new CustomMailBoxes
                                     {
                                         Name = comboSelSmu.SelectedItem.ToString()!,
-                                        Cmd = textBoxCMDAddress.Text,
-                                        Rsp = textBoxRSPAddress.Text,
-                                        Arg = textBoxARGAddress.Text
+                                        Cmd = TextBoxCmdAddress.Text,
+                                        Rsp = TextBoxRspAddress.Text,
+                                        Arg = TextBoxArgAddress.Text
                                     });
                                 }
                             }
@@ -2336,7 +2360,7 @@ public sealed partial class ПараметрыPage
                             }
                         }
 
-                        comboBoxMailboxSelect.SelectedIndex = saveIndex;
+                        ComboBoxMailboxSelect.SelectedIndex = saveIndex;
                         SmuSettingsSave();
                         Init_QuickSMU();
                         newQuickCommand?.Hide();
@@ -2422,12 +2446,12 @@ public sealed partial class ПараметрыPage
             };
             try
             {
-                foreach (var item in comboBoxMailboxSelect.Items)
+                foreach (var item in ComboBoxMailboxSelect.Items)
                 {
                     comboSelSmu.Items.Add(item);
                 }
 
-                comboSelSmu.SelectedIndex = comboBoxMailboxSelect.SelectedIndex;
+                comboSelSmu.SelectedIndex = ComboBoxMailboxSelect.SelectedIndex;
                 comboSelSmu.SelectionChanged += ComboSelSMU_SelectionChanged;
             }
             catch (Exception ex)
@@ -2483,9 +2507,9 @@ public sealed partial class ПараметрыPage
                                 _smusettings.MailBoxes?.Add(new CustomMailBoxes
                                 {
                                     Name = comboSelSmu.SelectedItem.ToString()!,
-                                    Cmd = textBoxCMDAddress.Text,
-                                    Rsp = textBoxRSPAddress.Text,
-                                    Arg = textBoxARGAddress.Text
+                                    Cmd = TextBoxCmdAddress.Text,
+                                    Rsp = TextBoxRspAddress.Text,
+                                    Arg = TextBoxArgAddress.Text
                                 });
                             }
                             else
@@ -2506,9 +2530,9 @@ public sealed partial class ПараметрыPage
                                     _smusettings.MailBoxes?.Add(new CustomMailBoxes
                                     {
                                         Name = comboSelSmu.SelectedItem.ToString()!,
-                                        Cmd = textBoxCMDAddress.Text,
-                                        Rsp = textBoxRSPAddress.Text,
-                                        Arg = textBoxARGAddress.Text
+                                        Cmd = TextBoxCmdAddress.Text,
+                                        Rsp = TextBoxRspAddress.Text,
+                                        Arg = TextBoxArgAddress.Text
                                     });
                                 }
                             }
@@ -2532,7 +2556,7 @@ public sealed partial class ПараметрыPage
 
                         }
 
-                        comboBoxMailboxSelect.SelectedIndex = saveIndex;
+                        ComboBoxMailboxSelect.SelectedIndex = saveIndex;
                         SmuSettingsSave();
                         Init_QuickSMU();
                         newQuickCommand?.Hide();
@@ -2581,7 +2605,7 @@ public sealed partial class ПараметрыPage
             var comboBox = sender as ComboBox;
             if (comboBox != null)
             {
-                comboBoxMailboxSelect.SelectedIndex = comboBox.SelectedIndex;
+                ComboBoxMailboxSelect.SelectedIndex = comboBox.SelectedIndex;
             }
         }
         catch (Exception ex)
@@ -2603,7 +2627,7 @@ public sealed partial class ПараметрыPage
     private void SMUNotes_TextChanged(object sender, RoutedEventArgs e)
     {
         SmuSettingsLoad();
-        var documentRange = SMUNotes.Document.GetRange(0, TextConstants.MaxUnitCount);
+        var documentRange = SmuNotes.Document.GetRange(0, TextConstants.MaxUnitCount);
         documentRange.GetText(TextGetOptions.FormatRtf, out var content);
         _smusettings.Note = content.TrimEnd();
         SmuSettingsSave();
@@ -2612,13 +2636,13 @@ public sealed partial class ПараметрыPage
     private void ToHex_Click(object sender, RoutedEventArgs e)
     {
         // Преобразование выделенного текста в шестнадцатиричную систему
-        if (textBoxARG0.SelectedText != "")
+        if (TextBoxArg0.SelectedText != "")
         {
             try
             {
-                var decimalValue = int.Parse(textBoxARG0.SelectedText);
+                var decimalValue = int.Parse(TextBoxArg0.SelectedText);
                 var hexValue = decimalValue.ToString("X");
-                textBoxARG0.SelectedText = hexValue;
+                TextBoxArg0.SelectedText = hexValue;
             }
             catch (Exception ex)
             {
@@ -2629,9 +2653,9 @@ public sealed partial class ПараметрыPage
         {
             try
             {
-                var decimalValue = int.Parse(textBoxARG0.Text);
+                var decimalValue = int.Parse(TextBoxArg0.Text);
                 var hexValue = decimalValue.ToString("X");
-                textBoxARG0.Text = hexValue;
+                TextBoxArg0.Text = hexValue;
             }
             catch (Exception ex)
             {
@@ -2642,63 +2666,63 @@ public sealed partial class ПараметрыPage
 
     private void CopyThis_Click(object sender, RoutedEventArgs e)
     {
-        if (textBoxARG0.SelectedText != "")
+        if (TextBoxArg0.SelectedText != "")
         {
             // Скопировать текст в буфер обмена
             var dataPackage = new DataPackage
             {
                 RequestedOperation = DataPackageOperation.Copy
             };
-            dataPackage.SetText(textBoxARG0.SelectedText);
+            dataPackage.SetText(TextBoxArg0.SelectedText);
             Clipboard.SetContent(dataPackage);
         }
         else
         {
             // Выделить весь текст
-            textBoxARG0.SelectAll();
+            TextBoxArg0.SelectAll();
             // Скопировать текст в буфер обмена
             var dataPackage = new DataPackage
             {
                 RequestedOperation = DataPackageOperation.Copy
             };
-            dataPackage.SetText(textBoxARG0.Text);
+            dataPackage.SetText(TextBoxArg0.Text);
             Clipboard.SetContent(dataPackage);
         }
     }
 
     private void CutThis_Click(object sender, RoutedEventArgs e)
     {
-        if (textBoxARG0.SelectedText != "")
+        if (TextBoxArg0.SelectedText != "")
         {
             // Скопировать текст в буфер обмена
             var dataPackage = new DataPackage
             {
                 RequestedOperation = DataPackageOperation.Copy
             };
-            dataPackage.SetText(textBoxARG0.SelectedText);
+            dataPackage.SetText(TextBoxArg0.SelectedText);
             Clipboard.SetContent(dataPackage);
             // Обнулить текст
-            textBoxARG0.SelectedText = "";
+            TextBoxArg0.SelectedText = "";
         }
         else
         {
             // Выделить весь текст
-            textBoxARG0.SelectAll();
+            TextBoxArg0.SelectAll();
             // Скопировать текст в буфер обмена
             var dataPackage = new DataPackage
             {
                 RequestedOperation = DataPackageOperation.Copy
             };
-            dataPackage.SetText(textBoxARG0.Text);
+            dataPackage.SetText(TextBoxArg0.Text);
             Clipboard.SetContent(dataPackage);
-            textBoxARG0.Text = "";
+            TextBoxArg0.Text = "";
         }
     }
 
     private void SelectAllThis_Click(object sender, RoutedEventArgs e)
     {
         // Выделить весь текст
-        textBoxARG0.SelectAll();
+        TextBoxArg0.SelectAll();
     }
 
     private void CancelRange_Click(object sender, RoutedEventArgs e)
@@ -2736,14 +2760,14 @@ public sealed partial class ПараметрыPage
                 await Task.Delay(100);
             }
 
-            if (ProfileCOM.SelectedIndex != -1)
+            if (ProfileCom.SelectedIndex != -1)
             {
-                AppSettings.Preset = ProfileCOM.SelectedIndex - 1;
+                AppSettings.Preset = ProfileCom.SelectedIndex - 1;
                 AppSettings.SaveSettings();
             }
 
-            _indexprofile = ProfileCOM.SelectedIndex - 1;
-            MainInit(ProfileCOM.SelectedIndex - 1);
+            _indexprofile = ProfileCom.SelectedIndex - 1;
+            MainInit(ProfileCom.SelectedIndex - 1);
         }
         catch (Exception exception)
         {
@@ -2783,11 +2807,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = c1.IsChecked == true;
+        var check = C1.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu1 = check;
-            _profile[_indexprofile].cpu1value = c1v.Value;
+            _profile[_indexprofile].Cpu1 = check;
+            _profile[_indexprofile].Cpu1Value = C1V.Value;
             ProfileSave();
         }
     }
@@ -2801,11 +2825,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = c2.IsChecked == true;
+        var check = C2.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu2 = check;
-            _profile[_indexprofile].cpu2value = c2v.Value;
+            _profile[_indexprofile].Cpu2 = check;
+            _profile[_indexprofile].Cpu2Value = C2V.Value;
             ProfileSave();
         }
     }
@@ -2819,11 +2843,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = c3.IsChecked == true;
+        var check = C3.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu3 = check;
-            _profile[_indexprofile].cpu3value = c3v.Value;
+            _profile[_indexprofile].Cpu3 = check;
+            _profile[_indexprofile].Cpu3Value = C3V.Value;
             ProfileSave();
         }
     }
@@ -2837,11 +2861,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = c4.IsChecked == true;
+        var check = C4.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu4 = check;
-            _profile[_indexprofile].cpu4value = c4v.Value;
+            _profile[_indexprofile].Cpu4 = check;
+            _profile[_indexprofile].Cpu4Value = C4V.Value;
             ProfileSave();
         }
     }
@@ -2855,11 +2879,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = c5.IsChecked == true;
+        var check = C5.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu5 = check;
-            _profile[_indexprofile].cpu5value = c5v.Value;
+            _profile[_indexprofile].Cpu5 = check;
+            _profile[_indexprofile].Cpu5Value = C5V.Value;
             ProfileSave();
         }
     }
@@ -2873,11 +2897,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = c6.IsChecked == true;
+        var check = C6.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu6 = check;
-            _profile[_indexprofile].cpu6value = c6v.Value;
+            _profile[_indexprofile].Cpu6 = check;
+            _profile[_indexprofile].Cpu6Value = C6V.Value;
             ProfileSave();
         }
     }
@@ -2895,8 +2919,8 @@ public sealed partial class ПараметрыPage
         var check = V1.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm1 = check;
-            _profile[_indexprofile].vrm1value = V1V.Value;
+            _profile[_indexprofile].Vrm1 = check;
+            _profile[_indexprofile].Vrm1Value = V1V.Value;
             ProfileSave();
         }
     }
@@ -2913,8 +2937,8 @@ public sealed partial class ПараметрыPage
         var check = V2.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm2 = check;
-            _profile[_indexprofile].vrm2value = V2V.Value;
+            _profile[_indexprofile].Vrm2 = check;
+            _profile[_indexprofile].Vrm2Value = V2V.Value;
             ProfileSave();
         }
     }
@@ -2931,8 +2955,8 @@ public sealed partial class ПараметрыPage
         var check = V3.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm3 = check;
-            _profile[_indexprofile].vrm3value = V3V.Value;
+            _profile[_indexprofile].Vrm3 = check;
+            _profile[_indexprofile].Vrm3Value = V3V.Value;
             ProfileSave();
         }
     }
@@ -2949,8 +2973,8 @@ public sealed partial class ПараметрыPage
         var check = V4.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm4 = check;
-            _profile[_indexprofile].vrm4value = V4V.Value;
+            _profile[_indexprofile].Vrm4 = check;
+            _profile[_indexprofile].Vrm4Value = V4V.Value;
             ProfileSave();
         }
     }
@@ -2967,8 +2991,8 @@ public sealed partial class ПараметрыPage
         var check = V5.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm5 = check;
-            _profile[_indexprofile].vrm5value = V5V.Value;
+            _profile[_indexprofile].Vrm5 = check;
+            _profile[_indexprofile].Vrm5Value = V5V.Value;
             ProfileSave();
         }
     }
@@ -2985,8 +3009,8 @@ public sealed partial class ПараметрыPage
         var check = V6.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm6 = check;
-            _profile[_indexprofile].vrm6value = V6V.Value;
+            _profile[_indexprofile].Vrm6 = check;
+            _profile[_indexprofile].Vrm6Value = V6V.Value;
             ProfileSave();
         }
     }
@@ -3003,8 +3027,8 @@ public sealed partial class ПараметрыPage
         var check = V7.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm7 = check;
-            _profile[_indexprofile].vrm7value = V7V.Value;
+            _profile[_indexprofile].Vrm7 = check;
+            _profile[_indexprofile].Vrm7Value = V7V.Value;
             ProfileSave();
         }
     }
@@ -3019,11 +3043,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = g1.IsChecked == true;
+        var check = G1.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu1 = check;
-            _profile[_indexprofile].gpu1value = g1v.Value;
+            _profile[_indexprofile].Gpu1 = check;
+            _profile[_indexprofile].Gpu1Value = G1V.Value;
             ProfileSave();
         }
     }
@@ -3037,11 +3061,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = g2.IsChecked == true;
+        var check = G2.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu2 = check;
-            _profile[_indexprofile].gpu2value = g2v.Value;
+            _profile[_indexprofile].Gpu2 = check;
+            _profile[_indexprofile].Gpu2Value = G2V.Value;
             ProfileSave();
         }
     }
@@ -3055,11 +3079,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = g3.IsChecked == true;
+        var check = G3.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu3 = check;
-            _profile[_indexprofile].gpu3value = g3v.Value;
+            _profile[_indexprofile].Gpu3 = check;
+            _profile[_indexprofile].Gpu3Value = G3V.Value;
             ProfileSave();
         }
     }
@@ -3073,11 +3097,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = g4.IsChecked == true;
+        var check = G4.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu4 = check;
-            _profile[_indexprofile].gpu4value = g4v.Value;
+            _profile[_indexprofile].Gpu4 = check;
+            _profile[_indexprofile].Gpu4Value = G4V.Value;
             ProfileSave();
         }
     }
@@ -3091,11 +3115,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = g5.IsChecked == true;
+        var check = G5.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu5 = check;
-            _profile[_indexprofile].gpu5value = g5v.Value;
+            _profile[_indexprofile].Gpu5 = check;
+            _profile[_indexprofile].Gpu5Value = G5V.Value;
             ProfileSave();
         }
     }
@@ -3109,11 +3133,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = g6.IsChecked == true;
+        var check = G6.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu6 = check;
-            _profile[_indexprofile].gpu6value = g6v.Value;
+            _profile[_indexprofile].Gpu6 = check;
+            _profile[_indexprofile].Gpu6Value = G6V.Value;
             ProfileSave();
         }
     }
@@ -3127,11 +3151,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = g7.IsChecked == true;
+        var check = G7.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu7 = check;
-            _profile[_indexprofile].gpu7value = g7v.Value;
+            _profile[_indexprofile].Gpu7 = check;
+            _profile[_indexprofile].Gpu7Value = G7V.Value;
             ProfileSave();
         }
     }
@@ -3145,11 +3169,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = g8.IsChecked == true;
+        var check = G8.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu8 = check;
-            _profile[_indexprofile].gpu8value = g8v.Value;
+            _profile[_indexprofile].Gpu8 = check;
+            _profile[_indexprofile].Gpu8Value = G8V.Value;
             ProfileSave();
         }
     }
@@ -3163,11 +3187,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = g9.IsChecked == true;
+        var check = G9.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu9 = check;
-            _profile[_indexprofile].gpu9value = g9v.Value;
+            _profile[_indexprofile].Gpu9 = check;
+            _profile[_indexprofile].Gpu9Value = G9V.Value;
             ProfileSave();
         }
     }
@@ -3181,11 +3205,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = g10.IsChecked == true;
+        var check = G10.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu10 = check;
-            _profile[_indexprofile].gpu10value = g10v.Value;
+            _profile[_indexprofile].Gpu10 = check;
+            _profile[_indexprofile].Gpu10Value = G10V.Value;
             ProfileSave();
         }
     }
@@ -3200,11 +3224,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a4.IsChecked == true;
+        var check = A4.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd4 = check;
-            _profile[_indexprofile].advncd4value = a4v.Value;
+            _profile[_indexprofile].Advncd4 = check;
+            _profile[_indexprofile].Advncd4Value = A4V.Value;
             ProfileSave();
         }
     }
@@ -3217,11 +3241,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a5.IsChecked == true;
+        var check = A5.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd5 = check;
-            _profile[_indexprofile].advncd5value = a5v.Value;
+            _profile[_indexprofile].Advncd5 = check;
+            _profile[_indexprofile].Advncd5Value = A5V.Value;
             ProfileSave();
         }
     }
@@ -3234,11 +3258,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a6.IsChecked == true;
+        var check = A6.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd6 = check;
-            _profile[_indexprofile].advncd6value = a6v.Value;
+            _profile[_indexprofile].Advncd6 = check;
+            _profile[_indexprofile].Advncd6Value = A6V.Value;
             ProfileSave();
         }
     }
@@ -3251,11 +3275,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a7.IsChecked == true;
+        var check = A7.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd7 = check;
-            _profile[_indexprofile].advncd7value = a7v.Value;
+            _profile[_indexprofile].Advncd7 = check;
+            _profile[_indexprofile].Advncd7Value = A7V.Value;
             ProfileSave();
         }
     }
@@ -3268,11 +3292,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a8.IsChecked == true;
+        var check = A8.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd8 = check;
-            _profile[_indexprofile].advncd8value = a8v.Value;
+            _profile[_indexprofile].Advncd8 = check;
+            _profile[_indexprofile].Advncd8Value = A8V.Value;
             ProfileSave();
         }
     }
@@ -3285,11 +3309,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a9.IsChecked == true;
+        var check = A9.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd9 = check;
-            _profile[_indexprofile].advncd9value = a9v.Value;
+            _profile[_indexprofile].Advncd9 = check;
+            _profile[_indexprofile].Advncd9Value = A9V.Value;
             ProfileSave();
         }
     }
@@ -3302,11 +3326,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a10.IsChecked == true;
+        var check = A10.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd10 = check;
-            _profile[_indexprofile].advncd10value = a10v.Value;
+            _profile[_indexprofile].Advncd10 = check;
+            _profile[_indexprofile].Advncd10Value = A10V.Value;
             ProfileSave();
         }
     }
@@ -3319,11 +3343,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a11.IsChecked == true;
+        var check = A11.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd11 = check;
-            _profile[_indexprofile].advncd11value = a11v.Value;
+            _profile[_indexprofile].Advncd11 = check;
+            _profile[_indexprofile].Advncd11Value = A11V.Value;
             ProfileSave();
         }
     }
@@ -3336,11 +3360,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a12.IsChecked == true;
+        var check = A12.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd12 = check;
-            _profile[_indexprofile].advncd12value = a12v.Value;
+            _profile[_indexprofile].Advncd12 = check;
+            _profile[_indexprofile].Advncd12Value = A12V.Value;
             ProfileSave();
         }
     }
@@ -3353,11 +3377,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a13.IsChecked == true;
+        var check = A13.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd13 = check;
-            _profile[_indexprofile].advncd1value = a13m.SelectedIndex;
+            _profile[_indexprofile].Advncd13 = check;
+            _profile[_indexprofile].Advncd1Value = A13M.SelectedIndex;
             ProfileSave();
         }
     }
@@ -3371,11 +3395,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD2_8.IsChecked == true;
+        var check = Ccd28.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper15 = check;
-            _profile[_indexprofile].coper15value = CCD2_8v.Value;
+            _profile[_indexprofile].Coper15 = check;
+            _profile[_indexprofile].Coper15Value = Ccd28V.Value;
             ProfileSave();
         }
     }
@@ -3388,11 +3412,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD2_7.IsChecked == true;
+        var check = Ccd27.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper14 = check;
-            _profile[_indexprofile].coper14value = CCD2_7v.Value;
+            _profile[_indexprofile].Coper14 = check;
+            _profile[_indexprofile].Coper14Value = Ccd27V.Value;
             ProfileSave();
         }
     }
@@ -3405,11 +3429,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD2_6.IsChecked == true;
+        var check = Ccd26.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper13 = check;
-            _profile[_indexprofile].coper13value = CCD2_6v.Value;
+            _profile[_indexprofile].Coper13 = check;
+            _profile[_indexprofile].Coper13Value = Ccd26V.Value;
             ProfileSave();
         }
     }
@@ -3422,11 +3446,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD2_5.IsChecked == true;
+        var check = Ccd25.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper12 = check;
-            _profile[_indexprofile].coper12value = CCD2_5v.Value;
+            _profile[_indexprofile].Coper12 = check;
+            _profile[_indexprofile].Coper12Value = Ccd25V.Value;
             ProfileSave();
         }
     }
@@ -3439,11 +3463,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD2_4.IsChecked == true;
+        var check = Ccd24.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper11 = check;
-            _profile[_indexprofile].coper11value = CCD2_4v.Value;
+            _profile[_indexprofile].Coper11 = check;
+            _profile[_indexprofile].Coper11Value = Ccd24V.Value;
             ProfileSave();
         }
     }
@@ -3456,11 +3480,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD2_3.IsChecked == true;
+        var check = Ccd23.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper10 = check;
-            _profile[_indexprofile].coper10value = CCD2_3v.Value;
+            _profile[_indexprofile].Coper10 = check;
+            _profile[_indexprofile].Coper10Value = Ccd23V.Value;
             ProfileSave();
         }
     }
@@ -3473,11 +3497,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD2_2.IsChecked == true;
+        var check = Ccd22.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper9 = check;
-            _profile[_indexprofile].coper9value = CCD2_2v.Value;
+            _profile[_indexprofile].Coper9 = check;
+            _profile[_indexprofile].Coper9Value = Ccd22V.Value;
             ProfileSave();
         }
     }
@@ -3490,11 +3514,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD2_1.IsChecked == true;
+        var check = Ccd21.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper8 = check;
-            _profile[_indexprofile].coper8value = CCD2_1v.Value;
+            _profile[_indexprofile].Coper8 = check;
+            _profile[_indexprofile].Coper8Value = Ccd21V.Value;
             ProfileSave();
         }
     }
@@ -3507,11 +3531,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD1_8.IsChecked == true;
+        var check = Ccd18.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper7 = check;
-            _profile[_indexprofile].coper7value = CCD1_8v.Value;
+            _profile[_indexprofile].Coper7 = check;
+            _profile[_indexprofile].Coper7Value = Ccd18V.Value;
             ProfileSave();
         }
     }
@@ -3524,11 +3548,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD1_7.IsChecked == true;
+        var check = Ccd17.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper6 = check;
-            _profile[_indexprofile].coper6value = CCD1_7v.Value;
+            _profile[_indexprofile].Coper6 = check;
+            _profile[_indexprofile].Coper6Value = Ccd17V.Value;
             ProfileSave();
         }
     }
@@ -3541,11 +3565,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD1_6.IsChecked == true;
+        var check = Ccd16.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper5 = check;
-            _profile[_indexprofile].coper5value = CCD1_6v.Value;
+            _profile[_indexprofile].Coper5 = check;
+            _profile[_indexprofile].Coper5Value = Ccd16V.Value;
             ProfileSave();
         }
     }
@@ -3558,11 +3582,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD1_5.IsChecked == true;
+        var check = Ccd15.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper4 = check;
-            _profile[_indexprofile].coper4value = CCD1_5v.Value;
+            _profile[_indexprofile].Coper4 = check;
+            _profile[_indexprofile].Coper4Value = Ccd15V.Value;
             ProfileSave();
         }
     }
@@ -3575,11 +3599,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD1_4.IsChecked == true;
+        var check = Ccd14.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper3 = check;
-            _profile[_indexprofile].coper3value = CCD1_4v.Value;
+            _profile[_indexprofile].Coper3 = check;
+            _profile[_indexprofile].Coper3Value = Ccd14V.Value;
             ProfileSave();
         }
     }
@@ -3592,11 +3616,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD1_3.IsChecked == true;
+        var check = Ccd13.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper2 = check;
-            _profile[_indexprofile].coper2value = CCD1_3v.Value;
+            _profile[_indexprofile].Coper2 = check;
+            _profile[_indexprofile].Coper2Value = Ccd13V.Value;
             ProfileSave();
         }
     }
@@ -3609,11 +3633,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD1_2.IsChecked == true;
+        var check = Ccd12.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper1 = check;
-            _profile[_indexprofile].coper1value = CCD1_2v.Value;
+            _profile[_indexprofile].Coper1 = check;
+            _profile[_indexprofile].Coper1Value = Ccd12V.Value;
             ProfileSave();
         }
     }
@@ -3626,11 +3650,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD1_1.IsChecked == true;
+        var check = Ccd11.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper0 = check;
-            _profile[_indexprofile].coper0value = CCD1_1v.Value;
+            _profile[_indexprofile].Coper0 = check;
+            _profile[_indexprofile].Coper0Value = Ccd11V.Value;
             ProfileSave();
         }
     }
@@ -3646,8 +3670,8 @@ public sealed partial class ПараметрыPage
         var check = O1.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coall = check;
-            _profile[_indexprofile].coallvalue = O1v.Value;
+            _profile[_indexprofile].Coall = check;
+            _profile[_indexprofile].Coallvalue = O1V.Value;
             ProfileSave();
         }
     }
@@ -3663,8 +3687,8 @@ public sealed partial class ПараметрыPage
         var check = O2.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cogfx = check;
-            _profile[_indexprofile].cogfxvalue = O2v.Value;
+            _profile[_indexprofile].Cogfx = check;
+            _profile[_indexprofile].Cogfxvalue = O2V.Value;
             ProfileSave();
         }
     }
@@ -3676,7 +3700,7 @@ public sealed partial class ПараметрыPage
             return;
         }
 
-        if (CCD_CO_Mode.SelectedIndex > 0 && CCD_CO_Mode_Sel.IsChecked == true)
+        if (CcdCoMode.SelectedIndex > 0 && CcdCoModeSel.IsChecked == true)
         {
             HideDisabledCurveOptimizedParameters(true); //Оставить параметры изменения кривой
         }
@@ -3686,11 +3710,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = CCD_CO_Mode_Sel.IsChecked == true;
+        var check = CcdCoModeSel.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].comode = check;
-            _profile[_indexprofile].coprefmode = CCD_CO_Mode.SelectedIndex;
+            _profile[_indexprofile].Comode = check;
+            _profile[_indexprofile].Coprefmode = CcdCoMode.SelectedIndex;
             ProfileSave();
         }
     }
@@ -3707,7 +3731,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu1value = c1v.Value;
+            _profile[_indexprofile].Cpu1Value = C1V.Value;
             ProfileSave();
         }
     }
@@ -3723,7 +3747,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu2value = c2v.Value;
+            _profile[_indexprofile].Cpu2Value = C2V.Value;
             ProfileSave();
         }
     }
@@ -3739,7 +3763,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu3value = c3v.Value;
+            _profile[_indexprofile].Cpu3Value = C3V.Value;
             ProfileSave();
         }
     }
@@ -3755,7 +3779,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu4value = c4v.Value;
+            _profile[_indexprofile].Cpu4Value = C4V.Value;
             ProfileSave();
         }
     }
@@ -3771,7 +3795,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu5value = c5v.Value;
+            _profile[_indexprofile].Cpu5Value = C5V.Value;
             ProfileSave();
         }
     }
@@ -3787,7 +3811,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu6value = c6v.Value;
+            _profile[_indexprofile].Cpu6Value = C6V.Value;
             ProfileSave();
         }
     }
@@ -3803,7 +3827,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm1value = V1V.Value;
+            _profile[_indexprofile].Vrm1Value = V1V.Value;
             ProfileSave();
         }
     }
@@ -3818,7 +3842,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm2value = V2V.Value;
+            _profile[_indexprofile].Vrm2Value = V2V.Value;
             ProfileSave();
         }
     }
@@ -3833,7 +3857,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm3value = V3V.Value;
+            _profile[_indexprofile].Vrm3Value = V3V.Value;
             ProfileSave();
         }
     }
@@ -3848,7 +3872,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm4value = V4V.Value;
+            _profile[_indexprofile].Vrm4Value = V4V.Value;
             ProfileSave();
         }
     }
@@ -3863,7 +3887,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm5value = V5V.Value;
+            _profile[_indexprofile].Vrm5Value = V5V.Value;
             ProfileSave();
         }
     }
@@ -3878,7 +3902,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm6value = V6V.Value;
+            _profile[_indexprofile].Vrm6Value = V6V.Value;
             ProfileSave();
         }
     }
@@ -3893,7 +3917,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm7value = V7V.Value;
+            _profile[_indexprofile].Vrm7Value = V7V.Value;
             ProfileSave();
         }
     }
@@ -3909,7 +3933,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu1value = g1v.Value;
+            _profile[_indexprofile].Gpu1Value = G1V.Value;
             ProfileSave();
         }
     }
@@ -3924,7 +3948,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu2value = g2v.Value;
+            _profile[_indexprofile].Gpu2Value = G2V.Value;
             ProfileSave();
         }
     }
@@ -3939,7 +3963,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu3value = g3v.Value;
+            _profile[_indexprofile].Gpu3Value = G3V.Value;
             ProfileSave();
         }
     }
@@ -3954,7 +3978,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu4value = g4v.Value;
+            _profile[_indexprofile].Gpu4Value = G4V.Value;
             ProfileSave();
         }
     }
@@ -3969,7 +3993,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu5value = g5v.Value;
+            _profile[_indexprofile].Gpu5Value = G5V.Value;
             ProfileSave();
         }
     }
@@ -3984,7 +4008,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu6value = g6v.Value;
+            _profile[_indexprofile].Gpu6Value = G6V.Value;
             ProfileSave();
         }
     }
@@ -3999,7 +4023,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu7value = g7v.Value;
+            _profile[_indexprofile].Gpu7Value = G7V.Value;
             ProfileSave();
         }
     }
@@ -4014,7 +4038,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu8value = g8v.Value;
+            _profile[_indexprofile].Gpu8Value = G8V.Value;
             ProfileSave();
         }
     }
@@ -4029,7 +4053,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu9value = g9v.Value;
+            _profile[_indexprofile].Gpu9Value = G9V.Value;
             ProfileSave();
         }
     }
@@ -4044,7 +4068,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu10value = g10v.Value;
+            _profile[_indexprofile].Gpu10Value = G10V.Value;
             ProfileSave();
         }
     }
@@ -4061,7 +4085,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd4value = a4v.Value;
+            _profile[_indexprofile].Advncd4Value = A4V.Value;
             ProfileSave();
         }
     }
@@ -4076,7 +4100,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd5value = a5v.Value;
+            _profile[_indexprofile].Advncd5Value = A5V.Value;
             ProfileSave();
         }
     }
@@ -4091,7 +4115,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd6value = a6v.Value;
+            _profile[_indexprofile].Advncd6Value = A6V.Value;
             ProfileSave();
         }
     }
@@ -4106,7 +4130,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd7value = a7v.Value;
+            _profile[_indexprofile].Advncd7Value = A7V.Value;
             ProfileSave();
         }
     }
@@ -4121,7 +4145,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd8value = a8v.Value;
+            _profile[_indexprofile].Advncd8Value = A8V.Value;
             ProfileSave();
         }
     }
@@ -4136,7 +4160,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd9value = a9v.Value;
+            _profile[_indexprofile].Advncd9Value = A9V.Value;
             ProfileSave();
         }
     }
@@ -4151,7 +4175,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd10value = a10v.Value;
+            _profile[_indexprofile].Advncd10Value = A10V.Value;
             ProfileSave();
         }
     }
@@ -4166,7 +4190,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd11value = a11v.Value;
+            _profile[_indexprofile].Advncd11Value = A11V.Value;
             ProfileSave();
         }
     }
@@ -4181,7 +4205,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd12value = a12v.Value;
+            _profile[_indexprofile].Advncd12Value = A12V.Value;
             ProfileSave();
         }
     }
@@ -4196,7 +4220,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd13value = a13m.SelectedIndex;
+            _profile[_indexprofile].Advncd13Value = A13M.SelectedIndex;
             ProfileSave();
         }
     }
@@ -4210,11 +4234,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = c7.IsChecked == true;
+        var check = C7.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu7 = check;
-            _profile[_indexprofile].cpu7value = c7v.Value;
+            _profile[_indexprofile].Cpu7 = check;
+            _profile[_indexprofile].Cpu7Value = C7V.Value;
             ProfileSave();
         }
     }
@@ -4229,7 +4253,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu7value = c7v.Value;
+            _profile[_indexprofile].Cpu7Value = C7V.Value;
             ProfileSave();
         }
     }
@@ -4242,11 +4266,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = g16.IsChecked == true;
+        var check = G16.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu16 = check;
-            _profile[_indexprofile].gpu16value = g16m.SelectedIndex;
+            _profile[_indexprofile].Gpu16 = check;
+            _profile[_indexprofile].Gpu16Value = G16M.SelectedIndex;
             ProfileSave();
         }
     }
@@ -4261,7 +4285,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu16value = g16m.SelectedIndex;
+            _profile[_indexprofile].Gpu16Value = G16M.SelectedIndex;
             ProfileSave();
         }
     }
@@ -4274,11 +4298,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a14.IsChecked == true;
+        var check = A14.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd14 = check;
-            _profile[_indexprofile].advncd14value = a14m.SelectedIndex;
+            _profile[_indexprofile].Advncd14 = check;
+            _profile[_indexprofile].Advncd14Value = A14M.SelectedIndex;
             ProfileSave();
         }
     }
@@ -4293,7 +4317,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd14value = a14m.SelectedIndex;
+            _profile[_indexprofile].Advncd14Value = A14M.SelectedIndex;
             ProfileSave();
         }
     }
@@ -4306,11 +4330,11 @@ public sealed partial class ПараметрыPage
         }
 
         ProfileLoad();
-        var check = a15.IsChecked == true;
+        var check = A15.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd15 = check;
-            _profile[_indexprofile].advncd15value = a15v.Value;
+            _profile[_indexprofile].Advncd15 = check;
+            _profile[_indexprofile].Advncd15Value = A15V.Value;
             ProfileSave();
         }
     }
@@ -4325,7 +4349,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].advncd15value = a15v.Value;
+            _profile[_indexprofile].Advncd15Value = A15V.Value;
             ProfileSave();
         }
     }
@@ -4341,7 +4365,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coallvalue = O1v.Value;
+            _profile[_indexprofile].Coallvalue = O1V.Value;
             ProfileSave();
         }
     }
@@ -4356,7 +4380,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cogfxvalue = O2v.Value;
+            _profile[_indexprofile].Cogfxvalue = O2V.Value;
             ProfileSave();
         }
     }
@@ -4371,7 +4395,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper0value = CCD1_1v.Value;
+            _profile[_indexprofile].Coper0Value = Ccd11V.Value;
             ProfileSave();
         }
     }
@@ -4386,7 +4410,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper1value = CCD1_2v.Value;
+            _profile[_indexprofile].Coper1Value = Ccd12V.Value;
             ProfileSave();
         }
     }
@@ -4401,7 +4425,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper2value = CCD1_3v.Value;
+            _profile[_indexprofile].Coper2Value = Ccd13V.Value;
             ProfileSave();
         }
     }
@@ -4416,7 +4440,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper3value = CCD1_4v.Value;
+            _profile[_indexprofile].Coper3Value = Ccd14V.Value;
             ProfileSave();
         }
     }
@@ -4431,7 +4455,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper4value = CCD1_5v.Value;
+            _profile[_indexprofile].Coper4Value = Ccd15V.Value;
             ProfileSave();
         }
     }
@@ -4446,7 +4470,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper5value = CCD1_6v.Value;
+            _profile[_indexprofile].Coper5Value = Ccd16V.Value;
             ProfileSave();
         }
     }
@@ -4461,7 +4485,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper6value = CCD1_7v.Value;
+            _profile[_indexprofile].Coper6Value = Ccd17V.Value;
             ProfileSave();
         }
     }
@@ -4476,7 +4500,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper7value = CCD1_8v.Value;
+            _profile[_indexprofile].Coper7Value = Ccd18V.Value;
             ProfileSave();
         }
     }
@@ -4491,7 +4515,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper8value = CCD2_1v.Value;
+            _profile[_indexprofile].Coper8Value = Ccd21V.Value;
             ProfileSave();
         }
     }
@@ -4506,7 +4530,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper9value = CCD2_2v.Value;
+            _profile[_indexprofile].Coper9Value = Ccd22V.Value;
             ProfileSave();
         }
     }
@@ -4521,7 +4545,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper10value = CCD2_3v.Value;
+            _profile[_indexprofile].Coper10Value = Ccd23V.Value;
             ProfileSave();
         }
     }
@@ -4536,7 +4560,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper11value = CCD2_4v.Value;
+            _profile[_indexprofile].Coper11Value = Ccd24V.Value;
             ProfileSave();
         }
     }
@@ -4551,7 +4575,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper12value = CCD2_5v.Value;
+            _profile[_indexprofile].Coper12Value = Ccd25V.Value;
             ProfileSave();
         }
     }
@@ -4566,7 +4590,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper13value = CCD2_6v.Value;
+            _profile[_indexprofile].Coper13Value = Ccd26V.Value;
             ProfileSave();
         }
     }
@@ -4581,7 +4605,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper14value = CCD2_7v.Value;
+            _profile[_indexprofile].Coper14Value = Ccd27V.Value;
             ProfileSave();
         }
     }
@@ -4596,7 +4620,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coper15value = CCD2_8v.Value;
+            _profile[_indexprofile].Coper15Value = Ccd28V.Value;
             ProfileSave();
         }
     }
@@ -4608,7 +4632,7 @@ public sealed partial class ПараметрыPage
             return;
         }
 
-        if (CCD_CO_Mode.SelectedIndex > 0 && CCD_CO_Mode_Sel.IsChecked == true)
+        if (CcdCoMode.SelectedIndex > 0 && CcdCoModeSel.IsChecked == true)
         {
             HideDisabledCurveOptimizedParameters(true); //Оставить параметры изменения кривой
         }
@@ -4620,7 +4644,7 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].coprefmode = CCD_CO_Mode.SelectedIndex;
+            _profile[_indexprofile].Coprefmode = CcdCoMode.SelectedIndex;
             ProfileSave();
         }
     }
@@ -4628,45 +4652,46 @@ public sealed partial class ПараметрыPage
     //Кнопка применить, итоговый выход, Zen States-Core SMU Command
     private async void Apply_Click(object sender, RoutedEventArgs e)
     {
-        var isBristol = _cpu?.info.codeName == Cpu.CodeName.BristolRidge;
         try
         {
+            var isBristol = _cpu?.info.codeName == Cpu.CodeName.BristolRidge;
+
             if (NormalUserMode.Visibility == Visibility.Visible)
             {
-                if (c1.IsChecked == true)
+                if (C1.IsChecked == true)
                 {
-                    _adjline += " --tctl-temp=" + c1v.Value + (isBristol ? "000" : string.Empty);
+                    _adjline += " --tctl-temp=" + C1V.Value + (isBristol ? "000" : string.Empty);
                 }
 
-                if (c2.IsChecked == true)
+                if (C2.IsChecked == true)
                 {
-                    var stapmBoostMillisecondsBristol = c5v.Value * 1000 < 180000 ? c5v.Value * 1000 : 180000;
-                    _adjline += " --stapm-limit=" + c2v.Value + "000" + (isBristol ? ",2," + stapmBoostMillisecondsBristol : string.Empty);
+                    var stapmBoostMillisecondsBristol = C5V.Value * 1000 < 180000 ? C5V.Value * 1000 : 180000;
+                    _adjline += " --stapm-limit=" + C2V.Value + "000" + (isBristol ? ",2," + stapmBoostMillisecondsBristol : string.Empty);
                 }
 
-                if (c3.IsChecked == true)
+                if (C3.IsChecked == true)
                 {
-                    _adjline += " --fast-limit=" + c3v.Value + "000";
+                    _adjline += " --fast-limit=" + C3V.Value + "000";
                 }
 
-                if (c4.IsChecked == true)
+                if (C4.IsChecked == true)
                 {
-                    _adjline += " --slow-limit=" + c4v.Value + "000" + (isBristol ? "," + c4v.Value + "000,0" : string.Empty);
+                    _adjline += " --slow-limit=" + C4V.Value + "000" + (isBristol ? "," + C4V.Value + "000,0" : string.Empty);
                 }
 
-                if (c5.IsChecked == true)
+                if (C5.IsChecked == true)
                 {
-                    _adjline += " --stapm-time=" + c5v.Value;
+                    _adjline += " --stapm-time=" + C5V.Value;
                 }
 
-                if (c6.IsChecked == true)
+                if (C6.IsChecked == true)
                 {
-                    _adjline += " --slow-time=" + c6v.Value;
+                    _adjline += " --slow-time=" + C6V.Value;
                 }
 
-                if (c7.IsChecked == true)
+                if (C7.IsChecked == true)
                 {
-                    _adjline += " --cHTC-temp=" + c7v.Value;
+                    _adjline += " --cHTC-temp=" + C7V.Value;
                 }
 
                 //vrm
@@ -4707,153 +4732,153 @@ public sealed partial class ПараметрыPage
                 }
 
                 //gpu
-                if (g1.IsChecked == true)
+                if (G1.IsChecked == true)
                 {
-                    _adjline += " --min-socclk-frequency=" + g1v.Value;
+                    _adjline += " --min-socclk-frequency=" + G1V.Value;
                 }
 
-                if (g2.IsChecked == true)
+                if (G2.IsChecked == true)
                 {
-                    _adjline += " --max-socclk-frequency=" + g2v.Value;
+                    _adjline += " --max-socclk-frequency=" + G2V.Value;
                 }
 
-                if (g3.IsChecked == true)
+                if (G3.IsChecked == true)
                 {
-                    _adjline += " --min-fclk-frequency=" + g3v.Value;
+                    _adjline += " --min-fclk-frequency=" + G3V.Value;
                 }
 
-                if (g4.IsChecked == true)
+                if (G4.IsChecked == true)
                 {
-                    _adjline += " --max-fclk-frequency=" + g4v.Value;
+                    _adjline += " --max-fclk-frequency=" + G4V.Value;
                 }
 
-                if (g5.IsChecked == true)
+                if (G5.IsChecked == true)
                 {
-                    _adjline += " --min-vcn=" + g5v.Value;
+                    _adjline += " --min-vcn=" + G5V.Value;
                 }
 
-                if (g6.IsChecked == true)
+                if (G6.IsChecked == true)
                 {
-                    _adjline += " --max-vcn=" + g6v.Value;
+                    _adjline += " --max-vcn=" + G6V.Value;
                 }
 
-                if (g7.IsChecked == true)
+                if (G7.IsChecked == true)
                 {
-                    _adjline += " --min-lclk=" + g7v.Value;
+                    _adjline += " --min-lclk=" + G7V.Value;
                 }
 
-                if (g8.IsChecked == true)
+                if (G8.IsChecked == true)
                 {
-                    _adjline += " --max-lclk=" + g8v.Value;
+                    _adjline += " --max-lclk=" + G8V.Value;
                 }
 
-                if (g9.IsChecked == true)
+                if (G9.IsChecked == true)
                 {
-                    _adjline += " --min-gfxclk=" + g9v.Value;
+                    _adjline += " --min-gfxclk=" + G9V.Value;
                 }
 
-                if (g10.IsChecked == true)
+                if (G10.IsChecked == true)
                 {
-                    _adjline += " --max-gfxclk=" + g10v.Value;
+                    _adjline += " --max-gfxclk=" + G10V.Value;
                 }
 
-                if (g16.IsChecked == true)
+                if (G16.IsChecked == true)
                 {
                     _cpu ??= CpuSingleton.GetInstance();
                     _adjline += _cpu.info.codeName switch
                     {
-                        Cpu.CodeName.RavenRidge or Cpu.CodeName.FireFlight or Cpu.CodeName.Cezanne or Cpu.CodeName.Renoir or Cpu.CodeName.Lucienne => g16m.SelectedIndex != 0 ? " --disable-feature=0,32" : " --enable-feature=0,32",
-                        Cpu.CodeName.Rembrandt or Cpu.CodeName.Mendocino or Cpu.CodeName.Phoenix or Cpu.CodeName.Phoenix2 or Cpu.CodeName.HawkPoint or Cpu.CodeName.StrixPoint or Cpu.CodeName.StrixHalo or Cpu.CodeName.KrackanPoint => g16m.SelectedIndex != 0 ? " --disable-feature=0,16" : " --enable-feature=0,16",
-                        Cpu.CodeName.Raphael or Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.StormPeak or Cpu.CodeName.DragonRange or Cpu.CodeName.Bergamo => g16m.SelectedIndex != 0 ? " --disable-feature=128" : " --enable-feature=128",
-                        _ => g16m.SelectedIndex != 0 ? " --setcpu-freqto-ramstate=0" : " --stopcpu-freqto-ramstate=0",
+                        Cpu.CodeName.RavenRidge or Cpu.CodeName.FireFlight or Cpu.CodeName.Cezanne or Cpu.CodeName.Renoir or Cpu.CodeName.Lucienne => G16M.SelectedIndex != 0 ? " --disable-feature=0,32" : " --enable-feature=0,32",
+                        Cpu.CodeName.Rembrandt or Cpu.CodeName.Mendocino or Cpu.CodeName.Phoenix or Cpu.CodeName.Phoenix2 or Cpu.CodeName.HawkPoint or Cpu.CodeName.StrixPoint or Cpu.CodeName.StrixHalo or Cpu.CodeName.KrackanPoint => G16M.SelectedIndex != 0 ? " --disable-feature=0,16" : " --enable-feature=0,16",
+                        Cpu.CodeName.Raphael or Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.StormPeak or Cpu.CodeName.DragonRange or Cpu.CodeName.Bergamo => G16M.SelectedIndex != 0 ? " --disable-feature=128" : " --enable-feature=128",
+                        _ => G16M.SelectedIndex != 0 ? " --setcpu-freqto-ramstate=0" : " --stopcpu-freqto-ramstate=0",
                     };
                 }
 
                 //advanced
 
-                if (a4.IsChecked == true)
+                if (A4.IsChecked == true)
                 {
-                    _adjline += " --psi3cpu_current=" + a4v.Value + "000";
+                    _adjline += " --psi3cpu_current=" + A4V.Value + "000";
                 }
 
-                if (a5.IsChecked == true)
+                if (A5.IsChecked == true)
                 {
-                    _adjline += " --psi3gfx_current=" + a5v.Value + "000";
+                    _adjline += " --psi3gfx_current=" + A5V.Value + "000";
                 }
 
-                if (a6.IsChecked == true)
+                if (A6.IsChecked == true)
                 {
-                    _adjline += " --apu-skin-temp=" + a6v.Value * 256;
+                    _adjline += " --apu-skin-temp=" + A6V.Value * 256;
                 }
 
-                if (a7.IsChecked == true)
+                if (A7.IsChecked == true)
                 {
-                    _adjline += " --dgpu-skin-temp=" + a7v.Value * 256;
+                    _adjline += " --dgpu-skin-temp=" + A7V.Value * 256;
                 }
 
-                if (a8.IsChecked == true)
+                if (A8.IsChecked == true)
                 {
-                    _adjline += " --apu-slow-limit=" + a8v.Value + "000";
+                    _adjline += " --apu-slow-limit=" + A8V.Value + "000";
                 }
 
-                if (a9.IsChecked == true)
+                if (A9.IsChecked == true)
                 {
-                    _adjline += " --skin-temp-limit=" + a9v.Value + "000";
+                    _adjline += " --skin-temp-limit=" + A9V.Value + "000";
 
                     if (_isStapmTuneRequired)
                     {
-                        _adjline += " --stapm-limit=" + a9v.Value + "000";
+                        _adjline += " --stapm-limit=" + A9V.Value + "000";
                     }
                 }
 
-                if (a10.IsChecked == true)
+                if (A10.IsChecked == true)
                 {
-                    var val = 0x480000 | (int)a10v.Value; // Always at 1.1V
+                    var val = 0x480000 | (int)A10V.Value; // Always at 1.1V
                     _cpu ??= CpuSingleton.GetInstance();
                     _adjline += _cpu.info.codeName switch
                     {
                         Cpu.CodeName.RavenRidge or Cpu.CodeName.FireFlight or Cpu.CodeName.Dali or Cpu.CodeName.Picasso => " --set-gpuclockoverdrive-byvid=" + val,
-                        _ => " --gfx-clk=" + a10v.Value,
+                        _ => " --gfx-clk=" + A10V.Value,
                     };
                 }
 
-                if (a11.IsChecked == true)
+                if (A11.IsChecked == true)
                 {
-                    _adjline += " --oc-clk=" + a11v.Value;
+                    _adjline += " --oc-clk=" + A11V.Value;
                 }
 
-                if (a12.IsChecked == true)
+                if (A12.IsChecked == true)
                 {
-                    _adjline += " --oc-volt=" + Math.Round((1.55 - a12v.Value / 1000) / 0.00625);
+                    _adjline += " --oc-volt=" + Math.Round((1.55 - A12V.Value / 1000) / 0.00625);
                 }
 
 
-                if (a13.IsChecked == true)
+                if (A13.IsChecked == true)
                 {
-                    _adjline += a13m.SelectedIndex switch
+                    _adjline += A13M.SelectedIndex switch
                     {
                         2 => " --power-saving=1",
                         _ => " --max-performance=1",
                     };
                 }
 
-                if (a14.IsChecked == true)
+                if (A14.IsChecked == true)
                 {
-                    _adjline += a14m.SelectedIndex switch
+                    _adjline += A14M.SelectedIndex switch
                     {
                         1 => " --enable-oc=1",
                         _ => " --disable-oc=1",
                     };
                 }
 
-                if (a15.IsChecked == true)
+                if (A15.IsChecked == true)
                 {
-                    _adjline += " --pbo-scalar=" + a15v.Value * 100;
+                    _adjline += " --pbo-scalar=" + A15V.Value * 100;
                 }
 
                 if (O1.IsChecked == true)
                 {
-                    _adjline += (O1v.Value >= 0.0) ? $" --set-coall={O1v.Value} " : $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)O1v.Value))} ";
+                    _adjline += (O1V.Value >= 0.0) ? $" --set-coall={O1V.Value} " : $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)O1V.Value))} ";
                 }
 
                 if (O2.IsChecked == true)
@@ -4868,7 +4893,7 @@ public sealed partial class ПараметрыPage
                         {
                             if (_cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
                             {
-                                _cpu.SetPsmMarginSingleCore(GetCoreMask(i), Convert.ToInt32(O2v.Value));
+                                _cpu.SetPsmMarginSingleCore(GetCoreMask(i), Convert.ToInt32(O2V.Value));
                             }
                         }
                     }
@@ -4877,236 +4902,236 @@ public sealed partial class ПараметрыPage
                     _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, true);
                 }
 
-                if (CCD_CO_Mode_Sel.IsChecked == true &&
-                    CCD_CO_Mode.SelectedIndex != 0) // Если пользователь выбрал хотя-бы один режим и ...
+                if (CcdCoModeSel.IsChecked == true &&
+                    CcdCoMode.SelectedIndex != 0) // Если пользователь выбрал хотя-бы один режим и ...
                 {
-                    if (CCD_CO_Mode.SelectedIndex == 1) // Если выбран режим ноутбук
+                    if (CcdCoMode.SelectedIndex == 1) // Если выбран режим ноутбук
                     {
                         if (_cpu?.info.codeName == Cpu.CodeName.DragonRange) // Так как там как у компьютеров
                         {
-                            if (CCD1_1.IsChecked == true)
+                            if (Ccd11.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={0 | ((int)CCD1_1v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={0 | ((int)Ccd11V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_2.IsChecked == true)
+                            if (Ccd12.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={1048576 | ((int)CCD1_2v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={1048576 | ((int)Ccd12V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_3.IsChecked == true)
+                            if (Ccd13.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={2097152 | ((int)CCD1_3v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={2097152 | ((int)Ccd13V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_4.IsChecked == true)
+                            if (Ccd14.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={3145728 | ((int)CCD1_4v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={3145728 | ((int)Ccd14V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_5.IsChecked == true)
+                            if (Ccd15.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={4194304 | ((int)CCD1_5v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={4194304 | ((int)Ccd15V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_6.IsChecked == true)
+                            if (Ccd16.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={5242880 | ((int)CCD1_6v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={5242880 | ((int)Ccd16V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_7.IsChecked == true)
+                            if (Ccd17.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={6291456 | ((int)CCD1_7v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={6291456 | ((int)Ccd17V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_8.IsChecked == true)
+                            if (Ccd18.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={7340032 | ((int)CCD1_8v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={7340032 | ((int)Ccd18V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD2_1.IsChecked == true)
+                            if (Ccd21.IsChecked == true)
                             {
                                 _adjline +=
-                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)CCD2_1v.Value & 0xFFFF)} ";
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)Ccd21V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD2_2.IsChecked == true)
+                            if (Ccd22.IsChecked == true)
                             {
                                 _adjline +=
-                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)CCD2_2v.Value & 0xFFFF)} ";
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)Ccd22V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD2_3.IsChecked == true)
+                            if (Ccd23.IsChecked == true)
                             {
                                 _adjline +=
-                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)CCD2_3v.Value & 0xFFFF)} ";
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)Ccd23V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD2_4.IsChecked == true)
+                            if (Ccd24.IsChecked == true)
                             {
                                 _adjline +=
-                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)CCD2_4v.Value & 0xFFFF)} ";
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)Ccd24V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD2_5.IsChecked == true)
+                            if (Ccd25.IsChecked == true)
                             {
                                 _adjline +=
-                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)CCD2_5v.Value & 0xFFFF)} ";
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)Ccd25V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD2_6.IsChecked == true)
+                            if (Ccd26.IsChecked == true)
                             {
                                 _adjline +=
-                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)CCD2_6v.Value & 0xFFFF)} ";
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)Ccd26V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD2_7.IsChecked == true)
+                            if (Ccd27.IsChecked == true)
                             {
                                 _adjline +=
-                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)CCD2_7v.Value & 0xFFFF)} ";
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)Ccd27V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD2_8.IsChecked == true)
+                            if (Ccd28.IsChecked == true)
                             {
                                 _adjline +=
-                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)CCD2_8v.Value & 0xFFFF)} ";
+                                    $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)Ccd28V.Value & 0xFFFF)} ";
                             }
                         }
                         else
                         {
-                            if (CCD1_1.IsChecked == true)
+                            if (Ccd11.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={0 | ((int)CCD1_1v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={0 | ((int)Ccd11V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_2.IsChecked == true)
+                            if (Ccd12.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={(1 << 20) | ((int)CCD1_2v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={(1 << 20) | ((int)Ccd12V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_3.IsChecked == true)
+                            if (Ccd13.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={(2 << 20) | ((int)CCD1_3v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={(2 << 20) | ((int)Ccd13V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_4.IsChecked == true)
+                            if (Ccd14.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={(3 << 20) | ((int)CCD1_4v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={(3 << 20) | ((int)Ccd14V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_5.IsChecked == true)
+                            if (Ccd15.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={(4 << 20) | ((int)CCD1_5v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={(4 << 20) | ((int)Ccd15V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_6.IsChecked == true)
+                            if (Ccd16.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={(5 << 20) | ((int)CCD1_6v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={(5 << 20) | ((int)Ccd16V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_7.IsChecked == true)
+                            if (Ccd17.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={(6 << 20) | ((int)CCD1_7v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={(6 << 20) | ((int)Ccd17V.Value & 0xFFFF)} ";
                             }
 
-                            if (CCD1_8.IsChecked == true)
+                            if (Ccd18.IsChecked == true)
                             {
-                                _adjline += $" --set-coper={(7 << 20) | ((int)CCD1_8v.Value & 0xFFFF)} ";
+                                _adjline += $" --set-coper={(7 << 20) | ((int)Ccd18V.Value & 0xFFFF)} ";
                             }
                         }
                     }
-                    else if (CCD_CO_Mode.SelectedIndex == 2) //Если выбран режим компьютер
+                    else if (CcdCoMode.SelectedIndex == 2) //Если выбран режим компьютер
                     {
-                        if (CCD1_1.IsChecked == true)
+                        if (Ccd11.IsChecked == true)
                         {
-                            _adjline += $" --set-coper={0 | ((int)CCD1_1v.Value & 0xFFFF)} ";
+                            _adjline += $" --set-coper={0 | ((int)Ccd11V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD1_2.IsChecked == true)
+                        if (Ccd12.IsChecked == true)
                         {
-                            _adjline += $" --set-coper={1048576 | ((int)CCD1_2v.Value & 0xFFFF)} ";
+                            _adjline += $" --set-coper={1048576 | ((int)Ccd12V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD1_3.IsChecked == true)
+                        if (Ccd13.IsChecked == true)
                         {
-                            _adjline += $" --set-coper={2097152 | ((int)CCD1_3v.Value & 0xFFFF)} ";
+                            _adjline += $" --set-coper={2097152 | ((int)Ccd13V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD1_4.IsChecked == true)
+                        if (Ccd14.IsChecked == true)
                         {
-                            _adjline += $" --set-coper={3145728 | ((int)CCD1_4v.Value & 0xFFFF)} ";
+                            _adjline += $" --set-coper={3145728 | ((int)Ccd14V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD1_5.IsChecked == true)
+                        if (Ccd15.IsChecked == true)
                         {
-                            _adjline += $" --set-coper={4194304 | ((int)CCD1_5v.Value & 0xFFFF)} ";
+                            _adjline += $" --set-coper={4194304 | ((int)Ccd15V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD1_6.IsChecked == true)
+                        if (Ccd16.IsChecked == true)
                         {
-                            _adjline += $" --set-coper={5242880 | ((int)CCD1_6v.Value & 0xFFFF)} ";
+                            _adjline += $" --set-coper={5242880 | ((int)Ccd16V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD1_7.IsChecked == true)
+                        if (Ccd17.IsChecked == true)
                         {
-                            _adjline += $" --set-coper={6291456 | ((int)CCD1_7v.Value & 0xFFFF)} ";
+                            _adjline += $" --set-coper={6291456 | ((int)Ccd17V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD1_8.IsChecked == true)
+                        if (Ccd18.IsChecked == true)
                         {
-                            _adjline += $" --set-coper={7340032 | ((int)CCD1_8v.Value & 0xFFFF)} ";
+                            _adjline += $" --set-coper={7340032 | ((int)Ccd18V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD2_1.IsChecked == true)
+                        if (Ccd21.IsChecked == true)
                         {
                             _adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)CCD2_1v.Value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)Ccd21V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD2_2.IsChecked == true)
+                        if (Ccd22.IsChecked == true)
                         {
                             _adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)CCD2_2v.Value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)Ccd22V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD2_3.IsChecked == true)
+                        if (Ccd23.IsChecked == true)
                         {
                             _adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)CCD2_3v.Value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)Ccd23V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD2_4.IsChecked == true)
+                        if (Ccd24.IsChecked == true)
                         {
                             _adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)CCD2_4v.Value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)Ccd24V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD2_5.IsChecked == true)
+                        if (Ccd25.IsChecked == true)
                         {
                             _adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)CCD2_5v.Value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)Ccd25V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD2_6.IsChecked == true)
+                        if (Ccd26.IsChecked == true)
                         {
                             _adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)CCD2_6v.Value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)Ccd26V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD2_7.IsChecked == true)
+                        if (Ccd27.IsChecked == true)
                         {
                             _adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)CCD2_7v.Value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)Ccd27V.Value & 0xFFFF)} ";
                         }
 
-                        if (CCD2_8.IsChecked == true)
+                        if (Ccd28.IsChecked == true)
                         {
                             _adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)CCD2_8v.Value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)Ccd28V.Value & 0xFFFF)} ";
                         }
                     }
                     else if
-                        (CCD_CO_Mode.SelectedIndex ==
+                        (CcdCoMode.SelectedIndex ==
                          3) // Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
                     {
                         _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, false);
@@ -5114,13 +5139,13 @@ public sealed partial class ПараметрыPage
                         for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
                         {
                             var checkbox = i < 8
-                                ? (CheckBox)CCD1_Grid.FindName($"CCD1_{i + 1}")
-                                : (CheckBox)CCD2_Grid.FindName($"CCD2_{i - 7}");
+                                ? (CheckBox)Ccd1Grid.FindName($"Ccd1{i + 1}")
+                                : (CheckBox)Ccd2Grid.FindName($"Ccd2{i - 7}");
                             if (checkbox != null && checkbox.IsChecked == true)
                             {
                                 var setVal = i < 8
-                                    ? (Slider)CCD1_Grid.FindName($"CCD1_{i + 1}v")
-                                    : (Slider)CCD2_Grid.FindName($"CCD2_{i - 7}v");
+                                    ? (Slider)Ccd1Grid.FindName($"Ccd1{i + 1}V")
+                                    : (Slider)Ccd2Grid.FindName($"Ccd2{i - 7}V");
                                 var mapIndex = i < 8 ? 0 : 1;
                                 if (((~_cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1) // Если ядро включено
                                 {
@@ -5136,9 +5161,9 @@ public sealed partial class ПараметрыPage
             }
 
 
-            if (SMU_Func_Enabl.IsOn)
+            if (SmuFuncEnableToggle.IsOn)
             {
-                if (Bit_0_FEATURE_CCLK_CONTROLLER.IsOn)
+                if (Bit0FeatureCclkController.IsOn)
                 {
                     _adjline += " --enable-feature=1";
                 }
@@ -5147,7 +5172,7 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=1";
                 }
 
-                if (Bit_2_FEATURE_DATA_CALCULATION.IsOn)
+                if (Bit2FeatureDataCalculation.IsOn)
                 {
                     _adjline += " --enable-feature=4";
                 }
@@ -5156,7 +5181,7 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=4";
                 }
 
-                if (Bit_3_FEATURE_PPT.IsOn)
+                if (Bit3FeaturePpt.IsOn)
                 {
                     _adjline += " --enable-feature=8";
                 }
@@ -5165,7 +5190,7 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=8";
                 }
 
-                if (Bit_4_FEATURE_TDC.IsOn)
+                if (Bit4FeatureTdc.IsOn)
                 {
                     _adjline += " --enable-feature=16";
                 }
@@ -5174,7 +5199,7 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=16";
                 }
 
-                if (Bit_5_FEATURE_THERMAL.IsOn)
+                if (Bit5FeatureThermal.IsOn)
                 {
                     _adjline += " --enable-feature=32";
                 }
@@ -5183,7 +5208,7 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=32";
                 }
 
-                if (Bit_8_FEATURE_PLL_POWER_DOWN.IsOn)
+                if (Bit8FeaturePllPowerDown.IsOn)
                 {
                     _adjline += " --enable-feature=256";
                 }
@@ -5192,7 +5217,7 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=256";
                 }
 
-                if (Bit_37_FEATURE_PROCHOT.IsOn)
+                if (Bit37FeatureProchot.IsOn)
                 {
                     _adjline += " --enable-feature=0,32";
                 }
@@ -5201,7 +5226,7 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=0,32";
                 }
 
-                if (Bit_39_FEATURE_STAPM.IsOn)
+                if (Bit39FeatureStapm.IsOn)
                 {
                     _adjline += " --enable-feature=0,128";
                 }
@@ -5210,7 +5235,7 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=0,128";
                 }
 
-                if (Bit_40_FEATURE_CORE_CSTATES.IsOn)
+                if (Bit40FeatureCoreCstates.IsOn)
                 {
                     _adjline += " --enable-feature=0,256";
                 }
@@ -5219,7 +5244,7 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=0,256";
                 }
 
-                if (Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn)
+                if (Bit41FeatureGfxDutyCycle.IsOn)
                 {
                     _adjline += " --enable-feature=0,512";
                 }
@@ -5228,7 +5253,7 @@ public sealed partial class ПараметрыPage
                     _adjline += " --disable-feature=0,512";
                 }
 
-                if (Bit_42_FEATURE_AA_MODE.IsOn)
+                if (Bit42FeatureAaMode.IsOn)
                 {
                     _adjline += " --enable-feature=0,1024";
                 }
@@ -5250,12 +5275,12 @@ public sealed partial class ПараметрыPage
                 BtnPstateWrite_Click();
             }
 
-            if (textBoxARG0 != null &&
-                textBoxARGAddress != null &&
-                textBoxCMD != null &&
-                textBoxCMDAddress != null &&
-                textBoxRSPAddress != null &&
-                EnableSMU.IsOn)
+            if (TextBoxArg0 != null &&
+                TextBoxArgAddress != null &&
+                TextBoxCmd != null &&
+                TextBoxCmdAddress != null &&
+                TextBoxRspAddress != null &&
+                EnableSmu.IsOn)
             {
                 ApplySettings(0, 0);
             }
@@ -5269,45 +5294,45 @@ public sealed partial class ПараметрыPage
 
             if (SettingsViewModel.VersionId != 5) // Если версия не Debug Lanore
             {
-                Apply_tooltip.Title = "Apply_Success".GetLocalized();
-                Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized();
+                ApplyTooltip.Title = "Apply_Success".GetLocalized();
+                ApplyTooltip.Subtitle = "Apply_Success_Desc".GetLocalized();
             }
             else
 #pragma warning disable CS0162 // Unreachable code detected
             // ReSharper disable once HeuristicUnreachableCode
             {
-                Apply_tooltip.Title = "Apply_Success".GetLocalized();
-                Apply_tooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + AppSettings.RyzenAdjLine;
+                ApplyTooltip.Title = "Apply_Success".GetLocalized();
+                ApplyTooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + AppSettings.RyzenAdjLine;
             }
 #pragma warning restore CS0162 // Unreachable code detected
-            Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-            Apply_tooltip.IsOpen = true;
+            ApplyTooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+            ApplyTooltip.IsOpen = true;
             var infoSet = InfoBarSeverity.Success;
             if (ApplyInfo != string.Empty && _commandReturnedValue == false)
             {
                 await LogHelper.Log(ApplyInfo);
-                Apply_tooltip.Title = "Apply_Warn".GetLocalized();
-                Apply_tooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + ApplyInfo;
-                Apply_tooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
+                ApplyTooltip.Title = "Apply_Warn".GetLocalized();
+                ApplyTooltip.Subtitle = "Apply_Warn_Desc".GetLocalized() + ApplyInfo;
+                ApplyTooltip.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
                 await Task.Delay(timer);
-                Apply_tooltip.IsOpen = false;
+                ApplyTooltip.IsOpen = false;
                 infoSet = InfoBarSeverity.Warning;
             }
             else
             {
                 if (_commandReturnedValue)
                 {
-                    Apply_tooltip.Subtitle = ApplyInfo;
+                    ApplyTooltip.Subtitle = ApplyInfo;
                 }
                 await Task.Delay(3000);
-                Apply_tooltip.IsOpen = false;
+                ApplyTooltip.IsOpen = false;
             }
 
             NotificationsService.Notifies ??= [];
             NotificationsService.Notifies.Add(new Notify
             {
-                Title = Apply_tooltip.Title,
-                Msg = Apply_tooltip.Subtitle.Replace("Param_DeveloperOptions_ResultSaved".GetLocalized(), string.Empty) + ((ApplyInfo != string.Empty && !_commandReturnedValue) ? "DELETEUNAVAILABLE" : ""),
+                Title = ApplyTooltip.Title,
+                Msg = ApplyTooltip.Subtitle.Replace("Param_DeveloperOptions_ResultSaved".GetLocalized(), string.Empty) + ((ApplyInfo != string.Empty && !_commandReturnedValue) ? "DELETEUNAVAILABLE" : ""),
                 Type = infoSet
             });
             NotificationsService.SaveNotificationsSettings();
@@ -5329,16 +5354,16 @@ public sealed partial class ПараметрыPage
                 ProfileLoad();
                 try
                 {
-                    ActionButton_Save.Flyout.Hide();
+                    ActionButtonSave.Flyout.Hide();
                     AppSettings.Preset += 1;
                     _indexprofile += 1;
                     _waitforload = true;
-                    ProfileCOM.Items.Add(SaveProfileN.Text);
-                    ProfileCOM.SelectedItem = SaveProfileN.Text;
+                    ProfileCom.Items.Add(SaveProfileN.Text);
+                    ProfileCom.SelectedItem = SaveProfileN.Text;
                     if (_profile.Length == 0)
                     {
                         _profile = new Profile[1];
-                        _profile[0] = new Profile { profilename = SaveProfileN.Text };
+                        _profile[0] = new Profile { Profilename = SaveProfileN.Text };
                     }
                     else
                     {
@@ -5346,7 +5371,7 @@ public sealed partial class ПараметрыPage
                         {
                             new()
                             {
-                                profilename = SaveProfileN.Text
+                                Profilename = SaveProfileN.Text
                             }
                         };
                         _profile = [.. profileList];
@@ -5364,9 +5389,9 @@ public sealed partial class ПараметрыPage
                 }
                 catch
                 {
-                    Add_tooltip_Max.IsOpen = true;
+                    AddTooltipMax.IsOpen = true;
                     await Task.Delay(3000);
-                    Add_tooltip_Max.IsOpen = false;
+                    AddTooltipMax.IsOpen = false;
                 }
             }
             else
@@ -5374,14 +5399,14 @@ public sealed partial class ПараметрыPage
                 NotificationsService.Notifies ??= [];
                 NotificationsService.Notifies.Add(new Notify
                 {
-                    Title = Add_tooltip_Error.Title,
-                    Msg = Add_tooltip_Error.Subtitle,
+                    Title = AddTooltipError.Title,
+                    Msg = AddTooltipError.Subtitle,
                     Type = InfoBarSeverity.Error
                 });
                 NotificationsService.SaveNotificationsSettings();
-                Add_tooltip_Error.IsOpen = true;
+                AddTooltipError.IsOpen = true;
                 await Task.Delay(3000);
-                Add_tooltip_Error.IsOpen = false;
+                AddTooltipError.IsOpen = false;
             }
 
             AppSettings.SaveSettings();
@@ -5400,21 +5425,21 @@ public sealed partial class ПараметрыPage
             EditProfileButton.Flyout.Hide();
             if (EditProfileN.Text != "")
             {
-                var backupIndex = ProfileCOM.SelectedIndex;
-                if (ProfileCOM.SelectedIndex == 0 || _indexprofile + 1 == 0)
+                var backupIndex = ProfileCom.SelectedIndex;
+                if (ProfileCom.SelectedIndex == 0 || _indexprofile + 1 == 0)
                 {
-                    Unsaved_tooltip.IsOpen = true;
+                    UnsavedTooltip.IsOpen = true;
                     await Task.Delay(3000);
-                    Unsaved_tooltip.IsOpen = false;
+                    UnsavedTooltip.IsOpen = false;
                 }
                 else
                 {
                     ProfileLoad();
-                    _profile[_indexprofile].profilename = EditProfileN.Text;
+                    _profile[_indexprofile].Profilename = EditProfileN.Text;
                     ProfileSave();
                     _waitforload = true;
-                    ProfileCOM.Items.Clear();
-                    ProfileCOM.Items.Add(new ComboBoxItem
+                    ProfileCom.Items.Clear();
+                    ProfileCom.Items.Add(new ComboBoxItem
                     {
                         Content = new TextBlock
                         {
@@ -5425,25 +5450,25 @@ public sealed partial class ПараметрыPage
                     });
                     foreach (var currProfile in _profile)
                     {
-                        if (currProfile.profilename != string.Empty || currProfile.profilename != "Unsigned profile")
+                        if (currProfile.Profilename != string.Empty || currProfile.Profilename != "Unsigned profile")
                         {
-                            ProfileCOM.Items.Add(currProfile.profilename);
+                            ProfileCom.Items.Add(currProfile.Profilename);
                         }
                     }
 
-                    ProfileCOM.SelectedIndex = 0;
+                    ProfileCom.SelectedIndex = 0;
                     _waitforload = false;
-                    ProfileCOM.SelectedIndex = backupIndex;
+                    ProfileCom.SelectedIndex = backupIndex;
                     NotificationsService.Notifies ??= [];
                     NotificationsService.Notifies.Add(new Notify
                     {
-                        Title = Edit_tooltip.Title,
-                        Msg = Edit_tooltip.Subtitle + " " + SaveProfileN.Text,
+                        Title = EditTooltip.Title,
+                        Msg = EditTooltip.Subtitle + " " + SaveProfileN.Text,
                         Type = InfoBarSeverity.Success
                     });
-                    Edit_tooltip.IsOpen = true;
+                    EditTooltip.IsOpen = true;
                     await Task.Delay(3000);
-                    Edit_tooltip.IsOpen = false;
+                    EditTooltip.IsOpen = false;
                 }
             }
             else
@@ -5451,13 +5476,13 @@ public sealed partial class ПараметрыPage
                 NotificationsService.Notifies ??= [];
                 NotificationsService.Notifies.Add(new Notify
                 {
-                    Title = Edit_tooltip_Error.Title,
-                    Msg = Edit_tooltip_Error.Subtitle,
+                    Title = EditTooltipError.Title,
+                    Msg = EditTooltipError.Subtitle,
                     Type = InfoBarSeverity.Error
                 });
-                Edit_tooltip_Error.IsOpen = true;
+                EditTooltipError.IsOpen = true;
                 await Task.Delay(3000);
-                Edit_tooltip_Error.IsOpen = false;
+                EditTooltipError.IsOpen = false;
             }
             NotificationsService.SaveNotificationsSettings();
         }
@@ -5489,32 +5514,32 @@ public sealed partial class ПараметрыPage
             var result = await delDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                if (ProfileCOM.SelectedIndex == 0)
+                if (ProfileCom.SelectedIndex == 0)
                 {
                     NotificationsService.Notifies ??= [];
                     NotificationsService.Notifies.Add(new Notify
                     {
-                        Title = Delete_tooltip_error.Title,
-                        Msg = Delete_tooltip_error.Subtitle,
+                        Title = DeleteTooltipError.Title,
+                        Msg = DeleteTooltipError.Subtitle,
                         Type = InfoBarSeverity.Error
                     });
                     NotificationsService.SaveNotificationsSettings();
-                    Delete_tooltip_error.IsOpen = true;
+                    DeleteTooltipError.IsOpen = true;
                     await Task.Delay(3000);
-                    Delete_tooltip_error.IsOpen = false;
+                    DeleteTooltipError.IsOpen = false;
                 }
                 else
                 {
                     ProfileLoad();
                     _waitforload = true;
-                    ProfileCOM.Items.Remove(ProfileCOM.SelectedItem);
+                    ProfileCom.Items.Remove(ProfileCom.SelectedItem);
                     var profileList = new List<Profile>(_profile);
                     profileList.RemoveAt(_indexprofile);
                     _profile = [.. profileList];
                     _indexprofile = 0;
                     _waitforload = false;
 
-                    ProfileCOM.SelectedIndex = ProfileCOM.Items.Count - 1;
+                    ProfileCom.SelectedIndex = ProfileCom.Items.Count - 1;
                     NotificationsService.Notifies ??= [];
                     NotificationsService.Notifies.Add(new Notify
                     {
@@ -5574,13 +5599,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            SMU_Func_Enabl.IsOn = SMU_Func_Enabl.IsOn != true;
+            SmuFuncEnableToggle.IsOn = SmuFuncEnableToggle.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFunctionsEnabl = SMU_Func_Enabl.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFunctionsEnabl = SmuFuncEnableToggle.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5598,13 +5623,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            Bit_0_FEATURE_CCLK_CONTROLLER.IsOn = Bit_0_FEATURE_CCLK_CONTROLLER.IsOn != true;
+            Bit0FeatureCclkController.IsOn = Bit0FeatureCclkController.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFeatureCCLK = Bit_0_FEATURE_CCLK_CONTROLLER.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFeatureCclk = Bit0FeatureCclkController.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5622,13 +5647,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            Bit_2_FEATURE_DATA_CALCULATION.IsOn = Bit_2_FEATURE_DATA_CALCULATION.IsOn != true;
+            Bit2FeatureDataCalculation.IsOn = Bit2FeatureDataCalculation.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFeatureData = Bit_2_FEATURE_DATA_CALCULATION.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFeatureData = Bit2FeatureDataCalculation.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5646,13 +5671,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            Bit_3_FEATURE_PPT.IsOn = Bit_3_FEATURE_PPT.IsOn != true;
+            Bit3FeaturePpt.IsOn = Bit3FeaturePpt.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFeaturePPT = Bit_3_FEATURE_PPT.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFeaturePpt = Bit3FeaturePpt.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5670,13 +5695,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            Bit_4_FEATURE_TDC.IsOn = Bit_4_FEATURE_TDC.IsOn != true;
+            Bit4FeatureTdc.IsOn = Bit4FeatureTdc.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFeatureTDC = Bit_4_FEATURE_TDC.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFeatureTdc = Bit4FeatureTdc.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5694,13 +5719,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            Bit_5_FEATURE_THERMAL.IsOn = Bit_5_FEATURE_THERMAL.IsOn != true;
+            Bit5FeatureThermal.IsOn = Bit5FeatureThermal.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFeatureThermal = Bit_5_FEATURE_THERMAL.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFeatureThermal = Bit5FeatureThermal.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5718,13 +5743,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            Bit_8_FEATURE_PLL_POWER_DOWN.IsOn = Bit_8_FEATURE_PLL_POWER_DOWN.IsOn != true;
+            Bit8FeaturePllPowerDown.IsOn = Bit8FeaturePllPowerDown.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFeaturePowerDown = Bit_8_FEATURE_PLL_POWER_DOWN.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFeaturePowerDown = Bit8FeaturePllPowerDown.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5742,13 +5767,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            Bit_37_FEATURE_PROCHOT.IsOn = Bit_37_FEATURE_PROCHOT.IsOn != true;
+            Bit37FeatureProchot.IsOn = Bit37FeatureProchot.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFeatureProchot = Bit_37_FEATURE_PROCHOT.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFeatureProchot = Bit37FeatureProchot.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5766,13 +5791,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            Bit_39_FEATURE_STAPM.IsOn = Bit_39_FEATURE_STAPM.IsOn != true;
+            Bit39FeatureStapm.IsOn = Bit39FeatureStapm.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFeatureSTAPM = Bit_39_FEATURE_STAPM.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFeatureStapm = Bit39FeatureStapm.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5790,13 +5815,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            Bit_40_FEATURE_CORE_CSTATES.IsOn = Bit_40_FEATURE_CORE_CSTATES.IsOn != true;
+            Bit40FeatureCoreCstates.IsOn = Bit40FeatureCoreCstates.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFeatureCStates = Bit_40_FEATURE_CORE_CSTATES.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFeatureCStates = Bit40FeatureCoreCstates.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5814,13 +5839,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn = Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn != true;
+            Bit41FeatureGfxDutyCycle.IsOn = Bit41FeatureGfxDutyCycle.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFeatureGfxDutyCycle = Bit_41_FEATURE_GFX_DUTY_CYCLE.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFeatureGfxDutyCycle = Bit41FeatureGfxDutyCycle.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5838,13 +5863,13 @@ public sealed partial class ПараметрыPage
 
         if (isButton)
         {
-            Bit_42_FEATURE_AA_MODE.IsOn = Bit_42_FEATURE_AA_MODE.IsOn != true;
+            Bit42FeatureAaMode.IsOn = Bit42FeatureAaMode.IsOn != true;
         }
 
         try
         {
             ProfileLoad();
-            _profile[ProfileCOM.SelectedIndex - 1].smuFeatureAplusA = Bit_42_FEATURE_AA_MODE.IsOn;
+            _profile[ProfileCom.SelectedIndex - 1].SmuFeatureAplusA = Bit42FeatureAaMode.IsOn;
             ProfileSave();
         }
         catch (Exception ex)
@@ -5854,7 +5879,7 @@ public sealed partial class ПараметрыPage
     }
 
     //NumberBoxes
-    private void C2t_FocusEngaged(object sender, object args)
+    private void TargetNumberBox_FocusEngaged(object sender, object args)
     {
         if (sender is NumberBox numberBox)
         {
@@ -5862,7 +5887,7 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private void C2t_FocusDisengaged(object sender, object args)
+    private void TargetNumberBox_FocusDisengaged(object sender, object args)
     {
         if (sender is NumberBox numberBox)
         {
@@ -5870,32 +5895,32 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private void C2t_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    private void TargetNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
         {
-            object slider;
-            if (sender.Name.Contains('v'))
+            
+            var name = sender.Tag.ToString();
+            
+            if (name != null)
             {
-                slider = FindName(sender.Name.Replace('t', 'V').Replace('v', 'V'));
-            }
-            else
-            {
+                object sliderObject;
+
                 try
                 {
-                    slider = FindName(sender.Name.Replace('t', 'v'));
+                    sliderObject = FindName(name);
                 }
                 catch (Exception ex)
                 {
                     LogHelper.TraceIt_TraceError(ex.ToString());
                     return;
                 }
-            }
 
-            if (slider is Slider slider1)
-            {
-                if (slider1.Maximum < sender.Value)
+                if (sliderObject is Slider slider)
                 {
-                    slider1.Maximum = FromValueToUpperFive(sender.Value);
+                    if (slider.Maximum < sender.Value)
+                    {
+                        slider.Maximum = FromValueToUpperFive(sender.Value);
+                    }
                 }
             }
         }
@@ -5903,22 +5928,22 @@ public sealed partial class ПараметрыPage
 
     private void BackToNormalMode_Click(object sender, RoutedEventArgs e)
     {
-        ToolTipService.SetToolTip(ActionButton_Apply, "Param_Apply/ToolTipService/ToolTip".GetLocalized());
+        ToolTipService.SetToolTip(ActionButtonApply, "Param_Apply/ToolTipService/ToolTip".GetLocalized());
         DeveloperSettingsMode.Visibility = Visibility.Collapsed;
         DeveloperOptionsApply.Visibility = Visibility.Collapsed;
         NormalUserMode.Visibility = Visibility.Visible;
-        Param_Name.Text = "Param_Name/Text".GetLocalized();
-        Suggestions_Filter_StackPanel.Visibility = Visibility.Visible;
+        ParamName.Text = "Param_Name/Text".GetLocalized();
+        SuggestionsFilterStackPanel.Visibility = Visibility.Visible;
     }
 
     private void OpenDeveloperOptionsMode_Click(object sender, RoutedEventArgs e)
     {
-        ToolTipService.SetToolTip(ActionButton_Apply, "Param_Apply_DevOptions/ToolTipService/ToolTip".GetLocalized());
+        ToolTipService.SetToolTip(ActionButtonApply, "Param_Apply_DevOptions/ToolTipService/ToolTip".GetLocalized());
         NormalUserMode.Visibility = Visibility.Collapsed;
         DeveloperSettingsMode.Visibility = Visibility.Visible;
         DeveloperOptionsApply.Visibility = Visibility.Visible;
-        Param_Name.Text = "Param_DeveloperOptions_Name/Text".GetLocalized();
-        Suggestions_Filter_StackPanel.Visibility = Visibility.Collapsed;
+        ParamName.Text = "Param_DeveloperOptions_Name/Text".GetLocalized();
+        SuggestionsFilterStackPanel.Visibility = Visibility.Collapsed;
     }
     #endregion
 
@@ -5929,19 +5954,19 @@ public sealed partial class ПараметрыPage
         try
         {
             await LogHelper.Log("P-States writing...");
-            _profile[AppSettings.Preset].did0 = DID_0.Value;
-            _profile[AppSettings.Preset].did1 = DID_1.Value;
-            _profile[AppSettings.Preset].did2 = DID_2.Value;
-            _profile[AppSettings.Preset].fid0 = FID_0.Value;
-            _profile[AppSettings.Preset].fid1 = FID_1.Value;
-            _profile[AppSettings.Preset].fid2 = FID_2.Value;
-            _profile[AppSettings.Preset].vid0 = VID_0.Value;
-            _profile[AppSettings.Preset].vid1 = VID_1.Value;
-            _profile[AppSettings.Preset].vid2 = VID_2.Value;
+            _profile[AppSettings.Preset].Did0 = Did0.Value;
+            _profile[AppSettings.Preset].Did1 = Did1.Value;
+            _profile[AppSettings.Preset].Did2 = Did2.Value;
+            _profile[AppSettings.Preset].Fid0 = Fid0.Value;
+            _profile[AppSettings.Preset].Fid1 = Fid1.Value;
+            _profile[AppSettings.Preset].Fid2 = Fid2.Value;
+            _profile[AppSettings.Preset].Vid0 = Vid0.Value;
+            _profile[AppSettings.Preset].Vid1 = Vid1.Value;
+            _profile[AppSettings.Preset].Vid2 = Vid2.Value;
             ProfileSave();
-            if (_profile[AppSettings.Preset].autoPstate)
+            if (_profile[AppSettings.Preset].AutoPstate)
             {
-                if (Without_P0.IsOn)
+                if (WithoutP0State.IsOn)
                 {
                     WritePstates();
                 }
@@ -5954,7 +5979,7 @@ public sealed partial class ПараметрыPage
             {
                 if (IgnoreWarn.IsOn)
                 {
-                    if (Without_P0.IsOn)
+                    if (WithoutP0State.IsOn)
                     {
                         WritePstates();
                     }
@@ -5965,7 +5990,7 @@ public sealed partial class ПараметрыPage
                 }
                 else
                 {
-                    if (Without_P0.IsOn)
+                    if (WithoutP0State.IsOn)
                     {
                         var writeDialog = new ContentDialog
                         {
@@ -6047,15 +6072,15 @@ public sealed partial class ПараметрыPage
             }
 
             ProfileLoad();
-            PstatesDid[0] = _profile[AppSettings.Preset].did0;
-            PstatesDid[1] = _profile[AppSettings.Preset].did1;
-            PstatesDid[2] = _profile[AppSettings.Preset].did2;
-            PstatesFid[0] = _profile[AppSettings.Preset].fid0;
-            PstatesFid[1] = _profile[AppSettings.Preset].fid1;
-            PstatesFid[2] = _profile[AppSettings.Preset].fid2;
-            PstatesVid[0] = _profile[AppSettings.Preset].vid0;
-            PstatesVid[1] = _profile[AppSettings.Preset].vid1;
-            PstatesVid[2] = _profile[AppSettings.Preset].vid2;
+            PstatesDid[0] = _profile[AppSettings.Preset].Did0;
+            PstatesDid[1] = _profile[AppSettings.Preset].Did1;
+            PstatesDid[2] = _profile[AppSettings.Preset].Did2;
+            PstatesFid[0] = _profile[AppSettings.Preset].Fid0;
+            PstatesFid[1] = _profile[AppSettings.Preset].Fid1;
+            PstatesFid[2] = _profile[AppSettings.Preset].Fid2;
+            PstatesVid[0] = _profile[AppSettings.Preset].Vid0;
+            PstatesVid[1] = _profile[AppSettings.Preset].Vid1;
+            PstatesVid[2] = _profile[AppSettings.Preset].Vid2;
             for (var p = 0; p < 3; p++)
             {
                 if (PstatesFid[p] == 0 || PstatesDid[p] == 0 || PstatesVid[p] == 0)
@@ -6135,10 +6160,10 @@ public sealed partial class ПараметрыPage
         {
             for (var p = 1; p < 3; p++)
             {
-                if (string.IsNullOrEmpty(DID_1.Text)
-                    || string.IsNullOrEmpty(FID_1.Text)
-                    || string.IsNullOrEmpty(DID_2.Text)
-                    || string.IsNullOrEmpty(FID_2.Text))
+                if (string.IsNullOrEmpty(Did1.Text)
+                    || string.IsNullOrEmpty(Fid1.Text)
+                    || string.IsNullOrEmpty(Did2.Text)
+                    || string.IsNullOrEmpty(Fid2.Text))
                 {
                     ReadPstates();
                     ReadPstate();
@@ -6160,12 +6185,12 @@ public sealed partial class ПараметрыPage
                 switch (p)
                 {
                     case 1:
-                        didtext = DID_1.Text;
-                        fidtext = FID_1.Text;
+                        didtext = Did1.Text;
+                        fidtext = Fid1.Text;
                         break;
                     case 2:
-                        didtext = DID_2.Text;
-                        fidtext = FID_2.Text;
+                        didtext = Did2.Text;
+                        fidtext = Fid2.Text;
                         break;
                 }
 
@@ -6350,9 +6375,9 @@ public sealed partial class ПараметрыPage
                 switch (i)
                 {
                     case 0:
-                        DID_0.Text = Convert.ToString(cpuDfsId, 10);
-                        FID_0.Text = Convert.ToString(cpuFid, 10);
-                        P0_Freq.Content = cpuFid * 25 / (cpuDfsId * 12.5) * 100;
+                        Did0.Text = Convert.ToString(cpuDfsId, 10);
+                        Fid0.Text = Convert.ToString(cpuFid, 10);
+                        P0Freq.Content = cpuFid * 25 / (cpuDfsId * 12.5) * 100;
                         var mult0V = (int)(cpuFid * 25 / (cpuDfsId * 12.5));
                         mult0V -= 4;
                         if (mult0V <= 0)
@@ -6362,12 +6387,12 @@ public sealed partial class ПараметрыPage
                             App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
-                        Mult_0.SelectedIndex = mult0V;
+                        Mult0.SelectedIndex = mult0V;
                         break;
                     case 1:
-                        DID_1.Text = Convert.ToString(cpuDfsId, 10);
-                        FID_1.Text = Convert.ToString(cpuFid, 10);
-                        P1_Freq.Content = cpuFid * 25 / (cpuDfsId * 12.5) * 100;
+                        Did1.Text = Convert.ToString(cpuDfsId, 10);
+                        Fid1.Text = Convert.ToString(cpuFid, 10);
+                        P1Freq.Content = cpuFid * 25 / (cpuDfsId * 12.5) * 100;
                         var mult1V = (int)(cpuFid * 25 / (cpuDfsId * 12.5));
                         mult1V -= 4;
                         if (mult1V <= 0)
@@ -6377,12 +6402,12 @@ public sealed partial class ПараметрыPage
                             App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
-                        Mult_1.SelectedIndex = mult1V;
+                        Mult1.SelectedIndex = mult1V;
                         break;
                     case 2:
-                        DID_2.Text = Convert.ToString(cpuDfsId, 10);
-                        FID_2.Text = Convert.ToString(cpuFid, 10);
-                        P2_Freq.Content = cpuFid * 25 / (cpuDfsId * 12.5) * 100;
+                        Did2.Text = Convert.ToString(cpuDfsId, 10);
+                        Fid2.Text = Convert.ToString(cpuFid, 10);
+                        P2Freq.Content = cpuFid * 25 / (cpuDfsId * 12.5) * 100;
                         var mult2V = (int)(cpuFid * 25 / (cpuDfsId * 12.5));
                         mult2V -= 4;
                         if (mult2V <= 0)
@@ -6392,7 +6417,7 @@ public sealed partial class ПараметрыPage
                             App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
-                        Mult_2.SelectedIndex = mult2V;
+                        Mult2.SelectedIndex = mult2V;
                         break;
                 }
             }
@@ -6412,9 +6437,9 @@ public sealed partial class ПараметрыPage
 
     private void TurboBoost_Click(object sender, RoutedEventArgs e)
     {
-        if (Turbo_boost.IsEnabled)
+        if (TurboBoostToggle.IsEnabled)
         {
-            Turbo_boost.IsOn = !Turbo_boost.IsOn;
+            TurboBoostToggle.IsOn = !TurboBoostToggle.IsOn;
         }
 
         TurboBoost();
@@ -6422,13 +6447,13 @@ public sealed partial class ПараметрыPage
 
     private void Autoapply_Click(object sender, RoutedEventArgs e)
     {
-        Autoapply_1.IsOn = !Autoapply_1.IsOn;
+        AutoApplyPstates.IsOn = !AutoApplyPstates.IsOn;
         Autoapply();
     }
 
     private void WithoutP0_Click(object sender, RoutedEventArgs e)
     {
-        Without_P0.IsOn = !Without_P0.IsOn;
+        WithoutP0State.IsOn = !WithoutP0State.IsOn;
         WithoutP0();
     }
 
@@ -6443,7 +6468,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            _profile[_indexprofile].enablePstateEditor = EnablePstates.IsOn;
+            _profile[_indexprofile].EnablePstateEditor = EnablePstates.IsOn;
 
             ProfileSave();
         }
@@ -6456,8 +6481,8 @@ public sealed partial class ПараметрыPage
 
     private void TurboBoost()
     {
-        SetCorePerformanceBoost(Turbo_boost.IsOn); //Турбобуст... 
-        _profile[_indexprofile].turboBoost = Turbo_boost.IsOn; //Сохранение
+        SetCorePerformanceBoost(TurboBoostToggle.IsOn); //Турбобуст... 
+        _profile[_indexprofile].TurboBoost = TurboBoostToggle.IsOn; //Сохранение
 
         ProfileSave();
     }
@@ -6490,28 +6515,28 @@ public sealed partial class ПараметрыPage
 
     private void Autoapply()
     {
-        if (Autoapply_1.IsOn)
+        if (AutoApplyPstates.IsOn)
         {
-            _profile[_indexprofile].autoPstate = true;
+            _profile[_indexprofile].AutoPstate = true;
             ProfileSave();
         }
         else
         {
-            _profile[_indexprofile].autoPstate = false;
+            _profile[_indexprofile].AutoPstate = false;
             ProfileSave();
         }
     }
 
     private void WithoutP0()
     {
-        if (Without_P0.IsOn)
+        if (WithoutP0State.IsOn)
         {
-            _profile[_indexprofile].p0Ignorewarn = true;
+            _profile[_indexprofile].P0Ignorewarn = true;
             ProfileSave();
         }
         else
         {
-            _profile[_indexprofile].p0Ignorewarn = false;
+            _profile[_indexprofile].P0Ignorewarn = false;
             ProfileSave();
         }
     }
@@ -6520,12 +6545,12 @@ public sealed partial class ПараметрыPage
     {
         if (IgnoreWarn.IsOn)
         {
-            _profile[_indexprofile].ignoreWarn = true;
+            _profile[_indexprofile].IgnoreWarn = true;
             ProfileSave();
         }
         else
         {
-            _profile[_indexprofile].ignoreWarn = false;
+            _profile[_indexprofile].IgnoreWarn = false;
             ProfileSave();
         }
     }
@@ -6548,8 +6573,8 @@ public sealed partial class ПараметрыPage
                 if (_relay == false)
                 {
                     await Task.Delay(20);
-                    var didValue = DID_0.Value;
-                    var fidValue = FID_0.Value;
+                    var didValue = Did0.Value;
+                    var fidValue = Fid0.Value;
                     try
                     {
                         var mult0V = fidValue / didValue * 2;
@@ -6567,8 +6592,8 @@ public sealed partial class ПараметрыPage
                             mult0V = 0;
                         }
 
-                        P0_Freq.Content = (mult0V + 4) * 100;
-                        Mult_0.SelectedIndex = (int)mult0V;
+                        P0Freq.Content = (mult0V + 4) * 100;
+                        Mult0.SelectedIndex = (int)mult0V;
                     }
                     catch (Exception ex)
                     {
@@ -6596,16 +6621,16 @@ public sealed partial class ПараметрыPage
             if (_waitforload == false)
             {
                 await Task.Delay(20);
-                var didValue = DID_0.Value;
-                if (DID_0.Text != string.Empty)
+                var didValue = Did0.Value;
+                if (Did0.Text != string.Empty)
                 {
                     _waitforload = true;
-                    var fidValue = (Mult_0.SelectedIndex + 4) * didValue / 2;
+                    var fidValue = (Mult0.SelectedIndex + 4) * didValue / 2;
                     _relay = true;
-                    FID_0.Value = fidValue;
+                    Fid0.Value = fidValue;
                     await Task.Delay(40);
-                    FID_0.Value = fidValue;
-                    P0_Freq.Content = (Mult_0.SelectedIndex + 4) * 100;
+                    Fid0.Value = fidValue;
+                    P0Freq.Content = (Mult0.SelectedIndex + 4) * 100;
                     Save_ID0();
                     await Task.Delay(40);
                     _waitforload = false;
@@ -6628,8 +6653,8 @@ public sealed partial class ПараметрыPage
             }
 
             await Task.Delay(20);
-            var didValue = DID_0.Value;
-            var fidValue = FID_0.Value;
+            var didValue = Did0.Value;
+            var fidValue = Fid0.Value;
             var mult0V = fidValue / didValue * 2;
             if (fidValue / didValue % 2 - 5 == 0.0d)
             {
@@ -6645,10 +6670,10 @@ public sealed partial class ПараметрыPage
                 mult0V = 0;
             }
 
-            P0_Freq.Content = (mult0V + 4) * 100;
+            P0Freq.Content = (mult0V + 4) * 100;
             try
             {
-                Mult_0.SelectedIndex = (int)mult0V;
+                Mult0.SelectedIndex = (int)mult0V;
             }
             catch (Exception ex)
             {
@@ -6672,8 +6697,8 @@ public sealed partial class ПараметрыPage
                 if (_relay == false)
                 {
                     await Task.Delay(20);
-                    var didValue = DID_1.Value;
-                    var fidValue = FID_1.Value;
+                    var didValue = Did1.Value;
+                    var fidValue = Fid1.Value;
                     try
                     {
                         var mult1V = fidValue / didValue * 2;
@@ -6691,8 +6716,8 @@ public sealed partial class ПараметрыPage
                             mult1V = 0;
                         }
 
-                        P1_Freq.Content = (mult1V + 4) * 100;
-                        Mult_1.SelectedIndex = (int)mult1V;
+                        P1Freq.Content = (mult1V + 4) * 100;
+                        Mult1.SelectedIndex = (int)mult1V;
                     }
                     catch (Exception ex)
                     {
@@ -6720,16 +6745,16 @@ public sealed partial class ПараметрыPage
             if (_waitforload == false)
             {
                 await Task.Delay(20);
-                var didValue = DID_1.Value;
-                if (DID_1.Text != "" || DID_1.Text != null)
+                var didValue = Did1.Value;
+                if (Did1.Text != "" || Did1.Text != null)
                 {
                     _waitforload = true;
-                    var fidValue = (Mult_1.SelectedIndex + 4) * didValue / 2;
+                    var fidValue = (Mult1.SelectedIndex + 4) * didValue / 2;
                     _relay = true;
-                    FID_1.Value = fidValue;
+                    Fid1.Value = fidValue;
                     await Task.Delay(40);
-                    FID_1.Value = fidValue;
-                    P1_Freq.Content = (Mult_1.SelectedIndex + 4) * 100;
+                    Fid1.Value = fidValue;
+                    P1Freq.Content = (Mult1.SelectedIndex + 4) * 100;
                     Save_ID1();
                     _waitforload = false;
                 }
@@ -6748,8 +6773,8 @@ public sealed partial class ПараметрыPage
             if (_waitforload == false)
             {
                 await Task.Delay(20);
-                var didValue = DID_1.Value;
-                var fidValue = FID_1.Value;
+                var didValue = Did1.Value;
+                var fidValue = Fid1.Value;
                 var mult1V = fidValue / didValue * 2;
                 if (fidValue / didValue % 2 - 5 == 0.0f)
                 {
@@ -6765,10 +6790,10 @@ public sealed partial class ПараметрыPage
                     mult1V = 0;
                 }
 
-                P1_Freq.Content = (mult1V + 4) * 100;
+                P1Freq.Content = (mult1V + 4) * 100;
                 try
                 {
-                    Mult_1.SelectedIndex = (int)mult1V;
+                    Mult1.SelectedIndex = (int)mult1V;
                 }
                 catch (Exception ex)
                 {
@@ -6794,16 +6819,16 @@ public sealed partial class ПараметрыPage
             }
 
             await Task.Delay(20);
-            var didValue = DID_2.Value;
-            if (DID_2.Text != "" || DID_2.Text != null)
+            var didValue = Did2.Value;
+            if (Did2.Text != "" || Did2.Text != null)
             {
                 _waitforload = true;
-                var fidValue = (Mult_2.SelectedIndex + 4) * didValue / 2;
+                var fidValue = (Mult2.SelectedIndex + 4) * didValue / 2;
                 _relay = true;
-                FID_2.Value = fidValue;
+                Fid2.Value = fidValue;
                 await Task.Delay(40);
-                FID_2.Value = fidValue;
-                P2_Freq.Content = (Mult_2.SelectedIndex + 4) * 100;
+                Fid2.Value = fidValue;
+                P2Freq.Content = (Mult2.SelectedIndex + 4) * 100;
                 Save_ID2();
                 _waitforload = false;
             }
@@ -6823,8 +6848,8 @@ public sealed partial class ПараметрыPage
                 if (_relay == false)
                 {
                     await Task.Delay(20);
-                    var didValue = DID_2.Value;
-                    var fidValue = FID_2.Value;
+                    var didValue = Did2.Value;
+                    var fidValue = Fid2.Value;
                     try
                     {
                         var mult2V = fidValue / didValue * 2;
@@ -6842,8 +6867,8 @@ public sealed partial class ПараметрыPage
                             mult2V = 0;
                         }
 
-                        P2_Freq.Content = (mult2V + 4) * 100;
-                        Mult_2.SelectedIndex = (int)mult2V;
+                        P2Freq.Content = (mult2V + 4) * 100;
+                        Mult2.SelectedIndex = (int)mult2V;
                     }
                     catch (Exception ex)
                     {
@@ -6871,8 +6896,8 @@ public sealed partial class ПараметрыPage
             if (_waitforload == false)
             {
                 await Task.Delay(40);
-                var didValue = DID_2.Value;
-                var fidValue = FID_2.Value;
+                var didValue = Did2.Value;
+                var fidValue = Fid2.Value;
                 var mult2V = fidValue / didValue * 2;
                 mult2V -= 4;
                 if (mult2V <= 0)
@@ -6880,10 +6905,10 @@ public sealed partial class ПараметрыPage
                     mult2V = 0;
                 }
 
-                P2_Freq.Content = (mult2V + 4) * 100;
+                P2Freq.Content = (mult2V + 4) * 100;
                 try
                 {
-                    Mult_2.SelectedIndex = (int)mult2V;
+                    Mult2.SelectedIndex = (int)mult2V;
                 }
                 catch (Exception ex)
                 {
@@ -6903,18 +6928,18 @@ public sealed partial class ПараметрыPage
     {
         if (_waitforload == false)
         {
-            _profile[_indexprofile].did0 = DID_0.Value;
-            _profile[_indexprofile].fid0 = FID_0.Value;
-            _profile[_indexprofile].vid0 = VID_0.Value;
-            _profile[_indexprofile].did1 = DID_1.Value;
-            _profile[_indexprofile].fid1 = FID_1.Value;
-            _profile[_indexprofile].vid1 = VID_1.Value;
-            _profile[_indexprofile].did2 = DID_2.Value;
-            _profile[_indexprofile].fid2 = FID_2.Value;
-            _profile[_indexprofile].vid2 = VID_2.Value;
-            PstatesDid[0] = DID_0.Value;
-            PstatesFid[0] = FID_0.Value;
-            PstatesVid[0] = VID_0.Value;
+            _profile[_indexprofile].Did0 = Did0.Value;
+            _profile[_indexprofile].Fid0 = Fid0.Value;
+            _profile[_indexprofile].Vid0 = Vid0.Value;
+            _profile[_indexprofile].Did1 = Did1.Value;
+            _profile[_indexprofile].Fid1 = Fid1.Value;
+            _profile[_indexprofile].Vid1 = Vid1.Value;
+            _profile[_indexprofile].Did2 = Did2.Value;
+            _profile[_indexprofile].Fid2 = Fid2.Value;
+            _profile[_indexprofile].Vid2 = Vid2.Value;
+            PstatesDid[0] = Did0.Value;
+            PstatesFid[0] = Fid0.Value;
+            PstatesVid[0] = Vid0.Value;
             ProfileSave();
         }
     }
@@ -6923,18 +6948,18 @@ public sealed partial class ПараметрыPage
     {
         if (_waitforload == false)
         {
-            _profile[_indexprofile].did0 = DID_0.Value;
-            _profile[_indexprofile].fid0 = FID_0.Value;
-            _profile[_indexprofile].vid0 = VID_0.Value;
-            _profile[_indexprofile].did1 = DID_1.Value;
-            _profile[_indexprofile].fid1 = FID_1.Value;
-            _profile[_indexprofile].vid1 = VID_1.Value;
-            _profile[_indexprofile].did2 = DID_2.Value;
-            _profile[_indexprofile].fid2 = FID_2.Value;
-            _profile[_indexprofile].vid2 = VID_2.Value;
-            PstatesDid[1] = DID_1.Value;
-            PstatesFid[1] = FID_1.Value;
-            PstatesVid[1] = VID_1.Value;
+            _profile[_indexprofile].Did0 = Did0.Value;
+            _profile[_indexprofile].Fid0 = Fid0.Value;
+            _profile[_indexprofile].Vid0 = Vid0.Value;
+            _profile[_indexprofile].Did1 = Did1.Value;
+            _profile[_indexprofile].Fid1 = Fid1.Value;
+            _profile[_indexprofile].Vid1 = Vid1.Value;
+            _profile[_indexprofile].Did2 = Did2.Value;
+            _profile[_indexprofile].Fid2 = Fid2.Value;
+            _profile[_indexprofile].Vid2 = Vid2.Value;
+            PstatesDid[1] = Did1.Value;
+            PstatesFid[1] = Fid1.Value;
+            PstatesVid[1] = Vid1.Value;
             ProfileSave();
         }
     }
@@ -6943,18 +6968,18 @@ public sealed partial class ПараметрыPage
     {
         if (_waitforload == false)
         {
-            _profile[_indexprofile].did0 = DID_0.Value;
-            _profile[_indexprofile].fid0 = FID_0.Value;
-            _profile[_indexprofile].vid0 = VID_0.Value;
-            _profile[_indexprofile].did1 = DID_1.Value;
-            _profile[_indexprofile].fid1 = FID_1.Value;
-            _profile[_indexprofile].vid1 = VID_1.Value;
-            _profile[_indexprofile].did2 = DID_2.Value;
-            _profile[_indexprofile].fid2 = FID_2.Value;
-            _profile[_indexprofile].vid2 = VID_2.Value;
-            PstatesDid[2] = DID_0.Value;
-            PstatesFid[2] = FID_0.Value;
-            PstatesVid[2] = VID_0.Value;
+            _profile[_indexprofile].Did0 = Did0.Value;
+            _profile[_indexprofile].Fid0 = Fid0.Value;
+            _profile[_indexprofile].Vid0 = Vid0.Value;
+            _profile[_indexprofile].Did1 = Did1.Value;
+            _profile[_indexprofile].Fid1 = Fid1.Value;
+            _profile[_indexprofile].Vid1 = Vid1.Value;
+            _profile[_indexprofile].Did2 = Did2.Value;
+            _profile[_indexprofile].Fid2 = Fid2.Value;
+            _profile[_indexprofile].Vid2 = Vid2.Value;
+            PstatesDid[2] = Did0.Value;
+            PstatesFid[2] = Fid0.Value;
+            PstatesVid[2] = Vid0.Value;
             ProfileSave();
         }
     }

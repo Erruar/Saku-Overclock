@@ -1,27 +1,35 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers;
+using WinRT.Interop;
 using Visual = Microsoft.UI.Composition.Visual;
 
 namespace Saku_Overclock.ProfileSwitcher;
-public sealed partial class ProfileSwitcher : Window
+
+public sealed partial class ProfileSwitcher
 {
-    private static ProfileSwitcher? _instance; 
-    private readonly Visual _windowVisual; 
-    private static CancellationTokenSource? _hideCts; // Контроль запуска анимации скрытия, чтобы скрытие выполнялось только один раз
+    private static ProfileSwitcher? _instance;
+    private readonly Visual _windowVisual;
+
+    /// <summary>
+    ///     Контроль запуска анимации скрытия, чтобы скрытие выполнялось только один раз
+    /// </summary>
+    private static CancellationTokenSource?
+        _hideCts;
 
     public ProfileSwitcher()
     {
         InitializeComponent();
+
         // Элемент для анимации - окно
         _windowVisual = ElementCompositionPreview.GetElementVisual(Content);
 
         // Настройка окна
-        this.SetWindowSize(300, 50); 
+        this.SetWindowSize(300, 50);
         this.CenterOnScreen();
         this.SetWindowOpacity(120);
         Content.CanDrag = false;
@@ -29,40 +37,42 @@ public sealed partial class ProfileSwitcher : Window
         this.SetIsAlwaysOnTop(true);
         this.SetIsResizable(false);
         this.ToggleWindowStyle(true, WindowStyle.SysMenu);
-        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        var hwnd = WindowNative.GetWindowHandle(this);
 
         // Устанавливаем стиль окна как POPUP (убираем заголовок)
         SetWindowStyle(hwnd);
 
         // Применяем прозрачность фона
-        SetTransparentBackground(hwnd); 
+        SetTransparentBackground(hwnd);
 
         // Начальное смещение окна (контента)
-        _windowVisual.Offset = new Vector3(_windowVisual.Offset.X, 0, _windowVisual.Offset.Z);
+        _windowVisual.Offset = _windowVisual.Offset with { Y = 0 };
     }
 
 
-    // Устанавливаем стиль окна как POPUP
+    /// <summary>
+    ///     Устанавливаем стиль окна как POPUP
+    /// </summary>
+    /// <param name="hwnd">окно приложения</param>
     private static void SetWindowStyle(IntPtr hwnd)
     {
-        const int GWL_STYLE = -16;
-        const uint WS_POPUP = 0x80000000;
-        const uint WS_VISIBLE = 0x10000000;
-        var style = GetWindowLong(hwnd, GWL_STYLE);
-        _ = SetWindowLong(hwnd, GWL_STYLE, (int)(style & ~(WS_POPUP | WS_VISIBLE)));
+        const int gwlStyle = -16;
+        const uint wsPopup = 0x80000000;
+        const uint wsVisible = 0x10000000;
+        var style = GetWindowLong(hwnd, gwlStyle);
+        _ = SetWindowLong(hwnd, gwlStyle, (int)(style & ~(wsPopup | wsVisible)));
     }
 
-    // Устанавливаем прозрачный фон окна
+    /// <summary>
+    ///     Устанавливаем прозрачный фон окна
+    /// </summary>
+    /// <param name="hwnd">окно приложения</param>
     private void SetTransparentBackground(IntPtr hwnd)
     {
-        var extendedStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-        SetWindowLong(hwnd, GWL_EXSTYLE, extendedStyle | WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT);
-        SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
+        var extendedStyle = GetWindowLong(hwnd, GwlExstyle);
+        SetWindowLong(hwnd, GwlExstyle, extendedStyle | WsExLayered | WsExToolwindow | WsExTransparent);
+        SetLayeredWindowAttributes(hwnd, 0, 255, LwaAlpha);
     }
-
-    [LibraryImport("gdi32.dll", SetLastError = true)]
-    private static partial IntPtr CreateRoundRectRgn(
-        int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
 
     [LibraryImport("user32.dll", SetLastError = true)]
     private static partial int GetWindowLongW(IntPtr hWnd, int nIndex);
@@ -72,28 +82,23 @@ public sealed partial class ProfileSwitcher : Window
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
+    private static partial void SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
 
-    public static IntPtr CreateRoundedRegion(int x, int y, int width, int height, int ellipseWidth, int ellipseHeight)
-        => CreateRoundRectRgn(x, y, width, height, ellipseWidth, ellipseHeight);
-
-    public static int GetWindowLong(IntPtr hWnd, int nIndex)
+    private static int GetWindowLong(IntPtr hWnd, int nIndex)
         => GetWindowLongW(hWnd, nIndex);
 
-    public static int SetWindowLong(IntPtr hWnd, int nIndex, int newLong)
+    private static int SetWindowLong(IntPtr hWnd, int nIndex, int newLong)
         => SetWindowLongW(hWnd, nIndex, newLong);
 
-    public static bool SetLayeredAttributes(IntPtr hwnd, uint key, byte alpha, uint flags)
-        => SetLayeredWindowAttributes(hwnd, key, alpha, flags);
+    private const int GwlExstyle = -20;
+    private const int WsExToolwindow = 0x00000080;
+    private const int WsExTransparent = 0x00000020;
+    private const int WsExLayered = 0x00080000;
+    private const uint LwaAlpha = 0x02;
 
-    private const int GWL_EXSTYLE = -20;
-    private const int WS_EX_TOOLWINDOW = 0x00000080;
-    private const int WS_EX_TRANSPARENT = 0x00000020; 
-    private const int WS_EX_LAYERED = 0x00080000;
-    private const uint LWA_ALPHA = 0x02;
-
-    public static async void ShowOverlay(Contracts.Services.IThemeSelectorService themeSelectorService, IAppSettingsService settingsService, string profileName, string? profileIcon = null, string? profileDesc = null)
-    { 
+    public static async Task ShowOverlay(IThemeSelectorService themeSelectorService,
+        IAppSettingsService settingsService, string profileName, string? profileIcon = null, string? profileDesc = null)
+    {
         if (_instance == null)
         {
             _instance = new ProfileSwitcher();
@@ -110,35 +115,38 @@ public sealed partial class ProfileSwitcher : Window
             !string.IsNullOrEmpty(themeBackground) &&
             (themeBackground.Contains("http") || themeBackground.Contains("appx") || File.Exists(themeBackground)))
         {
-            _instance.mainSource.ImageSource = new BitmapImage(new Uri(themeBackground));
+            _instance.MainSource.ImageSource = new BitmapImage(new Uri(themeBackground));
         }
-        _instance.mainThemeGrid.Opacity = themeSelectorService.Themes[settingsService.ThemeType].ThemeOpacity;
-        _instance.mainOpacity.Opacity = themeSelectorService.Themes[settingsService.ThemeType].ThemeMaskOpacity;
-        
+
+        _instance.MainThemeGrid.Opacity = themeSelectorService.Themes[settingsService.ThemeType].ThemeOpacity;
+        _instance.MainOpacity.Opacity = themeSelectorService.Themes[settingsService.ThemeType].ThemeMaskOpacity;
+
         // Подготовка контента
-        _instance.ProfileText.Text = profileName; 
+        _instance.ProfileText.Text = profileName;
         _instance.ProfileIcon.Glyph = profileIcon ?? "\uE718";
 
         if (profileDesc?.Length > 26)
         {
             profileDesc = profileDesc[..26] + "...";
         }
+
         _instance.ProfileDesc.Text = profileDesc ?? string.Empty;
-        
+
         if (profileDesc == null || string.IsNullOrEmpty(profileDesc))
         {
             _instance.ProfileDesc.Visibility = Visibility.Collapsed;
         }
         else
-        { 
+        {
             _instance.ProfileDesc.Visibility = Visibility.Visible;
         }
+
         // Сбрасываем начальные значения для анимации при каждом вызове:
         // Для окна: Scale.Y = 0 (высота 0) и Opacity = 0.
         _instance._windowVisual.Scale = new Vector3(1, 0, 1);
         _instance._windowVisual.Opacity = 0;
         // Для анимации размера dpWindow нужно получить его Composition Visual
-        var dpVisual = ElementCompositionPreview.GetElementVisual(_instance.dpWindow);
+        var dpVisual = ElementCompositionPreview.GetElementVisual(_instance.DpWindow);
         // Для dpWindow: Scale.X = 50/300, Scale.Y = 1 (высота фиксирована)
         dpVisual.Scale = new Vector3(50f / 300f, 1, 1);
 
@@ -151,6 +159,7 @@ public sealed partial class ProfileSwitcher : Window
         await _instance.AnimateShow(compositor);
 
         // Сбрасываем предыдущий таймер анимации скрытия, если такой был запущен
+        // ReSharper disable once MethodHasAsyncOverload
         _hideCts?.Cancel();
         _hideCts?.Dispose();
         _hideCts = new CancellationTokenSource();
@@ -167,23 +176,26 @@ public sealed partial class ProfileSwitcher : Window
         }
     }
 
-    private async Task AnimateShow(Microsoft.UI.Composition.Compositor compositor)
+    private async Task AnimateShow(Compositor compositor)
     {
         // Для анимации размера dpWindow нужно получить его Composition Visual
-        var dpVisual = ElementCompositionPreview.GetElementVisual(dpWindow);
-        _windowVisual.CenterPoint = new Vector3(150, 30, 0); 
+        var dpVisual = ElementCompositionPreview.GetElementVisual(DpWindow);
+        _windowVisual.CenterPoint = new Vector3(150, 30, 0);
+
         // Анимация окна: Scale.Y от 0 до 1 за 1.7 сек (это имитирует увеличение высоты с 0 до 40)
         var windowScaleAnimation = compositor.CreateScalarKeyFrameAnimation();
         windowScaleAnimation.InsertKeyFrame(0f, 0f);
         windowScaleAnimation.InsertKeyFrame(1f, 1f);
         windowScaleAnimation.Duration = TimeSpan.FromSeconds(0.5);
         _windowVisual.StartAnimation("Scale.Y", windowScaleAnimation);
+
         // Анимация для dpWindow: Scale.X от 50/300 до 1 за 1.7 сек (ширина растёт с 50 до 300)
         var dpScaleAnimation = compositor.CreateScalarKeyFrameAnimation();
         dpScaleAnimation.InsertKeyFrame(0f, 50f / 300f);
         dpScaleAnimation.InsertKeyFrame(1f, 1f);
         dpScaleAnimation.Duration = TimeSpan.FromSeconds(0.5);
         dpVisual.StartAnimation("Scale.X", dpScaleAnimation);
+
         // Параллельно анимируем появление через Opacity
         var opacityAnimation = compositor.CreateScalarKeyFrameAnimation();
         opacityAnimation.InsertKeyFrame(0f, 0f);
@@ -199,10 +211,10 @@ public sealed partial class ProfileSwitcher : Window
         dpVisual.Scale = new Vector3(1, 1, 1);
     }
 
-    private async Task AnimateHide(Microsoft.UI.Composition.Compositor compositor)
+    private async Task AnimateHide(Compositor compositor)
     {
         // Получаем Composition Visual для dpWindow
-        var dpVisual = ElementCompositionPreview.GetElementVisual(dpWindow);
+        var dpVisual = ElementCompositionPreview.GetElementVisual(DpWindow);
         _windowVisual.CenterPoint = new Vector3(150, 30, 0);
 
         // Останавливаем предыдущие анимации перед запуском новых
@@ -235,5 +247,5 @@ public sealed partial class ProfileSwitcher : Window
         // Дожидаемся завершения анимации перед скрытием окна
         await Task.Delay(TimeSpan.FromSeconds(1.3));
         this.Hide();
-    } 
+    }
 }

@@ -1,20 +1,20 @@
 ﻿using System.Runtime.InteropServices;
-
-using Microsoft.UI;
-using Microsoft.UI.Xaml;
 using Windows.UI;
 using Windows.UI.ViewManagement;
+using Microsoft.UI;
+using Microsoft.UI.Xaml;
+using WinRT.Interop;
 
 namespace Saku_Overclock.Helpers;
 
 // Helper class to workaround custom title bar bugs.
 // DISCLAIMER: The resource key names and color values used below are subject to change. Do not depend on them.
 // https://github.com/microsoft/TemplateStudio/issues/4516
-internal class TitleBarHelper
+internal abstract class TitleBarHelper
 {
-    private const int WAINACTIVE = 0x00;
-    private const int WAACTIVE = 0x01;
-    private const int WMACTIVATE = 0x0006;
+    private const int WaInactive = 0x00;
+    private const int WaActive = 0x01;
+    private const int WmActivate = 0x0006;
 
     [DllImport("user32.dll")]
     private static extern IntPtr GetActiveWindow();
@@ -32,11 +32,6 @@ internal class TitleBarHelper
                 var background = uiSettings.GetColorValue(UIColorType.Background);
 
                 theme = background == Colors.White ? ElementTheme.Light : ElementTheme.Dark;
-            }
-
-            if (theme == ElementTheme.Default)
-            {
-                theme = Application.Current.RequestedTheme == ApplicationTheme.Light ? ElementTheme.Light : ElementTheme.Dark;
             }
 
             App.MainWindow.AppWindow.TitleBar.ButtonForegroundColor = theme switch
@@ -69,16 +64,16 @@ internal class TitleBarHelper
 
             App.MainWindow.AppWindow.TitleBar.BackgroundColor = Colors.Transparent;
 
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+            var hwnd = WindowNative.GetWindowHandle(App.MainWindow);
             if (hwnd == GetActiveWindow())
             {
-                SendMessage(hwnd, WMACTIVATE, WAINACTIVE, IntPtr.Zero);
-                SendMessage(hwnd, WMACTIVATE, WAACTIVE, IntPtr.Zero);
+                SendMessage(hwnd, WmActivate, WaInactive, IntPtr.Zero);
+                SendMessage(hwnd, WmActivate, WaActive, IntPtr.Zero);
             }
             else
             {
-                SendMessage(hwnd, WMACTIVATE, WAACTIVE, IntPtr.Zero);
-                SendMessage(hwnd, WMACTIVATE, WAINACTIVE, IntPtr.Zero);
+                SendMessage(hwnd, WmActivate, WaActive, IntPtr.Zero);
+                SendMessage(hwnd, WmActivate, WaInactive, IntPtr.Zero);
             }
         }
     }

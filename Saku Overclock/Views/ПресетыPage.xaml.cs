@@ -55,7 +55,7 @@ public sealed partial class ПресетыPage
 
         try
         {
-            _isPlatformPC = SendSmuCommand.IsPlatformPC(CpuSingleton.GetInstance());
+            _isPlatformPC = SendSmuCommand.IsPlatformPc(CpuSingleton.GetInstance());
         }
         catch (Exception ex)
         {
@@ -160,17 +160,17 @@ public sealed partial class ПресетыPage
         foreach (var profile in _profile)
         {
             var isChecked = AppSettings.Preset != -1 &&
-                            _profile[AppSettings.Preset].profilename == profile.profilename &&
-                            _profile[AppSettings.Preset].profiledesc == profile.profiledesc &&
-                            _profile[AppSettings.Preset].profileicon == profile.profileicon;
+                            _profile[AppSettings.Preset].Profilename == profile.Profilename &&
+                            _profile[AppSettings.Preset].Profiledesc == profile.Profiledesc &&
+                            _profile[AppSettings.Preset].Profileicon == profile.Profileicon;
 
 
             var toggleButton = new ProfileItem
             {
                 IsSelected = isChecked,
-                IconGlyph = profile.profileicon == string.Empty ? "\uE718" : profile.profileicon,
-                Text = profile.profilename,
-                Description = profile.profiledesc != string.Empty ? profile.profiledesc : profile.profilename
+                IconGlyph = profile.Profileicon == string.Empty ? "\uE718" : profile.Profileicon,
+                Text = profile.Profilename,
+                Description = profile.Profiledesc != string.Empty ? profile.Profiledesc : profile.Profilename
             };
             ProfilesControl.Items.Add(toggleButton);
         }
@@ -389,69 +389,69 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         try
         {
-            if (_profile[index].cpu1value > c1v.Maximum)
+            if (_profile[index].Cpu1Value > c1v.Maximum)
             {
-                c1v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu1value);
+                c1v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu1Value);
             }
 
-            if (_profile[index].cpu2value > BaseTdp_Slider.Maximum)
+            if (_profile[index].Cpu2Value > BaseTdp_Slider.Maximum)
             {
-                BaseTdp_Slider.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu2value);
+                BaseTdp_Slider.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu2Value);
             }
 
-            if (_profile[index].cpu2value > c2v.Maximum)
+            if (_profile[index].Cpu2Value > c2v.Maximum)
             {
-                c2v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu2value);
+                c2v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu2Value);
             }
 
-            if (_profile[index].cpu3value > c3v.Maximum)
+            if (_profile[index].Cpu3Value > c3v.Maximum)
             {
-                c3v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu3value);
+                c3v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu3Value);
             }
 
-            if (_profile[index].cpu4value > c4v.Maximum)
+            if (_profile[index].Cpu4Value > c4v.Maximum)
             {
-                c4v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu4value);
+                c4v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu4Value);
             }
 
-            if (_profile[index].cpu5value > c5v.Maximum)
+            if (_profile[index].Cpu5Value > c5v.Maximum)
             {
-                c5v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu5value);
+                c5v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu5Value);
             }
 
-            if (_profile[index].cpu6value > c6v.Maximum)
+            if (_profile[index].Cpu6Value > c6v.Maximum)
             {
-                c6v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].cpu6value);
+                c6v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu6Value);
             }
 
-            if (_profile[index].vrm1value > V1V.Maximum)
+            if (_profile[index].Vrm1Value > V1V.Maximum)
             {
-                V1V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].vrm1value);
+                V1V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Vrm1Value);
             }
 
-            if (_profile[index].vrm2value > V2V.Maximum)
+            if (_profile[index].Vrm2Value > V2V.Maximum)
             {
-                V2V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].vrm2value);
+                V2V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Vrm2Value);
             }
 
-            if (_profile[index].vrm3value > V3V.Maximum)
+            if (_profile[index].Vrm3Value > V3V.Maximum)
             {
-                V3V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].vrm3value);
+                V3V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Vrm3Value);
             }
 
-            if (_profile[index].vrm4value > V4V.Maximum)
+            if (_profile[index].Vrm4Value > V4V.Maximum)
             {
-                V4V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].vrm4value);
+                V4V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Vrm4Value);
             }
 
-            if (_profile[index].gpu9value > g9v.Maximum)
+            if (_profile[index].Gpu9Value > g9v.Maximum)
             {
-                g9v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].gpu9value);
+                g9v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Gpu9Value);
             }
 
-            if (_profile[index].gpu10value > g10v.Maximum)
+            if (_profile[index].Gpu10Value > g10v.Maximum)
             {
-                g10v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].gpu10value);
+                g10v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Gpu10Value);
             }
         }
         catch (Exception ex)
@@ -462,14 +462,14 @@ public sealed partial class ПресетыPage
         try
         {
             // Заранее скомпилированная функция увеличения TDP, созданная специально для фирменной функции Smart TDP
-            var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * _profile[index].cpu2value + 0.21631949);
+            var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * _profile[index].Cpu2Value + 0.21631949);
 
-            c2.IsChecked = _profile[index].cpu2;
-            c2v.Value = _profile[index].cpu2value;
+            c2.IsChecked = _profile[index].Cpu2;
+            c2v.Value = _profile[index].Cpu2Value;
 
-            BaseTdp_Slider.Value = _profile[index].cpu2value;
-            if (_profile[index].cpu2 && _profile[index].cpu3 && _profile[index].cpu4 &&
-                _profile[index].cpu2value == _profile[index].cpu4value && _profile[index].cpu3value == fineTunedTdp)
+            BaseTdp_Slider.Value = _profile[index].Cpu2Value;
+            if (_profile[index].Cpu2 && _profile[index].Cpu3 && _profile[index].Cpu4 &&
+                _profile[index].Cpu2Value == _profile[index].Cpu4Value && _profile[index].Cpu3Value == fineTunedTdp)
             {
                 SmartTdp.IsOn = true;
             }
@@ -478,7 +478,7 @@ public sealed partial class ПресетыPage
                 if (_isPlatformPC != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
                 {
                     // Так как на компьютерах невозможно выставить другие Power лимиты
-                    if (!_profile[index].cpu2 && !_profile[index].cpu4 && _profile[index].cpu3value == fineTunedTdp)
+                    if (!_profile[index].Cpu2 && !_profile[index].Cpu4 && _profile[index].Cpu3Value == fineTunedTdp)
                     {
                         SmartTdp.IsOn = true;
                     }
@@ -489,27 +489,27 @@ public sealed partial class ПресетыPage
                 }
             }
 
-            c1.IsChecked = _profile[index].cpu1;
-            c1v.Value = _profile[index].cpu1value;
-            c3.IsChecked = _profile[index].cpu3;
-            c3v.Value = _profile[index].cpu3value;
-            c4.IsChecked = _profile[index].cpu4;
-            c4v.Value = _profile[index].cpu4value;
-            c5.IsChecked = _profile[index].cpu5;
-            c5v.Value = _profile[index].cpu5value;
-            c6.IsChecked = _profile[index].cpu6;
-            c6v.Value = _profile[index].cpu6value;
+            c1.IsChecked = _profile[index].Cpu1;
+            c1v.Value = _profile[index].Cpu1Value;
+            c3.IsChecked = _profile[index].Cpu3;
+            c3v.Value = _profile[index].Cpu3Value;
+            c4.IsChecked = _profile[index].Cpu4;
+            c4v.Value = _profile[index].Cpu4Value;
+            c5.IsChecked = _profile[index].Cpu5;
+            c5v.Value = _profile[index].Cpu5Value;
+            c6.IsChecked = _profile[index].Cpu6;
+            c6v.Value = _profile[index].Cpu6Value;
 
 
             if (IsRavenFamily())
             {
-                if (_profile[index].gpu10 == true && _profile[index].gpu9 == true && _profile[index].gpu10value == 1200)
+                if (_profile[index].Gpu10 == true && _profile[index].Gpu9 == true && _profile[index].Gpu10Value == 1200)
                 {
-                    if (_profile[index].gpu9value == 800)
+                    if (_profile[index].Gpu9Value == 800)
                     {
                         IgpuEnchancementCombo.SelectedIndex = 1;
                     }
-                    if (_profile[index].gpu9value == 1000)
+                    if (_profile[index].Gpu9Value == 1000)
                     {
                         IgpuEnchancementCombo.SelectedIndex = 2;
                     }
@@ -521,13 +521,13 @@ public sealed partial class ПресетыPage
             }
             else
             {
-                if (_profile[index].advncd10 == true)
+                if (_profile[index].Advncd10 == true)
                 {
-                    if (_profile[index].advncd10value == 1750)
+                    if (_profile[index].Advncd10Value == 1750)
                     {
                         IgpuEnchancementCombo.SelectedIndex = 1;
                     }
-                    if (_profile[index].advncd10value == 2200)
+                    if (_profile[index].Advncd10Value == 2200)
                     {
                         IgpuEnchancementCombo.SelectedIndex = 2;
                     }
@@ -538,23 +538,23 @@ public sealed partial class ПресетыPage
                 }
             }
 
-            if (!_profile[index].cpu5 && !_profile[index].cpu6)
+            if (!_profile[index].Cpu5 && !_profile[index].Cpu6)
             {
                 TurboSetOnly(Turbo_LightModeToggle);
             }
             else
             {
-                if ((_profile[index].cpu5 && !_profile[index].cpu6) || (!_profile[index].cpu5 && _profile[index].cpu6))
+                if ((_profile[index].Cpu5 && !_profile[index].Cpu6) || (!_profile[index].Cpu5 && _profile[index].Cpu6))
                 {
                     TurboSetOnly(Turbo_LightModeToggle);
                 }
-                if (_profile[index].cpu5 && _profile[index].cpu6)
+                if (_profile[index].Cpu5 && _profile[index].Cpu6)
                 {
-                    if (_profile[index].cpu5value == 400 && _profile[index].cpu6value == 3)
+                    if (_profile[index].Cpu5Value == 400 && _profile[index].Cpu6Value == 3)
                     {
                         TurboSetOnly(Turbo_BalanceModeToggle);
                     }
-                    else if (_profile[index].cpu5value == 5000 && _profile[index].cpu6value == 1)
+                    else if (_profile[index].Cpu5Value == 5000 && _profile[index].Cpu6Value == 1)
                     {
                         TurboSetOnly(Turbo_HeavyModeToggle);
                     }
@@ -569,28 +569,28 @@ public sealed partial class ПресетыPage
                 }
             }
 
-            if (_profile[index].coall)
+            if (_profile[index].Coall)
             {
                 CurveOptimizerCustom.IsOn = true;
-                CurveOptimizerLevelCustom_Slider.Value = _profile[index].coallvalue;
+                CurveOptimizerLevelCustom_Slider.Value = _profile[index].Coallvalue;
             }
             else
             {
                 CurveOptimizerCustom.IsOn = false;
             }
 
-            V1.IsChecked = _profile[index].vrm1;
-            V1V.Value = _profile[index].vrm1value;
-            V2.IsChecked = _profile[index].vrm2;
-            V2V.Value = _profile[index].vrm2value;
-            V3.IsChecked = _profile[index].vrm3;
-            V3V.Value = _profile[index].vrm3value;
-            V4.IsChecked = _profile[index].vrm4;
-            V4V.Value = _profile[index].vrm4value;
-            g9v.Value = _profile[index].gpu9value;
-            g9.IsChecked = _profile[index].gpu9;
-            g10v.Value = _profile[index].gpu10value;
-            g10.IsChecked = _profile[index].gpu10;
+            V1.IsChecked = _profile[index].Vrm1;
+            V1V.Value = _profile[index].Vrm1Value;
+            V2.IsChecked = _profile[index].Vrm2;
+            V2V.Value = _profile[index].Vrm2Value;
+            V3.IsChecked = _profile[index].Vrm3;
+            V3V.Value = _profile[index].Vrm3Value;
+            V4.IsChecked = _profile[index].Vrm4;
+            V4V.Value = _profile[index].Vrm4Value;
+            g9v.Value = _profile[index].Gpu9Value;
+            g9.IsChecked = _profile[index].Gpu9;
+            g10v.Value = _profile[index].Gpu10Value;
+            g10.IsChecked = _profile[index].Gpu10;
         }
         catch
         {
@@ -1045,11 +1045,11 @@ public sealed partial class ПресетыPage
         var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * BaseTdp_Slider.Value + 0.21631949);
 
         c2.IsChecked = true;
-        _profile[index].cpu2 = true;
+        _profile[index].Cpu2 = true;
         c3.IsChecked = true;
-        _profile[index].cpu3 = true;
+        _profile[index].Cpu3 = true;
         c4.IsChecked = true;
-        _profile[index].cpu4 = true;
+        _profile[index].Cpu4 = true;
 
         if (fineTunedTdp > c3v.Maximum || BaseTdp_Slider.Value > c2v.Maximum || BaseTdp_Slider.Value > c4v.Maximum)
         {
@@ -1058,28 +1058,28 @@ public sealed partial class ПресетыPage
             c4v.Maximum = ПараметрыPage.FromValueToUpperFive(BaseTdp_Slider.Value);
         }
         c2v.Value = BaseTdp_Slider.Value;
-        _profile[index].cpu2value = BaseTdp_Slider.Value;
+        _profile[index].Cpu2Value = BaseTdp_Slider.Value;
 
         c4v.Value = BaseTdp_Slider.Value;
-        _profile[index].cpu4value = BaseTdp_Slider.Value;
+        _profile[index].Cpu4Value = BaseTdp_Slider.Value;
 
         if (SmartTdp.IsOn)
         {
             c3v.Value = fineTunedTdp;
-            _profile[index].cpu3value = fineTunedTdp;
+            _profile[index].Cpu3Value = fineTunedTdp;
         }
         else
         {
             c3v.Value = BaseTdp_Slider.Value;
-            _profile[index].cpu3value = BaseTdp_Slider.Value;
+            _profile[index].Cpu3Value = BaseTdp_Slider.Value;
         }
         if (_isPlatformPC != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
         {
             // Так как на компьютерах невозможно выставить другие Power лимиты
             c2.IsChecked = false; // Отключить STAPM
-            _profile[index].cpu2 = false;
+            _profile[index].Cpu2 = false;
             c4.IsChecked = false; // Отключить Slow лимит
-            _profile[index].cpu4 = false;
+            _profile[index].Cpu4 = false;
         }
         ProfileSave();
     }
@@ -1116,18 +1116,18 @@ public sealed partial class ПресетыPage
             if (toggle!.Name == "Turbo_LightModeToggle")
             {
                 TurboSetOnly(Turbo_LightModeToggle);
-                _profile[index].cpu5 = false;
-                _profile[index].cpu6 = false;
+                _profile[index].Cpu5 = false;
+                _profile[index].Cpu6 = false;
                 c5.IsChecked = false;
                 c6.IsChecked = false;
             }
             else if (toggle.Name == "Turbo_BalanceModeToggle")
             {
                 TurboSetOnly(Turbo_BalanceModeToggle);
-                _profile[index].cpu5 = true;
-                _profile[index].cpu6 = true;
-                _profile[index].cpu5value = 400;
-                _profile[index].cpu6value = 3;
+                _profile[index].Cpu5 = true;
+                _profile[index].Cpu6 = true;
+                _profile[index].Cpu5Value = 400;
+                _profile[index].Cpu6Value = 3;
                 c5.IsChecked = true;
                 c6.IsChecked = true;
                 c5v.Value = 400;
@@ -1136,10 +1136,10 @@ public sealed partial class ПресетыPage
             else if (toggle.Name == "Turbo_HeavyModeToggle")
             {
                 TurboSetOnly(Turbo_HeavyModeToggle);
-                _profile[index].cpu5 = true;
-                _profile[index].cpu6 = true;
-                _profile[index].cpu5value = 5000;
-                _profile[index].cpu6value = 1;
+                _profile[index].Cpu5 = true;
+                _profile[index].Cpu6 = true;
+                _profile[index].Cpu5Value = 5000;
+                _profile[index].Cpu6Value = 1;
                 c5.IsChecked = true;
                 c6.IsChecked = true;
                 c5v.Maximum = 5000;
@@ -1172,40 +1172,40 @@ public sealed partial class ПресетыPage
             case 0:
                 if (IsRavenFamily())
                 {
-                    _profile[index].gpu10 = false;
-                    _profile[index].gpu9 = false;
+                    _profile[index].Gpu10 = false;
+                    _profile[index].Gpu9 = false;
                 }
                 else
                 {
-                    _profile[index].advncd10 = false;
+                    _profile[index].Advncd10 = false;
                 }
                 break;
             case 1:
                 if (IsRavenFamily())
                 {
-                    _profile[index].gpu10 = true;
-                    _profile[index].gpu10value = 1200;
-                    _profile[index].gpu9 = true;
-                    _profile[index].gpu9value = 800;
+                    _profile[index].Gpu10 = true;
+                    _profile[index].Gpu10Value = 1200;
+                    _profile[index].Gpu9 = true;
+                    _profile[index].Gpu9Value = 800;
                 }
                 else
                 {
-                    _profile[index].advncd10 = true;
-                    _profile[index].advncd10value = 1750;
+                    _profile[index].Advncd10 = true;
+                    _profile[index].Advncd10Value = 1750;
                 }
                 break;
             case 2:
                 if (IsRavenFamily())
                 {
-                    _profile[index].gpu10 = true;
-                    _profile[index].gpu10value = 1200;
-                    _profile[index].gpu9 = true;
-                    _profile[index].gpu9value = 1000;
+                    _profile[index].Gpu10 = true;
+                    _profile[index].Gpu10Value = 1200;
+                    _profile[index].Gpu9 = true;
+                    _profile[index].Gpu9Value = 1000;
                 }
                 else
                 {
-                    _profile[index].advncd10 = true;
-                    _profile[index].advncd10value = 2200;
+                    _profile[index].Advncd10 = true;
+                    _profile[index].Advncd10Value = 2200;
                 }
                 break;
         }
@@ -1244,7 +1244,7 @@ public sealed partial class ПресетыPage
                     if (_profile.Length == 0)
                     {
                         _profile = new Profile[1];
-                        _profile[0] = new Profile { profilename = SaveProfileN.Text, profiledesc = SaveProfileD.Text };
+                        _profile[0] = new Profile { Profilename = SaveProfileN.Text, Profiledesc = SaveProfileD.Text };
                     }
                     else
                     {
@@ -1252,8 +1252,8 @@ public sealed partial class ПресетыPage
                         {
                             new()
                             {
-                                profilename = SaveProfileN.Text,
-                                profiledesc = SaveProfileD.Text
+                                Profilename = SaveProfileN.Text,
+                                Profiledesc = SaveProfileD.Text
                             }
                         };
                         _profile = [.. profileList];
@@ -1299,13 +1299,13 @@ public sealed partial class ПресетыPage
     {
         try
         {
-            await LogHelper.Log($"Editing profile name: From \"{_profile[_indexprofile].profilename}\" To \"{EditProfileN.Text}\"");
+            await LogHelper.Log($"Editing profile name: From \"{_profile[_indexprofile].Profilename}\" To \"{EditProfileN.Text}\"");
             EditProfileButton.Flyout.Hide();
             if (EditProfileN.Text != "")
             {
                 ProfileLoad();
-                _profile[_indexprofile].profilename = EditProfileN.Text;
-                _profile[_indexprofile].profiledesc = EditProfileD.Text;
+                _profile[_indexprofile].Profilename = EditProfileN.Text;
+                _profile[_indexprofile].Profiledesc = EditProfileD.Text;
                 ProfileSave();
                 _waitforload = true;
                 LoadProfiles();
@@ -1359,15 +1359,23 @@ public sealed partial class ПресетыPage
             if (result == ContentDialogResult.Primary)
             {
                 var indexprofile = AppSettings.Preset > -1 ? AppSettings.Preset : 0;
-                await LogHelper.Log($"Showing delete profile dialog: deleting profile \"{_profile[indexprofile].profilename}\"");
+
+                await LogHelper.Log($"Showing delete profile dialog: deleting profile \"{_profile[indexprofile].Profilename}\"");
+
                 ProfileLoad();
+
                 _waitforload = true;
+
                 var profileList = new List<Profile>(_profile);
                 profileList.RemoveAt(indexprofile);
                 _profile = [.. profileList];
+
                 _waitforload = false;
-                AppSettings.Preset = 0;
-                _indexprofile = 0;
+
+                AppSettings.Preset = _profile.Length > 0 ? 0 : -1;
+                _indexprofile = AppSettings.Preset;
+                
+
                 NotificationsService.Notifies ??= [];
                 NotificationsService.Notifies.Add(new Notify
                 {
@@ -1388,8 +1396,8 @@ public sealed partial class ПресетыPage
     }
     private void EditProfileButton_Click_1(object sender, RoutedEventArgs e)
     {
-        EditProfileN.Text = _profile[_indexprofile].profilename;
-        EditProfileD.Text = _profile[_indexprofile].profiledesc;
+        EditProfileN.Text = _profile[_indexprofile].Profilename;
+        EditProfileD.Text = _profile[_indexprofile].Profiledesc;
     }
 
     #endregion
@@ -1545,9 +1553,9 @@ public sealed partial class ПресетыPage
 
                 for (var i = 0; i < _profile.Length; i++)
                 {
-                    if ((_profile[i].profiledesc == selectedItem.Description || _profile[i].profilename == selectedItem.Description) &&
-                        _profile[i].profilename == selectedItem.Text &&
-                        _profile[i].profileicon == selectedItem.IconGlyph)
+                    if ((_profile[i].Profiledesc == selectedItem.Description || _profile[i].Profilename == selectedItem.Description) &&
+                        _profile[i].Profilename == selectedItem.Text &&
+                        _profile[i].Profileicon == selectedItem.IconGlyph)
                     {
                         _indexprofile = i;
                         AppSettings.Preset = i;
@@ -1609,10 +1617,10 @@ public sealed partial class ПресетыPage
             for (var i = 0; i < _profile.Length; i++)
             {
                 var profile = _profile[i];
-                if (profile.profilename == name &&
-                    (profile.profiledesc == desc || profile.profilename == desc) &&
-                    (profile.profileicon == icon ||
-                     profile.profileicon == "\uE718"))
+                if (profile.Profilename == name &&
+                    (profile.Profiledesc == desc || profile.Profilename == desc) &&
+                    (profile.Profileicon == icon ||
+                     profile.Profileicon == "\uE718"))
                 {
                     ПараметрыPage.ApplyInfo = string.Empty;
                     ShellPage.MandarinSparseUnitProfile(profile, true);
@@ -1741,7 +1749,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         var index = _indexprofile == -1 ? 0 : _indexprofile;
 
-        _profile[index].coallvalue = CurveOptimizerLevelCustom_Slider.Value;
+        _profile[index].Coallvalue = CurveOptimizerLevelCustom_Slider.Value;
         ProfileSave();
     }
 
@@ -1751,7 +1759,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         var index = _indexprofile == -1 ? 0 : _indexprofile;
 
-        _profile[index].coall = CurveOptimizerCustom.IsOn;
+        _profile[index].Coall = CurveOptimizerCustom.IsOn;
         ProfileSave();
     }
 
@@ -1880,7 +1888,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu1value = c1v.Value;
+            _profile[_indexprofile].Cpu1Value = c1v.Value;
             ProfileSave();
         }
     }
@@ -1896,7 +1904,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu2value = c2v.Value;
+            _profile[_indexprofile].Cpu2Value = c2v.Value;
             ProfileSave();
         }
     }
@@ -1912,7 +1920,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu3value = c3v.Value;
+            _profile[_indexprofile].Cpu3Value = c3v.Value;
             ProfileSave();
         }
     }
@@ -1928,7 +1936,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu4value = c4v.Value;
+            _profile[_indexprofile].Cpu4Value = c4v.Value;
             ProfileSave();
         }
     }
@@ -1944,7 +1952,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu5value = c5v.Value;
+            _profile[_indexprofile].Cpu5Value = c5v.Value;
             ProfileSave();
         }
     }
@@ -1960,7 +1968,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu6value = c6v.Value;
+            _profile[_indexprofile].Cpu6Value = c6v.Value;
             ProfileSave();
         }
     }
@@ -1976,7 +1984,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm1value = V1V.Value;
+            _profile[_indexprofile].Vrm1Value = V1V.Value;
             ProfileSave();
         }
     }
@@ -1991,7 +1999,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm2value = V2V.Value;
+            _profile[_indexprofile].Vrm2Value = V2V.Value;
             ProfileSave();
         }
     }
@@ -2006,7 +2014,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm3value = V3V.Value;
+            _profile[_indexprofile].Vrm3Value = V3V.Value;
             ProfileSave();
         }
     }
@@ -2021,7 +2029,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm4value = V4V.Value;
+            _profile[_indexprofile].Vrm4Value = V4V.Value;
             ProfileSave();
         }
     }
@@ -2036,7 +2044,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu9value = g9v.Value;
+            _profile[_indexprofile].Gpu9Value = g9v.Value;
             ProfileSave();
         }
     }
@@ -2051,7 +2059,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu10value = g10v.Value;
+            _profile[_indexprofile].Gpu10Value = g10v.Value;
             ProfileSave();
         }
     }
@@ -2071,8 +2079,8 @@ public sealed partial class ПресетыPage
         var check = c1.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu1 = check;
-            _profile[_indexprofile].cpu1value = c1v.Value;
+            _profile[_indexprofile].Cpu1 = check;
+            _profile[_indexprofile].Cpu1Value = c1v.Value;
             ProfileSave();
         }
     }
@@ -2089,8 +2097,8 @@ public sealed partial class ПресетыPage
         var check = c2.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu2 = check;
-            _profile[_indexprofile].cpu2value = c2v.Value;
+            _profile[_indexprofile].Cpu2 = check;
+            _profile[_indexprofile].Cpu2Value = c2v.Value;
             ProfileSave();
         }
     }
@@ -2107,8 +2115,8 @@ public sealed partial class ПресетыPage
         var check = c3.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu3 = check;
-            _profile[_indexprofile].cpu3value = c3v.Value;
+            _profile[_indexprofile].Cpu3 = check;
+            _profile[_indexprofile].Cpu3Value = c3v.Value;
             ProfileSave();
         }
     }
@@ -2125,8 +2133,8 @@ public sealed partial class ПресетыPage
         var check = c4.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu4 = check;
-            _profile[_indexprofile].cpu4value = c4v.Value;
+            _profile[_indexprofile].Cpu4 = check;
+            _profile[_indexprofile].Cpu4Value = c4v.Value;
             ProfileSave();
         }
     }
@@ -2143,8 +2151,8 @@ public sealed partial class ПресетыPage
         var check = c5.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu5 = check;
-            _profile[_indexprofile].cpu5value = c5v.Value;
+            _profile[_indexprofile].Cpu5 = check;
+            _profile[_indexprofile].Cpu5Value = c5v.Value;
             ProfileSave();
         }
     }
@@ -2161,8 +2169,8 @@ public sealed partial class ПресетыPage
         var check = c6.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].cpu6 = check;
-            _profile[_indexprofile].cpu6value = c6v.Value;
+            _profile[_indexprofile].Cpu6 = check;
+            _profile[_indexprofile].Cpu6Value = c6v.Value;
             ProfileSave();
         }
     }
@@ -2180,8 +2188,8 @@ public sealed partial class ПресетыPage
         var check = V1.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm1 = check;
-            _profile[_indexprofile].vrm1value = V1V.Value;
+            _profile[_indexprofile].Vrm1 = check;
+            _profile[_indexprofile].Vrm1Value = V1V.Value;
             ProfileSave();
         }
     }
@@ -2198,8 +2206,8 @@ public sealed partial class ПресетыPage
         var check = V2.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm2 = check;
-            _profile[_indexprofile].vrm2value = V2V.Value;
+            _profile[_indexprofile].Vrm2 = check;
+            _profile[_indexprofile].Vrm2Value = V2V.Value;
             ProfileSave();
         }
     }
@@ -2216,8 +2224,8 @@ public sealed partial class ПресетыPage
         var check = V3.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm3 = check;
-            _profile[_indexprofile].vrm3value = V3V.Value;
+            _profile[_indexprofile].Vrm3 = check;
+            _profile[_indexprofile].Vrm3Value = V3V.Value;
             ProfileSave();
         }
     }
@@ -2234,8 +2242,8 @@ public sealed partial class ПресетыPage
         var check = V4.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].vrm4 = check;
-            _profile[_indexprofile].vrm4value = V4V.Value;
+            _profile[_indexprofile].Vrm4 = check;
+            _profile[_indexprofile].Vrm4Value = V4V.Value;
             ProfileSave();
         }
     }
@@ -2252,8 +2260,8 @@ public sealed partial class ПресетыPage
         var check = g9.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu9 = check;
-            _profile[_indexprofile].gpu9value = g9v.Value;
+            _profile[_indexprofile].Gpu9 = check;
+            _profile[_indexprofile].Gpu9Value = g9v.Value;
             ProfileSave();
         }
     }
@@ -2270,8 +2278,8 @@ public sealed partial class ПресетыPage
         var check = g10.IsChecked == true;
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].gpu10 = check;
-            _profile[_indexprofile].gpu10value = g10v.Value;
+            _profile[_indexprofile].Gpu10 = check;
+            _profile[_indexprofile].Gpu10Value = g10v.Value;
             ProfileSave();
         }
     }

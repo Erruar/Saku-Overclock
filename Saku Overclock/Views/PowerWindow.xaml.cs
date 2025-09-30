@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 
 namespace Saku_Overclock.Views;
@@ -20,7 +21,6 @@ internal partial class PowerWindow : IDisposable
     private const int PAGE_SIZE = 50; // Показываем только 50 элементов за раз
     private int _totalItems = 0;
     private bool _isLoading = false;
-    private int _previousScroll = 0;
 
     public PowerWindow()
     {
@@ -105,9 +105,9 @@ internal partial class PowerWindow : IDisposable
             for (var i = startIndex; i < endIndex; i++)
             {
                 // Убеждаемся что у нас есть заметка
-                while (_notes?._notelist.Count <= i)
+                while (_notes?.Notelist.Count <= i)
                 {
-                    _notes?._notelist.Add(" ");
+                    _notes?.Notelist.Add(" ");
                 }
 
                 var item = new PowerMonitorItem
@@ -115,7 +115,7 @@ internal partial class PowerWindow : IDisposable
                     Index = $"{i:D4}",
                     Offset = $"0x{i * 4:X4}",
                     Value = $"{_rawData[i]:F6}",
-                    Note = _notes?._notelist[i] ?? " ",
+                    Note = _notes?.Notelist[i] ?? " ",
                     RealIndex = i // Сохраняем реальный индекс
                 };
 
@@ -419,11 +419,11 @@ internal partial class PowerWindow : IDisposable
                 }
 
                 // Сохраняем заметки если изменились
-                if (item.Note != _notes?._notelist[realIndex])
+                if (item.Note != _notes?.Notelist[realIndex])
                 {
-                    if (_notes != null && realIndex < _notes._notelist.Count)
+                    if (_notes != null && realIndex < _notes.Notelist.Count)
                     {
-                        _notes._notelist[realIndex] = item.Note ?? " ";
+                        _notes.Notelist[realIndex] = item.Note ?? " ";
                         // Отложенное сохранение
                         Task.Run(NoteSave);
                     }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Saku_Overclock.Contracts.Services;
+﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.SMUEngine;
 
 namespace Saku_Overclock.Services;
@@ -12,7 +7,7 @@ public class CompositeDataProvider : IDataProvider
 {
     private readonly RyzenadjProvider _ryzenadjProvider;
     private readonly ZenstatesCoreProvider _zenstatesProvider;
-    private bool _fallbackMode = false;
+    private bool _fallbackMode;
 
     public CompositeDataProvider(RyzenadjProvider ryzenadjProvider, ZenstatesCoreProvider zenstatesProvider)
     {
@@ -50,13 +45,13 @@ public class CompositeDataProvider : IDataProvider
     /// Возвращает информацию с использованием Ryzenadj, если он доступен,
     /// иначе – через Zenstates Core.
     /// </summary>
-    public async Task<SensorsInformation> GetDataAsync()
+    public SensorsInformation GetDataAsync()
     {
         if (!_fallbackMode)
         {
             try
             {
-                return await _ryzenadjProvider.GetDataAsync();
+                return _ryzenadjProvider.GetDataAsync();
             }
             catch (Exception ex)
             {
@@ -66,6 +61,6 @@ public class CompositeDataProvider : IDataProvider
         }
 
         // Если мы в режиме fallback – используем Zenstates Core.
-        return await _zenstatesProvider.GetDataAsync();
+        return _zenstatesProvider.GetDataAsync();
     }
 }

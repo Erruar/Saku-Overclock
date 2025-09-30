@@ -9,51 +9,108 @@ namespace Saku_Overclock.Services;
 
 public class ZenstatesCoreProvider : IDataProvider
 {
-    private readonly List<double> _coreMultiplierCache = []; // Кэш множителей ядер
     private float _currentCpuLoad;
     private int _globalCoreCounter = -1;
-    private readonly Cpu Cpu = CpuSingleton.GetInstance();
-    private readonly Dictionary<int, int> _coreToTableIndexMap = []; // Маппинг: ядро -> индекс в таблице
-    private bool _isInitialized; // Флаг для проверки готовности таблицы
-    public async Task<SensorsInformation> GetDataAsync()
-    {
-        // Здесь реализация через Zenstates Core (с WMI, таблицами Power_Table и т.п.)
-        RefreshPowerTable();
-        await InitializeCoreIndexMapAsync((int)Cpu.info.topology.cores);
+    private readonly Cpu _cpu = CpuSingleton.GetInstance();
+    private uint _tableVersion;
 
-        var (avgCoreClk, clkPerClock) = CalculateCoreMetrics();
+    // Переиспользуемые массивы для предотвращения аллокаций
+    private double[] _clkPerCoreCache = [];
+    private double[] _voltPerCoreCache = [];
+    private double[] _tempPerCoreCache = [];
+    private double[] _powerPerCoreCache = [];
+
+    // Кэш строк для предотвращения аллокаций
+    private static class SensorNames
+    {
+        public const string CpuFrequencyStart = "CpuFrequencyStart";
+        public const string CpuVoltageStart = "CpuVoltageStart";
+        public const string CpuTemperatureStart = "CpuTemperatureStart";
+        public const string CpuPowerStart = "CpuPowerStart";
+    }
+
+    /// <summary>
+    ///     Реализация получения информации через Zenstates Core
+    /// </summary>
+    /// <returns>SensorsInformation</returns>
+    public SensorsInformation GetDataAsync()
+    {
+        RefreshPowerTable();
+
+        if (_globalCoreCounter == -1)
+        {
+            _globalCoreCounter = (int)_cpu.info.topology.physicalCores;
+            InitializeCoreArrays();
+        }
+
+        _tableVersion = _cpu.smu.TableVersion;
+
+        var (avgCoreClk, avgCoreVolt) = CalculateCoreMetrics();
+
         return new SensorsInformation
         {
-            CpuFamily = Cpu.info.codeName.ToString(),
-            CpuStapmLimit = Cpu.powerTable?.Table?[0] ?? 0,
-            CpuStapmValue = Cpu.powerTable?.Table?[1] ?? 0,
-            CpuFastLimit = Cpu.powerTable?.Table?[2] ?? 0,
-            CpuFastValue = Cpu.powerTable?.Table?[3] ?? 0,
-            CpuSlowLimit = Cpu.powerTable?.Table?[4] ?? 0,
-            CpuSlowValue = Cpu.powerTable?.Table?[5] ?? 0,
-            VrmTdcValue = (Cpu.powerTable?.Table != null ? (Cpu.powerTable?.Table[6] != 0 ? Cpu.powerTable?.Table[7] : Cpu.powerTable?.Table[9]) : 0) ?? 0,
-            VrmEdcValue = (Cpu.powerTable?.Table != null ? (Cpu.powerTable?.Table[6] != 0 ? Cpu.powerTable?.Table[7] : Cpu.powerTable?.Table[9]) : 0) ?? 0,
-            VrmTdcLimit = (Cpu.powerTable?.Table != null ? (Cpu.powerTable?.Table[6] != 0 ? Cpu.powerTable?.Table[6] : Cpu.powerTable?.Table[8]) : 0) ?? 0,
-            VrmEdcLimit = (Cpu.powerTable?.Table != null ? (Cpu.powerTable?.Table[6] != 0 ? Cpu.powerTable?.Table[6] : Cpu.powerTable?.Table[8]) : 0) ?? 0,
-            CpuTempValue = Cpu.powerTable?.Table?[11] ?? Cpu.GetCpuTemperature() ?? 0d,
-            CpuTempLimit = Cpu.powerTable?.Table?[10] ?? 100,
-            CpuUsage = GetCoreLoad(),
-            MemFrequency = Cpu.powerTable?.MCLK ?? 0,
-            FabricFrequency = Cpu.powerTable?.FCLK ?? 0,
-            SocPower = (Cpu.powerTable?.VDDCR_SOC ?? 0) * 10,
-            SocVoltage = Cpu.powerTable?.VDDCR_SOC ?? 0,
+            // powerTable Может быть нулевой на некотором оборудовании (ОЧЕНЬ редко)!
+            CpuFamily = _cpu.info.codeName.ToString(), // Не стоит менять, работает везде
+            CpuUsage = GetCoreLoad(), // Это попрошу оставить, работает везде, использует winAPI
+            CpuStapmLimit = GetSensorValue("CpuStapmLimit", _tableVersion),
+            CpuStapmValue = GetSensorValue("CpuStapmValue", _tableVersion),
+            CpuFastLimit = GetSensorValue("CpuFastLimit", _tableVersion),
+            CpuFastValue = GetSensorValue("CpuFastValue", _tableVersion),
+            CpuSlowLimit = GetSensorValue("CpuSlowLimit", _tableVersion),
+            CpuSlowValue = GetSensorValue("CpuSlowValue", _tableVersion),
+            VrmTdcValue = GetVrmValue("VrmTdcValue", _tableVersion),
+            VrmEdcValue = GetVrmValue("VrmEdcValue", _tableVersion),
+            VrmTdcLimit = GetVrmLimit("VrmTdcLimit", _tableVersion),
+            VrmEdcLimit = GetVrmLimit("VrmEdcLimit", _tableVersion),
+            CpuTempValue = GetSensorValue("CpuTempValue", _tableVersion, _cpu.GetCpuTemperature() ?? 0f),
+            CpuTempLimit = GetSensorValue("CpuTempLimit", _tableVersion, 100),
+            MemFrequency = _cpu.powerTable?.MCLK ?? 0,
+            FabricFrequency = _cpu.powerTable?.FCLK ?? 0,
+            SocPower = GetSensorValue("SocPower", _tableVersion, (_cpu.powerTable?.VDDCR_SOC ?? 0) * 10),
+            SocVoltage = _cpu.powerTable?.VDDCR_SOC ?? 0,
             CpuFrequency = avgCoreClk,
-            CpuFrequencyPerCore = clkPerClock,
+            CpuFrequencyPerCore = _clkPerCoreCache,
+            CpuVoltage = avgCoreVolt,
+            CpuVoltagePerCore = _voltPerCoreCache,
+            CpuTemperaturePerCore = _tempPerCoreCache,
+            CpuPowerPerCore = _powerPerCoreCache,
+
+            // Параметры которые есть не на каждом процессоре
+            ApuSlowLimit = GetSensorValue("ApuSlowLimit", _tableVersion),
+            ApuSlowValue = GetSensorValue("ApuSlowValue", _tableVersion),
+            VrmPsiValue = GetSensorValue("VrmPsiValue", _tableVersion),
+            VrmPsiSocValue = GetSensorValue("VrmPsiSocValue", _tableVersion),
+            SocTdcValue = GetSensorValue("SocTdcValue", _tableVersion),
+            SocTdcLimit = GetSensorValue("SocTdcLimit", _tableVersion),
+            SocEdcValue = GetSensorValue("SocEdcValue", _tableVersion),
+            SocEdcLimit = GetSensorValue("SocEdcLimit", _tableVersion),
+            ApuTempValue = GetSensorValue("ApuTempValue", _tableVersion),
+            ApuTempLimit = GetSensorValue("ApuTempLimit", _tableVersion),
+            DgpuTempValue = GetSensorValue("DgpuTempValue", _tableVersion),
+            DgpuTempLimit = GetSensorValue("DgpuTempLimit", _tableVersion),
+            CpuStapmTimeValue = GetSensorValue("CpuStapmTimeValue", _tableVersion),
+            CpuSlowTimeValue = GetSensorValue("CpuSlowTimeValue", _tableVersion),
+            ApuFrequency = GetSensorValue("ApuFrequency", _tableVersion),
+            ApuTemperature = GetSensorValue("ApuTemperature", _tableVersion),
+            ApuVoltage = GetSensorValue("ApuVoltage", _tableVersion)
         };
     }
 
-    public float[]? GetPowerTable() => Cpu.powerTable?.Table;
+    #region Get Information voids
 
+    /// <summary>
+    ///     Возвращает таблицу PowerTable целиком для дальнейшей обработки, например для методов OC Finder
+    /// </summary>
+    public float[]? GetPowerTable() => _cpu.powerTable?.Table;
+
+    /// <summary>
+    ///     Обновляет PowerTable
+    /// </summary>
     private void RefreshPowerTable()
     {
         try
         {
-            Cpu.RefreshPowerTable();
+            _cpu.RefreshPowerTable();
         }
         catch
         {
@@ -61,319 +118,456 @@ public class ZenstatesCoreProvider : IDataProvider
         }
     }
 
-    private (double avgCoreClk, double[] clkPerClock) CalculateCoreMetrics()
+    /// <summary>
+    ///     Словарь маппинга разных версий таблицы PowerTable к определённым сенсорам доступным на этой версии таблицы.
+    ///     Принимает: Table Version, Value: Словарь для (Index -> Sensor Name)
+    /// </summary>
+    private static readonly Dictionary<uint, List<(uint Offset, string Name)>> SupportedPmTableVersions = new()
     {
-        double sumCoreClk = 0;
-        var validCoreCount = 0;
-        List<double> clkPerClock = [];
-        for (uint f = 0; f < _globalCoreCounter; f++)
+        // Zen 2
         {
-            var clk = Math.Round(GetCoreClock(f), 3);
-            if (clk > 0) // Исключаем нули и -1
+            0x00240803, [
+                (0, "CpuFastLimit"),
+                (29, "CpuFastValue"),
+                (0, "CpuSlowLimit"),
+                (1, "CpuSlowValue"),
+                (2, "VrmTdcLimit"),
+                (3, "VrmTdcValue"),
+                (4, "CpuTempLimit"),
+                (5, "CpuTempValue"),
+                (8, "VrmEdcLimit"),
+                (9, "VrmEdcValue"),
+                (25, "SocPower"),
+                (45, "SocVoltage"),
+                (42, "VrmPsiValue"),
+                (46, "VrmPsiSocValue"),
+                (46, "SocTdcValue"),
+                (8, "SocTdcLimit"),
+                (46, "SocEdcValue"),
+                (8, "SocEdcLimit"),
+                (147, "CpuPowerStart"),
+                (163, "CpuVoltageStart"),
+                (179, "CpuTemperatureStart"),
+                (227, "CpuFrequencyStart")
+            ]
+        },
+        {
+            0x00240903, [
+                (0, "CpuFastLimit"),
+                (29, "CpuFastValue"),
+                (0, "CpuSlowLimit"),
+                (1, "CpuSlowValue"),
+                (2, "VrmTdcLimit"),
+                (3, "VrmTdcValue"),
+                (4, "CpuTempLimit"),
+                (5, "CpuTempValue"),
+                (8, "VrmEdcLimit"),
+                (9, "VrmEdcValue"),
+                (25, "SocPower"),
+                (45, "SocVoltage"),
+                (41, "VrmPsiValue"),
+                (46, "VrmPsiSocValue"),
+                (46, "SocTdcValue"),
+                (8, "SocTdcLimit"),
+                (46, "SocEdcValue"),
+                (8, "SocEdcLimit"),
+                (147, "CpuPowerStart"),
+                (155, "CpuVoltageStart"),
+                (163, "CpuTemperatureStart"),
+                (187, "CpuFrequencyStart")
+            ]
+        },
+        // Zen 3
+        {
+            0x00380904, [
+                (0, "CpuFastLimit"),
+                (29, "CpuFastValue"),
+                (0, "CpuSlowLimit"),
+                (1, "CpuSlowValue"),
+                (2, "VrmTdcLimit"),
+                (3, "VrmTdcValue"),
+                (4, "CpuTempLimit"),
+                (5, "CpuTempValue"),
+                (8, "VrmEdcLimit"),
+                (9, "VrmEdcValue"),
+                (25, "SocPower"),
+                (45, "SocVoltage"),
+                (42, "VrmPsiValue"),
+                (46, "VrmPsiSocValue"),
+                (46, "SocTdcValue"),
+                (8, "SocTdcLimit"),
+                (46, "SocEdcValue"),
+                (8, "SocEdcLimit"),
+                (169, "CpuPowerStart"),
+                (177, "CpuVoltageStart"),
+                (185, "CpuTemperatureStart"),
+                (209, "CpuFrequencyStart")
+            ]
+        },
+        {
+            0x00380905, [
+                (0, "CpuFastLimit"),
+                (29, "CpuFastValue"),
+                (0, "CpuSlowLimit"),
+                (1, "CpuSlowValue"),
+                (2, "VrmTdcLimit"),
+                (3, "VrmTdcValue"),
+                (4, "CpuTempLimit"),
+                (5, "CpuTempValue"),
+                (8, "VrmEdcLimit"),
+                (9, "VrmEdcValue"),
+                (25, "SocPower"),
+                (45, "SocVoltage"),
+                (42, "VrmPsiValue"),
+                (46, "VrmPsiSocValue"),
+                (46, "SocTdcValue"),
+                (8, "SocTdcLimit"),
+                (46, "SocEdcValue"),
+                (8, "SocEdcLimit"),
+                (172, "CpuPowerStart"),
+                (180, "CpuVoltageStart"),
+                (188, "CpuTemperatureStart"),
+                (212, "CpuFrequencyStart")
+            ]
+        },
+        {
+            0x00380804, [
+                (0, "CpuFastLimit"),
+                (29, "CpuFastValue"),
+                (0, "CpuSlowLimit"),
+                (1, "CpuSlowValue"),
+                (2, "VrmTdcLimit"),
+                (3, "VrmTdcValue"),
+                (4, "CpuTempLimit"),
+                (5, "CpuTempValue"),
+                (8, "VrmEdcLimit"),
+                (9, "VrmEdcValue"),
+                (25, "SocPower"),
+                (45, "SocVoltage"),
+                (42, "VrmPsiValue"),
+                (46, "VrmPsiSocValue"),
+                (46, "SocTdcValue"),
+                (8, "SocTdcLimit"),
+                (46, "SocEdcValue"),
+                (8, "SocEdcLimit"),
+                (169, "CpuPowerStart"),
+                (185, "CpuVoltageStart"),
+                (201, "CpuTemperatureStart"),
+                (249, "CpuFrequencyStart")
+            ]
+        },
+        {
+            0x00380805, [
+                (0, "CpuFastLimit"),
+                (29, "CpuFastValue"),
+                (0, "CpuSlowLimit"),
+                (1, "CpuSlowValue"),
+                (2, "VrmTdcLimit"),
+                (3, "VrmTdcValue"),
+                (4, "CpuTempLimit"),
+                (5, "CpuTempValue"),
+                (8, "VrmEdcLimit"),
+                (9, "VrmEdcValue"),
+                (25, "SocPower"),
+                (45, "SocVoltage"),
+                (42, "VrmPsiValue"),
+                (46, "VrmPsiSocValue"),
+                (46, "SocTdcValue"),
+                (8, "SocTdcLimit"),
+                (46, "SocEdcValue"),
+                (8, "SocEdcLimit"),
+                (172, "CpuPowerStart"),
+                (188, "CpuVoltageStart"),
+                (204, "CpuTemperatureStart"),
+                (252, "CpuFrequencyStart")
+            ]
+        },
+        // Zen 4
+        {
+            0x00540004, [
+                (0, "CpuStapmLimit"),
+                (1, "CpuStapmValue"),
+                (2, "CpuFastLimit"),
+                (26, "CpuFastValue"),
+                (2, "CpuSlowLimit"),
+                (3, "CpuSlowValue"),
+                (8, "VrmTdcLimit"),
+                (8, "VrmEdcLimit"),
+                (48, "VrmTdcValue"),
+                (49, "VrmEdcValue"),
+                (10, "CpuTempLimit"),
+                (11, "CpuTempValue"),
+                (21, "SocPower"),
+                (52, "SocVoltage"),
+                (293, "CpuPowerStart"),
+                (309, "CpuVoltageStart"),
+                (325, "CpuTemperatureStart"),
+                (341, "CpuFrequencyStart")
+            ]
+        }
+    };
+
+    /// <summary>
+    ///     Получает значение сенсора по имени из PM таблицы
+    /// </summary>
+    private float GetSensorValue(string sensorName, uint tableVersion, float fallbackValue = 0f)
+    {
+        if (_cpu.powerTable?.Table == null)
+        {
+            return fallbackValue;
+        }
+
+        // Проверяем, поддерживается ли версия таблицы
+        if (!SupportedPmTableVersions.TryGetValue(tableVersion, out var sensorMap))
+        {
+            LogHelper.LogWarn($"Unsupported PM table version: 0x{tableVersion:X8}");
+            return fallbackValue;
+        }
+
+        // Ищем индекс сенсора по имени
+        var sensorIndex = sensorMap.FirstOrDefault(kvp => kvp.Name == sensorName).Offset;
+
+        // Проверяем границы массива
+        if (sensorIndex >= _cpu.powerTable.Table.Length)
+        {
+            LogHelper.LogWarn($"Sensor index {sensorIndex} out of bounds for {sensorName}");
+            return fallbackValue;
+        }
+
+        var value = _cpu.powerTable.Table[sensorIndex];
+        return value != 0 ? value : fallbackValue;
+    }
+
+    /// <summary>
+    ///     Получает значение VRM с поддержкой альтернативных индексов
+    /// </summary>
+    private float GetVrmValue(string baseSensorName, uint tableVersion)
+    {
+        if (_cpu.powerTable?.Table == null)
+        {
+            return 0f;
+        }
+
+        var primaryValue = GetSensorValue(baseSensorName, tableVersion);
+
+        // Если основное значение нулевое, пробуем альтернативные индексы
+        if (primaryValue == 0)
+        {
+            var altValue = GetSensorValue($"{baseSensorName}_Alt", tableVersion);
+            if (altValue != 0)
             {
-                clkPerClock.Add(clk);
-                sumCoreClk += clk;
-                validCoreCount++;
+                return altValue;
+            }
+
+            altValue = GetSensorValue($"{baseSensorName}_Alt2", tableVersion);
+            if (altValue != 0)
+            {
+                return altValue;
             }
         }
 
-        var avgCoreClk = validCoreCount > 0 ? sumCoreClk / validCoreCount : 0;
-
-        return (avgCoreClk, clkPerClock.ToArray());
+        return primaryValue;
     }
 
-    #region Get Information voids
-    private async Task InitializeCoreIndexMapAsync(int coreCounter)
+    /// <summary>
+    ///     Получает лимит VRM с поддержкой альтернативных индексов
+    /// </summary>
+    private float GetVrmLimit(string baseSensorName, uint tableVersion)
     {
-        if (_isInitialized) { return; }
-
-        _isInitialized = true;
-        _globalCoreCounter = coreCounter; // Всего ядер в процессоре
-
-        // Асинхронная загрузка WMI
-        await Task.Run(() =>
+        if (_cpu.powerTable?.Table == null)
         {
-            // Получаем текущие частоты через CPU Multiplier для каждого ядра
-            UpdateCoreMultiplierCache();
-
-            // Строим маппинг ядер к индексам Power Table
-            BuildCoreToTableMapping();
-        }).ConfigureAwait(false); // Не в UI потоке
-    }
-
-    private void UpdateCoreMultiplierCache()
-    {
-        for (var core = 0; core < Cpu.info.topology.physicalCores; core++)
-        {
-            try
-            {
-                // Получаем множитель и конвертируем в ГГц
-                var multiplier = (float)Cpu.GetCoreMulti(core) / 10f;
-                if (multiplier > 0.38) // Частота больше минимальных 0.4 ГГц
-                {
-                    _coreMultiplierCache.Add(multiplier);
-                }
-            }
-            catch (Exception ex)
-            {
-                _coreMultiplierCache.Add(0);
-                LogHelper.LogWarn(ex.ToString());
-            }
-        }
-    }
-    private void BuildCoreToTableMapping()
-    {
-        _coreToTableIndexMap.Clear();
-
-        if (Cpu.powerTable?.Table == null || _coreMultiplierCache.Count == 0)
-        {
-            return;
+            return 0f;
         }
 
-        // Получаем активные ядра (с частотой > 0.38)
-        var activeCores = new List<int>();
-        var disabledCores = new List<int>();
-        for (var i = 0; i < Cpu.info.topology.physicalCores; i++)
-        {
-            var mapIndex = i < 8 ? 0 : 1;
-            if ((~Cpu.info.topology.coreDisableMap[mapIndex] >> i % 8 & 1) != 0)
+        var primaryValue = GetSensorValue(baseSensorName, tableVersion);
 
+        // Если основное значение нулевое, пробуем VrmEdcLimit как fallback
+        if (primaryValue == 0)
+        {
+            return GetSensorValue($"{baseSensorName}_Alt", tableVersion);
+        }
+
+        return primaryValue;
+    }
+
+    /// <summary>
+    ///     Первая инициализация безопасных массивов различных сенсоров процессора
+    /// </summary>
+    private void InitializeCoreArrays()
+    {
+        _clkPerCoreCache = new double[_globalCoreCounter];
+        _voltPerCoreCache = new double[_globalCoreCounter];
+        _tempPerCoreCache = new double[_globalCoreCounter];
+        _powerPerCoreCache = new double[_globalCoreCounter];
+    }
+
+    /// <summary>
+    ///     Обновление массивов различных сенсоров процессора
+    /// </summary>
+    private (double avgCoreClk, double avgCoreVolt) CalculateCoreMetrics()
+    {
+        var startFreqIndex = GetStartIndex(SensorNames.CpuFrequencyStart);
+        var startVoltIndex = GetStartIndex(SensorNames.CpuVoltageStart);
+        var startTempIndex = GetStartIndex(SensorNames.CpuTemperatureStart);
+        var startPowerIndex = GetStartIndex(SensorNames.CpuPowerStart);
+
+        double sumClk = 0, sumVolt = 0;
+        int validClk = 0, validVolt = 0;
+
+        for (var core = 0; core < _cpu.info.topology.cores; core++)
+        {
+            // Частота
+            var clk = GetCoreMetric(startFreqIndex, core, 0.2, 8.0);
+            if (clk > 0)
             {
-                activeCores.Add(i);
+                _clkPerCoreCache[core] = Math.Round(clk, 3);
+                sumClk += _clkPerCoreCache[core];
+                validClk++;
             }
             else
             {
-                disabledCores.Add(i);
-            }
-        }
-
-        if (activeCores.Count == 0)
-        {
-            return;
-        }
-
-        // Ищем последовательности частот в таблице
-        var frequencyGroups = FindFrequencyGroupsInTable(disabledCores);
-
-        // Сопоставляем ядра с группами частот
-        ValidateFrequencyGroups(frequencyGroups);
-    }
-
-    private List<(int startIndex, List<(int index, float frequency)> frequencies)> FindFrequencyGroupsInTable(List<int> disabledCores)
-    {
-        if (Cpu.powerTable?.Table == null)
-        {
-            return [];
-        }
-
-        var groups = new List<(int startIndex, List<(int index, float frequency)> frequencies)>();
-
-        // Определяем максимальное количество ядер в CCD (обычно 8)
-        const int maxCoresPerCcd = 16;
-
-        // Создаем шаблон позиций отключенных ядер относительно начала группы
-        var disabledOffsets = disabledCores.OrderBy(x => x).ToList();
-
-        for (var i = 0; i < Cpu.powerTable?.Table?.Length - maxCoresPerCcd; i++)
-        {
-            // Проверяем, может ли здесь начинаться группа частот ядер
-            if (!IsValidFrequencyGroupStart(i, disabledOffsets, maxCoresPerCcd))
-            {
-                continue;
-            }
-
-            // Собираем группу частот
-            var group = CollectFrequencyGroup(i, disabledOffsets, maxCoresPerCcd);
-
-            if (group.Count != 0 && IsValidFrequencyGroup(group))
-            {
-                groups.Add((i, group));
-
-                // Логируем найденную группу
-                var freqStr = string.Join(", ", group.Select(f => $"{f.index}:{f.frequency:F3}"));
-                LogHelper.Log($"Found frequency group: start={i}, frequencies=[{freqStr}]");
-            }
-        }
-
-        LogHelper.Log($"Total frequency groups found: {groups.Count}");
-        return groups;
-    }
-
-    private bool IsValidFrequencyGroupStart(int startIndex, List<int> disabledOffsets, int maxCoresPerCcd)
-    {
-        // Проверяем, что в позициях отключенных ядер действительно нули
-        foreach (var offset in disabledOffsets)
-        {
-            var checkIndex = startIndex + offset;
-            if (checkIndex >= Cpu.powerTable?.Table?.Length || Cpu.powerTable?.Table?[checkIndex] != 0)
-            {
-                return false;
-            }
-        }
-
-        // Проверяем, что остальные значения в пределах разумного диапазона частот
-        for (var i = 0; i < maxCoresPerCcd && (startIndex + i) < Cpu.powerTable?.Table?.Length; i++)
-        {
-            // Пропускаем позиции отключенных ядер
-            if (disabledOffsets.Contains(i))
-            {
-                continue;
-            }
-
-            var value = Cpu.powerTable?.Table[startIndex + i];
-            // Проверяем, что значение похоже на частоту процессора (0.5 - 6.0 ГГц)
-            if (value != 0 && (value < 0.5f || value > 6.0f))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private List<(int index, float frequency)> CollectFrequencyGroup(int startIndex, List<int> disabledOffsets, int maxCoresPerCcd)
-    {
-        var group = new List<(int index, float frequency)>();
-
-        for (var i = 0; i < maxCoresPerCcd && (startIndex + i) < Cpu.powerTable?.Table?.Length; i++)
-        {
-            var currentIndex = startIndex + i;
-            var frequency = Cpu.powerTable?.Table[currentIndex] ?? 0;
-
-            // Добавляем все значения, кроме нулей от отключенных ядер
-            if (frequency != 0 || disabledOffsets.Contains(i))
-            {
-                group.Add((currentIndex, frequency));
-            }
-        }
-
-        return group;
-    }
-
-    private static bool IsValidFrequencyGroup(List<(int index, float frequency)> group)
-    {
-        // Группа должна содержать хотя бы одно ненулевое значение
-        if (!group.Any(g => g.frequency > 0))
-        {
-            return false;
-        }
-
-        // Проверяем, что все ненулевые значения находятся в разумном диапазоне частот
-        var validFrequencies = group.Where(g => g.frequency > 0).Select(g => g.frequency).ToList();
-
-        if (validFrequencies.Count == 0)
-        {
-            return false;
-        }
-
-        // Все частоты должны быть в пределах разумного диапазона
-        if (validFrequencies.Any(freq => freq < 0.5f || freq > 6.0f))
-        {
-            return false;
-        }
-
-        // Проверяем, что частоты не слишком разные (разброс не более 2 ГГц между мин и макс)
-        var minFreq = validFrequencies.Min();
-        var maxFreq = validFrequencies.Max();
-
-        if (maxFreq - minFreq > 2.0f)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private void ValidateFrequencyGroups(List<(int startIndex, List<(int index, float frequency)> frequencies)> frequencyGroups)
-    {
-        if (frequencyGroups.Count == 0 || _coreMultiplierCache == null)
-        {
-            return;
-        }
-
-        _coreToTableIndexMap.Clear();
-
-        // Преобразуем множители в частоты и найдём среднюю частоту
-        var averageFreq = GetAverage(_coreMultiplierCache);
-
-        var usedTableIndices = new HashSet<int>();
-        var usedCores = new HashSet<int>();
-
-        // Проходим по каждой группе частот в таблице
-        foreach (var (groupStartIndex, frequencies) in frequencyGroups)
-        {
-            // Фильтруем только ненулевые частоты из группы
-            var validFrequencies = frequencies
-                .Where(f => f.frequency > 0)
-                .OrderByDescending(f => f.frequency)
-                .ToList();
-
-            if (validFrequencies.Count == 0)
-            {
-                continue;
-            }
-
-            var groupList = new List<double>(); 
-            foreach (var (index, frequency) in validFrequencies) 
-            {
-                groupList.Add(frequency);
-            }
-            var averageGroupFreq = GetAverage(groupList);
-
-            if (Math.Abs(averageFreq - averageGroupFreq) <= 0.5)
-            {
-                var paramCounter = 0;
-                for (var i = 0; i < frequencies.Count; i++) 
+                var fallbackClk = _cpu.GetCoreMulti(core) / 10; // Fallback на GetCoreMulti (Legacy)
+                _clkPerCoreCache[core] = Math.Round(fallbackClk, 3);
+                if (fallbackClk > 0.38)
                 {
-                    if (frequencies.Count == Cpu.info.topology.physicalCores && frequencies[i].frequency > 0)
-                    {
-                        _coreToTableIndexMap[paramCounter] = frequencies[i].index;
-                        paramCounter++;
-                    }
+                    sumClk += _clkPerCoreCache[core];
+                    validClk++;
                 }
             }
-        }
 
-        // Логируем результат для отладки
-        LogHelper.Log($"Core mapping result: {string.Join(", ", _coreToTableIndexMap.Select(kvp => $"Core{kvp.Key}→{kvp.Value}"))}");
-    }
-
-    private static float GetAverage(List<double> list, double lowerThan = 0.38, int divideBy = 1)
-    {
-        var coresAvgFrequency = 0d;
-        var coresAvfCount = 0;
-        foreach (var frequency in list)
-        {
-            if (frequency > lowerThan)
+            // Напряжение
+            var volt = GetCoreMetric(startVoltIndex, core, 0.4, 2.0);
+            if (volt > 0)
             {
-                coresAvgFrequency += frequency / divideBy;
-                coresAvfCount++;
+                _voltPerCoreCache[core] = Math.Round(volt, 4);
+                sumVolt += _voltPerCoreCache[core];
+                validVolt++;
+            }
+
+            // Температура
+            var temp = GetCoreMetric(startTempIndex, core, -300, 150);
+            if (temp > 0)
+            {
+                _tempPerCoreCache[core] = Math.Round(temp, 2);
+            }
+
+            // Мощность
+            var power = GetCoreMetric(startPowerIndex, core, 0.001, 1000);
+            if (power > 0)
+            {
+                _powerPerCoreCache[core] = Math.Round(power, 2);
             }
         }
 
-        if (coresAvfCount == 0) { coresAvfCount = 1; }
+        var avgClk = validClk > 0 ? sumClk / validClk : 0;
+        var avgVolt = validVolt > 0 ? sumVolt / validVolt : 0;
 
-        return (float)(coresAvgFrequency / coresAvfCount);
+        return (avgClk, avgVolt);
     }
 
-    private float GetCoreClock(uint core)
+    /// <summary>
+    ///     Возвращает стартовый индекс для определённого индекса из словаря SupportedPmTableVersions
+    /// </summary>
+    private int GetStartIndex(string sensorName)
     {
-        // Проверяем кэш маппинга к Power Table
-        if (_coreToTableIndexMap.TryGetValue((int)core, out var tableIndex) &&
-            Cpu.powerTable?.Table != null &&
-            tableIndex < Cpu.powerTable?.Table?.Length)
+        if (_cpu.powerTable?.Table == null)
         {
-            var tableFreq = Cpu.powerTable?.Table[tableIndex];
-            if (tableFreq >= 0.38)
+            return -1;
+        }
+
+        if (!SupportedPmTableVersions.TryGetValue(_tableVersion, out var sensorMap))
+        {
+            return -1;
+        }
+
+        foreach (var (offset, _) in from kvp in sensorMap
+                 where kvp.Name == sensorName
+                 select kvp)
+        {
+            return (int)offset;
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    ///     Маппинг (Core -> Index) с учётом отключенных ядер процессора
+    /// </summary>
+    private readonly Dictionary<int, int[]> _activeCoreToPhysicalIndex = [];
+
+    /// <summary>
+    ///     Создаёт маппинг (Core -> Index) с учётом отключенных ядер процессора
+    /// </summary>
+    private void BuildActiveCoreMapping(int startIndex)
+    {
+        if (_cpu.powerTable?.Table == null || startIndex == -1)
+        {
+            _activeCoreToPhysicalIndex.Clear();
+            return;
+        }
+
+        var mapping = new List<int>();
+        for (var physIndex = 0; physIndex < _globalCoreCounter; physIndex++)
+        {
+            var tableIndex = startIndex + physIndex;
+            if (tableIndex >= _cpu.powerTable.Table.Length)
             {
-                return tableFreq ?? 0;
+                break;
+            }
+
+            if (_cpu.powerTable.Table[tableIndex] != 0)
+            {
+                mapping.Add(tableIndex);
             }
         }
 
-        // Последний fallback - прямое обращение к CPU Multiplier
-        return (float)Cpu.GetCoreMulti((int)core) / 10; // В итоге приложение всегда падает сюда
+        _activeCoreToPhysicalIndex.Add(startIndex, [.. mapping]);
     }
 
+    /// <summary>
+    ///     Возвращает значение сенсора для определённого индекса и проверяет его на корректность
+    /// </summary>
+    private double GetCoreMetric(int startIndex, int logicalCore, double minValid, double maxValid)
+    {
+        // Убедимся, что маппинг построен
+        if (_activeCoreToPhysicalIndex.Capacity == 0 ||
+            !_activeCoreToPhysicalIndex.ContainsKey(startIndex))
+        {
+            BuildActiveCoreMapping(startIndex);
+        }
+
+        // Проверяем доступность значения
+        if (logicalCore < 0 ||
+            logicalCore > _globalCoreCounter ||
+            _activeCoreToPhysicalIndex[startIndex].Length < logicalCore ||
+            !_activeCoreToPhysicalIndex.TryGetValue(startIndex, out var values) ||
+            values.Length < logicalCore)
+        {
+            return 0;
+        }
+
+        var physicalTableIndex = values[logicalCore];
+
+        if (physicalTableIndex >= _cpu.powerTable!.Table.Length)
+        {
+            return 0;
+        }
+
+        var value = _cpu.powerTable.Table[physicalTableIndex];
+
+        // Дополнительная проверка на валидность (на случай, если 0 — валидное значение)
+        if (value >= minValid && value <= maxValid)
+        {
+            return value;
+        }
+
+        return 0;
+    }
+
+    /// <summary>
+    ///     Возвращает значение загрузки процессора в процента, используя NtDll методы и нативную реализацию из диспетчера
+    ///     задач Windows
+    /// </summary>
     private float GetCoreLoad()
     {
         if (!GetTimes(out var newIdleTimes, out var newTotalTimes))
@@ -412,7 +606,7 @@ public class ZenstatesCoreProvider : IDataProvider
         float result = 0;
         if (count > 0)
         {
-            var total = 1.0f - (totalIdle / count);
+            var total = 1.0f - totalIdle / count;
             result = (float)Math.Round(Math.Max(0.001f, Math.Min(1.0f, total)) * 100.0f, 2);
         }
 
@@ -424,28 +618,36 @@ public class ZenstatesCoreProvider : IDataProvider
         return result;
     }
 
-    private static readonly bool _queryIdleTimeSeparated = Environment.OSVersion.Version >= new Version(10, 0, 22621, 0) && Environment.OSVersion.Version < new Version(10, 0, 26100, 0);
+    /// <summary>
+    ///     Проверка на определённые версии Windows где время в простое необходимо считать отдельно
+    /// </summary>
+    private static readonly bool QueryIdleTimeSeparated =
+        Environment.OSVersion.Version >= new Version(10, 0, 22621, 0) &&
+        Environment.OSVersion.Version < new Version(10, 0, 26100, 0);
 
     private long[] _idleTimes = [];
     private long[] _totalTimes = [];
 
+    /// <summary>
+    ///     Возвращает значение загрузки процессора всего и в простое
+    /// </summary>
     private static bool GetTimes(out long[] idle, out long[] total)
     {
         idle = [];
         total = [];
 
-        if (_queryIdleTimeSeparated)
+        if (QueryIdleTimeSeparated)
         {
             return GetWindowsTimesFromIdleTimes(out idle, out total);
         }
 
         // Стандартный метод через SystemProcessorPerformanceInformation
-        var perfInfo = ArrayPool<Cpu_Performance_Information>.Shared.Rent(64);
-        var perfSize = Marshal.SizeOf<Cpu_Performance_Information>();
+        var perfInfo = ArrayPool<CpuPerformanceInformation>.Shared.Rent(64);
+        var perfSize = Marshal.SizeOf<CpuPerformanceInformation>();
 
         if (NtQuerySystemInformation(
-            Cpu_Sys_Information.SystemProcessorPerformanceInformation,
-            perfInfo, perfInfo.Length * perfSize, out var perfReturn) != 0)
+                CpuSysInformation.SystemProcessorPerformanceInformation,
+                perfInfo, perfInfo.Length * perfSize, out var perfReturn) != 0)
         {
             return false;
         }
@@ -460,32 +662,35 @@ public class ZenstatesCoreProvider : IDataProvider
             total[i] = perfInfo[i].KernelTime + perfInfo[i].UserTime;
         }
 
-        ArrayPool<Cpu_Performance_Information>.Shared.Return(perfInfo);
+        ArrayPool<CpuPerformanceInformation>.Shared.Return(perfInfo);
         return true;
     }
 
+    /// <summary>
+    ///     Возвращает значение загрузки процессора в производительном состоянии и в простое (для более новыз систем)
+    /// </summary>
     private static bool GetWindowsTimesFromIdleTimes(out long[] idle, out long[] total)
     {
         idle = [];
         total = [];
 
-        var perfInfo = ArrayPool<Cpu_Performance_Information>.Shared.Rent(64);
-        var perfSize = Marshal.SizeOf<Cpu_Performance_Information>();
-        var idleInfo = ArrayPool<Cpu_Idle_Information>.Shared.Rent(64);
-        var idleSize = Marshal.SizeOf<Cpu_Idle_Information>();
+        var perfInfo = ArrayPool<CpuPerformanceInformation>.Shared.Rent(64);
+        var perfSize = Marshal.SizeOf<CpuPerformanceInformation>();
+        var idleInfo = ArrayPool<CpuIdleInformation>.Shared.Rent(64);
+        var idleSize = Marshal.SizeOf<CpuIdleInformation>();
 
         // Получаем idle информацию
         if (NtQuerySystemInformation(
-            Cpu_Sys_Information.SystemProcessorIdleInformation,
-            idleInfo, idleInfo.Length * idleSize, out var idleReturn) != 0)
+                CpuSysInformation.SystemProcessorIdleInformation,
+                idleInfo, idleInfo.Length * idleSize, out var idleReturn) != 0)
         {
             return false;
         }
 
         // Получаем performance информацию
         if (NtQuerySystemInformation(
-            Cpu_Sys_Information.SystemProcessorPerformanceInformation,
-            perfInfo, perfInfo.Length * perfSize, out var perfReturn) != 0)
+                CpuSysInformation.SystemProcessorPerformanceInformation,
+                perfInfo, perfInfo.Length * perfSize, out var perfReturn) != 0)
         {
             return false;
         }
@@ -505,8 +710,8 @@ public class ZenstatesCoreProvider : IDataProvider
             total[i] = perfInfo[i].KernelTime + perfInfo[i].UserTime;
         }
 
-        ArrayPool<Cpu_Performance_Information>.Shared.Return(perfInfo);
-        ArrayPool<Cpu_Idle_Information>.Shared.Return(idleInfo);
+        ArrayPool<CpuPerformanceInformation>.Shared.Return(perfInfo);
+        ArrayPool<CpuIdleInformation>.Shared.Return(idleInfo);
         return true;
     }
 
@@ -515,7 +720,7 @@ public class ZenstatesCoreProvider : IDataProvider
     private const string DllName = "ntdll.dll";
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct Cpu_Performance_Information
+    private struct CpuPerformanceInformation
     {
         public long IdleTime;
         public long KernelTime;
@@ -526,7 +731,7 @@ public class ZenstatesCoreProvider : IDataProvider
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct Cpu_Idle_Information
+    private struct CpuIdleInformation
     {
         public long IdleTime;
         public long C1Time;
@@ -538,7 +743,7 @@ public class ZenstatesCoreProvider : IDataProvider
         public uint Padding;
     }
 
-    internal enum Cpu_Sys_Information
+    private enum CpuSysInformation
     {
         SystemProcessorPerformanceInformation = 8,
         SystemProcessorIdleInformation = 42
@@ -546,14 +751,21 @@ public class ZenstatesCoreProvider : IDataProvider
 
     [DllImport(DllName)]
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-    internal static extern int NtQuerySystemInformation(Cpu_Sys_Information SystemInformationClass, [Out] Cpu_Performance_Information[] SystemInformation, int SystemInformationLength, out int ReturnLength);
+    private static extern int NtQuerySystemInformation(
+        CpuSysInformation systemInformationClass,
+        [Out] CpuPerformanceInformation[] systemInformation,
+        int systemInformationLength,
+        out int returnLength);
 
     [DllImport(DllName)]
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-    internal static extern int NtQuerySystemInformation(Cpu_Sys_Information SystemInformationClass, [Out] Cpu_Idle_Information[] SystemInformation, int SystemInformationLength, out int ReturnLength);
+    private static extern int NtQuerySystemInformation(
+        CpuSysInformation systemInformationClass,
+        [Out] CpuIdleInformation[] systemInformation,
+        int systemInformationLength,
+        out int returnLength);
 
     #endregion
 
     #endregion
 }
-

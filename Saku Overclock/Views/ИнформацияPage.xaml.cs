@@ -16,6 +16,7 @@ using Saku_Overclock.Wrappers;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Text;
+using Saku_Overclock.JsonContainers.Helpers;
 using ZenStates.Core;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 
@@ -37,12 +38,12 @@ public sealed partial class ИнформацияPage
     private double _totalRam;
     private bool _loaded; // Страница загружена
     private bool _doNotTrackBattery; // Флаг не использования батареи 
-    private readonly List<InfoPageCPUPoints> _cpuPointer = []; // Лист графика использования процессора
-    private readonly List<InfoPageCPUPoints> _gpuPointer = []; // Лист графика частоты графического процессора
-    private readonly List<InfoPageCPUPoints> _ramPointer = []; // Лист графика занятой ОЗУ
-    private readonly List<InfoPageCPUPoints> _vrmPointer = []; // Лист графика тока VRM
-    private readonly List<InfoPageCPUPoints> _batPointer = []; // Лист графика зарядки батареи
-    private readonly List<InfoPageCPUPoints> _pstPointer = []; // Лист графика изменения P-State
+    private readonly List<InfoPageCpuPoints> _cpuPointer = []; // Лист графика использования процессора
+    private readonly List<InfoPageCpuPoints> _gpuPointer = []; // Лист графика частоты графического процессора
+    private readonly List<InfoPageCpuPoints> _ramPointer = []; // Лист графика занятой ОЗУ
+    private readonly List<InfoPageCpuPoints> _vrmPointer = []; // Лист графика тока VRM
+    private readonly List<InfoPageCpuPoints> _batPointer = []; // Лист графика зарядки батареи
+    private readonly List<InfoPageCpuPoints> _pstPointer = []; // Лист графика изменения P-State
     private readonly List<double> _psTatesList = [0, 0, 0]; // Лист с информацией о P-State
     private static readonly Point MaxedPoint = new(65, 54);
     private static readonly Point StartPoint = new(-2, 54);
@@ -549,7 +550,6 @@ public sealed partial class ИнформацияPage
             {
                 if (_selectedGroup != 0)
                 {
-                    infoCPUSectionComboBox.Visibility = Visibility.Collapsed;
                     InfoCPUComboBoxBorderSharedShadow_Element.Visibility = Visibility.Collapsed;
                     switch (_selectedGroup)
                     {
@@ -626,9 +626,6 @@ public sealed partial class ИнформацияPage
                 {
                     infoCPUMAINSection.Visibility = Visibility.Visible;
                     infoRAMMAINSection.Visibility = Visibility.Collapsed;
-                    infoCPUSectionComboBox.Visibility = !RyzenadjProvider.IsPhysicallyUnavailable
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
                     InfoCPUComboBoxBorderSharedShadow_Element.Visibility = RyzenadjProvider.IsPhysicallyUnavailable
                         ? Visibility.Collapsed
                         : Visibility.Visible;
@@ -1011,7 +1008,7 @@ public sealed partial class ИнформацияPage
 
                 //InfoACPUBanner График
                 InfoACPUBannerPolygon.Points.Remove(ZeroPoint);
-                _cpuPointer.Add(new InfoPageCPUPoints { X = 60, Y = 48 - (int)(coreCpuUsage * 0.48) });
+                _cpuPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - (int)(coreCpuUsage * 0.48) });
                 if (CPUFlyout.IsOpen)
                 {
                     InfoACPUBigBannerPolygon.Points.Remove(ZeroPoint);
@@ -1059,7 +1056,7 @@ public sealed partial class ИнформацияPage
 
                 //InfoAGPUBanner График
                 InfoAGPUBannerPolygon.Points.Remove(ZeroPoint);
-                _gpuPointer.Add(new InfoPageCPUPoints { X = 60, Y = 48 - (int)(gfxClk / _maxGfxClock * 48) });
+                _gpuPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - (int)(gfxClk / _maxGfxClock * 48) });
                 InfoAGPUBannerPolygon.Points.Add(new Point(60,
                     48 - (int)(gfxClk / _maxGfxClock * 48)));
                 if (GPUFlyout.IsOpen)
@@ -1108,7 +1105,7 @@ public sealed partial class ИнформацияPage
 
                 //InfoAVRMBanner График
                 InfoAVRMBannerPolygon.Points.Remove(ZeroPoint);
-                _vrmPointer.Add(new InfoPageCPUPoints
+                _vrmPointer.Add(new InfoPageCpuPoints
                 {
                     X = 60,
                     Y = 48 - (int)(_sensorsInformation.VrmEdcValue /
@@ -1162,7 +1159,7 @@ public sealed partial class ИнформацияPage
 
                 //InfoAPSTBanner График
                 InfoAPSTBannerPolygon.Points.Remove(ZeroPoint);
-                _pstPointer.Add(new InfoPageCPUPoints { X = 60, Y = 48 - currentPstate * 16 });
+                _pstPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - currentPstate * 16 });
                 InfoAPSTBannerPolygon.Points.Add(new Point(60, 48 - currentPstate * 16));
                 if (PSTFlyout.IsOpen)
                 {
@@ -1207,7 +1204,7 @@ public sealed partial class ИнформацияPage
 
                 //InfoABATBanner График
                 InfoABATBannerPolygon.Points.Remove(ZeroPoint);
-                _batPointer.Add(new InfoPageCPUPoints { X = 60, Y = 48 - (int)(Math.Abs(currBatRate) / _maxBatRate * 48) });
+                _batPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - (int)(Math.Abs(currBatRate) / _maxBatRate * 48) });
                 InfoABATBannerPolygon.Points.Add(new Point(60,
                     48 - (int)(Math.Abs(currBatRate) / _maxBatRate * 48)));
                 if (BATFlyout.IsOpen)
@@ -1259,7 +1256,7 @@ public sealed partial class ИнформацияPage
                     if (busyRam != 0 && usageResult != 0)
                     {
                         InfoARAMBannerPolygon.Points.Remove(ZeroPoint);
-                        _ramPointer.Add(new InfoPageCPUPoints
+                        _ramPointer.Add(new InfoPageCpuPoints
                         {
                             X = 60,
                             Y = 48 - (int)(busyRam * 100 / usageResult * 0.48)

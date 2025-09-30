@@ -1,10 +1,10 @@
-﻿using Microsoft.UI.Xaml.Data;
+﻿using Windows.UI;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
-using Windows.UI;
 
 namespace Saku_Overclock.Helpers;
 
-public class ColorToBrushConverter : IValueConverter
+public partial class ColorToBrushConverter : IValueConverter
 {
     public object? Convert(object value, Type targetType, object parameter, string language)
     {
@@ -12,6 +12,7 @@ public class ColorToBrushConverter : IValueConverter
         {
             return new SolidColorBrush(color);
         }
+
         return null;
     }
 
@@ -21,6 +22,7 @@ public class ColorToBrushConverter : IValueConverter
         {
             return brush.Color;
         }
+
         return null;
     }
 }

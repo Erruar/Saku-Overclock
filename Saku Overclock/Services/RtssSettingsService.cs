@@ -2,12 +2,15 @@
 using Saku_Overclock.Core.Contracts.Services;
 
 namespace Saku_Overclock.Services;
+
 public class RtssSettingsService : IRtssSettingsService
 {
     private const string FolderPath = "Saku Overclock/Settings";
     private const string FileName = "RtssSettings.json";
 
-    private readonly string _localApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    private readonly string _localApplicationData =
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
     private readonly string _applicationDataFolder;
 
     private readonly IFileService _fileService;
@@ -18,7 +21,11 @@ public class RtssSettingsService : IRtssSettingsService
         _fileService = fileService;
     }
 
-    public List<RTSSElementsClass> RTSS_Elements { get; set; } =
+    public List<RtssElementsClass> RTSS_Elements
+    {
+        get;
+        set;
+    } =
     [
         new()
         {
@@ -84,8 +91,18 @@ public class RtssSettingsService : IRtssSettingsService
             UseCompact = true
         }
     ];
-    public bool IsAdvancedCodeEditorEnabled { get; set; } = false;
-    public string AdvancedCodeEditor { get; set; } =
+
+    public bool IsAdvancedCodeEditorEnabled
+    {
+        get;
+        set;
+    } = false;
+
+    public string AdvancedCodeEditor
+    {
+        get;
+        set;
+    } =
         "<C0=FFA0A0><C1=A0FFA0><C2=FC89AC><C3=fa2363><S1=70><S2=-50>\n" +
         "<C0>Saku Overclock <C1>" + "$AppVersion$" + ": <S0>$SelectedProfile$\n" +
         "<S1><C2>STAPM, Fast, Slow: <C3><S0>$stapm_value$<S2>W<S1>$stapm_limit$W <S0>$fast_value$<S2>W<S1>$fast_limit$W <S0>$slow_value$<S2>W<S1>$slow_limit$W\n" +
@@ -99,30 +116,24 @@ public class RtssSettingsService : IRtssSettingsService
     public void LoadSettings()
     {
         var settings = _fileService.Read<RtssSettingsService>(_applicationDataFolder, FileName);
-        if (settings != null)
+        foreach (var prop in typeof(RtssSettingsService).GetProperties())
         {
-            foreach (var prop in typeof(RtssSettingsService).GetProperties())
+            var value = prop.GetValue(settings);
+            if (value != null)
             {
-                var value = prop.GetValue(settings);
-                if (value != null)
-                {
-                    prop.SetValue(this, value);
-                }
+                prop.SetValue(this, value);
             }
         }
     }
 
     // Сохранение настроек
-    public void SaveSettings()
-    {
-        _fileService.Save(_applicationDataFolder, FileName, this);
-    }
+    public void SaveSettings() => _fileService.Save(_applicationDataFolder, FileName, this);
 }
 
-public class RTSSElementsClass
+public class RtssElementsClass
 {
     public bool Enabled = true;
     public string Name = "Element Name";
     public string Color = "#FFFFAC";
-    public bool UseCompact = false;
+    public bool UseCompact;
 }

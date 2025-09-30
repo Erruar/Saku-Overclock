@@ -83,53 +83,52 @@ internal static class LogHelper
             // Создаём файл лога
             return await logFolder.CreateFileAsync(fileName, CreationCollisionOption.OpenIfExists);
         }
-        catch (Exception ex)
+        catch
         {
-            Debug.WriteLine($"Error getting log file: {ex.Message}");
             return null;
         }
     }
 
     private static async Task LogToFile(string message, string fileName)
     {
-        await LogSemaphore.WaitAsync();
+        await LogSemaphore.WaitAsync().ConfigureAwait(false);
         try
         {
-            Debug.WriteLine($"Attempting to log: {message}");
+            Debug.WriteLine(message);
 
-            var logFile = await GetLogFile($"{fileName}_{ГлавнаяViewModel.GetPublicVersionDescription()}_{ГлавнаяViewModel.GetVersion()}.txt");
+            var logFile = await GetLogFile($"{fileName}_{ГлавнаяViewModel.GetPublicVersionDescription()}_{ГлавнаяViewModel.GetVersion()}.txt")
+                .ConfigureAwait(false);
+
             if (logFile == null)
             {
-                Debug.WriteLine("Log file could not be created.");
                 return;
             }
 
-            Debug.WriteLine($"Log file path: {logFile.Path}");
-
-            // Открываем файл в режиме добавления (Append)
-            using (var stream = await logFile.OpenAsync(FileAccessMode.ReadWrite).AsTask().ConfigureAwait(false))
+            try
             {
-                using (var outputStream = stream.GetOutputStreamAt(stream.Size))
-                {
-                    using (var writer = new StreamWriter(outputStream.AsStreamForWrite(), new UTF8Encoding(false)))
-                    {
-                        await writer.WriteLineAsync($"{DateTime.Now:T}: {message}");
-                        await writer.FlushAsync(); // Принудительно сбрасываем буфер
-                    }
+                using var stream = await logFile.OpenAsync(FileAccessMode.ReadWrite).AsTask().ConfigureAwait(false);
+                using var outputStream = stream.GetOutputStreamAt(stream.Size);
+                using var writer = new StreamWriter(outputStream.AsStreamForWrite(), new UTF8Encoding(false));
 
-                    // Явно закрываем outputStream
-                    await outputStream.FlushAsync();
-                }
-
-                // Явно закрываем stream
-                await stream.FlushAsync();
+                await writer.WriteLineAsync($"{DateTime.Now:T}: {message}").ConfigureAwait(false);
+                await writer.FlushAsync().ConfigureAwait(false);
+                await outputStream.FlushAsync().AsTask().ConfigureAwait(false);
+                await stream.FlushAsync().AsTask().ConfigureAwait(false);
             }
-
-            Debug.WriteLine("Message written to log file.");
+            catch (Exception ex) when (
+                ex is ObjectDisposedException ||
+                ex is UnauthorizedAccessException ||
+                ex is IOException ||
+                ex is TaskCanceledException)
+            {
+                // Игнорируем ошибки записи — логирование не должно ломать приложение
+                Debug.WriteLine($"[LOG WRITE FAILED] {ex.Message}");
+            }
         }
-        catch (Exception logException)
+        catch (Exception ex)
         {
-            Debug.WriteLine($"Error logging to file: {logException.Message}");
+            // Даже ошибка получения файла — не должна ломать приложение
+            Debug.WriteLine($"[LOG FAILED] {ex.Message}");
         }
         finally
         {

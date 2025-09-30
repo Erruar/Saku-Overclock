@@ -9,16 +9,22 @@ public class RyzenadjProvider : IDataProvider
 {
     private IntPtr _rypointer = IntPtr.Zero; // Указатель на внутренние структуры Ryzenadj.
     private const string DllName = "libryzenadj.dll"; // Имя библиотеки Ryzenadj
-    public static bool IsPhysicallyUnavailable { get; private set; } = false; // Флаг, указывающий, что Ryzenadj физически недоступен.
+
+    public static bool IsPhysicallyUnavailable
+    {
+        get;
+        private set;
+    } // Флаг, указывающий, что Ryzenadj физически недоступен.
+
     private bool _isDllRunning; // Флаг запущен ли dll
-    private bool _isTableRunning; // Флаг запущена ли таблица Power Table внутри dll
-    private bool? _useOnlyTwoCores = null; // Флаг использования только 4х ядер на Picasso
+    private bool? _useOnlyTwoCores; // Флаг использования только 4х ядер на Picasso
 
     #region Provider Initialization
+
     /// <summary>
-    /// Инициализация Ryzenadj и установка флага его доступности.
-    /// Вызывается при создании экземпляра 
-    /// </summary>  
+    ///     Инициализация Ryzenadj и установка флага его доступности.
+    ///     Вызывается при создании экземпляра
+    /// </summary>
     public void Initialize()
     {
         // Здесь вызов инициализации из libryzenadj.dll.
@@ -31,7 +37,7 @@ public class RyzenadjProvider : IDataProvider
     }
 
     /// <summary>
-    /// Метод инициализации libryzenadj.dll.
+    ///     Метод инициализации libryzenadj.dll.
     /// </summary>
     private IntPtr ExternalRyzenadjInit()
     {
@@ -42,28 +48,12 @@ public class RyzenadjProvider : IDataProvider
             _rypointer = currentIntPtr;
             return currentIntPtr;
         }
-        return _rypointer;
-    }
-    public IntPtr Init_table(IntPtr ryzenAccess)
-    {
-        try
-        {
-            if (_isDllRunning && !_isTableRunning && ryzenAccess != 0x0)
-            {
-                _isTableRunning = true;
-                return init_table(ryzenAccess);
-            }
 
-            return 0;
-        }
-        catch
-        {
-            return 0;
-        }
+        return _rypointer;
     }
 
     /// <summary>
-    /// Получает всю Power Table как массив float значений
+    ///     Получает всю Power Table как массив float значений
     /// </summary>
     /// <returns>Массив float значений или null при ошибке</returns>
     public float[]? GetPowerTable()
@@ -110,27 +100,19 @@ public class RyzenadjProvider : IDataProvider
         }
     }
 
-    public void Cleanup_ryzenadj(IntPtr ry)
-    {
-        if (_isDllRunning)
-        {
-            cleanup_ryzenadj(ry);
-            _isDllRunning = false;
-            _isTableRunning = false;
-        }
-    }
     #endregion
 
     #region Get Provider Data
-    public async Task<SensorsInformation> GetDataAsync()
+
+    public SensorsInformation GetDataAsync()
     {
         if (_rypointer == IntPtr.Zero && !IsPhysicallyUnavailable)
         {
             Initialize();
         }
+
         _ = refresh_table(_rypointer);
         // Здесь реализация получения данных через Ryzenadj 
-        await Task.Delay(30);
         var (avgCoreClk, avgCoreVolt, clkPerClock, voltPerClock, tempPerClock, powerPerClock) = CalculateCoreMetrics();
         return new SensorsInformation
         {
@@ -178,7 +160,8 @@ public class RyzenadjProvider : IDataProvider
         };
     }
 
-    private (double avgCoreClk, double avgCoreVolt, double[] clkPerClock, double[] voltPerClock, double[] tempPerClock, double[] powerPerClock) CalculateCoreMetrics()
+    private (double avgCoreClk, double avgCoreVolt, double[] clkPerClock, double[] voltPerClock, double[] tempPerClock,
+        double[] powerPerClock) CalculateCoreMetrics()
     {
         double sumCoreClk = 0;
         double sumCoreVolt = 0;
@@ -193,7 +176,7 @@ public class RyzenadjProvider : IDataProvider
         if (_useOnlyTwoCores == null)
         {
             var family = get_cpu_family(_rypointer);
-            _useOnlyTwoCores = family is RyzenFamily.PICASSO or RyzenFamily.DALI or RyzenFamily.RAVEN;
+            _useOnlyTwoCores = family is RyzenFamily.Picasso or RyzenFamily.Dali or RyzenFamily.Raven;
         }
 
         // Сначала заполняем коллекции для отображения — для всех 8 ядер
@@ -245,49 +228,27 @@ public class RyzenadjProvider : IDataProvider
             voltPerClock.ToArray(),
             tempPerClock.ToArray(),
             powerPerClock.ToArray()
-               );
+        );
     }
 
     #endregion
 
     #region RyzenADJ usings
-    public enum RyzenFamily
+
+    private enum RyzenFamily
     {
-        WAIT_FOR_LOAD = -2,
-        Unsupported = -1,
-        RAVEN = 0,
-        PICASSO,
-        RENOIR,
-        CEZANNE,
-        DALI,
-        LUCIENNE,
-        VANGOGH,
-        REMBRANDT,
-        MENDOCINO,
-        PHOENIX,
-        HAWKPOINT,
-        STRIXPOINT,
-        END
+        Raven = 0,
+        Picasso,
+        Dali = 4
     }
 
     #region DLL Imports
+
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern IntPtr init_ryzenadj();
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern void cleanup_ryzenadj(IntPtr ry);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern RyzenFamily get_cpu_family(IntPtr ry);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern int get_bios_if_ver(IntPtr ry);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern int init_table(IntPtr ry);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern uint get_table_ver(IntPtr ry);
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern UIntPtr get_table_size(IntPtr ry);
@@ -297,12 +258,6 @@ public class RyzenadjProvider : IDataProvider
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern int refresh_table(IntPtr ry);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern int set_stapm_limit(IntPtr ry, uint value);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern int set_fast_limit(IntPtr ry, uint value);
 
 
     // Добавление оставшихся функций
@@ -385,9 +340,6 @@ public class RyzenadjProvider : IDataProvider
     private static extern float get_slow_time(IntPtr ry);
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern float get_cclk_setpoint(IntPtr ry);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern float get_cclk_busy_value(IntPtr ry);
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
@@ -401,18 +353,6 @@ public class RyzenadjProvider : IDataProvider
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern float get_core_temp(IntPtr ry, uint value);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern float get_l3_clk(IntPtr ry);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern float get_l3_logic(IntPtr ry);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern float get_l3_vddm(IntPtr ry);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern float get_l3_temp(IntPtr ry);
 
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern float get_gfx_clk(IntPtr ry);
@@ -435,10 +375,7 @@ public class RyzenadjProvider : IDataProvider
     [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
     private static extern float get_soc_volt(IntPtr ry);
 
-    [DllImport(DllName, CallingConvention = CallingConvention.StdCall)]
-    private static extern float get_socket_power(IntPtr ry);
-
     #endregion
-   
+
     #endregion
 }

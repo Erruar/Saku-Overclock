@@ -5,72 +5,73 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Views;
 
 namespace Saku_Overclock.Services;
-public class ActivationService : IActivationService
+
+public class ActivationService(
+    ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
+    IEnumerable<IActivationHandler> activationHandlers,
+    IThemeSelectorService themeSelectorService,
+    IAppSettingsService appSettingsService)
+    : IActivationService
 {
     private UIElement? _shell;
-    private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
-    private readonly IEnumerable<IActivationHandler> _activationHandlers;
-    private readonly IThemeSelectorService _themeSelectorService;
-    private readonly IAppSettingsService _appSettingsService;
-
-    public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
-        IEnumerable<IActivationHandler> activationHandlers,
-        IThemeSelectorService themeSelectorService,
-        IAppSettingsService appSettingsService)
-    {
-        _defaultHandler = defaultHandler;
-        _activationHandlers = activationHandlers;
-        _themeSelectorService = themeSelectorService;
-        _appSettingsService = appSettingsService;
-    }
 
     public async Task ActivateAsync(object activationArgs)
     {
-        // Execute tasks before activation.
+        // Выполняется перед активацией
         await InitializeAsync();
 
-        // Set the MainWindow Content.
+        // Установаить контент для MainWindow
         if (App.MainWindow.Content == null)
         {
             _shell = App.GetService<ShellPage>();
             App.MainWindow.Content = _shell ?? new Frame();
         }
 
-        // Handle activation via ActivationHandlers.
+        // Выполнить активацию
         await HandleActivationAsync(activationArgs);
 
-        // Activate the MainWindow.
+        // Активировать MainWindow.
         App.MainWindow.Activate();
 
-        // Execute tasks after activation.
+        // Задачи после активации
         await StartupAsync();
     }
 
+    /// <summary>
+    ///     Установка обработчика запуска приложения
+    /// </summary>
+    /// <param name="activationArgs"></param>
     private async Task HandleActivationAsync(object activationArgs)
     {
-        var activationHandler = _activationHandlers.FirstOrDefault(h => h.CanHandle(activationArgs));
+        var activationHandler = activationHandlers.FirstOrDefault(h => h.CanHandle(activationArgs));
 
         if (activationHandler != null)
         {
             await activationHandler.HandleAsync(activationArgs);
         }
 
-        if (_defaultHandler.CanHandle(activationArgs))
+        if (defaultHandler.CanHandle(activationArgs))
         {
-            await _defaultHandler.HandleAsync(activationArgs);
+            await defaultHandler.HandleAsync(activationArgs);
         }
     }
 
+    /// <summary>
+    ///     Оптимизация тем перед активацией приложения
+    /// </summary>
     private async Task InitializeAsync()
     {
-        await _themeSelectorService.InitializeAsync().ConfigureAwait(false);
+        await themeSelectorService.InitializeAsync().ConfigureAwait(false);
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    ///     Загрузка тем и настроек приложения
+    /// </summary>
     private async Task StartupAsync()
     {
-        await _themeSelectorService.SetRequestedThemeAsync();
-        _appSettingsService.LoadSettings();
+        await themeSelectorService.SetRequestedThemeAsync();
+        appSettingsService.LoadSettings();
         await Task.CompletedTask;
     }
 }

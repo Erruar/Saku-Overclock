@@ -17,11 +17,13 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
+using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.System;
 using Windows.UI.Text;
+using Saku_Overclock.JsonContainers;
 using ZenStates.Core;
 using Action = System.Action;
 using Button = Microsoft.UI.Xaml.Controls.Button;
@@ -132,9 +134,10 @@ public sealed partial class ShellPage
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
+        
         StartInfoUpdate();
         GetProfileInit();
-        Theme_Loader(); //Загрузить тему
+        Theme_Loader();
         AutoStartChecker();
     }
 
@@ -219,7 +222,7 @@ public sealed partial class ShellPage
                 }
                 var comboBoxItem = new ComboBoxItem
                 {
-                    Content = securedProfile.profilename,
+                    Content = securedProfile.Profilename,
                     IsEnabled = true
                 };
                 itemz.Add(comboBoxItem);
@@ -283,10 +286,19 @@ public sealed partial class ShellPage
                 ViewModel.SelectedIndex = AppSettings.Preset + 1;
                 foreach (var item in ViewModel.Items)
                 {
-                    if (item.Content.ToString() == _profile[AppSettings.Preset].profilename)
+                    if (_profile.Length > AppSettings.Preset && AppSettings.Preset != -1)
                     {
-                        ViewModel.SelectedItem = item;
+                        if (item.Content.ToString() == _profile[AppSettings.Preset].Profilename)
+                        {
+                            ViewModel.SelectedItem = item;
+                        }
                     }
+                    else
+                    {
+                        AppSettings.Preset = -1;
+                        AppSettings.SaveSettings();
+                    }
+                    
                 }
             }
         }
@@ -461,12 +473,12 @@ public sealed partial class ShellPage
 
             // Проверяем корректность индекса и данных профиля
             if (nextProfileIndex >= 0 && nextProfileIndex < _profile.Length &&
-                !string.IsNullOrEmpty(_profile[nextProfileIndex].profilename))
+                !string.IsNullOrEmpty(_profile[nextProfileIndex].Profilename))
             {
                 var profile = _profile[nextProfileIndex];
-                icon = profile.profileicon;
-                desc = profile.profiledesc;
-                return (profile.profilename, nextProfileIndex);
+                icon = profile.Profileicon;
+                desc = profile.Profiledesc;
+                return (profile.Profilename, nextProfileIndex);
             }
             else
             {
@@ -530,9 +542,9 @@ public sealed partial class ShellPage
             var profile = _profile[profileIndex];
 
             // Обновляем UI
-            UpdateProfileComboBox(profile.profilename);
+            UpdateProfileComboBox(profile.Profilename);
             MandarinSparseUnit();
-            SelectedProfile = profile.profilename;
+            SelectedProfile = profile.Profilename;
 
             AppSettings.SaveSettings();
         }
@@ -680,146 +692,146 @@ public sealed partial class ShellPage
         var isBristol = CpuSingleton.GetInstance()?.info.codeName == Cpu.CodeName.BristolRidge;
 
         var adjline = "";
-        if (profile.cpu1)
+        if (profile.Cpu1)
         {
-            adjline += " --tctl-temp=" + profile.cpu1value + (isBristol ? "000" : string.Empty);
+            adjline += " --tctl-temp=" + profile.Cpu1Value + (isBristol ? "000" : string.Empty);
         }
 
-        if (profile.cpu2)
+        if (profile.Cpu2)
         {
-            var stapmBoostMillisecondsBristol = profile.cpu5value * 1000 < 180000 ? profile.cpu5value * 1000 : 180000;
-            adjline += " --stapm-limit=" + profile.cpu2value + "000" + (isBristol ? ",2," + stapmBoostMillisecondsBristol : string.Empty);
+            var stapmBoostMillisecondsBristol = profile.Cpu5Value * 1000 < 180000 ? profile.Cpu5Value * 1000 : 180000;
+            adjline += " --stapm-limit=" + profile.Cpu2Value + "000" + (isBristol ? ",2," + stapmBoostMillisecondsBristol : string.Empty);
         }
 
-        if (profile.cpu3)
+        if (profile.Cpu3)
         {
-            adjline += " --fast-limit=" + profile.cpu3value + "000";
+            adjline += " --fast-limit=" + profile.Cpu3Value + "000";
         }
 
-        if (profile.cpu4)
+        if (profile.Cpu4)
         {
-            adjline += " --slow-limit=" + profile.cpu4value + "000" + (isBristol ? "," + profile.cpu4value + "000,0" : string.Empty);
+            adjline += " --slow-limit=" + profile.Cpu4Value + "000" + (isBristol ? "," + profile.Cpu4Value + "000,0" : string.Empty);
         }
 
-        if (profile.cpu5)
+        if (profile.Cpu5)
         {
-            adjline += " --stapm-time=" + profile.cpu5value;
+            adjline += " --stapm-time=" + profile.Cpu5Value;
         }
 
-        if (profile.cpu6)
+        if (profile.Cpu6)
         {
-            adjline += " --slow-time=" + profile.cpu6value;
+            adjline += " --slow-time=" + profile.Cpu6Value;
         }
 
-        if (profile.cpu7)
+        if (profile.Cpu7)
         {
-            adjline += " --cHTC-temp=" + profile.cpu7value;
+            adjline += " --cHTC-temp=" + profile.Cpu7Value;
         }
 
         //vrm
-        if (profile.vrm1)
+        if (profile.Vrm1)
         {
-            adjline += " --vrmmax-current=" + profile.vrm1value + "000" + (isBristol ? "," + profile.vrm3value + "000," + profile.vrm3value + "000" : string.Empty);
+            adjline += " --vrmmax-current=" + profile.Vrm1Value + "000" + (isBristol ? "," + profile.Vrm3Value + "000," + profile.Vrm3Value + "000" : string.Empty);
         }
 
-        if (profile.vrm2)
+        if (profile.Vrm2)
         {
-            adjline += " --vrm-current=" + profile.vrm2value + "000" + (isBristol ? "," + profile.vrm4value + "000," + profile.vrm4value + "000" : string.Empty);
+            adjline += " --vrm-current=" + profile.Vrm2Value + "000" + (isBristol ? "," + profile.Vrm4Value + "000," + profile.Vrm4Value + "000" : string.Empty);
         }
 
-        if (profile.vrm3 && !isBristol)
+        if (profile.Vrm3 && !isBristol)
         {
-            adjline += " --vrmsocmax-current=" + profile.vrm3value + "000";
+            adjline += " --vrmsocmax-current=" + profile.Vrm3Value + "000";
         }
 
-        if (profile.vrm4 && !isBristol)
+        if (profile.Vrm4 && !isBristol)
         {
-            adjline += " --vrmsoc-current=" + profile.vrm4value + "000";
+            adjline += " --vrmsoc-current=" + profile.Vrm4Value + "000";
         }
 
-        if (profile.vrm5)
+        if (profile.Vrm5)
         {
-            adjline += " --psi0-current=" + profile.vrm5value + "000" + (isBristol ? "," + profile.vrm6value + "000," + profile.vrm6value + "000" : string.Empty); ;
+            adjline += " --psi0-current=" + profile.Vrm5Value + "000" + (isBristol ? "," + profile.Vrm6Value + "000," + profile.Vrm6Value + "000" : string.Empty); ;
         }
 
-        if (profile.vrm6 && !isBristol)
+        if (profile.Vrm6 && !isBristol)
         {
-            adjline += " --psi0soc-current=" + profile.vrm6value + "000";
+            adjline += " --psi0soc-current=" + profile.Vrm6Value + "000";
         }
 
-        if (profile.vrm7)
+        if (profile.Vrm7)
         {
-            var prochotDeassertionTimeMillisecondsBristol = profile.vrm7value < 100 ? profile.vrm7value : 100;
-            adjline += " --prochot-deassertion-ramp=" + (isBristol ? prochotDeassertionTimeMillisecondsBristol : profile.vrm7value);
+            var prochotDeassertionTimeMillisecondsBristol = profile.Vrm7Value < 100 ? profile.Vrm7Value : 100;
+            adjline += " --prochot-deassertion-ramp=" + (isBristol ? prochotDeassertionTimeMillisecondsBristol : profile.Vrm7Value);
         }
 
 
         //gpu
-        if (profile.gpu1)
+        if (profile.Gpu1)
         {
-            adjline += " --min-socclk-frequency=" + profile.gpu1value;
+            adjline += " --min-socclk-frequency=" + profile.Gpu1Value;
         }
 
-        if (profile.gpu2)
+        if (profile.Gpu2)
         {
-            adjline += " --max-socclk-frequency=" + profile.gpu2value;
+            adjline += " --max-socclk-frequency=" + profile.Gpu2Value;
         }
 
-        if (profile.gpu3)
+        if (profile.Gpu3)
         {
-            adjline += " --min-fclk-frequency=" + profile.gpu3value;
+            adjline += " --min-fclk-frequency=" + profile.Gpu3Value;
         }
 
-        if (profile.gpu4)
+        if (profile.Gpu4)
         {
-            adjline += " --max-fclk-frequency=" + profile.gpu4value;
+            adjline += " --max-fclk-frequency=" + profile.Gpu4Value;
         }
 
-        if (profile.gpu5)
+        if (profile.Gpu5)
         {
-            adjline += " --min-vcn=" + profile.gpu5value;
+            adjline += " --min-vcn=" + profile.Gpu5Value;
         }
 
-        if (profile.gpu6)
+        if (profile.Gpu6)
         {
-            adjline += " --max-vcn=" + profile.gpu6value;
+            adjline += " --max-vcn=" + profile.Gpu6Value;
         }
 
-        if (profile.gpu7)
+        if (profile.Gpu7)
         {
-            adjline += " --min-lclk=" + profile.gpu7value;
+            adjline += " --min-lclk=" + profile.Gpu7Value;
         }
 
-        if (profile.gpu8)
+        if (profile.Gpu8)
         {
-            adjline += " --max-lclk=" + profile.gpu8value;
+            adjline += " --max-lclk=" + profile.Gpu8Value;
         }
 
-        if (profile.gpu9)
+        if (profile.Gpu9)
         {
-            adjline += " --min-gfxclk=" + profile.gpu9value;
+            adjline += " --min-gfxclk=" + profile.Gpu9Value;
         }
 
-        if (profile.gpu10)
+        if (profile.Gpu10)
         {
-            adjline += " --max-gfxclk=" + profile.gpu10value;
+            adjline += " --max-gfxclk=" + profile.Gpu10Value;
         }
 
-        if (profile.gpu11)
+        if (profile.Gpu11)
         {
-            adjline += " --min-cpuclk=" + profile.gpu11value;
+            adjline += " --min-cpuclk=" + profile.Gpu11Value;
         }
 
-        if (profile.gpu12)
+        if (profile.Gpu12)
         {
-            adjline += " --max-cpuclk=" + profile.gpu12value;
+            adjline += " --max-cpuclk=" + profile.Gpu12Value;
         }
 
-        if (profile.gpu16)
+        if (profile.Gpu16)
         {
-            if (profile.gpu16value != 0)
+            if (profile.Gpu16Value != 0)
             {
-                adjline += " --setcpu-freqto-ramstate=" + (profile.gpu16value - 1);
+                adjline += " --setcpu-freqto-ramstate=" + (profile.Gpu16Value - 1);
             }
             else
             {
@@ -828,78 +840,78 @@ public sealed partial class ShellPage
         }
 
         //advanced
-        if (profile.advncd1)
+        if (profile.Advncd1)
         {
-            adjline += " --vrmgfx-current=" + profile.advncd1value + "000";
+            adjline += " --vrmgfx-current=" + profile.Advncd1Value + "000";
         }
 
-        if (profile.advncd3)
+        if (profile.Advncd3)
         {
-            adjline += " --vrmgfxmax_current=" + profile.advncd3value + "000";
+            adjline += " --vrmgfxmax_current=" + profile.Advncd3Value + "000";
         }
 
-        if (profile.advncd4)
+        if (profile.Advncd4)
         {
-            adjline += " --psi3cpu_current=" + profile.advncd4value + "000";
+            adjline += " --psi3cpu_current=" + profile.Advncd4Value + "000";
         }
 
-        if (profile.advncd5)
+        if (profile.Advncd5)
         {
-            adjline += " --psi3gfx_current=" + profile.advncd5value + "000";
+            adjline += " --psi3gfx_current=" + profile.Advncd5Value + "000";
         }
 
-        if (profile.advncd6)
+        if (profile.Advncd6)
         {
-            adjline += " --apu-skin-temp=" + profile.advncd6value * 256;
+            adjline += " --apu-skin-temp=" + profile.Advncd6Value * 256;
         }
 
-        if (profile.advncd7)
+        if (profile.Advncd7)
         {
-            adjline += " --dgpu-skin-temp=" + profile.advncd7value * 256;
+            adjline += " --dgpu-skin-temp=" + profile.Advncd7Value * 256;
         }
 
-        if (profile.advncd8)
+        if (profile.Advncd8)
         {
-            adjline += " --apu-slow-limit=" + profile.advncd8value + "000";
+            adjline += " --apu-slow-limit=" + profile.Advncd8Value + "000";
         }
 
-        if (profile.advncd9)
+        if (profile.Advncd9)
         {
-            adjline += " --skin-temp-limit=" + profile.advncd9value + "000";
+            adjline += " --skin-temp-limit=" + profile.Advncd9Value + "000";
         }
 
-        if (profile.advncd10)
+        if (profile.Advncd10)
         {
-            adjline += " --gfx-clk=" + profile.advncd10value;
+            adjline += " --gfx-clk=" + profile.Advncd10Value;
         }
 
-        if (profile.advncd11)
+        if (profile.Advncd11)
         {
-            adjline += " --oc-clk=" + profile.advncd11value;
+            adjline += " --oc-clk=" + profile.Advncd11Value;
         }
 
-        if (profile.advncd12)
+        if (profile.Advncd12)
         {
-            adjline += " --oc-volt=" + Math.Round((1.55 - profile.advncd12value / 1000) / 0.00625);
+            adjline += " --oc-volt=" + Math.Round((1.55 - profile.Advncd12Value / 1000) / 0.00625);
         }
 
 
-        if (profile.advncd13)
+        if (profile.Advncd13)
         {
-            if (profile.advncd13value == 1)
+            if (profile.Advncd13Value == 1)
             {
                 adjline += " --max-performance=1";
             }
 
-            if (profile.advncd13value == 2)
+            if (profile.Advncd13Value == 2)
             {
                 adjline += " --power-saving=1";
             }
         }
 
-        if (profile.advncd14)
+        if (profile.Advncd14)
         {
-            switch (profile.advncd14value)
+            switch (profile.Advncd14Value)
             {
                 case 0:
                     adjline += " --disable-oc=1";
@@ -910,25 +922,25 @@ public sealed partial class ShellPage
             }
         }
 
-        if (profile.advncd15)
+        if (profile.Advncd15)
         {
-            adjline += " --pbo-scalar=" + profile.advncd15value * 100;
+            adjline += " --pbo-scalar=" + profile.Advncd15Value * 100;
         }
 
-        if (profile.coall)
+        if (profile.Coall)
         {
-            if (profile.coallvalue >= 0.0)
+            if (profile.Coallvalue >= 0.0)
             {
-                adjline += $" --set-coall={profile.coallvalue} ";
+                adjline += $" --set-coall={profile.Coallvalue} ";
             }
             else
             {
-                adjline += $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)profile.coallvalue))} ";
+                adjline += $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)profile.Coallvalue))} ";
             }
         }
 
         var cpu = CpuSingleton.GetInstance();
-        if (profile.cogfx)
+        if (profile.Cogfx)
         {
             cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(cpu.info.codeName, false);
             cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(cpu.info.codeName, true);
@@ -940,7 +952,7 @@ public sealed partial class ShellPage
                 {
                     if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
                     {
-                        cpu.SetPsmMarginSingleCore(GetCoreMask(cpu, i), Convert.ToInt32(profile.cogfxvalue));
+                        cpu.SetPsmMarginSingleCore(GetCoreMask(cpu, i), Convert.ToInt32(profile.Cogfxvalue));
                     }
                 }
             }
@@ -949,144 +961,144 @@ public sealed partial class ShellPage
             cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName, true);
         }
 
-        if (profile.comode && profile.coprefmode != 0) // Если пользователь выбрал хотя-бы один режим и ...
+        if (profile.Comode && profile.Coprefmode != 0) // Если пользователь выбрал хотя-бы один режим и ...
         {
-            switch (profile.coprefmode)
+            switch (profile.Coprefmode)
             {
                 // Если выбран режим ноутбук
                 // Так как там как у компьютеров
                 case 1 when cpu.info.codeName == Cpu.CodeName.DragonRange:
                     {
-                        if (profile.coper0)
+                        if (profile.Coper0)
                         {
-                            adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
+                            adjline += $" --set-coper={0 | ((int)profile.Coper0Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper1)
+                        if (profile.Coper1)
                         {
-                            adjline += $" --set-coper={1048576 | ((int)profile.coper1value & 0xFFFF)} ";
+                            adjline += $" --set-coper={1048576 | ((int)profile.Coper1Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper2)
+                        if (profile.Coper2)
                         {
-                            adjline += $" --set-coper={2097152 | ((int)profile.coper2value & 0xFFFF)} ";
+                            adjline += $" --set-coper={2097152 | ((int)profile.Coper2Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper3)
+                        if (profile.Coper3)
                         {
-                            adjline += $" --set-coper={3145728 | ((int)profile.coper3value & 0xFFFF)} ";
+                            adjline += $" --set-coper={3145728 | ((int)profile.Coper3Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper4)
+                        if (profile.Coper4)
                         {
-                            adjline += $" --set-coper={4194304 | ((int)profile.coper4value & 0xFFFF)} ";
+                            adjline += $" --set-coper={4194304 | ((int)profile.Coper4Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper5)
+                        if (profile.Coper5)
                         {
-                            adjline += $" --set-coper={5242880 | ((int)profile.coper5value & 0xFFFF)} ";
+                            adjline += $" --set-coper={5242880 | ((int)profile.Coper5Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper6)
+                        if (profile.Coper6)
                         {
-                            adjline += $" --set-coper={6291456 | ((int)profile.coper6value & 0xFFFF)} ";
+                            adjline += $" --set-coper={6291456 | ((int)profile.Coper6Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper7)
+                        if (profile.Coper7)
                         {
-                            adjline += $" --set-coper={7340032 | ((int)profile.coper7value & 0xFFFF)} ";
+                            adjline += $" --set-coper={7340032 | ((int)profile.Coper7Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper8)
+                        if (profile.Coper8)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.coper8value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.Coper8Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper9)
+                        if (profile.Coper9)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.coper9value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.Coper9Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper10)
+                        if (profile.Coper10)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.coper10value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.Coper10Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper11)
+                        if (profile.Coper11)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.coper11value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.Coper11Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper12)
+                        if (profile.Coper12)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.coper12value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.Coper12Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper13)
+                        if (profile.Coper13)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.coper13value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.Coper13Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper14)
+                        if (profile.Coper14)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.coper14value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.Coper14Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper15)
+                        if (profile.Coper15)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.coper15value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.Coper15Value & 0xFFFF)} ";
                         }
 
                         break;
                     }
                 case 1:
                     {
-                        if (profile.coper0)
+                        if (profile.Coper0)
                         {
-                            adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
+                            adjline += $" --set-coper={0 | ((int)profile.Coper0Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper1)
+                        if (profile.Coper1)
                         {
-                            adjline += $" --set-coper={(1 << 20) | ((int)profile.coper1value & 0xFFFF)} ";
+                            adjline += $" --set-coper={(1 << 20) | ((int)profile.Coper1Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper2)
+                        if (profile.Coper2)
                         {
-                            adjline += $" --set-coper={(2 << 20) | ((int)profile.coper2value & 0xFFFF)} ";
+                            adjline += $" --set-coper={(2 << 20) | ((int)profile.Coper2Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper3)
+                        if (profile.Coper3)
                         {
-                            adjline += $" --set-coper={(3 << 20) | ((int)profile.coper3value & 0xFFFF)} ";
+                            adjline += $" --set-coper={(3 << 20) | ((int)profile.Coper3Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper4)
+                        if (profile.Coper4)
                         {
-                            adjline += $" --set-coper={(4 << 20) | ((int)profile.coper4value & 0xFFFF)} ";
+                            adjline += $" --set-coper={(4 << 20) | ((int)profile.Coper4Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper5)
+                        if (profile.Coper5)
                         {
-                            adjline += $" --set-coper={(5 << 20) | ((int)profile.coper5value & 0xFFFF)} ";
+                            adjline += $" --set-coper={(5 << 20) | ((int)profile.Coper5Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper6)
+                        if (profile.Coper6)
                         {
-                            adjline += $" --set-coper={(6 << 20) | ((int)profile.coper6value & 0xFFFF)} ";
+                            adjline += $" --set-coper={(6 << 20) | ((int)profile.Coper6Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper7)
+                        if (profile.Coper7)
                         {
-                            adjline += $" --set-coper={(7 << 20) | ((int)profile.coper7value & 0xFFFF)} ";
+                            adjline += $" --set-coper={(7 << 20) | ((int)profile.Coper7Value & 0xFFFF)} ";
                         }
 
                         break;
@@ -1094,92 +1106,92 @@ public sealed partial class ShellPage
                 //Если выбран режим компьютер
                 case 2:
                     {
-                        if (profile.coper0)
+                        if (profile.Coper0)
                         {
-                            adjline += $" --set-coper={0 | ((int)profile.coper0value & 0xFFFF)} ";
+                            adjline += $" --set-coper={0 | ((int)profile.Coper0Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper1)
+                        if (profile.Coper1)
                         {
-                            adjline += $" --set-coper={1048576 | ((int)profile.coper1value & 0xFFFF)} ";
+                            adjline += $" --set-coper={1048576 | ((int)profile.Coper1Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper2)
+                        if (profile.Coper2)
                         {
-                            adjline += $" --set-coper={2097152 | ((int)profile.coper2value & 0xFFFF)} ";
+                            adjline += $" --set-coper={2097152 | ((int)profile.Coper2Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper3)
+                        if (profile.Coper3)
                         {
-                            adjline += $" --set-coper={3145728 | ((int)profile.coper3value & 0xFFFF)} ";
+                            adjline += $" --set-coper={3145728 | ((int)profile.Coper3Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper4)
+                        if (profile.Coper4)
                         {
-                            adjline += $" --set-coper={4194304 | ((int)profile.coper4value & 0xFFFF)} ";
+                            adjline += $" --set-coper={4194304 | ((int)profile.Coper4Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper5)
+                        if (profile.Coper5)
                         {
-                            adjline += $" --set-coper={5242880 | ((int)profile.coper5value & 0xFFFF)} ";
+                            adjline += $" --set-coper={5242880 | ((int)profile.Coper5Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper6)
+                        if (profile.Coper6)
                         {
-                            adjline += $" --set-coper={6291456 | ((int)profile.coper6value & 0xFFFF)} ";
+                            adjline += $" --set-coper={6291456 | ((int)profile.Coper6Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper7)
+                        if (profile.Coper7)
                         {
-                            adjline += $" --set-coper={7340032 | ((int)profile.coper7value & 0xFFFF)} ";
+                            adjline += $" --set-coper={7340032 | ((int)profile.Coper7Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper8)
+                        if (profile.Coper8)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.coper8value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.Coper8Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper9)
+                        if (profile.Coper9)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.coper9value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.Coper9Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper10)
+                        if (profile.Coper10)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.coper10value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.Coper10Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper11)
+                        if (profile.Coper11)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.coper11value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.Coper11Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper12)
+                        if (profile.Coper12)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.coper12value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.Coper12Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper13)
+                        if (profile.Coper13)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.coper13value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.Coper13Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper14)
+                        if (profile.Coper14)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.coper14value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.Coper14Value & 0xFFFF)} ";
                         }
 
-                        if (profile.coper15)
+                        if (profile.Coper15)
                         {
                             adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.coper15value & 0xFFFF)} ";
+                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.Coper15Value & 0xFFFF)} ";
                         }
 
                         break;
@@ -1191,41 +1203,41 @@ public sealed partial class ShellPage
                         cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName, true);
                         var options = new Dictionary<int, double>
                     {
-                        { 0, profile.coper0value },
-                        { 1, profile.coper1value },
-                        { 2, profile.coper2value },
-                        { 3, profile.coper3value },
-                        { 4, profile.coper4value },
-                        { 5, profile.coper5value },
-                        { 6, profile.coper6value },
-                        { 7, profile.coper7value },
-                        { 8, profile.coper8value },
-                        { 9, profile.coper9value },
-                        { 10, profile.coper10value },
-                        { 11, profile.coper11value },
-                        { 12, profile.coper12value },
-                        { 13, profile.coper13value },
-                        { 14, profile.coper14value },
-                        { 15, profile.coper15value }
+                        { 0, profile.Coper0Value },
+                        { 1, profile.Coper1Value },
+                        { 2, profile.Coper2Value },
+                        { 3, profile.Coper3Value },
+                        { 4, profile.Coper4Value },
+                        { 5, profile.Coper5Value },
+                        { 6, profile.Coper6Value },
+                        { 7, profile.Coper7Value },
+                        { 8, profile.Coper8Value },
+                        { 9, profile.Coper9Value },
+                        { 10, profile.Coper10Value },
+                        { 11, profile.Coper11Value },
+                        { 12, profile.Coper12Value },
+                        { 13, profile.Coper13Value },
+                        { 14, profile.Coper14Value },
+                        { 15, profile.Coper15Value }
                     };
                         var checks = new Dictionary<int, bool>
                     {
-                        { 0, profile.coper0 },
-                        { 1, profile.coper1 },
-                        { 2, profile.coper2 },
-                        { 3, profile.coper3 },
-                        { 4, profile.coper4 },
-                        { 5, profile.coper5 },
-                        { 6, profile.coper6 },
-                        { 7, profile.coper7 },
-                        { 8, profile.coper8 },
-                        { 9, profile.coper9 },
-                        { 10, profile.coper10 },
-                        { 11, profile.coper11 },
-                        { 12, profile.coper12 },
-                        { 13, profile.coper13 },
-                        { 14, profile.coper14 },
-                        { 15, profile.coper15 }
+                        { 0, profile.Coper0 },
+                        { 1, profile.Coper1 },
+                        { 2, profile.Coper2 },
+                        { 3, profile.Coper3 },
+                        { 4, profile.Coper4 },
+                        { 5, profile.Coper5 },
+                        { 6, profile.Coper6 },
+                        { 7, profile.Coper7 },
+                        { 8, profile.Coper8 },
+                        { 9, profile.Coper9 },
+                        { 10, profile.Coper10 },
+                        { 11, profile.Coper11 },
+                        { 12, profile.Coper12 },
+                        { 13, profile.Coper13 },
+                        { 14, profile.Coper14 },
+                        { 15, profile.Coper15 }
                     };
                         for (var i = 0; i < cpu.info.topology.physicalCores; i++)
                         {
@@ -1249,9 +1261,9 @@ public sealed partial class ShellPage
             }
         }
 
-        if (profile.smuFunctionsEnabl)
+        if (profile.SmuFunctionsEnabl)
         {
-            if (profile.smuFeatureCCLK)
+            if (profile.SmuFeatureCclk)
             {
                 adjline += " --enable-feature=1";
             }
@@ -1260,7 +1272,7 @@ public sealed partial class ShellPage
                 adjline += " --disable-feature=1";
             }
 
-            if (profile.smuFeatureData)
+            if (profile.SmuFeatureData)
             {
                 adjline += " --enable-feature=4";
             }
@@ -1269,7 +1281,7 @@ public sealed partial class ShellPage
                 adjline += " --disable-feature=4";
             }
 
-            if (profile.smuFeaturePPT)
+            if (profile.SmuFeaturePpt)
             {
                 adjline += " --enable-feature=8";
             }
@@ -1278,7 +1290,7 @@ public sealed partial class ShellPage
                 adjline += " --disable-feature=8";
             }
 
-            if (profile.smuFeatureTDC)
+            if (profile.SmuFeatureTdc)
             {
                 adjline += " --enable-feature=16";
             }
@@ -1287,7 +1299,7 @@ public sealed partial class ShellPage
                 adjline += " --disable-feature=16";
             }
 
-            if (profile.smuFeatureThermal)
+            if (profile.SmuFeatureThermal)
             {
                 adjline += " --enable-feature=32";
             }
@@ -1296,7 +1308,7 @@ public sealed partial class ShellPage
                 adjline += " --disable-feature=32";
             }
 
-            if (profile.smuFeaturePowerDown)
+            if (profile.SmuFeaturePowerDown)
             {
                 adjline += " --enable-feature=256";
             }
@@ -1305,7 +1317,7 @@ public sealed partial class ShellPage
                 adjline += " --disable-feature=256";
             }
 
-            if (profile.smuFeatureProchot)
+            if (profile.SmuFeatureProchot)
             {
                 adjline += " --enable-feature=0,32";
             }
@@ -1314,7 +1326,7 @@ public sealed partial class ShellPage
                 adjline += " --disable-feature=0,32";
             }
 
-            if (profile.smuFeatureSTAPM)
+            if (profile.SmuFeatureStapm)
             {
                 adjline += " --enable-feature=0,128";
             }
@@ -1323,7 +1335,7 @@ public sealed partial class ShellPage
                 adjline += " --disable-feature=0,128";
             }
 
-            if (profile.smuFeatureCStates)
+            if (profile.SmuFeatureCStates)
             {
                 adjline += " --enable-feature=0,256";
             }
@@ -1332,7 +1344,7 @@ public sealed partial class ShellPage
                 adjline += " --disable-feature=0,256";
             }
 
-            if (profile.smuFeatureGfxDutyCycle)
+            if (profile.SmuFeatureGfxDutyCycle)
             {
                 adjline += " --enable-feature=0,512";
             }
@@ -1341,7 +1353,7 @@ public sealed partial class ShellPage
                 adjline += " --disable-feature=0,512";
             }
 
-            if (profile.smuFeatureAplusA)
+            if (profile.SmuFeatureAplusA)
             {
                 adjline += " --enable-feature=0,1024";
             }
@@ -1532,18 +1544,18 @@ public sealed partial class ShellPage
                     case "UpdateNAVBAR":
                         HideNavBar();
                         Icon.Visibility = Visibility.Collapsed;
-                        RingerNotifGrid.Visibility = Visibility.Collapsed;
+                        RingerNotificationGrid.Visibility = Visibility.Collapsed;
                         return; //Удалить и не показывать 
                     case "FirstLaunch":
                         HideNavBar();
                         Icon.Visibility = Visibility.Collapsed;
-                        RingerNotifGrid.Visibility = Visibility.Collapsed;
+                        RingerNotificationGrid.Visibility = Visibility.Collapsed;
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return;
                     case "ExitFirstLaunch":
                         ShowNavBar();
                         Icon.Visibility = Visibility.Visible;
-                        RingerNotifGrid.Visibility = Visibility.Visible;
+                        RingerNotificationGrid.Visibility = Visibility.Visible;
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return;
                     case "UPDATE_REQUIRED":
@@ -1575,7 +1587,7 @@ public sealed partial class ShellPage
                         {
                             HideNavBar();
                             Icon.Visibility = Visibility.Collapsed;
-                            RingerNotifGrid.Visibility = Visibility.Collapsed;
+                            RingerNotificationGrid.Visibility = Visibility.Collapsed;
                             var navigationService = App.GetService<INavigationService>();
                             navigationService.NavigateTo(typeof(ОбновлениеViewModel).FullName!, null, true);
                             ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления 
@@ -1681,191 +1693,193 @@ public sealed partial class ShellPage
                             {
                                 {
                                     "Param_SMU_Func_Text/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].smuFunctionsEnabl = false
+                                    () => _profile[AppSettings.Preset].SmuFunctionsEnabl = false
                                 },
                                 {
                                     "Param_CPU_c2/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].cpu2 = false
+                                    () => _profile[AppSettings.Preset].Cpu2 = false
                                 },
                                 {
                                     "Param_VRM_v2/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].vrm2 = false
+                                    () => _profile[AppSettings.Preset].Vrm2 = false
                                 },
                                 {
                                     "Param_VRM_v1/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].vrm1 = false
+                                    () => _profile[AppSettings.Preset].Vrm1 = false
                                 },
                                 {
                                     "Param_CPU_c1/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].cpu1 = false
+                                    () => _profile[AppSettings.Preset].Cpu1 = false
                                 },
                                 {
                                     "Param_ADV_a15/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd15 = false
+                                    () => _profile[AppSettings.Preset].Advncd15 = false
                                 },
                                 {
                                     "Param_ADV_a11/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd11 = false
+                                    () => _profile[AppSettings.Preset].Advncd11 = false
                                 },
                                 {
                                     "Param_ADV_a12/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd12 = false
+                                    () => _profile[AppSettings.Preset].Advncd12 = false
                                 },
                                 {
                                     "Param_CO_O1/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].coall = false
+                                    () => _profile[AppSettings.Preset].Coall = false
                                 },
                                 {
                                     "Param_CO_O2/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].cogfx = false
+                                    () => _profile[AppSettings.Preset].Cogfx = false
                                 },
                                 {
                                     "Param_CCD1_CO_Section/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].coprefmode = 0
+                                    () => _profile[AppSettings.Preset].Coprefmode = 0
                                 },
                                 {
                                     "Param_ADV_a14_E/Content".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd14 = false
+                                    () => _profile[AppSettings.Preset].Advncd14 = false
                                 },
                                 {
                                     "Param_CPU_c5/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].cpu5 = false
+                                    () => _profile[AppSettings.Preset].Cpu5 = false
                                 },
                                 {
                                     "Param_CPU_c3/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].cpu3 = false
+                                    () => _profile[AppSettings.Preset].Cpu3 = false
                                 },
                                 {
                                     "Param_CPU_c4/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].cpu4 = false
+                                    () => _profile[AppSettings.Preset].Cpu4 = false
                                 },
                                 {
                                     "Param_CPU_c6/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].cpu6 = false
+                                    () => _profile[AppSettings.Preset].Cpu6 = false
                                 },
                                 {
                                     "Param_CPU_c7/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].cpu7 = false
+                                    () => _profile[AppSettings.Preset].Cpu7 = false
                                 },
                                 {
                                     "Param_ADV_a6/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd6 = false
+                                    () => _profile[AppSettings.Preset].Advncd6 = false
                                 },
                                 {
                                     "Param_VRM_v4/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].vrm4 = false
+                                    () => _profile[AppSettings.Preset].Vrm4 = false
                                 },
                                 {
                                     "Param_VRM_v3/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].vrm3 = false
+                                    () => _profile[AppSettings.Preset].Vrm3 = false
                                 },
                                 {
                                     "Param_ADV_a1/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd1 = false
+                                    () => _profile[AppSettings.Preset].Advncd1 = false
                                 },
                                 {
                                     "Param_ADV_a3/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd3 = false
+                                    () => _profile[AppSettings.Preset].Advncd3 = false
                                 },
                                 {
                                     "Param_VRM_v7/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].vrm7 = false
+                                    () => _profile[AppSettings.Preset].Vrm7 = false
                                 },
                                 {
                                     "Param_ADV_a4/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd4 = false
+                                    () => _profile[AppSettings.Preset].Advncd4 = false
                                 },
                                 {
                                     "Param_ADV_a5/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd5 = false
+                                    () => _profile[AppSettings.Preset].Advncd5 = false
                                 },
                                 {
                                     "Param_ADV_a10/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd10 = false
+                                    () => _profile[AppSettings.Preset].Advncd10 = false
                                 },
                                 {
                                     "Param_ADV_a13_E/Content".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd13 = false
+                                    () => _profile[AppSettings.Preset].Advncd13 = false
                                 },
                                 {
                                     "Param_ADV_a13_U/Content".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd13 = false
+                                    () => _profile[AppSettings.Preset].Advncd13 = false
                                 },
                                 {
                                     "Param_ADV_a8/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd8 = false
+                                    () => _profile[AppSettings.Preset].Advncd8 = false
                                 },
                                 {
                                     "Param_ADV_a7/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd7 = false
+                                    () => _profile[AppSettings.Preset].Advncd7 = false
                                 },
                                 {
                                     "Param_VRM_v5/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].vrm5 = false
+                                    () => _profile[AppSettings.Preset].Vrm5 = false
                                 },
                                 {
                                     "Param_VRM_v6/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].vrm6 = false
+                                    () => _profile[AppSettings.Preset].Vrm6 = false
                                 },
                                 {
                                     "Param_ADV_a9/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].advncd9 = false
+                                    () => _profile[AppSettings.Preset].Advncd9 = false
                                 },
                                 {
                                     "Param_GPU_g12/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu12 = false
+                                    () => _profile[AppSettings.Preset].Gpu12 = false
                                 },
                                 {
                                     "Param_GPU_g11/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu11 = false
+                                    () => _profile[AppSettings.Preset].Gpu11 = false
                                 },
                                 {
                                     "Param_GPU_g10/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu10 = false
+                                    () => _profile[AppSettings.Preset].Gpu10 = false
                                 },
                                 {
                                     "Param_GPU_g9/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu9 = false
+                                    () => _profile[AppSettings.Preset].Gpu9 = false
                                 },
                                 {
                                     "Param_GPU_g2/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu2 = false
+                                    () => _profile[AppSettings.Preset].Gpu2 = false
                                 },
                                 {
                                     "Param_GPU_g1/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu1 = false
+                                    () => _profile[AppSettings.Preset].Gpu1 = false
                                 },
                                 {
                                     "Param_GPU_g4/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu4 = false
+                                    () => _profile[AppSettings.Preset].Gpu4 = false
                                 },
                                 {
                                     "Param_GPU_g3/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu3 = false
+                                    () => _profile[AppSettings.Preset].Gpu3 = false
                                 },
                                 {
                                     "Param_GPU_g6/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu6 = false
+                                    () => _profile[AppSettings.Preset].Gpu6 = false
                                 },
                                 {
                                     "Param_GPU_g5/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu5 = false
+                                    () => _profile[AppSettings.Preset].Gpu5 = false
                                 },
                                 {
                                     "Param_GPU_g8/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu8 = false
+                                    () => _profile[AppSettings.Preset].Gpu8 = false
                                 },
                                 {
                                     "Param_GPU_g7/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu7 = false
+                                    () => _profile[AppSettings.Preset].Gpu7 = false
                                 },
                                 {
                                     "Param_GPU_g15/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu15 = false
+                                    () =>
+                                    {
+                                    }
                                 },
                                 {
                                     "Param_GPU_g16/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].gpu16 = false
+                                    () => _profile[AppSettings.Preset].Gpu16 = false
                                 }
                             };
                                 var loggingList = string.Empty;
@@ -2035,7 +2049,7 @@ public sealed partial class ShellPage
                     notify1.Msg = notify1.Msg.Replace("DELETEUNAVAILABLE", "");
                 }
 
-                MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, notify1.IsClosable, subcontent);
+                MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, Notify.IsClosable, subcontent);
                 if (notify1.Title.Contains("SaveSuccessTitle".GetLocalized()) ||
                     notify1.Title.Contains("DeleteSuccessTitle".GetLocalized()) ||
                     notify1.Title.Contains("Edit_TargetTitle".GetLocalized()))
@@ -2527,10 +2541,10 @@ public sealed partial class ShellPage
             TitleIcon.ActualHeight));
         var searchBoxRect = GetRect(bounds, scaleAdjustment);
 
-        transform = RingerNotifGrid.TransformToVisual(null);
+        transform = RingerNotificationGrid.TransformToVisual(null);
         bounds = transform.TransformBounds(new Rect(0, 0,
-            RingerNotifGrid.ActualWidth,
-            RingerNotifGrid.ActualHeight));
+            RingerNotificationGrid.ActualWidth,
+            RingerNotificationGrid.ActualHeight));
         var ringerNotifRect = GetRect(bounds, scaleAdjustment);
 
         var rectArray = new[] { searchBoxRect, ringerNotifRect };
@@ -2669,8 +2683,8 @@ public sealed partial class ShellPage
 
                 if (UpdateChecker.GitHubInfoString != "**Failed to fetch info**")
                 {
-                    NotifChangelogTexts.Children.Clear();
-                    await ГлавнаяPage.GenerateFormattedReleaseNotes(NotifChangelogTexts);
+                    NotificationChangelogTexts.Children.Clear();
+                    await ГлавнаяPage.GenerateFormattedReleaseNotes(NotificationChangelogTexts);
                 }
             }
         }

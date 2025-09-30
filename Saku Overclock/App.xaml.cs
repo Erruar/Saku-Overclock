@@ -79,7 +79,7 @@ public partial class App
             .FirstOrDefault(p => p.ProcessName == currentProcess.ProcessName && p.Id != currentProcess.Id);
         if (anotherProcess != null) // Если открыто ещё одно окно приложения
         {
-            var hWnd = ActivationInvokeHandler.FindMainWindowHWND(null, "Saku Overclock");
+            var hWnd = ActivationInvokeHandler.FindMainWindowHwnd(null, "Saku Overclock");
             ActivationInvokeHandler.BringToFrontWindow(anotherProcess.MainWindowHandle);
             ActivationInvokeHandler.ChangeAllWindowState(hWnd, DwmwaWindowStateNormal);
             ActivationInvokeHandler.ChangeWindowState(hWnd, DwmwaWindowStateNormal);

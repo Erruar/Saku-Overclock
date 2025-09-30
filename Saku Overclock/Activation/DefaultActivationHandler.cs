@@ -1,28 +1,21 @@
 ﻿using Microsoft.UI.Xaml;
-
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Activation;
 
-public class DefaultActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
+public class DefaultActivationHandler(INavigationService navigationService)
+    : ActivationHandler<LaunchActivatedEventArgs>
 {
-    private readonly INavigationService _navigationService;
-
-    public DefaultActivationHandler(INavigationService navigationService)
-    {
-        _navigationService = navigationService;
-    }
-
-    protected override bool CanHandleInternal(LaunchActivatedEventArgs args)
+    protected override bool CanHandleInternal()
     {
         // None of the ActivationHandlers has handled the activation.
-        return _navigationService.Frame?.Content == null;
+        return navigationService.Frame?.Content == null;
     }
 
     protected async override Task HandleInternalAsync(LaunchActivatedEventArgs args)
     {
-        _navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, args.Arguments);
+        navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, args.Arguments);
 
         await Task.CompletedTask;
     }

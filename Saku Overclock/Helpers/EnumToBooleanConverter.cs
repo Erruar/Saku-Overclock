@@ -3,12 +3,8 @@ using Microsoft.UI.Xaml.Data;
 
 namespace Saku_Overclock.Helpers;
 
-public class EnumToBooleanConverter : IValueConverter
+public partial class EnumToBooleanConverter : IValueConverter
 {
-    public EnumToBooleanConverter()
-    {
-    }
-
     public object Convert(object value, Type targetType, object parameter, string language)
     {
         if (parameter is string enumString)
@@ -18,7 +14,7 @@ public class EnumToBooleanConverter : IValueConverter
                 throw new ArgumentException("ExceptionEnumToBooleanConverterValueMustBeAnEnum");
             }
 
-            var enumValue = Enum.Parse(typeof(ElementTheme), enumString);
+            var enumValue = Enum.Parse<ElementTheme>(enumString);
 
             return enumValue.Equals(value);
         }
@@ -30,7 +26,7 @@ public class EnumToBooleanConverter : IValueConverter
     {
         if (parameter is string enumString)
         {
-            return Enum.Parse(typeof(ElementTheme), enumString);
+            return Enum.Parse<ElementTheme>(enumString);
         }
 
         throw new ArgumentException("ExceptionEnumToBooleanConverterParameterMustBeAnEnumName");
