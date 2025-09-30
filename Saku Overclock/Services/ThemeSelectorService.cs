@@ -130,18 +130,23 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
 
     public void LoadThemeFromSettings()
     {
-        Themes = localThemeSettingsService.LoadThemeSettings().CustomThemes;
-        try
+        var retValue = localThemeSettingsService.LoadThemeSettings();
+        if (retValue != null)
         {
-            if (Enum.TryParse(localThemeSettingsService.LoadThemeSettings().AppBackgroundRequestedTheme,
-                    out ElementTheme cacheTheme))
+            Themes = retValue.CustomThemes;
+
+            try
             {
-                Theme = cacheTheme;
+                if (Enum.TryParse(localThemeSettingsService.LoadThemeSettings().AppBackgroundRequestedTheme,
+                        out ElementTheme cacheTheme))
+                {
+                    Theme = cacheTheme;
+                }
             }
-        }
-        catch
-        {
-            Theme = ElementTheme.Default;
+            catch
+            {
+                Theme = ElementTheme.Default;
+            }
         }
     }
 

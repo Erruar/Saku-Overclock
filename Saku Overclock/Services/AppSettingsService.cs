@@ -318,12 +318,21 @@ public class AppSettingsService : IAppSettingsService
     public void LoadSettings()
     {
         var settings = _fileService.Read<AppSettingsService>(_applicationDataFolder, FileName);
+
+        if (settings == null) 
+        { 
+            return; 
+        }
+
         foreach (var prop in typeof(AppSettingsService).GetProperties())
         {
-            var value = prop.GetValue(settings);
-            if (value != null)
+            if (prop.CanRead && prop.CanWrite)
             {
-                prop.SetValue(this, value);
+                var value = prop.GetValue(settings);
+                if (value != null)
+                {
+                    prop.SetValue(this, value);
+                }
             }
         }
     }

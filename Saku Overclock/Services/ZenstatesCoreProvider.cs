@@ -45,6 +45,11 @@ public class ZenstatesCoreProvider : IDataProvider
 
         _tableVersion = _cpu.smu.TableVersion;
 
+        if (_tableVersion == 0 && _cpu.info.codeName is Cpu.CodeName.SummitRidge or Cpu.CodeName.PinnacleRidge)
+        {
+            _tableVersion = 0x100;
+        }
+
         var (avgCoreClk, avgCoreVolt) = CalculateCoreMetrics();
 
         return new SensorsInformation
@@ -124,6 +129,31 @@ public class ZenstatesCoreProvider : IDataProvider
     /// </summary>
     private static readonly Dictionary<uint, List<(uint Offset, string Name)>> SupportedPmTableVersions = new()
     {
+        // Zen
+        {
+            0x00000100,[
+                (0, "CpuFastLimit"),
+                (22, "CpuFastValue"),
+                (0, "CpuSlowLimit"),
+                (1, "CpuSlowValue"),
+                (2, "VrmTdcLimit"),
+                (3, "VrmTdcValue"),
+                (4, "CpuTempLimit"),
+                (5, "CpuTempValue"),
+                (2, "VrmEdcLimit"),
+                (25, "VrmEdcValue"),
+                (19, "SocPower"),
+                (26, "SocVoltage"),
+                (27, "SocTdcValue"),
+                (2, "SocTdcLimit"),
+                (28, "SocEdcValue"),
+                (2, "SocEdcLimit"),
+                (41, "CpuPowerStart"),
+                (57, "CpuVoltageStart"),
+                (65, "CpuTemperatureStart"),
+                (81, "CpuFrequencyStart")
+            ]
+        },
         // Zen 2
         {
             0x00240803, [
@@ -321,6 +351,13 @@ public class ZenstatesCoreProvider : IDataProvider
         if (!SupportedPmTableVersions.TryGetValue(tableVersion, out var sensorMap))
         {
             LogHelper.LogWarn($"Unsupported PM table version: 0x{tableVersion:X8}");
+            return fallbackValue;
+        }
+
+        // Проверка на отсутствие сенсора
+        var checkedSensor = sensorMap.FirstOrDefault(x => x.Name == sensorName);
+        if (checkedSensor.Name == null)
+        {
             return fallbackValue;
         }
 
