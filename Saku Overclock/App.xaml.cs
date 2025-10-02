@@ -16,7 +16,6 @@ using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using WinRT.Interop;
 using UIElement = Microsoft.UI.Xaml.UIElement;
-using UnhandledExceptionEventArgs = Microsoft.UI.Xaml.UnhandledExceptionEventArgs;
 
 namespace Saku_Overclock;
 
@@ -36,12 +35,22 @@ public partial class App
     public static T GetService<T>()
         where T : class
     {
-        if ((Current as App)!.Host!.Services.GetService(typeof(T)) is not T service)
+        try
         {
-            throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
-        }
+            if ((Current as App)!.Host!.Services.GetService(typeof(T)) is not T service)
+            {
+                throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
+            }
 
-        return service;
+            return service;
+        }
+        catch (Exception ex)
+        {
+            HandleCriticalError(new InvalidOperationException(
+                $"Unable to get service {typeof(T).Name}", ex));
+            Current.Exit();
+            throw;
+        }
     }
 
     // Глобальный экземпляр фонового обновлятора, зарегистрированный как синглтон через DI.
@@ -64,31 +73,15 @@ public partial class App
         set;
     }
 
-    private const int
-        DwmwaWindowStateNormal =
-            5; // Команда для отображения окна, даже если оно скрыто в трей или не видно пользователю
-
     public App()
     {
         InitializeComponent();
 
-        // Текущее окно
-        var currentProcess = Process.GetCurrentProcess();
-        // Поиск открытого ещё одного окна приложения
-        var anotherProcess = Process.GetProcesses()
-            .FirstOrDefault(p => p.ProcessName == currentProcess.ProcessName && p.Id != currentProcess.Id);
-        if (anotherProcess != null) // Если открыто ещё одно окно приложения
-        {
-            var hWnd = ActivationInvokeHandler.FindMainWindowHwnd(null, "Saku Overclock");
-            ActivationInvokeHandler.BringToFrontWindow(anotherProcess.MainWindowHandle);
-            ActivationInvokeHandler.ChangeAllWindowState(hWnd, DwmwaWindowStateNormal);
-            ActivationInvokeHandler.ChangeWindowState(hWnd, DwmwaWindowStateNormal);
-            ActivationInvokeHandler.SwitchToMainWindow(hWnd, true);
-            Current.Exit();
-            return; // Выйти
-        }
+        CheckForSecondInstance();
 
-        Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory)
+        try
+        {
+            Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseContentRoot(AppContext.BaseDirectory)
             .ConfigureServices((context, services) =>
             {
                 // Default Activation Handler
@@ -146,31 +139,18 @@ public partial class App
                 services.Configure<LocalSettingsOptions>(
                     context.Configuration.GetSection(nameof(LocalSettingsOptions)));
             }).Build();
-        GetService<IAppNotificationService>().Initialize();
-        UnhandledException += App_UnhandledException;
+            GetService<IAppNotificationService>().Initialize();
+        }
+        catch (Exception ex)
+        {
+            HandleCriticalError(ex);
+            Current.Exit();
+        }
+
+        UnhandledException += (s,e) => { HandleCriticalError(e.Exception); };
     }
 
     #region JSON and Initialization
-
-    private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-    {
-        var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
-        var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
-        var sakuLogo = Path.Combine(pathToProgramDirectory!, "WindowIcon.ico");
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "CrashHandler.exe",
-            Arguments = $"\"{e.Message}\" -theme dark -appName \"Saku Overclock\" -iconPath \"{sakuLogo}\"",
-            Verb = "runas"
-        });
-    }
-
-    // Импортируем функцию SetPriorityClass из kernel32.dll
-    [DllImport("kernel32.dll", SetLastError = true)]
-    private static extern bool SetPriorityClass(IntPtr hProcess, uint dwPriorityClass);
-
-    // Константа для приоритета "Нормальный"
-    private const uint NORMAL_PRIORITY_CLASS = 0x20;
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
@@ -180,14 +160,57 @@ public partial class App
         GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(),
             AppContext.BaseDirectory));
 
-        await GetService<IActivationService>().ActivateAsync(args); 
+        await GetService<IActivationService>().ActivateAsync(args);
 
         await Task.Delay(1500);
         await Task.Run(() =>
         {
-            var hProcess = Process.GetCurrentProcess().Handle;
-            SetPriorityClass(hProcess, NORMAL_PRIORITY_CLASS);
+            SetPriorityClass(Process.GetCurrentProcess().Handle, /*NORMAL_PRIORITY_CLASS*/0x20);
         });
     }
+
+    /// <summary>
+    ///    Обработка критической ошибки приложения
+    /// </summary>
+    private static void HandleCriticalError(Exception e)
+    {
+        var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
+        var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
+        var sakuLogo = Path.Combine(pathToProgramDirectory!, "WindowIcon.ico");
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "CrashHandler.exe",
+            Arguments = $"\"{e.Message} {e.StackTrace}\" -theme dark -appName \"Saku Overclock\" -iconPath \"{sakuLogo}\"",
+            Verb = "runas"
+        });
+    }
+
+    /// <summary>
+    ///    Проверка на отсутствие других запущенных экземпляров приложения
+    /// </summary>
+    private static void CheckForSecondInstance()
+    {
+        var currentProcess = Process.GetCurrentProcess();
+        var anotherProcess = Process.GetProcesses()
+            .FirstOrDefault(p => p.ProcessName == currentProcess.ProcessName && p.Id != currentProcess.Id);
+
+        // Если открыто ещё одно окно приложения
+        if (anotherProcess != null)
+        {
+            var hWnd = ActivationInvokeHandler.FindMainWindowHwnd(null, "Saku Overclock");
+            ActivationInvokeHandler.BringToFrontWindow(anotherProcess.MainWindowHandle);
+            ActivationInvokeHandler.ChangeAllWindowState(hWnd, 5);
+            ActivationInvokeHandler.ChangeWindowState(hWnd, 5);
+            ActivationInvokeHandler.SwitchToMainWindow(hWnd, true);
+            Current.Exit();
+        }
+    }
+
+    /// <summary>
+    ///    Фикс запуска в "режиме эффективности" на Windows 11
+    /// </summary>
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool SetPriorityClass(IntPtr hProcess, uint dwPriorityClass);
+
     #endregion
 }
