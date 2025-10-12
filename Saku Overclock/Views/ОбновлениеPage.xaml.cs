@@ -64,7 +64,7 @@ public sealed partial class ОбновлениеPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -94,7 +94,7 @@ public sealed partial class ОбновлениеPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     } 
     private void Cancel_Click(object sender, RoutedEventArgs e)

@@ -1,7 +1,10 @@
 ﻿using System.Management;
 using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
@@ -9,42 +12,43 @@ using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Win32;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.JsonContainers.Helpers;
 using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
-using Saku_Overclock.ViewModels;
 using Saku_Overclock.Wrappers;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Text;
-using Saku_Overclock.JsonContainers.Helpers;
 using ZenStates.Core;
+using static ZenStates.Core.DRAM.MemoryConfig;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 
 namespace Saku_Overclock.Views;
 
 public sealed partial class ИнформацияPage
 {
-    // ReSharper disable once InconsistentNaming
-    private readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
-    private List<ManagementObject>? _cachedGpuList; // Кешированный лист GPU 
-
-    public class MinMax // Класс для хранения минимальных и максимальных значений Ni-Icons
+    /// <summary>
+    ///  Класс для хранения минимальных и максимальных значений TrayMon
+    /// </summary>
+    public class MinMax
     {
         public double Min;
         public double Max;
     }
 
+    private readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
     private double _busyRam; // Текущее использование ОЗУ и всего ОЗУ
     private double _totalRam;
     private bool _loaded; // Страница загружена
     private bool _doNotTrackBattery; // Флаг не использования батареи 
+    private bool _isBatteryInformationLoaded; // Флаг обновления информации о батарее
     private readonly List<InfoPageCpuPoints> _cpuPointer = []; // Лист графика использования процессора
     private readonly List<InfoPageCpuPoints> _gpuPointer = []; // Лист графика частоты графического процессора
     private readonly List<InfoPageCpuPoints> _ramPointer = []; // Лист графика занятой ОЗУ
     private readonly List<InfoPageCpuPoints> _vrmPointer = []; // Лист графика тока VRM
     private readonly List<InfoPageCpuPoints> _batPointer = []; // Лист графика зарядки батареи
     private readonly List<InfoPageCpuPoints> _pstPointer = []; // Лист графика изменения P-State
-    private readonly List<double> _psTatesList = [0, 0, 0]; // Лист с информацией о P-State
+    private readonly List<double> _pstatesList = [0, 0, 0]; // Лист с информацией о P-State
     private static readonly Point MaxedPoint = new(65, 54);
     private static readonly Point StartPoint = new(-2, 54);
     private static readonly Point ZeroPoint = new(0, 0);
@@ -61,26 +65,52 @@ public sealed partial class ИнформацияPage
         _selectedBorderBrush; // Кисть цвета границы выделенной кнопки, используется для кнопок выбора баннера
 
     private int _selectedGroup; // Текущий выбранный баннер, используется для кнопок выбора баннера
-    private bool _isAppInTray; // Флаг приложения в трее, чтобы не обновлять значения и не тратить ресурсы ноутбука
     private string _cpuName = "Unknown"; // Название процессора в системе
     private string _gpuName = "Unknown"; // Название графического процессора в системе
     private string _ramName = "Unknown"; // Название ОЗУ в системе
-    private string? _batName = "Unknown"; // Название батареи в системе
+    private string _batName = "Unknown"; // Название батареи в системе
     private int _numberOfCores; // Количество ядер
     private int _numberOfLogicalProcessors; // Количество потоков
     private DispatcherTimer? _dispatcherTimer; // Таймер для автообновления информации
-    private readonly IBackgroundDataUpdater _dataUpdater; // Фоновое обновление информации
+    private readonly IBackgroundDataUpdater? _dataUpdater = App.BackgroundUpdater; // Фоновое обновление информации
     private SensorsInformation? _sensorsInformation; // Информация с датчиков
-    private Cpu? _cpu; // Инициализация ZenStates Core
+    private readonly Cpu? _cpu = CpuSingleton.GetInstance(); // Инициализация ZenStates Core
+
+    private static readonly string _batFromWall = "InfoBatteryAC".GetLocalized(); // Устройство от сети
+    private static readonly string _mhzFreq = "InfoFreqBoundsMHZ".GetLocalized(); // Частота МГц
+    private static readonly string _ghzFreq = "infoAGHZ".GetLocalized(); // Частота ГГц
+    private static readonly string _pstate = "InfoPSTState".GetLocalized(); // P-State
+
+    private Button[] _allBannerButtons = [];
+    private Button[] _allExpandButtons = [];
+
+    // Константы для индексов выбора секции
+    private const int SECTION_FREQUENCY = 0;
+    private const int SECTION_VOLTAGE = 1;
+    private const int SECTION_POWER = 2;
+    private const int SECTION_TEMPERATURE = 3;
+
+    // Константы для групп отображения
+    private const int GROUP_CPU = 0;
+    private const int GROUP_GPU = 1;
+    private const int GROUP_RAM = 2;
+    private const int GROUP_VRM = 3;
+    private const int GROUP_BATTERY = 4;
+    private const int GROUP_CPU_PST = 5;
+
+    private const int MAX_CORES = 16;
+    private const double MAX_VALID_FREQUENCY = 7.0;
+    private const double MAX_VALID_VOLTAGE = 1.7;
 
     public ИнформацияPage()
     {
-        _numberOfLogicalProcessors = 0;
-        App.GetService<ИнформацияViewModel>();
         InitializeComponent();
-        InitializeZenStates();
-        _dataUpdater = App.BackgroundUpdater!;
-        _dataUpdater.DataUpdated += OnDataUpdated;
+
+        if (_dataUpdater != null)
+        {
+            _dataUpdater.DataUpdated += OnDataUpdated;
+        }
+
         Loaded += ИнформацияPage_Loaded;
         Unloaded += ИнформацияPage_Unloaded;
     }
@@ -89,60 +119,44 @@ public sealed partial class ИнформацияPage
 
     #region Get-Info voids
 
+    /// <summary>
+    ///  Основной метод для получения и обновления значений сенсоров системы
+    /// </summary>
     private void OnDataUpdated(object? sender, SensorsInformation info) => _sensorsInformation = info;
 
-    private void InitializeZenStates()
-    {
-        try
-        {
-            _cpu ??= CpuSingleton.GetInstance(); // Загрузить ZenStates Core
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex.ToString());
-            App.GetService<IAppNotificationService>()
-                .Show(string.Format("AppNotificationCrash".GetLocalized(), AppContext.BaseDirectory)); // Вывести ошибку
-        }
-    }
-
+    /// <summary>
+    ///  Вспомогательный метод для правильной установки цветов элементов
+    /// </summary>
     private void SetThemeAccentTextForeground()
     {
-        if (tbCPUFreq.Foreground is SolidColorBrush brush)
+        if (CpuFrequency.Foreground is SolidColorBrush brush)
         {
             if (brush.Color == Color.FromArgb(228, 0, 0, 0))
             {
-                infoACPUUsageBannerPolygonText.Foreground = brush;
-                infoACPUUsageBigBannerPolygonText.Foreground = brush;
-                infoAGPUUsageBannerPolygonText.Foreground = brush;
-                infoAGPUUsageBigBannerPolygonText.Foreground = brush;
+                CpuUsageBannerPolygonText.Foreground = brush;
+                CpuUsageBigBannerPolygonText.Foreground = brush;
+                GpuUsageBannerPolygonText.Foreground = brush;
+                GpuUsageBigBannerPolygonText.Foreground = brush;
                 infoAVRMUsageBannerPolygonText.Foreground = brush;
                 infoAVRMUsageBigBannerPolygonText.Foreground = brush;
                 infoARAMUsageBannerPolygonText.Foreground = brush;
                 infoARAMUsageBigBannerPolygonText.Foreground = brush;
                 infoABATUsageBannerPolygonText.Foreground = brush;
                 infoABATUsageBigBannerPolygonText.Foreground = brush;
-                infoAPSTUsageBannerPolygonText.Foreground = brush;
-                infoAPSTUsageBigBannerPolygonText.Foreground = brush;
+                PstUsageBannerPolygonText.Foreground = brush;
+                PstUsageBigBannerPolygonText.Foreground = brush;
             }
         }
     }
 
-    private static (string name, string baseClock) ReadCpuFromRegistry()
-    {
-        const string key = @"HARDWARE\DESCRIPTION\System\CentralProcessor\0";
-        using var reg = Registry.LocalMachine.OpenSubKey(key);
-        var name = reg?.GetValue("ProcessorNameString") as string ?? "";
-        var mhz = reg?.GetValue("~MHz")?.ToString() ?? "";
-        return (name, mhz);
-    }
-
-    private async Task GetCpuInfo()
+    /// <summary>
+    ///  Основной метод отображения характеристик процессора
+    /// </summary>
+    private async Task LoadCpuInformation()
     {
         try
         {
-            // Переменные для хранения данных
-
-            var (name, baseclock) = ReadCpuFromRegistry();
+            var (name, baseclock) = GetSystemInfo.ReadCpuInformation();
             tbBaseClock.Text = $"{baseclock} MHz";
             tbThreads.Text = Environment.ProcessorCount.ToString();
 
@@ -174,7 +188,6 @@ public sealed partial class ИнформацияPage
                 infoSMU.Visibility = Visibility.Collapsed;
             }
 
-            // Обновление UI в основном потоке
             await InfoCpuSectionGridBuilder();
 
             tbProcessor.Text = _cpuName;
@@ -182,25 +195,14 @@ public sealed partial class ИнформацияPage
                 ? _numberOfCores.ToString()
                 : GetSystemInfo.GetBigLITTLE(_numberOfCores);
 
-            var gpuNameTask = Task.Run(() =>
-            {
-                var gpuName = GetSystemInfo.GetGPUName(0) ?? "";
-                return gpuName.Contains("AMD") ? gpuName : GetSystemInfo.GetGPUName(1) ?? gpuName;
-            });
+            var gpus = GetSystemInfo.GetGpuNames();
+            var gpuName = gpus.Count == 0 ? "Unknown" :
+                          gpus.Count == 1 ? gpus[0] :
+                          gpus[0].Contains("AMD", StringComparison.OrdinalIgnoreCase) ? gpus[0] : gpus[1];
 
-            // Асинхронное выполнение других операций
-            var instructionSetsTask = Task.Run(GetSystemInfo.InstructionSets);
-            var l1CacheTask = Task.Run(() => CalculateCacheSizeAsync(GetSystemInfo.CacheLevel.Level1));
-            var l2CacheTask = Task.Run(() => CalculateCacheSizeAsync(GetSystemInfo.CacheLevel.Level2));
-
-            // Ожидание выполнения всех задач
-            await Task.WhenAll(gpuNameTask, instructionSetsTask, l1CacheTask, l2CacheTask);
-
-            // Получение результатов
-            var gpuName = gpuNameTask.Result;
-            var instructionSets = instructionSetsTask.Result;
-            var l1Cache = l1CacheTask.Result;
-            var l2Cache = l2CacheTask.Result; 
+            var instructionSets = GetSystemInfo.InstructionSets();
+            var l1Cache = GetSystemInfo.CalculateCacheSize(GetSystemInfo.CacheLevel.Level1);
+            var l2Cache = GetSystemInfo.CalculateCacheSize(GetSystemInfo.CacheLevel.Level2);
 
             _gpuName = gpuName;
 
@@ -208,26 +210,23 @@ public sealed partial class ИнформацияPage
             tbL1Cache.Text = $"{l1Cache:0.##} MB";
             tbL2Cache.Text = $"{l2Cache:0.##} MB";
             tbInstructions.Text = instructionSets;
+            tbCaption.Text = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER")?.Replace(", AuthenticAMD", "");
 
             var wmiTask = Task.Run(() =>
             {
-                var desc = "";
                 double l3 = 0;
                 var searcher = new ManagementObjectSearcher(
                     "root\\CIMV2",
-                    "SELECT Description, L3CacheSize FROM Win32_Processor");
+                    "SELECT L3CacheSize FROM Win32_Processor");
                 foreach (var obj in searcher.Get().Cast<ManagementObject>())
                 {
-                    desc = obj["Description"]?.ToString() ?? "";
                     l3 = Convert.ToDouble(obj["L3CacheSize"]) / 1024;
-                    break; // нам всего одна строка
+                    break; 
                 }
-                return (desc, l3);
+                return l3;
             });
 
-            var (description, l3Size) = await wmiTask;
-
-            tbCaption.Text = description;
+            var l3Size = await wmiTask;
             tbL3Cache.Text = $"{l3Size:0.##} MB";
 
             tbBaseClock_Panel0.Visibility = Visibility.Visible;
@@ -248,145 +247,89 @@ public sealed partial class ИнформацияPage
         }
         catch (Exception ex)
         {
-            Console.WriteLine("An error occurred: " + ex.Message);
+            await LogHelper.TraceIt_TraceError(ex);
         }
     }
 
-
-    private static async Task<double> CalculateCacheSizeAsync(GetSystemInfo.CacheLevel level)
+    /// <summary>
+    ///  Основной метод отображения характеристик батареи
+    /// </summary>
+    private void LoadBatteryInformation()
     {
-        return await Task.Run(() =>
+        if (BatBannerButton.Visibility == Visibility.Collapsed || _isBatteryInformationLoaded)
         {
-            var sum = 0u;
-            foreach (var number in GetSystemInfo.GetCacheSizes(level))
+            return;
+        }
+
+        if (_sensorsInformation != null)
+        {
+            if (_sensorsInformation.BatteryUnavailable)
             {
-                sum += number;
+                BatBannerButton.Visibility = Visibility.Collapsed;
+                _doNotTrackBattery = true;
             }
 
-            return sum / 1024.0;
-        });
+            tbBATHealth.Text = _sensorsInformation.BatteryHealth;
+            tbBATCycles.Text = _sensorsInformation.BatteryCycles;
+            tbBATCapacity.Text = _sensorsInformation.BatteryCapacity;
+            _batName = _sensorsInformation.BatteryName ?? "Unknown";
+
+            _isBatteryInformationLoaded = true;
+        }
     }
 
-    private async void GetBatInfoAsync()
+    /// <summary>
+    ///  Основной метод отображения характеристик оперативной памяти
+    /// </summary>
+    private async Task LoadRamInformation()
     {
         try
         {
-            if (BATBannerButton.Visibility == Visibility.Collapsed)
+            if (_cpu != null)
             {
-                return;
-            }
+                var capacity = _cpu.GetMemoryConfig().TotalCapacity.SizeInBytes / 1073741824;
 
-            if (_sensorsInformation == null)
-            {
-                await Task.Delay(100);
-                GetBatInfoAsync();
-                return;
-            }
+                var speed = _cpu.powerTable?.MCLK * 2 ?? 0;
+                var umcBase = _cpu.ReadDword(0x50200);
+                var freqFromRatio = (_cpu.GetMemoryConfig().Type == MemType.DDR4 ?
+                                     Utils.GetBits(umcBase, 0, 7) / 3 :
+                                     Utils.GetBits(umcBase, 0, 16) / 100)
+                                     * 200;
 
-            if (_sensorsInformation!.BatteryUnavailable)
-            {
-                BATBannerButton.Visibility = Visibility.Collapsed;
-                _doNotTrackBattery = true;
-            }
-
-            try
-            {
-                // Обновление UI
-                tbBAT.Text = _sensorsInformation!.BatteryPercent;
-                tbBATState.Text = _sensorsInformation!.BatteryState;
-                tbBATHealth.Text = _sensorsInformation!.BatteryHealth;
-                tbBATCycles.Text = _sensorsInformation!.BatteryCycles;
-                tbBATCapacity.Text = _sensorsInformation!.BatteryCapacity;
-                tbBATChargeRate.Text = _sensorsInformation!.BatteryChargeRate;
-                _batName = _sensorsInformation!.BatteryName;
-            }
-            catch
-            {
-                // При ошибке скрываем элементы и отмечаем, что батарея некорректно отслеживается
-                _doNotTrackBattery = true;
-                if (BATBannerButton.Visibility != Visibility.Collapsed)
+                if (speed == 0 || freqFromRatio > speed)
                 {
-                    BATBannerButton.Visibility = Visibility.Collapsed;
+                    speed = freqFromRatio;
                 }
+
+                var type = _cpu.GetMemoryConfig().Type;
+                var width = _cpu.GetMemoryConfig().Modules.Count * 64;
+                var slots = _cpu.GetMemoryConfig().Modules.Count;
+                var producer = _cpu.GetMemoryConfig().Modules[0].Manufacturer;
+                var model = _cpu.GetMemoryConfig().Modules[0].PartNumber;
+                var tcl = Utils.GetBits(_cpu.ReadDword(0x50204), 0, 6);
+                var trcdwr = Utils.GetBits(_cpu.ReadDword(0x50204), 24, 6);
+                var trcdrd = Utils.GetBits(_cpu.ReadDword(0x50204), 16, 6);
+                var tras = Utils.GetBits(_cpu.ReadDword(0x50204), 8, 7);
+                var trp = Utils.GetBits(_cpu.ReadDword(0x50208), 16, 6);
+                var trc = Utils.GetBits(_cpu.ReadDword(0x50208), 0, 8);
+
+                _ramName = $"{capacity} GB {type} @ {speed} MT/s";
+                tbRAM.Text = speed + "MT/s";
+                tbRAMProducer.Text = producer;
+                RamModel.Text = model.Replace(" ", "");
+                tbWidth.Text = $"{width} bit";
+                tbSlots.Text = $"{slots} * {width / slots} bit";
+                tbTCL.Text = tcl + "T";
+                tbTRCDWR.Text = trcdwr + "T";
+                tbTRCDRD.Text = trcdrd + "T";
+                tbTRAS.Text = tras + "T";
+                tbTRP.Text = trp + "T";
+                tbTRC.Text = trc + "T";
             }
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex.ToString());
-        }
-    }
-
-    private async Task GetRamInfo()
-    {
-        double capacity = 0;
-        var speed = 0;
-        var type = 0;
-        var width = 0;
-        var slots = 0;
-        var producer = string.Empty;
-        var model = string.Empty;
-
-        try
-        {
-            var searcher = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_PhysicalMemory");
-            await Task.Run(() =>
-            {
-                foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
-                {
-                    if (producer == "")
-                    {
-                        producer = queryObj["Manufacturer"].ToString();
-                    }
-                    else if (!producer!.Contains(queryObj["Manufacturer"].ToString()!))
-                    {
-                        producer = $"{producer}/{queryObj["Manufacturer"]}";
-                    }
-
-                    if (model == "")
-                    {
-                        model = queryObj["PartNumber"].ToString();
-                    }
-                    else if (!model!.Contains(queryObj["PartNumber"].ToString()!))
-                    {
-                        model = $"{model}/{queryObj["PartNumber"]}";
-                    }
-
-                    capacity += Convert.ToDouble(queryObj["Capacity"]);
-                    speed = Convert.ToInt32(queryObj["ConfiguredClockSpeed"]);
-                    type = Convert.ToInt32(queryObj["SMBIOSMemoryType"]);
-                    width += Convert.ToInt32(queryObj["DataWidth"]);
-                    slots++;
-                }
-            });
-            capacity = capacity / 1024 / 1024 / 1024;
-            var ddrType = type switch
-            {
-                20 => "DDR",
-                21 => "DDR2",
-                24 => "DDR3",
-                26 => "DDR4",
-                30 => "LPDDR4",
-                34 => "DDR5",
-                35 => "LPDDR5",
-                36 => "LPDDR5X",
-                _ => $"Unknown ({type})"
-            };
-            _ramName = $"{capacity} GB {ddrType} @ {speed} MT/s";
-            tbRAM.Text = speed + "MT/s";
-            tbRAMProducer.Text = producer;
-            tbRAMModel.Text = model.Replace(" ", null);
-            tbWidth.Text = $"{width} bit";
-            tbSlots.Text = $"{slots} * {width / slots} bit";
-            tbTCL.Text = Utils.GetBits(_cpu!.ReadDword(0 | 0x50204), 0, 6) + "T";
-            tbTRCDWR.Text = Utils.GetBits(_cpu!.ReadDword(0 | 0x50204), 24, 6) + "T";
-            tbTRCDRD.Text = Utils.GetBits(_cpu!.ReadDword(0 | 0x50204), 16, 6) + "T";
-            tbTRAS.Text = Utils.GetBits(_cpu!.ReadDword(0 | 0x50204), 8, 7) + "T";
-            tbTRP.Text = Utils.GetBits(_cpu!.ReadDword(0 | 0x50208), 16, 6) + "T";
-            tbTRC.Text = Utils.GetBits(_cpu!.ReadDword(0 | 0x50208), 0, 8) + "T";
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.TraceIt_TraceError(ex.ToString());
+            await LogHelper.LogError(ex);
         }
     }
 
@@ -394,6 +337,9 @@ public sealed partial class ИнформацияPage
 
     #region P-State voids
 
+    /// <summary>
+    ///  Вспомогательный метод для получения Fid/Did
+    /// </summary>
     private static void CalculatePstateDetails(uint eax,
         out uint cpuDfsId, out uint cpuFid)
     {
@@ -401,6 +347,9 @@ public sealed partial class ИнформацияPage
         cpuFid = eax & 0xFF;
     }
 
+    /// <summary>
+    ///  Основной метод чтения P-States
+    /// </summary>
     private void ReadPstate()
     {
         try
@@ -420,7 +369,7 @@ public sealed partial class ИнформацияPage
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.TraceIt_TraceError(ex.ToString());
+                    LogHelper.TraceIt_TraceError(ex);
                 }
 
                 CalculatePstateDetails(eax, out var cpuDfsId, out var cpuFid);
@@ -429,19 +378,19 @@ public sealed partial class ИнформацияPage
                 {
                     textBlock.Text =
                         $"FID: {Convert.ToString(cpuFid, 10)}/DID: {Convert.ToString(cpuDfsId, 10)}\n{cpuFid * 25 / (cpuDfsId * 12.5) / 10}" +
-                        "infoAGHZ".GetLocalized();
+                        _ghzFreq;
                 }
                 else
                 {
                     textBlock.Text = "Info_PowerSumInfo_DisabledPState".GetLocalized();
                 }
 
-                _psTatesList[i] = cpuFid * 25 / (cpuDfsId * 12.5) / 10;
+                _pstatesList[i] = cpuFid * 25 / (cpuDfsId * 12.5) / 10;
             }
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -449,94 +398,112 @@ public sealed partial class ИнформацияPage
 
     #region Page-related voids
 
+    /// <summary>
+    ///  Обработчик сворачивания окна
+    /// </summary>
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
     {
         if (args.Visible)
         {
             _dispatcherTimer?.Start();
-            _isAppInTray = false;
         }
         else
         {
-            if (infoRTSSButton.IsChecked == false && AppSettings.NiIconsEnabled == false)
-            {
-                _dispatcherTimer?.Stop();
-                _isAppInTray = true;
-            }
+            StopInfoUpdate();
         }
     }
 
+    /// <summary>
+    ///  Обработчик захода на страницу
+    /// </summary>
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
         StartInfoUpdate();
     }
 
+    /// <summary>
+    ///  Обработчик выхода со страницы
+    /// </summary>
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
         base.OnNavigatedFrom(e);
         StopInfoUpdate();
+        App.MainWindow.VisibilityChanged -= Window_VisibilityChanged;
     }
 
+    /// <summary>
+    ///  Обработчик загрузки страницы
+    /// </summary>
     private async void ИнформацияPage_Loaded(object sender, RoutedEventArgs e)
     {
         try
         {
             _loaded = true;
-            _selectedBrush = CPUBannerButton.Background;
-            _selectedBorderBrush = CPUBannerButton.BorderBrush;
-            _transparentBrush = GPUBannerButton.Background;
+
+            _selectedBrush = CpuBannerButton.Background;
+            _selectedBorderBrush = CpuBannerButton.BorderBrush;
+            _transparentBrush = GpuBannerButton.Background;
+
+            _allBannerButtons =
+            [
+                CpuBannerButton, GpuBannerButton, 
+                RamBannerButton, VrmBannerButton, 
+                BatBannerButton, PstBannerButton
+            ];
+
+            _allExpandButtons =
+            [
+                CpuExpandButton, VrmExpandButton, 
+                GpuExpandButton, RamExpandButton, 
+                BatExpandButton, PstExpandButton
+            ];
+
             SetThemeAccentTextForeground();
-            GetBatInfoAsync();
-            await GetCpuInfo();
-            await GetRamInfo();
+
+            await LoadCpuInformation();
+            await LoadRamInformation();
             ReadPstate();
-            if (CPUBannerButton.Shadow != new ThemeShadow())
+
+            if (CpuBannerButton.Shadow != new ThemeShadow())
             {
-                CPUBannerButton.Shadow ??= new ThemeShadow();
-                GPUBannerButton.Shadow = null;
-                RAMBannerButton.Shadow = null;
-                BATBannerButton.Shadow = null;
-                PSTBannerButton.Shadow = null;
-                VRMBannerButton.Shadow = null;
+                CpuBannerButton.Shadow ??= new ThemeShadow();
+                GpuBannerButton.Shadow = null;
+                RamBannerButton.Shadow = null;
+                BatBannerButton.Shadow = null;
+                PstBannerButton.Shadow = null;
+                VrmBannerButton.Shadow = null;
             }
 
-            try
-            {
-                infoRTSSButton.IsChecked = AppSettings.RtssMetricsEnabled;
-                infoNiIconsButton.IsChecked = AppSettings.NiIconsEnabled;
-            }
-            catch (Exception exception)
-            {
-                await LogHelper.TraceIt_TraceError(exception.ToString());
-            }
-        }
-        catch (Exception exception)
-        {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
-        }
-    }
-
-    private void ИнформацияPage_Unloaded(object sender, RoutedEventArgs e)
-    {
-        _dataUpdater.DataUpdated -= OnDataUpdated;
-
-        try
-        {
-            infoRTSSButton.IsChecked = false;
-            _dispatcherTimer?.Stop();
-            RtssHandler.ResetOsdText();
+            infoRTSSButton.IsChecked = AppSettings.RtssMetricsEnabled;
+            infoNiIconsButton.IsChecked = AppSettings.NiIconsEnabled;
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            await LogHelper.TraceIt_TraceError(ex);
         }
+    }
+
+    /// <summary>
+    ///  Обработчик выгрузки страницы
+    /// </summary>
+    private void ИнформацияPage_Unloaded(object sender, RoutedEventArgs e)
+    {
+        if (_dataUpdater != null)
+        {
+            _dataUpdater.DataUpdated -= OnDataUpdated;
+        }
+
+        StopInfoUpdate();
     }
 
     #endregion
 
     #region Info Update voids
 
+    /// <summary>
+    ///  Основной метод автообновления информации
+    /// </summary>
     private void UpdateInfo()
     {
         try
@@ -546,844 +513,868 @@ public sealed partial class ИнформацияPage
                 return;
             }
 
-            if (!_isAppInTray)
+            // Сначала скрываем всё
+            HideAllSections();
+
+            if (_selectedGroup != 0)
             {
-                if (_selectedGroup != 0)
+                infoCPUSectionComboBox.Visibility = _selectedGroup != 5 ? Visibility.Collapsed : Visibility.Visible;
+
+                switch (_selectedGroup)
                 {
-                    InfoCPUComboBoxBorderSharedShadow_Element.Visibility = Visibility.Collapsed;
-                    switch (_selectedGroup)
+                    case 1: // GPU
+                        ConfigureSection(
+                            "InfoGPUSectionName".GetLocalized(),
+                            _gpuName,
+                            gpuVisible: true
+                        );
+                        break;
+
+                    case 2: // RAM
+                        ConfigureSection(
+                            "InfoRAMSectionName".GetLocalized(),
+                            _ramName,
+                            ramVisible: true,
+                            ramMainVisible: true
+                        );
+                        break;
+
+                    case 3: // VRM
+                        ConfigureSection(
+                            "VRM",
+                            _cpuName,
+                            vrmVisible: true,
+                            cpuMainVisible: true
+                        );
+                        break;
+
+                    case 4: // Battery
+                        ConfigureSection(
+                            "InfoBatteryName".GetLocalized(),
+                            _batName,
+                            batVisible: true
+                        );
+                        break;
+
+                    case 5: // P-States
+                        ConfigureSection(
+                            "P-States",
+                            _cpuName,
+                            pstVisible: true,
+                            cpuMainVisible: true
+                        );
+                        break;
+                }
+            }
+            else
+            {
+                // CPU по умолчанию
+                HideAllSections();
+
+                infoCPUMAINSection.Visibility = Visibility.Visible;
+                InfoCPUSectionMetrics.Visibility = Visibility.Visible;
+                infoCPUSectionComboBox.Visibility = Visibility.Visible;
+
+                infoCPUSectionName.Text = "InfoCPUSectionName".GetLocalized();
+                tbProcessor.Text = _cpuName;
+            }
+
+
+            if (RyzenadjProvider.IsPhysicallyUnavailable)
+            {
+                GpuBannerButton.Visibility = Visibility.Collapsed;
+            }
+
+            CpuBannerPolygon.Points.Remove(MaxedPoint);
+            CpuBigBannerPolygon.Points.Remove(MaxedPoint);
+            GpuBannerPolygon.Points.Remove(MaxedPoint);
+            GpuBigBannerPolygon.Points.Remove(MaxedPoint);
+            RamBannerPolygon.Points.Remove(MaxedPoint);
+            RamBigBannerPolygon.Points.Remove(MaxedPoint);
+            VrmBannerPolygon.Points.Remove(MaxedPoint);
+            VrmBigBannerPolygon.Points.Remove(MaxedPoint);
+            BatBannerPolygon.Points.Remove(MaxedPoint);
+            BatBigBannerPolygon.Points.Remove(MaxedPoint);
+            PstBannerPolygon.Points.Remove(MaxedPoint);
+            PstBigBannerPolygon.Points.Remove(MaxedPoint);
+
+            if (_sensorsInformation == null)
+            {
+                return;
+            }
+
+            LoadBatteryInformation();
+
+            var currBatRate = 0d;
+            var previousMaxBatRate = 0;
+            if (!_doNotTrackBattery)
+            {
+                tbBATChargeRate.Text = infoABATUsageBigBannerPolygonText.Text = infoABATUsageBannerPolygonText.Text = $"{_sensorsInformation.BatteryChargeRate:0.##}W";
+                tbBAT.Text = _sensorsInformation.BatteryPercent;
+                tbBATTime.Text = _sensorsInformation.BatteryLifeTime < 0 ? 
+                    _batFromWall : 
+                    GetSystemInfo.ConvertBatteryLifeTime(_sensorsInformation.BatteryLifeTime);
+                infoIBATUsageBigBanner.Text = InfoBATUsage.Text = tbBAT.Text + " " + tbBATChargeRate.Text + "\n" + tbBATTime.Text;
+                tbBATState.Text = _sensorsInformation.BatteryState;
+                
+                currBatRate = Math.Abs(_sensorsInformation.BatteryChargeRate);
+                previousMaxBatRate = (int)_maxBatRate;
+                if (currBatRate > _maxBatRate)
+                {
+                    _maxBatRate = currBatRate;
+                }
+            }
+
+            tbStapmL.Text = _sensorsInformation.CpuStapmLimit == 0 ? 
+                "Info_PowerSumInfo_Disabled".GetLocalized() : 
+                $"{_sensorsInformation.CpuStapmValue:0.###}W/{_sensorsInformation.CpuStapmLimit:0}W";
+
+            tbAclualPowerL.Text = tbActualL.Text = $"{_sensorsInformation.CpuFastValue:0.###}W/{_sensorsInformation.CpuFastLimit:0}W";
+
+            tbAVGL.Text = _sensorsInformation.CpuSlowLimit == 0 ? 
+                "Info_PowerSumInfo_Disabled".GetLocalized() : 
+                $"{_sensorsInformation.CpuSlowValue:0.###}W/{_sensorsInformation.CpuSlowLimit:0}W";
+            
+
+            tbFast.Text = $"{_sensorsInformation.CpuStapmTimeValue:0.###}S";
+            tbSlow.Text = $"{_sensorsInformation.CpuSlowTimeValue:0.###}S";
+
+            tbAPUL.Text = $"{_sensorsInformation.ApuSlowValue:0.###}W/{_sensorsInformation.ApuSlowLimit:0}W";
+
+            tbVRMTDCL.Text = $"{_sensorsInformation.VrmTdcValue:0.###}A/{_sensorsInformation.VrmTdcLimit:0}A";
+            tbSOCTDCL.Text = $"{_sensorsInformation.SocTdcValue:0.###}A/{_sensorsInformation.SocTdcLimit:0}A";
+            tbVRMEDCVRML.Text = tbVRMEDCL.Text = $"{_sensorsInformation.VrmEdcValue:0.###}A/{_sensorsInformation.VrmEdcLimit:0}A";
+            infoIVRMUsageBigBanner.Text = infoVRMUsageBanner.Text = $"{_sensorsInformation.VrmEdcValue:0.###}A\n{_sensorsInformation.CpuFastValue:0.###}W";
+            infoAVRMUsageBigBannerPolygonText.Text = infoAVRMUsageBannerPolygonText.Text = $"{_sensorsInformation.VrmEdcValue:0.###}A";
+            tbSOCEDCL.Text = $"{_sensorsInformation.SocEdcValue:0.###}A/{_sensorsInformation.SocEdcLimit:0}A";
+            tbSOCVOLT.Text = _sensorsInformation.SocVoltage == 0 ? 
+                $"{_cpu!.powerTable?.VDDCR_SOC ?? 0:0.###}V" : 
+                $"{_sensorsInformation.SocVoltage:0.###}V";
+
+            tbSOCPOWER.Text = _sensorsInformation.SocPower == 0 ? 
+                $"{(_cpu!.powerTable?.VDDCR_SOC ?? 0) * 10:0.###}W" : 
+                $"{_sensorsInformation.SocPower:0.###}W";
+
+            tbMEMCLOCK.Text = _sensorsInformation.MemFrequency == 0 ? 
+                $"{_cpu!.powerTable?.MCLK ?? 0:0.###}{_mhzFreq}" : 
+                $"{_sensorsInformation.MemFrequency:0.###}{_mhzFreq}";
+
+            tbFabricClock.Text = _sensorsInformation.FabricFrequency == 0 ? 
+                $"{_cpu!.powerTable?.FCLK ?? 0:0.###}{_mhzFreq}" : 
+                $"{_sensorsInformation.FabricFrequency:0.###}{_mhzFreq}";
+
+            // Инициализация переменных для накопления данных
+            var totalFrequency = 0d;
+            var frequencyCount = 0;
+            var totalVoltage = 0d;
+            var voltageCount = 0;
+            var maxFrequency = 0d;
+            var currentPstate = 4;
+
+            var selectedSection = infoCPUSectionComboBox.SelectedIndex;
+
+            // Обработка данных по каждому ядру
+            for (uint coreIndex = 0; coreIndex < MAX_CORES; coreIndex++)
+            {
+                // Получение частоты текущего ядра
+                var coreFrequency = GetCoreValue(_sensorsInformation.CpuFrequencyPerCore, coreIndex);
+
+                // Отслеживание максимальной частоты
+                if (!double.IsNaN(coreFrequency) && coreFrequency > maxFrequency)
+                {
+                    maxFrequency = coreFrequency;
+                }
+
+                // Получение значения в зависимости от выбранной секции
+                var currentValue = selectedSection switch
+                {
+                    SECTION_FREQUENCY => coreFrequency,
+                    SECTION_VOLTAGE => GetCoreValue(_sensorsInformation.CpuVoltagePerCore, coreIndex),
+                    SECTION_POWER => GetCoreValue(_sensorsInformation.CpuPowerPerCore, coreIndex),
+                    SECTION_TEMPERATURE => GetCoreValue(_sensorsInformation.CpuTemperaturePerCore, coreIndex),
+                    _ => coreFrequency
+                };
+
+                // Обновление UI, если значение валидно
+                if (!double.IsNaN(currentValue))
+                {
+                    UpdateButtonText(coreIndex, currentValue, selectedSection);
+
+                    // Накопление данных для средних значений (только для реальных ядер)
+                    if (coreIndex < _numberOfCores && IsValidFrequency(coreFrequency))
                     {
-                        case 1:
-                            // Показать свойства видеокарты
-
-                            infoCPUSectionName.Text = "InfoGPUSectionName".GetLocalized();
-                            InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoGPUSectionMetrics.Visibility = Visibility.Visible;
-                            InfoRAMSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoVRMSectionMetrics.Visibility = Visibility.Collapsed;
-                            infoRAMMAINSection.Visibility = Visibility.Collapsed;
-                            infoCPUMAINSection.Visibility = Visibility.Collapsed;
-                            InfoBATSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoPSTSectionMetrics.Visibility = Visibility.Collapsed;
-                            tbProcessor.Text = _gpuName;
-                            break;
-                        case 2:
-                            // Свойства ОЗУ
-
-                            infoCPUSectionName.Text = "InfoRAMSectionName".GetLocalized();
-                            InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoRAMSectionMetrics.Visibility = Visibility.Visible;
-                            InfoVRMSectionMetrics.Visibility = Visibility.Collapsed;
-                            tbProcessor.Text = _ramName;
-                            infoRAMMAINSection.Visibility = Visibility.Visible;
-                            infoCPUMAINSection.Visibility = Visibility.Collapsed;
-                            InfoBATSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoPSTSectionMetrics.Visibility = Visibility.Collapsed;
-                            break;
-                        case 3:
-                            //Зона VRM 
-                            infoCPUSectionName.Text = "VRM";
-                            InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoRAMSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoVRMSectionMetrics.Visibility = Visibility.Visible;
-                            tbProcessor.Text = _cpuName;
-                            infoRAMMAINSection.Visibility = Visibility.Collapsed;
-                            infoCPUMAINSection.Visibility = Visibility.Visible;
-                            InfoBATSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoPSTSectionMetrics.Visibility = Visibility.Collapsed;
-                            break;
-                        case 4:
-                            // Батарея
-                            infoCPUSectionName.Text = "InfoBatteryName".GetLocalized();
-                            InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoRAMSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoVRMSectionMetrics.Visibility = Visibility.Collapsed;
-                            tbProcessor.Text = _batName;
-                            infoRAMMAINSection.Visibility = Visibility.Collapsed;
-                            infoCPUMAINSection.Visibility = Visibility.Collapsed;
-                            InfoBATSectionMetrics.Visibility = Visibility.Visible;
-                            InfoPSTSectionMetrics.Visibility = Visibility.Collapsed;
-                            break;
-                        case 5:
-                            // P-States
-                            infoCPUSectionName.Text = "P-States";
-                            InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoRAMSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoVRMSectionMetrics.Visibility = Visibility.Collapsed;
-                            tbProcessor.Text = _cpuName;
-                            infoRAMMAINSection.Visibility = Visibility.Collapsed;
-                            infoCPUMAINSection.Visibility = Visibility.Visible;
-                            InfoBATSectionMetrics.Visibility = Visibility.Collapsed;
-                            InfoPSTSectionMetrics.Visibility = Visibility.Visible;
-                            break;
+                        totalFrequency += coreFrequency;
+                        frequencyCount++;
                     }
+                }
+
+                // Накопление данных по напряжению
+                var coreVoltage = GetCoreValue(_sensorsInformation.CpuVoltagePerCore, coreIndex);
+                if (IsValidVoltage(coreVoltage))
+                {
+                    totalVoltage += coreVoltage;
+                    voltageCount++;
+                }
+            }
+
+            // Обновление средней частоты и P-state
+            if (frequencyCount > 0)
+            {
+                var avgFrequency = Math.Round(totalFrequency / frequencyCount, 3);
+                CpuFrequency.Text = $"{avgFrequency} {_ghzFreq}";
+
+                currentPstate = DeterminePState(avgFrequency);
+                UpdatePStateUI(currentPstate);
+            }
+            else
+            {
+                CpuFrequency.Text = $"? {_ghzFreq}";
+            }
+
+            // Обновление среднего напряжения
+            if (voltageCount > 0)
+            {
+                CpuVoltage.Text = $"{Math.Round(totalVoltage / voltageCount, 3)}V";
+            }
+            else
+            {
+                HideVoltagePanel();
+            }
+
+
+            PstFrequency.Text = CpuFrequency.Text;
+            // Используем уже готовые значения с форматами
+            var gfxClk = _sensorsInformation.ApuFrequency / 1000.0;
+            var gfxVolt = _sensorsInformation.ApuVoltage;
+            var gfxTemp = _sensorsInformation.ApuTemperature;
+
+            // обновление максимума
+            var beforeMaxGfxClk = _maxGfxClock;
+            if (_maxGfxClock < gfxClk)
+            {
+                _maxGfxClock = gfxClk;
+            }
+
+            // GPU баннеры
+            GpuUsageBanner.Text = GpuUsageBigBanner.Text =
+                $"{gfxClk:0.###} {_ghzFreq}  {gfxTemp:0}C\n{gfxVolt:0.###}V";
+
+            GpuFrequency.Text = GpuUsageBigBannerPolygonText.Text = GpuUsageBannerPolygonText.Text =
+                $"{gfxClk:0.###}{_ghzFreq}";
+
+            GpuVoltage.Text = $"{gfxVolt:0.###}V";
+
+            // CPU max temp
+            var maxTemp = _sensorsInformation.CpuTempLimit;
+            CpuMaxTemp.Text = CpuMaxTempLimit.Text = CpuMaxTempLimit_Vrm.Text =
+                $"{_sensorsInformation.CpuTempValue:0.###}C/{maxTemp:0.###}C";
+
+            // APU temp
+            var apuTemp = _sensorsInformation.ApuTempValue;
+            var apuTempLimit = _sensorsInformation.ApuTempLimit;
+            IgpuMaxTempLimit.Text =
+                $"{(!double.IsNaN(apuTemp) && apuTemp > 0 ? apuTemp : gfxTemp):0.###}C/" +
+                $"{(!double.IsNaN(apuTempLimit) && apuTempLimit > 0 ? apuTempLimit : maxTemp):0.###}C";
+
+            // dGPU temp
+            DgpuMaxTempLimit.Text =
+                $"{_sensorsInformation.DgpuTempValue:0.###}C/{_sensorsInformation.DgpuTempLimit:0.###}C";
+
+            // CPU usage
+            var coreCpuUsage = _sensorsInformation.CpuUsage;
+            CpuUsage.Text = CpuUsageBigBannerPolygonText.Text = $"{coreCpuUsage:0.###}%";
+            CpuUsageBannerPolygonText.Text = $"{coreCpuUsage:0}%";
+            CpuUsageBanner.Text = CpuUsageBigBanner.Text =
+                $"{coreCpuUsage:0}%  {CpuFrequency.Text}\n{(CpuVoltage.Text != "?V" ? CpuVoltage.Text : string.Empty)}";
+
+
+            //InfoACPUBanner График
+            CpuBannerPolygon.Points.Remove(ZeroPoint);
+            _cpuPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - (int)(coreCpuUsage * 0.48) });
+            if (CpuFlyout.IsOpen)
+            {
+                CpuBigBannerPolygon.Points.Remove(ZeroPoint);
+                CpuBigBannerPolygon.Points.Add(new Point(60,
+                    48 - (int)(coreCpuUsage * 0.48)));
+            }
+
+            CpuBannerPolygon.Points.Add(new Point(60, 48 - (int)(coreCpuUsage * 0.48)));
+            foreach (var element in _cpuPointer.ToList())
+            {
+                if (element.X < 0)
+                {
+                    _cpuPointer.Remove(element);
+                    if (CpuFlyout.IsOpen)
+                    {
+                        CpuBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    }
+
+                    CpuBannerPolygon.Points.Remove(new Point(element.X, element.Y));
                 }
                 else
                 {
-                    infoCPUMAINSection.Visibility = Visibility.Visible;
-                    infoRAMMAINSection.Visibility = Visibility.Collapsed;
-                    InfoCPUComboBoxBorderSharedShadow_Element.Visibility = RyzenadjProvider.IsPhysicallyUnavailable
-                        ? Visibility.Collapsed
-                        : Visibility.Visible;
-                    InfoCPUSectionMetrics.Visibility = Visibility.Visible;
-                    InfoVRMSectionMetrics.Visibility = Visibility.Collapsed;
-                    InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
-                    InfoRAMSectionMetrics.Visibility = Visibility.Collapsed;
-                    InfoBATSectionMetrics.Visibility = Visibility.Collapsed;
-                    InfoPSTSectionMetrics.Visibility = Visibility.Collapsed;
-                    //Скрыть лишние элементы 
-                    infoCPUSectionName.Text = "InfoCPUSectionName".GetLocalized();
-                    tbProcessor.Text = _cpuName;
-                }
-
-
-                if (RyzenadjProvider.IsPhysicallyUnavailable)
-                {
-                    GPUBannerButton.Visibility = Visibility.Collapsed;
-                    InfoCPUSectionGetInfoSelectIndexesButton.Visibility = Visibility.Collapsed;
-                }
-
-                InfoACPUBannerPolygon.Points.Remove(MaxedPoint);
-                InfoACPUBigBannerPolygon.Points.Remove(MaxedPoint);
-                InfoAGPUBannerPolygon.Points.Remove(MaxedPoint);
-                InfoAGPUBigBannerPolygon.Points.Remove(MaxedPoint);
-                InfoARAMBannerPolygon.Points.Remove(MaxedPoint);
-                InfoARAMBigBannerPolygon.Points.Remove(MaxedPoint);
-                InfoAVRMBannerPolygon.Points.Remove(MaxedPoint);
-                InfoAVRMBigBannerPolygon.Points.Remove(MaxedPoint);
-                InfoABATBannerPolygon.Points.Remove(MaxedPoint);
-                InfoABATBigBannerPolygon.Points.Remove(MaxedPoint);
-                InfoAPSTBannerPolygon.Points.Remove(MaxedPoint);
-                InfoAPSTBigBannerPolygon.Points.Remove(MaxedPoint);
-
-                var currBatRate = 0d;
-                var beforeMaxBatRate = 0;
-                if (!_doNotTrackBattery)
-                {
-                    var batteryRate = 0d;
-                    try
+                    if (CpuFlyout.IsOpen)
                     {
-                        if (_sensorsInformation?.BatteryChargeRate?.Replace("W", string.Empty) != "")
-                        {
-                            batteryRate =
-                                Convert.ToDouble(_sensorsInformation?.BatteryChargeRate?.Replace("W", string.Empty));
-                        }
-                        else
-                        {
-                            _doNotTrackBattery = true;
-                        }
-                    }
-                    catch
-                    {
-                        _doNotTrackBattery = true;
+                        CpuBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
                     }
 
-                    tbBATChargeRate.Text = _sensorsInformation?.BatteryChargeRate;
-                    tbBAT.Text = _sensorsInformation?.BatteryPercent;
-                    var trueBatLifeTime = 0d;
-                    if (_sensorsInformation?.BatteryLifeTime != null)
+                    CpuBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    element.X -= 1;
+                    CpuBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                    if (CpuFlyout.IsOpen)
                     {
-                        trueBatLifeTime = _sensorsInformation.BatteryLifeTime;
-                    }
-
-                    if (trueBatLifeTime < 0)
-                    {
-                        tbBATTime.Text = "InfoBatteryAC".GetLocalized(); // Устройство от сети
-                    }
-                    else
-                    {
-                        var ts = TimeSpan.FromSeconds(trueBatLifeTime); // Секунды в TimeSpan
-                        var parts = new List<string>();
-                        if ((int)ts.TotalHours > 0)
-                        {
-                            parts.Add($"{(int)ts.TotalHours}h"); // Часы, если они есть
-                        }
-
-                        if (ts.Minutes > 0)
-                        {
-                            parts.Add($"{ts.Minutes}m"); // Минуты, если они есть
-                        }
-
-                        if (ts.Seconds > 0 || parts.Count == 0)
-                        {
-                            parts.Add(
-                                $"{ts.Seconds}s"); // Секунды
-                        }
-
-                        tbBATTime.Text = string.Join(" ", parts);
-                    }
-
-                    InfoBATUsage.Text = tbBAT.Text + " " + tbBATChargeRate.Text + "\n" + tbBATTime.Text;
-                    infoIBATUsageBigBanner.Text = InfoBATUsage.Text;
-                    infoABATUsageBannerPolygonText.Text = tbBATChargeRate.Text;
-                    infoABATUsageBigBannerPolygonText.Text = tbBATChargeRate.Text;
-                    tbBATState.Text = _sensorsInformation?.BatteryState;
-                    currBatRate = Math.Abs(batteryRate);
-                    beforeMaxBatRate = (int)_maxBatRate;
-                    if (currBatRate > _maxBatRate)
-                    {
-                        _maxBatRate = currBatRate;
+                        CpuBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
                     }
                 }
+            }
 
-                if (_sensorsInformation == null)
-                {
-                    return;
-                }
+            if (CpuFlyout.IsOpen)
+            {
+                CpuBigBannerPolygon.Points.Add(MaxedPoint);
+            }
 
-                if (_sensorsInformation.CpuStapmLimit == 0)
-                {
-                    tbStapmL.Text = "Info_PowerSumInfo_Disabled".GetLocalized();
-                }
-                else
-                {
-                    tbStapmL.Text = Math.Round(_sensorsInformation.CpuStapmValue, 3) + "W/" +
-                                    (int)_sensorsInformation.CpuStapmLimit + "W";
-                }
-
-                tbActualL.Text = Math.Round(_sensorsInformation.CpuFastValue, 3) + "W/" +
-                                 (int)_sensorsInformation.CpuFastLimit + "W";
-                tbAclualPowerL.Text = tbActualL.Text;
-                if (_sensorsInformation.CpuSlowLimit == 0)
-                {
-                    tbAVGL.Text = "Info_PowerSumInfo_Disabled".GetLocalized();
-                }
-                else
-                {
-                    tbAVGL.Text = Math.Round(_sensorsInformation.CpuSlowValue, 3) + "W/" +
-                                  (int)_sensorsInformation.CpuSlowLimit + "W";
-                }
-
-                tbFast.Text = Math.Round(_sensorsInformation.CpuStapmTimeValue, 3) + "S";
-                tbSlow.Text = Math.Round(_sensorsInformation.CpuSlowTimeValue, 3) + "S";
-
-                tbAPUL.Text = Math.Round(_sensorsInformation.ApuSlowValue, 3) + "W/" +
-                              (int)_sensorsInformation.ApuSlowLimit + "W";
-
-                tbVRMTDCL.Text = Math.Round(_sensorsInformation.VrmTdcValue, 3) + "A/" +
-                                 (int)_sensorsInformation.VrmTdcLimit + "A";
-                tbSOCTDCL.Text = Math.Round(_sensorsInformation.SocTdcValue, 3) + "A/" +
-                                 (int)_sensorsInformation.SocTdcLimit + "A";
-                tbVRMEDCL.Text = Math.Round(_sensorsInformation.VrmEdcValue, 3) + "A/" +
-                                 (int)_sensorsInformation.VrmEdcLimit + "A";
-                tbVRMEDCVRML.Text = tbVRMEDCL.Text;
-                infoVRMUsageBanner.Text = Math.Round(_sensorsInformation.VrmEdcValue, 3) +
-                                          "A\n" + Math.Round(_sensorsInformation.CpuFastValue, 3) + "W";
-                infoIVRMUsageBigBanner.Text = infoVRMUsageBanner.Text;
-                infoAVRMUsageBannerPolygonText.Text =
-                    Math.Round(_sensorsInformation.VrmEdcValue, 3) + "A";
-                infoAVRMUsageBigBannerPolygonText.Text = infoAVRMUsageBannerPolygonText.Text;
-                tbSOCEDCL.Text = Math.Round(_sensorsInformation.SocEdcValue, 3) + "A/" +
-                                 (int)_sensorsInformation.SocEdcLimit + "A";
-                tbSOCVOLT.Text = _sensorsInformation.SocVoltage == 0
-                    ? Math.Round(_cpu!.powerTable?.VDDCR_SOC ?? 0, 3) + "V"
-                    : Math.Round(_sensorsInformation.SocVoltage, 3) + "V";
-                tbSOCPOWER.Text = Math.Round(_sensorsInformation.SocPower, 3) == 0
-                    ? Math.Round((_cpu!.powerTable?.VDDCR_SOC ?? 0) * 10, 3) + "W"
-                    : Math.Round(_sensorsInformation.SocPower, 3) + "W";
-                tbMEMCLOCK.Text = Math.Round(_sensorsInformation.MemFrequency, 3) == 0
-                    ? Math.Round(_cpu!.powerTable?.MCLK ?? 0, 3) + "InfoFreqBoundsMHZ".GetLocalized()
-                    : Math.Round(_sensorsInformation.MemFrequency, 3) + "InfoFreqBoundsMHZ".GetLocalized();
-                tbFabricClock.Text = Math.Round(_sensorsInformation.FabricFrequency, 3) == 0
-                    ? Math.Round(_cpu!.powerTable?.FCLK ?? 0, 3) + "InfoFreqBoundsMHZ".GetLocalized()
-                    : Math.Round(_sensorsInformation.FabricFrequency, 3) + "InfoFreqBoundsMHZ".GetLocalized();
-                var coreClk = 0d;
-                var endtrace = 0;
-                var coreVolt = 0d;
-                var endtraced = 0;
-                var maxFreq = 0.0d;
-                var currentPstate = 4;
-                for (uint f = 0; f < 16; f++)
-                {
-                    var getCurrFreq = _sensorsInformation.CpuFrequencyPerCore != null
-                        ? _sensorsInformation.CpuFrequencyPerCore.Length > f
-                            ? _sensorsInformation.CpuFrequencyPerCore[f]
-                            : 0f
-                        : 0f;
-                    if (!double.IsNaN(getCurrFreq) && getCurrFreq > maxFreq)
-                    {
-                        maxFreq = getCurrFreq;
-                    }
-
-                    var currCore = infoCPUSectionComboBox.SelectedIndex switch
-                    {
-                        0 => getCurrFreq,
-                        1 => _sensorsInformation.CpuVoltagePerCore != null
-                            ? _sensorsInformation.CpuVoltagePerCore.Length > f
-                                ? _sensorsInformation.CpuVoltagePerCore[f]
-                                : 0f
-                            : 0f,
-                        2 => _sensorsInformation.CpuPowerPerCore != null
-                            ? _sensorsInformation.CpuPowerPerCore.Length > f
-                                ? _sensorsInformation.CpuPowerPerCore[f]
-                                : 0f
-                            : 0f,
-                        3 => _sensorsInformation.CpuTemperaturePerCore != null
-                            ? _sensorsInformation.CpuTemperaturePerCore.Length > f
-                                ? _sensorsInformation.CpuTemperaturePerCore[f]
-                                : 0f
-                            : 0f,
-                        _ => getCurrFreq
-                    };
-                    if (!double.IsNaN(currCore))
-                    {
-                        if (!InfoMainCPUFreqGrid.IsLoaded)
-                        {
-                            return;
-                        }
-
-                        var currText = (TextBlock)InfoMainCPUFreqGrid.FindName($"FreqButtonText_{f}");
-                        if (currText != null)
-                        {
-                            if (_selectedGroup is 0 or 5)
-                            {
-                                currText.Text = infoCPUSectionComboBox.SelectedIndex switch
-                                {
-                                    0 => Math.Round(currCore, 3) + " " + "infoAGHZ".GetLocalized(),
-                                    1 => Math.Round(currCore, 3) + "V",
-                                    2 => Math.Round(currCore, 3) + "W",
-                                    3 => Math.Round(currCore, 3) + "C",
-                                    _ => Math.Round(currCore, 3) + " " + "infoAGHZ".GetLocalized()
-                                };
-                            }
-                            else
-                            {
-                                switch (_selectedGroup)
-                                {
-                                    case 1:
-                                        currText.Text = GetSystemInfo.GetGPUName((int)f);
-                                        break;
-                                    case 2:
-                                        {
-                                            var reject = 0;
-                                            foreach (var element in tbRAMModel.Text.Split('/'))
-                                            {
-                                                if (reject == (int)f)
-                                                {
-                                                    currText.Text = element;
-                                                }
-
-                                                reject++;
-                                            }
-
-                                            break;
-                                        }
-                                    case 3:
-                                        currText.Text = f switch
-                                        {
-                                            0 =>
-                                                $"{Math.Round(_sensorsInformation.VrmEdcValue, 3)}A/{Math.Round(_sensorsInformation.VrmEdcLimit, 3)}A",
-                                            1 =>
-                                                $"{Math.Round(_sensorsInformation.VrmTdcValue, 3)}A/{Math.Round(_sensorsInformation.VrmTdcLimit, 3)}A",
-                                            2 =>
-                                                $"{Math.Round(_sensorsInformation.SocEdcValue, 3)}A/{Math.Round(_sensorsInformation.SocEdcLimit, 3)}A",
-                                            3 =>
-                                                $"{Math.Round(_sensorsInformation.SocTdcValue, 3)}A/{Math.Round(_sensorsInformation.SocTdcLimit, 3)}A",
-                                            _ => "0A"
-                                        };
-                                        break;
-                                    case 4:
-                                        currText.Text = _batName;
-                                        break;
-                                }
-                            }
-                        }
-
-                        if (f < _numberOfCores)
-                        {
-                            if (getCurrFreq + 1.0f > 0 && getCurrFreq != 0 && getCurrFreq < 7)
-                            {
-                                coreClk += getCurrFreq;
-                                endtrace += 1;
-                            }
-                        }
-                    }
-
-                    var currVolt = _sensorsInformation.CpuVoltagePerCore != null
-                        ? _sensorsInformation.CpuVoltagePerCore.Length > f
-                            ? _sensorsInformation.CpuVoltagePerCore[f]
-                            : 0f
-                        : 0f;
-                    if (!double.IsNaN(currVolt) && currVolt != 0 && currVolt - -1.0f > 0 && currVolt < 1.7)
-                    {
-                        coreVolt += currVolt;
-                        endtraced += 1;
-                    }
-                }
-
-                if (endtrace != 0)
-                {
-                    tbCPUFreq.Text = Math.Round(coreClk / endtrace, 3) + " " + "infoAGHZ".GetLocalized();
-
-                    if (Math.Round(coreClk / endtrace, 3) >= _psTatesList[2])
-                    {
-                        tbPST.Text = "P2";
-                        infoAPSTUsageBannerPolygonText.Text = "P2";
-                        infoAPSTUsageBigBannerPolygonText.Text = "P2";
-                        currentPstate = 1;
-                    }
-                    else
-                    {
-                        tbPST.Text = "C1";
-                        infoAPSTUsageBannerPolygonText.Text = "C1";
-                        infoAPSTUsageBigBannerPolygonText.Text = "C1";
-                        currentPstate = 0;
-                    }
-
-                    if (Math.Round(coreClk / endtrace, 3) >= _psTatesList[1])
-                    {
-                        tbPST.Text = "P1";
-                        infoAPSTUsageBannerPolygonText.Text = "P1";
-                        infoAPSTUsageBigBannerPolygonText.Text = "P1";
-                        currentPstate = 2;
-                    }
-
-                    if (Math.Round(coreClk / endtrace, 3) >= _psTatesList[0])
-                    {
-                        tbPST.Text = "P0";
-                        infoAPSTUsageBannerPolygonText.Text = "P0";
-                        infoAPSTUsageBigBannerPolygonText.Text = "P0";
-                        currentPstate = 3;
-                    }
-
-                    InfoPSTUsage.Text = tbPST.Text + "InfoPSTState".GetLocalized();
-                    infoIPSTUsageBigBanner.Text = InfoPSTUsage.Text;
-                }
-                else
-                {
-                    tbCPUFreq.Text = "? " + "infoAGHZ".GetLocalized();
-                }
-
-                if (endtraced != 0)
-                {
-                    tbCPUVolt.Text = Math.Round(coreVolt / endtraced, 3) + "V";
-                }
-                else
-                {
-                    CpuVoltagePanel.Visibility = Visibility.Collapsed;
-                    tbCPUVoltDesc.Visibility = Visibility.Collapsed;
-                    tbCPUVolt.Visibility = Visibility.Collapsed;
-                    tbCPUVolt.Text = "?V";
-                }
-
-                tbPSTFREQ.Text = tbCPUFreq.Text;
-                var gfxClk = Math.Round(_sensorsInformation.ApuFrequency / 1000, 3);
-                var gfxVolt = Math.Round(_sensorsInformation.ApuVoltage, 3);
-                var gfxTemp = _sensorsInformation.ApuTemperature;
-                var beforeMaxGfx = _maxGfxClock;
-                if (_maxGfxClock < gfxClk)
-                {
-                    _maxGfxClock = gfxClk;
-                }
-
-                infoGPUUsageBanner.Text = gfxClk + " " + "infoAGHZ".GetLocalized() + "  " + Math.Round(gfxTemp, 0) +
-                                          "C\n" + gfxVolt + "V";
-                infoAGPUUsageBannerPolygonText.Text = gfxClk + "infoAGHZ".GetLocalized();
-                tbGPUFreq.Text = infoAGPUUsageBannerPolygonText.Text;
-                infoAGPUUsageBigBannerPolygonText.Text = infoAGPUUsageBannerPolygonText.Text;
-                infoIGPUUsageBigBanner.Text = infoGPUUsageBanner.Text;
-                tbGPUVolt.Text = gfxVolt + "V";
-                var maxTemp = Math.Round(_sensorsInformation.CpuTempLimit, 3);
-                tbCPUMaxL.Text = Math.Round(_sensorsInformation.CpuTempValue, 3) + "C/" + maxTemp +
-                                 "C";
-                tbCPUMaxTempL.Text = tbCPUMaxL.Text;
-                tbCPUMaxTempVRML.Text = tbCPUMaxL.Text;
-                var apuTemp = Math.Round(_sensorsInformation.ApuTempValue, 3);
-                var apuTempLimit = Math.Round(_sensorsInformation.ApuTempLimit, 3);
-                tbAPUMaxL.Text = (!double.IsNaN(apuTemp) && apuTemp > 0 ? apuTemp : Math.Round(gfxTemp, 3)) + "C/" +
-                                 (!double.IsNaN(apuTempLimit) && apuTempLimit > 0 ? apuTempLimit : maxTemp) + "C";
-                tbDGPUMaxL.Text = Math.Round(_sensorsInformation.DgpuTempValue, 3) + "C/" +
-                                  Math.Round(_sensorsInformation.DgpuTempLimit, 3) + "C";
-                var coreCpuUsage = Math.Round(_sensorsInformation.CpuUsage, 3);
-                tbCPUUsage.Text = coreCpuUsage + "%";
-                infoACPUUsageBannerPolygonText.Text = Math.Round(coreCpuUsage, 0) + "%";
-                infoICPUUsageBanner.Text = Math.Round(coreCpuUsage, 0) + "%  " + tbCPUFreq.Text + "\n" +
-                                           (tbCPUVolt.Text != "?V" ? tbCPUVolt.Text : string.Empty);
-                infoACPUUsageBigBannerPolygonText.Text = tbCPUUsage.Text;
-                infoICPUUsageBigBanner.Text = infoICPUUsageBanner.Text;
-
-                //InfoACPUBanner График
-                InfoACPUBannerPolygon.Points.Remove(ZeroPoint);
-                _cpuPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - (int)(coreCpuUsage * 0.48) });
-                if (CPUFlyout.IsOpen)
-                {
-                    InfoACPUBigBannerPolygon.Points.Remove(ZeroPoint);
-                    InfoACPUBigBannerPolygon.Points.Add(new Point(60,
-                        48 - (int)(coreCpuUsage * 0.48)));
-                }
-
-                InfoACPUBannerPolygon.Points.Add(new Point(60, 48 - (int)(coreCpuUsage * 0.48)));
-                foreach (var element in _cpuPointer.ToList())
-                {
-                    if (element.X < 0)
-                    {
-                        _cpuPointer.Remove(element);
-                        if (CPUFlyout.IsOpen)
-                        {
-                            InfoACPUBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        }
-
-                        InfoACPUBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                    }
-                    else
-                    {
-                        if (CPUFlyout.IsOpen)
-                        {
-                            InfoACPUBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        }
-
-                        InfoACPUBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        element.X -= 1;
-                        InfoACPUBannerPolygon.Points.Add(new Point(element.X, element.Y));
-                        if (CPUFlyout.IsOpen)
-                        {
-                            InfoACPUBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
-                        }
-                    }
-                }
-
-                if (CPUFlyout.IsOpen)
-                {
-                    InfoACPUBigBannerPolygon.Points.Add(MaxedPoint);
-                }
-
-                InfoACPUBannerPolygon.Points.Add(MaxedPoint);
+            CpuBannerPolygon.Points.Add(MaxedPoint);
 
 
-                //InfoAGPUBanner График
-                InfoAGPUBannerPolygon.Points.Remove(ZeroPoint);
-                _gpuPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - (int)(gfxClk / _maxGfxClock * 48) });
-                InfoAGPUBannerPolygon.Points.Add(new Point(60,
+            //InfoAGPUBanner График
+            GpuBannerPolygon.Points.Remove(ZeroPoint);
+            _gpuPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - (int)(gfxClk / _maxGfxClock * 48) });
+            GpuBannerPolygon.Points.Add(new Point(60,
+                48 - (int)(gfxClk / _maxGfxClock * 48)));
+            if (GpuFlyout.IsOpen)
+            {
+                GpuBigBannerPolygon.Points.Remove(ZeroPoint);
+                GpuBigBannerPolygon.Points.Add(new Point(60,
                     48 - (int)(gfxClk / _maxGfxClock * 48)));
-                if (GPUFlyout.IsOpen)
+            }
+
+            foreach (var element in _gpuPointer.ToList())
+            {
+                if (element.X < 0)
                 {
-                    InfoAGPUBigBannerPolygon.Points.Remove(ZeroPoint);
-                    InfoAGPUBigBannerPolygon.Points.Add(new Point(60,
-                        48 - (int)(gfxClk / _maxGfxClock * 48)));
-                }
-
-                foreach (var element in _gpuPointer.ToList())
-                {
-                    if (element.X < 0)
+                    _gpuPointer.Remove(element);
+                    GpuBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    if (GpuFlyout.IsOpen)
                     {
-                        _gpuPointer.Remove(element);
-                        InfoAGPUBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        if (GPUFlyout.IsOpen)
-                        {
-                            InfoAGPUBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        }
-                    }
-                    else
-                    {
-                        InfoAGPUBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        if (GPUFlyout.IsOpen)
-                        {
-                            InfoAGPUBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        }
-
-                        element.X -= 1;
-                        element.Y = (int)(element.Y * beforeMaxGfx / _maxGfxClock);
-                        if (GPUFlyout.IsOpen)
-                        {
-                            InfoAGPUBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
-                        }
-
-                        InfoAGPUBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                        GpuBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
                     }
                 }
-
-                if (GPUFlyout.IsOpen)
+                else
                 {
-                    InfoAGPUBigBannerPolygon.Points.Add(MaxedPoint);
+                    GpuBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    if (GpuFlyout.IsOpen)
+                    {
+                        GpuBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    }
+
+                    element.X -= 1;
+                    element.Y = (int)(element.Y * beforeMaxGfxClk / _maxGfxClock);
+                    if (GpuFlyout.IsOpen)
+                    {
+                        GpuBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                    }
+
+                    GpuBannerPolygon.Points.Add(new Point(element.X, element.Y));
                 }
+            }
 
-                InfoAGPUBannerPolygon.Points.Add(MaxedPoint);
+            if (GpuFlyout.IsOpen)
+            {
+                GpuBigBannerPolygon.Points.Add(MaxedPoint);
+            }
 
-                //InfoAVRMBanner График
-                InfoAVRMBannerPolygon.Points.Remove(ZeroPoint);
-                _vrmPointer.Add(new InfoPageCpuPoints
-                {
-                    X = 60,
-                    Y = 48 - (int)(_sensorsInformation.VrmEdcValue /
-                        _sensorsInformation.VrmEdcLimit * 48)
-                });
-                if (VRMFlyout.IsOpen)
-                {
-                    InfoAVRMBigBannerPolygon.Points.Remove(ZeroPoint);
-                    InfoAVRMBigBannerPolygon.Points.Add(new Point(60,
-                        48 - (int)(_sensorsInformation.VrmEdcValue /
-                            _sensorsInformation.VrmEdcLimit * 48)));
-                }
+            GpuBannerPolygon.Points.Add(MaxedPoint);
 
-                InfoAVRMBannerPolygon.Points.Add(new Point(60,
+            //InfoAVRMBanner График
+            VrmBannerPolygon.Points.Remove(ZeroPoint);
+            _vrmPointer.Add(new InfoPageCpuPoints
+            {
+                X = 60,
+                Y = 48 - (int)(_sensorsInformation.VrmEdcValue /
+                    _sensorsInformation.VrmEdcLimit * 48)
+            });
+            if (VrmFlyout.IsOpen)
+            {
+                VrmBigBannerPolygon.Points.Remove(ZeroPoint);
+                VrmBigBannerPolygon.Points.Add(new Point(60,
                     48 - (int)(_sensorsInformation.VrmEdcValue /
                         _sensorsInformation.VrmEdcLimit * 48)));
-                foreach (var element in _vrmPointer.ToList())
+            }
+
+            VrmBannerPolygon.Points.Add(new Point(60,
+                48 - (int)(_sensorsInformation.VrmEdcValue /
+                    _sensorsInformation.VrmEdcLimit * 48)));
+            foreach (var element in _vrmPointer.ToList())
+            {
+                if (element.X < 0)
                 {
-                    if (element.X < 0)
+                    _vrmPointer.Remove(element);
+                    VrmBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    if (VrmFlyout.IsOpen)
                     {
-                        _vrmPointer.Remove(element);
-                        InfoAVRMBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        if (VRMFlyout.IsOpen)
-                        {
-                            InfoAVRMBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        }
-                    }
-                    else
-                    {
-                        if (VRMFlyout.IsOpen)
-                        {
-                            InfoAVRMBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        }
-
-                        InfoAVRMBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        element.X -= 1;
-                        if (VRMFlyout.IsOpen)
-                        {
-                            InfoAVRMBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
-                        }
-
-                        InfoAVRMBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                        VrmBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
                     }
                 }
-
-                InfoAVRMBannerPolygon.Points.Add(MaxedPoint);
-                if (VRMFlyout.IsOpen)
+                else
                 {
-                    InfoAVRMBigBannerPolygon.Points.Add(MaxedPoint);
-                }
-
-                //InfoAPSTBanner График
-                InfoAPSTBannerPolygon.Points.Remove(ZeroPoint);
-                _pstPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - currentPstate * 16 });
-                InfoAPSTBannerPolygon.Points.Add(new Point(60, 48 - currentPstate * 16));
-                if (PSTFlyout.IsOpen)
-                {
-                    InfoAPSTBigBannerPolygon.Points.Remove(ZeroPoint);
-                    InfoAPSTBigBannerPolygon.Points.Add(new Point(60, 48 - currentPstate * 16));
-                }
-
-                foreach (var element in _pstPointer.ToList())
-                {
-                    if (element.X < 0)
+                    if (VrmFlyout.IsOpen)
                     {
-                        _pstPointer.Remove(element);
-                        InfoAPSTBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        if (PSTFlyout.IsOpen)
-                        {
-                            InfoAPSTBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        }
+                        VrmBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
                     }
-                    else
+
+                    VrmBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    element.X -= 1;
+                    if (VrmFlyout.IsOpen)
                     {
-                        InfoAPSTBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        if (PSTFlyout.IsOpen)
-                        {
-                            InfoAPSTBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        }
+                        VrmBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                    }
 
-                        element.X -= 1;
-                        InfoAPSTBannerPolygon.Points.Add(new Point(element.X, element.Y));
-                        if (PSTFlyout.IsOpen)
-                        {
-                            InfoAPSTBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
-                        }
+                    VrmBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                }
+            }
+
+            VrmBannerPolygon.Points.Add(MaxedPoint);
+            if (VrmFlyout.IsOpen)
+            {
+                VrmBigBannerPolygon.Points.Add(MaxedPoint);
+            }
+
+            //InfoAPSTBanner График
+            PstBannerPolygon.Points.Remove(ZeroPoint);
+            _pstPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - currentPstate * 16 });
+            PstBannerPolygon.Points.Add(new Point(60, 48 - currentPstate * 16));
+            if (PstFlyout.IsOpen)
+            {
+                PstBigBannerPolygon.Points.Remove(ZeroPoint);
+                PstBigBannerPolygon.Points.Add(new Point(60, 48 - currentPstate * 16));
+            }
+
+            foreach (var element in _pstPointer.ToList())
+            {
+                if (element.X < 0)
+                {
+                    _pstPointer.Remove(element);
+                    PstBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    if (PstFlyout.IsOpen)
+                    {
+                        PstBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
                     }
                 }
-
-                if (PSTFlyout.IsOpen)
+                else
                 {
-                    InfoAPSTBigBannerPolygon.Points.Add(MaxedPoint);
+                    PstBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    if (PstFlyout.IsOpen)
+                    {
+                        PstBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    }
+
+                    element.X -= 1;
+                    PstBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                    if (PstFlyout.IsOpen)
+                    {
+                        PstBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                    }
                 }
+            }
 
-                InfoAPSTBannerPolygon.Points.Add(MaxedPoint);
+            if (PstFlyout.IsOpen)
+            {
+                PstBigBannerPolygon.Points.Add(MaxedPoint);
+            }
 
-                //InfoABATBanner График
-                InfoABATBannerPolygon.Points.Remove(ZeroPoint);
-                _batPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - (int)(Math.Abs(currBatRate) / _maxBatRate * 48) });
-                InfoABATBannerPolygon.Points.Add(new Point(60,
+            PstBannerPolygon.Points.Add(MaxedPoint);
+
+            //InfoABATBanner График
+            BatBannerPolygon.Points.Remove(ZeroPoint);
+            _batPointer.Add(new InfoPageCpuPoints { X = 60, Y = 48 - (int)(Math.Abs(currBatRate) / _maxBatRate * 48) });
+            BatBannerPolygon.Points.Add(new Point(60,
+                48 - (int)(Math.Abs(currBatRate) / _maxBatRate * 48)));
+            if (BatFlyout.IsOpen)
+            {
+                BatBigBannerPolygon.Points.Remove(ZeroPoint);
+                BatBigBannerPolygon.Points.Add(new Point(60,
                     48 - (int)(Math.Abs(currBatRate) / _maxBatRate * 48)));
-                if (BATFlyout.IsOpen)
+            }
+
+            foreach (var element in _batPointer.ToList())
+            {
+                if (element.X < 0)
                 {
-                    InfoABATBigBannerPolygon.Points.Remove(ZeroPoint);
-                    InfoABATBigBannerPolygon.Points.Add(new Point(60,
-                        48 - (int)(Math.Abs(currBatRate) / _maxBatRate * 48)));
+                    _batPointer.Remove(element);
+                    BatBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    if (BatFlyout.IsOpen)
+                    {
+                        BatBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    }
+                }
+                else
+                {
+                    BatBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    if (BatFlyout.IsOpen)
+                    {
+                        BatBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                    }
+
+                    element.X -= 1;
+                    element.Y = (int)(element.Y * previousMaxBatRate / _maxBatRate);
+                    BatBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                    if (BatFlyout.IsOpen)
+                    {
+                        BatBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                    }
+                }
+            }
+
+            if (BatFlyout.IsOpen)
+            {
+                BatBigBannerPolygon.Points.Add(MaxedPoint);
+            }
+
+            BatBannerPolygon.Points.Add(MaxedPoint);
+            try
+            {
+                var busyRam = _busyRam;
+                var usageResult = _totalRam;
+                if (busyRam != 0 && usageResult != 0)
+                {
+                    RamBannerPolygon.Points.Remove(ZeroPoint);
+                    _ramPointer.Add(new InfoPageCpuPoints
+                    {
+                        X = 60,
+                        Y = 48 - (int)(busyRam * 100 / usageResult * 0.48)
+                    });
+                    RamBannerPolygon.Points.Add(new Point(60,
+                        48 - (int)(busyRam * 100 / usageResult * 0.48)));
+                    if (RamFlyout.IsOpen)
+                    {
+                        RamBigBannerPolygon.Points.Remove(ZeroPoint);
+                        RamBigBannerPolygon.Points.Add(new Point(60,
+                            48 - (int)(busyRam * 100 / usageResult * 0.48)));
+                    }
                 }
 
-                foreach (var element in _batPointer.ToList())
+                foreach (var element in _ramPointer.ToList())
                 {
                     if (element.X < 0)
                     {
-                        _batPointer.Remove(element);
-                        InfoABATBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        if (BATFlyout.IsOpen)
+                        _ramPointer.Remove(element);
+                        RamBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                        if (RamFlyout.IsOpen)
                         {
-                            InfoABATBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                            RamBigBannerPolygon.Points.Remove(
+                                new Point(element.X, element.Y));
                         }
                     }
                     else
                     {
-                        InfoABATBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                        if (BATFlyout.IsOpen)
+                        if (RamFlyout.IsOpen)
                         {
-                            InfoABATBigBannerPolygon.Points.Remove(new Point(element.X, element.Y));
+                            RamBigBannerPolygon.Points.Remove(
+                                new Point(element.X, element.Y));
                         }
 
+                        RamBannerPolygon.Points.Remove(new Point(element.X, element.Y));
                         element.X -= 1;
-                        element.Y = (int)(element.Y * beforeMaxBatRate / _maxBatRate);
-                        InfoABATBannerPolygon.Points.Add(new Point(element.X, element.Y));
-                        if (BATFlyout.IsOpen)
+                        RamBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                        if (RamFlyout.IsOpen)
                         {
-                            InfoABATBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
+                            RamBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
                         }
                     }
                 }
 
-                if (BATFlyout.IsOpen)
+                if (RamFlyout.IsOpen)
                 {
-                    InfoABATBigBannerPolygon.Points.Add(MaxedPoint);
+                    RamBigBannerPolygon.Points.Add(MaxedPoint);
                 }
 
-                InfoABATBannerPolygon.Points.Add(MaxedPoint);
-                try
-                {
-                    var busyRam = _busyRam;
-                    var usageResult = _totalRam;
-                    if (busyRam != 0 && usageResult != 0)
-                    {
-                        InfoARAMBannerPolygon.Points.Remove(ZeroPoint);
-                        _ramPointer.Add(new InfoPageCpuPoints
-                        {
-                            X = 60,
-                            Y = 48 - (int)(busyRam * 100 / usageResult * 0.48)
-                        });
-                        InfoARAMBannerPolygon.Points.Add(new Point(60,
-                            48 - (int)(busyRam * 100 / usageResult * 0.48)));
-                        if (RAMFlyout.IsOpen)
-                        {
-                            InfoARAMBigBannerPolygon.Points.Remove(ZeroPoint);
-                            InfoARAMBigBannerPolygon.Points.Add(new Point(60,
-                                48 - (int)(busyRam * 100 / usageResult * 0.48)));
-                        }
-                    }
+                RamBannerPolygon.Points.Add(MaxedPoint);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.TraceIt_TraceError(ex);
+            }
 
-                    foreach (var element in _ramPointer.ToList())
-                    {
-                        if (element.X < 0)
-                        {
-                            _ramPointer.Remove(element);
-                            InfoARAMBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                            if (RAMFlyout.IsOpen)
-                            {
-                                InfoARAMBigBannerPolygon.Points.Remove(
-                                    new Point(element.X, element.Y));
-                            }
-                        }
-                        else
-                        {
-                            if (RAMFlyout.IsOpen)
-                            {
-                                InfoARAMBigBannerPolygon.Points.Remove(
-                                    new Point(element.X, element.Y));
-                            }
-
-                            InfoARAMBannerPolygon.Points.Remove(new Point(element.X, element.Y));
-                            element.X -= 1;
-                            InfoARAMBannerPolygon.Points.Add(new Point(element.X, element.Y));
-                            if (RAMFlyout.IsOpen)
-                            {
-                                InfoARAMBigBannerPolygon.Points.Add(new Point(element.X, element.Y));
-                            }
-                        }
-                    }
-
-                    if (RAMFlyout.IsOpen)
-                    {
-                        InfoARAMBigBannerPolygon.Points.Add(MaxedPoint);
-                    }
-
-                    InfoARAMBannerPolygon.Points.Add(MaxedPoint);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.TraceIt_TraceError(ex.ToString());
-                }
-
-                InfoRAMUsage.Text = _sensorsInformation.RamUsage;
-                infoARAMUsageBannerPolygonText.Text = _sensorsInformation.RamUsagePercent + "%";
-                infoARAMUsageBigBannerPolygonText.Text = infoARAMUsageBannerPolygonText.Text;
-                infoIRAMUsageBigBanner.Text = InfoRAMUsage.Text;
-                //InfoARAMBanner График
-                try
-                {
-                    _busyRam = Convert.ToDouble(_sensorsInformation?.RamBusy?.Replace("GB", string.Empty));
-                    _totalRam = Convert.ToDouble(_sensorsInformation?.RamTotal?.Replace("GB", string.Empty));
-                }
-                catch
-                {
-                    _busyRam = 0;
-                    _totalRam = 0;
-                }
+            InfoRAMUsage.Text = _sensorsInformation.RamUsage;
+            infoARAMUsageBannerPolygonText.Text = _sensorsInformation.RamUsagePercent + "%";
+            infoARAMUsageBigBannerPolygonText.Text = infoARAMUsageBannerPolygonText.Text;
+            infoIRAMUsageBigBanner.Text = InfoRAMUsage.Text;
+            //InfoARAMBanner График
+            try
+            {
+                _busyRam = Convert.ToDouble(_sensorsInformation?.RamBusy?.Replace("GB", string.Empty));
+                _totalRam = Convert.ToDouble(_sensorsInformation?.RamTotal?.Replace("GB", string.Empty));
+            }
+            catch
+            {
+                _busyRam = 0;
+                _totalRam = 0;
             }
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
-    // Автообновление информации 
-    private void StartInfoUpdate() // Начать обновление информации
+    #region Update Helpers
+
+    /// <summary>
+    ///  Безопасное получение значения из массива
+    /// </summary>
+    private static double GetCoreValue(double[]? array, uint index) => array != null && array.Length > index ? array[index] : 0f;
+
+    /// <summary>
+    ///  Проверка валидности частоты
+    /// </summary>
+    private static bool IsValidFrequency(double frequency) => frequency > 0 && frequency < MAX_VALID_FREQUENCY;
+
+    /// <summary>
+    ///  Проверка валидности напряжения
+    /// </summary>
+    private static bool IsValidVoltage(double voltage) => !double.IsNaN(voltage) && voltage > 0 && voltage < MAX_VALID_VOLTAGE;
+
+    /// <summary>
+    ///  Обновление отображаемого в интерфейсе значения для конкретного индекса
+    /// </summary>
+    private void UpdateButtonText(uint index, double value, int section)
+    {
+        var textBlock = (TextBlock)InfoMainCPUFreqGrid.FindName($"FreqButtonText_{index}");
+        if (textBlock == null)
+        {
+            return;
+        }
+
+        if (_selectedGroup is GROUP_CPU or GROUP_CPU_PST)
+        {
+            textBlock.Text = FormatCoreValue(value, section);
+        }
+        else
+        {
+            textBlock.Text = GetGroupSpecificText(index);
+        }
+    }
+
+    /// <summary>
+    ///  Форматирование значения в зависимости от секции
+    /// </summary>
+    private static string FormatCoreValue(double value, int section)
+    {
+        return section switch
+        {
+            SECTION_FREQUENCY => $"{value:0.###} {_ghzFreq}",
+            SECTION_VOLTAGE => $"{value:0.###}V",
+            SECTION_POWER => $"{value:0.###}W",
+            SECTION_TEMPERATURE => $"{value:0.###}C",
+            _ => $"{value:0.###} {_ghzFreq}"
+        };
+    }
+
+
+    /// <summary>
+    ///  Получение текста для специфичных групп (GPU, RAM, VRM, Battery)
+    /// </summary>
+    private string GetGroupSpecificText(uint index)
+    {
+        return _selectedGroup switch
+        {
+            GROUP_GPU => GetGpuText(index),
+            GROUP_RAM => GetRamText(index),
+            GROUP_VRM => GetVrmText(index),
+            GROUP_BATTERY => _batName,
+            _ => "Unknown"
+        };
+    }
+
+    /// <summary>
+    ///  Получение текста для GPU
+    /// </summary>
+    private static string GetGpuText(uint index)
+    {
+        var gpuNames = GetSystemInfo.GetGpuNames();
+        return index < gpuNames.Count ? gpuNames[(int)index] : "Unknown";
+    }
+
+    /// <summary>
+    ///  Получение текста для RAM
+    /// </summary>
+    private string GetRamText(uint index)
+    {
+        var ramModels = RamModel.Text.Split('/');
+        return index < ramModels.Length ? ramModels[index] : "Unknown";
+    }
+
+    /// <summary>
+    ///  Получение текста для VRM
+    /// </summary>
+    private string GetVrmText(uint index)
+    {
+        return index switch
+        {
+            0 => FormatCurrentLimit(_sensorsInformation?.VrmEdcValue, _sensorsInformation?.VrmEdcLimit),
+            1 => FormatCurrentLimit(_sensorsInformation?.VrmTdcValue, _sensorsInformation?.VrmTdcLimit),
+            2 => FormatCurrentLimit(_sensorsInformation?.SocEdcValue, _sensorsInformation?.SocEdcLimit),
+            3 => FormatCurrentLimit(_sensorsInformation?.SocTdcValue, _sensorsInformation?.SocTdcLimit),
+            _ => "0A"
+        };
+    }
+
+    /// <summary>
+    ///  Форматирование значений тока VRM
+    /// </summary>
+    private static string FormatCurrentLimit(double? value, double? limit) => $"{value:0.###}A/{limit:0.###}A";
+
+    // Определение текущего P-state на основе частоты
+    private int DeterminePState(double frequency)
+    {
+        if (frequency >= _pstatesList[0])
+        {
+            return 3; // P0
+        }
+
+        if (frequency >= _pstatesList[1])
+        {
+            return 2; // P1
+        }
+
+        if (frequency >= _pstatesList[2])
+        {
+            return 1; // P2
+        }
+
+        return 0; // C1
+    }
+
+    /// <summary>
+    ///  Обновление UI элементов P-state
+    /// </summary>
+    private void UpdatePStateUI(int pstate)
+    {
+        var pstateText = pstate switch
+        {
+            3 => "P0",
+            2 => "P1",
+            1 => "P2",
+            _ => "C1"
+        };
+
+        PowerState.Text = PstUsageBannerPolygonText.Text = PstUsageBigBannerPolygonText.Text = pstateText;
+        PstUsage.Text = PstUsageBigBanner.Text = pstateText + _pstate;
+    }
+
+    /// <summary>
+    ///  Скрытие панели напряжения
+    /// </summary>
+    private void HideVoltagePanel()
+    {
+        CpuVoltagePanel.Visibility = Visibility.Collapsed;
+        CpuVoltageDescription.Visibility = Visibility.Collapsed;
+        CpuVoltage.Visibility = Visibility.Collapsed;
+    }
+
+    /// <summary>
+    ///  Вспомогательный метод для скрытия всех секций сенсоров
+    /// </summary>
+    private void HideAllSections()
+    {
+        InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
+        InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
+        InfoRAMSectionMetrics.Visibility = Visibility.Collapsed;
+        InfoVRMSectionMetrics.Visibility = Visibility.Collapsed;
+        InfoBATSectionMetrics.Visibility = Visibility.Collapsed;
+        InfoPSTSectionMetrics.Visibility = Visibility.Collapsed;
+        infoRAMMAINSection.Visibility = Visibility.Collapsed;
+        infoCPUMAINSection.Visibility = Visibility.Collapsed;
+    }
+
+    /// <summary>
+    ///  Вспомогательный метод для отображения или скрытия секций сенсоров
+    /// </summary>
+    private void ConfigureSection(
+        string sectionName,
+        string processorText,
+        bool cpuVisible = false,
+        bool gpuVisible = false,
+        bool ramVisible = false,
+        bool vrmVisible = false,
+        bool batVisible = false,
+        bool pstVisible = false,
+        bool cpuMainVisible = false,
+        bool ramMainVisible = false
+    )
+    {
+        infoCPUSectionName.Text = sectionName;
+        tbProcessor.Text = processorText;
+
+        InfoCPUSectionMetrics.Visibility = cpuVisible ? Visibility.Visible : Visibility.Collapsed;
+        InfoGPUSectionMetrics.Visibility = gpuVisible ? Visibility.Visible : Visibility.Collapsed;
+        InfoRAMSectionMetrics.Visibility = ramVisible ? Visibility.Visible : Visibility.Collapsed;
+        InfoVRMSectionMetrics.Visibility = vrmVisible ? Visibility.Visible : Visibility.Collapsed;
+        InfoBATSectionMetrics.Visibility = batVisible ? Visibility.Visible : Visibility.Collapsed;
+        InfoPSTSectionMetrics.Visibility = pstVisible ? Visibility.Visible : Visibility.Collapsed;
+        infoCPUMAINSection.Visibility = cpuMainVisible ? Visibility.Visible : Visibility.Collapsed;
+        infoRAMMAINSection.Visibility = ramMainVisible ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    /// <summary>
+    ///  Начать автообновление информации 
+    /// </summary>
+    private void StartInfoUpdate()
     {
         try
         {
-            InfoACPUBannerPolygon.Points.Clear();
-            InfoACPUBannerPolygon.Points.Add(StartPoint);
-            InfoACPUBigBannerPolygon.Points.Clear();
-            InfoACPUBigBannerPolygon.Points.Add(StartPoint);
-            InfoAGPUBannerPolygon.Points.Clear();
-            InfoAGPUBannerPolygon.Points.Add(StartPoint);
-            InfoAGPUBigBannerPolygon.Points.Clear();
-            InfoAGPUBigBannerPolygon.Points.Add(StartPoint);
-            InfoARAMBannerPolygon.Points.Clear();
-            InfoARAMBannerPolygon.Points.Add(StartPoint);
-            InfoARAMBigBannerPolygon.Points.Clear();
-            InfoARAMBigBannerPolygon.Points.Add(StartPoint);
-            InfoAVRMBannerPolygon.Points.Clear();
-            InfoAVRMBannerPolygon.Points.Add(StartPoint);
-            InfoAVRMBigBannerPolygon.Points.Clear();
-            InfoAVRMBigBannerPolygon.Points.Add(StartPoint);
-            InfoABATBannerPolygon.Points.Clear();
-            InfoABATBannerPolygon.Points.Add(StartPoint);
-            InfoABATBigBannerPolygon.Points.Clear();
-            InfoABATBigBannerPolygon.Points.Add(StartPoint);
-            InfoAPSTBannerPolygon.Points.Clear();
-            InfoAPSTBannerPolygon.Points.Add(StartPoint);
-            InfoAPSTBigBannerPolygon.Points.Clear();
-            InfoAPSTBigBannerPolygon.Points.Add(StartPoint);
+            CpuBannerPolygon.Points.Clear();
+            CpuBannerPolygon.Points.Add(StartPoint);
+            CpuBigBannerPolygon.Points.Clear();
+            CpuBigBannerPolygon.Points.Add(StartPoint);
+            GpuBannerPolygon.Points.Clear();
+            GpuBannerPolygon.Points.Add(StartPoint);
+            GpuBigBannerPolygon.Points.Clear();
+            GpuBigBannerPolygon.Points.Add(StartPoint);
+            RamBannerPolygon.Points.Clear();
+            RamBannerPolygon.Points.Add(StartPoint);
+            RamBigBannerPolygon.Points.Clear();
+            RamBigBannerPolygon.Points.Add(StartPoint);
+            VrmBannerPolygon.Points.Clear();
+            VrmBannerPolygon.Points.Add(StartPoint);
+            VrmBigBannerPolygon.Points.Clear();
+            VrmBigBannerPolygon.Points.Add(StartPoint);
+            BatBannerPolygon.Points.Clear();
+            BatBannerPolygon.Points.Add(StartPoint);
+            BatBigBannerPolygon.Points.Clear();
+            BatBigBannerPolygon.Points.Add(StartPoint);
+            PstBannerPolygon.Points.Clear();
+            PstBannerPolygon.Points.Add(StartPoint);
+            PstBigBannerPolygon.Points.Clear();
+            PstBigBannerPolygon.Points.Add(StartPoint);
+
             _dispatcherTimer = new DispatcherTimer();
             _dispatcherTimer.Tick += (_, _) => UpdateInfo();
             _dispatcherTimer.Interval = TimeSpan.FromMilliseconds(300);
+
             App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
             _dispatcherTimer.Start();
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
-    // Метод, который будет вызываться при скрытии/переключении страницы
+    /// <summary>
+    ///  Остановка автообновления информации. Вызываеться при скрытии/переключении страницы
+    /// </summary>
     private void StopInfoUpdate() => _dispatcherTimer?.Stop();
+
+    #endregion
 
     #endregion
 
     #region Information builders
 
+    /// <summary>
+    ///  Основной метод для создания кнопок содержащих текущие показатели системы
+    /// </summary>
     private async Task InfoCpuSectionGridBuilder()
     {
         try
@@ -1391,55 +1382,39 @@ public sealed partial class ИнформацияPage
             InfoMainCPUFreqGrid.RowDefinitions.Clear();
             InfoMainCPUFreqGrid.ColumnDefinitions.Clear();
 
-            // Список видеокарт из WMI
-            _cachedGpuList ??= await Task.Run(() =>
-            {
-                return new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
-                    .Get()
-                    .Cast<ManagementObject>()
-                    .Where(element =>
-                    {
-                        var name = element["Name"]?.ToString() ?? string.Empty;
-                        // Исключаем виртуальные видеокарты (например, Parsec)
-                        return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
-                               !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
-                    })
-                    .ToList();
-            });
-
             // Количество видеокарт
-            var gpuCounter = _cachedGpuList.Count;
+            var gpuCounter = GetSystemInfo.GetGpuNames().Count;
 
-            var backupNumberLogical = _numberOfLogicalProcessors;
+            var threads = _numberOfLogicalProcessors;
 
             // Определяем количество элементов (coreCounter) в зависимости от выбранной секции
             var coreCounter = _selectedGroup switch
             {
-                // Секция процессора или PStates
+                // Секция процессора или P-States
                 0 or 5 => _numberOfCores > 2
                     ? _numberOfCores // Если ядер больше 2, используем количество ядер
                     : infoCPUSectionComboBox.SelectedIndex == 0
-                        ? backupNumberLogical // Если выбрано отображение частоты, используем логические процессоры
+                        ? threads // Если выбрано отображение частоты, используем логические процессоры
                         : _numberOfCores, // Иначе используем количество ядер
                 // Секция GFX
                 1 => gpuCounter, // Используем количество видеокарт
                 // Секция RAM
-                2 => tbRAMModel.Text.Split('/').Length, // Используем количество плат ОЗУ
+                2 => RamModel.Text.Split('/').Length, // Используем количество плат ОЗУ
                 // Секция 3
                 3 => 4, // Фиксированное значение для секции 3
                 // Другие секции
                 _ => 1 // По умолчанию 1 элемент
             };
 
-            // Если количество ядер больше 2, обновляем backupNumberLogical
+            // Если количество ядер больше 2, обновляем threads
             if (_numberOfCores > 2)
             {
-                backupNumberLogical = coreCounter;
+                threads = coreCounter;
             }
 
             // Определяем количество строк и столбцов для сетки
-            var rowCount = backupNumberLogical / 2 > 4 ? 4 : backupNumberLogical / 2;
-            if (backupNumberLogical % 2 != 0 || backupNumberLogical == 2)
+            var rowCount = threads / 2 > 4 ? 4 : threads / 2;
+            if (threads % 2 != 0 || threads == 2)
             {
                 rowCount++; // Добавляем дополнительную строку, если количество элементов нечётное или равно 2
             }
@@ -1475,7 +1450,7 @@ public sealed partial class ИнформацияPage
                         // Секция GFX
                         1 => gpuCounter - coreCounter, // Используем оставшиеся видеокарты
                         // Секция RAM
-                        2 => tbRAMModel.Text.Split('/').Length - coreCounter, // Используем оставшиеся платы ОЗУ
+                        2 => RamModel.Text.Split('/').Length - coreCounter, // Используем оставшиеся платы ОЗУ
                         // Секция 3
                         3 => 4 - coreCounter, // Фиксированное значение для секции 3
                         // Другие секции
@@ -1483,7 +1458,7 @@ public sealed partial class ИнформацияPage
                     };
 
                     // Создаём кнопку для текущего элемента
-                    var elementButton = CreateElementButton(currCore, _selectedGroup, _numberOfCores, tbRAMModel.Text);
+                    var elementButton = CreateElementButton(currCore, _selectedGroup, _numberOfCores, RamModel.Text);
 
                     // Добавляем кнопку в сетку
                     Grid.SetRow(elementButton, j);
@@ -1498,19 +1473,22 @@ public sealed partial class ИнформацияPage
         catch (Exception e)
         {
             // Логируем ошибку, если что-то пошло не так
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
+    /// <summary> 
+    ///  Создаёт кнопки отображающие текущие показатели 
+    /// </summary>
     private static Grid
         CreateElementButton(int currCore, int selectedGroup, int numberOfCores,
-            string ramModelText) // Создать кнопки отображающие текущие показатели
+            string ramModelText)
     {
         var elementButton = new Grid
         {
             VerticalAlignment = VerticalAlignment.Stretch,
             HorizontalAlignment = HorizontalAlignment.Stretch,
-            Margin = new Thickness(3, 3, 3, 3),
+            Margin = new Thickness(3),
             Children =
             {
                 new Button
@@ -1589,19 +1567,31 @@ public sealed partial class ИнформацияPage
 
     #region Event Handlers
 
-    private void InfoCPUSectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    /// <summary>
+    ///  Обработчик переключения режима отображения информации о процессоре
+    /// </summary>
+    private async void CpuSection_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        //0 - частота, 1 - напряжение, 2 - мощность, 3 - температуры
         if (!_loaded)
         {
             return;
         }
 
-        InfoMainCPUFreqGrid.Children.Clear();
-        _ = InfoCpuSectionGridBuilder();
+        try
+        {
+            InfoMainCPUFreqGrid.Children.Clear();
+            await InfoCpuSectionGridBuilder();
+        }
+        catch (Exception ex)
+        {
+            await LogHelper.TraceIt_TraceError(ex);
+        }
     }
 
-    private async void InfoRTSSButton_Click(object sender, RoutedEventArgs e)
+    /// <summary>
+    ///  Обработчик переключения режима RTSS
+    /// </summary>
+    private async void RtssButton_Click(object sender, RoutedEventArgs e)
     {
         try
         {
@@ -1616,179 +1606,129 @@ public sealed partial class ИнформацияPage
                 Info_RTSSTeacherTip.IsOpen = false;
             }
 
-            if (!_loaded)
-            {
-                return;
-            }
-
             AppSettings.RtssMetricsEnabled = infoRTSSButton.IsChecked == true;
             AppSettings.SaveSettings();
         }
-        catch
+        catch (Exception ex)
         {
-            //
+            await LogHelper.TraceIt_TraceError(ex);
         }
     }
 
-    private void InfoNiIconsButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (!_loaded)
-        {
-            return;
-        }
-
-        AppSettings.NiIconsEnabled = infoNiIconsButton.IsChecked == true;
-        AppSettings.SaveSettings();
-    }
-
-    #region Banner Buttons Click Handlers
-
-    private void HandleBannerButtonClick(Button clickedButton, int selectedGroup)
-    {
-        if (_selectedGroup != selectedGroup)
-        {
-            SetShadow(clickedButton);
-            _selectedGroup = selectedGroup;
-            UpdateButtonAppearance(clickedButton);
-            InfoMainCPUFreqGrid.Children.Clear();
-            if (selectedGroup == 5 && infoCPUSectionComboBox.SelectedIndex != 0)
-            {
-                infoCPUSectionComboBox.SelectedIndex = 0;
-            }
-            else
-            {
-                _ = InfoCpuSectionGridBuilder();
-            }
-        }
-    }
-
-    private void SetShadow(Button clickedButton)
-    {
-        var allButtons = new[]
-            { CPUBannerButton, GPUBannerButton, RAMBannerButton, VRMBannerButton, BATBannerButton, PSTBannerButton };
-        foreach (var button in allButtons)
-        {
-            button.Shadow = button == clickedButton ? new ThemeShadow() : null;
-        }
-    }
-
-    private void UpdateButtonAppearance(Button clickedButton)
-    {
-        var allButtons = new[]
-            { CPUBannerButton, GPUBannerButton, RAMBannerButton, VRMBannerButton, BATBannerButton, PSTBannerButton };
-        foreach (var button in allButtons)
-        {
-            button.Background = button == clickedButton ? _selectedBrush : _transparentBrush;
-            button.BorderBrush = button == clickedButton ? _selectedBorderBrush : _transparentBrush;
-        }
-    }
-
-    // Обработчики событий для каждой кнопки
-    private void CPUBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(CPUBannerButton, 0);
-    private void GPUBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(GPUBannerButton, 1);
-    private void RAMBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(RAMBannerButton, 2);
-    private void VRMBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(VRMBannerButton, 3);
-    private void BATBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(BATBannerButton, 4);
-    private void PSTBannerButton_Click(object sender, RoutedEventArgs e) => HandleBannerButtonClick(PSTBannerButton, 5);
-
-    #endregion
+    /// <summary>
+    ///  Обработчик переключения режима TrayMon
+    /// </summary>
+    private void NiIconsButton_Click(object sender, RoutedEventArgs e) => AppSettings.NiIconsEnabled = infoNiIconsButton.IsChecked == true;
 
     #region Flyouts and Banner Buttons handlers
 
-    private static void HandleFlyoutOpening(Flyout flyout, Polygon polygon, FontIcon expandIcon, Button expandButton)
+    /// <summary>
+    ///  Обработчик выбора отображения другой группы сенсоров
+    /// </summary>
+    private async void BannerButton_Click(object sender, RoutedEventArgs e)
     {
-        polygon.Points.Clear();
-        polygon.Points.Add(StartPoint);
+        try
+        {
+            if (sender is Button clickedButton && int.TryParse((string)clickedButton.Tag, out var selectedGroup))
+            {
+                if (_selectedGroup != selectedGroup)
+                {
+                    foreach (var button in _allBannerButtons)
+                    {
+                        button.Shadow = button == clickedButton ? new ThemeShadow() : null;
+                        button.Background = button == clickedButton ? _selectedBrush : _transparentBrush;
+                        button.BorderBrush = button == clickedButton ? _selectedBorderBrush : _transparentBrush;
+                    }
 
-        if (flyout.IsOpen)
-        {
-            expandIcon.Glyph = "\uF0D7";
-            expandButton.Visibility = Visibility.Visible;
+                    _selectedGroup = selectedGroup;
+                    InfoMainCPUFreqGrid.Children.Clear();
+
+                    if (selectedGroup == 5 && infoCPUSectionComboBox.SelectedIndex != 0)
+                    {
+                        infoCPUSectionComboBox.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        await InfoCpuSectionGridBuilder();
+                    }
+                }
+            }
         }
-        else
+        catch (Exception ex)
         {
-            expandButton.Visibility = Visibility.Collapsed;
-            expandIcon.Glyph = "\uF0D8";
+            await LogHelper.TraceIt_TraceError(ex);
         }
     }
 
-    private void HandleBannerButtonPointerEntered(Button bannerButton, Flyout flyout, FontIcon expandIcon,
-        Button expandButton)
+    /// <summary>
+    ///  Обработчик отображения кнопки увеличения графика
+    /// </summary>
+    private void BannerButton_PointerEntered(object sender, PointerRoutedEventArgs e)
     {
-        if (bannerButton.IsPointerOver)
+        if (sender is Button bannerButton)
         {
-            expandIcon.Glyph = "\uF0D8";
-            expandButton.Visibility = Visibility.Visible;
+            var prefix = bannerButton.Name.Replace("BannerButton", "");
 
-            // Скрываем все остальные кнопки
-            CollapseAllExpandButtons(expandButton);
-        }
-        else
-        {
-            if (flyout.IsOpen)
+            var flyout = (Flyout)FindName(prefix + "Flyout");
+            var expandIcon = (FontIcon)FindName(prefix + "ExpandFontIcon");
+            var expandButton = (Button)FindName(prefix + "ExpandButton");
+
+            if (bannerButton.IsPointerOver)
             {
+                expandIcon.Glyph = "\uF0D8";
                 expandButton.Visibility = Visibility.Visible;
+
+                foreach (var button in _allExpandButtons)
+                {
+                    if (button != expandButton)
+                    {
+                        button.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
+            else
+            {
+                if (flyout.IsOpen)
+                {
+                    expandButton.Visibility = Visibility.Visible;
+                    expandIcon.Glyph = "\uF0D7";
+                }
+                else
+                {
+                    expandButton.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    ///  Обработчик открытия Flyout для увеличения графика
+    /// </summary>
+    private void Flyout_Opening(object sender, object e)
+    {
+        if (sender is FlyoutBase flyout && flyout.Target is FrameworkElement target)
+        {
+            var prefix = target.Name.Replace("ExpandButton", "");
+
+            var polygon = (Polygon)FindName(prefix + "BigBannerPolygon");
+            var expandIcon = (FontIcon)FindName(prefix + "ExpandFontIcon");
+            var expandButton = (Button)FindName(prefix + "ExpandButton");
+
+            polygon.Points.Clear();
+            polygon.Points.Add(StartPoint);
+
+            if (((Flyout)flyout).IsOpen)
+            {
                 expandIcon.Glyph = "\uF0D7";
+                expandButton.Visibility = Visibility.Visible;
             }
             else
             {
                 expandButton.Visibility = Visibility.Collapsed;
+                expandIcon.Glyph = "\uF0D8";
             }
         }
     }
-
-    private void CollapseAllExpandButtons(Button exceptButton)
-    {
-        var allButtons = new[]
-        {
-            CPU_Expand_Button, VRM_Expand_Button, GPU_Expand_Button, RAM_Expand_Button, BAT_Expand_Button,
-            PST_Expand_Button
-        };
-        foreach (var button in allButtons)
-        {
-            if (button != exceptButton)
-            {
-                button.Visibility = Visibility.Collapsed;
-            }
-        }
-    }
-
-    // Обработчики событий для каждого Flyout и BannerButton
-    private void CPUFlyout_Opening(object sender, object e) => HandleFlyoutOpening(CPUFlyout, InfoACPUBigBannerPolygon,
-        CPU_Expand_FontIcon, CPU_Expand_Button);
-
-    private void CPUBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) =>
-        HandleBannerButtonPointerEntered(CPUBannerButton, CPUFlyout, CPU_Expand_FontIcon, CPU_Expand_Button);
-
-    private void VRMFlyout_Opening(object sender, object e) => HandleFlyoutOpening(VRMFlyout, InfoAVRMBigBannerPolygon,
-        VRM_Expand_FontIcon, VRM_Expand_Button);
-
-    private void VRMBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) =>
-        HandleBannerButtonPointerEntered(VRMBannerButton, VRMFlyout, VRM_Expand_FontIcon, VRM_Expand_Button);
-
-    private void GPUFlyout_Opening(object sender, object e) => HandleFlyoutOpening(GPUFlyout, InfoAGPUBigBannerPolygon,
-        GPU_Expand_FontIcon, GPU_Expand_Button);
-
-    private void GPUBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) =>
-        HandleBannerButtonPointerEntered(GPUBannerButton, GPUFlyout, GPU_Expand_FontIcon, GPU_Expand_Button);
-
-    private void RAMFlyout_Opening(object sender, object e) => HandleFlyoutOpening(RAMFlyout, InfoARAMBigBannerPolygon,
-        RAM_Expand_FontIcon, RAM_Expand_Button);
-
-    private void RAMBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) =>
-        HandleBannerButtonPointerEntered(RAMBannerButton, RAMFlyout, RAM_Expand_FontIcon, RAM_Expand_Button);
-
-    private void BATFlyout_Opening(object sender, object e) => HandleFlyoutOpening(BATFlyout, InfoABATBigBannerPolygon,
-        BAT_Expand_FontIcon, BAT_Expand_Button);
-
-    private void BATBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) =>
-        HandleBannerButtonPointerEntered(BATBannerButton, BATFlyout, BAT_Expand_FontIcon, BAT_Expand_Button);
-
-    private void PSTFlyout_Opening(object sender, object e) => HandleFlyoutOpening(PSTFlyout, InfoAPSTBigBannerPolygon,
-        PST_Expand_FontIcon, PST_Expand_Button);
-
-    private void PSTBannerButton_PointerEntered(object sender, PointerRoutedEventArgs e) =>
-        HandleBannerButtonPointerEntered(PSTBannerButton, PSTFlyout, PST_Expand_FontIcon, PST_Expand_Button);
 
     #endregion
 

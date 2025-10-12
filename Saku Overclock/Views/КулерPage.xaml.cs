@@ -385,7 +385,7 @@ public sealed partial class КулерPage
             catch (Exception exception)
             {
                 _unavailableFlag = true;
-                await LogHelper.TraceIt_TraceError(exception.ToString());
+                await LogHelper.TraceIt_TraceError(exception);
             }
             try
             {
@@ -446,7 +446,7 @@ public sealed partial class КулерPage
             }
             catch (Exception ex1)
             {
-                await LogHelper.TraceIt_TraceError(ex1.ToString());
+                await LogHelper.TraceIt_TraceError(ex1);
             }
         }
         catch (Exception e1)
@@ -552,7 +552,7 @@ public sealed partial class КулерPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -564,7 +564,7 @@ public sealed partial class КулерPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -617,7 +617,7 @@ public sealed partial class КулерPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -753,7 +753,7 @@ public sealed partial class КулерPage
         }
         catch (Exception ex)
         {
-            await LogHelper.TraceIt_TraceError(ex.ToString());
+            await LogHelper.TraceIt_TraceError(ex);
         }
         finally
         {
@@ -1182,7 +1182,7 @@ public sealed partial class КулерPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -1222,7 +1222,7 @@ public sealed partial class КулерPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 

@@ -187,7 +187,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         string BatteryHealth,
         string BatteryCycles,
         string BatteryCapacity,
-        string BatteryChargeRate,
+        double BatteryChargeRate,
         bool BatteryUnavailable,
         int BatteryLifeTime
         )> GetBatInfoAsync()
@@ -198,7 +198,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
             return (string.Empty, string.Empty,
                 string.Empty, string.Empty,
                 string.Empty, string.Empty,
-                string.Empty,
+                0,
                 true, 0);
         }
 
@@ -210,7 +210,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 // Получаем часто меняющиеся параметры
                 var batteryPercent = GetSystemInfo.GetBatteryPercent() + "%";
                 var batteryState = GetSystemInfo.GetBatteryStatus().ToString();
-                var chargeRate = $"{GetSystemInfo.GetBatteryRate() / 1000:0.##}W";
+                var chargeRate = (double)(GetSystemInfo.GetBatteryRate() / 1000);
 
                 // Время работы батареи
                 var batteryLifeTime = GetSystemInfo.GetBatteryLifeTime();
@@ -262,7 +262,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
             return (string.Empty, string.Empty,
                 string.Empty, string.Empty,
                 string.Empty, string.Empty,
-                string.Empty,
+                0,
                 true, 0);
         }
     }

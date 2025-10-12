@@ -2,6 +2,7 @@
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
+using System.Text;
 using Microsoft.Win32;
 using Saku_Overclock.Helpers;
 
@@ -10,10 +11,10 @@ namespace Saku_Overclock.SMUEngine;
 internal class GetSystemInfo
 {
     private static readonly ManagementObjectSearcher ComputerSsystemInfo = new("root\\CIMV2", "SELECT * FROM Win32_ComputerSystemProduct");
-    private static List<ManagementObject>? CachedGPUList;
-    private static bool DoNotTrackBattery;
-    private static decimal DesignCapacity = 0;
-    private static decimal FullCapacity = 0;
+    private static List<string> _cachedGpuList = [];
+    private static bool _doNotTrackBattery;
+    private static decimal _designCapacity = 0;
+    private static decimal _fullCapacity = 0;
 
     #region Battery Information
 
@@ -101,7 +102,7 @@ internal class GetSystemInfo
     {
         if (!HasBattery())
         {
-            DoNotTrackBattery = true;
+            _doNotTrackBattery = true;
             return 0;
         }
 
@@ -145,8 +146,8 @@ internal class GetSystemInfo
 
     public static decimal ReadFullChargeCapacity()
     {
-        if (DoNotTrackBattery) { return 0; }
-        if (FullCapacity == 0)
+        if (_doNotTrackBattery) { return 0; }
+        if (_fullCapacity == 0)
         {
             try
             {
@@ -157,7 +158,7 @@ internal class GetSystemInfo
                 foreach (var obj in searcher.Get().Cast<ManagementObject>())
                 {
                     var fullCharged = Convert.ToDecimal(obj["FullChargedCapacity"]);
-                    FullCapacity = fullCharged;
+                    _fullCapacity = fullCharged;
                     return fullCharged;
                 }
                 return 0;
@@ -169,7 +170,7 @@ internal class GetSystemInfo
         }
         else
         {
-            return FullCapacity;
+            return _fullCapacity;
         }
     }
 
@@ -177,16 +178,16 @@ internal class GetSystemInfo
     {
         if (!HasBattery())
         {
-            DoNotTrackBattery = true;
+            _doNotTrackBattery = true;
         }
 
-        if (DoNotTrackBattery)
+        if (_doNotTrackBattery)
         {
             doNotTrack = true;
             return 0;
         }
 
-        if (DesignCapacity == 0)
+        if (_designCapacity == 0)
         {
             try
             {
@@ -196,39 +197,39 @@ internal class GetSystemInfo
                 if (searcher == null)
                 {
                     doNotTrack = true;
-                    DoNotTrackBattery = true;
+                    _doNotTrackBattery = true;
                     return 0;
                 }
 
                 foreach (var obj in searcher.Get().Cast<ManagementObject>())
                 {
-                    doNotTrack = false; DoNotTrackBattery = false;
+                    doNotTrack = false; _doNotTrackBattery = false;
                     var returnCapacity = Convert.ToDecimal(obj["DesignedCapacity"]);
-                    DesignCapacity = returnCapacity;
+                    _designCapacity = returnCapacity;
                     return returnCapacity;
                 }
                 doNotTrack = true;
-                DoNotTrackBattery = true;
+                _doNotTrackBattery = true;
                 return 0;
             }
             catch
             {
                 doNotTrack = true;
-                DoNotTrackBattery = true;
+                _doNotTrackBattery = true;
                 return 0;
             }
         }
         else
         {
             doNotTrack = false;
-            DoNotTrackBattery = false;
-            return DesignCapacity;
+            _doNotTrackBattery = false;
+            return _designCapacity;
         }
     }
 
     public static int GetBatteryCycle()
     {
-        if (DoNotTrackBattery)
+        if (_doNotTrackBattery)
         {
             return 0;
         }
@@ -303,6 +304,27 @@ internal class GetSystemInfo
         }
     }
 
+    public static string ConvertBatteryLifeTime(int input)
+    {
+        var timeSpan = TimeSpan.FromSeconds(input); // Секунды в TimeSpan
+        var batTime = "";
+        if ((int)timeSpan.TotalHours > 0)
+        {
+            batTime += $"{(int)timeSpan.TotalHours}h"; // Часы, если они есть
+        }
+
+        if (timeSpan.Minutes > 0)
+        {
+            batTime += $"{timeSpan.Minutes}m"; // Минуты, если они есть
+        }
+
+        if (timeSpan.Seconds > 0 || batTime == string.Empty)
+        {
+            batTime += $"{timeSpan.Seconds}s"; // Секунды
+        }
+        return batTime;
+    }
+
     #endregion
 
     #region OS Information
@@ -358,39 +380,80 @@ internal class GetSystemInfo
 
     #region Motherboard and GPU Information
 
-    public static string? GetGPUName(int i)
+    private static readonly Guid GUID_DEVCLASS_DISPLAY = new("4d36e968-e325-11ce-bfc1-08002be10318");
+    private const uint DIGCF_PRESENT = 0x00000002;
+    private const uint SPDRP_DEVICEDESC = 0x00000000;
+
+    [DllImport("setupapi.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern IntPtr SetupDiGetClassDevs(
+        ref Guid ClassGuid, IntPtr Enumerator, IntPtr hwndParent, uint Flags);
+
+    [DllImport("setupapi.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern bool SetupDiEnumDeviceInfo(
+        IntPtr DeviceInfoSet, uint MemberIndex, ref SP_DEVINFO_DATA DeviceInfoData);
+
+    [DllImport("setupapi.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern bool SetupDiGetDeviceRegistryProperty(
+        IntPtr DeviceInfoSet, ref SP_DEVINFO_DATA DeviceInfoData, uint Property,
+        out uint PropertyRegDataType, byte[] PropertyBuffer, uint PropertyBufferSize, out uint RequiredSize);
+
+    [DllImport("setupapi.dll", SetLastError = true)]
+    private static extern bool SetupDiDestroyDeviceInfoList(IntPtr DeviceInfoSet);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct SP_DEVINFO_DATA
     {
+        public uint cbSize;
+        public Guid ClassGuid;
+        public uint DevInst;
+        public IntPtr Reserved;
+    }
+
+    public static List<string> GetGpuNames()
+    {
+        if (_cachedGpuList.Count != 0)
+        {
+            return _cachedGpuList;
+        }
+
+        var result = new List<string>();
+        var guid = GUID_DEVCLASS_DISPLAY;
+        var hDevInfo = SetupDiGetClassDevs(ref guid, IntPtr.Zero, IntPtr.Zero, DIGCF_PRESENT);
+
+        if (hDevInfo == IntPtr.Zero || hDevInfo == new IntPtr(-1))
+        {
+            _cachedGpuList = result;
+            return result;
+        }
+
         try
         {
-            // Отфильтрованный список видеокарт
-            CachedGPUList ??= [.. new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_VideoController")
-            .Get()
-            .Cast<ManagementObject>()
-            .Where(element =>
-            {
-                var name = element["Name"]?.ToString() ?? string.Empty;
-                return !name.Contains("Parsec", StringComparison.OrdinalIgnoreCase) &&
-                       !name.Contains("virtual", StringComparison.OrdinalIgnoreCase);
-            })];
+            var devInfo = new SP_DEVINFO_DATA { cbSize = (uint)Marshal.SizeOf<SP_DEVINFO_DATA>() };
+            var buffer = new byte[1024];
 
-
-            if (i >= 0 && i < CachedGPUList.Count)
+            for (uint i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, ref devInfo); i++)
             {
-                // Читаем имя видеокарты
-                var gpuName = CachedGPUList[i]["Name"]?.ToString() ?? "Unknown GPU";
-                _ = Garbage.Garbage_Collect();
-                return gpuName;
+                if (SetupDiGetDeviceRegistryProperty(hDevInfo, ref devInfo, SPDRP_DEVICEDESC,
+                    out _, buffer, (uint)buffer.Length, out var requiredSize) && requiredSize > 2)
+                {
+                    var name = Encoding.Unicode.GetString(buffer, 0, (int)requiredSize - 2);
+
+                    if (!string.IsNullOrWhiteSpace(name) &&
+                        !name.Contains("virtual", StringComparison.OrdinalIgnoreCase) &&
+                        !name.Contains("parsec", StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.Add(name);
+                    }
+                }
             }
-
-            return "Unknown GPU";
         }
-        catch (Exception ex)
+        finally
         {
-            LogHelper.TraceIt_TraceError($"Error retrieving GPU name: {ex}");
+            SetupDiDestroyDeviceInfoList(hDevInfo);
         }
 
-        _ = Garbage.Garbage_Collect();
-        return "Unknown GPU";
+        _cachedGpuList = result;
+        return result;
     }
 
     public static string? Product
@@ -416,6 +479,15 @@ internal class GetSystemInfo
 
     #region CPU Information
 
+    public static (string name, string baseClock) ReadCpuInformation()
+    {
+        const string key = @"HARDWARE\DESCRIPTION\System\CentralProcessor\0";
+        using var reg = Registry.LocalMachine.OpenSubKey(key);
+        var name = reg?.GetValue("ProcessorNameString") as string ?? "";
+        var mhz = reg?.GetValue("~MHz")?.ToString() ?? "";
+        return (name, mhz);
+    }
+
     public enum CacheLevel : ushort
     {
         Level1 = 3,
@@ -435,6 +507,17 @@ internal class GetSystemInfo
           .Select(p => (uint)p.Properties["MaxCacheSize"].Value));
 
         return cacheSizes;
+    }
+
+    public static double CalculateCacheSize(GetSystemInfo.CacheLevel level)
+    {
+        var sum = 0u;
+        foreach (var number in GetSystemInfo.GetCacheSizes(level))
+        {
+            sum += number;
+        }
+
+        return sum / 1024.0;
     }
 
     public static string GetBigLITTLE(int cores)

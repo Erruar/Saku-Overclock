@@ -123,7 +123,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -167,7 +167,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         catch (Exception ex)
         {
             JsonRepair('s');
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -181,7 +181,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         catch (Exception ex)
         {
             JsonRepair('p');
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -327,7 +327,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -463,7 +463,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                     }
                     catch (Exception ex)
                     {
-                        await LogHelper.TraceIt_TraceError(ex.ToString());
+                        await LogHelper.TraceIt_TraceError(ex);
                     }
                 }
 
@@ -472,14 +472,14 @@ public class SendSmuCommandService : ISendSmuCommandService
             }
             catch (Exception ex)
             {
-                await LogHelper.TraceIt_TraceError(ex.ToString());
+                await LogHelper.TraceIt_TraceError(ex);
             }
 
             _checkAdjLine = ryzenAdjString;
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
     private async Task ApplySettings(string commandName, uint value, uint value1 = 0, uint value2 = 0)
@@ -570,7 +570,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
         catch (Exception ex)
         {
-            await LogHelper.TraceIt_TraceError(ex.ToString());
+            await LogHelper.TraceIt_TraceError(ex);
             ПараметрыPage.ApplyInfo += "\n" + "Param_SMU_Command".GetLocalized() + "\"" +
                                        CommandNameParser(commandName) + "\" " +
                                        "Param_SMU_Command_Unavailable".GetLocalized();
@@ -892,12 +892,12 @@ public class SendSmuCommandService : ISendSmuCommandService
             }
             catch (Exception ex)
             {
-                await LogHelper.TraceIt_TraceError(ex.ToString());
+                await LogHelper.TraceIt_TraceError(ex);
             }
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 

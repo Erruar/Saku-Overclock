@@ -93,7 +93,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
             App.GetService<IAppNotificationService>()
                 .Show(string.Format("AppNotificationCrash_CPU".GetLocalized(), AppContext.BaseDirectory));
         }
@@ -119,7 +119,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            LogHelper.TraceIt_TraceError(exception.ToString());
+            LogHelper.TraceIt_TraceError(exception);
         }
     }
     
@@ -150,7 +150,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -186,7 +186,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -200,7 +200,7 @@ public sealed partial class ПараметрыPage
         catch (Exception ex)
         {
             JsonRepair('p');
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -647,7 +647,7 @@ public sealed partial class ПараметрыPage
                         }
                         catch (Exception e)
                         {
-                            await LogHelper.TraceIt_TraceError(e.ToString());
+                            await LogHelper.TraceIt_TraceError(e);
                         }
                     }
                 }
@@ -979,7 +979,7 @@ public sealed partial class ПараметрыPage
             }
             catch (Exception ex)
             {
-                await LogHelper.TraceIt_TraceError(ex.ToString());
+                await LogHelper.TraceIt_TraceError(ex);
             }
 
             try
@@ -1167,7 +1167,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -1734,7 +1734,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.Message);
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -1778,7 +1778,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -2048,7 +2048,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -2193,7 +2193,7 @@ public sealed partial class ПараметрыPage
             }
             catch (Exception ex)
             {
-                await LogHelper.TraceIt_TraceError(ex.ToString());
+                await LogHelper.TraceIt_TraceError(ex);
             }
 
             try
@@ -2391,12 +2391,12 @@ public sealed partial class ПараметрыPage
             }
             catch (Exception ex)
             {
-                await LogHelper.TraceIt_TraceError(ex.ToString());
+                await LogHelper.TraceIt_TraceError(ex);
             }
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -2456,7 +2456,7 @@ public sealed partial class ПараметрыPage
             }
             catch (Exception ex)
             {
-                await LogHelper.TraceIt_TraceError(ex.ToString());
+                await LogHelper.TraceIt_TraceError(ex);
             }
 
             try
@@ -2576,12 +2576,12 @@ public sealed partial class ПараметрыPage
             }
             catch (Exception ex)
             {
-                await LogHelper.TraceIt_TraceError(ex.ToString());
+                await LogHelper.TraceIt_TraceError(ex);
             }
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
     private void CloseRangeStarted(object? sender, object? args)
@@ -2610,7 +2610,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -2646,7 +2646,7 @@ public sealed partial class ПараметрыPage
             }
             catch (Exception ex)
             {
-                LogHelper.TraceIt_TraceError(ex.ToString());
+                LogHelper.TraceIt_TraceError(ex);
             }
         }
         else
@@ -2659,7 +2659,7 @@ public sealed partial class ПараметрыPage
             }
             catch (Exception ex)
             {
-                LogHelper.TraceIt_TraceError(ex.ToString());
+                LogHelper.TraceIt_TraceError(ex);
             }
         }
     }
@@ -2771,7 +2771,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -5341,7 +5341,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -5414,7 +5414,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -5488,7 +5488,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -5555,7 +5555,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -5610,7 +5610,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5634,7 +5634,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5658,7 +5658,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5682,7 +5682,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5706,7 +5706,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5730,7 +5730,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5754,7 +5754,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5778,7 +5778,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5802,7 +5802,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5826,7 +5826,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5850,7 +5850,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5874,7 +5874,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -5911,7 +5911,7 @@ public sealed partial class ПараметрыPage
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.TraceIt_TraceError(ex.ToString());
+                    LogHelper.TraceIt_TraceError(ex);
                     return;
                 }
 
@@ -6047,7 +6047,7 @@ public sealed partial class ПараметрыPage
                         }
                         catch (Exception ex)
                         {
-                            await LogHelper.TraceIt_TraceError(ex.ToString());
+                            await LogHelper.TraceIt_TraceError(ex);
                             WritePstatesWithoutP0();
                         }
                     }
@@ -6056,7 +6056,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -6150,7 +6150,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -6232,7 +6232,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -6298,7 +6298,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
             return false;
         }
     }
@@ -6323,7 +6323,7 @@ public sealed partial class ПараметрыPage
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.TraceIt_TraceError(ex.ToString());
+                    LogHelper.TraceIt_TraceError(ex);
                 }
 
                 CalculatePstateDetails(eax, out _, out _, out _, out var cpuDfsId, out var cpuFid);
@@ -6346,7 +6346,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -6368,7 +6368,7 @@ public sealed partial class ПараметрыPage
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.TraceIt_TraceError(ex.ToString());
+                    LogHelper.TraceIt_TraceError(ex);
                 }
 
                 CalculatePstateDetails(eax, out _, out _, out _, out var cpuDfsId, out var cpuFid);
@@ -6424,7 +6424,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -6474,7 +6474,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
             _indexprofile = 0;
         }
     }
@@ -6597,7 +6597,7 @@ public sealed partial class ПараметрыPage
                     }
                     catch (Exception ex)
                     {
-                        await LogHelper.TraceIt_TraceError(ex.ToString());
+                        await LogHelper.TraceIt_TraceError(ex);
                     }
                 }
                 else
@@ -6610,7 +6610,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -6639,7 +6639,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -6677,14 +6677,14 @@ public sealed partial class ПараметрыPage
             }
             catch (Exception ex)
             {
-                await LogHelper.TraceIt_TraceError(ex.ToString());
+                await LogHelper.TraceIt_TraceError(ex);
             }
 
             Save_ID0();
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -6721,7 +6721,7 @@ public sealed partial class ПараметрыPage
                     }
                     catch (Exception ex)
                     {
-                        await LogHelper.TraceIt_TraceError(ex.ToString());
+                        await LogHelper.TraceIt_TraceError(ex);
                     }
                 }
                 else
@@ -6734,7 +6734,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -6762,7 +6762,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -6797,7 +6797,7 @@ public sealed partial class ПараметрыPage
                 }
                 catch (Exception ex)
                 {
-                    await LogHelper.TraceIt_TraceError(ex.ToString());
+                    await LogHelper.TraceIt_TraceError(ex);
                 }
 
                 Save_ID1();
@@ -6805,7 +6805,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -6835,7 +6835,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -6872,7 +6872,7 @@ public sealed partial class ПараметрыPage
                     }
                     catch (Exception ex)
                     {
-                        await LogHelper.TraceIt_TraceError(ex.ToString());
+                        await LogHelper.TraceIt_TraceError(ex);
                     }
                 }
                 else
@@ -6885,7 +6885,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -6912,7 +6912,7 @@ public sealed partial class ПараметрыPage
                 }
                 catch (Exception ex)
                 {
-                    await LogHelper.TraceIt_TraceError(ex.ToString());
+                    await LogHelper.TraceIt_TraceError(ex);
                 }
 
                 Save_ID2();
@@ -6920,7 +6920,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
 

@@ -114,7 +114,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
     private void LoadProfiles()
@@ -368,7 +368,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception ex)
         {
-            LogHelper.LogError(ex.ToString());
+            LogHelper.LogError(ex);
         }
     }
 
@@ -395,7 +395,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception ex)
         { 
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
     #endregion
@@ -537,7 +537,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex.ToString());
+            await LogHelper.LogError(ex);
         }
     }
 
@@ -578,7 +578,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex.ToString());
+            await LogHelper.LogError(ex);
         }
     }
 
@@ -926,7 +926,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception ex)
         {
-            await LogHelper.TraceIt_TraceError(ex.ToString());
+            await LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -1224,7 +1224,7 @@ public sealed partial class SettingsPage
                             }
                             catch (Exception ex)
                             {
-                                LogHelper.LogError(ex.ToString());
+                                LogHelper.LogError(ex);
                             }
                         }
                     };
@@ -1247,7 +1247,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex.ToString());
+            await LogHelper.LogError(ex);
         }
     }
 
@@ -1874,7 +1874,7 @@ public sealed partial class SettingsPage
                             }
                             catch (Exception ex)
                             {
-                                LogHelper.LogError(ex.ToString());
+                                LogHelper.LogError(ex);
                             }
                         }
                     };
@@ -1897,7 +1897,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
 
         App.BackgroundUpdater?.UpdateNotifyIcons();
@@ -1988,7 +1988,7 @@ public sealed partial class SettingsPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 

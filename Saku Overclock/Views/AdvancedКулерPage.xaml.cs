@@ -107,7 +107,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -284,7 +284,7 @@ public sealed partial class AdvancedКулерPage
                             }
                             catch (Exception ex)
                             {
-                                await LogHelper.TraceIt_TraceError(ex.ToString());
+                                await LogHelper.TraceIt_TraceError(ex);
                             }
 
                             // Добавление точек на соответствующий Polyline в соответствии с текущими значениями и идентификатором FanConfiguration
@@ -387,7 +387,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
     private async Task ShowNbfcDialogAsync()
@@ -626,7 +626,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -638,7 +638,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -650,7 +650,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -978,7 +978,7 @@ public sealed partial class AdvancedКулерPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 

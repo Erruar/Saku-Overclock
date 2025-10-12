@@ -199,7 +199,7 @@ public class SensorsInformation
     {
         get; set;
     }
-    public string? BatteryChargeRate
+    public double BatteryChargeRate
     {
         get; set;
     }

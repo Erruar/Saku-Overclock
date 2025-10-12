@@ -64,7 +64,7 @@ public sealed partial class ГлавнаяPage
         }
         catch (Exception ex)
         {
-            LogHelper.LogError(ex.ToString());
+            LogHelper.LogError(ex);
         }
     }
 
@@ -160,7 +160,7 @@ public sealed partial class ГлавнаяPage
         catch (Exception ex)
         {
             JsonRepair('p');
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -508,7 +508,7 @@ public sealed partial class ГлавнаяPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e.ToString());
+            await LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -664,7 +664,7 @@ public sealed partial class ГлавнаяPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex.ToString());
+            await LogHelper.LogError(ex);
         }
     }
 
@@ -863,7 +863,7 @@ public sealed partial class ГлавнаяPage
                     }
                     catch (Exception ex)
                     {
-                        await LogHelper.LogError(ex.ToString());
+                        await LogHelper.LogError(ex);
                     }
 
                     break;
@@ -888,7 +888,7 @@ public sealed partial class ГлавнаяPage
                     }
                     catch (Exception ex)
                     {
-                        await LogHelper.LogError(ex.ToString());
+                        await LogHelper.LogError(ex);
                     }
 
                     break;
@@ -934,7 +934,7 @@ public sealed partial class ГлавнаяPage
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex.ToString());
+            await LogHelper.LogError(ex);
         }
     }
 

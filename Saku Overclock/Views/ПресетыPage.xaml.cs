@@ -59,7 +59,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            LogHelper.LogError(ex.ToString());
+            LogHelper.LogError(ex);
         }
 
         LoadProfiles();
@@ -456,7 +456,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            await LogHelper.TraceIt_TraceError(ex.ToString());
+            await LogHelper.TraceIt_TraceError(ex);
         }
 
         try
@@ -745,7 +745,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -759,7 +759,7 @@ public sealed partial class ПресетыPage
         catch (Exception ex)
         {
             JsonRepair('p');
-            LogHelper.TraceIt_TraceError(ex.ToString());
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -1292,7 +1292,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
     private async void EditProfileButton_Click(object sender, RoutedEventArgs e)
@@ -1332,7 +1332,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
     private async void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
@@ -1391,7 +1391,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception.ToString());
+            await LogHelper.TraceIt_TraceError(exception);
         }
     }
     private void EditProfileButton_Click_1(object sender, RoutedEventArgs e)
@@ -2318,7 +2318,7 @@ public sealed partial class ПресетыPage
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.TraceIt_TraceError(ex.ToString());
+                    LogHelper.TraceIt_TraceError(ex);
                     return;
                 }
             }

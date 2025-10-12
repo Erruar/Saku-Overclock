@@ -47,16 +47,15 @@ public class ZenstatesCoreProvider : IDataProvider
 
         if (_tableVersion == 0 && _cpu.info.codeName is Cpu.CodeName.SummitRidge or Cpu.CodeName.PinnacleRidge)
         {
-            _tableVersion = 0x100;
+            _tableVersion = 0x00190001;
         }
 
         var (avgCoreClk, avgCoreVolt) = CalculateCoreMetrics();
 
         return new SensorsInformation
         {
-            // powerTable Может быть нулевой на некотором оборудовании (ОЧЕНЬ редко)!
-            CpuFamily = _cpu.info.codeName.ToString(), // Не стоит менять, работает везде
-            CpuUsage = GetCoreLoad(), // Это попрошу оставить, работает везде, использует winAPI
+            CpuFamily = _cpu.info.codeName.ToString(),
+            CpuUsage = GetCoreLoad(),
             CpuStapmLimit = GetSensorValue("CpuStapmLimit", _tableVersion),
             CpuStapmValue = GetSensorValue("CpuStapmValue", _tableVersion),
             CpuFastLimit = GetSensorValue("CpuFastLimit", _tableVersion),
@@ -131,7 +130,7 @@ public class ZenstatesCoreProvider : IDataProvider
     {
         // Zen
         {
-            0x00000100,[
+            0x00190001, [
                 (0, "CpuFastLimit"),
                 (22, "CpuFastValue"),
                 (0, "CpuSlowLimit"),
@@ -355,8 +354,8 @@ public class ZenstatesCoreProvider : IDataProvider
         }
 
         // Проверка на отсутствие сенсора
-        var checkedSensor = sensorMap.FirstOrDefault(x => x.Name == sensorName);
-        if (checkedSensor.Name == null)
+        var (Offset, Name) = sensorMap.FirstOrDefault(x => x.Name == sensorName);
+        if (Name == null)
         {
             return fallbackValue;
         }
