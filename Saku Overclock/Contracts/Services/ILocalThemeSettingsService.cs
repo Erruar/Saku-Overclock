@@ -5,8 +5,8 @@ namespace Saku_Overclock.Contracts.Services;
 
 public interface ILocalThemeSettingsService
 {
-    public LocalThemeSettingsOptions LoadThemeSettings();
+    LocalThemeSettingsOptions LoadThemeSettings();
 
-    public void SaveThemeSettings(LocalThemeSettingsOptions themeSettings);
+    void SaveThemeSettings(LocalThemeSettingsOptions themeSettings);
     List<ThemeClass> GetDefaultThemes();
 }

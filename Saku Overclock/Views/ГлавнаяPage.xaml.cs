@@ -764,7 +764,7 @@ public sealed partial class ГлавнаяPage
                             AppSettings.SaveSettings();
 
                             ПараметрыPage.ApplyInfo = string.Empty; 
-                            ShellPage.MandarinSparseUnitProfile(profile,true);
+                            ShellPage.ParseOverclockProfile(profile,true);
 
                             NotificationsService.Notifies ??= [];
                             NotificationsService.Notifies.Add(new Notify

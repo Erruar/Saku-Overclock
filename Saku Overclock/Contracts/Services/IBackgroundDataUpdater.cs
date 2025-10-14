@@ -8,4 +8,5 @@ public interface IBackgroundDataUpdater
     void Stop();
     void UpdateNotifyIcons();
     event EventHandler<SensorsInformation> DataUpdated;
+    bool IsBatteryUnavailable();
 }

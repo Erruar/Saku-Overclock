@@ -281,7 +281,7 @@ public class OcFinderService : IOcFinderService
             return;
         }
 
-        var cpuPower = SendSmuCommand.ReturnCpuPowerLimit(_cpu);
+        var cpuPower = SendSmuCommand.ReturnCpuPowerLimit(_cpu.smu);
         CheckUndervoltingFeature();
         var powerTable = _dataProvider?.GetPowerTable();
         var powerTableCheckError = false;
@@ -321,7 +321,7 @@ public class OcFinderService : IOcFinderService
             cpuPower = checkupCpuPower;
         }
 
-        _isPlatformPc = SendSmuCommand.IsPlatformPc(_cpu) == true;
+        _isPlatformPc = SendSmuCommand.IsPlatformPc() == true;
         _validatedCpuPower = cpuPower;
 
         // Ограничение для мобильных платформ
@@ -348,7 +348,7 @@ public class OcFinderService : IOcFinderService
             return _isUndervoltingAvailable;
         }
 
-        _isUndervoltingAvailable = SendSmuCommand.ReturnUndervoltingAvailability(_cpu);
+        _isUndervoltingAvailable = SendSmuCommand.ReturnUndervoltingAvailability(_cpu.smu);
         _isUndervoltingChecked = true;
         return _isUndervoltingAvailable;
     }
@@ -451,7 +451,7 @@ public class OcFinderService : IOcFinderService
     /// </summary>
     private ArchitectureProfile GetArchitectureProfile()
     {
-        var codenameGeneration = SendSmuCommand.GetCodeNameGeneration(_cpu);
+        var codenameGeneration = SendSmuCommand.GetCodeNameGeneration();
         return codenameGeneration switch
         {
             "FP4" => _architectureProfiles["PreZen"],
@@ -603,7 +603,7 @@ public class OcFinderService : IOcFinderService
             sb.Append($"--tctl-temp={tempLimit} ");
 
             // DragonRange is laptop CPU but with Desktop silicon and has Stapm limit
-            var codenameGen = SendSmuCommand.GetCodeNameGeneration(_cpu);
+            var codenameGen = SendSmuCommand.GetCodeNameGeneration();
             if ((codenameGen == "AM5" && _cpu.info.codeName == CodeName.DragonRange) || codenameGen != "AM5")
             {
                 sb.Append($"--stapm-limit={(int)(stapm * 1000)} ");

@@ -1,7 +1,5 @@
 ﻿using System.Management;
 using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -9,7 +7,6 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
-using Microsoft.Win32;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers.Helpers;
@@ -302,10 +299,25 @@ public sealed partial class ИнформацияPage
                 }
 
                 var type = _cpu.GetMemoryConfig().Type;
-                var width = _cpu.GetMemoryConfig().Modules.Count * 64;
-                var slots = _cpu.GetMemoryConfig().Modules.Count;
-                var producer = _cpu.GetMemoryConfig().Modules[0].Manufacturer;
-                var model = _cpu.GetMemoryConfig().Modules[0].PartNumber;
+                var modules = _cpu.GetMemoryConfig().Modules;
+
+                var width = modules.Count * 64;
+                var slots = modules.Count; 
+
+                var producer = (modules == null || modules.Count == 0)
+                    ? "Unknown"
+                    : string.Join("/", modules
+                        .Select(m => m?.Manufacturer ?? "Unknown")
+                        .Where(s => !string.IsNullOrWhiteSpace(s))
+                        .Distinct());
+
+                var model = (modules == null || modules.Count == 0)
+                    ? "Unknown"
+                    : string.Join("/", modules
+                        .Select(m => m?.PartNumber ?? "Unknown")
+                        .Where(s => !string.IsNullOrWhiteSpace(s))
+                        .Distinct());
+
                 var tcl = Utils.GetBits(_cpu.ReadDword(0x50204), 0, 6);
                 var trcdwr = Utils.GetBits(_cpu.ReadDword(0x50204), 24, 6);
                 var trcdrd = Utils.GetBits(_cpu.ReadDword(0x50204), 16, 6);

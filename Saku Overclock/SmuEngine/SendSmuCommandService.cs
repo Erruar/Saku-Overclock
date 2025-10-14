@@ -9,91 +9,77 @@ using static ZenStates.Core.Cpu;
 namespace Saku_Overclock.SMUEngine;
 
 /*Created by Serzhik Sakurazhima*/
-/*Этот класс является частью программного обеспечения для управления разгоном процессоров.Он содержит методы и данные для отправки команд SMU (System Management Unit) на процессор.Вот краткое описание содержимого класса:
 
-Приватные статические поля:
-
-RsmuRsp, RsmuArg, RsmuCmd: содержат адреса для отправки команд SMU на системы AMD.
-Mp1Rsp, Mp1Arg, Mp1Cmd: содержат адреса для отправки команд SMU на системы с другой архитектурой.
-Публичные свойства и поля:
-
-Commands: список кортежей, хранящих информацию о командах (название, флаг применения, адрес).
-_cancelrange: флаг для отмены диапазона команд.
-Методы:
-
-
-SmuSettingsLoad, ProfileLoad: методы для сохранения и загрузки настроек из JSON-файлов.
-Play_Invernate_QuickSMU, ApplySettings, ApplyThis, SendRange: устаревшие методы, отвечающие за отправку команд SMU на процессор.
-JsonRepair: метод для восстановления JSON-файлов в случае их повреждения.
-CancelRange: устанавливает флаг отмены диапазона команд.
-Приватные методы для определения адресов и отправки команд SMU на процессор.
-Этот класс является частью большой системы, управляющей разгоном процессоров, и содержит функционал для загрузки/сохранения настроек, определения возможности разгона на данной архитектуре и отправки соответствующих команд на процессор.*/
 public class SendSmuCommandService : ISendSmuCommandService
 {
-    private static uint RsmuRsp
-    {
-        get;
-        set;
-    }
+    // Адреса
+    private static uint RsmuRsp;
+    private static uint RsmuArg;
+    private static uint RsmuCmd;
 
-    private static uint RsmuArg
-    {
-        get;
-        set;
-    }
+    private static uint Mp1Rsp;
+    private static uint Mp1Arg;
+    private static uint Mp1Cmd;
 
-    private static uint RsmuCmd
-    {
-        get;
-        set;
-    }
+    // Профили и команды
+    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
+    private Profile[] _profile = new Profile[1];
+    private Smusettings _smuSettings = new();
 
-    private static uint Mp1Rsp
-    {
-        get;
-        set;
-    }
-
-    private static uint Mp1Arg
-    {
-        get;
-        set;
-    }
-
-    private static uint Mp1Cmd
-    {
-        get;
-        set;
-    }
-
-    private static List<(string, bool, uint)>? Commands
-    {
-        get;
-        set;
-    }
-
-    private bool _saveinfo;
+    // Связанное с Hardware
     private Cpu? _cpu;
     private static CodeName Codename;
-    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
-    private static string _cpuCodenameString = string.Empty;
-    private Smusettings _smusettings = new();
     private readonly Mailbox _testMailbox = new();
-    private Profile[] _profile = new Profile[1];
-    private bool _cancelrange;
-    private bool _dangersettingsapplied;
+    private static List<(string, bool, uint)>? Commands;
+    private static string _codenameGeneration = "None";
+
+    // Флаги
+    private bool _saveInfo;
+    private bool _cancelRange;
     private string _checkAdjLine = string.Empty;
-    private bool _isBatteryUnavailable = true;
+    private bool _dangerSettingsApplied;
+    private readonly bool _isBatteryUnavailable = true;
     private bool? _isOlderGeneration = null;
     private bool _unsupportedPlatformMessage = false;
+    private bool _safeReapply = true;
 
-    private bool SafeReapply
-    {
-        get;
-        set;
-    } = true;
-
-    private static string _codenameGeneration = "None";
+    /// <summary>
+    ///  Список строк для проверки на совпадение, если есть - не применять, так как такое переприменение может привести к нестабильности системы
+    /// </summary>
+    private readonly List<string> _terminateCommands =
+        [
+            "prochot-deassertion-ramp", //Безопасно переприменять
+            "min-socclk-frequency",
+            "max-socclk-frequency",
+            "min-fclk-frequency",
+            "max-fclk-frequency",
+            "min-vcn",
+            "max-vcn",
+            "min-lclk",
+            "max-lclk",
+            "min-gfxclk",
+            "max-gfxclk",
+            "min-cpuclk",
+            "max-cpuclk",
+            "psi3cpu_current",
+            "psi3gfx_current",
+            "gfx-clk",
+            "oc-clk",
+            "oc-volt",
+            "disable-oc", // Средне
+            "enable-oc",
+            "pbo-scalar",
+            "psi0-current",
+            "psi0soc-current",
+            "enable-feature",
+            "disable-feature",
+            "setcpu-freqto-ramstate", // ОПАСНО ПЕРЕПРИМЕНЯТЬ
+            "stopcpu-freqto-ramstate",
+            "max-performance",
+            "power-saving",
+            "set-coall",
+            "set-coper"
+        ];
 
     public SendSmuCommandService()
     {
@@ -101,65 +87,27 @@ public class SendSmuCommandService : ISendSmuCommandService
         {
             _cpu ??= CpuSingleton.GetInstance();
             Codename = _cpu.info.codeName;
+
+            _safeReapply = AppSettings.ReapplySafeOverclock;
+
+            _isBatteryUnavailable = App.BackgroundUpdater?.IsBatteryUnavailable() == true;
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError("[SendSmuCommand]@Launch_Get_ZenStates_Core - " + ex.ToString());
-        }
-
-        var dataUpdater = App.BackgroundUpdater;
-        if (dataUpdater != null)
-        {
-            dataUpdater.DataUpdated += OnDataUpdated;
-        }
-        else
-        {
-            _cpuCodenameString = _cpu != null ? _cpu.info.codeName.ToString() : "Unsupported";
-        }
-
-        try
-        {
-            SafeReapply = AppSettings.ReapplySafeOverclock;
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
+            LogHelper.TraceIt_TraceError("[SendSmuCommand]@Launch_Failed - " + ex.ToString());
         }
     }
 
-    private void OnDataUpdated(object? sender, SensorsInformation info)
-    {
-        _cpuCodenameString =
-        _cpuCodenameString == (info.CpuFamily ?? "Unsupported") ? _cpuCodenameString : info.CpuFamily ?? "Unsupported";
-        _isBatteryUnavailable = info.BatteryUnavailable;
-    }
-    public void Init(Cpu? cpu = null)
-    {
-        if (cpu == null)
-        {
-            _cpu ??= CpuSingleton.GetInstance();
-        }
-        _cpu = cpu;
-    }
-    public void SetCpuCodename(CodeName codename)
-    {
-        Codename = codename;
-    }
-    public bool GetSetSafeReapply(bool? value = null)
-    {
-        if (value != null)
-        {
-            SafeReapply = value == true;
-        }
-        return SafeReapply;
-    }
+    #region JSON
 
-    // JSON
+    /// <summary>
+    ///  Загрузка параметров быстрых команд Smu
+    /// </summary>
     private void SmuSettingsLoad()
     {
         try
         {
-            _smusettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(
+            _smuSettings = JsonConvert.DeserializeObject<Smusettings>(File.ReadAllText(
                                Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                                @"\SakuOverclock\smusettings.json")) ??
                            new Smusettings();
@@ -171,6 +119,9 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
     }
 
+    /// <summary>
+    ///  Загрузка профилей пользователя
+    /// </summary>
     private void ProfileLoad()
     {
         try
@@ -185,13 +136,16 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
     }
 
+    /// <summary>
+    ///  Восстановление настроек JSON
+    /// </summary>
     private void JsonRepair(char file)
     {
         switch (file)
         {
             case 's':
                 {
-                    _smusettings = new Smusettings();
+                    _smuSettings = new Smusettings();
                     try
                     {
                         Directory.CreateDirectory(
@@ -199,7 +153,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                         File.WriteAllText(
                             Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                             @"\SakuOverclock\smusettings.json",
-                            JsonConvert.SerializeObject(_smusettings, Formatting.Indented));
+                            JsonConvert.SerializeObject(_smuSettings, Formatting.Indented));
                     }
                     catch
                     {
@@ -210,7 +164,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                         File.WriteAllText(
                             Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                             @"\SakuOverclock\smusettings.json",
-                            JsonConvert.SerializeObject(_smusettings, Formatting.Indented));
+                            JsonConvert.SerializeObject(_smuSettings, Formatting.Indented));
                         App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
                             AppContext.BaseDirectory));
                     }
@@ -245,134 +199,132 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
     }
 
-    //SMU Send
-    private static void TryConvertToUint(string text, out uint address)
+    #endregion
+
+    #region Apply Overclock Options
+
+    #region Quick Smu Commands
+
+    /// <summary>
+    ///  Конвертер адреса в Uint
+    /// </summary>
+    private static bool TryConvertToUint(string text, out uint address)
     {
-        try
-        {
-            address = Convert.ToUInt32(text.Trim().ToLower(), 16);
-        }
-        catch
-        {
-            throw new ApplicationException("Invalid hexadecimal value.");
-        }
+        return uint.TryParse(
+            text.Trim(),
+            System.Globalization.NumberStyles.HexNumber,
+            System.Globalization.CultureInfo.InvariantCulture,
+            out address
+        );
     }
 
-    public void Play_Invernate_QuickSMU(int mode)
+    /// <summary>
+    /// Применяет быстрые команды SMU в зависимости от режима запуска
+    /// </summary>
+    /// <param name="startup">true - применяются команды при запуске (Startup или ApplyWith), false - только ApplyWith</param>
+    public void ApplyQuickSmuCommand(bool startup)
     {
         SmuSettingsLoad();
         ProfileLoad();
-        if (_smusettings.QuickSmuCommands == null)
+
+        if (_smuSettings.QuickSmuCommands == null)
         {
             return;
         }
 
-        if (AppSettings.Preset != -1)
+        if (AppSettings.Preset != -1 && _profile[AppSettings.Preset].SmuEnabled == false)
         {
-            if (_profile[AppSettings.Preset].SmuEnabled == false)
-            {
-                return;
-            }
+            return;
         }
 
-        for (var i = 0; i < _smusettings.QuickSmuCommands.Count; i++)
+        for (var i = 0; i < _smuSettings.QuickSmuCommands.Count; i++)
         {
-            if (mode == 0)
+            var command = _smuSettings.QuickSmuCommands[i];
+
+            // Определяем, нужно ли применять команду
+            if (command.ApplyWith || (startup && command.Startup))
             {
-                if (_smusettings.QuickSmuCommands[i].ApplyWith)
-                {
-                    ApplySettings(i);
-                }
-            }
-            else
-            {
-                if (_smusettings.QuickSmuCommands[i].ApplyWith || _smusettings.QuickSmuCommands[i].Startup)
-                {
-                    ApplySettings(i);
-                }
+                ApplySingleSmuCommand(i);
             }
         }
     }
 
-    private void ApplySettings(int commandIndex)
+    /// <summary>
+    /// Применяет конкретную быструю команду SMU
+    /// </summary>
+    private void ApplySingleSmuCommand(int commandIndex)
     {
         try
         {
-            Mailbox quickMailbox1 = new();
-            SmuSettingsLoad();
-            var args = Utils.MakeCmdArgs();
-            var userArgs = _smusettings.QuickSmuCommands?[commandIndex].Argument.Trim().Split(',');
-            TryConvertToUint(_smusettings.MailBoxes?[_smusettings.QuickSmuCommands![commandIndex].MailIndex].Cmd!,
-                out var addrMsg);
-            TryConvertToUint(_smusettings.MailBoxes?[_smusettings.QuickSmuCommands![commandIndex].MailIndex].Rsp!,
-                out var addrRsp);
-            TryConvertToUint(_smusettings.MailBoxes?[_smusettings.QuickSmuCommands![commandIndex].MailIndex].Arg!,
-                out var addrArg);
-            TryConvertToUint(_smusettings.QuickSmuCommands?[commandIndex].Command!, out var command);
-            quickMailbox1.SMU_ADDR_MSG = addrMsg;
-            quickMailbox1.SMU_ADDR_RSP = addrRsp;
-            quickMailbox1.SMU_ADDR_ARG = addrArg;
-            for (var i = 0; i < userArgs?.Length; i++)
+            var quickCommand = _smuSettings.QuickSmuCommands?[commandIndex];
+            if (quickCommand == null)
             {
-                if (i == args.Length)
-                {
-                    break;
-                }
-
-                TryConvertToUint(userArgs[i], out var temp);
-                args[i] = temp;
+                LogHelper.LogError($"Quick command at index {commandIndex} not found");
+                return;
             }
 
-            _ = _cpu?.smu.SendSmuCommand(quickMailbox1, command, ref args);
+            var mailbox = _smuSettings.MailBoxes?[quickCommand.MailIndex];
+            if (mailbox == null)
+            {
+                LogHelper.LogError($"Mailbox at index {quickCommand.MailIndex} not found");
+                return;
+            }
+
+            if (!TryConvertToUint(mailbox.Cmd, out var addrMsg) ||
+                !TryConvertToUint(mailbox.Rsp, out var addrRsp) ||
+                !TryConvertToUint(mailbox.Arg, out var addrArg) ||
+                !TryConvertToUint(quickCommand.Command, out var command))
+            {
+                LogHelper.LogError($"Failed to parse mailbox addresses or command for index {commandIndex}");
+                return;
+            }
+
+            var quickMailbox = new Mailbox
+            {
+                SMU_ADDR_MSG = addrMsg,
+                SMU_ADDR_RSP = addrRsp,
+                SMU_ADDR_ARG = addrArg
+            };
+
+            var args = Utils.MakeCmdArgs();
+            var userArgs = quickCommand.Argument?.Trim().Split(',');
+
+            if (userArgs != null)
+            {
+                for (var i = 0; i < userArgs.Length && i < args.Length; i++)
+                {
+                    if (!TryConvertToUint(userArgs[i], out args[i]))
+                    {
+                        LogHelper.LogError($"Failed to parse argument at position {i}: '{userArgs[i]}'");
+                        return;
+                    }
+                }
+            }
+
+            var status = _cpu?.smu.SendSmuCommand(quickMailbox, command, ref args);
+            if (status != SMU.Status.OK)
+            {
+                LogHelper.LogError(StatusCommandParser(status));
+            }
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError(ex);
+            LogHelper.LogError($"Failed to apply SMU command at index {commandIndex}: {ex.Message}");
         }
     }
 
-    //Из строк RyzenADJ в SMU Calls 
+    #endregion
+
+    #region Overclock Options
+
+    /// <summary>
+    ///  Применение параметров разгона из строк RyzenADJ в команды Smu 
+    /// </summary>
     public async void Translate(string ryzenAdjString, bool save)
     {
         try
         {
-            // Список строк для проверки на совпадение, если есть - не применять, так как такое переприменение может привести к нестабильности системы
-            var terminateCommands = new List<string>
-        {
-            "prochot-deassertion-ramp", //Безопасно переприменять
-            "min-socclk-frequency",
-            "max-socclk-frequency",
-            "min-fclk-frequency",
-            "max-fclk-frequency",
-            "min-vcn",
-            "max-vcn",
-            "min-lclk",
-            "max-lclk",
-            "min-gfxclk",
-            "max-gfxclk",
-            "min-cpuclk",
-            "max-cpuclk",
-            "psi3cpu_current",
-            "psi3gfx_current",
-            "gfx-clk",
-            "oc-clk",
-            "oc-volt",
-            "disable-oc", // Средне
-            "enable-oc",
-            "pbo-scalar",
-            "psi0-current",
-            "psi0soc-current",
-            "enable-feature",
-            "disable-feature",
-            "setcpu-freqto-ramstate", // ОПАСНО ПЕРЕПРИМЕНЯТЬ
-            "stopcpu-freqto-ramstate",
-            "max-performance",
-            "power-saving",
-            "set-coall",
-            "set-coper"
-        };
-
-            _saveinfo = save;
+            _saveInfo = save;
             try
             {
                 SetCodeNameGeneration(); // Защита от некорректно выставленного процессора 
@@ -390,10 +342,10 @@ public class SendSmuCommandService : ISendSmuCommandService
                         // Проверить есть ли совпадения с листом опасных команд, которые нежелательно переприменять, чтобы не получить краш системы из-за перегрузки SMU
                         if (_checkAdjLine ==
                             ryzenAdjString /* Если прошлое применение совпадает с текущим применением */
-                            && _dangersettingsapplied /* Если уже были применены опасные настройки */
+                            && _dangerSettingsApplied /* Если уже были применены опасные настройки */
                             && !save /* Если пользователь сам их не выставляет */
-                            && SafeReapply /* Если включено безопасное применение */
-                            && terminateCommands.Any(ryzenAdjCommand.Contains)) // Если есть совпадения в командах
+                            && _safeReapply /* Если включено безопасное применение */
+                            && _terminateCommands.Any(ryzenAdjCommand.Contains)) // Если есть совпадения в командах
                         {
                             //Ничего не делать 
                         }
@@ -417,7 +369,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                                     .Split(','); // узнать аргументы, разделив их
                                 if (parts.Length == 2 && uint.TryParse(parts[1], out var commaValue))
                                 {
-                                    await ApplySettings(ryzenAdjCommandString, 0x0, commaValue); // Применить преимущественно второй аргумент
+                                    await ApplySettings(ryzenAdjCommandString, 0x0, commaValue); // Применить только второй аргумент
                                 }
                                 else if (parts.Length == 3 && uint.TryParse(parts[0], out var commaValue0) 
                                                            && uint.TryParse(parts[1], out var commaValue1) 
@@ -428,14 +380,13 @@ public class SendSmuCommandService : ISendSmuCommandService
                             }
                             else
                             {
-                                // А теперь узнаем что стоит после знака равно
+                                // Значение после знака равно
                                 var ryzenAdjCommandValueString = command[(ryzenAdjCommand.IndexOf('=') + 1)..];
                                 if (ryzenAdjCommandValueString.Contains('='))
                                 {
                                     ryzenAdjCommandValueString = ryzenAdjCommandValueString.Replace("=", null);
                                 }
 
-                                // Конвертировать в Uint
                                 var ryzenAdjCommandValue = Convert.ToUInt32(ryzenAdjCommandValueString);
 
                                 // Если пользователь редактировал конфиги вручную, чтобы программа не крашнулась из-за непредвиденного отрицательного значения
@@ -467,8 +418,8 @@ public class SendSmuCommandService : ISendSmuCommandService
                     }
                 }
 
-                _dangersettingsapplied = true;
-                _saveinfo = false;
+                _dangerSettingsApplied = true;
+                _saveInfo = false;
             }
             catch (Exception ex)
             {
@@ -482,6 +433,10 @@ public class SendSmuCommandService : ISendSmuCommandService
             await LogHelper.TraceIt_TraceError(e);
         }
     }
+
+    /// <summary>
+    ///  Находит команду и применяет параметр разгона с помощью ApplyThisWithStatus
+    /// </summary>
     private async Task ApplySettings(string commandName, uint value, uint value1 = 0, uint value2 = 0)
     {
         try
@@ -497,10 +452,11 @@ public class SendSmuCommandService : ISendSmuCommandService
                 args[2] = value2;
             }
 
-            if(Commands == null)
+            if (Commands == null)
             {
-                SetCodeNameGeneration(Codename);
+                SetCodeNameGeneration();
             }
+
             // Найти код команды по имени
             var matchingCommands = Commands?.Where(c => c.Item1 == commandName);
             var commands = matchingCommands?.ToList();
@@ -577,6 +533,9 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
     }
 
+    /// <summary>
+    ///  Применяет команду Smu
+    /// </summary>
     private async Task<SMU.Status?> ApplyThisWithStatus(int mailbox, uint command, uint[] args, string commandName)
     {
         uint addrMsg = 0;
@@ -584,6 +543,8 @@ public class SendSmuCommandService : ISendSmuCommandService
         uint addrArg = 0;
         try
         {
+            _cpu ??= CpuSingleton.GetInstance();
+
             SetCodeNameGeneration();
             
             if (mailbox == 0)
@@ -603,7 +564,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             _testMailbox.SMU_ADDR_RSP = addrRsp;
             _testMailbox.SMU_ADDR_ARG = addrArg;
 
-            if (!_saveinfo && commandName == "stopcpu-freqto-ramstate")
+            if (!_saveInfo && commandName == "stopcpu-freqto-ramstate")
             {
                 return SMU.Status.OK; // Пропускаем команду но возвращаем OK, для безопасности системы
             }
@@ -614,7 +575,6 @@ public class SendSmuCommandService : ISendSmuCommandService
                 || commandName == "min-vcn"  || commandName == "max-vcn" 
                 || commandName == "min-lclk" || commandName == "max-lclk"))
             {
-                // Mode 
                 // 0 - SoC-clk
                 // 1 - Fclk
                 // 2 - Vcn
@@ -626,12 +586,12 @@ public class SendSmuCommandService : ISendSmuCommandService
                            commandName.Contains("lclk"  ) ? 3 : (
                            commandName.Contains("gfx"   ) ? 4 : 3))));
 
-                RavenSetSubsystemMinMaxFrequency(args, _cpu!, mode, commandName.Contains("max"));
+                RavenSetSubsystemMinMaxFrequency(args, _cpu.smu, mode, commandName.Contains("max"));
 
                 return SMU.Status.OK; // Команда применена, другим путём
             }
 
-            var status = _cpu?.smu.SendSmuCommand(_testMailbox, command, ref args);
+            var status = _cpu.smu.SendSmuCommand(_testMailbox, command, ref args);
 
             return status;
         }
@@ -644,19 +604,42 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
     }
 
-    // Вспомогательный метод для определения старых поколений. Нужен для применения команд Smu без задержек
-    private bool IsOlderGeneration()
+    /// <summary>
+    ///  Применяет параметры подсистем процессора на системах с процессорами RavenRidge, используя AMDGPU Smu
+    /// </summary>
+    /// <param name="mode">0 - SoC-clk, 1 - Fclk, 2 - Vcn, 3 - Lclk, 4 - Gfx-clk</param>
+    private void RavenSetSubsystemMinMaxFrequency(uint[] args, SMU smu, int mode = 0, bool setMax = false)
     {
-        _isOlderGeneration ??= _cpu?.info.codeName == CodeName.Picasso    || _cpuCodenameString.Contains("PICASSO") ||
-                               _cpu?.info.codeName == CodeName.RavenRidge || _cpuCodenameString.Contains("RAVEN")   ||
-                               _cpu?.info.codeName == CodeName.Dali       || _cpuCodenameString.Contains("DALI")    ||
-                               _cpu?.info.codeName == CodeName.Cezanne    || _cpuCodenameString.Contains("CEZANNE") ||
-                               _cpu?.info.codeName == CodeName.Renoir     || _cpuCodenameString.Contains("RENOIR")  ||
-                               _cpu?.info.codeName == CodeName.Lucienne   || _cpuCodenameString.Contains("LUCIENNE");
+        CheckCodeNameGeneration();
 
-        return _isOlderGeneration == true; // Использовать кешированное значение вместо постоянного прогона функций
+        Mailbox amdGpuMailbox = new()
+        {
+            SMU_ADDR_MSG = 0x3B10A08,
+            SMU_ADDR_RSP = 0x3B10A68,
+            SMU_ADDR_ARG = 0x3B10A48
+        };
+        var command = mode switch
+        {
+            0 => setMax ? 0x32u : 0x21u,
+            1 => setMax ? 0x33u : 0x12u,
+            2 => setMax ? 0x34u : 0x28u,
+            3 => setMax ? 0x14u : 0x23u,
+            4 => setMax ? 0x30u : 0x31u,
+            _ => setMax ? 0x30u : 0x31u,
+        };
+
+        var status = smu.SendSmuCommand(amdGpuMailbox, command, ref args);
+
+        if (status != SMU.Status.OK)
+        {
+            LogHelper.TraceIt_TraceError("[SendSmuCommand+RavenCommands]@Raven_SetGpuMinMaxFrequency_StatusNotOK: - " + status);
+        }
     }
 
+
+    /// <summary>
+    ///  Преобразователь статуса отправки команды Smu в текст
+    /// </summary>
     private static string StatusCommandParser(SMU.Status? status)
     {
         return status switch
@@ -670,88 +653,9 @@ public class SendSmuCommandService : ISendSmuCommandService
         };
     }
 
-    private void SetCodeNameGeneration(CodeName? codeName = null)
-    {
-        if (codeName == null)
-        {
-            _cpu ??= CpuSingleton.GetInstance();
-            if ((_cpu != null && Codename != _cpu.info.codeName) ||
-                !_cpuCodenameString.Contains(_cpu!.info.codeName.ToString()))
-            {
-                Codename = _cpu.info.codeName;
-                codeName = _cpu.info.codeName;
-                _cpuCodenameString = Codename.ToString().ToUpper();
-                _codenameGeneration = "Unknown";
-            }
-        }
-
-        if (codeName == CodeName.BristolRidge)
-        {
-            Socket_FP4();
-        }
-        else if (codeName == CodeName.SummitRidge || Codename == CodeName.SummitRidge ||
-            codeName == CodeName.PinnacleRidge)
-        {
-            Socket_AM4_V1();
-        }
-        else if (codeName == CodeName.RavenRidge || _cpuCodenameString.Contains("RAVEN") ||
-                 codeName == CodeName.Picasso || _cpuCodenameString.Contains("PICASSO") ||
-                 codeName == CodeName.Dali || _cpuCodenameString.Contains("DALI") ||
-                 codeName == CodeName.FireFlight)
-        {
-            Socket_FP5();
-        }
-        else if (codeName == CodeName.Matisse ||
-                 codeName == CodeName.Vermeer)
-        {
-            Socket_AM4_V2();
-        }
-        else if (codeName == CodeName.Renoir || _cpuCodenameString.Contains("RENOIR") ||
-                 codeName == CodeName.Lucienne || _cpuCodenameString.Contains("LUCIENNE") ||
-                 _cpuCodenameString.Contains("CEZANNE") ||
-                 codeName == CodeName.Cezanne)
-        {
-            Socket_FP6();
-        }
-        else if (codeName == CodeName.VanGogh || _cpuCodenameString.Contains("VANGOGH"))
-        {
-            Socket_FF3();
-        }
-        else if (codeName == CodeName.Mendocino || _cpuCodenameString.Contains("MENDOCINO") ||
-                 codeName == CodeName.Rembrandt || _cpuCodenameString.Contains("REMBRANDT") ||
-                 codeName == CodeName.Phoenix || _cpuCodenameString.Contains("PHOENIX") ||
-                 codeName == CodeName.Phoenix2 || _cpuCodenameString.Contains("HAWKPOINT") ||
-                 codeName == CodeName.StrixPoint || _cpuCodenameString.Contains("STRIXPOINT") ||
-                 codeName == CodeName.StrixHalo || codeName == CodeName.KrackanPoint 
-                 || codeName == CodeName.KrackanPoint2)
-        {
-            Socket_FT6_FP7_FP8_FP11();
-        }
-        else if (codeName == CodeName.Raphael ||
-                 codeName == CodeName.GraniteRidge ||
-                 codeName == CodeName.Genoa ||
-                 codeName == CodeName.StormPeak ||
-                 codeName == CodeName.DragonRange ||
-                 codeName == CodeName.Bergamo)
-        {
-            Socket_AM5_V1();
-        }
-        else if (codeName != null && !_unsupportedPlatformMessage)
-        {
-            _codenameGeneration = "Unknown";
-            _unsupportedPlatformMessage = true;
-            LogHelper.TraceIt_TraceError("Платформа не поддерживается. Невозможно отправить Smu команду");
-        }
-    }
-    public string GetCodeNameGeneration(Cpu cpu)
-    {
-        if (_codenameGeneration == "None")
-        {
-            SetCodeNameGeneration(cpu.info.codeName);
-        }
-        return _codenameGeneration;
-    }
-
+    /// <summary>
+    ///  Парсер для отображения на каких параметрах возникла ошибка применения
+    /// </summary>
     private string CommandNameParser(string commandName)
     {
         return commandName switch
@@ -801,23 +705,26 @@ public class SendSmuCommandService : ISendSmuCommandService
             "max-vcn" => "Param_GPU_g6/Text".GetLocalized(),
             "min-vcn" => "Param_GPU_g5/Text".GetLocalized(),
             "max-lclk" => "Param_GPU_g8/Text".GetLocalized(),
-            "min-lclk" => "Param_GPU_g7/Text".GetLocalized(),  
+            "min-lclk" => "Param_GPU_g7/Text".GetLocalized(),
             "setcpu-freqto-ramstate" => "Param_GPU_g16/Text".GetLocalized(),
             "stopcpu-freqto-ramstate" => "Param_GPU_g16/Text".GetLocalized(),
             "set-gpuclockoverdrive-byvid" => "Param_ADV_a10/Text".GetLocalized(),
             _ => "1"
         };
     }
+    
+    #endregion
 
-    public void CancelRange() => _cancelrange = true;
+    #region Send Smu command range
 
-    public event EventHandler? RangeCompleted;
-
+    /// <summary>
+    ///  Применение диапазона аргументов для команды Smu (для отладки)
+    /// </summary>
     public async void SendRange(string commandIndex, string startIndex, string endIndex, int mailbox, bool log)
     {
         try
         {
-            _cancelrange = false;
+            _cancelRange = false;
             try
             {
                 await Task.Run(() =>
@@ -847,18 +754,18 @@ public class SendSmuCommandService : ISendSmuCommandService
                     SmuSettingsLoad();
                     for (var j = startes; j < endes; j++)
                     {
-                        if (_cancelrange)
+                        if (_cancelRange)
                         {
-                            _cancelrange = false;
+                            _cancelRange = false;
                             sw.WriteLine(@"//------CANCEL------\\");
                             RangeCompleted?.Invoke(this, EventArgs.Empty);
                             return;
                         }
 
                         var args = Utils.MakeCmdArgs();
-                        TryConvertToUint(_smusettings?.MailBoxes![mailbox].Cmd!, out var addrMsg);
-                        TryConvertToUint(_smusettings?.MailBoxes![mailbox].Rsp!, out var addrRsp);
-                        TryConvertToUint(_smusettings?.MailBoxes![mailbox].Arg!, out var addrArg);
+                        TryConvertToUint(_smuSettings?.MailBoxes![mailbox].Cmd!, out var addrMsg);
+                        TryConvertToUint(_smuSettings?.MailBoxes![mailbox].Rsp!, out var addrRsp);
+                        TryConvertToUint(_smuSettings?.MailBoxes![mailbox].Arg!, out var addrArg);
                         TryConvertToUint(commandIndex, out var command);
                         _testMailbox.SMU_ADDR_MSG = addrMsg;
                         _testMailbox.SMU_ADDR_RSP = addrRsp;
@@ -901,10 +808,170 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
     }
 
-    public uint ReturnCoGfx(CodeName codeName, bool isMp1)
+    /// <summary>
+    ///  Отмена применения диапазона аргументов для команды Smu (для отладки)
+    /// </summary>
+    public void CancelRange() => _cancelRange = true;
+
+    /// <summary>
+    ///  Применение диапазона аргументов для команды Smu завершено (для отладки)
+    /// </summary>
+    public event EventHandler? RangeCompleted;
+
+    #endregion
+
+    #endregion
+
+    #region Generation helpers
+
+    /// <summary>
+    ///  Вспомогательный метод для определения старых поколений, для применения команд Smu без задержек
+    /// </summary>
+    private bool IsOlderGeneration()
     {
-        Codename = codeName; //если класс не инициализирован - задать правильный Codename
-        SetCodeNameGeneration(codeName);
+        _isOlderGeneration ??= _cpu?.info.codeName == CodeName.Picasso    ||
+                               _cpu?.info.codeName == CodeName.RavenRidge ||
+                               _cpu?.info.codeName == CodeName.Dali       ||
+                               _cpu?.info.codeName == CodeName.Cezanne    ||
+                               _cpu?.info.codeName == CodeName.Renoir     ||
+                               _cpu?.info.codeName == CodeName.Lucienne;
+
+        return _isOlderGeneration == true; // Использовать кешированное значение вместо постоянного прогона функций
+    }
+
+    /// <summary>
+    ///  Проверка кодового имени на корректность
+    /// </summary>
+    /// <returns></returns>
+    private CodeName GetCodeName()
+    {
+        _cpu ??= CpuSingleton.GetInstance();
+
+        if (_cpu == null)
+        {
+            return Codename;
+        }
+
+        if (Codename != _cpu.info.codeName)
+        {
+            Codename = _cpu.info.codeName;
+        }
+
+        return Codename;
+    }
+
+    /// <summary>
+    ///  Глобальный метод для установки адресов и команд Smu для каждого сокета и кодового имени процессоров
+    /// </summary>
+    private void SetCodeNameGeneration()
+    {
+        var codeName = GetCodeName();
+
+        if (codeName == CodeName.BristolRidge)
+        {
+            Socket_FP4();
+        }
+        else if (codeName == CodeName.SummitRidge || Codename == CodeName.SummitRidge ||
+            codeName == CodeName.PinnacleRidge)
+        {
+            Socket_AM4_V1();
+        }
+        else if (codeName == CodeName.RavenRidge ||
+                 codeName == CodeName.Picasso ||
+                 codeName == CodeName.Dali ||
+                 codeName == CodeName.FireFlight)
+        {
+            Socket_FP5();
+        }
+        else if (codeName == CodeName.Matisse ||
+                 codeName == CodeName.Vermeer)
+        {
+            Socket_AM4_V2();
+        }
+        else if (codeName == CodeName.Renoir ||
+                 codeName == CodeName.Lucienne ||
+                 codeName == CodeName.Cezanne)
+        {
+            Socket_FP6();
+        }
+        else if (codeName == CodeName.VanGogh)
+        {
+            Socket_FF3();
+        }
+        else if (codeName == CodeName.Mendocino ||
+                 codeName == CodeName.Rembrandt ||
+                 codeName == CodeName.Phoenix ||
+                 codeName == CodeName.Phoenix2 ||
+                 codeName == CodeName.HawkPoint ||
+                 codeName == CodeName.StrixPoint ||
+                 codeName == CodeName.StrixHalo || 
+                 codeName == CodeName.KrackanPoint || 
+                 codeName == CodeName.KrackanPoint2)
+        {
+            Socket_FT6_FP7_FP8_FP11();
+        }
+        else if (codeName == CodeName.Raphael ||
+                 codeName == CodeName.GraniteRidge ||
+                 codeName == CodeName.Genoa ||
+                 codeName == CodeName.StormPeak ||
+                 codeName == CodeName.DragonRange ||
+                 codeName == CodeName.Bergamo)
+        {
+            Socket_AM5_V1();
+        }
+        else if (!_unsupportedPlatformMessage)
+        {
+            _codenameGeneration = "Unknown";
+            _unsupportedPlatformMessage = true;
+            LogHelper.TraceIt_TraceError("Платформа не поддерживается. Невозможно отправить Smu команду");
+        }
+    }
+
+    /// <summary>
+    ///  Возвращает имя платформы, CodeNameGeneration
+    /// </summary>
+    public string GetCodeNameGeneration()
+    {
+        if (_codenameGeneration == "None")
+        {
+            SetCodeNameGeneration();
+        }
+        return _codenameGeneration;
+    }
+
+    /// <summary>
+    ///  Проверка корректности инициализации CodeNameGeneration
+    /// </summary>
+    private void CheckCodeNameGeneration()
+    {
+        if (_codenameGeneration == "None")
+        {
+            SetCodeNameGeneration();
+        }
+    }
+
+    #endregion
+
+    #region Helpers
+
+    /// <summary>
+    ///  Возвращает значение безопасного применения команд или назначает его
+    /// </summary>
+    public bool GetSetSafeReapply(bool? value = null)
+    {
+        if (value != null)
+        {
+            _safeReapply = value == true;
+        }
+        return _safeReapply;
+    }
+
+    /// <summary>
+    ///  Возвращает команду Gfx Curve Optimizer при её наличии
+    /// </summary>
+    public uint ReturnCoGfx(bool isMp1)
+    {
+        CheckCodeNameGeneration();
 
         var matchingCommands = Commands?.Where(c => c.Item1 == "set-cogfx" && c.Item2 == isMp1);
         var commands = matchingCommands!.ToList();
@@ -916,10 +983,12 @@ public class SendSmuCommandService : ISendSmuCommandService
         return 0U;
     }
 
-    public uint ReturnCoPer(CodeName codeName, bool isMp1)
+    /// <summary>
+    ///  Возвращает команду Cpu Per Core Curve Optimizer при её наличии
+    /// </summary>
+    public uint ReturnCoPer(bool isMp1)
     {
-        Codename = codeName; //если класс не инициализирован - задать правильный Codename
-        SetCodeNameGeneration(codeName);
+        CheckCodeNameGeneration();
 
         var matchingCommands = Commands?.Where(c => c.Item1 == "set-coper" && c.Item2 == isMp1);
         var commands = matchingCommands!.ToList();
@@ -931,10 +1000,12 @@ public class SendSmuCommandService : ISendSmuCommandService
         return 0U;
     }
 
-    public double ReturnCpuPowerLimit(Cpu cpu)
+    /// <summary>
+    ///  Возвращает значение установленное TDP 
+    /// </summary>
+    public double ReturnCpuPowerLimit(SMU smu)
     {
-        Codename = cpu.info.codeName; //если класс не инициализирован - задать правильный Codename
-        SetCodeNameGeneration(cpu.info.codeName);
+        CheckCodeNameGeneration();
 
         var actualCommand = 0x0U;
         var matchingCommandsMp1 = Commands?.Where(c => c.Item1 == "get-sustained-power-and-thm-limit" && c.Item2 == true);
@@ -980,7 +1051,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             };
 
             var args = Utils.MakeCmdArgs();
-            var status = cpu?.smu.SendSmuCommand(testMailbox1, actualCommand, ref args);
+            var status = smu.SendSmuCommand(testMailbox1, actualCommand, ref args);
 
             if (status != SMU.Status.OK)
             {
@@ -995,10 +1066,13 @@ public class SendSmuCommandService : ISendSmuCommandService
 
         return 15;
     }
-    public bool ReturnUndervoltingAvailability(Cpu cpu)
+
+    /// <summary>
+    ///  Проверка доступности андервольтинга
+    /// </summary>
+    public bool ReturnUndervoltingAvailability(SMU smu)
     {
-        Codename = cpu.info.codeName; //если класс не инициализирован - задать правильный Codename
-        SetCodeNameGeneration(cpu.info.codeName);
+        CheckCodeNameGeneration();
 
         var actualCommand = 0x0U;
         var matchingCommandsMp1 = Commands?.Where(c => c.Item1 == "get-coper-options" && c.Item2 == true);
@@ -1044,7 +1118,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             };
 
             var args = Utils.MakeCmdArgs();
-            var status = cpu?.smu.SendSmuCommand(testMailbox1, actualCommand, ref args);
+            var status = smu.SendSmuCommand(testMailbox1, actualCommand, ref args);
 
             if (status != SMU.Status.OK)
             {
@@ -1057,7 +1131,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             }
             else
             {
-                return TrySetUndervolt(cpu);
+                return TrySetUndervolt(smu);
             }
         }
 
@@ -1067,10 +1141,14 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
         else
         {
-            return TrySetUndervolt(cpu);
+            return TrySetUndervolt(smu);
         }
     }
-    private static bool TrySetUndervolt(Cpu? cpu)
+
+    /// <summary>
+    ///  Пытается установить андервольтинг (для проверки на его доступность)
+    /// </summary>
+    private static bool TrySetUndervolt(SMU smu)
     {
         var actualCommand = 0x0U;
         var matchingCommandsMp1 = Commands?.Where(c => c.Item1 == "set-coall" && c.Item2 == true);
@@ -1116,7 +1194,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             };
 
             var args = Utils.MakeCmdArgs();
-            var status = cpu?.smu.SendSmuCommand(testMailbox1, actualCommand, ref args);
+            var status = smu.SendSmuCommand(testMailbox1, actualCommand, ref args);
 
             if (status != SMU.Status.OK)
             {
@@ -1132,23 +1210,28 @@ public class SendSmuCommandService : ISendSmuCommandService
         return false;
     }
 
-    public bool? IsPlatformPc(Cpu cpu)
+    /// <summary>
+    ///  Возвращает тип платформы
+    /// </summary>
+    public bool? IsPlatformPc()
     {
-        Codename = cpu.info.codeName;
+        GetCodeName();
         if (IsPlatformPCByCodename(Codename) == true)
         {
             if (Codename is CodeName.RavenRidge or CodeName.Picasso or CodeName.Renoir or CodeName.Cezanne or CodeName.Phoenix or CodeName.Phoenix2)
             {
-                if (cpu.info.packageType == PackageType.FPX)
+                _cpu ??= CpuSingleton.GetInstance();
+
+                if (_cpu.info.packageType == PackageType.FPX)
                 {
                     if (_isBatteryUnavailable)
                     {
-                        if (cpu.info.cpuName.Contains('G') ||
-                            cpu.info.cpuName.Contains("GE") ||
-                            (cpu.info.cpuName.Contains('X') && !cpu.info.cpuName.Contains("HX")) ||
-                            cpu.info.cpuName.Contains('F') ||
-                            (cpu.info.cpuName.Contains("X3D") && !cpu.info.cpuName.Contains("HX3D")) ||
-                            cpu.info.cpuName.Contains("XT")
+                        if (_cpu.info.cpuName.Contains('G') ||
+                            _cpu.info.cpuName.Contains("GE") ||
+                            (_cpu.info.cpuName.Contains('X') && !_cpu.info.cpuName.Contains("HX")) ||
+                            _cpu.info.cpuName.Contains('F') ||
+                            (_cpu.info.cpuName.Contains("X3D") && !_cpu.info.cpuName.Contains("HX3D")) ||
+                            _cpu.info.cpuName.Contains("XT")
                            )
                         {
                             return true;
@@ -1167,6 +1250,10 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
         return null; // Платформа не определена!
     }
+
+    /// <summary>
+    ///  Возвращает тип платформы по кодовому имени
+    /// </summary>
     private static bool? IsPlatformPCByCodename(CodeName codeName)
     {
         if (Codename != codeName)
@@ -1176,71 +1263,19 @@ public class SendSmuCommandService : ISendSmuCommandService
         return Codename switch
         {
             CodeName.BristolRidge or CodeName.SummitRidge or CodeName.PinnacleRidge => true,
-            CodeName.RavenRidge or CodeName.Picasso or CodeName.Dali or CodeName.FireFlight => false, // Raven Ridge, Picasso can be PC!
+            CodeName.RavenRidge or CodeName.Picasso or CodeName.Dali or CodeName.FireFlight => false, // Raven Ridge, Picasso может быть PC!
             CodeName.Matisse or CodeName.Vermeer => true,
-            CodeName.Renoir or CodeName.Lucienne or CodeName.Cezanne => false, // Renoir, Cezanne can be PC!
+            CodeName.Renoir or CodeName.Lucienne or CodeName.Cezanne => false, // Renoir, Cezanne может быть PC!
             CodeName.VanGogh => false,
-            CodeName.Mendocino or CodeName.Rembrandt or CodeName.Phoenix or CodeName.Phoenix2 or CodeName.HawkPoint or CodeName.StrixPoint or CodeName.StrixHalo => false, // Phoenix can be PC!
+            CodeName.Mendocino or CodeName.Rembrandt or CodeName.Phoenix or CodeName.Phoenix2 or CodeName.HawkPoint or CodeName.StrixPoint or CodeName.StrixHalo => false, // Phoenix может быть PC!
             CodeName.GraniteRidge or CodeName.Genoa or CodeName.Bergamo or CodeName.Raphael or CodeName.DragonRange => true,
             _ => null,// Устройство не определено
         };
     }
 
-    public uint GenerateSmuArgForSetGfxclkOverdriveByFreqVid(double frequencyMHz, double voltage)
-    {
-        // Вычисляем VID по напряжению
-        var rawVid = (1.55 - voltage) / 0.00625;
-        var vid = (uint)Math.Round(rawVid);
+    #endregion
 
-        // Ограничения по диапазону VID
-        if (vid > 0xFF)
-        {
-            vid = 0xFF;
-        }
-
-        // Конвертируем частоту в целочисленный формат
-        var freq = (uint)Math.Round(frequencyMHz);
-
-        // Смещаем и комбинируем
-        var smuArg = (vid << 16) | (freq & 0xFFFF);
-        return smuArg;
-    }
-
-    private void RavenSetSubsystemMinMaxFrequency(uint[] args, Cpu cpu, int mode = 0, bool setMax = false)
-    {
-        // Mode 
-        // 0 - SoC-clk
-        // 1 - Fclk
-        // 2 - Vcn
-        // 3 - Lclk
-        // 4 - Gfx-clk
-        Codename = cpu.info.codeName; //если класс не инициализирован - задать правильный Codename
-        SetCodeNameGeneration(cpu.info.codeName);
-
-        Mailbox amdGpuMailbox = new()
-        {
-            SMU_ADDR_MSG = 0x3B10A08,
-            SMU_ADDR_RSP = 0x3B10A68,
-            SMU_ADDR_ARG = 0x3B10A48
-        };
-        var command = mode switch
-        {
-            0 => setMax ? 0x32u : 0x21u,
-            1 => setMax ? 0x33u : 0x12u,
-            2 => setMax ? 0x34u : 0x28u,
-            3 => setMax ? 0x14u : 0x23u,
-            4 => setMax ? 0x30u : 0x31u,
-            _ => setMax ? 0x30u : 0x31u,
-        };
-
-        var status = cpu?.smu.SendSmuCommand(amdGpuMailbox, command, ref args);
-
-        if (status != SMU.Status.OK)
-        {
-            LogHelper.TraceIt_TraceError("[SendSmuCommand+RavenCommands]@Raven_SetGpuMinMaxFrequency_StatusNotOK: - " + status);
-        }
-    }
-
+    #region Smu Command set
 
     /*
      * SMU Command Set - Reverse-Engineered
@@ -1813,4 +1848,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("get-pbo-fused-tctl-temp",           false, 0xDe) 
         ];
     }
+
+    #endregion
+
 }

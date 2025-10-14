@@ -291,7 +291,7 @@ public sealed partial class MainWindow
         {
             try
             { 
-                SendSmuCommand.Play_Invernate_QuickSMU(1);
+                SendSmuCommand.ApplyQuickSmuCommand(true);
             }
             catch (Exception ex)
             {
@@ -319,7 +319,7 @@ public sealed partial class MainWindow
                     }
                     if (SettingsService.Preset < profile.Length && SettingsService.Preset != -1)
                     {
-                        ShellPage.MandarinSparseUnitProfile(profile[SettingsService.Preset]);
+                        ShellPage.ParseOverclockProfile(profile[SettingsService.Preset]);
                         if (profile[SettingsService.Preset].AutoPstate &&
                         profile[SettingsService.Preset].EnablePstateEditor)
                         {
@@ -406,8 +406,8 @@ public sealed partial class MainWindow
                                 await Process(ryzenAdJline,
                                     false); // Запустить SendSMUCommand снова, БЕЗ логирования, false
                                 SendSmuCommand
-                                    ?.Play_Invernate_QuickSMU(
-                                        1); // Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
+                                    ?.ApplyQuickSmuCommand(
+                                        true); // Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
                             }
                         }
                         catch (Exception ex)

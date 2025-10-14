@@ -180,6 +180,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
     #region Update Battery information voids
 
+    public bool IsBatteryUnavailable() => _cachedBatteryUnavailable;
+
     private async Task<(
         string BatteryName,
         string BatteryPercent,

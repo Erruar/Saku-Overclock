@@ -55,7 +55,7 @@ public sealed partial class ПресетыPage
 
         try
         {
-            _isPlatformPC = SendSmuCommand.IsPlatformPc(CpuSingleton.GetInstance());
+            _isPlatformPC = SendSmuCommand.IsPlatformPc();
         }
         catch (Exception ex)
         {
@@ -81,6 +81,7 @@ public sealed partial class ПресетыPage
         {
             HideCom.SelectedIndex = 2;
         }
+
         ReapplyOptionsSetOnly(AppSettings.ReapplyOverclock ? ReapplyOptions_Enabled : ReapplyOptions_Disabled);
         AutoApplyOptionsSetOnly(AppSettings.ReapplyLatestSettingsOnAppLaunch ? AutoApplyOptions_Enabled : AutoApplyOptions_Disabled);
         TrayMonSetOnly(AppSettings.NiIconsEnabled ? TrayMonFeat_Enabled : TrayMonFeat_Disabled);
@@ -1623,7 +1624,7 @@ public sealed partial class ПресетыPage
                      profile.Profileicon == "\uE718"))
                 {
                     ПараметрыPage.ApplyInfo = string.Empty;
-                    ShellPage.MandarinSparseUnitProfile(profile, true);
+                    ShellPage.ParseOverclockProfile(profile, true);
 
                     NotificationsService.Notifies ??= [];
                     NotificationsService.Notifies.Add(new Notify

@@ -590,7 +590,7 @@ public sealed partial class ShellPage
             AppSettings.Preset = ViewModel.SelectedIndex - 1;
             AppSettings.SaveSettings();
             ProfileLoad();
-            MandarinSparseUnitProfile(_profile[indexRequired]);
+            ParseOverclockProfile(_profile[indexRequired]);
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
             {
                 var navigationService = App.GetService<INavigationService>();
@@ -687,7 +687,7 @@ public sealed partial class ShellPage
         }
     }
 
-    public static void MandarinSparseUnitProfile(Profile profile, bool saveInfo = false)
+    public static void ParseOverclockProfile(Profile profile, bool saveInfo = false)
     {
         var isBristol = CpuSingleton.GetInstance()?.info.codeName == Cpu.CodeName.BristolRidge;
 
@@ -942,8 +942,8 @@ public sealed partial class ShellPage
         var cpu = CpuSingleton.GetInstance();
         if (profile.Cogfx)
         {
-            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(cpu.info.codeName, false);
-            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(cpu.info.codeName, true);
+            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(false);
+            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(true);
             //Using Irusanov method
             for (var i = 0; i < cpu.info.topology.physicalCores; i++)
             {
@@ -957,8 +957,8 @@ public sealed partial class ShellPage
                 }
             }
 
-            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName, false);
-            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName, true);
+            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(false);
+            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(true);
         }
 
         if (profile.Comode && profile.Coprefmode != 0) // Если пользователь выбрал хотя-бы один режим и ...
@@ -1199,8 +1199,8 @@ public sealed partial class ShellPage
                 // Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
                 case 3:
                     {
-                        cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName, false);
-                        cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(cpu.info.codeName, true);
+                        cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(false);
+                        cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(true);
                         var options = new Dictionary<int, double>
                     {
                         { 0, profile.Coper0Value },

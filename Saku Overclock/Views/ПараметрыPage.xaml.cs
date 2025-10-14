@@ -4883,8 +4883,8 @@ public sealed partial class ПараметрыPage
 
                 if (O2.IsChecked == true)
                 {
-                    _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(_cpu.info.codeName, false);
-                    _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(_cpu.info.codeName, true);
+                    _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(false);
+                    _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(true);
                     //Using Irusanov method
                     for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
                     {
@@ -4898,8 +4898,8 @@ public sealed partial class ПараметрыPage
                         }
                     }
 
-                    _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, false);
-                    _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, true);
+                    _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(false);
+                    _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(true);
                 }
 
                 if (CcdCoModeSel.IsChecked == true &&
@@ -5134,8 +5134,8 @@ public sealed partial class ПараметрыPage
                         (CcdCoMode.SelectedIndex ==
                          3) // Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
                     {
-                        _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, false);
-                        _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(_cpu.info.codeName, true);
+                        _cpu!.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(false);
+                        _cpu!.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(true);
                         for (var i = 0; i < _cpu?.info.topology.physicalCores; i++)
                         {
                             var checkbox = i < 8
@@ -5267,7 +5267,6 @@ public sealed partial class ПараметрыPage
             _adjline = "";
             ApplyInfo = "";
             AppSettings.SaveSettings();
-            SendSmuCommand.SetCpuCodename(_cpu!.info.codeName);
             MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, true, AppSettings.ReapplyOverclock,
                 AppSettings.ReapplyOverclockTimer);
             if (EnablePstates.IsOn)
@@ -5337,7 +5336,7 @@ public sealed partial class ПараметрыPage
             });
             NotificationsService.SaveNotificationsSettings();
             _commandReturnedValue = false;
-            SendSmuCommand.Play_Invernate_QuickSMU(0);
+            SendSmuCommand.ApplyQuickSmuCommand(false);
         }
         catch (Exception exception)
         {
