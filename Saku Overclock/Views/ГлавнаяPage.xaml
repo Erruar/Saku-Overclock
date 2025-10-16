@@ -10,6 +10,116 @@
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
+        <Style TargetType="ToggleButton">
+            <Setter Property="Background" Value="{ThemeResource ControlFillColorSecondaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="11,5,11,6"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid x:Name="RootGrid"
+                      Background="{TemplateBinding Background}"
+                      BorderBrush="{TemplateBinding BorderBrush}"
+                      BorderThickness="{TemplateBinding BorderThickness}"
+                      CornerRadius="{TemplateBinding CornerRadius}">
+
+                            <VisualStateManager.VisualStateGroups>
+
+                                <!-- Общие состояния -->
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ControlFillColorSecondaryBrush}"/>
+                                            <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}"/>
+                                            <Setter Target="RootGrid.BorderThickness" Value="1"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}"/>
+                                            <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}"/>
+                                            <Setter Target="RootGrid.BorderThickness" Value="1"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}"/>
+                                            <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}"/>
+                                            <Setter Target="RootGrid.BorderThickness" Value="1"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+
+                                <!-- Состояния выбора -->
+                                <VisualStateGroup x:Name="CheckStates">
+                                    <VisualState x:Name="Unchecked">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ControlFillColorSecondaryBrush}"/>
+                                            <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}"/>
+                                            <Setter Target="RootGrid.BorderThickness" Value="1"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <VisualState x:Name="UncheckedPointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}"/>
+                                            <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}"/>
+                                            <Setter Target="RootGrid.BorderThickness" Value="1"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <VisualState x:Name="UncheckedPressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}"/>
+                                            <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}"/>
+                                            <Setter Target="RootGrid.BorderThickness" Value="1"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <VisualState x:Name="Checked">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ControlFillColorSecondaryBrush}"/>
+                                            <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                            <Setter Target="RootGrid.BorderThickness" Value="2"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <VisualState x:Name="CheckedPointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}"/>
+                                            <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                            <Setter Target="RootGrid.BorderThickness" Value="2"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+
+                                    <VisualState x:Name="CheckedPressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}"/>
+                                            <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource AccentFillColorDefaultBrush}"/>
+                                            <Setter Target="RootGrid.BorderThickness" Value="2"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+
+                            </VisualStateManager.VisualStateGroups>
+
+                            <ContentPresenter x:Name="ContentPresenter"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Padding="{TemplateBinding Padding}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Page.Resources>
     <Grid x:Name="ContentArea" Margin="-48,-65,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
         <TeachingTip x:Name="Main_Teach" IsOpen="False">
@@ -343,224 +453,156 @@ Text="{Binding Version}">
             </Grid>
             <Grid HorizontalAlignment="Stretch" Grid.Column="1" CornerRadius="16" Margin="0,0,10,5" Shadow="{StaticResource SharedShadow}" Translation="0,0,20">
                 <Grid CornerRadius="8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                    <Pivot Margin="0,-15,0,-5" CornerRadius="8,8,8,8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        <PivotItem Margin="12,0,12,-10">
-                            <PivotItem.Header>
-                                <TextBlock x:Uid="Main_Profiles" Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" Text="Пресеты"/>
-                            </PivotItem.Header>
-                            <Grid Margin="-12,0,-12,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition Height="45"/>
-                                </Grid.RowDefinitions>
-                                <Pivot Grid.Row="0" Loaded="PivotProfiles_Loaded" Margin="-10,0,-10,15" 
-                                       HorizontalAlignment="Center" HorizontalContentAlignment="Stretch"
-                                       x:Name="Preset_Pivot">
-                                    <PivotItem Margin="0,-14,0,7">
-                                        <PivotItem.Header>
-                                            <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_OwnProfiles" Text="Свои"/>
-                                        </PivotItem.Header> 
-                                        <ScrollViewer Grid.Row="0">
-                                            <StackPanel Margin="20,0,20,0" Orientation="Vertical" 
-                                                        HorizontalAlignment="Stretch" IsHitTestVisible="True"
-                                                        x:Name="Preset_Custom">
-                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                        <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xE718;"/>
-                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                            <TextBlock FontWeight="Bold" Text="11"/>
-                                                            <TextBlock TextWrapping="Wrap" Text="Кажется этот пресет без описания. Но вы можете это исправить"/>
-                                                        </StackPanel>
-                                                    </Grid>
-                                                </ToggleButton>
-                                            </StackPanel>
-                                        </ScrollViewer> 
-                                    </PivotItem>
-                                    <PivotItem Margin="0,-14,0,7">
-                                        <PivotItem.Header>
-                                            <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_PremadeProfiles" Text="Готовые"/>
-                                        </PivotItem.Header>
-                                        <ScrollViewer>
-                                            <StackPanel Margin="20,0,20,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Max" Tag="Preset_Max" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                        <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xEcad;"/>
-                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                            <TextBlock FontWeight="Bold" Text="Maximum" x:Uid="Preset_Max_Name"/>
-                                                            <TextBlock TextWrapping="Wrap" Text="Maximum" x:Uid="Preset_Max_Desc"/>
-                                                        </StackPanel>
-                                                    </Grid> 
-                                                </ToggleButton>
-                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Speed" Tag="Preset_Speed" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                        <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xe945;"/>
-                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                            <TextBlock FontWeight="Bold" Text="Speed" x:Uid="Preset_Speed_Name"/>
-                                                            <TextBlock TextWrapping="Wrap" Text="Speed" x:Uid="Preset_Speed_Desc"/>
-                                                        </StackPanel>
-                                                    </Grid> 
-                                                </ToggleButton>
-                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Balance" Tag="Preset_Balance" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                        <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec49;"/>
-                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                            <TextBlock FontWeight="Bold" Text="Balance" x:Uid="Preset_Balance_Name"/>
-                                                            <TextBlock TextWrapping="Wrap" Text="Balance" x:Uid="Preset_Balance_Desc"/>
-                                                        </StackPanel>
-                                                    </Grid> 
-                                                </ToggleButton>
-                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Eco" Tag="Preset_Eco" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                        <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec0a;"/>
-                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                            <TextBlock FontWeight="Bold" Text="Eco" x:Uid="Preset_Eco_Name"/>
-                                                            <TextBlock TextWrapping="Wrap" Text="Eco" x:Uid="Preset_Eco_Desc"/>
-                                                        </StackPanel>
-                                                    </Grid> 
-                                                </ToggleButton>
-                                                <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Min" Tag="Preset_Min" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,7" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                                    <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                        <FontIcon HorizontalAlignment="Left" Margin="6,0,0,0" Glyph="&#xebc0;"/>
-                                                        <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                            <TextBlock FontWeight="Bold" Text="Minimum" x:Uid="Preset_Min_Name"/>
-                                                            <TextBlock TextWrapping="Wrap" Text="Minimum" x:Uid="Preset_Min_Desc"/>
-                                                        </StackPanel>
-                                                    </Grid> 
-                                                </ToggleButton>
-                                            </StackPanel>
-                                        </ScrollViewer>
-                                    </PivotItem>
-                                </Pivot>
-                                <Button Click="Apply_Click" x:Name="ApplyButton" Grid.Row="1" Margin="10,-20,10,20" CornerRadius="16" MinHeight="20" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20">
-                                    <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                        <FontIcon Glyph="&#xE768;" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" x:Uid="Main_ApplyButton" Text="Применить" FontWeight="SemiBold" FontSize="16" Margin="0,-1,0,0"/>
-                                        <FontIcon Glyph="&#xE76C;" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                    </Grid>
-                                </Button>
+                    <TextBlock x:Uid="Main_PremadeProfiles" x:Name="Presets_TextBlock" Margin="14,16,0,0" FontWeight="SemiBold" FontSize="17" Text="Управление пресетами"/>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="55"/>
+                        </Grid.RowDefinitions>
+                        <Pivot Grid.Row="0" Loaded="PivotProfiles_Loaded" Margin="-10,0,-10,15" 
+                               HorizontalAlignment="Center" HorizontalContentAlignment="Stretch"
+                               x:Name="Preset_Pivot" SelectionChanged="Preset_Pivot_SelectionChanged">
+                            <PivotItem Margin="0,4,0,7">
+                                <PivotItem.Header>
+                                    <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_OwnProfiles" Text="Свои"/>
+                                </PivotItem.Header>
+                                <ScrollViewer Grid.Row="0">
+                                    <StackPanel Margin="20,0,20,0" Orientation="Vertical" 
+                                                HorizontalAlignment="Stretch" IsHitTestVisible="True"
+                                                x:Name="Preset_Custom">
+                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xE718;"/>
+                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                    <TextBlock FontWeight="Bold" Text="11"/>
+                                                    <TextBlock TextWrapping="Wrap" Text="Кажется этот пресет без описания. Но вы можете это исправить"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </ToggleButton>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </PivotItem>
+                            <PivotItem Margin="0,11,0,7">
+                                <PivotItem.Header>
+                                    <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_PremadeProfiles" Text="Готовые"/>
+                                </PivotItem.Header>
+                                <ScrollViewer>
+                                    <StackPanel Margin="20,-3,20,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
+                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Max" Tag="Preset_Max" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xEcad;"/>
+                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                    <TextBlock FontWeight="Bold" Text="Maximum" x:Uid="Preset_Max_Name"/>
+                                                    <TextBlock TextWrapping="Wrap" Text="Maximum" x:Uid="Preset_Max_Desc"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </ToggleButton>
+                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Speed" Tag="Preset_Speed" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xe945;"/>
+                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                    <TextBlock FontWeight="Bold" Text="Speed" x:Uid="Preset_Speed_Name"/>
+                                                    <TextBlock TextWrapping="Wrap" Text="Speed" x:Uid="Preset_Speed_Desc"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </ToggleButton>
+                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Balance" Tag="Preset_Balance" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec49;"/>
+                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                    <TextBlock FontWeight="Bold" Text="Balance" x:Uid="Preset_Balance_Name"/>
+                                                    <TextBlock TextWrapping="Wrap" Text="Balance" x:Uid="Preset_Balance_Desc"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </ToggleButton>
+                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Eco" Tag="Preset_Eco" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec0a;"/>
+                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                    <TextBlock FontWeight="Bold" Text="Eco" x:Uid="Preset_Eco_Name"/>
+                                                    <TextBlock TextWrapping="Wrap" Text="Eco" x:Uid="Preset_Eco_Desc"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </ToggleButton>
+                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Min" Tag="Preset_Min" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,7" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                <FontIcon HorizontalAlignment="Left" Margin="6,0,0,0" Glyph="&#xebc0;"/>
+                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                    <TextBlock FontWeight="Bold" Text="Minimum" x:Uid="Preset_Min_Name"/>
+                                                    <TextBlock TextWrapping="Wrap" Text="Minimum" x:Uid="Preset_Min_Desc"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </ToggleButton>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </PivotItem>
+                        </Pivot>
+                        <Button Click="Apply_Click" x:Name="ApplyButton" Grid.Row="1" Margin="10,-22,10,10" 
+CornerRadius="26" MinHeight="20" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}"
+HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" 
+Shadow="{ThemeResource SharedShadow}" Translation="0,0,20"
+RenderTransformOrigin="0.5,0.5">
+                            <Button.RenderTransform>
+                                <ScaleTransform x:Name="ButtonScaleTransform" ScaleX="1" ScaleY="1"/>
+                            </Button.RenderTransform>
+
+                            <Button.Resources>
+                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{Binding Color, Source={ThemeResource AccentTextFillColorTertiaryBrush}}"/>
+                                <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{Binding Color, Source={ThemeResource AccentTextFillColorTertiaryBrush}}"/>
+                                <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="{Binding Color, Source={ThemeResource AccentTextFillColorTertiaryBrush}}"/>
+                                <Storyboard x:Name="ButtonAnimationStoryboard">
+                                    <!-- Анимация CornerRadius -->
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ApplyButton" 
+                                  Storyboard.TargetProperty="CornerRadius">
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="26"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.015" Value="25"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.03" Value="24"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.045" Value="23"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.06" Value="22"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.075" Value="21"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.09" Value="20"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.105" Value="19"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.12" Value="18"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.135" Value="17"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.15" Value="16"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.165" Value="17"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.18" Value="18"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.195" Value="19"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.21" Value="20"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.225" Value="21"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.24" Value="22"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.255" Value="23"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.27" Value="24"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.285" Value="25"/>
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.30" Value="26"/>
+                                    </ObjectAnimationUsingKeyFrames>
+
+                                    <!-- Анимация Scale X -->
+                                    <DoubleAnimation Storyboard.TargetName="ButtonScaleTransform"
+                   Storyboard.TargetProperty="ScaleX"
+                   From="1.0" To="1.02" Duration="0:0:0.15"
+                   AutoReverse="True"/>
+
+                                </Storyboard>
+                            </Button.Resources>
+
+                            <Grid Margin="-5,-5,-5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <FontIcon Glyph="&#xE768;" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" x:Uid="Main_ApplyButton" 
+           Text="Применить" FontWeight="SemiBold" FontSize="16" Margin="0,-1,0,0"/>
+                                <FontIcon Glyph="&#xE76C;" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
                             </Grid>
-                        </PivotItem>
-                        <PivotItem>
-                            <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-8"
-FontSize="16"
-FontWeight="Bold" x:Uid="Shell_Changelog" Text="Changelog"/>
-                            </PivotItem.Header>
-                            <ScrollViewer Margin="-10,0,-10,0">
-                                <StackPanel Margin="10,0,10,0" Orientation="Vertical" x:Name="MainChangelogStackPanel" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                    <TextBlock Text="◆ Now you have better information page"/>
-                                    <TextBlock Text="◆ Safe reapply feature"/>
-                                    <TextBlock Text="◆ 5x Times faster information page"/>
-                                    <TextBlock Text="◆ RTSS Support for information page"/>
-                                </StackPanel>
-                            </ScrollViewer>
-                        </PivotItem>
-                        <PivotItem>
-                            <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-8"
-FontSize="16"
-FontWeight="Bold" x:Uid="Main_Guide" Text="Guide"/>
-                            </PivotItem.Header>
-                            <ScrollViewer Margin="-10,0,-10,0">
-                                <StackPanel Margin="10,0,10,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Title">Fixes &amp; Explanations:</TextBlock>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_OCTips">Overclocking/Undervolting tips</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#undervolting-support"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowTo04">How to apply the 0.4 GHz fix</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#explanation-how-to-apply-04-ghz-ryzen-mobile-fix"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowWork04">How actually works 0.4 GHz fix</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#how-did-it-actually-works"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Apply04">Applying fix 0.4 to certain cores</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#can-i-apply-this-fix-to-one-core-or-several-but-not-all-cores"/>
-                                    </Grid>
-                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Perf_Title">Performance mode:</TextBlock>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_MaxPerf">Max performance mode explanation</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#can-i-use-max-performance-option-while-on-ac-cable-power-supply"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Energy">Energy efficiency mode explanation</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#does-energy-efficiency-option-improve-battery-runtime"/>
-                                    </Grid>
-                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_CommonIssues_Title">Common Issues &amp; Solutions:</TextBlock>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HowBoost">How to fix boost delay issues</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#how-to-fix-the-boost-delay-issue"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_WhyLose">Why I losing my values even without restart</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#why-do-i-lose-my-values-even-without-restart"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_TempErr">Temperature or power limit does not work</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#temperature-or-power-limit-does-not-work"/>
-                                    </Grid>
-                                </StackPanel>
-                            </ScrollViewer>
-                        </PivotItem>
-                        <PivotItem>
-                            <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-8"
-FontSize="16"
-FontWeight="Bold" x:Uid="Main_Actions" Text="Actions"/>
-                            </PivotItem.Header>
-                            <ScrollViewer Margin="-10,0,-10,0">
-                                <StackPanel Margin="10,0,10,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Contrib_Title">Contributing &amp; Development:</TextBlock>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Support">Support the project author</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://www.donationalerts.com/r/RubyTrack"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_HelpDev">Help with development</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock?tab=readme-ov-file#contributing"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_NewFunctions">Adding new functions for CPUs</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#adding-functions"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_DMCA">DMCA/Copyright policy</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#dmca---what-is-that-can-i-copy-this-program"/>
-                                    </Grid>
-                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Advanced_Title">Advanced Features:</TextBlock>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_Fan">Adding fan control functionality</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#would-it-be-possible-to-add-fan-control-functionality"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ResetRest">Resetting values without restarting</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#would-it-be-possible-to-reset-values-without-restart"/>
-                                    </Grid>
-                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Supported_Title">Supported CPU Models:</TextBlock>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_CPUFamily">CPU family support and functions table</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#overclocking-page"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ProcSpec">Processor-specific details</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#details-for-"/>
-                                    </Grid>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_ProcContr">Processors of contributors</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/Supported%E2%80%90Models#processors-of-contributors"/>
-                                    </Grid>
-                                    <TextBlock FontWeight="Bold" x:Uid="Main_Guide_Errors_Title">Error Handling:</TextBlock>
-                                    <Grid Height="20">
-                                        <TextBlock HorizontalAlignment="Left" x:Uid="Main_Guide_FAQ">FAQs related to error messages</TextBlock>
-                                        <Button Background="Transparent" BorderBrush="Transparent" HorizontalAlignment="Stretch" Click="HyperLink_Click" Tag="https://github.com/Erruar/Saku-Overclock/wiki/FAQ#error-handling"/>
-                                    </Grid>
-                                </StackPanel>
-                            </ScrollViewer>
-                        </PivotItem>
-                    </Pivot>
+                        </Button>
+
+
+                    </Grid>
+
+                    <Button Click="SwitchPivot_Click"  x:Name="SwitchPivot" CornerRadius="16" Width="32" Height="32" HorizontalAlignment="Right" Margin="14,13,11,0" VerticalAlignment="Top">
+                        <Button.RenderTransform>
+                            <ScaleTransform ScaleX="0.9" ScaleY="0.9" CenterX="16" CenterY="16"/>
+                        </Button.RenderTransform>
+                        <FontIcon Margin="-5,0,-5,0" Glyph="&#xE76C;"/>
+                    </Button>
                 </Grid>
             </Grid>
         </Grid>

@@ -37,6 +37,8 @@ public sealed partial class ГлавнаяPage
     private bool _waitForCheck;
     private bool _waitingForCursorFlag;
     private string _doubleClickApplyPrev = string.Empty;
+    private int _lastAppliedPreset = -2; // Начальное значение, которое точно не совпадёт
+    private string _lastAppliedProfileName = string.Empty;
 
     public ГлавнаяPage()
     {
@@ -496,7 +498,7 @@ public sealed partial class ГлавнаяPage
 
     private async void GetUpdates()
     {
-        try
+        /*try
         {
             MainChangelogStackPanel.Children.Clear();
             if (string.IsNullOrEmpty(UpdateChecker.GitHubInfoString))
@@ -509,7 +511,7 @@ public sealed partial class ГлавнаяPage
         catch (Exception e)
         {
             await LogHelper.TraceIt_TraceError(e);
-        }
+        }*/
     }
 
     #endregion
@@ -605,8 +607,14 @@ public sealed partial class ГлавнаяPage
             var contentPresenters = VisualTreeHelper.FindVisualChildren<PivotHeaderPanel>(header);
             foreach (var content in contentPresenters)
             {
-                content.HorizontalAlignment = HorizontalAlignment.Center;
-                content.Opacity = 0.8;
+                var headerItems = VisualTreeHelper.FindVisualChildren<PivotHeaderItem>(header);
+                foreach (var item in headerItems)
+                {
+                    item.Visibility = Visibility.Collapsed;
+                }
+                content.Visibility = Visibility.Collapsed;
+                /*content.HorizontalAlignment = HorizontalAlignment.Center;
+                content.Opacity = 0.8;*/
                 content.Margin = new Thickness(0,-20,0,0);
             }
         }
@@ -666,18 +674,21 @@ public sealed partial class ГлавнаяPage
         {
             await LogHelper.LogError(ex);
         }
-    }
+    } 
 
     private async void Apply_Click(object? sender, RoutedEventArgs? e)
     {
+        // Анимация запускается всегда
+        ButtonAnimationStoryboard.Begin();
+
         var toggleButtons = VisualTreeHelper.FindVisualChildren<ToggleButton>(Preset_Pivot);
         foreach (var button in toggleButtons)
         {
             if (button.IsChecked == true)
             {
-                if (button.Tag != null && button.Tag.ToString()!.Contains("Preset_"))
+                if (button.Tag != null && ((string)button.Tag).Contains("Preset_"))
                 {
-                    AppSettings.Preset = -1;
+                    var presetValue = -1;
                     var endMode = "Balance";
                     switch (button.Tag)
                     {
@@ -698,32 +709,40 @@ public sealed partial class ГлавнаяPage
                             break;
                     }
 
-                    ShellPage.NextPremadeProfile_Activate(endMode);
-
-                    var (_, _, _, settings, _) = ShellPage.PremadedProfiles[endMode];
-
-                    AppSettings.RyzenAdjLine = settings;
-                    AppSettings.SaveSettings();
-
-                    MainWindow.Applyer.ApplyWithoutAdjLine(false);
-
-                    NotificationsService.Notifies ??= [];
-                    NotificationsService.Notifies.Add(new Notify
+                    // Проверяем, изменился ли пресет
+                    if (_lastAppliedPreset != presetValue || _lastAppliedProfileName != endMode)
                     {
-                        Title = "Profile_APPLIED",
-                        Msg = "DEBUG MESSAGE",
-                        Type = InfoBarSeverity.Informational
-                    });
-                    NotificationsService.SaveNotificationsSettings();
+                        _lastAppliedPreset = presetValue;
+                        _lastAppliedProfileName = endMode;
 
-                    Apply_Teach.Target = ApplyButton;
-                    Apply_Teach.Title = "Apply_Success".GetLocalized();
-                    Apply_Teach.Subtitle = "Apply_Success_Desc".GetLocalized();
-                    Apply_Teach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-                    Apply_Teach.IsOpen = true;
-                    await LogHelper.Log("Apply_Success".GetLocalized());
-                    await Task.Delay(3000);
-                    Apply_Teach.IsOpen = false;
+                        AppSettings.Preset = -1;
+                        ShellPage.NextPremadeProfile_Activate(endMode);
+
+                        var (_, _, _, settings, _) = ShellPage.PremadedProfiles[endMode];
+
+                        AppSettings.RyzenAdjLine = settings;
+                        AppSettings.SaveSettings();
+
+                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
+
+                        NotificationsService.Notifies ??= [];
+                        NotificationsService.Notifies.Add(new Notify
+                        {
+                            Title = "Profile_APPLIED",
+                            Msg = "DEBUG MESSAGE",
+                            Type = InfoBarSeverity.Informational
+                        });
+                        NotificationsService.SaveNotificationsSettings();
+
+                        Apply_Teach.Target = ApplyButton;
+                        Apply_Teach.Title = "Apply_Success".GetLocalized();
+                        Apply_Teach.Subtitle = "Apply_Success_Desc".GetLocalized();
+                        Apply_Teach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                        Apply_Teach.IsOpen = true;
+                        await LogHelper.Log("Apply_Success".GetLocalized());
+                        await Task.Delay(3000);
+                        Apply_Teach.IsOpen = false;
+                    }
                 }
                 else
                 {
@@ -760,60 +779,66 @@ public sealed partial class ГлавнаяPage
                             (profile.Profileicon == icon ||
                              profile.Profileicon == "\uE718"))
                         {
-                            AppSettings.Preset = i;
-                            AppSettings.SaveSettings();
-
-                            ПараметрыPage.ApplyInfo = string.Empty; 
-                            ShellPage.ParseOverclockProfile(profile,true);
-
-                            NotificationsService.Notifies ??= [];
-                            NotificationsService.Notifies.Add(new Notify
+                            // Проверяем, изменился ли профиль
+                            if (_lastAppliedPreset != i || _lastAppliedProfileName != name)
                             {
-                                Title = "Profile_APPLIED",
-                                Msg = "DEBUG MESSAGE",
-                                Type = InfoBarSeverity.Informational
-                            });
-                            NotificationsService.SaveNotificationsSettings();
+                                _lastAppliedPreset = i;
+                                _lastAppliedProfileName = name;
 
+                                AppSettings.Preset = i;
+                                AppSettings.SaveSettings();
 
-                            await Task.Delay(1000);
-                            var timer = 1000;
-                            if (ПараметрыPage.ApplyInfo != string.Empty)
-                            {
-                                timer *= ПараметрыPage.ApplyInfo.Split('\n').Length + 1;
+                                ПараметрыPage.ApplyInfo = string.Empty;
+                                ShellPage.ParseOverclockProfile(profile, true);
+
+                                NotificationsService.Notifies ??= [];
+                                NotificationsService.Notifies.Add(new Notify
+                                {
+                                    Title = "Profile_APPLIED",
+                                    Msg = "DEBUG MESSAGE",
+                                    Type = InfoBarSeverity.Informational
+                                });
+                                NotificationsService.SaveNotificationsSettings();
+
+                                await Task.Delay(1000);
+                                var timer = 1000;
+                                if (ПараметрыPage.ApplyInfo != string.Empty)
+                                {
+                                    timer *= ПараметрыPage.ApplyInfo.Split('\n').Length + 1;
+                                }
+
+                                Apply_Teach.Target = ApplyButton;
+                                Apply_Teach.Title = "Apply_Success".GetLocalized();
+                                Apply_Teach.Subtitle = "Apply_Success_Desc".GetLocalized();
+                                Apply_Teach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                                Apply_Teach.IsOpen = true;
+                                var infoSet = InfoBarSeverity.Success;
+                                if (ПараметрыPage.ApplyInfo != string.Empty)
+                                {
+                                    await LogHelper.Log(ПараметрыPage.ApplyInfo);
+                                    Apply_Teach.Title = "Apply_Warn".GetLocalized();
+                                    Apply_Teach.Subtitle = "Apply_Warn_Desc".GetLocalized() + ПараметрыPage.ApplyInfo;
+                                    Apply_Teach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
+                                    await Task.Delay(timer);
+                                    Apply_Teach.IsOpen = false;
+                                    infoSet = InfoBarSeverity.Warning;
+                                }
+                                else
+                                {
+                                    await LogHelper.Log("Apply_Success".GetLocalized());
+                                    await Task.Delay(3000);
+                                    Apply_Teach.IsOpen = false;
+                                }
+
+                                NotificationsService.Notifies ??= [];
+                                NotificationsService.Notifies.Add(new Notify
+                                {
+                                    Title = Apply_Teach.Title,
+                                    Msg = Apply_Teach.Subtitle + (ПараметрыPage.ApplyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                                    Type = infoSet
+                                });
+                                NotificationsService.SaveNotificationsSettings();
                             }
-
-                            Apply_Teach.Target = ApplyButton;
-                            Apply_Teach.Title = "Apply_Success".GetLocalized();
-                            Apply_Teach.Subtitle = "Apply_Success_Desc".GetLocalized();
-                            Apply_Teach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-                            Apply_Teach.IsOpen = true;
-                            var infoSet = InfoBarSeverity.Success;
-                            if (ПараметрыPage.ApplyInfo != string.Empty)
-                            {
-                                await LogHelper.Log(ПараметрыPage.ApplyInfo);
-                                Apply_Teach.Title = "Apply_Warn".GetLocalized();
-                                Apply_Teach.Subtitle = "Apply_Warn_Desc".GetLocalized() + ПараметрыPage.ApplyInfo;
-                                Apply_Teach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
-                                await Task.Delay(timer);
-                                Apply_Teach.IsOpen = false;
-                                infoSet = InfoBarSeverity.Warning;
-                            }
-                            else
-                            {
-                                await LogHelper.Log("Apply_Success".GetLocalized());
-                                await Task.Delay(3000);
-                                Apply_Teach.IsOpen = false;
-                            }
-
-                            NotificationsService.Notifies ??= [];
-                            NotificationsService.Notifies.Add(new Notify
-                            {
-                                Title = Apply_Teach.Title,
-                                Msg = Apply_Teach.Subtitle + (ПараметрыPage.ApplyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
-                                Type = infoSet
-                            });
-                            NotificationsService.SaveNotificationsSettings();
                             break;
                         }
                     }
@@ -1174,4 +1199,13 @@ public sealed partial class ГлавнаяPage
 
     #endregion
 
+    private void SwitchPivot_Click(object sender, RoutedEventArgs e)
+    {
+        Preset_Pivot.SelectedIndex = Preset_Pivot.SelectedIndex == 1 ? 0 : 1;
+    }
+
+    private void Preset_Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        Presets_TextBlock.Text = Preset_Pivot.SelectedIndex == 0 ? "Main_OwnProfiles/Text".GetLocalized() : "Main_PremadeProfiles/Text".GetLocalized();
+    }
 }

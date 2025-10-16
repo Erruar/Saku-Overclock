@@ -2843,10 +2843,10 @@ methods are available.</value>
     <value>Overclock page</value>
   </data>
   <data name="Main_OwnProfiles.Text" xml:space="preserve">
-    <value>Own</value>
+    <value>Own presets</value>
   </data>
   <data name="Main_PremadeProfiles.Text" xml:space="preserve">
-    <value>Premade</value>
+    <value>Premade presets</value>
   </data>
   <data name="Main_Profiles.Text" xml:space="preserve">
     <value>Presets</value>

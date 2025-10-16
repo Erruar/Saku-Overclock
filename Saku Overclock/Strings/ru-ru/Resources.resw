@@ -2881,10 +2881,10 @@ Asus. Может не поддерживаться на
     <value>Разгон</value>
   </data>
   <data name="Main_OwnProfiles.Text" xml:space="preserve">
-    <value>Свои</value>
+    <value>Свои пресеты</value>
   </data>
   <data name="Main_PremadeProfiles.Text" xml:space="preserve">
-    <value>Готовые</value>
+    <value>Готовые пресеты</value>
   </data>
   <data name="Main_Profiles.Text" xml:space="preserve">
     <value>Пресеты</value>

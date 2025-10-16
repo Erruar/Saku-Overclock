@@ -6,11 +6,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Page.Resources>
-        <ThemeShadow x:Name="SharedShadow"></ThemeShadow>
+        <ThemeShadow x:Name="SharedShadow"/>
     </Page.Resources>
 
     <Grid x:Name="ContentArea" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200" Margin="0,0,-12,0">
-        <TextBlock x:Uid="Info_Name" Text="Информация" FontSize="30" Margin="-48,-95,0,0"></TextBlock>
+        <TextBlock x:Uid="Info_Name" Text="Информация" FontSize="30" Margin="-48,-95,0,0"/>
         <ToggleButton CornerRadius="10" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="RtssButton_Click" x:Name="infoRTSSButton" x:Uid="InfoARTSSTooltip" ToolTipService.ToolTip="Enable RTSS updater" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Top"  Margin="0,-89,25,0" HorizontalAlignment="Right">
             <StackPanel Orientation="Horizontal">
                 <FontIcon Glyph="&#xE7AC;"/>
@@ -481,7 +481,7 @@ StrokeThickness="1.5" >
                     </Grid.RowDefinitions>
                     <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Row="0">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock HorizontalAlignment="Left" x:Name="infoCPUSectionName" FontWeight="Bold" FontSize="24" x:Uid="InfoCPU" Text="ЦП"></TextBlock>
+                            <TextBlock HorizontalAlignment="Left" x:Name="infoCPUSectionName" FontWeight="Bold" FontSize="24" x:Uid="InfoCPU" Text="ЦП"/>
                             <Grid Margin="10,1,0,-5" CornerRadius="10" Translation="0,0,28" Shadow="{StaticResource SharedShadow}" Visibility="{Binding ElementName=infoCPUSectionComboBox, Path=Visibility, Mode=OneWay}">
                                 <ComboBox Margin="1,0,0,0" CornerRadius="10" Style="{ThemeResource AcrylicComboBoxStyle}" Width="134.5" SelectedIndex="0" SelectionChanged="CpuSection_SelectionChanged" x:Name="infoCPUSectionComboBox">
                                     <ComboBoxItem x:Uid="InfoCPUComboFreq" Content="Frequency"/>
@@ -491,7 +491,7 @@ StrokeThickness="1.5" >
                                 </ComboBox>
                             </Grid>
                         </StackPanel>
-                        <TextBlock VerticalAlignment="Bottom" FontWeight="SemiBold" x:Name="tbProcessor" HorizontalAlignment="Right"></TextBlock>
+                        <TextBlock VerticalAlignment="Bottom" FontWeight="SemiBold" x:Name="tbProcessor" HorizontalAlignment="Right"/>
                         <TextBlock VerticalAlignment="Bottom" FontWeight="SemiBold" Visibility="Collapsed" HorizontalAlignment="Right">AMD Ryzen 7 4800H with Radeon Vega Mobile Gfx</TextBlock>
                     </Grid>
                     <Grid Margin="0,10,0,0" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -857,16 +857,16 @@ StrokeThickness="1.5" >
                                 </StackPanel>
 
                                 <StackPanel VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Margin="0,8,7,0">
-                                    <TextBlock Margin="6,3,0,3" x:Name="tbMEMCLOCK"></TextBlock>
+                                    <TextBlock Margin="6,3,0,3" x:Name="tbMEMCLOCK"/>
                                 </StackPanel>
                                 <StackPanel VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Margin="0,8,7,0">
-                                    <TextBlock Margin="6,3,0,3" x:Name="tbFabricClock"></TextBlock>
+                                    <TextBlock Margin="6,3,0,3" x:Name="tbFabricClock"/>
                                 </StackPanel>
                                 <StackPanel VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Margin="0,8,7,0">
-                                    <TextBlock TextAlignment="Center" Margin="11,3,0,3" x:Name="tbSOCVOLT"></TextBlock>
+                                    <TextBlock TextAlignment="Center" Margin="11,3,0,3" x:Name="tbSOCVOLT"/>
                                 </StackPanel>
                                 <StackPanel VerticalAlignment="Center" Grid.Row="4" Grid.Column="1" Margin="0,8,7,0">
-                                    <TextBlock TextAlignment="Center" Margin="11,3,0,3" x:Name="tbSOCPOWER"></TextBlock>
+                                    <TextBlock TextAlignment="Center" Margin="11,3,0,3" x:Name="tbSOCPOWER"/>
                                 </StackPanel>
                             </Grid>
                             <Grid Margin="6,0,0,0" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
@@ -911,22 +911,22 @@ StrokeThickness="1.5" >
                                 </StackPanel>
 
                                 <StackPanel VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0">
-                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTCL"></TextBlock>
+                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTCL"/>
                                 </StackPanel>
                                 <StackPanel VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0">
-                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTRCDWR"></TextBlock>
+                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTRCDWR"/>
                                 </StackPanel>
                                 <StackPanel VerticalAlignment="Stretch" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0">
-                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTRCDRD"></TextBlock>
+                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTRCDRD"/>
                                 </StackPanel>
                                 <StackPanel VerticalAlignment="Stretch" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0">
-                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTRP"></TextBlock>
+                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTRP"/>
                                 </StackPanel>
                                 <StackPanel VerticalAlignment="Stretch" Grid.Row="5" Grid.Column="1" Margin="0,8,0,0">
-                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTRAS"></TextBlock>
+                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTRAS"/>
                                 </StackPanel>
                                 <StackPanel VerticalAlignment="Stretch" Grid.Row="6" Grid.Column="1" Margin="0,8,0,8">
-                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTRC"></TextBlock>
+                                    <TextBlock Margin="11,3,0,3" TextAlignment="Center" x:Name="tbTRC"/>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
