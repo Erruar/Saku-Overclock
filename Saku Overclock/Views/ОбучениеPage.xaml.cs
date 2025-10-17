@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media.Animation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
 using Windows.UI.Text;
@@ -60,7 +61,7 @@ public sealed partial class ОбучениеPage : Page
             showLicenseSection.Children.Add(fadeIn);
         }
 
-        var formattedText = ГлавнаяPage.ApplyMarkdownStyles("LicenseText".GetLocalized());
+        var formattedText = UpdateChecker.ApplyMarkdownStyles("LicenseText".GetLocalized());
         foreach (var paragraph in formattedText)
         {
             LicenseText.Children.Add(paragraph);

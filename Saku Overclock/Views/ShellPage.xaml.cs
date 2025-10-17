@@ -2684,7 +2684,7 @@ public sealed partial class ShellPage
                 if (UpdateChecker.GitHubInfoString != "**Failed to fetch info**")
                 {
                     NotificationChangelogTexts.Children.Clear();
-                    await ГлавнаяPage.GenerateFormattedReleaseNotes(NotificationChangelogTexts);
+                    await UpdateChecker.GenerateFormattedReleaseNotes(NotificationChangelogTexts);
                 }
             }
         }

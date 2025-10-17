@@ -60,7 +60,7 @@ public sealed partial class ОбновлениеPage
                 await UpdateChecker.GenerateReleaseInfoString();
             }
 
-            await ГлавнаяPage.GenerateFormattedReleaseNotes(MainChangelogContent); 
+            await UpdateChecker.GenerateFormattedReleaseNotes(MainChangelogContent); 
         }
         catch (Exception e)
         {

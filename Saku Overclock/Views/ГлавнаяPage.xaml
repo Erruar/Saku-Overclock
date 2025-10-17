@@ -21,10 +21,10 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Grid x:Name="RootGrid"
-                      Background="{TemplateBinding Background}"
-                      BorderBrush="{TemplateBinding BorderBrush}"
-                      BorderThickness="{TemplateBinding BorderThickness}"
-                      CornerRadius="{TemplateBinding CornerRadius}">
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
 
                             <VisualStateManager.VisualStateGroups>
 
@@ -167,9 +167,13 @@ Text="{Binding Version}">
                 <RowDefinition Height="0.12"/>
             </Grid.RowDefinitions>
             <Grid Grid.Column="0" SizeChanged="Grid_SizeChanged" Margin="0,0,7,5" CornerRadius="16" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                <StackPanel x:Name="DeviceInfoSign" Margin="14,16,0,0" Orientation="Vertical">
-                    <TextBlock FontWeight="SemiBold" FontSize="17" x:Uid="Main_DeviceInfo" Text="Информация об устройстве"/>
-                </StackPanel>
+                <Grid.Transitions>
+                    <RepositionThemeTransition/>
+                </Grid.Transitions>
+                <Grid.ChildrenTransitions>
+                    <RepositionThemeTransition/>
+                </Grid.ChildrenTransitions>
+                <TextBlock x:Name="DeviceInfoSign" Margin="14,16,0,0" FontWeight="SemiBold" FontSize="17" x:Uid="Main_DeviceInfo" Text="Информация об устройстве"/>
                 <Grid x:Name="MainGrid" Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="2*" MaxHeight="270"/>
@@ -182,7 +186,7 @@ Text="{Binding Version}">
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0" Margin="10,0,0,0" CornerRadius="20" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                              x:Name="LogoPlacer" PointerPressed="LogoPlacer_PointerPressed">
+                              x:Name="LogoPlacer" Tag="1" PointerPressed="TooltipPlacer_PointerPressed">
                             <Border>
                                 <Border.Background>
                                     <ImageBrush ImageSource="ms-appx:///Assets/Ryzen-Logo.png" Stretch="Fill"/>
@@ -200,7 +204,7 @@ Text="{Binding Version}">
                             </Grid>
                         </Grid>
                         <Grid Grid.Column="1" Margin="10,0,0,0" CornerRadius="20" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                              x:Name="TemperaturePlacer" PointerPressed="TemperaturePlacer_PointerPressed">
+                              x:Name="TemperaturePlacer" Tag="2" PointerPressed="TooltipPlacer_PointerPressed">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
@@ -259,7 +263,7 @@ Text="{Binding Version}">
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0" Margin="10,0,10,5" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                      x:Name="UsabilityPlacer" PointerPressed="UsabilityPlacer_PointerPressed">
+                                      x:Name="UsabilityPlacer" Tag="3" PointerPressed="TooltipPlacer_PointerPressed">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="70"/>
@@ -274,7 +278,7 @@ Text="{Binding Version}">
                                     </Grid>
                                 </Grid>
                                 <Grid Grid.Row="1" Margin="10,5,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                      x:Name="FrequencyPlacer" PointerPressed="FrequencyPlacer_PointerPressed">
+                                      x:Name="FrequencyPlacer" Tag="4" PointerPressed="TooltipPlacer_PointerPressed">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="70"/>
@@ -287,7 +291,7 @@ Text="{Binding Version}">
                                         <ProgressRing Value="70" Maximum="100" Minimum="0" x:Name="Indicators_Freq_Ring" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
                                         <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xECAD;"/>
                                     </Grid>
-                                </Grid> 
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -297,7 +301,7 @@ Text="{Binding Version}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition MaxHeight="75"/>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition MaxHeight="75"/> 
+                                    <RowDefinition MaxHeight="75"/>
                                 </Grid.RowDefinitions>
                                 <Grid Grid.Row="0" x:Name="SegmentsGrid" VerticalAlignment="Stretch" Margin="-10,8,0,0">
                                     <Grid.RowDefinitions>
@@ -310,7 +314,7 @@ Text="{Binding Version}">
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <Grid Grid.Row="0" Grid.Column="0" Margin="10,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                          x:Name="RamPlacer" PointerPressed="RamPlacer_PointerPressed">
+                                          x:Name="RamPlacer" Tag="5" PointerPressed="TooltipPlacer_PointerPressed">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
@@ -325,7 +329,7 @@ Text="{Binding Version}">
                                         </Grid>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                          x:Name="PowerPlacer" PointerPressed="PowerPlacer_PointerPressed">
+                                          x:Name="PowerPlacer" Tag="6" PointerPressed="TooltipPlacer_PointerPressed">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
@@ -340,7 +344,7 @@ Text="{Binding Version}">
                                         </Grid>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                          x:Name="BatteryPlacer" PointerPressed="BatteryPlacer_PointerPressed">
+                                          x:Name="BatteryPlacer" Tag="8" PointerPressed="TooltipPlacer_PointerPressed">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
@@ -355,7 +359,7 @@ Text="{Binding Version}">
                                         </Grid>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="3" Margin="5,0,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                          x:Name="VrmPlacer" PointerPressed="VrmPlacer_PointerPressed">
+                                          x:Name="VrmPlacer" Tag="7" PointerPressed="TooltipPlacer_PointerPressed">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="70"/>
@@ -370,7 +374,7 @@ Text="{Binding Version}">
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <TextBlock Grid.Row="1" VerticalAlignment="Top" Margin="4,1,0,0" FontWeight="SemiBold" FontSize="17" x:Uid="Main_FrequentlyUsed" Text="Часто используемое"/>
+                                <TextBlock Grid.Row="1" VerticalAlignment="Top" Margin="4,1,0,0" FontWeight="SemiBold" FontSize="17" x:Name="FrequentlyUsedSign" x:Uid="Main_FrequentlyUsed" Text="Часто используемое"/>
                                 <Grid Grid.Row="2" VerticalAlignment="Stretch" x:Name="FriquentlyUsedGrid" Margin="-10,5,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition MaxHeight="75"/>
@@ -395,7 +399,7 @@ Text="{Binding Version}">
                                             <Grid Grid.Column="1" Margin="20,0,0,0">
                                                 <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xeadf;"/>
                                             </Grid>
-                                        </Grid> 
+                                        </Grid>
                                     </Button>
                                     <Button Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16"
                                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -446,14 +450,20 @@ Text="{Binding Version}">
                                         </Grid>
                                     </Button>
                                 </Grid>
-                            </Grid> 
-                        </ScrollViewer> 
+                            </Grid>
+                        </ScrollViewer>
                     </Grid>
                 </Grid>
             </Grid>
             <Grid HorizontalAlignment="Stretch" Grid.Column="1" CornerRadius="16" Margin="0,0,10,5" Shadow="{StaticResource SharedShadow}" Translation="0,0,20">
                 <Grid CornerRadius="8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                    <TextBlock x:Uid="Main_PremadeProfiles" x:Name="Presets_TextBlock" Margin="14,16,0,0" FontWeight="SemiBold" FontSize="17" Text="Управление пресетами"/>
+                    <Grid.Transitions>
+                        <RepositionThemeTransition/>
+                    </Grid.Transitions>
+                    <Grid.ChildrenTransitions>
+                        <RepositionThemeTransition/>
+                    </Grid.ChildrenTransitions>
+                    <TextBlock x:Uid="Main_PremadeProfiles" x:Name="PresetsSign" Margin="14,16,0,0" FontWeight="SemiBold" FontSize="17" Text="Управление пресетами"/>
                     <Grid Margin="0,0,0,10">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -538,10 +548,10 @@ Text="{Binding Version}">
                             </PivotItem>
                         </Pivot>
                         <Button Click="Apply_Click" x:Name="ApplyButton" Grid.Row="1" Margin="10,-22,10,10" 
-CornerRadius="26" MinHeight="20" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}"
-HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" 
-Shadow="{ThemeResource SharedShadow}" Translation="0,0,20"
-RenderTransformOrigin="0.5,0.5">
+                                CornerRadius="26" MinHeight="20" HorizontalAlignment="Stretch" Style="{ThemeResource AccentButtonStyle}"
+                                HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" 
+                                Shadow="{ThemeResource SharedShadow}" Translation="0,0,20"
+                                RenderTransformOrigin="0.5,0.5">
                             <Button.RenderTransform>
                                 <ScaleTransform x:Name="ButtonScaleTransform" ScaleX="1" ScaleY="1"/>
                             </Button.RenderTransform>
@@ -597,7 +607,7 @@ RenderTransformOrigin="0.5,0.5">
 
                     </Grid>
 
-                    <Button Click="SwitchPivot_Click"  x:Name="SwitchPivot" CornerRadius="16" Width="32" Height="32" HorizontalAlignment="Right" Margin="14,13,11,0" VerticalAlignment="Top">
+                    <Button Click="SwitchPivot_Click" x:Name="SwitchPivot" CornerRadius="16" Width="32" Height="32" HorizontalAlignment="Right" Margin="14,13,11,0" VerticalAlignment="Top">
                         <Button.RenderTransform>
                             <ScaleTransform ScaleX="0.9" ScaleY="0.9" CenterX="16" CenterY="16"/>
                         </Button.RenderTransform>
@@ -606,22 +616,5 @@ RenderTransformOrigin="0.5,0.5">
                 </Grid>
             </Grid>
         </Grid>
-        
-        <StackPanel Visibility="Collapsed" CornerRadius="8,8,0,0" Width="300" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,90">
-            <FlipView Height="150" Background="Transparent"> 
-                <FlipViewItem>
-                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Source="ms-appx:///Assets/InfoBadge/Saku-Overclock-Github-Readme.png"/>
-                        <Button Click="MainGithubReadmeButton_Click" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.0"/>
-                    </Grid> 
-                </FlipViewItem> 
-                <FlipViewItem>
-                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                        <Image VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Source="ms-appx:///Assets/InfoBadge/Saku-Overclock-Github-Issues.png"/>
-                        <Button Click="MainGithubIssuesButton_Click"  x:Name="MainGithubIssuesButton" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.0"/>
-                    </Grid>
-                </FlipViewItem>
-            </FlipView> 
-        </StackPanel>
     </Grid>
 </Page>

@@ -44,7 +44,6 @@ public sealed partial class ГлавнаяPage
     {
         App.GetService<ГлавнаяViewModel>();
         InitializeComponent();
-        GetUpdates();
         CalculateSegmentLengths();
         _dataUpdater = App.BackgroundUpdater!;
         _dataUpdater.DataUpdated += OnDataUpdated;
@@ -496,31 +495,13 @@ public sealed partial class ГлавнаяPage
         return points[index];
     }
 
-    private async void GetUpdates()
-    {
-        /*try
-        {
-            MainChangelogStackPanel.Children.Clear();
-            if (string.IsNullOrEmpty(UpdateChecker.GitHubInfoString))
-            {
-                await UpdateChecker.GenerateReleaseInfoString();
-            }
-
-            await GenerateFormattedReleaseNotes(MainChangelogStackPanel);
-        }
-        catch (Exception e)
-        {
-            await LogHelper.TraceIt_TraceError(e);
-        }*/
-    }
-
     #endregion
 
     #region Event Handlers
     private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         var isCompact = e.NewSize.Height < 400;
-        var (main, device, segments, frequent) = isCompact ? CompactGridMargins : NormalGridMargins;
+        var (main, device, frequent, presets) = isCompact ? CompactGridMargins : NormalGridMargins;
 
         if (MainGrid.Margin != main)
         {
@@ -532,41 +513,37 @@ public sealed partial class ГлавнаяPage
             DeviceInfoSign.Margin = device;
         }
 
-        if (SegmentsGrid.Margin != segments)
+        if (PresetsSign.Margin != device)
         {
-            SegmentsGrid.Margin = segments;
+            PresetsSign.Margin = device;
+        }
+
+        if (SwitchPivot.Margin != presets)
+        {
+            SwitchPivot.Margin = presets;
         }
 
         if (FriquentlyUsedGrid.Margin != frequent)
         {
             FriquentlyUsedGrid.Margin = frequent;
         }
+
+        FrequentlyUsedSign.Visibility = isCompact ? Visibility.Collapsed : Visibility.Visible;
     }
-    private static readonly (Thickness Main, Thickness Device, Thickness Segments, Thickness Frequent) CompactGridMargins =
+    private static readonly (Thickness Main, Thickness Device, Thickness Frequent, Thickness PresetsButton) CompactGridMargins =
     (
         new Thickness( 00, -3, 0, 0),
         new Thickness( 14,  2, 0, 0),
-        new Thickness(-10,  2, 0, 0),
-        new Thickness(-10,  2, 0, 3)
+        new Thickness(-10,  8, 0, 3),
+        new Thickness(14,  3, 11, 0)
     );
-    private static readonly (Thickness Main, Thickness Device, Thickness Segments, Thickness Frequent) NormalGridMargins =
+    private static readonly (Thickness Main, Thickness Device, Thickness Frequent, Thickness PresetsButton) NormalGridMargins =
     (
         new Thickness( 00, 20, 0, 0),
         new Thickness( 14, 16, 0, 0),
-        new Thickness(-10, 08, 0, 0),
-        new Thickness(-10, 05, 0, 3)
+        new Thickness(-10, 05, 0, 3),
+        new Thickness(14, 13, 11, 0)
     );
-
-    private void HyperLink_Click(object sender, RoutedEventArgs e)
-    {
-        var link = "https://github.com/Erruar/Saku-Overclock/wiki/FAQ";
-        if (sender is Button { Tag: string str1 })
-        {
-            link = str1;
-        }
-
-        Process.Start(new ProcessStartInfo(link) { UseShellExecute = true });
-    }
 
     private void PresetsPage_Click(object sender, RoutedEventArgs e)
     {
@@ -589,15 +566,6 @@ public sealed partial class ГлавнаяPage
     private void FaqLink_Click(object sender, RoutedEventArgs e) => Process.Start(
         new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/wiki/FAQ") { UseShellExecute = true });
 
-    private void MainGithubReadmeButton_Click(object sender, RoutedEventArgs e) =>
-        Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock") { UseShellExecute = true });
-
-    private void MainGithubIssuesButton_Click(object sender, RoutedEventArgs e)
-    {
-        Process.Start(
-            new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/issues") { UseShellExecute = true });
-    }
-
     private void PivotProfiles_Loaded(object sender, RoutedEventArgs e)
     {
         var pivot = sender as Pivot;
@@ -613,9 +581,7 @@ public sealed partial class ГлавнаяPage
                     item.Visibility = Visibility.Collapsed;
                 }
                 content.Visibility = Visibility.Collapsed;
-                /*content.HorizontalAlignment = HorizontalAlignment.Center;
-                content.Opacity = 0.8;*/
-                content.Margin = new Thickness(0,-20,0,0);
+                content.Margin = new Thickness(0,-20,0,0); // Сместит контент на несколько пикселей
             }
         }
     }
@@ -627,7 +593,7 @@ public sealed partial class ГлавнаяPage
             return;
         }
 
-        (sender as ToggleButton)!.IsChecked = true;
+        ((ToggleButton)sender).IsChecked = true;
     }
 
     private async void ToggleButton_Checked(object sender, RoutedEventArgs e)
@@ -847,6 +813,14 @@ public sealed partial class ГлавнаяPage
         }
     }
 
+    private void SwitchPivot_Click(object sender, RoutedEventArgs e) => 
+        Preset_Pivot.SelectedIndex = Preset_Pivot.SelectedIndex == 1 ? 0 : 1;
+
+    private void Preset_Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e) => 
+        PresetsSign.Text = Preset_Pivot.SelectedIndex == 0 ? 
+        "Main_OwnProfiles/Text".GetLocalized() : 
+        "Main_PremadeProfiles/Text".GetLocalized();
+
     #region Mouse Events & Blocks behavior
 
     private async void SetPlacerTipAsync(int currMode)
@@ -969,243 +943,11 @@ public sealed partial class ГлавнаяPage
         Main_Teach.IsOpen = false;
         _waitForTip = true;
     }
-    private void LogoPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-        SetPlacerTipAsync(1);
-
-    private void TemperaturePlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-        SetPlacerTipAsync(2);
-
-    private void UsabilityPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-        SetPlacerTipAsync(3);
-
-    private void FrequencyPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-        SetPlacerTipAsync(4);
-
-    private void RamPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-        SetPlacerTipAsync(5);
-
-    private void PowerPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-        SetPlacerTipAsync(6);
-
-    private void VrmPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-        SetPlacerTipAsync(7);
-
-    private void BatteryPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
-     SetPlacerTipAsync(8);
+    private void TooltipPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
+        SetPlacerTipAsync(int.Parse((string)((FrameworkElement)sender).Tag));
 
     #endregion
 
     #endregion
 
-    #region NotesWriter
-
-    public static async Task GenerateFormattedReleaseNotes(StackPanel stackPanel)
-    {
-        stackPanel.Children.Clear();
-        if (string.IsNullOrEmpty(UpdateChecker.GitHubInfoString))
-        {
-            await UpdateChecker.GenerateReleaseInfoString();
-        }
-
-        var formattedText = FormatReleaseNotes(UpdateChecker.GitHubInfoString);
-        foreach (var paragraph in formattedText)
-        {
-            stackPanel.Children.Add(paragraph);
-        }
-    }
-
-    private static UIElement[] FormatReleaseNotes(string? releaseNotes)
-    {
-        // Удаление ненужных частей текста
-        var cleanedNotes = CleanReleaseNotes(releaseNotes);
-        // Применение стилей markdown
-        var formattedElements = ApplyMarkdownStyles(cleanedNotes);
-        return formattedElements;
-    }
-
-    private static string CleanReleaseNotes(string? releaseNotes)
-    {
-        var lines = releaseNotes?.Split([Environment.NewLine], StringSplitOptions.None);
-        var cleanedLines = new List<string>();
-        for (var i = 0; i < lines?.Length; i++)
-        {
-            var line = lines[i];
-            if (line.StartsWith("Highlights:"))
-            {
-                cleanedLines.Add(line); // Добавляем строку Highlights: 
-                i++;
-                while (i < lines.Length)
-                {
-                    if (string.IsNullOrWhiteSpace(lines[i]) || char.IsDigit(lines[i][0]))
-                    {
-                        cleanedLines.Add(lines[i]);
-                    }
-                    else
-                    {
-                        break; // Удаляем всё после строки, которая не начинается с цифры или пустая
-                    }
-
-                    i++;
-                }
-
-                i--; // Вернемся на шаг назад, чтобы правильно обработать следующую строку
-            }
-            else
-            {
-                cleanedLines.Add(line);
-            }
-        }
-
-        return string.Join(Environment.NewLine, cleanedLines);
-    }
-
-    public static UIElement[] ApplyMarkdownStyles(string cleanedNotes)
-    {
-        var lines = cleanedNotes.Split(["\r\n", "\n"], StringSplitOptions.None);
-        var elements = new List<UIElement>();
-
-        foreach (var line in lines)
-        {
-            var trimmedLine = line.TrimStart(); // Убираем пробелы в начале строки 
-
-            if (trimmedLine.StartsWith("### "))
-            {
-                var text = trimmedLine[4..];
-                var textBlock = new TextBlock
-                {
-                    Text = text,
-                    FontWeight = new FontWeight(600),
-                    TextWrapping = TextWrapping.Wrap,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Width = double.NaN
-                };
-                elements.Add(textBlock);
-            }
-            else if (trimmedLine.StartsWith("## "))
-            {
-                var text = trimmedLine[3..];
-                var textBlock = new TextBlock
-                {
-                    Text = text,
-                    FontWeight = new FontWeight(700),
-                    TextWrapping = TextWrapping.Wrap,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Width = double.NaN
-                };
-                elements.Add(textBlock);
-            }
-            else if (trimmedLine.StartsWith("# "))
-            {
-                var text = trimmedLine[2..];
-                var textBlock = new TextBlock
-                {
-                    Text = text,
-                    FontWeight = new FontWeight(800),
-                    TextWrapping = TextWrapping.Wrap,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Width = double.NaN
-                };
-                elements.Add(textBlock);
-            }
-            else if (trimmedLine.StartsWith("> "))
-            {
-            }
-            else if (trimmedLine.StartsWith("![image]("))
-            {
-                var text = trimmedLine.Replace("![image](", "").Replace(")", "");
-                var spoilerText = new TextBlock
-                {
-                    Text = "+ Spoiler",
-                    FontWeight = new FontWeight(500),
-                    HorizontalAlignment = HorizontalAlignment.Left
-                };
-                var spoilerImage = new Image
-                {
-                    Source = new BitmapImage(new Uri(text)),
-                    Visibility = Visibility.Collapsed
-                };
-                var spoilerButton = new Button
-                {
-                    BorderBrush = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0)),
-                    Background = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0)),
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Content = new StackPanel
-                    {
-                        Children =
-                        {
-                            spoilerText,
-                            spoilerImage
-                        }
-                    }
-                };
-                spoilerButton.Click += (_, _) =>
-                {
-                    spoilerImage.Visibility = spoilerImage.Visibility == Visibility.Collapsed
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
-                    spoilerText.Text = spoilerText.Text.Contains('-') ? "+ Spoiler" : "- Spoiler";
-                };
-                elements.Add(spoilerButton);
-            }
-            else
-            {
-                var matches = UnmanagementWords().Matches(trimmedLine);
-                var lastPos = 0;
-
-                foreach (Match match in matches)
-                {
-                    if (match.Index > lastPos)
-                    {
-                        var beforeText = trimmedLine[lastPos..match.Index];
-                        elements.Add(new TextBlock
-                        {
-                            Text = beforeText,
-                            TextWrapping = TextWrapping.Wrap,
-                            HorizontalAlignment = HorizontalAlignment.Stretch
-                        });
-                    }
-
-                    var highlightedText = match.Groups[1].Value;
-                    elements.Add(new TextBlock
-                    {
-                        Text = highlightedText,
-                        FontWeight = new FontWeight(700),
-                        Foreground = (Brush)Application.Current.Resources["AccentColor"],
-                        TextWrapping = TextWrapping.Wrap,
-                        HorizontalAlignment = HorizontalAlignment.Stretch
-                    });
-
-                    lastPos = match.Index + match.Length;
-                }
-
-                if (lastPos < trimmedLine.Length)
-                {
-                    var remainingText = trimmedLine[lastPos..];
-                    elements.Add(new TextBlock
-                    {
-                        Text = remainingText,
-                        TextWrapping = TextWrapping.Wrap,
-                        HorizontalAlignment = HorizontalAlignment.Stretch
-                    });
-                }
-            }
-        }
-
-        return [.. elements];
-    }
-
-    [GeneratedRegex(@"\*\*(.*?)\*\*")]
-    private static partial Regex UnmanagementWords();
-
-    #endregion
-
-    private void SwitchPivot_Click(object sender, RoutedEventArgs e)
-    {
-        Preset_Pivot.SelectedIndex = Preset_Pivot.SelectedIndex == 1 ? 0 : 1;
-    }
-
-    private void Preset_Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        Presets_TextBlock.Text = Preset_Pivot.SelectedIndex == 0 ? "Main_OwnProfiles/Text".GetLocalized() : "Main_PremadeProfiles/Text".GetLocalized();
-    }
 }

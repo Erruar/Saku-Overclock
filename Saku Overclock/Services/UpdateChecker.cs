@@ -1,18 +1,24 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
 using Saku_Overclock.ViewModels;
+using Windows.UI;
+using Windows.UI.Text;
 using Application = Microsoft.UI.Xaml.Application;
 using FileMode = System.IO.FileMode;
 using Package = Windows.ApplicationModel.Package;
 
 namespace Saku_Overclock.Services;
-public abstract class UpdateChecker
+public abstract partial class UpdateChecker
 {
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
@@ -268,5 +274,208 @@ public abstract class UpdateChecker
             await App.MainWindow.ShowMessageDialogAsync("Main_ErrorReleaseLoad".GetLocalized() + $"{ex.Message}", "Error".GetLocalized());
         }
     }
+
+
+    #region NotesWriter
+
+    public static async Task GenerateFormattedReleaseNotes(StackPanel stackPanel)
+    {
+        stackPanel.Children.Clear();
+        if (string.IsNullOrEmpty(GitHubInfoString))
+        {
+            await GenerateReleaseInfoString();
+        }
+
+        var formattedText = FormatReleaseNotes(GitHubInfoString);
+        foreach (var paragraph in formattedText)
+        {
+            stackPanel.Children.Add(paragraph);
+        }
+    }
+
+    private static UIElement[] FormatReleaseNotes(string? releaseNotes)
+    {
+        // Удаление ненужных частей текста
+        var cleanedNotes = CleanReleaseNotes(releaseNotes);
+
+        // Применение стилей markdown
+        return ApplyMarkdownStyles(cleanedNotes);
+    }
+
+    private static string CleanReleaseNotes(string? releaseNotes)
+    {
+        var lines = releaseNotes?.Split([Environment.NewLine], StringSplitOptions.None);
+        var cleanedLines = new List<string>();
+        for (var i = 0; i < lines?.Length; i++)
+        {
+            var line = lines[i];
+            if (line.StartsWith("Highlights:"))
+            {
+                cleanedLines.Add(line); // Добавляем строку Highlights: 
+                i++;
+                while (i < lines.Length)
+                {
+                    if (string.IsNullOrWhiteSpace(lines[i]) || char.IsDigit(lines[i][0]))
+                    {
+                        cleanedLines.Add(lines[i]);
+                    }
+                    else
+                    {
+                        break; // Удаляем всё после строки, которая не начинается с цифры или пустая
+                    }
+
+                    i++;
+                }
+
+                i--; // Вернемся на шаг назад, чтобы правильно обработать следующую строку
+            }
+            else
+            {
+                cleanedLines.Add(line);
+            }
+        }
+
+        return string.Join(Environment.NewLine, cleanedLines);
+    }
+
+    public static UIElement[] ApplyMarkdownStyles(string cleanedNotes)
+    {
+        var lines = cleanedNotes.Split(["\r\n", "\n"], StringSplitOptions.None);
+        var elements = new List<UIElement>();
+
+        foreach (var line in lines)
+        {
+            var trimmedLine = line.TrimStart();
+
+            if (trimmedLine.StartsWith("### "))
+            {
+                var text = trimmedLine[4..];
+                var textBlock = new TextBlock
+                {
+                    Text = text,
+                    FontWeight = new FontWeight(600),
+                    TextWrapping = TextWrapping.Wrap,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Width = double.NaN
+                };
+                elements.Add(textBlock);
+            }
+            else if (trimmedLine.StartsWith("## "))
+            {
+                var text = trimmedLine[3..];
+                var textBlock = new TextBlock
+                {
+                    Text = text,
+                    FontWeight = new FontWeight(700),
+                    TextWrapping = TextWrapping.Wrap,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Width = double.NaN
+                };
+                elements.Add(textBlock);
+            }
+            else if (trimmedLine.StartsWith("# "))
+            {
+                var text = trimmedLine[2..];
+                var textBlock = new TextBlock
+                {
+                    Text = text,
+                    FontWeight = new FontWeight(800),
+                    TextWrapping = TextWrapping.Wrap,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Width = double.NaN
+                };
+                elements.Add(textBlock);
+            }
+            else if (trimmedLine.StartsWith("> "))
+            {
+            }
+            else if (trimmedLine.StartsWith("![image]("))
+            {
+                var text = trimmedLine.Replace("![image](", "").Replace(")", "");
+                var spoilerText = new TextBlock
+                {
+                    Text = "+ Spoiler",
+                    FontWeight = new FontWeight(500),
+                    HorizontalAlignment = HorizontalAlignment.Left
+                };
+                var spoilerImage = new Image
+                {
+                    Source = new BitmapImage(new Uri(text)),
+                    Visibility = Visibility.Collapsed
+                };
+                var spoilerButton = new Button
+                {
+                    BorderBrush = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0)),
+                    Background = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0)),
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Content = new StackPanel
+                    {
+                        Children =
+                        {
+                            spoilerText,
+                            spoilerImage
+                        }
+                    }
+                };
+                spoilerButton.Click += (_, _) =>
+                {
+                    spoilerImage.Visibility = spoilerImage.Visibility == Visibility.Collapsed
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                    spoilerText.Text = spoilerText.Text.Contains('-') ? "+ Spoiler" : "- Spoiler";
+                };
+                elements.Add(spoilerButton);
+            }
+            else
+            {
+                var matches = UnmanagementWords().Matches(trimmedLine);
+                var lastPos = 0;
+
+                foreach (Match match in matches)
+                {
+                    if (match.Index > lastPos)
+                    {
+                        var beforeText = trimmedLine[lastPos..match.Index];
+                        elements.Add(new TextBlock
+                        {
+                            Text = beforeText,
+                            TextWrapping = TextWrapping.Wrap,
+                            HorizontalAlignment = HorizontalAlignment.Stretch
+                        });
+                    }
+
+                    var highlightedText = match.Groups[1].Value;
+                    elements.Add(new TextBlock
+                    {
+                        Text = highlightedText,
+                        FontWeight = new FontWeight(700),
+                        Foreground = (Brush)Application.Current.Resources["AccentColor"],
+                        TextWrapping = TextWrapping.Wrap,
+                        HorizontalAlignment = HorizontalAlignment.Stretch
+                    });
+
+                    lastPos = match.Index + match.Length;
+                }
+
+                if (lastPos < trimmedLine.Length)
+                {
+                    var remainingText = trimmedLine[lastPos..];
+                    elements.Add(new TextBlock
+                    {
+                        Text = remainingText,
+                        TextWrapping = TextWrapping.Wrap,
+                        HorizontalAlignment = HorizontalAlignment.Stretch
+                    });
+                }
+            }
+        }
+
+        return [.. elements];
+    }
+
+    [GeneratedRegex(@"\*\*(.*?)\*\*")]
+    private static partial Regex UnmanagementWords();
+
+    #endregion
 
 }
