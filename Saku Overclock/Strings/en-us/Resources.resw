@@ -226,34 +226,6 @@
   <data name="Info_Refresh.ToolTipService.ToolTip" xml:space="preserve">
     <value>Refresh</value>
   </data>
-  <data name="Info_Text.Text" xml:space="preserve">
-    <value>- Setted sustained power limit CPU (W)
-- Current sustained power limit CPU (W)
-- Setted actual power limit CPU (W)
-- Current actual power limit CPU (W)  
-- Setted average power limit CPU (W) 
-- Current average power limit CPU (W) 
-- Time of fast frequency rise (S) 
-- Time of slow frequency rise (S) 
-- Average power limit of fast frequency rise (W) 
-- Average power limit of slow frequency rise (W) 
-- Setted VRM Max TDC (A)
-- Current VRM Max TDC (A)
-- Setted SoC Max TDC (A)
-- Current SoC Max TDC (A)
-- Setted VRM Max EDC (A) 
-- Current VRM Max EDC (A) 
-- Setted VRM SoC Max EDC (A) 
-- Current VRM SoC Max EDC (A) 
-- Setted maximum CPU temperature (C) 
-- Current CPU temperature (C) 
-- Setted maximum iGPU temperature (C) 
-- Current maximum iGPU temperature (C) 
-- Setted maximum dGPU temperature (C)  
-- Current maximum dGPU temperature(C) 
-- The percentage of CPU usage when frequency reduction begins (%)  
-- Current CPU usage (%)</value>
-  </data>
   <data name="Param_CPU.Text" xml:space="preserve">
     <value>CPU Overclocking</value>
   </data>
@@ -310,8 +282,7 @@
   </data>
   <data name="Param_Apply.ToolTipService.ToolTip" xml:space="preserve">
     <value>Apply values
-You can apply all enabled
-values by clicking at this button</value>
+You can apply all enabled options by clicking at this button</value>
   </data>
   <data name="Param_CPU_c1.Text" xml:space="preserve">
     <value>Maximum CPU temperature</value>
@@ -324,9 +295,7 @@ values by clicking at this button</value>
   </data>
   <data name="Param_Delete.ToolTipService.ToolTip" xml:space="preserve">
     <value>Delete preset
-You can easily delete
-preset by clicking
-at this button</value>
+You can delete preset by this button</value>
   </data>
   <data name="Param_GPU_g1.Text" xml:space="preserve">
     <value>Minimum SoC clock</value>
@@ -375,9 +344,6 @@ at this button</value>
 You can add new preset
 and add in it your values.
 All presets have autosaving</value>
-  </data>
-  <data name="Param_VRM_desc.Text" xml:space="preserve">
-    <value>Recommendation:     Balance                 Performance</value>
   </data>
   <data name="Param_VRM_Name.Text" xml:space="preserve">
     <value>VRM Limits</value>
@@ -460,14 +426,14 @@ To change it, just write the desired
 value in the text field and click on button</value>
   </data>
   <data name="Param_c1_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum temperature
+    <value>Maximum temperature (C)
 With this value, you can limit
 the processor by temperature, above
 this value it will not warm
-up, trottling will begin</value>
+up, throttling will begin</value>
   </data>
   <data name="Param_c2_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Sustained Power Limit 
+    <value>Sustained Power Limit (W)
 This value will limit
 the processor by the heat package to the value
 that you have set. Above this
@@ -475,40 +441,42 @@ value, it will not warm up and
 accelerate</value>
   </data>
   <data name="Param_c3_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Actual Power Limit
+    <value>Actual Power Limit (W)
 This value is responsible for limiting
 the power during a fast frequency rise</value>
   </data>
   <data name="Param_c4_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Average Power Limit
+    <value>Average Power Limit (W)
 This value is responsible for limiting
 the power at slow frequency rise of the processor</value>
   </data>
   <data name="Param_c5_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Time of slow frequency rise
+    <value>Time of slow frequency rise (S)
 This is the time that the processor will
 increase its power until
 it is needed or until
-it reaches the actual power limit</value>
+it reaches the sustained power limit.
+A time of slow frequency rise most often 
+occurs under prolonged load</value>
   </data>
   <data name="Param_c6_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Time of fast frequency rise
+    <value>Time of fast frequency rise (S)
 This is the time that the processor will
 increase its power until
 it is needed or until
-it reaches the average power limit. A time of 
-frequency rise most often occurs under
-prolonged load and increases
+it reaches the actual power limit. A time of 
+fast frequency rise most often occurs under
+non-prolonged load and increases
 processor performance.
 In other words, this is the
 duration of the turbo boost</value>
   </data>
   <data name="Param_g10_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum iGPU frequency
-Maximum frequency of iGPU video core</value>
+    <value>Maximum iGPU frequency (MHz)
+Maximum frequency of integrated graphics</value>
   </data>
   <data name="Param_g1_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Minimum SoC frequency
+    <value>Minimum SoC frequency (MHz)
 The minimum frequency
 of data transfer between all
 processor subsystems, that is, the frequency
@@ -516,7 +484,7 @@ of the memory controller, PCI
 controller, Sata controller, etc.</value>
   </data>
   <data name="Param_g2_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum SoC frequency
+    <value>Maximum SoC frequency (MHz)
 The maximum frequency
 of data transfer between all
 processor subsystems, that is, the frequency
@@ -524,113 +492,76 @@ of the memory controller, PCI
 controller, Sata controller, etc.</value>
   </data>
   <data name="Param_g3_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Minimum Infinity Fabric
+    <value>Minimum Infinity Fabric (MHz)
 This is the frequency of data transfer between
-the processor, RAM and hub, as well
-as integrated graphics</value>
+the processor, RAM and integrated graphics</value>
   </data>
   <data name="Param_g4_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum Infinity Fabric
+    <value>Maximum Infinity Fabric (MHz)
 This is the frequency of data transfer between
-the processor, RAM and hub, as well
-as integrated graphics</value>
+the processor, RAM and integrated graphics</value>
   </data>
   <data name="Param_g5_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Minimum VCE frequency
-This is the frequency of the video codec that
-processes video content, for example
-in YouTube videos, in players,
-in video editors, Photoshop and
-streaming</value>
+    <value>Minimum VCE frequency (MHz)
+Frequency of the video codec that processes video content, 
+for example in video players, in video editors and streaming</value>
   </data>
   <data name="Param_g6_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum VCE frequency
-This is the frequency of the video codec that
-processes video content, for example
-in YouTube videos, in players,
-in video editors, Photoshop and
-streaming</value>
+    <value>Maximum VCE frequency (MHz)
+Frequency of the video codec that processes video content, 
+for example in video players, in video editors and streaming</value>
   </data>
   <data name="Param_g7_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Minimum Data Latch Frequency
-The minimum frequency
-of the processor's clock generator, on which
-its correct operation depends
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+    <value>Minimum Data Latch Frequency (MHz)
+The minimum frequency of the RAM and integrated graphics</value>
   </data>
   <data name="Param_g8_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum Data Latch Frequency
-The minimum frequency
-of the processor's clock generator, on which
-its correct operation depends
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+    <value>Maximum Data Latch Frequency (MHz)
+The maximum frequency of the RAM and integrated graphics</value>
   </data>
   <data name="Param_g9_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Minimum iGPU frequency
-Minimum frequency of iGPU video core</value>
+    <value>Minimum iGPU frequency (MHz)
+Minimum frequency of integrated graphics</value>
   </data>
   <data name="Param_v1_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum VRM current EDC 
-It is responsible for the maximum possible
-power supply current of the processor and its
-subsystems. It is not recommended to set
-values above 80 A, although
-the processor will not reach such values anyway</value>
+    <value>Maximum VRM current EDC (A)
+Responsible for the maximum possible power supply current of the processor and its subsystems</value>
   </data>
   <data name="Param_v2_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>VRM Current limit TDC 
-It is responsible for the maximum possible
+    <value>VRM Current limit TDC (A)
+Responsible for the maximum possible
 power supply current of the processor and its
 subsystems under the influence of temperatures
-and loads. It is not recommended to set
-values above 80 A, although
-the processor will not reach such values anyway</value>
+and loads</value>
   </data>
   <data name="Param_v3_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum SoC current EDC
-It is responsible for the maximum current
-consumed by all
-processor subsystems except cores. That is
-a memory controller, a PCI
-controller, a Sata controller, etc</value>
+    <value>Maximum SoC current EDC (A)
+Responsible for the maximum current consumed by all processor subsystems. This is mainly the current of the memory controller</value>
   </data>
   <data name="Param_v4_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>SoC current limit TDC
-It is responsible for the maximum current
-consumed by all
-processor subsystems, except cores, under the influence
-of temperatures and loads. That is, the current 
-memory controller, PCI
-controller, Sata controller, etc</value>
+    <value>SoC current limit TDC (A)
+Responsible for the current consumed by all processor subsystems under the influence of heat and load. This is mainly the current of the memory controller.</value>
   </data>
   <data name="Param_v5_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum PSI0 VDD current
-It is responsible for the current consumed 
-by the processor cores under load
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+    <value>Maximum PSI0 VDD current (A)
+Responsible for the current consumed by processor cores in idle or power-saving mode</value>
   </data>
   <data name="Param_v6_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum PSI0 SoC current
-It is responsible for the current consumed 
-by the processor subsystems under load
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+    <value>Maximum PSI0 SoC current (A)
+Responsible for the current consumed by the processor subsystems in the idle or power-saving state</value>
   </data>
   <data name="Param_v7_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Restore Frequency time
+    <value>Restore Frequency time (S)
 Affects to time limit to rise up 
-frequency again after a prochot 
-condition is met where throtthling 
+frequency again after a processor-hot 
+condition is met where throttling 
 due max temperature reached. By 
 default, vendors set this value to 20, 
 but you can try experimenting 
-with this value.
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+with this value</value>
   </data>
   <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
     <value>Setting power limits and temperature control</value>
-  </data>
-  <data name="Param_CPU_Text.Text" xml:space="preserve">
-    <value>Power and temperature</value>
   </data>
   <data name="Param_GPU_Pdesc.Text" xml:space="preserve">
     <value>Cpu subsystems frequency overclocking</value>
@@ -649,11 +580,17 @@ Disable autoupdate
 and refresh fan info 
 once</value>
   </data>
+  <data name="Param_States_Text.Text" xml:space="preserve">
+    <value>CPU Power States</value>
+  </data>
+  <data name="Param_CPU_Text.Text" xml:space="preserve">
+    <value>Power and temperature</value>
+  </data>
   <data name="Param_enableps.Text" xml:space="preserve">
-    <value>Pstates control</value>
+    <value>P-States control</value>
   </data>
   <data name="Param_enableps_desc.Text" xml:space="preserve">
-    <value>Allow pstate changing on your CPU</value>
+    <value>Allow P-State changing on your CPU</value>
   </data>
   <data name="Param_Ignore.Text" xml:space="preserve">
     <value>Ignore all warnings</value>
@@ -674,10 +611,7 @@ once</value>
     <value>App will reapply this settings while starting if reapply enabled in settings</value>
   </data>
   <data name="Param_States_Pdesc.Text" xml:space="preserve">
-    <value>Edit all CPU pstates</value>
-  </data>
-  <data name="Param_States_Text.Text" xml:space="preserve">
-    <value>CPU Power States</value>
+    <value>Edit all CPU P-States</value>
   </data>
   <data name="Param_turbo.Text" xml:space="preserve">
     <value>CPU Turbo boost state</value>
@@ -686,102 +620,83 @@ once</value>
     <value>Allows your CPU use Turbo boost state, can broke this settings</value>
   </data>
   <data name="Param_a10_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>That value will fix iGPU freq
-This value will be reset after
-rebooting
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+    <value>Fixed iGPU frequency (MHz)
+That value will fix iGPU frequency to the level that you have 
+specified</value>
   </data>
   <data name="Param_a11_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>That value will fix CPU freq
-This value will be reset after
-rebooting
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+    <value>Fixed CPU frequency (MHz)
+That value will fix CPU frequency to the level that you have 
+specified</value>
   </data>
   <data name="Param_a12_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>That value will fix CPU voltage
-This value will be reset after
-rebooting
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+    <value>Fixed CPU voltage (V)
+That value will fix CPU voltage to the level that you have 
+specified</value>
   </data>
   <data name="Param_a13_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Processor operation mode, they
-switch when charging is connected and
-disconnected. If youre charging and turn 
-on Max perf, it won't do anything, since your
-processor is already in this mode,
-similar to battery life and
-energy efficiency mode</value>
+    <value>Preferred mode
+System operates in different modes depending on whether it is connected to a charging source or not. You can set this mode manually</value>
   </data>
   <data name="Param_a1_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>You can limit the current consumption 
+    <value>iGPU Maximum TDC (A)
+You can limit the current consumption 
 of your integrated graphics card under 
 the influence of temperatures and load</value>
   </data>
-  <data name="Param_a2_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>You can limit the current consumption 
-of your Neural Processor Unit under 
-the influence of temperatures and load
-(If you have it)</value>
-  </data>
   <data name="Param_a3_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Responsible for the maximum current
+    <value>iGPU Maximum EDC (A)
+Responsible for the maximum current
 consumed by the integrated
 graphics</value>
   </data>
   <data name="Param_a4_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Responsible for the maximum current
-consumed by the CPU
-at PCI Express bus</value>
+    <value>Maximum PSI3 CPU current (A)
+Responsible for the maximum current 
+consumed by the processor when the 
+system is idle or in a power-saving state</value>
   </data>
   <data name="Param_a5_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Responsible for the maximum current
-consumed by the all GPUs
-at PCI Express bus
-IT CAN'T BE LOWER THAN iGPU
-Maximum EDC!</value>
+    <value>Maximum PSI3 iGPU current (A)
+Responsible for the maximum current 
+consumed by the integrated processor 
+graphics when the system is idle or in a 
+power-saving state</value>
   </data>
   <data name="Param_a6_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum temperature
+    <value>iGPU Maximum temperature (C)
 With this value, you can limit
 the iGPU by temperature, above
 this value it will not warm
-up, trottling will begin
-This will ONLY work if you see
-the temperature values on
-the information page!</value>
+up, throttling will begin</value>
   </data>
   <data name="Param_a7_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Maximum temperature
-With this value, you can limit
-the dGPU by temperature, above
-this value it will not warm
-up, trottling will begin
-This will ONLY work if you see
-the temperature values on
-the information page!</value>
+    <value>dGPU Maximum temperature (C)
+With this value, you can limit the dGPU by 
+temperature, above this value it will not 
+warm up, throttling will begin. There may be 
+no effect if the function is not implemented 
+by the laptop manufacturer</value>
   </data>
   <data name="Param_a8_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>This value is responsible for limiting
-the power of your iGPU
-This will ONLY work if you see
-the temperature values on
-the information page!</value>
+    <value>iGPU Actual Power Limit (W)
+Responsible for limiting the power of your iGPU</value>
   </data>
   <data name="Param_a9_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>This value is responsible for limiting
-the power of your Laptop
-This will ONLY work on AMD APU + dGPU systems
-if you see the temperature values on
-the information page!</value>
+    <value>Laptop Power Limit (W)
+Restricts the system's power to the level that you have 
+specified. If the maximum power limit is exceeded, the 
+entire system will begin to reduce its frequency and 
+power output</value>
   </data>
   <data name="Param_ADV_a1.Text" xml:space="preserve">
     <value>iGPU Maximum TDC</value>
   </data>
   <data name="Param_ADV_a10.Text" xml:space="preserve">
-    <value>Fixed iGPU freq</value>
+    <value>Fixed iGPU frequency</value>
   </data>
   <data name="Param_ADV_a11.Text" xml:space="preserve">
-    <value>Fixed CPU freq</value>
+    <value>Fixed CPU frequency</value>
   </data>
   <data name="Param_ADV_a12.Text" xml:space="preserve">
     <value>Fixed CPU voltage</value>
@@ -793,10 +708,10 @@ the information page!</value>
     <value>iGPU Maximum EDC</value>
   </data>
   <data name="Param_ADV_a4.Text" xml:space="preserve">
-    <value>CPU Maximum EDC</value>
+    <value>Maximum current PSI3 CPU</value>
   </data>
   <data name="Param_ADV_a5.Text" xml:space="preserve">
-    <value>GPU Maximum EDC</value>
+    <value>Maximum current PSI3 iGPU </value>
   </data>
   <data name="Param_ADV_a6.Text" xml:space="preserve">
     <value>iGPU Maximum temperature</value>
@@ -822,11 +737,17 @@ the information page!</value>
   <data name="Set_succ" xml:space="preserve">
     <value>Сhanged successfully!</value>
   </data>
-  <data name="Add_tooltip_Error.Subtitle" xml:space="preserve">
-    <value>Set other name!</value>
+  <data name="Add_Target_Max.Subtitle" xml:space="preserve">
+    <value>You can't have more profiles!</value>
   </data>
-  <data name="Add_tooltip_Error.Title" xml:space="preserve">
-    <value>Add profile error</value>
+  <data name="Add_Target_Max.Title" xml:space="preserve">
+    <value>Error while adding</value>
+  </data>
+  <data name="Add_Target_Error.Subtitle" xml:space="preserve">
+    <value>You can't add profile without name</value>
+  </data>
+  <data name="Add_Target_Error.Title" xml:space="preserve">
+    <value>Error while adding</value>
   </data>
   <data name="ADV_Auto.Text" xml:space="preserve">
     <value>Keep auto</value>
@@ -838,7 +759,7 @@ the information page!</value>
     <value>You have successfully set your settings</value>
   </data>
   <data name="Apply_Target.Title" xml:space="preserve">
-    <value>Сhanged successfully!</value>
+    <value>Applied successfully!</value>
   </data>
   <data name="Delete_Target_Error.Subtitle" xml:space="preserve">
     <value>You can't delete Unsaved profile!</value>
@@ -1015,9 +936,6 @@ the information page!</value>
     <value>There you can change laptop fans behavior 
 for selected config:</value>
   </data>
-  <data name="AdvancedCooler_Curves.Text" xml:space="preserve">
-    <value>Fan Curve</value>
-  </data>
   <data name="AdvancedCooler_CurveText.Text" xml:space="preserve">
     <value>Fan curve editor</value>
   </data>
@@ -1094,7 +1012,7 @@ Get suggest on a possible configuration</value>
   <data name="Param_PowerMon.ToolTipService.ToolTip" xml:space="preserve">
     <value>Open Saku PowerMon Pro
 Monitoring for all device sensors
-provided via SMU</value>
+provided via SMU (Power Table)</value>
   </data>
   <data name="PowerMonDesc" xml:space="preserve">
     <value>Did you really want to open monitor? It may take up to 2 minutes to load it, while both applications will freeze and you will have to wait for its full initialization</value>
@@ -1174,27 +1092,44 @@ provided via SMU</value>
   <data name="ToHex.Text" xml:space="preserve">
     <value>Convert to Hex</value>
   </data>
-  <data name="Arguments" xml:space="preserve">
-    <value>Arguments</value>
-  </data>
   <data name="Change" xml:space="preserve">
     <value>Change</value>
-  </data>
-  <data name="Command" xml:space="preserve">
-    <value>Command</value>
   </data>
   <data name="Cooler_FanAuto_Desc" xml:space="preserve">
     <value>Did you really want to enable auto update? 
 This will negatively affect the performance of the application</value>
   </data>
   <data name="Cooler_FanAuto_Text" xml:space="preserve">
-    <value>Autoupdate info</value>
-  </data>
-  <data name="Desc" xml:space="preserve">
-    <value>Description</value>
+    <value>Auto-update info</value>
   </data>
   <data name="Enable" xml:space="preserve">
     <value>Enable</value>
+  </data>
+  <data name="Param_ChPstates_Desc" xml:space="preserve">
+    <value>Did you really want to change pstates? 
+This can crash your system immediately. 
+Changing P0 state have more chances to crash your system</value>
+  </data>
+  <data name="Param_ChPstates_Text" xml:space="preserve">
+    <value>Change Pstates?</value>
+  </data>
+  <data name="Param_DelPreset_Desc" xml:space="preserve">
+    <value>Did you really want to delete this preset?</value>
+  </data>
+  <data name="Param_DelPreset_Text" xml:space="preserve">
+    <value>Delete preset</value>
+  </data>
+  <data name="Without_P0" xml:space="preserve">
+    <value>Without P0</value>
+  </data>
+  <data name="Arguments" xml:space="preserve">
+    <value>Arguments</value>
+  </data>
+  <data name="Command" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="Desc" xml:space="preserve">
+    <value>Description</value>
   </data>
   <data name="Info_CPU_desc.Text" xml:space="preserve">
     <value>Information about CPU and other powers</value>
@@ -1211,20 +1146,6 @@ This will negatively affect the performance of the application</value>
   <data name="Param_Autorun" xml:space="preserve">
     <value>Apply with app start</value>
   </data>
-  <data name="Param_ChPstates_Desc" xml:space="preserve">
-    <value>Did you really want to change pstates? 
-This can crash your system immediately. 
-Changing P0 state have MORE chances to crash your system</value>
-  </data>
-  <data name="Param_ChPstates_Text" xml:space="preserve">
-    <value>Change Pstates?</value>
-  </data>
-  <data name="Param_DelPreset_Desc" xml:space="preserve">
-    <value>Did you really want to delete this preset?</value>
-  </data>
-  <data name="Param_DelPreset_Text" xml:space="preserve">
-    <value>Delete preset</value>
-  </data>
   <data name="Param_QSMU_Desc.Text" xml:space="preserve">
     <value>Add new command</value>
   </data>
@@ -1237,26 +1158,11 @@ Changing P0 state have MORE chances to crash your system</value>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
-  <data name="Without_P0" xml:space="preserve">
-    <value>Without P0</value>
-  </data>
   <data name="CancelToken.ToolTipService.ToolTip" xml:space="preserve">
     <value>Cancel operation</value>
   </data>
   <data name="SMURange" xml:space="preserve">
     <value>Range is applying</value>
-  </data>
-  <data name="Add_Target_Error.Subtitle" xml:space="preserve">
-    <value>You can't add profile without name</value>
-  </data>
-  <data name="Add_Target_Error.Title" xml:space="preserve">
-    <value>Error while adding</value>
-  </data>
-  <data name="Add_Target_Max.Subtitle" xml:space="preserve">
-    <value>You can't have more profiles!</value>
-  </data>
-  <data name="Add_Target_Max.Title" xml:space="preserve">
-    <value>Error while adding</value>
   </data>
   <data name="Apply" xml:space="preserve">
     <value>Apply</value>
@@ -1292,10 +1198,8 @@ Changing P0 state have MORE chances to crash your system</value>
     <value>Maximum cHTC temp</value>
   </data>
   <data name="Param_a14_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Advanced Overclock
-This is the processor's permission 
-to change advanced settings.
-Without OC-Mode they will be ignored</value>
+    <value>OC-Mode
+Property of the system that allows you to change additional overclocking parameters, such as PBO or fixed frequency processor voltage</value>
   </data>
   <data name="Param_a15_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>PBO Scalar
@@ -1303,8 +1207,7 @@ Increasing the PBO scalar would
 raise the temperature while also 
 causing the boost clocks to be more 
 aggressively maintained, potentially 
-at a higher CPU VID Voltage
-IT IS NOT RECOMMENDED TO CHANGE</value>
+at a higher CPU voltage</value>
   </data>
   <data name="Param_ADV_a13_E.Content" xml:space="preserve">
     <value>Energy efficiency</value>
@@ -1325,40 +1228,22 @@ IT IS NOT RECOMMENDED TO CHANGE</value>
     <value>PBO Scalar</value>
   </data>
   <data name="Param_g11_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Min CPU frequency
+    <value>Min CPU frequency (MHz)
 You can control minimum
 CPU frequency by this 
 parameter. It is far from 100% 
 that this will work for you, keep 
 in mind that high values are harder 
-for the processor to keep
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+for the processor to keep</value>
   </data>
   <data name="Param_g12_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Max CPU frequency
+    <value>Max CPU frequency (MHz)
 You can control maximum
 CPU frequency by this 
 parameter. It is far from 100% 
 that this will work for you, keep 
 in mind that high values are harder 
-for the processor to keep
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
-  </data>
-  <data name="Param_g13_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Min iGPU VRAM Usage
-By setting the minimum amount 
-of video memory for these parameters, 
-your iGPU will not consume less video 
-memory than the specified value
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
-  </data>
-  <data name="Param_g14_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Max iGPU VRAM Usage
-By setting the maximum amount 
-of video memory for these parameters, 
-your iGPU will not consume more video 
-memory than the specified value
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+for the processor to keep</value>
   </data>
   <data name="Param_g16_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Fix 0,4 GHz frequency 
@@ -1372,8 +1257,7 @@ performance state give you 2400 MHz on CPU and
 It is impossible to change RAM-States, because of
 this we can't adjust this freq more than 2400 MHz.
 To disable this option select Auto then apply. After
-that you can disable checkbox
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
+that you can disable checkbox</value>
   </data>
   <data name="Param_GPU_g11.Text" xml:space="preserve">
     <value>Min CPU frequency</value>
@@ -1381,50 +1265,8 @@ IT IS NOT RECOMMENDED TO TOUCH IT</value>
   <data name="Param_GPU_g12.Text" xml:space="preserve">
     <value>Max CPU frequency</value>
   </data>
-  <data name="Param_GPU_g15.Text" xml:space="preserve">
-    <value>Fix dGPU freq</value>
-  </data>
   <data name="Param_GPU_g16.Text" xml:space="preserve">
     <value>Fix 0,4 GHz frequency </value>
-  </data>
-  <data name="Param_Super_heavywarn" xml:space="preserve">
-    <value>ATTENTION! SUPER DANGEROUS ZONE!</value>
-  </data>
-  <data name="Param_v10_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Voltage Variable 
-Responsible for the stability of 
-the VID and VDD voltage of the processor, 
-for its change and, in general, for 
-its behavior. To put it simply, this 
-is how often the processor will change 
-the voltage
-I AM NOT RESPONSIBLE FOR THE 
-CONSEQUENCES OF THESE COMMANDS
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
-  </data>
-  <data name="Param_v8_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Voltage Scalar
-Affects on scalar of base CPU
-core VID and VDD. It can overclock or 
-undervolt voltage
-I AM NOT RESPONSIBLE FOR THE 
-CONSEQUENCES OF THESE COMMANDS
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
-  </data>
-  <data name="Param_v9_Help.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Voltage Modular
-Affects on how much voltage can change
-in voltage scalar
-I AM NOT RESPONSIBLE FOR THE 
-CONSEQUENCES OF THESE COMMANDS
-IT IS NOT RECOMMENDED TO TOUCH IT</value>
-  </data>
-  <data name="Param_Voltage_warn_heavy" xml:space="preserve">
-    <value>I AM NOT RESPONSIBLE FOR THE 
-CONSEQUENCES OF THESE COMMANDS.
-IT IS NOT RECOMMENDED TO TOUCH IT.
-CONTINUE ONLY IF YOU KNOW WHAT YOU 
-ARE DOING!!! IT CAN BURN YOUR CPU!</value>
   </data>
   <data name="DeleteSuccessDesc" xml:space="preserve">
     <value>You have successfully permanently deleted your profile </value>
@@ -1620,19 +1462,11 @@ ARE DOING!!! IT CAN BURN YOUR CPU!</value>
   </data>
   <data name="Param_O1_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>All cores Curve Optimizer
-With this parameter you can 
-change volt/freq curve of
-your CPU which can give you
-more energy efficiency or
-more performance</value>
+With this function, you can adjust the level of undervolting (lowering and increasing voltage) for all cores. These changes will allow you to increase energy efficiency or increase the performance of your device. I AM NOT RESPONSIBLE FOR THE CONSEQUENCES OF THESE OPTIONS. Safe limits are from -50 to 30 but if you noticed any unstability immidiately set curves closer to 0 value</value>
   </data>
   <data name="Param_O2_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>iGPU Curve Optimizer
-With this parameter you can 
-change volt/freq curve of
-your iGPU which can give you
-more energy efficiency or
-more performance</value>
+With this function, you can adjust the level of undervolting (lowering and increasing voltage) for integrated graphics. These changes will allow you to increase energy efficiency or increase the performance of your device. I AM NOT RESPONSIBLE FOR THE CONSEQUENCES OF THESE OPTIONS. Safe limits are from -50 to 30 but if you noticed any unstability immidiately set curves closer to 0 value</value>
   </data>
   <data name="Param_CO_CCD1_1.Text" xml:space="preserve">
     <value>Core 0 Curve Optimizer</value>
@@ -1684,20 +1518,7 @@ more performance</value>
   </data>
   <data name="Param_CO_CCD_Help.ToolTipService.ToolTip" xml:space="preserve">
     <value>Per core curve optimizer settings
-With this parameter you can 
-change volt/freq curve of each
-CPU cores which can give you
-more energy efficiency or
-more performance. If you haven't 
-selected some cores - they will not
-be adjusted. Note: this setting is above
-iGPU curve optimizer and all core
-curve optimizer and they will not
-be applyed. I AM NOT RESPONSIBLE 
-FOR THE CONSEQUENCES OF THESE 
-COMMANDS. Safe limits are from -50 
-to 30 but if you noticed any unstability 
-immidiately set curves closer to 0 value</value>
+With this function, you can adjust the level of undervolting (lowering and increasing voltage) for each individual core, if you have not turned on any core, it will not be affected by the change, these changes will allow you to increase energy efficiency or increase the performance of your device. With the parameters enabled, Curve Optimizer for individual cores, parameters for all cores and iGPUs can be ignored. I AM NOT RESPONSIBLE FOR THE CONSEQUENCES OF THESE OPTIONS. Safe limits are from -50 to 30 but if you noticed any unstability immidiately set curves closer to 0 value</value>
   </data>
   <data name="TraceIt_Error" xml:space="preserve">
     <value>TraceIt! system - I found an error when executing the program:</value>
@@ -2056,6 +1877,21 @@ to be installed and running</value>
   <data name="Settings_ni_Color_Picker.Text" xml:space="preserve">
     <value>Pick the color</value>
   </data>
+  <data name="Settings_ni_ContextMenu.Text" xml:space="preserve">
+    <value>Tooltip</value>
+  </data>
+  <data name="Settings_ni_Context_Base.Content" xml:space="preserve">
+    <value>Base</value>
+  </data>
+  <data name="Settings_ni_Context_Disabled.Content" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Settings_ni_Context_Extended.Content" xml:space="preserve">
+    <value>Extended</value>
+  </data>
+  <data name="Settings_ni_Delete.Text" xml:space="preserve">
+    <value>Delete element</value>
+  </data>
   <data name="Settings_ni_Elements.Text" xml:space="preserve">
     <value>Selected element</value>
   </data>
@@ -2064,6 +1900,9 @@ to be installed and running</value>
   </data>
   <data name="Settings_ni_Icon.Text" xml:space="preserve">
     <value>Metrics in system tray</value>
+  </data>
+  <data name="Settings_ni_ResetDef.Text" xml:space="preserve">
+    <value>Reset to defaults</value>
   </data>
   <data name="Settings_ni_ShapeSelector.Text" xml:space="preserve">
     <value>Tray icon shape</value>
@@ -2086,6 +1925,9 @@ to be installed and running</value>
   <data name="Settings_ni_Shape_Star.Content" xml:space="preserve">
     <value>Star</value>
   </data>
+  <data name="Settings_ni_Traymon.Text" xml:space="preserve">
+    <value>TrayMon - metrics in your tray</value>
+  </data>
   <data name="Settings_ni_Traymon_Desc.ToolTipService.ToolTip" xml:space="preserve">
     <value>TrayMon
 It's monitoring system that 
@@ -2096,32 +1938,11 @@ in the Windows tray. Allows you
 to track your laptop’s status 
 without opening extra windows</value>
   </data>
-  <data name="Settings_RTSS_Updater.Text" xml:space="preserve">
-    <value>In-Game Overlay</value>
-  </data>
-  <data name="Settings_ni_ContextMenu.Text" xml:space="preserve">
-    <value>Tooltip</value>
-  </data>
-  <data name="Settings_ni_Context_Base.Content" xml:space="preserve">
-    <value>Base</value>
-  </data>
-  <data name="Settings_ni_Context_Disabled.Content" xml:space="preserve">
-    <value>Off</value>
-  </data>
-  <data name="Settings_ni_Context_Extended.Content" xml:space="preserve">
-    <value>Extended</value>
-  </data>
-  <data name="Settings_ni_Delete.Text" xml:space="preserve">
-    <value>Delete element</value>
-  </data>
-  <data name="Settings_ni_ResetDef.Text" xml:space="preserve">
-    <value>Reset to defaults</value>
-  </data>
-  <data name="Settings_ni_Traymon.Text" xml:space="preserve">
-    <value>TrayMon - metrics in your tray</value>
-  </data>
   <data name="Settings_RTSS_Elements.Text" xml:space="preserve">
     <value>Showing elements</value>
+  </data>
+  <data name="Settings_RTSS_Updater.Text" xml:space="preserve">
+    <value>In-Game Overlay</value>
   </data>
   <data name="Settings_RTSS_AdvancedCode_Enable.Text" xml:space="preserve">
     <value>RTSS Overlay Code Editor</value>
@@ -2947,16 +2768,6 @@ methods are available.</value>
   <data name="Preset_RtssOverlay.Text" xml:space="preserve">
     <value>RTSS Overlay</value>
   </data>
-  <data name="Preset_StreamStabilizerTooltip.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Stream Optimizer 
-It's an innovative technology 
-designed for your AMD Ryzen. It locks in the 
-ideal performance levels for your graphics card 
-and CPU, freeing you from lags and freezes during 
-gaming and streaming. With built-in temperature 
-management, it keeps your system cool and 
-ensures maximum performance</value>
-  </data>
   <data name="Preset_Suggestions.Text" xml:space="preserve">
     <value>Suggestions</value>
   </data>
@@ -2974,8 +2785,8 @@ ensures maximum performance</value>
 Simple and safe overclocking settings with clear explanations aimed at beginners</value>
   </data>
   <data name="Param_ProMode" xml:space="preserve">
-    <value>Switch mode to Pro: 
-Full control over processor settings and power consumption. Manually adjust overclocking, temperature, and power limits for maximum efficiency</value>
+    <value>Show detailed settings:
+Full control over the temperature and power consumption settings of the processor. Manual parameter setting for maximum efficiency</value>
   </data>
   <data name="Param_CO_PreferredMode_Desc.Text" xml:space="preserve">
     <value>Preferred mode</value>
@@ -2987,8 +2798,7 @@ work correctly in the current mode or
 you have a different platform you can 
 choose the mode that best suits your
 platform. The method from Irusanov
-is suitable for all platforms, but has 
-compatibility limitations. For best 
+is suitable for all platforms. For best 
 results it is recommended to test CPU 
 under load for each of the modes and 
 choose the most stable one, where the 
@@ -3062,7 +2872,7 @@ Applies only selected developer options
 Such as sending Smu commands, P-State 
 writing, or Smu functions.
 Your previous P-State settings, Smu
-functions and Smu notes will be saved.</value>
+functions and Smu notes will be saved</value>
   </data>
   <data name="Param_DeveloperOptions.Text" xml:space="preserve">
     <value>Developer options</value>
@@ -3216,6 +3026,19 @@ Average power limit</value>
   <data name="Preset_StreamStabilizer.Text" xml:space="preserve">
     <value>Stream Stabilizer v4.0©</value>
   </data>
+  <data name="Preset_StreamStabilizerDesc.Text" xml:space="preserve">
+    <value>Innovation for Ryzen: maximum FPS, without lags, freezes, overheating. Smart auto-overclocking during streaming</value>
+  </data>
+  <data name="Preset_StreamStabilizerTooltip.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Stream Optimizer 
+It's an innovative technology 
+designed for your AMD Ryzen. It locks in the 
+ideal performance levels for your graphics card 
+and CPU, freeing you from lags and freezes during 
+gaming and streaming. With built-in temperature 
+management, it keeps your system cool and 
+ensures maximum performance</value>
+  </data>
   <data name="Preset_StreamStabilizer_Smart.Text" xml:space="preserve">
     <value>Smart</value>
   </data>
@@ -3224,9 +3047,6 @@ Average power limit</value>
   </data>
   <data name="Preset_RtssOverlay_Enabled.Text" xml:space="preserve">
     <value>On</value>
-  </data>
-  <data name="Preset_StreamStabilizerDesc.Text" xml:space="preserve">
-    <value>Innovation for Ryzen: maximum FPS, without lags, freezes, overheating. Smart auto-overclocking during streaming</value>
   </data>
   <data name="PowerMon_Goto.Text" xml:space="preserve">
     <value>Go to:</value>

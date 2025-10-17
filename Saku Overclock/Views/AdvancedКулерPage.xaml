@@ -18,7 +18,7 @@
                 <MenuFlyoutSubItem.Icon>
                     <FontIcon Glyph="&#xe8b7;"/>
                 </MenuFlyoutSubItem.Icon>
-                <MenuFlyoutItem x:Uid="AdvancedCooler_Curves" Text="Fan Curve" Click="Curve_Click">
+                <MenuFlyoutItem x:Uid="AdvancedCooler_Curve" Text="Fan Curve" Click="Curve_Click">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xe932;"/>
                     </MenuFlyoutItem.Icon>

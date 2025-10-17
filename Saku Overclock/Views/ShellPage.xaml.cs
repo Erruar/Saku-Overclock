@@ -2234,18 +2234,18 @@ public sealed partial class ShellPage
 
     private nint HookCallbackAsync(int nCode, IntPtr wParam, IntPtr lParam)
     {
-        CallNextHookEx(_hookId, nCode, wParam, lParam); // Передаем нажатие в следующее приложение
+        var next = CallNextHookEx(_hookId, nCode, wParam, lParam); // Передаем нажатие в следующее приложение
         
         if (nCode >= 0 && wParam == WmKeydown && GetAsyncKeyState(0x11) < 0 &&
                 IsAltPressed()) // Проверяем следует ли перехватывать хук и событие нажатия на клавишу Control (0x11), Alt
         {
-            HandleKeyboardKeysCallback(Marshal.ReadInt32(lParam));
+            _ = HandleKeyboardKeysCallback(Marshal.ReadInt32(lParam));
         }
 
-        return 0x0;
+        return next;
     }
 
-    private Task HandleKeyboardKeysCallback(int virtualkeyCode)
+    private async Task HandleKeyboardKeysCallback(int virtualkeyCode)
     {
         switch ((VirtualKey)virtualkeyCode)
         {
@@ -2264,7 +2264,7 @@ public sealed partial class ShellPage
                             _pendingCustomProfileIndex = nextCustomIndex;
                         }
 
-                        ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                        await ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                                 nextCustomProfile, icon1, desc1);
                         ScheduleApplyProfile();
 
@@ -2287,7 +2287,7 @@ public sealed partial class ShellPage
                         _isCustomProfile = false;
                     }
 
-                    ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                    await ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                             nextPremadeProfile, icon, desc);
 
                     ScheduleApplyProfile();
@@ -2302,14 +2302,14 @@ public sealed partial class ShellPage
                 if (AppSettings.RtssMetricsEnabled)
                 {
 
-                    ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                    await ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                         "RTSS " + "Cooler_Service_Disabled/Content".GetLocalized(), "\uE7AC");
 
                     AppSettings.RtssMetricsEnabled = false;
                 }
                 else
                 {
-                    ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                    await ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                         "RTSS " + "Cooler_Service_Enabled/Content".GetLocalized(), "\uE7AC");
 
                     AppSettings.RtssMetricsEnabled = true;
@@ -2321,7 +2321,6 @@ public sealed partial class ShellPage
                     "Shell_RTSSChanging_Success".GetLocalized(), InfoBarSeverity.Informational);
                 break;
         }
-        return Task.CompletedTask;
     }
     private void ScheduleApplyProfile()
     {
