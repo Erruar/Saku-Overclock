@@ -2,7 +2,7 @@
 
 namespace Saku_Overclock.Helpers;
 
-public partial class BooleanInvertorConverter : IValueConverter
+public partial class BooleanInverterConverter : IValueConverter
 {
     public object? Convert(object value, Type targetType, object parameter, string language)
     {

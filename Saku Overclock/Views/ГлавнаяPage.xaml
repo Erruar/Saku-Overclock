@@ -168,10 +168,14 @@ Text="{Binding Version}">
             </Grid.RowDefinitions>
             <Grid Grid.Column="0" SizeChanged="Grid_SizeChanged" Margin="0,0,7,5" CornerRadius="16" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                 <Grid.Transitions>
-                    <RepositionThemeTransition/>
+                    <TransitionCollection>
+                        <RepositionThemeTransition/>
+                    </TransitionCollection>
                 </Grid.Transitions>
                 <Grid.ChildrenTransitions>
-                    <RepositionThemeTransition/>
+                    <TransitionCollection>
+                        <RepositionThemeTransition/>
+                    </TransitionCollection>
                 </Grid.ChildrenTransitions>
                 <TextBlock x:Name="DeviceInfoSign" Margin="14,16,0,0" FontWeight="SemiBold" FontSize="17" x:Uid="Main_DeviceInfo" Text="Информация об устройстве"/>
                 <Grid x:Name="MainGrid" Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -458,12 +462,16 @@ Text="{Binding Version}">
             <Grid HorizontalAlignment="Stretch" Grid.Column="1" CornerRadius="16" Margin="0,0,10,5" Shadow="{StaticResource SharedShadow}" Translation="0,0,20">
                 <Grid CornerRadius="8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                     <Grid.Transitions>
-                        <RepositionThemeTransition/>
+                        <TransitionCollection>
+                            <RepositionThemeTransition/>
+                        </TransitionCollection>
                     </Grid.Transitions>
                     <Grid.ChildrenTransitions>
-                        <RepositionThemeTransition/>
+                        <TransitionCollection>
+                            <RepositionThemeTransition/>
+                        </TransitionCollection>
                     </Grid.ChildrenTransitions>
-                    <TextBlock x:Uid="Main_PremadeProfiles" x:Name="PresetsSign" Margin="14,16,0,0" FontWeight="SemiBold" FontSize="17" Text="Управление пресетами"/>
+                    <TextBlock x:Uid="Main_PremadeProfiles" x:Name="PresetsSign" Margin="14,16,0,0" FontWeight="SemiBold" FontSize="17" Text="Пресеты"/>
                     <Grid Margin="0,0,0,10">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -477,18 +485,49 @@ Text="{Binding Version}">
                                     <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_OwnProfiles" Text="Свои"/>
                                 </PivotItem.Header>
                                 <ScrollViewer Grid.Row="0">
-                                    <StackPanel Margin="20,0,20,0" Orientation="Vertical" 
-                                                HorizontalAlignment="Stretch" IsHitTestVisible="True"
-                                                x:Name="Preset_Custom">
-                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                                            <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
-                                                <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xE718;"/>
-                                                <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
-                                                    <TextBlock FontWeight="Bold" Text="11"/>
-                                                    <TextBlock TextWrapping="Wrap" Text="Кажется этот пресет без описания. Но вы можете это исправить"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </ToggleButton>
+                                    <StackPanel Margin="20,0,20,0" Orientation="Vertical" HorizontalAlignment="Stretch">
+                                        <StackPanel Orientation="Vertical" 
+                                                    HorizontalAlignment="Stretch" IsHitTestVisible="True"
+                                                    x:Name="Preset_Custom">
+                                            <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                                <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
+                                                    <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xE718;"/>
+                                                    <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
+                                                        <TextBlock FontWeight="Bold" Text="11"/>
+                                                        <TextBlock TextWrapping="Wrap" Text="Кажется этот пресет без описания. Но вы можете это исправить"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </ToggleButton>
+                                        </StackPanel>
+                                        <HyperlinkButton Margin="-8,0,0,0" Click="ExpandButton_Click" Foreground="{ThemeResource TextFillColorSecondary}">Не видите здесь свой пресет?</HyperlinkButton>
+                                        <Grid x:Name="ExpandGrid" Margin="0,2,0,0" HorizontalAlignment="Stretch">
+                                            <Grid.Resources>
+                                                <Storyboard x:Name="CollapseStoryboard">
+                                                    <DoubleAnimation Storyboard.TargetName="ExpandGrid"
+                                                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                                     To="0" Duration="0:0:0.1" />
+                                                </Storyboard>
+
+                                                <Storyboard x:Name="ExpandStoryboard">
+                                                    <DoubleAnimation Storyboard.TargetName="ExpandGrid"
+                                                                     Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                                     To="1" Duration="0:0:0.1" />
+                                                </Storyboard>
+                                            </Grid.Resources>
+                                            <Grid.RenderTransform>
+                                                <ScaleTransform ScaleY="0"/>
+                                            </Grid.RenderTransform>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button CornerRadius="14" VerticalAlignment="Stretch" Click="PresetsPage_Click" HorizontalAlignment="Stretch" Margin="0,0,4,0" Grid.Column="0" Translation="0,0,10" Shadow="{ThemeResource SharedShadow}">
+                                                <TextBlock TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Управление пресетами"/>
+                                            </Button>
+                                            <Button CornerRadius="14" VerticalAlignment="Stretch" Click="SwitchPivot_Click" HorizontalAlignment="Stretch" Margin="4,0,0,0" Grid.Column="1" Translation="0,0,10" Shadow="{ThemeResource SharedShadow}">
+                                                <TextBlock TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Готовые пресеты"/>
+                                            </Button>
+                                        </Grid>
                                     </StackPanel>
                                 </ScrollViewer>
                             </PivotItem>

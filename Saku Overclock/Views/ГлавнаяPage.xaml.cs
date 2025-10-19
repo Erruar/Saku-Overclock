@@ -950,4 +950,18 @@ public sealed partial class ГлавнаяPage
 
     #endregion
 
+    private bool _isExpanded;
+    private void ExpandButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_isExpanded)
+        {
+            CollapseStoryboard.Begin();
+        }
+        else
+        {
+            ExpandStoryboard.Begin();
+        }
+
+        _isExpanded = !_isExpanded;
+    }
 }
