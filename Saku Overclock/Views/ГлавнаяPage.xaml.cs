@@ -28,6 +28,7 @@ public sealed partial class ГлавнаяPage
     private readonly IBackgroundDataUpdater? _dataUpdater;
     private double _maxCpuFreq = 1d;
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
+    private static readonly IApplyerService _applyer = App.GetService<IApplyerService>();
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
     private List<double>? _segmentLengths; // Хранит длины всех сегментов
@@ -682,14 +683,14 @@ public sealed partial class ГлавнаяPage
                         _lastAppliedProfileName = endMode;
 
                         AppSettings.Preset = -1;
-                        ShellPage.NextPremadeProfile_Activate(endMode);
+                        ShellPage.SelectPremadePreset(endMode);
 
-                        var (_, _, _, settings, _) = ShellPage.PremadedProfiles[endMode];
+                        var (_, _, _, settings, _) = ShellPage.PremadedPresets[endMode];
 
                         AppSettings.RyzenAdjLine = settings;
                         AppSettings.SaveSettings();
 
-                        MainWindow.Applyer.ApplyWithoutAdjLine(false);
+                        await _applyer.ApplyWithoutAdjLine(false);
 
                         NotificationsService.Notifies ??= [];
                         NotificationsService.Notifies.Add(new Notify
@@ -755,7 +756,7 @@ public sealed partial class ГлавнаяPage
                                 AppSettings.SaveSettings();
 
                                 ПараметрыPage.ApplyInfo = string.Empty;
-                                ShellPage.ParseOverclockProfile(profile, true);
+                                await _applyer.ApplyCustomPreset(profile, true);
 
                                 NotificationsService.Notifies ??= [];
                                 NotificationsService.Notifies.Add(new Notify

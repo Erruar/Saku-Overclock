@@ -11,13 +11,10 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
-using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Services;
-using Saku_Overclock.SMUEngine;
-using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -61,6 +58,7 @@ public sealed partial class ShellPage
         NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
+    private static readonly IApplyerService _applyer = App.GetService<IApplyerService>();
 
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
@@ -100,33 +98,34 @@ public sealed partial class ShellPage
         }
 
         MAppWindow = App.MainWindow.AppWindow; // AppWindow, нужен для тайтлбара приложения
-        ViewModel = viewModel; // ViewModel, установка нужной модели для UI страницы
-        InitializeComponent(); // Запуск UI
+        ViewModel = viewModel;
+        InitializeComponent();
         ViewModel.NavigationService.Frame = NavigationFrame; // Выбранная пользователем страница
         ViewModel.NavigationViewService.Initialize(NavigationViewControl); // Инициализировать выбор страниц
 
-        // A custom title bar is required for full window theme and Mica support.
-        // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(AppTitleBar);
-        App.MainWindow.Activated += MainWindow_Activated; // Приложение активировалось, выставить первую страницу
+        App.MainWindow.Activated += MainWindow_Activated; // Приложение активировалось, загрузить параметры TitleBar
         App.MainWindow.Closed += (_, _) =>
         {
             UnhookWindowsHookEx(_hookId); // Приложение закрылось - убить хуки
         };
     }
 
-    #region JSON and Initialization
+    #region Page Initialization and User Presets
 
     #region App TitleBar Initialization
 
-    #region App TitleBar
+    #region App loading and TitleBar  
 
+    /// <summary>
+    /// Загрузка приложения
+    /// </summary>
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         /*if (AppSettings.AppFirstRun) 
         {
-            HideNavBar();
+            HideNavigationBar();
             Icon.Visibility = Visibility.Collapsed;
             RingerNotifGrid.Visibility = Visibility.Collapsed;
         }*/
@@ -136,11 +135,14 @@ public sealed partial class ShellPage
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
         
         StartInfoUpdate();
-        GetProfileInit();
-        Theme_Loader();
-        AutoStartChecker();
+        LoadPresetsToViewModel();
+        InitializeThemes();
+        AutoStartHelper.AutoStartCheckAndFix();
     }
 
+    /// <summary>
+    /// Обработчик активации окна
+    /// </summary>
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
         App.AppTitlebar = VersionNumberIndicator;
@@ -148,1290 +150,15 @@ public sealed partial class ShellPage
         AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
     }
 
-    private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            SetRegionsForCustomTitleBar(); //Установить регион взаимодействия
-        }
-        catch (Exception ex)
-        {
-            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
-        }
-    }
-
-    private void AppTitleBar_SizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        try
-        {
-            App.MainWindow.DispatcherQueue.TryEnqueue(SetRegionsForCustomTitleBar); //Установить регион взаимодействия
-        }
-        catch (Exception ex)
-        {
-            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
-        }
-    }
-
-    #endregion
-
-    #region User Profiles
-
-    private void GetProfileInit()
-    {
-        if (!AppSettings.OldTitleBar)
-        {
-            var itemz = new ObservableCollection<ComboBoxItem>();
-            itemz.Clear();
-            var userProfiles = new ComboBoxItem
-            {
-                Content = new TextBlock
-                {
-                    Text = "Shell_CustomProfiles".GetLocalized(),
-                    Foreground = (Brush)Application.Current.Resources["AccentTextFillColorTertiaryBrush"]
-                },
-                IsEnabled = false
-            };
-            itemz.Add(userProfiles);
-
-            ProfileLoad();
-
-            if (_profile == null)
-            {
-                _profile = new Profile[1];
-                _profile[0] = new Profile();
-                ProfileSave();
-            }
-
-            foreach (var profile in _profile)
-            {
-                var securedProfile = profile;
-                if (profile == null)
-                {
-                    securedProfile = new Profile();
-                    if (_profile.Length > 0)
-                    {
-                        _profile[0] = securedProfile;
-                        ProfileSave();
-                    }
-                    else
-                    {
-                        _profile = new Profile[1];
-                        _profile[0] = securedProfile;
-                        ProfileSave();
-                    }
-                }
-                var comboBoxItem = new ComboBoxItem
-                {
-                    Content = securedProfile.Profilename,
-                    IsEnabled = true
-                };
-                itemz.Add(comboBoxItem);
-            }
-
-            // Добавление второго элемента (с разделителем)
-            var separator = new ComboBoxItem
-            {
-                IsEnabled = false,
-                Content = new NavigationViewItemSeparator
-                {
-                    BorderThickness = new Thickness(1)
-                }
-            };
-            itemz.Add(separator);
-            var premadedProfiles = new ComboBoxItem
-            {
-                Content = new TextBlock
-                {
-                    Text = "Shell_PremadedProfiles".GetLocalized(),
-                    Foreground = (Brush)Application.Current.Resources["AccentTextFillColorTertiaryBrush"]
-                },
-                IsEnabled = false
-            };
-            itemz.Add(premadedProfiles);
-            itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Min".GetLocalized(), Name = "PremadeSsAMin" });
-            itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Eco".GetLocalized(), Name = "PremadeSsAEco" });
-            itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Balance".GetLocalized(), Name = "PremadeSsABal" });
-            itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Speed".GetLocalized(), Name = "PremadeSsASpd" });
-            itemz.Add(new ComboBoxItem { Content = "Shell_Preset_Max".GetLocalized(), Name = "PremadeSsAMax" });
-            ViewModel.Items = itemz;
-            if (AppSettings.Preset == -1)
-            {
-                if (AppSettings.PremadeMinActivated)
-                {
-                    SelectRightPremadedProfileName("PremadeSsAMin");
-                }
-
-                if (AppSettings.PremadeEcoActivated)
-                {
-                    SelectRightPremadedProfileName("PremadeSsAEco");
-                }
-
-                if (AppSettings.PremadeBalanceActivated)
-                {
-                    SelectRightPremadedProfileName("PremadeSsABal");
-                }
-
-                if (AppSettings.PremadeSpeedActivated)
-                {
-                    SelectRightPremadedProfileName("PremadeSsASpd");
-                }
-
-                if (AppSettings.PremadeMaxActivated)
-                {
-                    SelectRightPremadedProfileName("PremadeSsAMax");
-                }
-            }
-            else
-            {
-                ViewModel.SelectedIndex = AppSettings.Preset + 1;
-                foreach (var item in ViewModel.Items)
-                {
-                    if (_profile.Length > AppSettings.Preset && AppSettings.Preset != -1)
-                    {
-                        if (item.Content.ToString() == _profile[AppSettings.Preset].Profilename)
-                        {
-                            ViewModel.SelectedItem = item;
-                        }
-                    }
-                    else
-                    {
-                        AppSettings.Preset = -1;
-                        AppSettings.SaveSettings();
-                    }
-                    
-                }
-            }
-        }
-    }
-
-    private void SelectRightPremadedProfileName(string names)
-    {
-        foreach (var box in ViewModel.Items)
-        {
-            if (box?.Name.Contains(names) == true)
-            {
-                ViewModel.SelectedItem = box;
-                return;
-            }
-        }
-    }
-
-    public static void NextPremadeProfile_Activate(string nextProfile)
-    {
-        var profiles = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
-        foreach (var profile in profiles)
-        {
-            typeof(IAppSettingsService).GetProperty($"Premade{profile}Activated")
-                ?.SetValue(AppSettings, profile == nextProfile);
-        }
-        AppSettings.Preset = -1;
-        AppSettings.SaveSettings();
-    }
-
-    private static Dictionary<string, string> NextProfiles => new()
-    {
-        { "Min", "Eco" },
-        { "Eco", "Balance" },
-        { "Balance", "Speed" },
-        { "Speed", "Max" },
-        { "Max", "Min" }
-    };
-
-    public static Dictionary<string, (string name, string desc, string icon, string settings, string comboName)>
-        PremadedProfiles => new()
-    {
-        {
-            "Min",
-            ("Shell_Preset_Min", "Preset_Min_OverlayDesc", "\uEBC0",
-                OcFinder.CreatePreset(PresetType.Min, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard : (AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
-                "PremadeSsAMin")
-        },
-        {
-            "Eco",
-            ("Shell_Preset_Eco", "Preset_Eco_OverlayDesc", "\uEC0A",
-                OcFinder.CreatePreset(PresetType.Eco, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard : (AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
-                "PremadeSsAEco")
-        },
-        {
-            "Balance",
-            ("Shell_Preset_Balance", "Preset_Balance_OverlayDesc", "\uEC49",
-                OcFinder.CreatePreset(PresetType.Balance, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
-                "PremadeSsABal")
-        },
-        {
-            "Speed",
-            ("Shell_Preset_Speed", "Preset_Speed_OverlayDesc", "\uE945",
-                OcFinder.CreatePreset(PresetType.Performance, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
-                "PremadeSsASpd")
-        },
-        {
-            "Max",
-            ("Shell_Preset_Max", "Preset_Max_OverlayDesc", "\uECAD",
-                OcFinder.CreatePreset(PresetType.Max, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
-                "PremadeSsAMax")
-        }
-    };
-
-    // Методы для получения следующего профиля БЕЗ применения настроек
-    private (string profileName, string profileKey) GetNextPremadeProfile(out string icon, out string desc)
-    {
-        icon = "\uE783";
-        desc = "Unable to read description";
-
-        var profiles = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
-
-        string currentProfile;
-
-        // Определяем текущую позицию
-        if (_isVirtualStateActive && !string.IsNullOrEmpty(_virtualPremadeProfile))
-        {
-            // Используем виртуальную позицию при быстром переключении
-            currentProfile = _virtualPremadeProfile;
-        }
-        else
-        {
-            // Определяем реальную текущую позицию
-            if (AppSettings.Preset == -1)
-            {
-                // Активен готовый профиль - ищем какой именно
-                currentProfile = profiles.FirstOrDefault(p =>
-                                    (bool)typeof(IAppSettingsService).GetProperty($"Premade{p}Activated")
-                                        ?.GetValue(AppSettings)!) ?? "Balance";
-
-                // Инициализируем виртуальное состояние
-                _virtualPremadeProfile = currentProfile;
-                _isVirtualStateActive = true;
-            }
-            else
-            {
-                // Был активен кастомный профиль - начинаем с Balance
-                currentProfile = "Balance";
-                _virtualPremadeProfile = currentProfile;
-                _isVirtualStateActive = true;
-            }
-        }
-
-        // Получаем следующий профиль
-        var nextProfile = NextProfiles[currentProfile];
-
-        // Обновляем виртуальную позицию
-        _virtualPremadeProfile = nextProfile;
-
-        // Получаем данные профиля для отображения
-        var (name, description, iconStr, _, _) = PremadedProfiles[nextProfile];
-        desc = description.GetLocalized();
-        icon = iconStr;
-
-        return (name.GetLocalized(), nextProfile);
-    }
-
-    private (string profileName, int profileIndex) GetNextCustomProfile(out string? icon, out string? desc)
-    {
-        icon = string.Empty;
-        desc = string.Empty;
-
-        try
-        {
-            ProfileLoad();
-
-            if (_profile == null || _profile.Length == 0)
-            {
-                MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                    "No custom profiles available", InfoBarSeverity.Warning);
-                return (string.Empty, -1);
-            }
-
-            int nextProfileIndex;
-
-            // Определяем текущую позицию
-            if (_isVirtualStateActive && _virtualCustomProfileIndex >= 0)
-            {
-                // Используем виртуальную позицию при быстром переключении
-                nextProfileIndex = (_virtualCustomProfileIndex + 1) % _profile.Length;
-            }
-            else
-            {
-                // Определяем реальную текущую позицию
-                if (AppSettings.Preset == -1)
-                {
-                    // Сейчас активен готовый пресет - начинаем с первого кастомного
-                    nextProfileIndex = 0;
-                    _virtualCustomProfileIndex = -1; // Чтобы следующий был 0
-                    _isVirtualStateActive = true;
-                }
-                else
-                {
-                    // Уже выбран кастомный профиль
-                    nextProfileIndex = (AppSettings.Preset + 1) % _profile.Length;
-                    _virtualCustomProfileIndex = AppSettings.Preset;
-                    _isVirtualStateActive = true;
-                }
-            }
-
-            // Обновляем виртуальную позицию
-            _virtualCustomProfileIndex = nextProfileIndex;
-
-            // Проверяем корректность индекса и данных профиля
-            if (nextProfileIndex >= 0 && nextProfileIndex < _profile.Length &&
-                !string.IsNullOrEmpty(_profile[nextProfileIndex].Profilename))
-            {
-                var profile = _profile[nextProfileIndex];
-                icon = profile.Profileicon;
-                desc = profile.Profiledesc;
-                return (profile.Profilename, nextProfileIndex);
-            }
-            else
-            {
-                MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                    $"Invalid profile index: {nextProfileIndex}", InfoBarSeverity.Error);
-                return (string.Empty, -1);
-            }
-        }
-        catch (Exception ex)
-        {
-            MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                $"Error getting next custom profile: {ex.Message}", InfoBarSeverity.Error);
-            return (string.Empty, -1);
-        }
-    }
-
-    // Методы для применения профилей (вызываются только после задержки)
-    private void ApplyPremadeProfile(string profileKey)
-    {
-        try
-        {
-            // Активируем профиль
-            NextPremadeProfile_Activate(profileKey);
-            AppSettings.Preset = -1; // Устанавливаем флаг готового профиля
-
-            // Получаем данные профиля и обновляем настройки
-            var (_, _, _, settings, comboName) = PremadedProfiles[profileKey];
-            AppSettings.RyzenAdjLine = settings;
-
-            // Обновляем UI
-            foreach (var element in ViewModel.Items.OfType<ComboBoxItem>())
-            {
-                var selectedName = element.Content?.ToString();
-                if (element.Name == comboName)
-                {
-                    SelectedProfile = selectedName!;
-                    ViewModel.SelectedItem = element;
-                    break;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                $"Error applying premade profile: {ex.Message}", InfoBarSeverity.Error);
-        }
-    }
-
-    private void ApplyCustomProfile(int profileIndex)
-    {
-        try
-        {
-            if (_profile == null || profileIndex < 0 || profileIndex >= _profile.Length)
-            {
-                MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                    $"Invalid custom profile index: {profileIndex}", InfoBarSeverity.Error);
-                return;
-            }
-
-            AppSettings.Preset = profileIndex;
-            var profile = _profile[profileIndex];
-
-            // Обновляем UI
-            UpdateProfileComboBox(profile.Profilename);
-            MandarinSparseUnit();
-            SelectedProfile = profile.Profilename;
-
-            AppSettings.SaveSettings();
-        }
-        catch (Exception ex)
-        {
-            MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                $"Error applying custom profile: {ex.Message}", InfoBarSeverity.Error);
-        }
-    }
-
-    private void UpdateProfileComboBox(string profileName)
-    {
-        try
-        {
-            foreach (var element in ViewModel.Items.OfType<ComboBoxItem>())
-            {
-                var selectedName = element.Content?.ToString();
-                if (!string.IsNullOrEmpty(selectedName) && selectedName == profileName)
-                {
-                    SelectedProfile = selectedName;
-                    ViewModel.SelectedItem = element;
-                    return;
-                }
-            }
-
-            MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                $"Profile '{profileName}' not found in ComboBox", InfoBarSeverity.Warning);
-        }
-        catch (Exception ex)
-        {
-            MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                $"Error updating ComboBox: {ex.Message}", InfoBarSeverity.Error);
-        }
-    }
-
-    private void MandarinSparseUnit()
-    {
-        var element = ViewModel.SelectedItem;
-        //Required index
-        if (!element!.Name.Contains("PremadeSsA"))
-        {
-            var indexRequired = ViewModel.SelectedIndex - 1;
-            AppSettings.Preset = ViewModel.SelectedIndex - 1;
-            AppSettings.SaveSettings();
-            ProfileLoad();
-            ParseOverclockProfile(_profile[indexRequired]);
-            App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-            {
-                var navigationService = App.GetService<INavigationService>();
-                if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel)
-                {
-                    navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
-                    navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true);
-                }
-            });
-        }
-        else
-        {
-            var optimizationLevel = AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard : (AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep);
-            if (element.Name.Contains("Min"))
-            {
-                AppSettings.PremadeMinActivated = true;
-                AppSettings.PremadeEcoActivated = false;
-                AppSettings.PremadeBalanceActivated = false;
-                AppSettings.PremadeSpeedActivated = false;
-                AppSettings.PremadeMaxActivated = false;
-                AppSettings.Preset = -1;
-                AppSettings.RyzenAdjLine = OcFinder.CreatePreset(PresetType.Min, optimizationLevel).CommandString;
-                MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
-                    AppSettings.ReapplyOverclockTimer);
-            }
-
-            if (element.Name.Contains("Eco"))
-            {
-                AppSettings.PremadeMinActivated = false;
-                AppSettings.PremadeEcoActivated = true;
-                AppSettings.PremadeBalanceActivated = false;
-                AppSettings.PremadeSpeedActivated = false;
-                AppSettings.PremadeMaxActivated = false;
-                AppSettings.Preset = -1;
-                AppSettings.RyzenAdjLine = OcFinder.CreatePreset(PresetType.Eco, optimizationLevel).CommandString;
-                MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
-                    AppSettings.ReapplyOverclockTimer);
-            }
-
-            if (element.Name.Contains("Bal"))
-            {
-                AppSettings.PremadeMinActivated = false;
-                AppSettings.PremadeEcoActivated = false;
-                AppSettings.PremadeBalanceActivated = true;
-                AppSettings.PremadeSpeedActivated = false;
-                AppSettings.PremadeMaxActivated = false;
-                AppSettings.Preset = -1;
-                AppSettings.RyzenAdjLine = OcFinder.CreatePreset(PresetType.Balance, optimizationLevel).CommandString;
-                MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
-                    AppSettings.ReapplyOverclockTimer);
-            }
-
-            if (element.Name.Contains("Spd"))
-            {
-                AppSettings.PremadeMinActivated = false;
-                AppSettings.PremadeEcoActivated = false;
-                AppSettings.PremadeBalanceActivated = false;
-                AppSettings.PremadeSpeedActivated = true;
-                AppSettings.PremadeMaxActivated = false;
-                AppSettings.Preset = -1;
-                AppSettings.RyzenAdjLine = OcFinder.CreatePreset(PresetType.Performance, optimizationLevel).CommandString;
-                MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
-                    AppSettings.ReapplyOverclockTimer);
-            }
-
-            if (element.Name.Contains("Max"))
-            {
-                AppSettings.PremadeMinActivated = false;
-                AppSettings.PremadeEcoActivated = false;
-                AppSettings.PremadeBalanceActivated = false;
-                AppSettings.PremadeSpeedActivated = false;
-                AppSettings.PremadeMaxActivated = true;
-                AppSettings.Preset = -1;
-                AppSettings.RyzenAdjLine = OcFinder.CreatePreset(PresetType.Max, optimizationLevel).CommandString;
-                MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, false, AppSettings.ReapplyOverclock,
-                    AppSettings.ReapplyOverclockTimer);
-            }
-
-            AppSettings.SaveSettings();
-            App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-            {
-                var navigationService = App.GetService<INavigationService>();
-                if (navigationService.Frame!.GetPageViewModel() is ПресетыViewModel)
-                {
-                    navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
-                    navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!, null, true);
-                }
-                else if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel)
-                {
-                    navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
-                    navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true);
-                }
-            });
-        }
-    }
-
-    public static void ParseOverclockProfile(Profile profile, bool saveInfo = false)
-    {
-        var isBristol = CpuSingleton.GetInstance()?.info.codeName == Cpu.CodeName.BristolRidge;
-
-        var adjline = "";
-        if (profile.Cpu1)
-        {
-            adjline += " --tctl-temp=" + profile.Cpu1Value + (isBristol ? "000" : string.Empty);
-        }
-
-        if (profile.Cpu2)
-        {
-            var stapmBoostMillisecondsBristol = profile.Cpu5Value * 1000 < 180000 ? profile.Cpu5Value * 1000 : 180000;
-            adjline += " --stapm-limit=" + profile.Cpu2Value + "000" + (isBristol ? ",2," + stapmBoostMillisecondsBristol : string.Empty);
-        }
-
-        if (profile.Cpu3)
-        {
-            adjline += " --fast-limit=" + profile.Cpu3Value + "000";
-        }
-
-        if (profile.Cpu4)
-        {
-            adjline += " --slow-limit=" + profile.Cpu4Value + "000" + (isBristol ? "," + profile.Cpu4Value + "000,0" : string.Empty);
-        }
-
-        if (profile.Cpu5)
-        {
-            adjline += " --stapm-time=" + profile.Cpu5Value;
-        }
-
-        if (profile.Cpu6)
-        {
-            adjline += " --slow-time=" + profile.Cpu6Value;
-        }
-
-        if (profile.Cpu7)
-        {
-            adjline += " --cHTC-temp=" + profile.Cpu7Value;
-        }
-
-        //vrm
-        if (profile.Vrm1)
-        {
-            adjline += " --vrmmax-current=" + profile.Vrm1Value + "000" + (isBristol ? "," + profile.Vrm3Value + "000," + profile.Vrm3Value + "000" : string.Empty);
-        }
-
-        if (profile.Vrm2)
-        {
-            adjline += " --vrm-current=" + profile.Vrm2Value + "000" + (isBristol ? "," + profile.Vrm4Value + "000," + profile.Vrm4Value + "000" : string.Empty);
-        }
-
-        if (profile.Vrm3 && !isBristol)
-        {
-            adjline += " --vrmsocmax-current=" + profile.Vrm3Value + "000";
-        }
-
-        if (profile.Vrm4 && !isBristol)
-        {
-            adjline += " --vrmsoc-current=" + profile.Vrm4Value + "000";
-        }
-
-        if (profile.Vrm5)
-        {
-            adjline += " --psi0-current=" + profile.Vrm5Value + "000" + (isBristol ? "," + profile.Vrm6Value + "000," + profile.Vrm6Value + "000" : string.Empty); ;
-        }
-
-        if (profile.Vrm6 && !isBristol)
-        {
-            adjline += " --psi0soc-current=" + profile.Vrm6Value + "000";
-        }
-
-        if (profile.Vrm7)
-        {
-            var prochotDeassertionTimeMillisecondsBristol = profile.Vrm7Value < 100 ? profile.Vrm7Value : 100;
-            adjline += " --prochot-deassertion-ramp=" + (isBristol ? prochotDeassertionTimeMillisecondsBristol : profile.Vrm7Value);
-        }
-
-
-        //gpu
-        if (profile.Gpu1)
-        {
-            adjline += " --min-socclk-frequency=" + profile.Gpu1Value;
-        }
-
-        if (profile.Gpu2)
-        {
-            adjline += " --max-socclk-frequency=" + profile.Gpu2Value;
-        }
-
-        if (profile.Gpu3)
-        {
-            adjline += " --min-fclk-frequency=" + profile.Gpu3Value;
-        }
-
-        if (profile.Gpu4)
-        {
-            adjline += " --max-fclk-frequency=" + profile.Gpu4Value;
-        }
-
-        if (profile.Gpu5)
-        {
-            adjline += " --min-vcn=" + profile.Gpu5Value;
-        }
-
-        if (profile.Gpu6)
-        {
-            adjline += " --max-vcn=" + profile.Gpu6Value;
-        }
-
-        if (profile.Gpu7)
-        {
-            adjline += " --min-lclk=" + profile.Gpu7Value;
-        }
-
-        if (profile.Gpu8)
-        {
-            adjline += " --max-lclk=" + profile.Gpu8Value;
-        }
-
-        if (profile.Gpu9)
-        {
-            adjline += " --min-gfxclk=" + profile.Gpu9Value;
-        }
-
-        if (profile.Gpu10)
-        {
-            adjline += " --max-gfxclk=" + profile.Gpu10Value;
-        }
-
-        if (profile.Gpu11)
-        {
-            adjline += " --min-cpuclk=" + profile.Gpu11Value;
-        }
-
-        if (profile.Gpu12)
-        {
-            adjline += " --max-cpuclk=" + profile.Gpu12Value;
-        }
-
-        if (profile.Gpu16)
-        {
-            if (profile.Gpu16Value != 0)
-            {
-                adjline += " --setcpu-freqto-ramstate=" + (profile.Gpu16Value - 1);
-            }
-            else
-            {
-                adjline += " --stopcpu-freqto-ramstate=0";
-            }
-        }
-
-        //advanced
-        if (profile.Advncd1)
-        {
-            adjline += " --vrmgfx-current=" + profile.Advncd1Value + "000";
-        }
-
-        if (profile.Advncd3)
-        {
-            adjline += " --vrmgfxmax_current=" + profile.Advncd3Value + "000";
-        }
-
-        if (profile.Advncd4)
-        {
-            adjline += " --psi3cpu_current=" + profile.Advncd4Value + "000";
-        }
-
-        if (profile.Advncd5)
-        {
-            adjline += " --psi3gfx_current=" + profile.Advncd5Value + "000";
-        }
-
-        if (profile.Advncd6)
-        {
-            adjline += " --apu-skin-temp=" + profile.Advncd6Value * 256;
-        }
-
-        if (profile.Advncd7)
-        {
-            adjline += " --dgpu-skin-temp=" + profile.Advncd7Value * 256;
-        }
-
-        if (profile.Advncd8)
-        {
-            adjline += " --apu-slow-limit=" + profile.Advncd8Value + "000";
-        }
-
-        if (profile.Advncd9)
-        {
-            adjline += " --skin-temp-limit=" + profile.Advncd9Value + "000";
-        }
-
-        if (profile.Advncd10)
-        {
-            adjline += " --gfx-clk=" + profile.Advncd10Value;
-        }
-
-        if (profile.Advncd11)
-        {
-            adjline += " --oc-clk=" + profile.Advncd11Value;
-        }
-
-        if (profile.Advncd12)
-        {
-            adjline += " --oc-volt=" + Math.Round((1.55 - profile.Advncd12Value / 1000) / 0.00625);
-        }
-
-
-        if (profile.Advncd13)
-        {
-            if (profile.Advncd13Value == 1)
-            {
-                adjline += " --max-performance=1";
-            }
-
-            if (profile.Advncd13Value == 2)
-            {
-                adjline += " --power-saving=1";
-            }
-        }
-
-        if (profile.Advncd14)
-        {
-            switch (profile.Advncd14Value)
-            {
-                case 0:
-                    adjline += " --disable-oc=1";
-                    break;
-                case 1:
-                    adjline += " --enable-oc=1";
-                    break;
-            }
-        }
-
-        if (profile.Advncd15)
-        {
-            adjline += " --pbo-scalar=" + profile.Advncd15Value * 100;
-        }
-
-        if (profile.Coall)
-        {
-            if (profile.Coallvalue >= 0.0)
-            {
-                adjline += $" --set-coall={profile.Coallvalue} ";
-            }
-            else
-            {
-                adjline += $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)profile.Coallvalue))} ";
-            }
-        }
-
-        var cpu = CpuSingleton.GetInstance();
-        if (profile.Cogfx)
-        {
-            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(false);
-            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoGfx(true);
-            //Using Irusanov method
-            for (var i = 0; i < cpu.info.topology.physicalCores; i++)
-            {
-                var mapIndex = i < 8 ? 0 : 1;
-                if (((~cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1)
-                {
-                    if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
-                    {
-                        cpu.SetPsmMarginSingleCore(GetCoreMask(cpu, i), Convert.ToInt32(profile.Cogfxvalue));
-                    }
-                }
-            }
-
-            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(false);
-            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(true);
-        }
-
-        if (profile.Comode && profile.Coprefmode != 0) // Если пользователь выбрал хотя-бы один режим и ...
-        {
-            switch (profile.Coprefmode)
-            {
-                // Если выбран режим ноутбук
-                // Так как там как у компьютеров
-                case 1 when cpu.info.codeName == Cpu.CodeName.DragonRange:
-                    {
-                        if (profile.Coper0)
-                        {
-                            adjline += $" --set-coper={0 | ((int)profile.Coper0Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper1)
-                        {
-                            adjline += $" --set-coper={1048576 | ((int)profile.Coper1Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper2)
-                        {
-                            adjline += $" --set-coper={2097152 | ((int)profile.Coper2Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper3)
-                        {
-                            adjline += $" --set-coper={3145728 | ((int)profile.Coper3Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper4)
-                        {
-                            adjline += $" --set-coper={4194304 | ((int)profile.Coper4Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper5)
-                        {
-                            adjline += $" --set-coper={5242880 | ((int)profile.Coper5Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper6)
-                        {
-                            adjline += $" --set-coper={6291456 | ((int)profile.Coper6Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper7)
-                        {
-                            adjline += $" --set-coper={7340032 | ((int)profile.Coper7Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper8)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.Coper8Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper9)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.Coper9Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper10)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.Coper10Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper11)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.Coper11Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper12)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.Coper12Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper13)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.Coper13Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper14)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.Coper14Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper15)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.Coper15Value & 0xFFFF)} ";
-                        }
-
-                        break;
-                    }
-                case 1:
-                    {
-                        if (profile.Coper0)
-                        {
-                            adjline += $" --set-coper={0 | ((int)profile.Coper0Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper1)
-                        {
-                            adjline += $" --set-coper={(1 << 20) | ((int)profile.Coper1Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper2)
-                        {
-                            adjline += $" --set-coper={(2 << 20) | ((int)profile.Coper2Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper3)
-                        {
-                            adjline += $" --set-coper={(3 << 20) | ((int)profile.Coper3Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper4)
-                        {
-                            adjline += $" --set-coper={(4 << 20) | ((int)profile.Coper4Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper5)
-                        {
-                            adjline += $" --set-coper={(5 << 20) | ((int)profile.Coper5Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper6)
-                        {
-                            adjline += $" --set-coper={(6 << 20) | ((int)profile.Coper6Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper7)
-                        {
-                            adjline += $" --set-coper={(7 << 20) | ((int)profile.Coper7Value & 0xFFFF)} ";
-                        }
-
-                        break;
-                    }
-                //Если выбран режим компьютер
-                case 2:
-                    {
-                        if (profile.Coper0)
-                        {
-                            adjline += $" --set-coper={0 | ((int)profile.Coper0Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper1)
-                        {
-                            adjline += $" --set-coper={1048576 | ((int)profile.Coper1Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper2)
-                        {
-                            adjline += $" --set-coper={2097152 | ((int)profile.Coper2Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper3)
-                        {
-                            adjline += $" --set-coper={3145728 | ((int)profile.Coper3Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper4)
-                        {
-                            adjline += $" --set-coper={4194304 | ((int)profile.Coper4Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper5)
-                        {
-                            adjline += $" --set-coper={5242880 | ((int)profile.Coper5Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper6)
-                        {
-                            adjline += $" --set-coper={6291456 | ((int)profile.Coper6Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper7)
-                        {
-                            adjline += $" --set-coper={7340032 | ((int)profile.Coper7Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper8)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.Coper8Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper9)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.Coper9Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper10)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.Coper10Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper11)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.Coper11Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper12)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.Coper12Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper13)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.Coper13Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper14)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.Coper14Value & 0xFFFF)} ";
-                        }
-
-                        if (profile.Coper15)
-                        {
-                            adjline +=
-                                $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.Coper15Value & 0xFFFF)} ";
-                        }
-
-                        break;
-                    }
-                // Если выбран режим с использованием метода от Ирусанова, Irusanov, https://github.com/irusanov
-                case 3:
-                    {
-                        cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(false);
-                        cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = SendSmuCommand.ReturnCoPer(true);
-                        var options = new Dictionary<int, double>
-                    {
-                        { 0, profile.Coper0Value },
-                        { 1, profile.Coper1Value },
-                        { 2, profile.Coper2Value },
-                        { 3, profile.Coper3Value },
-                        { 4, profile.Coper4Value },
-                        { 5, profile.Coper5Value },
-                        { 6, profile.Coper6Value },
-                        { 7, profile.Coper7Value },
-                        { 8, profile.Coper8Value },
-                        { 9, profile.Coper9Value },
-                        { 10, profile.Coper10Value },
-                        { 11, profile.Coper11Value },
-                        { 12, profile.Coper12Value },
-                        { 13, profile.Coper13Value },
-                        { 14, profile.Coper14Value },
-                        { 15, profile.Coper15Value }
-                    };
-                        var checks = new Dictionary<int, bool>
-                    {
-                        { 0, profile.Coper0 },
-                        { 1, profile.Coper1 },
-                        { 2, profile.Coper2 },
-                        { 3, profile.Coper3 },
-                        { 4, profile.Coper4 },
-                        { 5, profile.Coper5 },
-                        { 6, profile.Coper6 },
-                        { 7, profile.Coper7 },
-                        { 8, profile.Coper8 },
-                        { 9, profile.Coper9 },
-                        { 10, profile.Coper10 },
-                        { 11, profile.Coper11 },
-                        { 12, profile.Coper12 },
-                        { 13, profile.Coper13 },
-                        { 14, profile.Coper14 },
-                        { 15, profile.Coper15 }
-                    };
-                        for (var i = 0; i < cpu.info.topology.physicalCores; i++)
-                        {
-                            var checkbox = i < 16 && checks[i];
-                            if (checkbox)
-                            {
-                                var setVal = options[i];
-                                var mapIndex = i < 8 ? 0 : 1;
-                                if (((~cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1) // Если ядро включено
-                                {
-                                    if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U) // Если команда существует
-                                    {
-                                        cpu.SetPsmMarginSingleCore(GetCoreMask(cpu, i), Convert.ToInt32(setVal));
-                                    }
-                                }
-                            }
-                        }
-
-                        break;
-                    }
-            }
-        }
-
-        if (profile.SmuFunctionsEnabl)
-        {
-            if (profile.SmuFeatureCclk)
-            {
-                adjline += " --enable-feature=1";
-            }
-            else
-            {
-                adjline += " --disable-feature=1";
-            }
-
-            if (profile.SmuFeatureData)
-            {
-                adjline += " --enable-feature=4";
-            }
-            else
-            {
-                adjline += " --disable-feature=4";
-            }
-
-            if (profile.SmuFeaturePpt)
-            {
-                adjline += " --enable-feature=8";
-            }
-            else
-            {
-                adjline += " --disable-feature=8";
-            }
-
-            if (profile.SmuFeatureTdc)
-            {
-                adjline += " --enable-feature=16";
-            }
-            else
-            {
-                adjline += " --disable-feature=16";
-            }
-
-            if (profile.SmuFeatureThermal)
-            {
-                adjline += " --enable-feature=32";
-            }
-            else
-            {
-                adjline += " --disable-feature=32";
-            }
-
-            if (profile.SmuFeaturePowerDown)
-            {
-                adjline += " --enable-feature=256";
-            }
-            else
-            {
-                adjline += " --disable-feature=256";
-            }
-
-            if (profile.SmuFeatureProchot)
-            {
-                adjline += " --enable-feature=0,32";
-            }
-            else
-            {
-                adjline += " --disable-feature=0,32";
-            }
-
-            if (profile.SmuFeatureStapm)
-            {
-                adjline += " --enable-feature=0,128";
-            }
-            else
-            {
-                adjline += " --disable-feature=0,128";
-            }
-
-            if (profile.SmuFeatureCStates)
-            {
-                adjline += " --enable-feature=0,256";
-            }
-            else
-            {
-                adjline += " --disable-feature=0,256";
-            }
-
-            if (profile.SmuFeatureGfxDutyCycle)
-            {
-                adjline += " --enable-feature=0,512";
-            }
-            else
-            {
-                adjline += " --disable-feature=0,512";
-            }
-
-            if (profile.SmuFeatureAplusA)
-            {
-                adjline += " --enable-feature=0,1024";
-            }
-            else
-            {
-                adjline += " --disable-feature=0,1024";
-            }
-        }
-
-        AppSettings.RyzenAdjLine = adjline + " ";
-        AppSettings.SaveSettings();
-        MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, saveInfo, AppSettings.ReapplyOverclock,
-            AppSettings.ReapplyOverclockTimer);
-    }
-
-    private static uint GetCoreMask(Cpu cpu, int coreIndex)
-    {
-        Task.Run(async () => await LogHelper.Log("Getting Core Mask..."));
-        var ccxInCcd = cpu.info.family >= Cpu.Family.FAMILY_19H ? 1U : 2U;
-        var coresInCcx = 8 / ccxInCcd;
-
-        var ccd = Convert.ToUInt32(coreIndex / 8);
-        var ccx = Convert.ToUInt32(coreIndex / coresInCcx - ccxInCcd * ccd);
-        var core = Convert.ToUInt32(coreIndex % coresInCcx);
-        var coreMask = cpu.MakeCoreMask(core, ccd, ccx);
-        Task.Run(async () =>
-            await LogHelper.Log(
-                $"Core Mask detected: {coreMask}\nCCD: {ccd}\nCCX: {ccx}\nCore: {core}\nCCX in Index: {ccxInCcd}"));
-        return coreMask;
-    }
-
-    public static void AutoStartChecker()
-    {
-        var taskService = new TaskService();
-        const string taskName = "Saku Overclock";
-        var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
-        var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
-        var pathToStartupLnk = Path.Combine(pathToProgramDirectory!, "Saku Overclock.exe");
-
-        if (AppSettings.AutostartType == 2 || AppSettings.AutostartType == 3)
-        {
-            // Проверяем существование задачи
-            var existingTask = taskService.GetTask(taskName);
-            if (existingTask != null)
-            {
-                // Проверяем корректность пути к исполняемому файлу
-                if (existingTask.Definition.Actions[0] is ExecAction execAction && execAction.Path.Equals(pathToStartupLnk, StringComparison.OrdinalIgnoreCase))
-                {
-                    // Задача существует и путь корректен, ничего не делаем
-                    return;
-                }
-                else
-                {
-                    // Путь некорректен, удаляем задачу
-                    taskService.RootFolder.DeleteTask(taskName);
-                }
-            }
-
-            // Создаём новую задачу
-            var taskDefinition = taskService.NewTask();
-            taskDefinition.RegistrationInfo.Description = "An awesome ryzen laptop overclock utility for those who want real performance! Autostart Saku Overclock application task";
-            taskDefinition.RegistrationInfo.Author = "Sakura Serzhik";
-            taskDefinition.RegistrationInfo.Version = new Version("1.0.0");
-            taskDefinition.Principal.RunLevel = TaskRunLevel.Highest;
-            taskDefinition.Triggers.Add(new LogonTrigger { Enabled = true });
-            taskDefinition.Actions.Add(new ExecAction(pathToStartupLnk));
-
-            taskService.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
-        }
-        else
-        {
-            // Если задача существует, удаляем её
-            if (taskService.GetTask(taskName) != null)
-            {
-                taskService.RootFolder.DeleteTask(taskName);
-            }
-        }
-    }
+    /// <summary>
+    /// Помогает установить регион взаимодействия с программой (кликабельную кнопку уведомлений и лого)
+    /// </summary>
+    private void AppTitleBar_Loaded(object sender, RoutedEventArgs e) => SetRegionsForCustomTitleBar(); //Установить регион взаимодействия
+
+    /// <summary>
+    /// Помогает установить регион взаимодействия с программой (кликабельную кнопку уведомлений и лого)
+    /// </summary>
+    private void AppTitleBar_SizeChanged(object sender, SizeChangedEventArgs e) => App.MainWindow.DispatcherQueue.TryEnqueue(SetRegionsForCustomTitleBar);
 
     #endregion
 
@@ -1439,26 +166,30 @@ public sealed partial class ShellPage
 
     #region Window Definitions
 
+    /// <summary>
+    /// Активирует или выключает проверку уведомлений в приложении, если пользователь переключился на окно программы
+    /// </summary>
     private void Window_Activated(object sender, WindowActivatedEventArgs args)
     {
         if (args.WindowActivationState == WindowActivationState.CodeActivated ||
             args.WindowActivationState == WindowActivationState.PointerActivated)
         {
-            // Окно активировано
-            _dispatcherTimer?.Start();
+            _dispatcherTimer?.Start(); // Снова запускает проверку наличия новых уведомлений
         }
         else
         {
-            // Окно не активировано
             _dispatcherTimer?.Stop();
         }
     }
 
+    /// <summary>
+    /// Активирует или выключает проверку уведомлений в приложении, если пользователь свернул или развернул окно программы
+    /// </summary>
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
     {
         if (args.Visible)
         {
-            _dispatcherTimer?.Start();
+            _dispatcherTimer?.Start(); // Снова запускает проверку наличия новых уведомлений
         }
         else
         {
@@ -1469,6 +200,10 @@ public sealed partial class ShellPage
     #endregion
 
     #region Info Update Timers
+
+    /// <summary>
+    /// Начинает проверку наличия новых уведомлений
+    /// </summary>
     private void StartInfoUpdate()
     {
         _dispatcherTimer = new DispatcherTimer();
@@ -1479,36 +214,24 @@ public sealed partial class ShellPage
         _dispatcherTimer.Start();
     }
 
+    /// <summary>
+    /// Останавливает проверку наличия новых уведомлений
+    /// </summary>
     private void StopInfoUpdate() => _dispatcherTimer?.Stop();
-
-    #endregion
-
-    #region Info Update Timer Stop When Page Navigated
-
-    protected override void OnNavigatedTo(NavigationEventArgs e)
-    {
-        base.OnNavigatedTo(e);
-        StartInfoUpdate();
-    }
-
-    protected override void OnNavigatedFrom(NavigationEventArgs e)
-    {
-        base.OnNavigatedFrom(e);
-        StopInfoUpdate();
-    }
 
     #endregion
 
     #region Notification Update Voids
 
+    /// <summary>
+    /// Главный метод проверки наличия новых уведомлений
+    /// </summary>
     private Task GetNotify()
     {
-        if (ViewModel.SelectedIndex != -1 && ((ComboBoxItem?)ViewModel.SelectedItem)?.Content != null)
+        if (ViewModel.SelectedIndex != -1 && ViewModel.SelectedItem != string.Empty
+            && SelectedProfile != ViewModel.SelectedItem)
         {
-            if (SelectedProfile != ((ComboBoxItem?)ViewModel.SelectedItem)?.Content.ToString())
-            {
-                SelectedProfile = ViewModel.SelectedItem?.Content.ToString()!;
-            }
+            SelectedProfile = ViewModel.SelectedItem ?? "Unknown";
         }
 
         if (_isNotificationPanelShow)
@@ -1538,22 +261,22 @@ public sealed partial class ShellPage
                 {
                     //Если уведомление о изменении темы
                     case "Theme applied!":
-                        Theme_Loader();
+                        InitializeThemes();
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return; //Удалить и не показывать 
                     case "UpdateNAVBAR":
-                        HideNavBar();
+                        HideNavigationBar();
                         Icon.Visibility = Visibility.Collapsed;
                         RingerNotificationGrid.Visibility = Visibility.Collapsed;
                         return; //Удалить и не показывать 
                     case "FirstLaunch":
-                        HideNavBar();
+                        HideNavigationBar();
                         Icon.Visibility = Visibility.Collapsed;
                         RingerNotificationGrid.Visibility = Visibility.Collapsed;
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
                         return;
                     case "ExitFirstLaunch":
-                        ShowNavBar();
+                        ShowNavigationBar();
                         Icon.Visibility = Visibility.Visible;
                         RingerNotificationGrid.Visibility = Visibility.Visible;
                         ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
@@ -1585,7 +308,7 @@ public sealed partial class ShellPage
                         };
                         updateButton.Click += (_, _) =>
                         {
-                            HideNavBar();
+                            HideNavigationBar();
                             Icon.Visibility = Visibility.Collapsed;
                             RingerNotificationGrid.Visibility = Visibility.Collapsed;
                             var navigationService = App.GetService<INavigationService>();
@@ -2069,7 +792,7 @@ public sealed partial class ShellPage
 
             if (contains)
             {
-                GetProfileInit();
+                LoadPresetsToViewModel();
             }
 
             _compareList = NotificationsService.Notifies.Count;
@@ -2077,7 +800,10 @@ public sealed partial class ShellPage
         return Task.CompletedTask;
     }
 
-    private void HideNavBar() // Скрыть навигационную панель
+    /// <summary>
+    /// Скрывает навигационную панель
+    /// </summary>
+    private void HideNavigationBar()
     {
         NavigationViewControl.Margin = new Thickness(-49, -48, 0, 0);
         NavigationViewControl.IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed;
@@ -2088,10 +814,13 @@ public sealed partial class ShellPage
             ((NavigationViewItem)element).Visibility = Visibility.Collapsed;
         }
 
-        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+        ClearAllNotification(NotificationPanelClearAllBtn, null);
     }
 
-    private void ShowNavBar() // Показать навигационную панель
+    /// <summary>
+    /// Показывает навигационную панель после скрытия
+    /// </summary>
+    private void ShowNavigationBar()
     {
         NavigationViewControl.Margin = new Thickness(0, 0, 0, 0);
         NavigationViewControl.IsBackButtonVisible = NavigationViewBackButtonVisible.Visible;
@@ -2101,7 +830,7 @@ public sealed partial class ShellPage
             ((NavigationViewItem)element).Visibility = Visibility.Visible;
         }
 
-        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+        ClearAllNotification(NotificationPanelClearAllBtn, null);
     }
 
     #endregion
@@ -2110,9 +839,371 @@ public sealed partial class ShellPage
 
     #endregion
 
-    #region JSON Initialization
+    #region User Presets
 
-    private void Theme_Loader()
+    /// <summary>
+    /// Загружает пресеты в ViewModel (включая готовые)
+    /// </summary>
+    private void LoadPresetsToViewModel()
+    {
+        var presetsCollection = new List<string>();
+
+        ProfileLoad();
+
+        if (_profile == null)
+        {
+            _profile = new Profile[1];
+            _profile[0] = new Profile();
+            ProfileSave();
+        }
+
+        foreach (var profile in _profile)
+        {
+            var securedProfile = profile;
+            if (profile == null)
+            {
+                securedProfile = new Profile();
+                if (_profile.Length > 0)
+                {
+                    _profile[0] = securedProfile;
+                    ProfileSave();
+                }
+                else
+                {
+                    _profile = new Profile[1];
+                    _profile[0] = securedProfile;
+                    ProfileSave();
+                }
+            }
+
+            presetsCollection.Add(securedProfile.Profilename);
+        }
+
+        presetsCollection.Add("PremadeSsAMin");
+        presetsCollection.Add("PremadeSsAEco");
+        presetsCollection.Add("PremadeSsABal");
+        presetsCollection.Add("PremadeSsASpd");
+        presetsCollection.Add("PremadeSsAMax");
+
+        ViewModel.Presets = presetsCollection;
+
+        if (AppSettings.Preset == -1)
+        {
+            if (AppSettings.PremadeMinActivated)
+            {
+                SelectRightPresetName("PremadeSsAMin");
+            }
+
+            if (AppSettings.PremadeEcoActivated)
+            {
+                SelectRightPresetName("PremadeSsAEco");
+            }
+
+            if (AppSettings.PremadeBalanceActivated)
+            {
+                SelectRightPresetName("PremadeSsABal");
+            }
+
+            if (AppSettings.PremadeSpeedActivated)
+            {
+                SelectRightPresetName("PremadeSsASpd");
+            }
+
+            if (AppSettings.PremadeMaxActivated)
+            {
+                SelectRightPresetName("PremadeSsAMax");
+            }
+        }
+        else
+        {
+            ViewModel.SelectedIndex = AppSettings.Preset;
+
+            if (_profile.Length > AppSettings.Preset)
+            {
+                ViewModel.SelectedItem = _profile[AppSettings.Preset].Profilename;
+            }
+            else
+            {
+                AppSettings.Preset = -1;
+                AppSettings.SaveSettings();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Помощник, выставляющий во ViewModel нужный пресет по имени
+    /// </summary>
+    private void SelectRightPresetName(string name)
+    {
+        foreach (var element in ViewModel.Presets)
+        {
+            if (element?.Contains(name) == true)
+            {
+                ViewModel.SelectedItem = element;
+                ViewModel.SelectedIndex = ViewModel.Presets.IndexOf(name);
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Делает активным готовый пресет по короткому имени, но не применяет его
+    /// </summary>
+    public static void SelectPremadePreset(string nextProfile)
+    {
+        var profiles = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
+        foreach (var profile in profiles)
+        {
+            typeof(IAppSettingsService).GetProperty($"Premade{profile}Activated")
+                ?.SetValue(AppSettings, profile == nextProfile);
+        }
+        AppSettings.Preset = -1;
+        AppSettings.SaveSettings();
+    }
+
+    /// <summary>
+    /// Вспомогательный словарь, показывающий какой готовый пресет следующий, на основе предыдущего
+    /// </summary>
+    private static Dictionary<string, string> NextPremadePreset => new()
+    {
+        { "Min", "Eco" },
+        { "Eco", "Balance" },
+        { "Balance", "Speed" },
+        { "Speed", "Max" },
+        { "Max", "Min" }
+    };
+
+    /// <summary>
+    /// Вспомогательный словарь, выдающий данные о готовом пресете по его короткому имени
+    /// </summary>
+    public static Dictionary<string, (string name, string desc, string icon, string settings, string comboName)>
+        PremadedPresets => new()
+    {
+        {
+            "Min",
+            ("Shell_Preset_Min", "Preset_Min_OverlayDesc", "\uEBC0",
+                OcFinder.CreatePreset(PresetType.Min, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard : (AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
+                "PremadeSsAMin")
+        },
+        {
+            "Eco",
+            ("Shell_Preset_Eco", "Preset_Eco_OverlayDesc", "\uEC0A",
+                OcFinder.CreatePreset(PresetType.Eco, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard : (AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
+                "PremadeSsAEco")
+        },
+        {
+            "Balance",
+            ("Shell_Preset_Balance", "Preset_Balance_OverlayDesc", "\uEC49",
+                OcFinder.CreatePreset(PresetType.Balance, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
+                "PremadeSsABal")
+        },
+        {
+            "Speed",
+            ("Shell_Preset_Speed", "Preset_Speed_OverlayDesc", "\uE945",
+                OcFinder.CreatePreset(PresetType.Performance, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
+                "PremadeSsASpd")
+        },
+        {
+            "Max",
+            ("Shell_Preset_Max", "Preset_Max_OverlayDesc", "\uECAD",
+                OcFinder.CreatePreset(PresetType.Max, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
+                "PremadeSsAMax")
+        }
+    };
+
+    /// <summary>
+    /// Метод для получения следующего готового пресета, без применения настроек
+    /// </summary>
+    private (string profileName, string profileKey) GetNextPremadeProfile(out string icon, out string desc)
+    {
+        icon = "\uE783";
+        desc = "";
+
+        var profiles = new[] { "Min", "Eco", "Balance", "Speed", "Max" };
+
+        string currentProfile;
+
+        // Определяем текущую позицию
+        if (_isVirtualStateActive && !string.IsNullOrEmpty(_virtualPremadeProfile))
+        {
+            currentProfile = _virtualPremadeProfile;
+        }
+        else
+        {
+            // Определяем реальную текущую позицию
+            // Активен готовый пресет - ищем какой именно
+            currentProfile = profiles.FirstOrDefault(p =>
+                                (bool)typeof(IAppSettingsService).GetProperty($"Premade{p}Activated")
+                                    ?.GetValue(AppSettings)!) ?? "Balance";
+
+            _virtualPremadeProfile = currentProfile;
+            _isVirtualStateActive = true;
+        }
+
+        // Получаем следующий пресет
+        var nextProfile = NextPremadePreset[currentProfile];
+
+        // Обновляем виртуальную позицию
+        _virtualPremadeProfile = nextProfile;
+
+        // Получаем данные пресета для отображения
+        var (name, description, iconStr, _, _) = PremadedPresets[nextProfile];
+        desc = description.GetLocalized();
+        icon = iconStr;
+
+        return (name.GetLocalized(), nextProfile);
+    }
+
+    /// <summary>
+    /// Метод для получения следующего кастомного пресета, без применения настроек
+    /// </summary>
+    private (string profileName, int profileIndex) GetNextCustomProfile(out string? icon, out string? desc)
+    {
+        icon = string.Empty;
+        desc = string.Empty;
+
+        try
+        {
+            ProfileLoad();
+
+            if (_profile == null || _profile.Length == 0)
+            {
+                MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                    "No custom profiles available", InfoBarSeverity.Warning);
+                return (string.Empty, -1);
+            }
+
+            int nextProfileIndex;
+
+            // Определяем текущую позицию
+            if (_isVirtualStateActive && _virtualCustomProfileIndex >= 0)
+            {
+                nextProfileIndex = (_virtualCustomProfileIndex + 1) % _profile.Length;
+            }
+            else
+            {
+                if (AppSettings.Preset == -1)
+                {
+                    // Сейчас активен готовый пресет - начинаем с первого кастомного
+                    nextProfileIndex = 0;
+                    _virtualCustomProfileIndex = -1; // Чтобы следующий был 0
+                    _isVirtualStateActive = true;
+                }
+                else
+                {
+                    // Уже выбран кастомный пресет
+                    nextProfileIndex = (AppSettings.Preset + 1) % _profile.Length;
+                    _virtualCustomProfileIndex = AppSettings.Preset;
+                    _isVirtualStateActive = true;
+                }
+            }
+
+            // Обновляем виртуальную позицию
+            _virtualCustomProfileIndex = nextProfileIndex;
+
+            // Проверяем корректность индекса и данных пресета
+            if (nextProfileIndex >= 0 && nextProfileIndex < _profile.Length &&
+                !string.IsNullOrEmpty(_profile[nextProfileIndex].Profilename))
+            {
+                var profile = _profile[nextProfileIndex];
+                icon = profile.Profileicon;
+                desc = profile.Profiledesc;
+                return (profile.Profilename, nextProfileIndex);
+            }
+            else
+            {
+                MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                    $"Invalid profile index: {nextProfileIndex}", InfoBarSeverity.Error);
+                return (string.Empty, -1);
+            }
+        }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                $"Error getting next custom profile: {ex.Message}", InfoBarSeverity.Error);
+            return (string.Empty, -1);
+        }
+    }
+
+    /// <summary>
+    /// Устанавливает готовую строку параметров разгона для применения готового пресета, но не применяет
+    /// </summary>
+    private void SetPremadePreset(string profileKey)
+    {
+        try
+        {
+            // Активируем пресет
+            SelectPremadePreset(profileKey);
+            AppSettings.Preset = -1; // Устанавливаем флаг готового пресета
+
+            // Получаем данные пресета и обновляем настройки
+            var (presetName, _, _, settings, comboName) = PremadedPresets[profileKey];
+
+            AppSettings.RyzenAdjLine = settings;
+
+            SelectRightPresetName(comboName);
+
+            SelectedProfile = presetName.GetLocalized();
+        }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                $"Error applying premade profile: {ex.Message}", InfoBarSeverity.Error);
+        }
+    }
+
+    /// <summary>
+    /// Устанавливает и применяет готовую строку параметров разгона для применения кастомного пресета
+    /// </summary>
+    private void ApplyCustomProfile(int profileIndex)
+    {
+        try
+        {
+            ProfileLoad();
+
+            if (_profile == null || profileIndex < 0 || profileIndex >= _profile.Length)
+            {
+                MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                    $"Invalid custom profile index: {profileIndex}", InfoBarSeverity.Error);
+                return;
+            }
+
+            AppSettings.Preset = profileIndex;
+
+            var profile = _profile[profileIndex];
+
+            SelectRightPresetName(profile.Profilename);
+            _applyer.ApplyCustomPreset(profile);
+
+            SelectedProfile = profile.Profilename;
+
+            App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+            {
+                var navigationService = App.GetService<INavigationService>();
+                if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel)
+                {
+                    navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+                    navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!, null, true);
+                }
+            });
+
+            AppSettings.SaveSettings();
+        }
+        catch (Exception ex)
+        {
+            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                $"Error applying custom profile: {ex.Message}", InfoBarSeverity.Error);
+        }
+    }
+
+    #endregion
+
+    #region Themes
+    
+    /// <summary>
+    /// Инициализирует активную тему приложения
+    /// </summary>
+    private void InitializeThemes()
     {
         try
         {
@@ -2153,6 +1244,10 @@ public sealed partial class ShellPage
             );
         }
     }
+
+    #endregion
+
+    #region JSON
 
     private void ProfileSave()
     {
@@ -2366,10 +1461,9 @@ public sealed partial class ShellPage
                                 }
                                 else
                                 {
-                                    ApplyPremadeProfile(profileToApply);
+                                    SetPremadePreset(profileToApply);
+                                    _applyer.ApplyWithoutAdjLine(false);
                                 }
-
-                                MainWindow.Applyer.ApplyWithoutAdjLine(false);
                             }
                         }
                         catch (Exception ex)
@@ -2566,7 +1660,6 @@ public sealed partial class ShellPage
 
     #region Event Handlers
 
-
     private void ToggleNotificationPanelBtn_Click(object sender, RoutedEventArgs e)
     {
         _isNotificationPanelShow = ToggleNotificationPanelBtn.IsChecked ?? false;
@@ -2651,40 +1744,6 @@ public sealed partial class ShellPage
                 button.IsEnabled = true;
                 NotificationsService.Notifies = [];
                 NotificationsService.SaveNotificationsSettings();
-            }
-        }
-        catch (Exception ex)
-        {
-            MandarinAddNotification("TraceIt_Error".GetLocalized(), ex.ToString(), InfoBarSeverity.Error);
-        }
-    }
-
-    private async void Notif_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        try
-        {
-            if (NotificationsPivot.SelectedIndex == 0)
-            {
-                NotificationContainer.Visibility = Visibility.Visible;
-                if (NotificationContainer.Children.Count == 0)
-                {
-                    NoNotificationIndicator.Visibility = Visibility.Visible;
-                }
-            }
-            else
-            {
-                NotificationContainer.Visibility = Visibility.Collapsed;
-                NoNotificationIndicator.Visibility = Visibility.Collapsed;
-                if (UpdateChecker.GitHubInfoString == string.Empty)
-                {
-                    await UpdateChecker.GenerateReleaseInfoString();
-                }
-
-                if (UpdateChecker.GitHubInfoString != "**Failed to fetch info**")
-                {
-                    NotificationChangelogTexts.Children.Clear();
-                    await UpdateChecker.GenerateFormattedReleaseNotes(NotificationChangelogTexts);
-                }
             }
         }
         catch (Exception ex)

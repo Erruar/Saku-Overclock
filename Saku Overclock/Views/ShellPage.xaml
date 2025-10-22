@@ -31,7 +31,7 @@
                 PaneClosed="NavigationViewControl_PaneClosed"
                 IsBackButtonVisible="Visible"
                 IsBackEnabled="{x:Bind ViewModel.IsBackEnabled, Mode=OneWay}"
-                SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
+                SelectedItem="{x:Bind ViewModel.SelectedPage, Mode=OneWay}"
                 IsSettingsVisible="True"
                 ExpandedModeThresholdWidth="1280"
                 DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
@@ -126,10 +126,14 @@
                             Shadow="{ThemeResource SharedShadow}"
                             Translation="0,0,12">
                         <Button.Transitions>
-                            <RepositionThemeTransition/>
+                            <TransitionCollection>
+                                <RepositionThemeTransition/>
+                            </TransitionCollection>
                         </Button.Transitions>
                         <Button.ContentTransitions>
-                            <RepositionThemeTransition/>
+                            <TransitionCollection>
+                                <RepositionThemeTransition/>
+                            </TransitionCollection>
                         </Button.ContentTransitions>
                         <StackPanel Margin="-5,-5,-5,-5"
                                     HorizontalAlignment="Left"
@@ -181,7 +185,9 @@
                                 CornerRadius="3"
                                 Visibility="Visible">
                                 <StackPanel.Transitions>
-                                    <RepositionThemeTransition/>
+                                    <TransitionCollection>
+                                        <RepositionThemeTransition/>
+                                    </TransitionCollection>
                                 </StackPanel.Transitions>
                                 <TextBlock x:Name="VersionNumberIndicator"
                                            PointerEntered="TitleIcon_PointerEntered"
@@ -248,59 +254,15 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.Transitions>
-                    <RepositionThemeTransition/>
+                    <TransitionCollection>
+                        <RepositionThemeTransition/>
+                    </TransitionCollection>
                 </Grid.Transitions>
                 <Grid>
                     <ScrollViewer
                         CanContentRenderOutsideBounds="True"
                         HorizontalScrollBarVisibility="Disabled">
                         <Grid MinWidth="608" MinHeight="200">
-                            <Pivot HorizontalContentAlignment="Center" SelectedIndex="0" x:Name="NotificationsPivot"
-                                   SelectionChanged="Notif_SelectionChanged" Width="600">
-                                <PivotItem Width="600">
-                                    <PivotItem.Header>
-                                        <TextBlock x:Uid="Shell_Notifications" Text="Notifications" FontWeight="Bold"/>
-                                    </PivotItem.Header>
-                                </PivotItem>
-                                <PivotItem Width="570">
-                                    <StackPanel x:Name="NotificationChangelogTexts"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Center"
-                                                Orientation="Vertical">
-                                        <StackPanel.OpacityTransition>
-                                            <ScalarTransition/>
-                                        </StackPanel.OpacityTransition>
-                                        <Grid Width="200"
-                                              Margin="0,0,0,16"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
-                                              Opacity="0.7">
-                                            <FontIcon FontSize="40" Glyph="&#xEA6A;"/>
-                                        </Grid>
-                                        <Grid Padding="24,8"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
-                                              CornerRadius="16">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="1"
-                                                       VerticalAlignment="Center"
-                                                       FontSize="20"
-                                                       FontWeight="SemiBold"
-                                                       Opacity="0.50"
-                                                       TextWrapping="Wrap"
-                                                       x:Uid="Shell_No_Changelog"
-                                                       Text="Unable to fetch changelog"
-                                                       TextAlignment="Center"/>
-                                        </Grid>
-                                    </StackPanel>
-                                    <PivotItem.Header>
-                                        <TextBlock x:Uid="Shell_Changelog" Text="Changelog" FontWeight="Bold"/>
-                                    </PivotItem.Header>
-                                </PivotItem>
-                            </Pivot>
                             <StackPanel x:Name="NoNotificationIndicator"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
@@ -334,7 +296,7 @@
                                 </Grid>
                             </StackPanel>
                             <StackPanel x:Name="NotificationContainer"
-                                        Margin="0,46,0,7">
+                                        Margin="0,0,0,7">
 
                                 <StackPanel.ChildrenTransitions>
                                     <TransitionCollection>
@@ -369,7 +331,7 @@
                                        Text="Clear All"/>
                             <FontIcon
                                 FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                Glyph="&#xe7ed;" Margin="0,-2,0,0"/>
+                                Glyph="&#xE74D;" Margin="0,-2,0,0"/>
                         </StackPanel>
                     </Button>
                 </Grid>

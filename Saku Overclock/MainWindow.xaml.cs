@@ -244,14 +244,14 @@ public sealed partial class MainWindow
         SettingsService.PremadeMinActivated = false;
         SettingsService.PremadeSpeedActivated = false;
 
-        ShellPage.NextPremadeProfile_Activate("Eco");
+        ShellPage.SelectPremadePreset("Eco");
 
-        var (_, _, _, settings, _) = ShellPage.PremadedProfiles["Eco"];
+        var (_, _, _, settings, _) = ShellPage.PremadedPresets["Eco"];
 
         SettingsService.RyzenAdjLine = settings;
         SettingsService.SaveSettings();
 
-        Applyer.ApplyWithoutAdjLine(true);
+        _ = App.GetService<ApplyerService>().ApplyWithoutAdjLine(true);
 
         App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationEco".GetLocalized(),
                 AppContext.BaseDirectory));
@@ -319,7 +319,7 @@ public sealed partial class MainWindow
                     }
                     if (SettingsService.Preset < profile.Length && SettingsService.Preset != -1)
                     {
-                        ShellPage.ParseOverclockProfile(profile[SettingsService.Preset]);
+                        await App.GetService<IApplyerService>().ApplyCustomPreset(profile[SettingsService.Preset]);
                         if (profile[SettingsService.Preset].AutoPstate &&
                         profile[SettingsService.Preset].EnablePstateEditor)
                         {
@@ -362,91 +362,4 @@ public sealed partial class MainWindow
 
     #endregion
 
-    #region Applyer class
-
-    public class Applyer
-    {
-        private static readonly DispatcherTimer Timer = new() { Interval = TimeSpan.FromMilliseconds(3 * 1000) };
-        private static EventHandler<object>? _tickHandler;
-
-        public static void ApplyWithoutAdjLine(bool saveinfo) => Apply(SettingsService.RyzenAdjLine, saveinfo,
-            SettingsService.ReapplyOverclock, SettingsService.ReapplyOverclockTimer);
-
-        public static async void Apply(string ryzenAdJline, bool saveinfo, bool reapplyOverclock,
-            double reapplyOverclockTimer)
-        {
-            try
-            {  
-                if (reapplyOverclock)
-                {
-                    try
-                    {
-                        Timer.Interval = TimeSpan.FromMilliseconds(reapplyOverclockTimer * 1000);
-                        Timer.Stop();
-                    }
-                    catch
-                    {
-                        await LogHelper.TraceIt_TraceError(
-                            "Время автообновления разгона некорректно и было исправлено на 3000 мс");
-                        reapplyOverclockTimer = 3000;
-                        Timer.Interval = TimeSpan.FromMilliseconds(reapplyOverclockTimer);
-                    }
-
-                    if (_tickHandler != null)
-                    {
-                        Timer.Tick -= _tickHandler; // Удаляем старый обработчик
-                    }
-
-                    _tickHandler = async void (_, _) =>
-                    {
-                        try
-                        {
-                            if (reapplyOverclock)
-                            {
-                                await Process(ryzenAdJline,
-                                    false); // Запустить SendSMUCommand снова, БЕЗ логирования, false
-                                SendSmuCommand
-                                    ?.ApplyQuickSmuCommand(
-                                        true); // Запустить кастомные SMU команды пользователя, которые он добавил в автостарт
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            await LogHelper.LogError("[Mainwindow@Applyer]::Overclock_Settings_Reapply_FAIL - " + ex.ToString());
-                        }
-                    };
-
-                    Timer.Tick += _tickHandler; // Добавляем новый обработчик
-                    Timer.Start();
-                }
-                else
-                {
-                    Timer.Stop();
-                }
-
-                await Process(ryzenAdJline, saveinfo);
-            }
-            catch (Exception ex)
-            {
-                await LogHelper.LogError("[Mainwindow@Applyer]::Overclock_Settings_FirstApply_FAIL - " + ex.ToString());
-            }
-        }
-
-        private static async Task Process(string adjLine, bool saveinfo)
-        {
-            try
-            {
-                await Task.Run(() =>
-                {
-                    SendSmuCommand?.Translate(adjLine, saveinfo);
-                });
-            }
-            catch (Exception ex)
-            {
-                await LogHelper.LogError("[Mainwindow@Applyer]::Overclock_Settings_Apply_FAIL - " + ex.ToString());
-            }
-        }
-    }
-
-    #endregion
 }

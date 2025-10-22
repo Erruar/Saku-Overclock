@@ -1,10 +1,8 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Documents;
-using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -21,6 +19,7 @@ namespace Saku_Overclock.Views;
 public sealed partial class ПресетыPage
 {
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
+    private static readonly IApplyerService _applyer = App.GetService<IApplyerService>();
     private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений 
     private bool _waitforload = true; // Ожидание окончательной смены профиля на другой. Активируется при смене профиля 
@@ -954,39 +953,13 @@ public sealed partial class ПресетыPage
         }
 
         AppSettings.AutostartType = AutostartCom.SelectedIndex;
-        var autoruns = new TaskService();
         if (AutostartCom.SelectedIndex == 2 || AutostartCom.SelectedIndex == 3)
         {
-            var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
-            var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
-            var pathToStartupLnk = Path.Combine(pathToProgramDirectory!, "Saku Overclock.exe");
-            // Добавить программу в автозагрузку
-            var sakuTask = autoruns.NewTask();
-            sakuTask.RegistrationInfo.Description =
-                "An awesome ryzen laptop overclock utility for those who want real performance! Autostart Saku Overclock application task";
-            sakuTask.RegistrationInfo.Author = "Sakura Serzhik";
-            sakuTask.RegistrationInfo.Version = new Version("1.0.0");
-            sakuTask.Principal.RunLevel = TaskRunLevel.Highest;
-            sakuTask.Triggers.Add(new LogonTrigger { Enabled = true });
-            sakuTask.Actions.Add(new ExecAction(pathToStartupLnk));
-            autoruns.RootFolder.RegisterTaskDefinition(@"Saku Overclock", sakuTask);
+            AutoStartHelper.SetStartupTask();
         }
         else
         {
-            try
-            {
-                foreach (var task in autoruns.RootFolder.Tasks) 
-                {
-                    if (task.Name.Contains("Saku Overclock"))
-                    {
-                        autoruns.RootFolder.DeleteTask("Saku Overclock");
-                    }
-                }
-            }
-            catch 
-            {
-                //
-            }
+            AutoStartHelper.RemoveStartupTask();
         }
 
         AppSettings.SaveSettings();
@@ -1624,7 +1597,7 @@ public sealed partial class ПресетыPage
                      profile.Profileicon == "\uE718"))
                 {
                     ПараметрыPage.ApplyInfo = string.Empty;
-                    ShellPage.ParseOverclockProfile(profile, true);
+                    await _applyer.ApplyCustomPreset(profile, true);
 
                     NotificationsService.Notifies ??= [];
                     NotificationsService.Notifies.Add(new Notify
@@ -1681,14 +1654,14 @@ public sealed partial class ПресетыPage
             }
         }
 
-        ShellPage.NextPremadeProfile_Activate(endMode);
+        ShellPage.SelectPremadePreset(endMode);
 
-        var (_, _, _, settings, _) = ShellPage.PremadedProfiles[endMode];
+        var (_, _, _, settings, _) = ShellPage.PremadedPresets[endMode];
 
         AppSettings.RyzenAdjLine = settings;
         AppSettings.SaveSettings();
 
-        MainWindow.Applyer.ApplyWithoutAdjLine(true);
+        await _applyer.ApplyWithoutAdjLine(true);
 
         NotificationsService.Notifies ??= [];
         NotificationsService.Notifies.Add(new Notify

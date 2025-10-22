@@ -39,6 +39,7 @@ public sealed partial class ПараметрыPage
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
+    private static readonly IApplyerService _applyer = App.GetService<IApplyerService>();
     private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
     private int _indexprofile; // Выбранный профиль
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Все настройки приложения
@@ -5267,7 +5268,7 @@ public sealed partial class ПараметрыPage
             _adjline = "";
             ApplyInfo = "";
             AppSettings.SaveSettings();
-            MainWindow.Applyer.Apply(AppSettings.RyzenAdjLine, true, AppSettings.ReapplyOverclock,
+            await _applyer.Apply(AppSettings.RyzenAdjLine, true, AppSettings.ReapplyOverclock,
                 AppSettings.ReapplyOverclockTimer);
             if (EnablePstates.IsOn)
             {

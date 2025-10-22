@@ -17,22 +17,22 @@ public partial class ShellViewModel : ObservableRecipient
         set => SetProperty(ref _isBackEnabled, value);
     }
 
-    private object? _selected;
-    public object? Selected
+    private object? _selectedPage;
+    public object? SelectedPage
     {
-        get => _selected;
-        set => SetProperty(ref _selected, value);
+        get => _selectedPage;
+        set => SetProperty(ref _selectedPage, value);
     }
 
-    private ObservableCollection<ComboBoxItem> _items;
-    public ObservableCollection<ComboBoxItem> Items
+    private List<string> _items;
+    public List<string> Presets
     {
         get => _items;
         set => SetProperty(ref _items, value);
     }
 
-    private ComboBoxItem? _selectedItem;
-    public ComboBoxItem? SelectedItem
+    private string? _selectedItem;
+    public string? SelectedItem
     {
         get => _selectedItem;
         set => SetProperty(ref _selectedItem, value);
@@ -60,15 +60,9 @@ public partial class ShellViewModel : ObservableRecipient
     {
         _items =
         [
-            new() {
-                Content = new TextBlock 
-                { 
-                    Text = "User profiles", 
-                },
-                    IsEnabled = false 
-                },
-            new() { Content = "dd" },
-            new() { Content = "dd1" }
+            "User profiles", 
+            "dd",
+            "dd1"
         ];
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
@@ -81,13 +75,13 @@ public partial class ShellViewModel : ObservableRecipient
 
         if (e.SourcePageType == typeof(SettingsPage))
         {
-            Selected = NavigationViewService.SettingsItem;
+            SelectedPage = NavigationViewService.SettingsItem;
             return;
         }
         var selectedItem = NavigationViewService.GetSelectedItem(e.SourcePageType);
         if (selectedItem != null)
         {
-            Selected = selectedItem;
+            SelectedPage = selectedItem;
         }
     }
 }

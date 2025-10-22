@@ -94,6 +94,7 @@ public partial class App
                 services.AddSingleton<IAppNotificationService, AppNotificationService>();
                 services.AddSingleton<ILocalThemeSettingsService, LocalThemeSettingsService>();
                 services.AddSingleton<IAppSettingsService, AppSettingsService>();
+                services.AddSingleton<IApplyerService, ApplyerService>();
                 services.AddSingleton<IRtssSettingsService, RtssSettingsService>();
                 services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
                 services.AddTransient<INavigationViewService, NavigationViewService>();
@@ -134,7 +135,6 @@ public partial class App
                 services.AddTransient<ОбновлениеViewModel>();
                 services.AddTransient<ОбучениеPage>();
                 services.AddTransient<ОбучениеViewModel>();
-                services.AddTransient<MainWindow.Applyer>();
                 // Configuration
                 services.Configure<LocalSettingsOptions>(
                     context.Configuration.GetSection(nameof(LocalSettingsOptions)));

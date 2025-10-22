@@ -411,39 +411,13 @@ public sealed partial class SettingsPage
         }
 
         AppSettings.AutostartType = AutoStartComboBox.SelectedIndex;
-        var autoruns = new TaskService();
         if (AutoStartComboBox.SelectedIndex is 2 or 3)
         {
-            var pathToExecutableFile = Assembly.GetExecutingAssembly().Location;
-            var pathToProgramDirectory = Path.GetDirectoryName(pathToExecutableFile);
-            var pathToStartupLnk = Path.Combine(pathToProgramDirectory!, "Saku Overclock.exe");
-            // Добавить программу в автозагрузку
-            var sakuTask = autoruns.NewTask();
-            sakuTask.RegistrationInfo.Description =
-                "An awesome ryzen laptop overclock utility for those who want real performance! Autostart Saku Overclock application task";
-            sakuTask.RegistrationInfo.Author = "Sakura Serzhik";
-            sakuTask.RegistrationInfo.Version = new Version("1.0.0");
-            sakuTask.Principal.RunLevel = TaskRunLevel.Highest;
-            sakuTask.Triggers.Add(new LogonTrigger { Enabled = true });
-            sakuTask.Actions.Add(new ExecAction(pathToStartupLnk));
-            autoruns.RootFolder.RegisterTaskDefinition("Saku Overclock", sakuTask);
+            AutoStartHelper.SetStartupTask();
         }
         else
         {
-            try
-            {
-                foreach (var task in autoruns.RootFolder.Tasks)
-                {
-                    if (task.Name.Contains("Saku Overclock"))
-                    {
-                        autoruns.RootFolder.DeleteTask("Saku Overclock");
-                    }
-                }
-            }
-            catch
-            {
-                //
-            }
+            AutoStartHelper.RemoveStartupTask();
         }
 
         AppSettings.SaveSettings();
