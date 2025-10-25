@@ -502,26 +502,13 @@ public sealed partial class ГлавнаяPage
     private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         var isCompact = e.NewSize.Height < 400;
-        var (main, device, frequent, presets) = isCompact ? CompactGridMargins : NormalGridMargins;
+        var (main, frequent) = isCompact ? CompactGridMargins : NormalGridMargins;
+
+
 
         if (MainGrid.Margin != main)
         {
             MainGrid.Margin = main;
-        }
-
-        if (DeviceInfoSign.Margin != device)
-        {
-            DeviceInfoSign.Margin = device;
-        }
-
-        if (PresetsSign.Margin != device)
-        {
-            PresetsSign.Margin = device;
-        }
-
-        if (SwitchPivot.Margin != presets)
-        {
-            SwitchPivot.Margin = presets;
         }
 
         if (FriquentlyUsedGrid.Margin != frequent)
@@ -529,21 +516,18 @@ public sealed partial class ГлавнаяPage
             FriquentlyUsedGrid.Margin = frequent;
         }
 
+        DeviceInfoSign.Visibility = isCompact ? Visibility.Collapsed : Visibility.Visible;
         FrequentlyUsedSign.Visibility = isCompact ? Visibility.Collapsed : Visibility.Visible;
     }
-    private static readonly (Thickness Main, Thickness Device, Thickness Frequent, Thickness PresetsButton) CompactGridMargins =
+    private static readonly (Thickness Main, Thickness Frequent) CompactGridMargins =
     (
-        new Thickness( 00, -3, 0, 0),
-        new Thickness( 14,  2, 0, 0),
-        new Thickness(-10,  8, 0, 3),
-        new Thickness(14,  3, 11, 0)
+        new Thickness( 00, -20, 0, 0),
+        new Thickness(-10,  8, 0, 3)
     );
-    private static readonly (Thickness Main, Thickness Device, Thickness Frequent, Thickness PresetsButton) NormalGridMargins =
+    private static readonly (Thickness Main, Thickness Frequent) NormalGridMargins =
     (
         new Thickness( 00, 20, 0, 0),
-        new Thickness( 14, 16, 0, 0),
-        new Thickness(-10, 05, 0, 3),
-        new Thickness(14, 13, 11, 0)
+        new Thickness(-10, 05, 0, 3)
     );
 
     private void PresetsPage_Click(object sender, RoutedEventArgs e)

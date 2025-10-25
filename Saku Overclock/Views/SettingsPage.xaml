@@ -175,7 +175,7 @@
                             </StackPanel>
                             <ToggleSwitch VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0" OffContent="" OnContent="" x:Name="ThemeCustomBg" Toggled="ThemeCustomBackground_Toggled"/>
                         </Grid>
-                        <Grid Visibility="{Binding ElementName=ThemeCustomBg, Path=Visibility}" PointerPressed="OpenSelectThemeBackgroundDialog_Click" Margin="0,2,0,0" Height="50" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
+                        <Grid Visibility="{Binding ElementName=ThemeBgButton, Path=Visibility}" PointerPressed="OpenSelectThemeBackgroundDialog_Click" Margin="0,2,0,0" Height="50" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                             <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
                                 <FontIcon Glyph="&#xE72A;"/>
                                 <TextBlock VerticalAlignment="Center" Margin="16,0,0,0" x:Uid="ThemeChangeBgText">Установите свой фон</TextBlock>

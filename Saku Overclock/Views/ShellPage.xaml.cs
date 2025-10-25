@@ -1188,13 +1188,20 @@ public sealed partial class ShellPage
                 ? ElementTheme.Light
                 : ElementTheme.Dark;
             themeMobil.SwitchThemeCommand.Execute(themeLight);
-            var themeBackground = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeBackground;
-
-            if (AppSettings.ThemeType > 2 &&
-                !string.IsNullOrEmpty(themeBackground) &&
-                (themeBackground.Contains("http") || themeBackground.Contains("appx") || File.Exists(themeBackground)))
+            if (_themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustomBg)
             {
-                ThemeBackground.ImageSource = new BitmapImage(new Uri(themeBackground));
+                var themeBackground = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeBackground;
+
+                if (AppSettings.ThemeType > 2 &&
+                    !string.IsNullOrEmpty(themeBackground) &&
+                    (themeBackground.Contains("http") || themeBackground.Contains("appx") || File.Exists(themeBackground)))
+                {
+                    ThemeBackground.ImageSource = new BitmapImage(new Uri(themeBackground));
+                }
+            }
+            else
+            {
+                ThemeBackground.ImageSource = null;
             }
 
             ThemeOpacity.Opacity = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeOpacity;
@@ -1507,7 +1514,7 @@ public sealed partial class ShellPage
         IconImg.Opacity = 0.8d;
     }
 
-    private void TitleIcon_PointerEntered(object sender, PointerRoutedEventArgs e)
+    private void TitleIcon_PointerEntered(object? sender, PointerRoutedEventArgs? e)
     {
         if (!NavigationViewControl.IsPaneOpen && !_fixedTitleBar)
         {
@@ -1531,7 +1538,12 @@ public sealed partial class ShellPage
         }
     }
 
-    private void Icon_Click(object sender, RoutedEventArgs e) => _fixedTitleBar = !_fixedTitleBar;
+    private void Icon_Click(object sender, RoutedEventArgs e)
+    {
+        _fixedTitleBar = !_fixedTitleBar;
+        AppSettings.FixedTitleBar = _fixedTitleBar;
+        AppSettings.SaveSettings();
+    }
 
     private void NavigationViewControl_DisplayModeChanged(NavigationView sender,
         NavigationViewDisplayModeChangedEventArgs args)
@@ -1592,6 +1604,11 @@ public sealed partial class ShellPage
 
     private void SetRegionsForCustomTitleBar()
     {
+        if (AppSettings.FixedTitleBar)
+        {
+            TitleIcon_PointerEntered(null, null);
+            _fixedTitleBar = true;
+        }
         var scaleAdjustment =
             AppTitleBar.XamlRoot.RasterizationScale; // Specify the interactive regions of the title bar.
         RightPaddingColumn.Width = new GridLength(MAppWindow.TitleBar.RightInset / scaleAdjustment);

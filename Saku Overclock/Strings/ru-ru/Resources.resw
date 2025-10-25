@@ -274,6 +274,9 @@
   <data name="Main_Preset.Text" xml:space="preserve">
     <value>Пресеты</value>
   </data>
+  <data name="Main_PresetPage.Text" xml:space="preserve">
+    <value>Управление пресетами</value>
+  </data>
   <data name="Main_Welcome.Text" xml:space="preserve">
     <value>Добро пожаловать в</value>
   </data>
@@ -2683,9 +2686,6 @@ Asus. Может не поддерживаться на
   <data name="Main_PremadeProfiles.Text" xml:space="preserve">
     <value>Готовые пресеты</value>
   </data>
-  <data name="Main_Profiles.Text" xml:space="preserve">
-    <value>Пресеты</value>
-  </data>
   <data name="Main_Settings.Text" xml:space="preserve">
     <value>Настройки</value>
   </data>
@@ -2795,11 +2795,11 @@ Asus. Может не поддерживаться на
     <value>Андервольтинг</value>
   </data>
   <data name="Param_NewbieMode" xml:space="preserve">
-    <value>Переключить режим отображения на Новичок:
+    <value>Отобразить быстрые настройки:
 Простые и безопасные настройки разгона с понятными объяснениями. Идеально для начинающих пользователей</value>
   </data>
   <data name="Param_ProMode" xml:space="preserve">
-    <value>Отобразит дополнительные функции:
+    <value>Отобразить дополнительные функции:
 Полный контроль над настройками температуры и энергопотребления процессора. Ручная настройка параметров для максимальной эффективности</value>
   </data>
   <data name="Param_CO_PreferredMode_Desc.Text" xml:space="preserve">
@@ -3270,5 +3270,8 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Settings_RTSS_AdvancedOptions.Text" xml:space="preserve">
     <value>Расширенные параметры</value>
+  </data>
+  <data name="Main_CantFindPreset.Content" xml:space="preserve">
+    <value>Не видите здесь свой пресет?</value>
   </data>
 </root>

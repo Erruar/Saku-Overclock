@@ -659,6 +659,7 @@ public sealed partial class SettingsPage
             _themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustomBg = ThemeCustomBg.IsOn;
             _themeSelectorService.SaveThemeInSettings();
             ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
+            UpdateTheme();
         }
     }
 
@@ -1208,6 +1209,7 @@ public sealed partial class SettingsPage
             }
 
             await themerDialog.ShowAsync();
+            UpdateTheme();
         }
         catch (Exception ex)
         {

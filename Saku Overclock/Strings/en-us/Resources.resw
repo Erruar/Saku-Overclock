@@ -274,6 +274,9 @@
   <data name="Main_Preset.Text" xml:space="preserve">
     <value>Presets</value>
   </data>
+  <data name="Main_PresetPage.Text" xml:space="preserve">
+    <value>Presets management</value>
+  </data>
   <data name="Main_Welcome.Text" xml:space="preserve">
     <value>Welcome to</value>
   </data>
@@ -2669,9 +2672,6 @@ methods are available.</value>
   <data name="Main_PremadeProfiles.Text" xml:space="preserve">
     <value>Premade presets</value>
   </data>
-  <data name="Main_Profiles.Text" xml:space="preserve">
-    <value>Presets</value>
-  </data>
   <data name="Main_Settings.Text" xml:space="preserve">
     <value>Settings</value>
   </data>
@@ -2781,7 +2781,7 @@ methods are available.</value>
     <value>Undervolting</value>
   </data>
   <data name="Param_NewbieMode" xml:space="preserve">
-    <value>Switch mode to Beginner:
+    <value>Show fast settings:
 Simple and safe overclocking settings with clear explanations aimed at beginners</value>
   </data>
   <data name="Param_ProMode" xml:space="preserve">
@@ -3253,5 +3253,8 @@ Set up a personalized undervolting level that will be applied to all premade pro
   </data>
   <data name="Settings_RTSS_AdvancedOptions.Text" xml:space="preserve">
     <value>Advanced options</value>
+  </data>
+  <data name="Main_CantFindPreset.Content" xml:space="preserve">
+    <value>Can't see your preset?</value>
   </data>
 </root>

@@ -91,6 +91,9 @@ public sealed partial class ПресетыPage
         StreamStabilizerModeCombo.SelectedIndex = AppSettings.StreamStabilizerType;
         StreamStabilizerTargetMhz.Value = AppSettings.StreamStabilizerMaxMHz;
         StreamStabilizerTargetPercent.Value = AppSettings.StreamStabilizerMaxPercentMHz;
+        _isLoaded = true;
+        StreamStabilizerModeCombo_SelectionChanged(null, null);
+        _isLoaded = false;
 
         if (OcFinder.IsUndervoltingAvailable() && AppSettings.PremadeOptimizationLevel == 2)
         {
@@ -932,6 +935,7 @@ public sealed partial class ПресетыPage
                 SetPowerConfig("PROCTHROTTLEMIN 100");
                 SetPowerConfig("PROCTHROTTLEMAX 100");
                 SetPowerConfig($"PROCFREQMAX 0");
+                SavePowerConfig();
                 SavePowerConfig();
             }
             else if (toggle.Name == "StreamStabilizer_Smart")

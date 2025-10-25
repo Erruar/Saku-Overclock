@@ -398,7 +398,7 @@ Text="{Binding Version}">
                                                 <ColumnDefinition Width="70"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" x:Uid="Main_Profiles" Text="Пресеты" TextWrapping="Wrap"/>
+                                                <TextBlock Margin="0,0,-20,0" FontWeight="SemiBold" x:Uid="Main_Preset" Text="Пресеты" TextWrapping="Wrap"/>
                                             </StackPanel>
                                             <Grid Grid.Column="1" Margin="20,0,0,0">
                                                 <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xeadf;"/>
@@ -484,7 +484,7 @@ Text="{Binding Version}">
                                 <PivotItem.Header>
                                     <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_OwnProfiles" Text="Свои"/>
                                 </PivotItem.Header>
-                                <ScrollViewer Grid.Row="0">
+                                <ScrollViewer Grid.Row="0" Margin="0,0,10,0" Padding="0,0,-10,0">
                                     <StackPanel Margin="20,0,20,0" Orientation="Vertical" HorizontalAlignment="Stretch">
                                         <StackPanel Orientation="Vertical" 
                                                     HorizontalAlignment="Stretch" IsHitTestVisible="True"
@@ -499,7 +499,7 @@ Text="{Binding Version}">
                                                 </Grid>
                                             </ToggleButton>
                                         </StackPanel>
-                                        <HyperlinkButton Margin="-8,0,0,0" Click="ExpandButton_Click" Foreground="{ThemeResource TextFillColorSecondary}">Не видите здесь свой пресет?</HyperlinkButton>
+                                        <HyperlinkButton x:Uid="Main_CantFindPreset" Margin="-8,0,0,0" Click="ExpandButton_Click" Foreground="{ThemeResource TextFillColorSecondary}">Не видите здесь свой пресет?</HyperlinkButton>
                                         <Grid x:Name="ExpandGrid" Margin="0,2,0,0" HorizontalAlignment="Stretch">
                                             <Grid.Resources>
                                                 <Storyboard x:Name="CollapseStoryboard">
@@ -522,10 +522,10 @@ Text="{Binding Version}">
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <Button CornerRadius="14" VerticalAlignment="Stretch" Click="PresetsPage_Click" HorizontalAlignment="Stretch" Margin="0,0,4,0" Grid.Column="0" Translation="0,0,10" Shadow="{ThemeResource SharedShadow}">
-                                                <TextBlock TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Управление пресетами"/>
+                                                <TextBlock x:Uid="Main_PresetPage" TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Управление пресетами"/>
                                             </Button>
                                             <Button CornerRadius="14" VerticalAlignment="Stretch" Click="SwitchPivot_Click" HorizontalAlignment="Stretch" Margin="4,0,0,0" Grid.Column="1" Translation="0,0,10" Shadow="{ThemeResource SharedShadow}">
-                                                <TextBlock TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Готовые пресеты"/>
+                                                <TextBlock x:Uid="Main_PremadeProfiles" TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Готовые пресеты"/>
                                             </Button>
                                         </Grid>
                                     </StackPanel>
@@ -535,7 +535,7 @@ Text="{Binding Version}">
                                 <PivotItem.Header>
                                     <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_PremadeProfiles" Text="Готовые"/>
                                 </PivotItem.Header>
-                                <ScrollViewer>
+                                <ScrollViewer Margin="0,0,10,0" Padding="0,0,-10,0" VerticalScrollBarVisibility="Visible">
                                     <StackPanel Margin="20,-3,20,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
                                         <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Max" Tag="Preset_Max" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                             <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
