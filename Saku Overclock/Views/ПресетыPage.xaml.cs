@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -10,6 +11,7 @@ using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
+using Windows.Foundation;
 using Windows.Foundation.Metadata;
 using static ZenStates.Core.Cpu;
 using Task = System.Threading.Tasks.Task;
@@ -31,6 +33,7 @@ public sealed partial class ПресетыPage
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private static bool? _isPlatformPC = false;
     private string _doubleClickApply = string.Empty;
+    private FontIcon _symbol = new() { Glyph = "\uE718" };
 
     public ПресетыPage()
     {
@@ -88,12 +91,17 @@ public sealed partial class ПресетыPage
         StreamStabilizerSetOnly(AppSettings.StreamStabilizerEnabled ? StreamStabilizer_Smart : StreamStabilizer_Disabled);
 
         Premade_OptimizationLevel.SelectedIndex = AppSettings.PremadeOptimizationLevel;
-        StreamStabilizerModeCombo.SelectedIndex = AppSettings.StreamStabilizerType;
-        StreamStabilizerTargetMhz.Value = AppSettings.StreamStabilizerMaxMHz;
-        StreamStabilizerTargetPercent.Value = AppSettings.StreamStabilizerMaxPercentMHz;
-        _isLoaded = true;
-        StreamStabilizerModeCombo_SelectionChanged(null, null);
-        _isLoaded = false;
+        
+        if (AppSettings.StreamStabilizerEnabled)
+        {
+            StreamStabilizerModeCombo.SelectedIndex = AppSettings.StreamStabilizerType;
+            StreamStabilizerTargetMhz.Value = AppSettings.StreamStabilizerMaxMHz;
+            StreamStabilizerTargetPercent.Value = AppSettings.StreamStabilizerMaxPercentMHz;
+
+            _isLoaded = true;
+            StreamStabilizerModeCombo_SelectionChanged(null, null);
+            _isLoaded = false;
+        }
 
         if (OcFinder.IsUndervoltingAvailable() && AppSettings.PremadeOptimizationLevel == 2)
         {
@@ -1209,81 +1217,184 @@ public sealed partial class ПресетыPage
     {
         try
         {
-            if (SaveProfileN.Text != "")
-            {
-                await LogHelper.Log($"Adding new profile: \"{SaveProfileN.Text}\"");
-                ProfileLoad();
-                try
-                {
-                    AddProfileButton.Flyout.Hide();
-                    AppSettings.Preset += 1;
-                    _indexprofile += 1;
-                    _waitforload = true;
-                    if (_profile.Length == 0)
-                    {
-                        _profile = new Profile[1];
-                        _profile[0] = new Profile { Profilename = SaveProfileN.Text, Profiledesc = SaveProfileD.Text };
-                    }
-                    else
-                    {
-                        var profileList = new List<Profile>(_profile)
-                        {
-                            new()
-                            {
-                                Profilename = SaveProfileN.Text,
-                                Profiledesc = SaveProfileD.Text
-                            }
-                        };
-                        _profile = [.. profileList];
-                    }
-
-                    _waitforload = false;
-                    NotificationsService.Notifies ??= [];
-                    NotificationsService.Notifies.Add(new Notify
-                    {
-                        Title = "SaveSuccessTitle".GetLocalized(),
-                        Msg = "SaveSuccessDesc".GetLocalized() + " " + SaveProfileN.Text,
-                        Type = InfoBarSeverity.Success
-                    });
-                    NotificationsService.SaveNotificationsSettings();
-                }
-                catch
-                {
-                    // Ignored
-                }
-            }
-            else
-            {
-                NotificationsService.Notifies ??= [];
-                NotificationsService.Notifies.Add(new Notify
-                {
-                    Title = "Add_Target_Error/Title".GetLocalized(),
-                    Msg = "Add_Target_Error/Subtitle".GetLocalized(),
-                    Type = InfoBarSeverity.Error
-                });
-                NotificationsService.SaveNotificationsSettings();
-            }
-
-            AppSettings.SaveSettings();
-            ProfileSave();
-            LoadProfiles();
+            await OpenAddProfileDialogAsync();
         }
         catch (Exception exception)
         {
             await LogHelper.TraceIt_TraceError(exception);
         }
     }
-    private async void EditProfileButton_Click(object sender, RoutedEventArgs e)
+
+    private async Task OpenAddProfileDialogAsync()
+    {
+        var selectedGlyph = "\uE718"; // Значок по умолчанию
+
+        // Кнопка выбора иконки
+        var glyphIcon = new FontIcon { Glyph = selectedGlyph };
+        var iconButton = new Button
+        {
+            Height = 60,
+            Width = 60,
+            CornerRadius = new CornerRadius(16),
+            Shadow = (ThemeShadow)Resources["SharedShadow"],
+            Translation = new System.Numerics.Vector3(0, 0, 14),
+            Content = glyphIcon
+        };
+
+        // Поля ввода
+        var nameBox = new TextBox
+        {
+            PlaceholderText = "Param_Profile_New_Name_Add/PlaceholderText".GetLocalized(),
+            CornerRadius = new CornerRadius(9),
+            Width = 250,
+            Shadow = (ThemeShadow)Resources["SharedShadow"],
+            Translation = new System.Numerics.Vector3(0, 0, 10)
+        };
+
+        var descBox = new TextBox
+        {
+            PlaceholderText = "Param_Profile_New_Desc_Add/PlaceholderText".GetLocalized(),
+            CornerRadius = new CornerRadius(9),
+            Width = 250,
+            Margin = new Thickness(0, 6, 0, 0),
+            Shadow = (ThemeShadow)Resources["SharedShadow"],
+            Translation = new System.Numerics.Vector3(0, 0, 10)
+        };
+
+        // Стек с текстбоксами и кнопкой
+        var fieldsPanel = new StackPanel
+        {
+            Margin = new Thickness(15, 0, 0, 0)
+        };
+        fieldsPanel.Children.Add(nameBox);
+        fieldsPanel.Children.Add(descBox);
+
+        // Основная горизонтальная панель
+        var content = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 15
+        };
+        content.Children.Add(iconButton);
+        content.Children.Add(fieldsPanel);
+
+        // Создаём диалог
+        var dialog = new ContentDialog
+        {
+            Title = "Param_Profile_New_Name/Content".GetLocalized(),
+            XamlRoot = XamlRoot,
+            CloseButtonText = "Cancel".GetLocalized(),
+            PrimaryButtonText = "Param_Profile_New_Name/Content".GetLocalized(),
+            Content = content,
+            DefaultButton = ContentDialogButton.Close
+        };
+
+        EventHandler<object> closedHandler = null!;
+        RoutedEventHandler clickHandler = null!;
+
+        clickHandler = (s, e) =>
+        {
+            // Отписываем, если уже был предыдущий обработчик
+            SymbolFlyout.Closed -= closedHandler;
+
+            closedHandler = (sender, args) =>
+            {
+                SymbolFlyout.Closed -= closedHandler;
+                selectedGlyph = _symbol.Glyph;
+                glyphIcon.Glyph = _symbol.Glyph;
+            };
+
+            SymbolFlyout.Closed += closedHandler;
+            SymbolFlyout.ShowAt(iconButton);
+        };
+
+        iconButton.Click += clickHandler;
+
+        var result = await dialog.ShowAsync();
+
+        // --- Очистка после диалога ---
+        iconButton.Click -= clickHandler;
+        SymbolFlyout.Closed -= closedHandler;
+
+        // --- Логика результата ---
+        if (result == ContentDialogResult.Primary)
+        {
+            await AddPreset(nameBox.Text, descBox.Text, selectedGlyph);
+        }
+    }
+    private async Task AddPreset(string presetName, string presetDesc, string glyph)
+    {
+        if (presetName != "")
+        {
+            await LogHelper.Log($"Adding new profile: \"{presetName}\"");
+            ProfileLoad();
+            try
+            {
+                AppSettings.Preset += 1;
+                _indexprofile += 1;
+                _waitforload = true;
+                if (_profile.Length == 0)
+                {
+                    _profile = new Profile[1];
+                    _profile[0] = new Profile { Profilename = presetName, Profiledesc = presetDesc, Profileicon = glyph };
+                }
+                else
+                {
+                    var profileList = new List<Profile>(_profile)
+                        {
+                            new()
+                            {
+                                Profilename = presetName,
+                                Profiledesc = presetDesc,
+                                Profileicon = glyph
+                            }
+                        };
+                    _profile = [.. profileList];
+                }
+
+                _waitforload = false;
+                NotificationsService.Notifies ??= [];
+                NotificationsService.Notifies.Add(new Notify
+                {
+                    Title = "SaveSuccessTitle".GetLocalized(),
+                    Msg = "SaveSuccessDesc".GetLocalized() + " " + presetName,
+                    Type = InfoBarSeverity.Success
+                });
+                NotificationsService.SaveNotificationsSettings();
+            }
+            catch
+            {
+                // Ignored
+            }
+        }
+        else
+        {
+            NotificationsService.Notifies ??= [];
+            NotificationsService.Notifies.Add(new Notify
+            {
+                Title = "Add_Target_Error/Title".GetLocalized(),
+                Msg = "Add_Target_Error/Subtitle".GetLocalized(),
+                Type = InfoBarSeverity.Error
+            });
+            NotificationsService.SaveNotificationsSettings();
+        }
+
+        AppSettings.SaveSettings();
+        ProfileSave();
+        LoadProfiles();
+    }
+
+    private async void EditProfileButton_Click(string profileName, string profileDesc, string glyph)
     {
         try
         {
-            await LogHelper.Log($"Editing profile name: From \"{_profile[_indexprofile].Profilename}\" To \"{EditProfileN.Text}\"");
-            EditProfileButton.Flyout.Hide();
-            if (EditProfileN.Text != "")
+            await LogHelper.Log($"Editing profile name: From \"{_profile[_indexprofile].Profilename}\" To \"{profileName}\"");
+            if (profileName != "")
             {
                 ProfileLoad();
-                _profile[_indexprofile].Profilename = EditProfileN.Text;
-                _profile[_indexprofile].Profiledesc = EditProfileD.Text;
+                _profile[_indexprofile].Profilename = profileName;
+                _profile[_indexprofile].Profiledesc = profileDesc;
+                _profile[_indexprofile].Profileicon = glyph;
                 ProfileSave();
                 _waitforload = true;
                 LoadProfiles();
@@ -1292,7 +1403,7 @@ public sealed partial class ПресетыPage
                 NotificationsService.Notifies.Add(new Notify
                 {
                     Title = "Edit_Target/Title".GetLocalized(),
-                    Msg = "Edit_Target/Subtitle".GetLocalized() + " " + EditProfileN.Text,
+                    Msg = "Edit_Target/Subtitle".GetLocalized() + " " + profileName,
                     Type = InfoBarSeverity.Success
                 });
             }
@@ -1313,7 +1424,7 @@ public sealed partial class ПресетыPage
             await LogHelper.TraceIt_TraceError(exception);
         }
     }
-    private async void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
+    private async void DeleteProfileButton_Click(object? sender, RoutedEventArgs? e)
     {
         try
         {
@@ -1372,10 +1483,118 @@ public sealed partial class ПресетыPage
             await LogHelper.TraceIt_TraceError(exception);
         }
     }
-    private void EditProfileButton_Click_1(object sender, RoutedEventArgs e)
+    private async void EditProfileButton_Click_1(object sender, RoutedEventArgs e)
     {
-        EditProfileN.Text = _profile[_indexprofile].Profilename;
-        EditProfileD.Text = _profile[_indexprofile].Profiledesc;
+        await OpenEditProfileDialog_Click(_profile[_indexprofile].Profilename, _profile[_indexprofile].Profiledesc, _profile[_indexprofile].Profileicon);
+    }
+
+    private async Task OpenEditProfileDialog_Click(string profileName, string profileDesc, string profileIcon)
+    {
+        // Создаём элементы интерфейса
+        var glyph = new FontIcon { Glyph = profileIcon };
+        var iconButton = new Button
+        {
+            Height = 60,
+            Width = 60,
+            CornerRadius = new CornerRadius(16),
+            Shadow = (ThemeShadow)Resources["SharedShadow"],
+            Translation = new System.Numerics.Vector3(0, 0, 14),
+            Content = glyph
+        };
+
+        var nameBox = new TextBox
+        {
+            Text = profileName,
+            MaxLength = 31,
+            PlaceholderText = "Param_Profile_New_Name_Add/PlaceholderText".GetLocalized(),
+            CornerRadius = new CornerRadius(9),
+            Width = 280,
+            Shadow = (ThemeShadow)Resources["SharedShadow"],
+            Translation = new System.Numerics.Vector3(0, 0, 10)
+        };
+
+        var descBox = new TextBox
+        {
+            Text = profileDesc,
+            PlaceholderText = "Param_Profile_New_Desc_Add/PlaceholderText".GetLocalized(),
+            CornerRadius = new CornerRadius(9),
+            Width = 280,
+            Margin = new Thickness(0, 6, 0, 0),
+            Shadow = (ThemeShadow)Resources["SharedShadow"],
+            Translation = new System.Numerics.Vector3(0, 0, 10)
+        };
+
+        var fieldsPanel = new StackPanel();
+        fieldsPanel.Children.Add(nameBox);
+        fieldsPanel.Children.Add(descBox);
+
+        var content = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 15
+        };
+        content.Children.Add(iconButton);
+        content.Children.Add(fieldsPanel);
+
+        var dialog = new ContentDialog
+        {
+            Title = "Param_Profile_Edit_Name/Content".GetLocalized(),
+            XamlRoot = XamlRoot,
+            PrimaryButtonText = "Param_Profile_Edit_Name/Content".GetLocalized(),
+            SecondaryButtonText = "Param_Profile_Delete_Profile/Content".GetLocalized(),
+            CloseButtonText = "Cancel".GetLocalized(),
+            DefaultButton = ContentDialogButton.Close,
+            Content = content
+        };
+
+        // --- безопасная подписка ---
+        EventHandler<object> closedHandler = null!;
+        RoutedEventHandler clickHandler = null!;
+
+        clickHandler = (s, e) =>
+        {
+            // Отписываем, если уже был предыдущий обработчик
+            SymbolFlyout.Closed -= closedHandler;
+
+            closedHandler = (sender, args) =>
+            {
+                SymbolFlyout.Closed -= closedHandler;
+                profileIcon = _symbol.Glyph;
+                glyph.Glyph = profileIcon;
+            };
+
+            SymbolFlyout.Closed += closedHandler;
+            SymbolFlyout.ShowAt(iconButton);
+        };
+
+        iconButton.Click += clickHandler;
+
+        // Показываем диалог
+        var result = await dialog.ShowAsync();
+
+        // --- Очистка после диалога ---
+        iconButton.Click -= clickHandler;
+        SymbolFlyout.Closed -= closedHandler;
+
+        // --- Логика результата ---
+        if (result == ContentDialogResult.Primary)
+        {
+            EditProfileButton_Click(nameBox.Text, descBox.Text, profileIcon);
+        }
+        else if (result == ContentDialogResult.Secondary)
+        {
+            DeleteProfileButton_Click(null, null);
+        }
+    }
+
+
+    private void SymbolList_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        var glypher = (FontIcon)e.ClickedItem;
+        if (glypher != null)
+        {
+            _symbol = glypher;
+        }
     }
 
     #endregion
@@ -1813,7 +2032,7 @@ public sealed partial class ПресетыPage
 
         AppSettings.StreamStabilizerMaxPercentMHz = (int)StreamStabilizerTargetPercent.Value;
         AppSettings.SaveSettings();
-    }
+    } 
 
     #region PowerConfig Helpers
 

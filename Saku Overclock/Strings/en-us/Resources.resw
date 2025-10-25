@@ -2039,7 +2039,7 @@ to track your laptop’s status
 without opening extra windows</value>
   </data>
   <data name="Param_Profile_Edit_Name.Content" xml:space="preserve">
-    <value>Change profile</value>
+    <value>Edit preset</value>
   </data>
   <data name="Param_Profile_New_Name.Content" xml:space="preserve">
     <value>Add new profile</value>
