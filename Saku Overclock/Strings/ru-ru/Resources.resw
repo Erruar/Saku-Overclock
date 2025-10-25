@@ -2118,13 +2118,13 @@ Overclock будут проигнорированы,
     <value>Осталось времени: </value>
   </data>
   <data name="Update_New_SubTitle.Text" xml:space="preserve">
-    <value>Если вы не хотите этого - отключите интернет и перезайдите в Saku Overclock©. Отлючите авто-обновления и снова включите интернет.</value>
+    <value>Обновитесь, чтобы испытать новые возможности и улучшенную работу всего, к чему вы привыкли</value>
   </data>
   <data name="Update_New_time.Text" xml:space="preserve">
     <value>Дата выхода обновления: </value>
   </data>
   <data name="Update_New_Title.Text" xml:space="preserve">
-    <value>Каждое обновление делает приложение лучше. Вы должны обновиться!</value>
+    <value>Saku Overclock продолжает развиваться, чтобы раскрыть весь потенциал вашего устройства</value>
   </data>
   <data name="Update_New_Update.Text" xml:space="preserve">
     <value>НОВОЕ
@@ -2612,7 +2612,7 @@ Asus. Может не поддерживаться на
     <value>Доступно обновление приложения</value>
   </data>
   <data name="Update_New_UpdateButton_Cancel.Content" xml:space="preserve">
-    <value>Отказаться</value>
+    <value>Позже</value>
   </data>
   <data name="Settings_Pivot_About.Text" xml:space="preserve">
     <value>О нас</value>

@@ -2081,13 +2081,13 @@ without opening extra windows</value>
     <value>Time left: </value>
   </data>
   <data name="Update_New_SubTitle.Text" xml:space="preserve">
-    <value>If you don't want to update the app - disable the internet and reopen Saku Overclock©. Then disable auto-updates and enable internet back.</value>
+    <value>Update to experience new capabilities and refined performance of everything you’re used to</value>
   </data>
   <data name="Update_New_time.Text" xml:space="preserve">
     <value>Update release date: </value>
   </data>
   <data name="Update_New_Title.Text" xml:space="preserve">
-    <value>Every update of the app makes it better. You should update it!</value>
+    <value>Saku Overclock keeps evolving to unlock your device’s full potential</value>
   </data>
   <data name="Update_New_Update.Text" xml:space="preserve">
     <value>NEW
@@ -2598,7 +2598,7 @@ methods are available.</value>
     <value>Application update available</value>
   </data>
   <data name="Update_New_UpdateButton_Cancel.Content" xml:space="preserve">
-    <value>Decline</value>
+    <value>Later</value>
   </data>
   <data name="Settings_Pivot_About.Text" xml:space="preserve">
     <value>About</value>

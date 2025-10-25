@@ -1,27 +1,21 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Reflection;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Microsoft.UI.Dispatching;
+using Windows.Foundation;
+using Windows.Graphics;
+using Windows.System;
+using Windows.UI.Text;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Xaml.Navigation;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.JsonContainers;
 using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
-using Windows.Foundation;
-using Windows.Graphics;
-using Windows.System;
-using Windows.UI.Text;
-using Saku_Overclock.JsonContainers;
-using ZenStates.Core;
 using Action = System.Action;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using Task = System.Threading.Tasks.Task;
@@ -46,19 +40,19 @@ public sealed partial class ShellPage
     private CancellationTokenSource? _applyDebounceCts;
     private readonly Lock _applyDebounceLock = new();
     private string _pendingProfileToApply = string.Empty; // Профиль, который нужно применить
-    private bool _isCustomProfile = false; // Флаг типа профиля для применения
+    private bool _isCustomProfile; // Флаг типа профиля для применения
     private int _pendingCustomProfileIndex = -1; // Индекс кастомного профиля для применения
 
     // Состояние для отслеживания позиции при быстром переключении
     private int _virtualCustomProfileIndex = -1; // Виртуальная позиция в кастомных профилях
     private string _virtualPremadeProfile = string.Empty; // Виртуальная позиция в готовых профилях
-    private bool _isVirtualStateActive = false; // Флаг активности виртуального состояния
+    private bool _isVirtualStateActive; // Флаг активности виртуального состояния
 
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
-    private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
+
     private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
-    private static readonly IApplyerService _applyer = App.GetService<IApplyerService>();
+    private static readonly IApplyerService Applyer = App.GetService<IApplyerService>();
 
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
@@ -116,14 +110,14 @@ public sealed partial class ShellPage
 
     #region App TitleBar Initialization
 
-    #region App loading and TitleBar  
+    #region App loading and TitleBar
 
     /// <summary>
-    /// Загрузка приложения
+    ///     Загрузка приложения
     /// </summary>
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        /*if (AppSettings.AppFirstRun) 
+        /*if (AppSettings.AppFirstRun)
         {
             HideNavigationBar();
             Icon.Visibility = Visibility.Collapsed;
@@ -133,7 +127,7 @@ public sealed partial class ShellPage
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
-        
+
         StartInfoUpdate();
         LoadPresetsToViewModel();
         InitializeThemes();
@@ -141,7 +135,7 @@ public sealed partial class ShellPage
     }
 
     /// <summary>
-    /// Обработчик активации окна
+    ///     Обработчик активации окна
     /// </summary>
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
@@ -151,14 +145,16 @@ public sealed partial class ShellPage
     }
 
     /// <summary>
-    /// Помогает установить регион взаимодействия с программой (кликабельную кнопку уведомлений и лого)
+    ///     Помогает установить регион взаимодействия с программой (кликабельную кнопку уведомлений и лого)
     /// </summary>
-    private void AppTitleBar_Loaded(object sender, RoutedEventArgs e) => SetRegionsForCustomTitleBar(); //Установить регион взаимодействия
+    private void AppTitleBar_Loaded(object sender, RoutedEventArgs e) =>
+        SetRegionsForCustomTitleBar(); //Установить регион взаимодействия
 
     /// <summary>
-    /// Помогает установить регион взаимодействия с программой (кликабельную кнопку уведомлений и лого)
+    ///     Помогает установить регион взаимодействия с программой (кликабельную кнопку уведомлений и лого)
     /// </summary>
-    private void AppTitleBar_SizeChanged(object sender, SizeChangedEventArgs e) => App.MainWindow.DispatcherQueue.TryEnqueue(SetRegionsForCustomTitleBar);
+    private void AppTitleBar_SizeChanged(object sender, SizeChangedEventArgs e) =>
+        App.MainWindow.DispatcherQueue.TryEnqueue(SetRegionsForCustomTitleBar);
 
     #endregion
 
@@ -167,7 +163,7 @@ public sealed partial class ShellPage
     #region Window Definitions
 
     /// <summary>
-    /// Активирует или выключает проверку уведомлений в приложении, если пользователь переключился на окно программы
+    ///     Активирует или выключает проверку уведомлений в приложении, если пользователь переключился на окно программы
     /// </summary>
     private void Window_Activated(object sender, WindowActivatedEventArgs args)
     {
@@ -183,7 +179,7 @@ public sealed partial class ShellPage
     }
 
     /// <summary>
-    /// Активирует или выключает проверку уведомлений в приложении, если пользователь свернул или развернул окно программы
+    ///     Активирует или выключает проверку уведомлений в приложении, если пользователь свернул или развернул окно программы
     /// </summary>
     private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
     {
@@ -202,7 +198,7 @@ public sealed partial class ShellPage
     #region Info Update Timers
 
     /// <summary>
-    /// Начинает проверку наличия новых уведомлений
+    ///     Начинает проверку наличия новых уведомлений
     /// </summary>
     private void StartInfoUpdate()
     {
@@ -214,22 +210,17 @@ public sealed partial class ShellPage
         _dispatcherTimer.Start();
     }
 
-    /// <summary>
-    /// Останавливает проверку наличия новых уведомлений
-    /// </summary>
-    private void StopInfoUpdate() => _dispatcherTimer?.Stop();
-
     #endregion
 
     #region Notification Update Voids
 
     /// <summary>
-    /// Главный метод проверки наличия новых уведомлений
+    ///     Главный метод проверки наличия новых уведомлений
     /// </summary>
     private Task GetNotify()
     {
         if (ViewModel.SelectedIndex != -1 && ViewModel.SelectedItem != string.Empty
-            && SelectedProfile != ViewModel.SelectedItem)
+                                          && SelectedProfile != ViewModel.SelectedItem)
         {
             SelectedProfile = ViewModel.SelectedItem ?? "Unknown";
         }
@@ -284,7 +275,8 @@ public sealed partial class ShellPage
                     case "UPDATE_REQUIRED":
                         notify1.Title = "Shell_Update_App_Title".GetLocalized();
                         notify1.Msg = "Shell_Update_App_Message".GetLocalized() + " " +
-                                      UpdateChecker.ParseVersion(UpdateChecker.GetNewVersion()?.TagName ?? "Null-null-0.0.0.0");
+                                      UpdateChecker.ParseVersion(UpdateChecker.GetNewVersion()?.TagName ??
+                                                                 "Null-null-0.0.0.0");
                         var updateButton = new Button
                         {
                             CornerRadius = new CornerRadius(15),
@@ -337,19 +329,19 @@ public sealed partial class ShellPage
                             Content = new Grid
                             {
                                 Children =
-                            {
-                                new FontIcon
                                 {
-                                    Glyph = "\uE71E",
-                                    HorizontalAlignment = HorizontalAlignment.Left
-                                },
-                                new TextBlock
-                                {
-                                    Margin = new Thickness(30, 0, 0, 0),
-                                    Text = "Shell_Notify_AboutErrors".GetLocalized(),
-                                    HorizontalAlignment = HorizontalAlignment.Center
+                                    new FontIcon
+                                    {
+                                        Glyph = "\uE71E",
+                                        HorizontalAlignment = HorizontalAlignment.Left
+                                    },
+                                    new TextBlock
+                                    {
+                                        Margin = new Thickness(30, 0, 0, 0),
+                                        Text = "Shell_Notify_AboutErrors".GetLocalized(),
+                                        HorizontalAlignment = HorizontalAlignment.Center
+                                    }
                                 }
-                            }
                             }
                         };
                         var but2 = new Button
@@ -360,19 +352,19 @@ public sealed partial class ShellPage
                             Content = new Grid
                             {
                                 Children =
-                            {
-                                new FontIcon
                                 {
-                                    Glyph = "\uE71C",
-                                    HorizontalAlignment = HorizontalAlignment.Left
-                                },
-                                new TextBlock
-                                {
-                                    Margin = new Thickness(30, 0, 0, 0),
-                                    Text = "Shell_Notify_DisableErrors".GetLocalized(),
-                                    HorizontalAlignment = HorizontalAlignment.Center
+                                    new FontIcon
+                                    {
+                                        Glyph = "\uE71C",
+                                        HorizontalAlignment = HorizontalAlignment.Left
+                                    },
+                                    new TextBlock
+                                    {
+                                        Margin = new Thickness(30, 0, 0, 0),
+                                        Text = "Shell_Notify_DisableErrors".GetLocalized(),
+                                        HorizontalAlignment = HorizontalAlignment.Center
+                                    }
                                 }
-                            }
                             }
                         };
                         but1.Click += (_, _) =>
@@ -402,10 +394,10 @@ public sealed partial class ShellPage
                                     VerticalAlignment = VerticalAlignment.Top,
                                     Children =
                                     {
-                                    new ProgressRing
-                                    {
-                                        IsActive = true
-                                    }
+                                        new ProgressRing
+                                        {
+                                            IsActive = true
+                                        }
                                     }
                                 });
                             var stringFrom = but2.Tag.ToString()?.Split('\"');
@@ -413,198 +405,198 @@ public sealed partial class ShellPage
                             {
                                 ProfileLoad();
                                 var commandActions = new Dictionary<string, Action>
-                            {
                                 {
-                                    "Param_SMU_Func_Text/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].SmuFunctionsEnabl = false
-                                },
-                                {
-                                    "Param_CPU_c2/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Cpu2 = false
-                                },
-                                {
-                                    "Param_VRM_v2/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Vrm2 = false
-                                },
-                                {
-                                    "Param_VRM_v1/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Vrm1 = false
-                                },
-                                {
-                                    "Param_CPU_c1/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Cpu1 = false
-                                },
-                                {
-                                    "Param_ADV_a15/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd15 = false
-                                },
-                                {
-                                    "Param_ADV_a11/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd11 = false
-                                },
-                                {
-                                    "Param_ADV_a12/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd12 = false
-                                },
-                                {
-                                    "Param_CO_O1/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Coall = false
-                                },
-                                {
-                                    "Param_CO_O2/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Cogfx = false
-                                },
-                                {
-                                    "Param_CCD1_CO_Section/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Coprefmode = 0
-                                },
-                                {
-                                    "Param_ADV_a14_E/Content".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd14 = false
-                                },
-                                {
-                                    "Param_CPU_c5/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Cpu5 = false
-                                },
-                                {
-                                    "Param_CPU_c3/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Cpu3 = false
-                                },
-                                {
-                                    "Param_CPU_c4/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Cpu4 = false
-                                },
-                                {
-                                    "Param_CPU_c6/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Cpu6 = false
-                                },
-                                {
-                                    "Param_CPU_c7/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Cpu7 = false
-                                },
-                                {
-                                    "Param_ADV_a6/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd6 = false
-                                },
-                                {
-                                    "Param_VRM_v4/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Vrm4 = false
-                                },
-                                {
-                                    "Param_VRM_v3/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Vrm3 = false
-                                },
-                                {
-                                    "Param_ADV_a1/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd1 = false
-                                },
-                                {
-                                    "Param_ADV_a3/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd3 = false
-                                },
-                                {
-                                    "Param_VRM_v7/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Vrm7 = false
-                                },
-                                {
-                                    "Param_ADV_a4/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd4 = false
-                                },
-                                {
-                                    "Param_ADV_a5/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd5 = false
-                                },
-                                {
-                                    "Param_ADV_a10/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd10 = false
-                                },
-                                {
-                                    "Param_ADV_a13_E/Content".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd13 = false
-                                },
-                                {
-                                    "Param_ADV_a13_U/Content".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd13 = false
-                                },
-                                {
-                                    "Param_ADV_a8/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd8 = false
-                                },
-                                {
-                                    "Param_ADV_a7/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd7 = false
-                                },
-                                {
-                                    "Param_VRM_v5/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Vrm5 = false
-                                },
-                                {
-                                    "Param_VRM_v6/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Vrm6 = false
-                                },
-                                {
-                                    "Param_ADV_a9/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Advncd9 = false
-                                },
-                                {
-                                    "Param_GPU_g12/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu12 = false
-                                },
-                                {
-                                    "Param_GPU_g11/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu11 = false
-                                },
-                                {
-                                    "Param_GPU_g10/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu10 = false
-                                },
-                                {
-                                    "Param_GPU_g9/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu9 = false
-                                },
-                                {
-                                    "Param_GPU_g2/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu2 = false
-                                },
-                                {
-                                    "Param_GPU_g1/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu1 = false
-                                },
-                                {
-                                    "Param_GPU_g4/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu4 = false
-                                },
-                                {
-                                    "Param_GPU_g3/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu3 = false
-                                },
-                                {
-                                    "Param_GPU_g6/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu6 = false
-                                },
-                                {
-                                    "Param_GPU_g5/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu5 = false
-                                },
-                                {
-                                    "Param_GPU_g8/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu8 = false
-                                },
-                                {
-                                    "Param_GPU_g7/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu7 = false
-                                },
-                                {
-                                    "Param_GPU_g15/Text".GetLocalized(),
-                                    () =>
                                     {
+                                        "Param_SMU_Func_Text/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].SmuFunctionsEnabl = false
+                                    },
+                                    {
+                                        "Param_CPU_c2/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Cpu2 = false
+                                    },
+                                    {
+                                        "Param_VRM_v2/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Vrm2 = false
+                                    },
+                                    {
+                                        "Param_VRM_v1/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Vrm1 = false
+                                    },
+                                    {
+                                        "Param_CPU_c1/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Cpu1 = false
+                                    },
+                                    {
+                                        "Param_ADV_a15/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd15 = false
+                                    },
+                                    {
+                                        "Param_ADV_a11/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd11 = false
+                                    },
+                                    {
+                                        "Param_ADV_a12/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd12 = false
+                                    },
+                                    {
+                                        "Param_CO_O1/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Coall = false
+                                    },
+                                    {
+                                        "Param_CO_O2/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Cogfx = false
+                                    },
+                                    {
+                                        "Param_CCD1_CO_Section/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Coprefmode = 0
+                                    },
+                                    {
+                                        "Param_ADV_a14_E/Content".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd14 = false
+                                    },
+                                    {
+                                        "Param_CPU_c5/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Cpu5 = false
+                                    },
+                                    {
+                                        "Param_CPU_c3/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Cpu3 = false
+                                    },
+                                    {
+                                        "Param_CPU_c4/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Cpu4 = false
+                                    },
+                                    {
+                                        "Param_CPU_c6/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Cpu6 = false
+                                    },
+                                    {
+                                        "Param_CPU_c7/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Cpu7 = false
+                                    },
+                                    {
+                                        "Param_ADV_a6/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd6 = false
+                                    },
+                                    {
+                                        "Param_VRM_v4/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Vrm4 = false
+                                    },
+                                    {
+                                        "Param_VRM_v3/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Vrm3 = false
+                                    },
+                                    {
+                                        "Param_ADV_a1/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd1 = false
+                                    },
+                                    {
+                                        "Param_ADV_a3/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd3 = false
+                                    },
+                                    {
+                                        "Param_VRM_v7/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Vrm7 = false
+                                    },
+                                    {
+                                        "Param_ADV_a4/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd4 = false
+                                    },
+                                    {
+                                        "Param_ADV_a5/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd5 = false
+                                    },
+                                    {
+                                        "Param_ADV_a10/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd10 = false
+                                    },
+                                    {
+                                        "Param_ADV_a13_E/Content".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd13 = false
+                                    },
+                                    {
+                                        "Param_ADV_a13_U/Content".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd13 = false
+                                    },
+                                    {
+                                        "Param_ADV_a8/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd8 = false
+                                    },
+                                    {
+                                        "Param_ADV_a7/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd7 = false
+                                    },
+                                    {
+                                        "Param_VRM_v5/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Vrm5 = false
+                                    },
+                                    {
+                                        "Param_VRM_v6/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Vrm6 = false
+                                    },
+                                    {
+                                        "Param_ADV_a9/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Advncd9 = false
+                                    },
+                                    {
+                                        "Param_GPU_g12/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu12 = false
+                                    },
+                                    {
+                                        "Param_GPU_g11/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu11 = false
+                                    },
+                                    {
+                                        "Param_GPU_g10/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu10 = false
+                                    },
+                                    {
+                                        "Param_GPU_g9/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu9 = false
+                                    },
+                                    {
+                                        "Param_GPU_g2/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu2 = false
+                                    },
+                                    {
+                                        "Param_GPU_g1/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu1 = false
+                                    },
+                                    {
+                                        "Param_GPU_g4/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu4 = false
+                                    },
+                                    {
+                                        "Param_GPU_g3/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu3 = false
+                                    },
+                                    {
+                                        "Param_GPU_g6/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu6 = false
+                                    },
+                                    {
+                                        "Param_GPU_g5/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu5 = false
+                                    },
+                                    {
+                                        "Param_GPU_g8/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu8 = false
+                                    },
+                                    {
+                                        "Param_GPU_g7/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu7 = false
+                                    },
+                                    {
+                                        "Param_GPU_g15/Text".GetLocalized(),
+                                        () =>
+                                        {
+                                        }
+                                    },
+                                    {
+                                        "Param_GPU_g16/Text".GetLocalized(),
+                                        () => _profile[AppSettings.Preset].Gpu16 = false
                                     }
-                                },
-                                {
-                                    "Param_GPU_g16/Text".GetLocalized(),
-                                    () => _profile[AppSettings.Preset].Gpu16 = false
-                                }
-                            };
+                                };
                                 var loggingList = string.Empty;
                                 var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                                                   @"\SakuOverclock\FixedFailingCommandsLog.txt";
@@ -631,14 +623,10 @@ public sealed partial class ShellPage
                                 await sw.WriteLineAsync(@"//------OK------\\");
                                 sw.Close();
 
-                                if (navigationService.Frame!.GetPageViewModel() is not ГлавнаяViewModel)
-                                {
-                                    navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, false);
-                                }
-                                else
-                                {
-                                    navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!, null, false);
-                                }
+                                navigationService.NavigateTo(
+                                    navigationService.Frame!.GetPageViewModel() is not ГлавнаяViewModel
+                                        ? typeof(ГлавнаяViewModel).FullName!
+                                        : typeof(ПресетыViewModel).FullName!);
 
                                 var butLogs = new Button
                                 {
@@ -646,19 +634,19 @@ public sealed partial class ShellPage
                                     Content = new Grid
                                     {
                                         Children =
-                                    {
-                                        new FontIcon
                                         {
-                                            Glyph = "\uE82D",
-                                            HorizontalAlignment = HorizontalAlignment.Left
-                                        },
-                                        new TextBlock
-                                        {
-                                            Margin = new Thickness(30, 0, 0, 0),
-                                            Text = "Shell_Notify_ErrorsShowLog".GetLocalized(),
-                                            HorizontalAlignment = HorizontalAlignment.Center
+                                            new FontIcon
+                                            {
+                                                Glyph = "\uE82D",
+                                                HorizontalAlignment = HorizontalAlignment.Left
+                                            },
+                                            new TextBlock
+                                            {
+                                                Margin = new Thickness(30, 0, 0, 0),
+                                                Text = "Shell_Notify_ErrorsShowLog".GetLocalized(),
+                                                HorizontalAlignment = HorizontalAlignment.Center
+                                            }
                                         }
-                                    }
                                     }
                                 };
                                 var butSavedLogs = new Button
@@ -668,19 +656,19 @@ public sealed partial class ShellPage
                                     Content = new Grid
                                     {
                                         Children =
-                                    {
-                                        new FontIcon
                                         {
-                                            Glyph = "\uE838",
-                                            HorizontalAlignment = HorizontalAlignment.Left
-                                        },
-                                        new TextBlock
-                                        {
-                                            Margin = new Thickness(30, 0, 0, 0),
-                                            Text = "Shell_Notify_ErrorsShowLogExplorer".GetLocalized(),
-                                            HorizontalAlignment = HorizontalAlignment.Center
+                                            new FontIcon
+                                            {
+                                                Glyph = "\uE838",
+                                                HorizontalAlignment = HorizontalAlignment.Left
+                                            },
+                                            new TextBlock
+                                            {
+                                                Margin = new Thickness(30, 0, 0, 0),
+                                                Text = "Shell_Notify_ErrorsShowLogExplorer".GetLocalized(),
+                                                HorizontalAlignment = HorizontalAlignment.Center
+                                            }
                                         }
-                                    }
                                     }
                                 };
                                 butSavedLogs.Click += (_, _) =>
@@ -701,32 +689,32 @@ public sealed partial class ShellPage
                                             {
                                                 Orientation = Orientation.Vertical,
                                                 Children =
-                                            {
-                                                new ScrollViewer
                                                 {
-                                                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                                                    VerticalAlignment = VerticalAlignment.Stretch,
-                                                    Content = new StackPanel
+                                                    new ScrollViewer
                                                     {
-                                                        Orientation = Orientation.Vertical,
-                                                        Children =
+                                                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                                                        VerticalAlignment = VerticalAlignment.Stretch,
+                                                        Content = new StackPanel
                                                         {
-                                                            new TextBlock
+                                                            Orientation = Orientation.Vertical,
+                                                            Children =
                                                             {
-                                                                Text = "Shell_Notify_ErrorLog".GetLocalized(),
-                                                                FontWeight = new FontWeight(600),
-                                                                FontSize = 21
-                                                            },
-                                                            new TextBlock
-                                                            {
-                                                                HorizontalAlignment = HorizontalAlignment.Stretch,
-                                                                Text = loggingList
+                                                                new TextBlock
+                                                                {
+                                                                    Text = "Shell_Notify_ErrorLog".GetLocalized(),
+                                                                    FontWeight = new FontWeight(600),
+                                                                    FontSize = 21
+                                                                },
+                                                                new TextBlock
+                                                                {
+                                                                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                                                                    Text = loggingList
+                                                                }
                                                             }
                                                         }
-                                                    }
-                                                },
-                                                butSavedLogs
-                                            }
+                                                    },
+                                                    butSavedLogs
+                                                }
                                             }
                                         };
                                         flyout1.ShowAt(butLogs);
@@ -740,14 +728,14 @@ public sealed partial class ShellPage
                                     {
                                         Children =
                                         {
-                                        new StackPanel
-                                        {
-                                            Orientation = Orientation.Horizontal,
-                                            Children =
+                                            new StackPanel
                                             {
-                                                butLogs
+                                                Orientation = Orientation.Horizontal,
+                                                Children =
+                                                {
+                                                    butLogs
+                                                }
                                             }
-                                        }
                                         }
                                     });
                             }
@@ -755,17 +743,17 @@ public sealed partial class ShellPage
                         subcontent = new Grid
                         {
                             Children =
-                        {
-                            new StackPanel
                             {
-                                Orientation = Orientation.Horizontal,
-                                Children =
+                                new StackPanel
                                 {
-                                    but1,
-                                    but2
+                                    Orientation = Orientation.Horizontal,
+                                    Children =
+                                    {
+                                        but1,
+                                        but2
+                                    }
                                 }
                             }
-                        }
                         };
                     }
 
@@ -801,7 +789,7 @@ public sealed partial class ShellPage
     }
 
     /// <summary>
-    /// Скрывает навигационную панель
+    ///     Скрывает навигационную панель
     /// </summary>
     private void HideNavigationBar()
     {
@@ -818,7 +806,7 @@ public sealed partial class ShellPage
     }
 
     /// <summary>
-    /// Показывает навигационную панель после скрытия
+    ///     Показывает навигационную панель после скрытия
     /// </summary>
     private void ShowNavigationBar()
     {
@@ -842,42 +830,13 @@ public sealed partial class ShellPage
     #region User Presets
 
     /// <summary>
-    /// Загружает пресеты в ViewModel (включая готовые)
+    ///     Загружает пресеты в ViewModel (включая готовые)
     /// </summary>
     private void LoadPresetsToViewModel()
     {
-        var presetsCollection = new List<string>();
-
         ProfileLoad();
 
-        if (_profile == null)
-        {
-            _profile = new Profile[1];
-            _profile[0] = new Profile();
-            ProfileSave();
-        }
-
-        foreach (var profile in _profile)
-        {
-            var securedProfile = profile;
-            if (profile == null)
-            {
-                securedProfile = new Profile();
-                if (_profile.Length > 0)
-                {
-                    _profile[0] = securedProfile;
-                    ProfileSave();
-                }
-                else
-                {
-                    _profile = new Profile[1];
-                    _profile[0] = securedProfile;
-                    ProfileSave();
-                }
-            }
-
-            presetsCollection.Add(securedProfile.Profilename);
-        }
+        var presetsCollection = _profile.Select(securedProfile => securedProfile.Profilename).ToList();
 
         presetsCollection.Add("PremadeSsAMin");
         presetsCollection.Add("PremadeSsAEco");
@@ -931,23 +890,20 @@ public sealed partial class ShellPage
     }
 
     /// <summary>
-    /// Помощник, выставляющий во ViewModel нужный пресет по имени
+    ///     Помощник, выставляющий во ViewModel нужный пресет по имени
     /// </summary>
     private void SelectRightPresetName(string name)
     {
-        foreach (var element in ViewModel.Presets)
+        foreach (var element in ViewModel.Presets.Where(element => element.Contains(name)))
         {
-            if (element?.Contains(name) == true)
-            {
-                ViewModel.SelectedItem = element;
-                ViewModel.SelectedIndex = ViewModel.Presets.IndexOf(name);
-                return;
-            }
+            ViewModel.SelectedItem = element;
+            ViewModel.SelectedIndex = ViewModel.Presets.IndexOf(name);
+            return;
         }
     }
 
     /// <summary>
-    /// Делает активным готовый пресет по короткому имени, но не применяет его
+    ///     Делает активным готовый пресет по короткому имени, но не применяет его
     /// </summary>
     public static void SelectPremadePreset(string nextProfile)
     {
@@ -957,12 +913,13 @@ public sealed partial class ShellPage
             typeof(IAppSettingsService).GetProperty($"Premade{profile}Activated")
                 ?.SetValue(AppSettings, profile == nextProfile);
         }
+
         AppSettings.Preset = -1;
         AppSettings.SaveSettings();
     }
 
     /// <summary>
-    /// Вспомогательный словарь, показывающий какой готовый пресет следующий, на основе предыдущего
+    ///     Вспомогательный словарь, показывающий какой готовый пресет следующий, на основе предыдущего
     /// </summary>
     private static Dictionary<string, string> NextPremadePreset => new()
     {
@@ -974,7 +931,7 @@ public sealed partial class ShellPage
     };
 
     /// <summary>
-    /// Вспомогательный словарь, выдающий данные о готовом пресете по его короткому имени
+    ///     Вспомогательный словарь, выдающий данные о готовом пресете по его короткому имени
     /// </summary>
     public static Dictionary<string, (string name, string desc, string icon, string settings, string comboName)>
         PremadedPresets => new()
@@ -982,37 +939,52 @@ public sealed partial class ShellPage
         {
             "Min",
             ("Shell_Preset_Min", "Preset_Min_OverlayDesc", "\uEBC0",
-                OcFinder.CreatePreset(PresetType.Min, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard : (AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
+                OcFinder.CreatePreset(PresetType.Min,
+                        AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :
+                        AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)
+                    .CommandString,
                 "PremadeSsAMin")
         },
         {
             "Eco",
             ("Shell_Preset_Eco", "Preset_Eco_OverlayDesc", "\uEC0A",
-                OcFinder.CreatePreset(PresetType.Eco, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard : (AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
+                OcFinder.CreatePreset(PresetType.Eco,
+                        AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :
+                        AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)
+                    .CommandString,
                 "PremadeSsAEco")
         },
         {
             "Balance",
             ("Shell_Preset_Balance", "Preset_Balance_OverlayDesc", "\uEC49",
-                OcFinder.CreatePreset(PresetType.Balance, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
+                OcFinder.CreatePreset(PresetType.Balance,
+                        AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :
+                        AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)
+                    .CommandString,
                 "PremadeSsABal")
         },
         {
             "Speed",
             ("Shell_Preset_Speed", "Preset_Speed_OverlayDesc", "\uE945",
-                OcFinder.CreatePreset(PresetType.Performance, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
+                OcFinder.CreatePreset(PresetType.Performance,
+                        AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :
+                        AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)
+                    .CommandString,
                 "PremadeSsASpd")
         },
         {
             "Max",
             ("Shell_Preset_Max", "Preset_Max_OverlayDesc", "\uECAD",
-                OcFinder.CreatePreset(PresetType.Max, AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :(AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)).CommandString,
+                OcFinder.CreatePreset(PresetType.Max,
+                        AppSettings.PremadeOptimizationLevel == 0 ? OptimizationLevel.Standard :
+                        AppSettings.PremadeOptimizationLevel == 1 ? OptimizationLevel.Standard : OptimizationLevel.Deep)
+                    .CommandString,
                 "PremadeSsAMax")
         }
     };
 
     /// <summary>
-    /// Метод для получения следующего готового пресета, без применения настроек
+    ///     Метод для получения следующего готового пресета, без применения настроек
     /// </summary>
     private (string profileName, string profileKey) GetNextPremadeProfile(out string icon, out string desc)
     {
@@ -1033,8 +1005,8 @@ public sealed partial class ShellPage
             // Определяем реальную текущую позицию
             // Активен готовый пресет - ищем какой именно
             currentProfile = profiles.FirstOrDefault(p =>
-                                (bool)typeof(IAppSettingsService).GetProperty($"Premade{p}Activated")
-                                    ?.GetValue(AppSettings)!) ?? "Balance";
+                (bool)typeof(IAppSettingsService).GetProperty($"Premade{p}Activated")
+                    ?.GetValue(AppSettings)!) ?? "Balance";
 
             _virtualPremadeProfile = currentProfile;
             _isVirtualStateActive = true;
@@ -1055,7 +1027,7 @@ public sealed partial class ShellPage
     }
 
     /// <summary>
-    /// Метод для получения следующего кастомного пресета, без применения настроек
+    ///     Метод для получения следующего кастомного пресета, без применения настроек
     /// </summary>
     private (string profileName, int profileIndex) GetNextCustomProfile(out string? icon, out string? desc)
     {
@@ -1066,7 +1038,7 @@ public sealed partial class ShellPage
         {
             ProfileLoad();
 
-            if (_profile == null || _profile.Length == 0)
+            if (_profile.Length == 0)
             {
                 MandarinAddNotification("TraceIt_Error".GetLocalized(),
                     "No custom profiles available", InfoBarSeverity.Warning);
@@ -1110,12 +1082,10 @@ public sealed partial class ShellPage
                 desc = profile.Profiledesc;
                 return (profile.Profilename, nextProfileIndex);
             }
-            else
-            {
-                MandarinAddNotification("TraceIt_Error".GetLocalized(),
-                    $"Invalid profile index: {nextProfileIndex}", InfoBarSeverity.Error);
-                return (string.Empty, -1);
-            }
+
+            MandarinAddNotification("TraceIt_Error".GetLocalized(),
+                $"Invalid profile index: {nextProfileIndex}", InfoBarSeverity.Error);
+            return (string.Empty, -1);
         }
         catch (Exception ex)
         {
@@ -1126,7 +1096,7 @@ public sealed partial class ShellPage
     }
 
     /// <summary>
-    /// Устанавливает готовую строку параметров разгона для применения готового пресета, но не применяет
+    ///     Устанавливает готовую строку параметров разгона для применения готового пресета, но не применяет
     /// </summary>
     private void SetPremadePreset(string profileKey)
     {
@@ -1153,7 +1123,7 @@ public sealed partial class ShellPage
     }
 
     /// <summary>
-    /// Устанавливает и применяет готовую строку параметров разгона для применения кастомного пресета
+    ///     Устанавливает и применяет готовую строку параметров разгона для применения кастомного пресета
     /// </summary>
     private void ApplyCustomProfile(int profileIndex)
     {
@@ -1161,7 +1131,7 @@ public sealed partial class ShellPage
         {
             ProfileLoad();
 
-            if (_profile == null || profileIndex < 0 || profileIndex >= _profile.Length)
+            if (profileIndex < 0 || profileIndex >= _profile.Length)
             {
                 MandarinAddNotification("TraceIt_Error".GetLocalized(),
                     $"Invalid custom profile index: {profileIndex}", InfoBarSeverity.Error);
@@ -1173,7 +1143,7 @@ public sealed partial class ShellPage
             var profile = _profile[profileIndex];
 
             SelectRightPresetName(profile.Profilename);
-            _applyer.ApplyCustomPreset(profile);
+            Applyer.ApplyCustomPreset(profile);
 
             SelectedProfile = profile.Profilename;
 
@@ -1199,9 +1169,9 @@ public sealed partial class ShellPage
     #endregion
 
     #region Themes
-    
+
     /// <summary>
-    /// Инициализирует активную тему приложения
+    ///     Инициализирует активную тему приложения
     /// </summary>
     private void InitializeThemes()
     {
@@ -1287,7 +1257,6 @@ public sealed partial class ShellPage
 
     private void JsonRepair()
     {
-
         _profile = [];
         try
         {
@@ -1309,8 +1278,6 @@ public sealed partial class ShellPage
             App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
                 AppContext.BaseDirectory));
         }
-
-
     }
 
     #endregion
@@ -1320,7 +1287,7 @@ public sealed partial class ShellPage
     #region Keyboard Hooks
 
     private static IntPtr SetHook(LowLevelKeyboardProc proc) => SetWindowsHookEx(WhKeyboardLl, proc,
-            GetModuleHandle(Process.GetCurrentProcess().MainModule!.ModuleName), 0);
+        GetModuleHandle(Process.GetCurrentProcess().MainModule!.ModuleName), 0);
 
     private static bool IsAltPressed() => (GetKeyState(VkMenu) & KeyPressed) != 0;
 
@@ -1330,9 +1297,9 @@ public sealed partial class ShellPage
     private nint HookCallbackAsync(int nCode, IntPtr wParam, IntPtr lParam)
     {
         var next = CallNextHookEx(_hookId, nCode, wParam, lParam); // Передаем нажатие в следующее приложение
-        
+
         if (nCode >= 0 && wParam == WmKeydown && GetAsyncKeyState(0x11) < 0 &&
-                IsAltPressed()) // Проверяем следует ли перехватывать хук и событие нажатия на клавишу Control (0x11), Alt
+            IsAltPressed()) // Проверяем следует ли перехватывать хук и событие нажатия на клавишу Control (0x11), Alt
         {
             _ = HandleKeyboardKeysCallback(Marshal.ReadInt32(lParam));
         }
@@ -1346,44 +1313,45 @@ public sealed partial class ShellPage
         {
             // Переключить между своими пресетами
             case VirtualKey.W:
+            {
+                var (nextCustomProfile, nextCustomIndex) = GetNextCustomProfile(out var icon1, out var desc1);
+
+                if (!string.IsNullOrEmpty(nextCustomProfile))
                 {
-                    (var nextCustomProfile, var nextCustomIndex) = GetNextCustomProfile(out var icon1, out var desc1);
-
-                    if (!string.IsNullOrEmpty(nextCustomProfile))
+                    // Сохраняем информацию о профиле для отложенного применения 
+                    lock (_applyDebounceLock)
                     {
-                        // Сохраняем информацию о профиле для отложенного применения 
-                        lock (_applyDebounceLock)
-                        {
-                            _pendingProfileToApply = nextCustomProfile;
-                            _isCustomProfile = true;
-                            _pendingCustomProfileIndex = nextCustomIndex;
-                        }
-
-                        await ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
-                                nextCustomProfile, icon1, desc1);
-                        ScheduleApplyProfile();
-
-                        MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
-                            "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
-                            InfoBarSeverity.Informational);
+                        _pendingProfileToApply = nextCustomProfile;
+                        _isCustomProfile = true;
+                        _pendingCustomProfileIndex = nextCustomIndex;
                     }
-                    break;
+
+                    await ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
+                        nextCustomProfile, icon1, desc1);
+                    ScheduleApplyProfile();
+
+                    MandarinAddNotification("Shell_ProfileChanging".GetLocalized(),
+                        "Shell_ProfileChanging_Custom".GetLocalized() + $"{nextCustomProfile}!",
+                        InfoBarSeverity.Informational);
                 }
+
+                break;
+            }
             // Переключить между готовыми пресетами
             case VirtualKey.P:
-                (var nextPremadeProfile, var nextPremadeKey) = GetNextPremadeProfile(out var icon, out var desc);
+                var (nextPremadeProfile, nextPremadeKey) = GetNextPremadeProfile(out var icon, out var desc);
 
                 if (!string.IsNullOrEmpty(nextPremadeProfile))
                 {
                     // Сохраняем информацию о профиле для отложенного применения 
                     lock (_applyDebounceLock)
                     {
-                        _pendingProfileToApply = nextPremadeKey; 
+                        _pendingProfileToApply = nextPremadeKey;
                         _isCustomProfile = false;
                     }
 
                     await ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
-                            nextPremadeProfile, icon, desc);
+                        nextPremadeProfile, icon, desc);
 
                     ScheduleApplyProfile();
 
@@ -1391,12 +1359,12 @@ public sealed partial class ShellPage
                         "Shell_ProfileChanging_Premade".GetLocalized() + $"{nextPremadeProfile}!",
                         InfoBarSeverity.Informational);
                 }
+
                 break;
             // Переключить состояние RTSS
             case VirtualKey.R:
                 if (AppSettings.RtssMetricsEnabled)
                 {
-
                     await ProfileSwitcher.ProfileSwitcher.ShowOverlay(_themeSelectorService, AppSettings,
                         "RTSS " + "Cooler_Service_Disabled/Content".GetLocalized(), "\uE7AC");
 
@@ -1417,6 +1385,7 @@ public sealed partial class ShellPage
                 break;
         }
     }
+
     private void ScheduleApplyProfile()
     {
         lock (_applyDebounceLock)
@@ -1462,7 +1431,7 @@ public sealed partial class ShellPage
                                 else
                                 {
                                     SetPremadePreset(profileToApply);
-                                    _applyer.ApplyWithoutAdjLine(false);
+                                    Applyer.ApplyWithoutAdjLine(false);
                                 }
                             }
                         }
@@ -1485,7 +1454,7 @@ public sealed partial class ShellPage
                             $"Error in profile scheduling: {ex.Message}", InfoBarSeverity.Error);
                     });
                 }
-            });
+            }, token);
         }
     }
 

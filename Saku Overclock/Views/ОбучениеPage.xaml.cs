@@ -1,14 +1,12 @@
-﻿using System.Diagnostics;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media.Animation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
-using Windows.UI.Text;
+using Saku_Overclock.JsonContainers;
 
 namespace Saku_Overclock.Views;
 
@@ -28,7 +26,7 @@ public sealed partial class ОбучениеPage : Page
     public static void ShowNavbarAndControls()
     {
         NotificationsService.Notifies ??= [];
-        NotificationsService.Notifies.Add(new()
+        NotificationsService.Notifies.Add(new Notify
         {
             Title = "ExitFirstLaunch",
             Msg = "DEBUG MESSAGE",
@@ -61,11 +59,8 @@ public sealed partial class ОбучениеPage : Page
             showLicenseSection.Children.Add(fadeIn);
         }
 
-        var formattedText = UpdateChecker.ApplyMarkdownStyles("LicenseText".GetLocalized());
-        foreach (var paragraph in formattedText)
-        {
-            LicenseText.Children.Add(paragraph);
-        }
+        var formattedText = UpdateChecker.FormatReleaseNotesAsRichText("LicenseText".GetLocalized());
+        LicenseText.Children.Add(formattedText);
         showLicenseSection.Begin();
     }
     private async void RunIntroSequence()
@@ -73,7 +68,6 @@ public sealed partial class ОбучениеPage : Page
         try
         {
             await Task.Delay(1000);
-            var logoAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
 
             var hideAnimationAndShowLogo = new Storyboard();
             {

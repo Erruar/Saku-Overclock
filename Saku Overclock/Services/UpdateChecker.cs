@@ -2,8 +2,12 @@
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Windows.UI.Text;
+using Microsoft.UI;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Octokit;
@@ -11,52 +15,58 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
 using Saku_Overclock.ViewModels;
-using Windows.UI;
-using Windows.UI.Text;
 using Application = Microsoft.UI.Xaml.Application;
 using FileMode = System.IO.FileMode;
 using Package = Windows.ApplicationModel.Package;
 
 namespace Saku_Overclock.Services;
+
 public abstract partial class UpdateChecker
 {
-    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
-    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
-    private static readonly Version CurrentVersion = RuntimeHelper.IsMsix ?
-        new Version(Package.Current.Id.Version.Major,
+    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>();
+
+    private static readonly Version CurrentVersion = RuntimeHelper.IsMsix
+        ? new Version(Package.Current.Id.Version.Major,
             Package.Current.Id.Version.Minor,
             Package.Current.Id.Version.Build,
             Package.Current.Id.Version.Revision)
-        : Assembly.GetExecutingAssembly().GetName().Version!;
+        : Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 19, 0);
 
     private const string RepoOwner = "Erruar";
     private const string RepoName = "Saku-Overclock";
-    private static double _downloadPercent; // Процент скачивания
-    private static string _timeElapsed = "0:00"; // Время, прошедшее с начала скачивания
-    private static string _timeLeft = "0:01"; // Время, оставшееся до завершения скачивания
+
+    private static Brush _strongFill = (Brush)Application.Current.Resources["ControlStrongFillColorDefaultBrush"];
+    private static Brush _secondaryFill = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"];
+    private static Brush _accentFill = (Brush)Application.Current.Resources["AccentTextFillColorPrimaryBrush"];
 
     public static string? GitHubInfoString
     {
-        get; private set;
-    }
-
-    public static string CurrentSubVersion
-    {
         get;
-    } = ГлавнаяViewModel.GetVersion();
+        private set;
+    }
 
     private static Release? _updateNewVersion;
     private static bool _apiRateLimited;
 
+    #region Updater
+
+    /// <summary>
+    ///     Проверяет наличие обновлений программы, при наличии переключает активную страницу на страницу обновления
+    /// </summary>
     public static async Task CheckForUpdates()
     {
-        if (_apiRateLimited) { return; }
+        if (_apiRateLimited)
+        {
+            return;
+        }
+
         var client = new GitHubClient(new ProductHeaderValue("Saku-Overclock-Updater"));
         IReadOnlyList<Release>? releases;
+
         try
         {
-           releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
-
+            releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
         }
         catch
         {
@@ -75,6 +85,7 @@ public abstract partial class UpdateChecker
             await App.MainWindow.ShowMessageDialogAsync("Main_NoReleases".GetLocalized(), "Error".GetLocalized());
             return;
         }
+
         if (latestRelease.Version > CurrentVersion)
         {
             _updateNewVersion = latestRelease.Release;
@@ -84,70 +95,52 @@ public abstract partial class UpdateChecker
                 var navigationService = App.GetService<INavigationService>();
                 navigationService.NavigateTo(typeof(ОбновлениеViewModel).FullName!, null, true);
             }
-            else 
+            else
             {
-                NotificationsService.Notifies ??= [];
-                NotificationsService.Notifies.Add(new Notify
-                {
-                    Title = "UPDATE_REQUIRED",
-                    Msg = "DEBUG MESSAGE",
-                    Type = InfoBarSeverity.Informational
-                });
-                NotificationsService.SaveNotificationsSettings();
+                NotifyUpdate();
             }
         }
     }
-    public static Release? GetNewVersion()
+
+    /// <summary>
+    ///     Переключает активную страницу на страницу обновления если включено автообновление программы, иначе показывает
+    ///     уведомление о наличии обновления
+    /// </summary>
+    private static void NotifyUpdate()
     {
-        return _updateNewVersion;
+        NotificationsService.Notifies ??= [];
+        NotificationsService.Notifies.Add(new Notify
+        {
+            Title = "UPDATE_REQUIRED",
+            Msg = "DEBUG MESSAGE",
+            Type = InfoBarSeverity.Informational
+        });
+        NotificationsService.SaveNotificationsSettings();
     }
 
+    /// <summary>
+    ///     Возвращает релиз новой версии (включая название, когда он был опубликован, файлы, и т.д)
+    /// </summary>
+    public static Release? GetNewVersion() => _updateNewVersion;
+
+    /// <summary>
+    ///     Получает строку информации о последних трёх релизах программы
+    /// </summary>
     public static async Task GenerateReleaseInfoString()
     {
-        if (_apiRateLimited) 
-        {
-            GitHubInfoString = "**Failed to fetch info**";
-            return; 
-        }
         try
         {
-
             var client = new GitHubClient(new ProductHeaderValue("Saku-Overclock-Updater"));
-            IReadOnlyList<Release>? releases;
-            try
-            {
-                if (_apiRateLimited)
-                {
-                    GitHubInfoString = "**Failed to fetch info**";
-                    return;
-                }
-                releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
-            }
-            catch (RateLimitExceededException v1)
-            {
-                _apiRateLimited = true;
-                GitHubInfoString = $"**Failed to fetch info**\n{v1}";
-                return;
-            }
-            catch
-            {
-                _apiRateLimited = true;
-                GitHubInfoString = "**Failed to fetch info**";
-                return;
-            }
-            
+            var releases = await client.Repository.Release.GetAll(RepoOwner, RepoName);
 
             var sb = new StringBuilder();
-            var currentRelease = 0;
-            foreach (var release in releases.OrderByDescending(r => r.CreatedAt))
+            const string removeText =
+                "### THATS ALL?\r\nDon't think that I'm not developing a project, I'm doing it every day for you friends, but so far I can't make a stable update because there are too many changes, but we're getting close to release!\r\nI hope you will appreciate my work as your **star** ⭐ , thank you!";
+
+            foreach (var release in releases.OrderByDescending(r => r.CreatedAt).Take(4))
             {
-                if (currentRelease > 3)
-                {
-                    break;
-                }
-                sb.AppendLine($"{release.Body}".Replace("### THATS ALL?\r\nDon't think that I'm not developing a project, I'm doing it every day for you friends, but so far I can't make a stable update because there are too many changes, but we're getting close to release!\r\nI hope you will appreciate my work as your **star** ⭐ , thank you!", "") + "\n")
-                  .AppendLine();
-                currentRelease++;
+                sb.AppendLine(release.Body?.Replace(removeText, "") ?? string.Empty)
+                    .AppendLine();
             }
 
             GitHubInfoString = sb.ToString();
@@ -159,25 +152,27 @@ public abstract partial class UpdateChecker
         }
     }
 
+    /// <summary>
+    ///     Парсит версию программы по тегу релиза
+    /// </summary>
+    /// <returns>Версия программы</returns>
     public static Version ParseVersion(string tagName)
     {
         // Пример тега: "Saku-Overclock-1.0.14.0-Release-Candidate-5"
-        var versionString = tagName.Split('-')[2];
-        return Version.TryParse(versionString, out var version) ? version : new Version(0, 0, 0, 0);
+        var parts = tagName.Split('-');
+        if (parts.Length > 2 && Version.TryParse(parts[2], out var version))
+        {
+            return version;
+        }
+
+        return new Version(0, 0, 0, 0);
     }
-    public static double GetDownloadPercent()
-    {
-        return _downloadPercent;
-    }
-    public static string GetDownloadTimeLeft()
-    {
-        return _timeLeft;
-    }
-    public static string GetDownloadTimeElapsed()
-    {
-        return _timeElapsed;
-    }
-    public static async Task DownloadAndUpdate(Release release, IProgress<(double percent, string elapsed, string left)> progress)
+
+    /// <summary>
+    ///     Скачивает новый релиз и возвращает текущий прогресс его загрузки (процент скачивания, оставшееся и прошедшее время)
+    /// </summary>
+    public static async Task DownloadAndUpdate(Release release,
+        IProgress<(double percent, string elapsed, string left)> progress)
     {
         var asset = release.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe") || a.Name.EndsWith(".msi"));
         if (asset == null)
@@ -191,90 +186,116 @@ public abstract partial class UpdateChecker
 
         try
         {
-            var client = new HttpClient();
-            var response = await client.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-
-            var totalBytes = response.Content.Headers.ContentLength ?? -1L; // Общий размер файла в байтах
-            var buffer = new byte[8192];
-            var totalRead = 0L;
-            var isMoreToRead = true;
-
-            var stopwatch = Stopwatch.StartNew(); // Таймер для отслеживания времени
-
-            var fs = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
-            var contentStream = await response.Content.ReadAsStreamAsync();
-            while (isMoreToRead)
+            // Скачивание файла в отдельном scope для гарантированного освобождения ресурсов
             {
-                var read = await contentStream.ReadAsync(buffer, 0, buffer.Length);
-                if (read == 0)
+                using var client = new HttpClient();
+                using var response = await client.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
+
+                var totalBytes = response.Content.Headers.ContentLength ?? -1L;
+                var buffer = new byte[8192];
+                var totalRead = 0L;
+
+                var stopwatch = Stopwatch.StartNew();
+
+                await using (var fs = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write, FileShare.None,
+                                 8192, true))
+                await using (var contentStream = await response.Content.ReadAsStreamAsync())
                 {
-                    isMoreToRead = false;
-                    continue;
-                }
-
-                await fs.WriteAsync(buffer, 0, read);
-                totalRead += read;
-
-                // Обновление процентов скачивания
-                if (totalBytes > 0)
-                {
-                    _downloadPercent = (double)totalRead / totalBytes * 100;
-                }
-
-                // Обновление времени загрузки
-                var elapsed = stopwatch.Elapsed;
-                _timeElapsed = $"{elapsed.Minutes}:{elapsed.Seconds:D2}";
-
-                // Оценка оставшегося времени
-                if (totalRead > 0 && _downloadPercent > 0)
-                {
-                    var estimatedTotalTime = TimeSpan.FromMilliseconds(elapsed.TotalMilliseconds / _downloadPercent * 100);
-                    var remainingTime = estimatedTotalTime - elapsed;
-                    _timeLeft = $"{remainingTime.Minutes}:{remainingTime.Seconds:D2}";
-                }
-
-                // Сообщаем о прогрессе в UI, если progress не null
-                progress?.Report((_downloadPercent, _timeElapsed, _timeLeft));
-            }
-
-            await fs.FlushAsync(); // Убедиться, что все данные записаны на диск
-
-            stopwatch.Stop();
-            await fs.DisposeAsync();
-
-            // Убедиться, что файл полностью закрыт перед запуском
-            if (File.Exists(tempFilePath))
-            {
-                label_8:
-                try
-                {
-                    // Запуск загруженного установочного файла с правами администратора
-                    Process.Start(new ProcessStartInfo
+                    int bytesRead;
+                    while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
                     {
-                        FileName = tempFilePath,
-                        Verb = "runas" // Запуск от имени администратора
-                    });
+                        await fs.WriteAsync(buffer.AsMemory(0, bytesRead));
+                        totalRead += bytesRead;
 
-                    // Закрытие текущего приложения
-                    Application.Current.Exit();
-                    App.MainWindow.Close();
-                }
-                catch (Exception ex)
-                {
-                    await App.MainWindow.ShowMessageDialogAsync("Main_ErrorReleaseLoad".GetLocalized() + $"{ex.Message}", "Error".GetLocalized());
-                    await Task.Delay(2000);
-                    goto label_8; // Повторить задачу открытия автообновления приложения, в случае если возникла ошибка доступа
-                }
-                
+                        // Обновление процентов скачивания
+                        var downloadPercent = totalBytes > 0 ? (double)totalRead / totalBytes * 100 : 0;
+
+                        // Обновление времени загрузки
+                        var elapsed = stopwatch.Elapsed;
+                        var timeElapsed = $"{elapsed.Minutes}:{elapsed.Seconds:D2}";
+
+                        // Оценка оставшегося времени
+                        var timeLeft = "0:01";
+                        if (totalRead > 0 && downloadPercent > 0)
+                        {
+                            var estimatedTotalTime =
+                                TimeSpan.FromMilliseconds(elapsed.TotalMilliseconds / downloadPercent * 100);
+                            var remainingTime = estimatedTotalTime - elapsed;
+                            timeLeft = $"{remainingTime.Minutes}:{remainingTime.Seconds:D2}";
+                        }
+
+                        progress?.Report((downloadPercent, timeElapsed, timeLeft));
+                    }
+
+                    await fs.FlushAsync();
+                } // Гарантированное закрытие потоков здесь
+
+                stopwatch.Stop();
             }
+
+            // Дополнительная задержка для полного освобождения файла системой
+            await Task.Delay(500);
+
+            // Запуск установщика после полного освобождения файла
+            await LaunchInstallerWithRetry(tempFilePath);
         }
         catch (Exception ex)
         {
-            await App.MainWindow.ShowMessageDialogAsync("Main_ErrorReleaseLoad".GetLocalized() + $"{ex.Message}", "Error".GetLocalized());
+            await App.MainWindow.ShowMessageDialogAsync("Main_ErrorReleaseLoad".GetLocalized() + $"{ex.Message}",
+                "Error".GetLocalized());
         }
     }
 
+    /// <summary>
+    ///     Запускает установку нового релиза, пропует перезапустить при ошибке
+    /// </summary>
+    private static async Task LaunchInstallerWithRetry(string filePath)
+    {
+        const int maxRetries = 5;
+
+        for (var retryCount = 0; retryCount < maxRetries; retryCount++)
+        {
+            try
+            {
+                if (!File.Exists(filePath))
+                {
+                    throw new FileNotFoundException("Installer file not found", filePath);
+                }
+
+                // Проверка, что файл не заблокирован
+                await using (File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    // Файл доступен
+                }
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = filePath,
+                    Verb = "runas",
+                    UseShellExecute = true
+                });
+
+                Application.Current.Exit();
+                App.MainWindow.Close();
+                return;
+            }
+            catch (Exception ex)
+            {
+                if (retryCount >= maxRetries - 1)
+                {
+                    await App.MainWindow.ShowMessageDialogAsync(
+                        "Main_ErrorReleaseLoad".GetLocalized() + $"{ex.Message}",
+                        "Error".GetLocalized());
+                    return;
+                }
+
+                await Task.Delay(2000);
+            }
+        }
+    }
+
+    #endregion
 
     #region NotesWriter
 
@@ -286,32 +307,43 @@ public abstract partial class UpdateChecker
             await GenerateReleaseInfoString();
         }
 
-        var formattedText = FormatReleaseNotes(GitHubInfoString);
-        foreach (var paragraph in formattedText)
-        {
-            stackPanel.Children.Add(paragraph);
-        }
+        var richTextBlock = FormatReleaseNotesAsRichText(GitHubInfoString);
+        stackPanel.Children.Add(richTextBlock);
     }
 
-    private static UIElement[] FormatReleaseNotes(string? releaseNotes)
+    public static RichTextBlock FormatReleaseNotesAsRichText(string? releaseNotes)
     {
-        // Удаление ненужных частей текста
         var cleanedNotes = CleanReleaseNotes(releaseNotes);
+        var richTextBlock = new RichTextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            IsTextSelectionEnabled = true,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Margin = new Thickness(0)
+        };
 
-        // Применение стилей markdown
-        return ApplyMarkdownStyles(cleanedNotes);
+        ParseAndAddContent(cleanedNotes, richTextBlock);
+        return richTextBlock;
+    }
+
+    public static void UpdateReleaseNotesBrushes(Brush accent, Brush secondary, Brush strong)
+    {
+        _accentFill = accent;
+        _secondaryFill = secondary;
+        _strongFill = strong;
     }
 
     private static string CleanReleaseNotes(string? releaseNotes)
     {
         var lines = releaseNotes?.Split([Environment.NewLine], StringSplitOptions.None);
         var cleanedLines = new List<string>();
+
         for (var i = 0; i < lines?.Length; i++)
         {
             var line = lines[i];
             if (line.StartsWith("Highlights:"))
             {
-                cleanedLines.Add(line); // Добавляем строку Highlights: 
+                cleanedLines.Add(line);
                 i++;
                 while (i < lines.Length)
                 {
@@ -321,13 +353,13 @@ public abstract partial class UpdateChecker
                     }
                     else
                     {
-                        break; // Удаляем всё после строки, которая не начинается с цифры или пустая
+                        break;
                     }
 
                     i++;
                 }
 
-                i--; // Вернемся на шаг назад, чтобы правильно обработать следующую строку
+                i--;
             }
             else
             {
@@ -338,144 +370,297 @@ public abstract partial class UpdateChecker
         return string.Join(Environment.NewLine, cleanedLines);
     }
 
-    public static UIElement[] ApplyMarkdownStyles(string cleanedNotes)
+    private static void ParseAndAddContent(string cleanedNotes, RichTextBlock richTextBlock)
     {
         var lines = cleanedNotes.Split(["\r\n", "\n"], StringSplitOptions.None);
-        var elements = new List<UIElement>();
+        var previousWasEmpty = false;
 
         foreach (var line in lines)
         {
             var trimmedLine = line.TrimStart();
 
+            if (string.IsNullOrWhiteSpace(trimmedLine))
+            {
+                // Пустая строка - отмечаем, но не добавляем сразу
+                previousWasEmpty = true;
+                continue;
+            }
+
+            // Если предыдущая строка была пустой, добавляем небольшой отступ
+            var topMargin = previousWasEmpty ? 4.0 : 0.0;
+            previousWasEmpty = false;
+
             if (trimmedLine.StartsWith("### "))
             {
-                var text = trimmedLine[4..];
-                var textBlock = new TextBlock
-                {
-                    Text = text,
-                    FontWeight = new FontWeight(600),
-                    TextWrapping = TextWrapping.Wrap,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Width = double.NaN
-                };
-                elements.Add(textBlock);
+                AddHeading(richTextBlock, trimmedLine[4..], 18, 600, topMargin);
             }
             else if (trimmedLine.StartsWith("## "))
             {
-                var text = trimmedLine[3..];
-                var textBlock = new TextBlock
-                {
-                    Text = text,
-                    FontWeight = new FontWeight(700),
-                    TextWrapping = TextWrapping.Wrap,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Width = double.NaN
-                };
-                elements.Add(textBlock);
+                AddHeading(richTextBlock, trimmedLine[3..], 18, 700, topMargin);
             }
             else if (trimmedLine.StartsWith("# "))
             {
-                var text = trimmedLine[2..];
-                var textBlock = new TextBlock
-                {
-                    Text = text,
-                    FontWeight = new FontWeight(800),
-                    TextWrapping = TextWrapping.Wrap,
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Width = double.NaN
-                };
-                elements.Add(textBlock);
+                AddHeading(richTextBlock, trimmedLine[2..], 20, 800, topMargin);
             }
             else if (trimmedLine.StartsWith("> "))
             {
+                AddBlockquote(richTextBlock, trimmedLine[2..], topMargin);
             }
             else if (trimmedLine.StartsWith("![image]("))
             {
-                var text = trimmedLine.Replace("![image](", "").Replace(")", "");
-                var spoilerText = new TextBlock
-                {
-                    Text = "+ Spoiler",
-                    FontWeight = new FontWeight(500),
-                    HorizontalAlignment = HorizontalAlignment.Left
-                };
-                var spoilerImage = new Image
-                {
-                    Source = new BitmapImage(new Uri(text)),
-                    Visibility = Visibility.Collapsed
-                };
-                var spoilerButton = new Button
-                {
-                    BorderBrush = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0)),
-                    Background = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0)),
-                    HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Content = new StackPanel
-                    {
-                        Children =
-                        {
-                            spoilerText,
-                            spoilerImage
-                        }
-                    }
-                };
-                spoilerButton.Click += (_, _) =>
-                {
-                    spoilerImage.Visibility = spoilerImage.Visibility == Visibility.Collapsed
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
-                    spoilerText.Text = spoilerText.Text.Contains('-') ? "+ Spoiler" : "- Spoiler";
-                };
-                elements.Add(spoilerButton);
+                AddImageSpoiler(richTextBlock, trimmedLine, topMargin);
+            }
+            else if (ContainsUrl(trimmedLine))
+            {
+                AddParagraphWithLinks(richTextBlock, trimmedLine, topMargin);
             }
             else
             {
-                var matches = UnmanagementWords().Matches(trimmedLine);
-                var lastPos = 0;
-
-                foreach (Match match in matches)
-                {
-                    if (match.Index > lastPos)
-                    {
-                        var beforeText = trimmedLine[lastPos..match.Index];
-                        elements.Add(new TextBlock
-                        {
-                            Text = beforeText,
-                            TextWrapping = TextWrapping.Wrap,
-                            HorizontalAlignment = HorizontalAlignment.Stretch
-                        });
-                    }
-
-                    var highlightedText = match.Groups[1].Value;
-                    elements.Add(new TextBlock
-                    {
-                        Text = highlightedText,
-                        FontWeight = new FontWeight(700),
-                        Foreground = (Brush)Application.Current.Resources["AccentColor"],
-                        TextWrapping = TextWrapping.Wrap,
-                        HorizontalAlignment = HorizontalAlignment.Stretch
-                    });
-
-                    lastPos = match.Index + match.Length;
-                }
-
-                if (lastPos < trimmedLine.Length)
-                {
-                    var remainingText = trimmedLine[lastPos..];
-                    elements.Add(new TextBlock
-                    {
-                        Text = remainingText,
-                        TextWrapping = TextWrapping.Wrap,
-                        HorizontalAlignment = HorizontalAlignment.Stretch
-                    });
-                }
+                AddFormattedParagraph(richTextBlock, trimmedLine, topMargin);
             }
         }
+    }
 
-        return [.. elements];
+    private static void AddHeading(RichTextBlock richTextBlock, string text, double fontSize, int fontWeight,
+        double topMargin = 0)
+    {
+        var paragraph = new Paragraph
+        {
+            Margin = new Thickness(0, topMargin + 6, 0, 0),
+            FontSize = fontSize,
+            FontWeight = new FontWeight((ushort)fontWeight),
+            LineHeight = 1
+        };
+        paragraph.Inlines.Add(new Run { Text = text });
+        richTextBlock.Blocks.Add(paragraph);
+    }
+
+    private static void AddBlockquote(RichTextBlock richTextBlock, string text, double topMargin = 0)
+    {
+        var paragraph = new Paragraph
+        {
+            Margin = new Thickness(12, topMargin, 0, 0),
+            FontStyle = FontStyle.Italic,
+            LineHeight = 1
+        };
+
+        // Добавляем вертикальную линию через Border (нужен InlineUIContainer)
+        var border = new Border
+        {
+            Margin = new Thickness(-10, 0, 0, 0),
+            BorderBrush = _strongFill,
+            BorderThickness = new Thickness(4, 0, 0, 0),
+            Padding = new Thickness(8, 0, 0, 0),
+            Child = new TextBlock
+            {
+                Text = text,
+                TextWrapping = TextWrapping.Wrap,
+                FontStyle = FontStyle.Italic,
+                Foreground = _secondaryFill
+            }
+        };
+
+        var container = new InlineUIContainer
+        {
+            Child = border
+        };
+
+        paragraph.Inlines.Add(container);
+        richTextBlock.Blocks.Add(paragraph);
+    }
+
+    private static void AddImageSpoiler(RichTextBlock richTextBlock, string line, double topMargin = 0)
+    {
+        var imageUrl = line.Replace("![image](", "").Replace(")", "").Trim();
+
+        var spoilerText = new TextBlock
+        {
+            Text = "+ Spoiler",
+            FontWeight = FontWeights.Medium,
+            Margin = new Thickness(0),
+            HorizontalAlignment = HorizontalAlignment.Left
+        };
+
+        var spoilerImage = new Image
+        {
+            Source = new BitmapImage(new Uri(imageUrl)),
+            Visibility = Visibility.Collapsed,
+            Stretch = Stretch.Uniform,
+            MaxHeight = 400,
+            Margin = new Thickness(0, 4, 0, 0),
+            HorizontalAlignment = HorizontalAlignment.Left
+        };
+
+        var spoilerStack = new StackPanel
+        {
+            Children = { spoilerText, spoilerImage },
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+
+        var spoilerButton = new Button
+        {
+            BorderBrush = new SolidColorBrush(Colors.Transparent),
+            Background = new SolidColorBrush(Colors.Transparent),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Left,
+            Content = spoilerStack,
+            Padding = new Thickness(0),
+            Margin = new Thickness(0)
+        };
+
+        spoilerButton.Click += (_, _) =>
+        {
+            spoilerImage.Visibility = spoilerImage.Visibility == Visibility.Collapsed
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            spoilerText.Text = spoilerText.Text.Contains('-') ? "+ Spoiler" : "- Spoiler";
+        };
+
+        var paragraph = new Paragraph
+        {
+            Margin = new Thickness(0, topMargin, 0, 0),
+            LineHeight = 1
+        };
+        var container = new InlineUIContainer
+        {
+            Child = spoilerButton
+        };
+
+        // Hack: устанавливаем ширину контейнера равной ширине RichTextBlock
+        richTextBlock.SizeChanged += (s, _) =>
+        {
+            if (s is RichTextBlock rtb)
+            {
+                spoilerButton.Width = rtb.ActualWidth;
+            }
+        };
+
+        paragraph.Inlines.Add(container);
+        richTextBlock.Blocks.Add(paragraph);
+    }
+
+    private static bool ContainsUrl(string text) => text.Contains("https://") || text.Contains("http://");
+
+    private static void AddParagraphWithLinks(RichTextBlock richTextBlock, string text, double topMargin = 0)
+    {
+        var paragraph = new Paragraph { Margin = new Thickness(0, topMargin, 0, 0) };
+
+        // Простой парсинг URL в тексте
+        var urlPattern = @"(https?://[^\s]+)";
+        var matches = Regex.Matches(text, urlPattern);
+
+        if (matches.Count == 0)
+        {
+            // Нет ссылок, добавляем как обычный текст
+            AddFormattedParagraph(richTextBlock, text);
+            return;
+        }
+
+        var lastPos = 0;
+        foreach (Match match in matches)
+        {
+            // Текст до ссылки
+            if (match.Index > lastPos)
+            {
+                var beforeText = text[lastPos..match.Index];
+                AddInlineFormatting(paragraph, beforeText);
+            }
+
+            // Сама ссылка
+            var url = match.Value;
+            var hyperlink = new Hyperlink
+            {
+                NavigateUri = new Uri(url)
+            };
+            hyperlink.Inlines.Add(new Run { Text = url });
+            paragraph.Inlines.Add(hyperlink);
+
+            lastPos = match.Index + match.Length;
+        }
+
+        // Текст после последней ссылки
+        if (lastPos < text.Length)
+        {
+            var remainingText = text[lastPos..];
+            AddInlineFormatting(paragraph, remainingText);
+        }
+
+        richTextBlock.Blocks.Add(paragraph);
+    }
+
+    private static void AddInlineFormatting(Paragraph paragraph, string text)
+    {
+        var matches = BoldTextRegex().Matches(text);
+        var lastPos = 0;
+
+        foreach (Match match in matches)
+        {
+            if (match.Index > lastPos)
+            {
+                var beforeText = text[lastPos..match.Index];
+                paragraph.Inlines.Add(new Run { Text = beforeText });
+            }
+
+            var boldText = match.Groups[1].Value;
+            var boldRun = new Run
+            {
+                Text = boldText,
+                FontWeight = FontWeights.Bold,
+                Foreground = _accentFill
+            };
+            paragraph.Inlines.Add(boldRun);
+
+            lastPos = match.Index + match.Length;
+        }
+
+        if (lastPos < text.Length)
+        {
+            var remainingText = text[lastPos..];
+            paragraph.Inlines.Add(new Run { Text = remainingText });
+        }
+    }
+
+    private static void AddFormattedParagraph(RichTextBlock richTextBlock, string text, double topMargin = 0)
+    {
+        var paragraph = new Paragraph { Margin = new Thickness(0, topMargin, 0, 0) };
+
+        var matches = BoldTextRegex().Matches(text);
+        var lastPos = 0;
+
+        foreach (Match match in matches)
+        {
+            // Добавляем текст до жирного
+            if (match.Index > lastPos)
+            {
+                var beforeText = text[lastPos..match.Index];
+                paragraph.Inlines.Add(new Run { Text = beforeText });
+            }
+
+            // Добавляем жирный текст
+            var boldText = match.Groups[1].Value;
+            var boldRun = new Run
+            {
+                Text = boldText,
+                FontWeight = FontWeights.Bold,
+                Foreground = _accentFill
+            };
+            paragraph.Inlines.Add(boldRun);
+
+            lastPos = match.Index + match.Length;
+        }
+
+        // Добавляем оставшийся текст
+        if (lastPos < text.Length)
+        {
+            var remainingText = text[lastPos..];
+            paragraph.Inlines.Add(new Run { Text = remainingText });
+        }
+
+        richTextBlock.Blocks.Add(paragraph);
     }
 
     [GeneratedRegex(@"\*\*(.*?)\*\*")]
-    private static partial Regex UnmanagementWords();
+    private static partial Regex BoldTextRegex();
 
     #endregion
-
 }

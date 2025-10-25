@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml.Controls;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Navigation; 
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Views;
@@ -58,12 +56,7 @@ public partial class ShellViewModel : ObservableRecipient
 
     public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService)
     {
-        _items =
-        [
-            "User profiles", 
-            "dd",
-            "dd1"
-        ];
+        _items = [];
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;

@@ -89,7 +89,7 @@ public sealed partial class MainWindow
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _settings = new UISettings();
         _settings.ColorValuesChanged +=
-            Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event   
+            Settings_ColorValuesChanged;
         Tray_Start();
         Closed += Dispose_Tray;
     }
@@ -117,14 +117,19 @@ public sealed partial class MainWindow
         }
         else
         {
-            App.BackgroundUpdater!.Stop();
+            App.BackgroundUpdater?.Stop();
         }
     }
+
     public static void Set_ContextMenu_Tray()
     {
         _niBackup?.Dispose();
-        _ni!.Visibility = Visibility.Visible;
-        _ni.ForceCreate();
+
+        if (_ni != null) 
+        {
+            _ni.Visibility = Visibility.Visible;
+            _ni.ForceCreate();
+        }
     }
 
     public static void Remove_ContextMenu_Tray()
