@@ -10,7 +10,7 @@
         <double:DoubleToPercentConverter x:Key="DoubleToPercent"/>
         <Flyout x:Name="SymbolFlyout" Placement="Bottom">
             <!-- flyout content -->
-            <GridView ItemClick="SymbolList_ItemClick" IsItemClickEnabled="True">
+            <GridView x:Name="SelectionGrid" IsItemClickEnabled="True">
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <ItemsWrapGrid MaximumRowsOrColumns="6" Orientation="Horizontal"/>

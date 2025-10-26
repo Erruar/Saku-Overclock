@@ -15,9 +15,9 @@
 	<UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <AssemblyVersion></AssemblyVersion>
-    <FileVersion>1.0.18.244</FileVersion>
+    <FileVersion>1.0.18.250</FileVersion>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>  
-    <Version>1.0.18.244</Version>
+    <Version>1.0.18.250</Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
     <UseWPF>False</UseWPF>
@@ -74,6 +74,7 @@
     <None Remove="Services\Cpu.cs.bak.zip" />
     <None Remove="show.png" />
     <None Remove="startup.lnk" />
+    <None Remove="Styles\ActiveButton.xaml" />
     <None Remove="Styles\ButtonCollapseLauncher.xaml" />
     <None Remove="Styles\ComboBoxCollapseLauncher.xaml" />
     <None Remove="Styles\CopyButton.xaml" />
@@ -137,8 +138,9 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.250402" />
     <PackageReference Include="CommunityToolkit.WinUI.Lottie" Version="8.2.250604" />
-    <PackageReference Include="H.NotifyIcon.WinUI" Version="2.3.1" />
+    <PackageReference Include="H.NotifyIcon.WinUI" Version="2.3.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.10" />
     <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251003001" />
@@ -365,6 +367,9 @@
     <None Update="SakuRTSSCLI.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Styles\ActiveButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\OptionsVisualizer.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

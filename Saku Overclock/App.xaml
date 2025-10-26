@@ -624,6 +624,7 @@
                 <!-- Button style-->
                 <ResourceDictionary Source="/Styles/ButtonCollapseLauncher.xaml"/>
                 <ResourceDictionary Source="/Styles/TrayIconResources.xaml"/>
+                <ResourceDictionary Source="/Styles/ActiveButton.xaml"/>
             </ResourceDictionary.MergedDictionaries> 
         </ResourceDictionary>
     </Application.Resources>

@@ -1800,7 +1800,7 @@ AND DO NOT TOUCH IT!</value>
     <value>SoC Volt</value>
   </data>
   <data name="InfoARTSSShowText.Text" xml:space="preserve">
-    <value>RTSS In-Game Overlay</value>
+    <value>In-Game Overlay</value>
   </data>
   <data name="InfoARTSSTooltip.ToolTipService.ToolTip" xml:space="preserve">
     <value>RTSS In-Game Overlay

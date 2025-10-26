@@ -11,7 +11,6 @@ using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
-using Windows.Foundation;
 using Windows.Foundation.Metadata;
 using static ZenStates.Core.Cpu;
 using Task = System.Threading.Tasks.Task;
@@ -33,7 +32,6 @@ public sealed partial class ПресетыPage
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private static bool? _isPlatformPC = false;
     private string _doubleClickApply = string.Empty;
-    private FontIcon _symbol = new() { Glyph = "\uE718" };
 
     public ПресетыPage()
     {
@@ -1289,22 +1287,27 @@ public sealed partial class ПресетыPage
             DefaultButton = ContentDialogButton.Close
         };
 
-        EventHandler<object> closedHandler = null!;
+        // --- Обработчики ---
+        ItemClickEventHandler itemClickHandler = null!;
         RoutedEventHandler clickHandler = null!;
+
+        // Обработчик выбора иконки — обновляем сразу!
+        itemClickHandler = (sender, e) =>
+        {
+            var clickedGlyph = (FontIcon)e.ClickedItem;
+            if (clickedGlyph != null)
+            {
+                selectedGlyph = clickedGlyph.Glyph;
+                glyphIcon.Glyph = selectedGlyph; // Обновляем иконку в реальном времени
+            }
+        };
 
         clickHandler = (s, e) =>
         {
-            // Отписываем, если уже был предыдущий обработчик
-            SymbolFlyout.Closed -= closedHandler;
+            // Подписываемся на выбор иконки
+            SelectionGrid.ItemClick -= itemClickHandler; // Избегаем дублирования
+            SelectionGrid.ItemClick += itemClickHandler;
 
-            closedHandler = (sender, args) =>
-            {
-                SymbolFlyout.Closed -= closedHandler;
-                selectedGlyph = _symbol.Glyph;
-                glyphIcon.Glyph = _symbol.Glyph;
-            };
-
-            SymbolFlyout.Closed += closedHandler;
             SymbolFlyout.ShowAt(iconButton);
         };
 
@@ -1314,7 +1317,7 @@ public sealed partial class ПресетыPage
 
         // --- Очистка после диалога ---
         iconButton.Click -= clickHandler;
-        SymbolFlyout.Closed -= closedHandler;
+        SelectionGrid.ItemClick -= itemClickHandler;
 
         // --- Логика результата ---
         if (result == ContentDialogResult.Primary)
@@ -1547,23 +1550,27 @@ public sealed partial class ПресетыPage
             Content = content
         };
 
-        // --- безопасная подписка ---
-        EventHandler<object> closedHandler = null!;
+        // --- Обработчики ---
+        ItemClickEventHandler itemClickHandler = null!;
         RoutedEventHandler clickHandler = null!;
+
+        // Обработчик выбора иконки — обновляем сразу!
+        itemClickHandler = (sender, e) =>
+        {
+            var selectedGlyph = (FontIcon)e.ClickedItem;
+            if (selectedGlyph != null)
+            {
+                profileIcon = selectedGlyph.Glyph;
+                glyph.Glyph = profileIcon; // Обновляем иконку в реальном времени
+            }
+        };
 
         clickHandler = (s, e) =>
         {
-            // Отписываем, если уже был предыдущий обработчик
-            SymbolFlyout.Closed -= closedHandler;
+            // Подписываемся на выбор иконки
+            SelectionGrid.ItemClick -= itemClickHandler; // Избегаем дублирования
+            SelectionGrid.ItemClick += itemClickHandler;
 
-            closedHandler = (sender, args) =>
-            {
-                SymbolFlyout.Closed -= closedHandler;
-                profileIcon = _symbol.Glyph;
-                glyph.Glyph = profileIcon;
-            };
-
-            SymbolFlyout.Closed += closedHandler;
             SymbolFlyout.ShowAt(iconButton);
         };
 
@@ -1574,7 +1581,7 @@ public sealed partial class ПресетыPage
 
         // --- Очистка после диалога ---
         iconButton.Click -= clickHandler;
-        SymbolFlyout.Closed -= closedHandler;
+        SelectionGrid.ItemClick -= itemClickHandler;
 
         // --- Логика результата ---
         if (result == ContentDialogResult.Primary)
@@ -1584,16 +1591,6 @@ public sealed partial class ПресетыPage
         else if (result == ContentDialogResult.Secondary)
         {
             DeleteProfileButton_Click(null, null);
-        }
-    }
-
-
-    private void SymbolList_ItemClick(object sender, ItemClickEventArgs e)
-    {
-        var glypher = (FontIcon)e.ClickedItem;
-        if (glypher != null)
-        {
-            _symbol = glypher;
         }
     }
 

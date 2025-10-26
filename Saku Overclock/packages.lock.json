@@ -8,6 +8,16 @@
         "resolved": "8.4.0",
         "contentHash": "tqVU8yc/ADO9oiTRyTnwhFN68hCwvkliMierptWOudIAvWY1mWCh5VFh+guwHJmpMwfg0J0rY+yyd5Oy7ty9Uw=="
       },
+      "CommunityToolkit.WinUI.Controls.Sizers": {
+        "type": "Direct",
+        "requested": "[8.2.250402, )",
+        "resolved": "8.2.250402",
+        "contentHash": "8kWJX+TxUyYbLFPpzoivtYPnSI9kgBGL1dfdsteQSw6Yq69v7mv/Z3emTLHqBJXOi9WKCiq2HNhKXuCH18/ctA==",
+        "dependencies": {
+          "CommunityToolkit.WinUI.Extensions": "8.2.250402",
+          "Microsoft.WindowsAppSDK": "1.6.250108002"
+        }
+      },
       "CommunityToolkit.WinUI.Lottie": {
         "type": "Direct",
         "requested": "[8.2.250604, )",
@@ -20,11 +30,11 @@
       },
       "H.NotifyIcon.WinUI": {
         "type": "Direct",
-        "requested": "[2.3.1, )",
-        "resolved": "2.3.1",
-        "contentHash": "emb2FUDW5ts7tFa9ZkfPAsA8EGzejJTWK+coyqkNoSmaBOTV3CHsGI0whWVEat+0NpZuDER56P9/pLXIBHSyEA==",
+        "requested": "[2.3.2, )",
+        "resolved": "2.3.2",
+        "contentHash": "UoI3z3Kc/6gBC6gOrL/cKhGAf6wz8gxk6wc0lYQZZYwSfU3OMpnKOdWJ5c1PXMaaJi/QMKYHN/ilpB7uHGUOpg==",
         "dependencies": {
-          "H.NotifyIcon": "2.3.1",
+          "H.NotifyIcon": "2.3.2",
           "Microsoft.WindowsAppSDK": "1.6.250108002",
           "System.Collections.Immutable": "9.0.1",
           "System.Reflection.Metadata": "9.0.1"
@@ -151,20 +161,34 @@
           "Microsoft.WindowsAppSDK.WinUI": "1.8.250906003"
         }
       },
+      "CommunityToolkit.Common": {
+        "type": "Transitive",
+        "resolved": "8.2.1",
+        "contentHash": "LWuhy8cQKJ/MYcy3XafJ916U3gPH/YDvYoNGWyQWN11aiEKCZszzPOTJAOvBjP9yG8vHmIcCyPUt4L82OK47Iw=="
+      },
+      "CommunityToolkit.WinUI.Extensions": {
+        "type": "Transitive",
+        "resolved": "8.2.250402",
+        "contentHash": "rAOYzNX6kdUeeE1ejGd6Q8B+xmyZvOrWFUbqCgOtP8OQsOL66en9ZQTtzxAlaaFC4qleLvnKcn8FJFBezujOlw==",
+        "dependencies": {
+          "CommunityToolkit.Common": "8.2.1",
+          "Microsoft.WindowsAppSDK": "1.6.250108002"
+        }
+      },
       "H.GeneratedIcons.System.Drawing": {
         "type": "Transitive",
-        "resolved": "2.3.1",
-        "contentHash": "eG1sm68eGLbnvfsXBG4eZ1o/aLNpTH2v+oUGZfILQKwQczwZVySf6Nl6xzoPHdIJwuIdjn3AaxcCre+0MpPeVw==",
+        "resolved": "2.3.2",
+        "contentHash": "f7P4X2a+rsQZp5jRQcFpNrY87pamppXlTJuXp5BYpDgOwYoW8g83TN/ZtDpE+RbpOfHYQuRkwPNpHIIbdsbmqQ==",
         "dependencies": {
           "System.Drawing.Common": "9.0.1"
         }
       },
       "H.NotifyIcon": {
         "type": "Transitive",
-        "resolved": "2.3.1",
-        "contentHash": "Io6snB/LGeKTXlaZOjRj4Wn1+VrTdwMenbkGcYEqdzpLoVo9LAkckg0Qy6ViXP8f2ZOaCHJ/DwAg6DnKM0f5BQ==",
+        "resolved": "2.3.2",
+        "contentHash": "d/kh5nJ9ahjbdM5tyb+UQ/CWSQwYb2xT/tmdot5OWK5E0C3rkyXEq3IfBIO6UEYvYkLE/ppX94Sm42yByxXJXA==",
         "dependencies": {
-          "H.GeneratedIcons.System.Drawing": "2.3.1"
+          "H.GeneratedIcons.System.Drawing": "2.3.2"
         }
       },
       "Microsoft.Extensions.Configuration": {

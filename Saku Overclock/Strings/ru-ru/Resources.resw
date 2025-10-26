@@ -1839,7 +1839,7 @@ Overclock будут проигнорированы,
     <value>Напряжение SoC</value>
   </data>
   <data name="InfoARTSSShowText.Text" xml:space="preserve">
-    <value>RTSS оверлей в игре</value>
+    <value>Оверлей в игре</value>
   </data>
   <data name="InfoARTSSTooltip.ToolTipService.ToolTip" xml:space="preserve">
     <value>RTSS оверлей в игре
