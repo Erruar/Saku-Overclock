@@ -1051,7 +1051,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
                     try
                     {
-                        notifyIcon.ForceCreate();
+                        notifyIcon.ForceCreate(enablesEfficiencyMode: App.EfficiencyModeAvailable);
                     }
                     catch
                     {

@@ -534,7 +534,7 @@ internal class GetSystemInfo
 
     public static string InstructionSets()
     {
-        var list = "x86-64, AMD-V";
+        var list = "AMD-V";
 
         if (Avx.IsSupported)
         {
@@ -547,10 +547,6 @@ internal class GetSystemInfo
         if (CheckAVX512Support())
         {
             list += ", AVX512";
-        }
-        if (Fma.IsSupported)
-        {
-            list += ", FMA";
         }
         if (Aes.IsSupported)
         {

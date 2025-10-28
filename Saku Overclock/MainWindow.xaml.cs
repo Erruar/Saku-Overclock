@@ -84,7 +84,7 @@ public sealed partial class MainWindow
         sakuLogoCommand.ExecuteRequested += GithubLink_ExecuteRequested;
 
         _ni = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
-        _ni.ForceCreate(); 
+        _ni.ForceCreate(enablesEfficiencyMode: App.EfficiencyModeAvailable); 
 
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _settings = new UISettings();
@@ -128,7 +128,7 @@ public sealed partial class MainWindow
         if (_ni != null) 
         {
             _ni.Visibility = Visibility.Visible;
-            _ni.ForceCreate();
+            _ni.ForceCreate(enablesEfficiencyMode: App.EfficiencyModeAvailable);
         }
     }
 
@@ -162,7 +162,7 @@ public sealed partial class MainWindow
             }
         };
         _niBackup.LeftClickCommand = xamlUiCommand;
-        _niBackup.ForceCreate();
+        _niBackup.ForceCreate(enablesEfficiencyMode: App.EfficiencyModeAvailable);
     }
 
     private void Dispose_Tray(object sender, WindowEventArgs args)

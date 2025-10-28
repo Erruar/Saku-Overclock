@@ -870,7 +870,7 @@ power output</value>
     <value>CPU Usage</value>
   </data>
   <data name="infoAFast.Text" xml:space="preserve">
-    <value>Fast Time</value>
+    <value>Fast frequency rise time</value>
   </data>
   <data name="infoAGPUTEMPC.Text" xml:space="preserve">
     <value>dGPU Curr Temp</value>
@@ -879,7 +879,7 @@ power output</value>
     <value>dGPU Max Temp</value>
   </data>
   <data name="infoASlow.Text" xml:space="preserve">
-    <value>Slow Time</value>
+    <value>Slow frequency rise time</value>
   </data>
   <data name="infoASOCEDCC.Text" xml:space="preserve">
     <value>EDC SoC Current</value>
@@ -2413,8 +2413,7 @@ set the value to 0</value>
     <value>Disabled</value>
   </data>
   <data name="Info_PowerSumInfo_DisabledPState" xml:space="preserve">
-    <value>Disabled on
-platform</value>
+    <value>Disabled on platform</value>
   </data>
   <data name="Tray_Cooler.Description" xml:space="preserve">
     <value>Tuning cooler speeds and NBFC</value>
@@ -3256,5 +3255,17 @@ Set up a personalized undervolting level that will be applied to all premade pro
   </data>
   <data name="Main_CantFindPreset.Content" xml:space="preserve">
     <value>Can't see your preset?</value>
+  </data>
+  <data name="Info_VrmDynamicChangeTimings.Text" xml:space="preserve">
+    <value>CPU frequency rise time on your device is calculated dynamically based on the current load</value>
+  </data>
+  <data name="Info_VrmNoChangeTimings" xml:space="preserve">
+    <value>CPU frequency rise time on your device is fixed and can be changed</value>
+  </data>
+  <data name="Info_VrmNotFoundTimings" xml:space="preserve">
+    <value>CPU frequency rise time is not available on your device</value>
+  </data>
+  <data name="infoTiming.Text" xml:space="preserve">
+    <value>Timing</value>
   </data>
 </root>

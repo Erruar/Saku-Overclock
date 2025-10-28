@@ -77,8 +77,13 @@ public sealed partial class ИнформацияPage
     private static readonly string _mhzFreq = "InfoFreqBoundsMHZ".GetLocalized(); // Частота МГц
     private static readonly string _ghzFreq = "infoAGHZ".GetLocalized(); // Частота ГГц
     private static readonly string _pstate = "InfoPSTState".GetLocalized(); // P-State
-    private double _maxVoltage;
-    private double _maxFrequency;
+    private static readonly string _powerDisabled = "Info_PowerSumInfo_Disabled".GetLocalized(); // Отключен
+    private bool _vrmTimingsDetected; // Флаг инициализации типа изменения таймингов VRM
+    private double _prevSlow; // Динамическое изменение таймингов VRM
+    private double _prevFast; // Динамическое изменение таймингов VRM
+    private int _vrmTimingIteration; // Текущая итерация проверки таймингов
+    private static readonly string StaticTimingsText = "Info_VrmNoChangeTimings".GetLocalized(); // Статические тайминги
+    private static readonly string TimingsNotFoundText = "Info_VrmNotFoundTimings".GetLocalized(); // Не удалось обнаружить тайминги
 
     private Button[] _allBannerButtons = [];
     private Button[] _allExpandButtons = [];
@@ -205,6 +210,29 @@ public sealed partial class ИнформацияPage
             _gpuName = gpuName;
 
             tbThreads.Text = _numberOfLogicalProcessors.ToString();
+
+            L1Cache.Text = $"{l1Cache:0.##} MB";
+            L2Cache.Text = $"{l2Cache:0.##} MB";
+            Instructions.Text = GetSystemInfo.InstructionSets();
+            Caption.Text = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER")?.Replace(", AuthenticAMD", "");
+
+            var wmiTask = Task.Run(() =>
+            {
+                double l3 = 0;
+                var searcher = new ManagementObjectSearcher(
+                    "root\\CIMV2",
+                    "SELECT L3CacheSize FROM Win32_Processor");
+                foreach (var obj in searcher.Get().Cast<ManagementObject>())
+                {
+                    l3 = Convert.ToDouble(obj["L3CacheSize"]) / 1024;
+                    break;
+                }
+                return l3;
+            });
+
+            var l3Size = await wmiTask;
+            L3Cache.Text = $"{l3Size:0.##} MB";
+
         }
         catch (Exception ex)
         {
@@ -270,14 +298,14 @@ public sealed partial class ИнформацияPage
 
                 var producer = (modules == null || modules.Count == 0)
                     ? "Unknown"
-                    : string.Join("/", modules
+                    : string.Join(" / ", modules
                         .Select(m => m?.Manufacturer ?? "Unknown")
                         .Where(s => !string.IsNullOrWhiteSpace(s))
                         .Distinct());
 
                 var model = (modules == null || modules.Count == 0)
                     ? "Unknown"
-                    : string.Join("/", modules
+                    : string.Join(" / ", modules
                         .Select(m => m?.PartNumber ?? "Unknown")
                         .Where(s => !string.IsNullOrWhiteSpace(s))
                         .Distinct());
@@ -293,7 +321,6 @@ public sealed partial class ИнформацияPage
                 tbRAM.Text = speed + "MT/s";
                 tbRAMProducer.Text = producer;
                 RamModel.Text = model.Replace(" ", "");
-                tbWidth.Text = $"{width} bit";
                 tbSlots.Text = $"{slots} * {width / slots} bit";
                 tbTCL.Text = tcl + "T";
                 tbTRCDWR.Text = trcdwr + "T";
@@ -333,6 +360,19 @@ public sealed partial class ИнформацияPage
             for (var i = 0; i < 3; i++)
             {
                 uint eax = 0, edx = 0;
+                var textBlock = i switch
+                {
+                    0 => PowerState_0,
+                    1 => PowerState_1,
+                    _ => PowerState_2
+                };
+                var textBlockDesc = i switch
+                {
+                    0 => PowerState_0_Desc,
+                    1 => PowerState_1_Desc,
+                    _ => PowerState_2_Desc
+                };
+                
                 var pstateId = i;
                 try
                 {
@@ -349,12 +389,13 @@ public sealed partial class ИнформацияPage
                 }
 
                 CalculatePstateDetails(eax, out var cpuDfsId, out var cpuFid);
-                var textBlock = (TextBlock)InfoPSTSectionMetrics.FindName($"tbPSTP{i}");
                 if (cpuFid != 0)
                 {
                     textBlock.Text =
-                        $"FID: {Convert.ToString(cpuFid, 10)}/DID: {Convert.ToString(cpuDfsId, 10)}\n{cpuFid * 25 / (cpuDfsId * 12.5) / 10}" +
-                        _ghzFreq;
+                        $"{cpuFid * 25 / (cpuDfsId * 12.5) / 10} {_ghzFreq}";
+                    textBlockDesc.Text = $"(FID {
+                        Convert.ToString(cpuFid, 10)} / DID {
+                        Convert.ToString(cpuDfsId, 10)})";
                 }
                 else
                 {
@@ -547,8 +588,9 @@ public sealed partial class ИнформацияPage
                 // CPU по умолчанию
                 HideAllSections();
 
-                infoCPUMAINSection.Visibility = Visibility.Visible;
-                InfoCPUSectionMetrics.Visibility = Visibility.Visible;
+                PowersSection.Visibility = Visibility.Visible;
+
+                CpuDetails.Visibility = Visibility.Visible;
                 infoCPUSectionComboBox.Visibility = Visibility.Visible;
 
                 infoCPUSectionName.Text = "InfoCPUSectionName".GetLocalized();
@@ -603,7 +645,7 @@ public sealed partial class ИнформацияPage
 
             if (_sensorsInformation.CpuStapmLimit == 0)
             {
-                tbStapmL.Text = "Info_PowerSumInfo_Disabled".GetLocalized();
+                tbStapmL.Text = _powerDisabled;
                 StapmLimitBar.ShowError = true;
                 StapmLimitBar.IsIndeterminate = true;
             }
@@ -611,21 +653,32 @@ public sealed partial class ИнформацияPage
             {
                 tbStapmL.Text = $"{_sensorsInformation.CpuStapmValue:0.###}W/{_sensorsInformation.CpuStapmLimit:0}W";
                 StapmLimitBar.Value = _sensorsInformation.CpuStapmValue;
-                StapmLimitBar.Maximum = _sensorsInformation.CpuStapmLimit;
+                if (StapmLimitBar.Maximum < _sensorsInformation.CpuStapmLimit)
+                {
+                    StapmLimitBar.Maximum = _sensorsInformation.CpuStapmLimit;
+                }
             }
 
             tbAclualPowerL.Text = tbActualL.Text = $"{_sensorsInformation.CpuFastValue:0.###}W/{_sensorsInformation.CpuFastLimit:0}W";
             ActualLimitBar.Value = _sensorsInformation.CpuFastValue;
-            ActualLimitBar.Maximum = _sensorsInformation.CpuFastLimit;
+            if (ActualLimitBar.Maximum < _sensorsInformation.CpuFastLimit)
+            {
+                ActualLimitBar.Maximum = _sensorsInformation.CpuFastLimit;
+            }
 
-            tbAVGL.Text = _sensorsInformation.CpuSlowLimit == 0 ? 
-                "Info_PowerSumInfo_Disabled".GetLocalized() : 
+            tbAVGL.Text = _sensorsInformation.CpuSlowLimit == 0 ?
+                _powerDisabled : 
                 $"{_sensorsInformation.CpuSlowValue:0.###}W/{_sensorsInformation.CpuSlowLimit:0}W";
             AverageLimitBar.Value = _sensorsInformation.CpuSlowValue;
-            AverageLimitBar.Maximum = _sensorsInformation.CpuSlowLimit;
+            if (AverageLimitBar.Maximum < _sensorsInformation.CpuSlowLimit)
+            {
+                AverageLimitBar.Maximum = _sensorsInformation.CpuSlowLimit;
+            }
 
             tbFast.Text = $"{_sensorsInformation.CpuStapmTimeValue:0.###}S";
             tbSlow.Text = $"{_sensorsInformation.CpuSlowTimeValue:0.###}S";
+
+            UpdateVrmTimingsDisplay(_sensorsInformation.CpuSlowTimeValue, _sensorsInformation.CpuStapmTimeValue);
 
             tbAPUL.Text = $"{_sensorsInformation.ApuSlowValue:0.###}W/{_sensorsInformation.ApuSlowLimit:0}W";
 
@@ -633,26 +686,59 @@ public sealed partial class ИнформацияPage
             tbSOCTDCL.Text = $"{_sensorsInformation.SocTdcValue:0.###}A/{_sensorsInformation.SocTdcLimit:0}A";
             tbVRMEDCVRML.Text = tbVRMEDCL.Text = $"{_sensorsInformation.VrmEdcValue:0.###}A/{_sensorsInformation.VrmEdcLimit:0}A";
             VrmEdcBar.Value = _sensorsInformation.VrmEdcValue;
-            VrmEdcBar.Maximum = _sensorsInformation.VrmEdcLimit;
+            if (VrmEdcBar.Maximum < _sensorsInformation.VrmEdcLimit)
+            {
+                VrmEdcBar.Maximum = _sensorsInformation.VrmEdcLimit;
+            }
+            VrmTdcBar.Value = _sensorsInformation.VrmTdcValue;
+            if (VrmTdcBar.Maximum < _sensorsInformation.VrmTdcLimit)
+            {
+                VrmTdcBar.Maximum = _sensorsInformation.VrmTdcLimit;
+            }
 
             infoIVRMUsageBigBanner.Text = infoVRMUsageBanner.Text = $"{_sensorsInformation.VrmEdcValue:0.###}A\n{_sensorsInformation.CpuFastValue:0.###}W";
             infoAVRMUsageBigBannerPolygonText.Text = infoAVRMUsageBannerPolygonText.Text = $"{_sensorsInformation.VrmEdcValue:0.###}A";
             tbSOCEDCL.Text = $"{_sensorsInformation.SocEdcValue:0.###}A/{_sensorsInformation.SocEdcLimit:0}A";
-            tbSOCVOLT.Text = _sensorsInformation.SocVoltage == 0 ? 
-                $"{_cpu!.powerTable?.VDDCR_SOC ?? 0:0.###}V" : 
-                $"{_sensorsInformation.SocVoltage:0.###}V";
+            tbSOCVOLT.Text = $"{_sensorsInformation.SocVoltage:0.###}V";
+            
+            if (SocVoltageBar.Maximum < _sensorsInformation.SocVoltage)
+            {
+                SocVoltageBar.Maximum = _sensorsInformation.SocVoltage;
+            }
+            SocVoltageBar.Value = _sensorsInformation.SocVoltage;
 
-            tbSOCPOWER.Text = _sensorsInformation.SocPower == 0 ? 
-                $"{(_cpu!.powerTable?.VDDCR_SOC ?? 0) * 10:0.###}W" : 
-                $"{_sensorsInformation.SocPower:0.###}W";
+            SocEdcBar.Value = _sensorsInformation.SocEdcValue;
+            if (SocEdcBar.Maximum < _sensorsInformation.SocEdcLimit)
+            {
+                SocEdcBar.Maximum = _sensorsInformation.SocEdcLimit;
+            }
+            SocTdcBar.Value = _sensorsInformation.SocTdcValue;
+            if (SocTdcBar.Maximum < _sensorsInformation.SocTdcLimit)
+            {
+                SocTdcBar.Maximum = _sensorsInformation.SocTdcLimit;
+            }
 
-            tbMEMCLOCK.Text = _sensorsInformation.MemFrequency == 0 ? 
-                $"{_cpu!.powerTable?.MCLK ?? 0:0.###}{_mhzFreq}" : 
-                $"{_sensorsInformation.MemFrequency:0.###}{_mhzFreq}";
+            tbSOCPOWER.Text = $"{_sensorsInformation.SocPower:0.###}W";
+            tbMEMCLOCK.Text = $"{_sensorsInformation.MemFrequency:0.###}{_mhzFreq}";
+            tbFabricClock.Text = $"{_sensorsInformation.FabricFrequency:0.###}{_mhzFreq}";
 
-            tbFabricClock.Text = _sensorsInformation.FabricFrequency == 0 ? 
-                $"{_cpu!.powerTable?.FCLK ?? 0:0.###}{_mhzFreq}" : 
-                $"{_sensorsInformation.FabricFrequency:0.###}{_mhzFreq}";
+            if (SocPowerBar.Maximum < _sensorsInformation.SocPower)
+            {
+                SocPowerBar.Maximum = _sensorsInformation.SocPower;
+            }
+            SocPowerBar.Value = _sensorsInformation.SocPower;
+
+            if (MemoryFrequencyBar.Maximum < _sensorsInformation.MemFrequency)
+            {
+                MemoryFrequencyBar.Maximum = _sensorsInformation.MemFrequency;
+            }
+            MemoryFrequencyBar.Value = _sensorsInformation.MemFrequency;
+
+            if (InfinityFabricBar.Maximum < _sensorsInformation.FabricFrequency)
+            {
+                InfinityFabricBar.Maximum = _sensorsInformation.FabricFrequency;
+            }
+            InfinityFabricBar.Value = _sensorsInformation.FabricFrequency;
 
             // Инициализация переменных для накопления данных
             var totalFrequency = 0d;
@@ -713,14 +799,14 @@ public sealed partial class ИнформацияPage
             {
                 var avgFrequency = Math.Round(totalFrequency / frequencyCount, 3);
                 CpuFrequency.Text = $"{avgFrequency} {_ghzFreq}";
-                if (avgFrequency > _maxFrequency)
+                if (CpuFrequencyBar.Maximum < avgFrequency)
                 {
-                    _maxFrequency = avgFrequency;
-                    CpuFrequencyBar.Maximum = _maxFrequency;
+                    CpuFrequencyBar.Maximum = avgFrequency;
                 }
                 CpuFrequencyBar.Value = avgFrequency;
 
                 currentPstate = DeterminePState(avgFrequency);
+                PowerStateBar.Value = currentPstate;
                 UpdatePStateUI(currentPstate);
             }
             else
@@ -733,10 +819,9 @@ public sealed partial class ИнформацияPage
             {
                 var avgVoltage = totalVoltage / voltageCount;
                 CpuVoltage.Text = $"{avgVoltage:0.###}V";
-                if (avgVoltage > _maxVoltage)
+                if (CpuVoltageBar.Maximum < avgVoltage)
                 {
-                    _maxVoltage = avgVoltage;
-                    CpuVoltageBar.Maximum = _maxVoltage;
+                    CpuVoltageBar.Maximum = avgVoltage;
                 }
                 CpuVoltageBar.Value = avgVoltage;
             }
@@ -745,8 +830,6 @@ public sealed partial class ИнформацияPage
                 HideVoltagePanel();
             }
 
-
-            PstFrequency.Text = CpuFrequency.Text;
             // Используем уже готовые значения с форматами
             var gfxClk = _sensorsInformation.ApuFrequency / 1000.0;
             var gfxVolt = _sensorsInformation.ApuVoltage;
@@ -770,10 +853,13 @@ public sealed partial class ИнформацияPage
 
             // CPU max temp
             var maxTemp = _sensorsInformation.CpuTempLimit;
-            CpuMaxTemp.Text = CpuMaxTempLimit.Text = CpuMaxTempLimit_Vrm.Text =
+            CpuMaxTemp.Text = CpuMaxTempLimit.Text =
                 $"{_sensorsInformation.CpuTempValue:0.###}C/{maxTemp:0.###}C";
             CpuTemperatureBar.Value = _sensorsInformation.CpuTempValue;
-            CpuTemperatureBar.Maximum = maxTemp;
+            if (CpuTemperatureBar.Maximum < maxTemp)
+            { 
+                CpuTemperatureBar.Maximum = maxTemp; 
+            }
 
             // APU temp
             var apuTemp = _sensorsInformation.ApuTempValue;
@@ -1127,6 +1213,43 @@ public sealed partial class ИнформацияPage
     #region Update Helpers
 
     /// <summary>
+    ///  Обновляет подпись для таймингов VRM
+    /// </summary>
+    private void UpdateVrmTimingsDisplay(double slow, double fast)
+    {
+        if (_vrmTimingsDetected || _vrmTimingIteration == 2)
+        {
+            return;
+        }
+
+        _vrmTimingIteration += 1;
+
+        // Оба тайминга = 0, не обнаружены
+        if (slow == 0 && fast == 0)
+        {
+            VrmTimingsSign.Text = TimingsNotFoundText;
+            SlowTimePanel.Visibility = Visibility.Collapsed;
+            FastTimePanel.Visibility = Visibility.Collapsed;
+            _vrmTimingsDetected = true;
+            return;
+        }
+
+        if (_prevSlow != 0 || _prevFast != 0)
+        {
+            if (slow == _prevSlow && fast == _prevFast)
+            {
+                // Значения не менялись, статические
+                VrmTimingsSign.Text = StaticTimingsText;
+                _vrmTimingsDetected = true;
+                return;
+            }
+        }
+
+        _prevSlow = slow;
+        _prevFast = fast;
+    }
+
+    /// <summary>
     ///  Безопасное получение значения из массива
     /// </summary>
     private static double GetCoreValue(double[]? array, uint index) => array != null && array.Length > index ? array[index] : 0f;
@@ -1207,8 +1330,12 @@ public sealed partial class ИнформацияPage
     /// </summary>
     private string GetRamText(uint index)
     {
-        var ramModels = RamModel.Text.Split('/');
-        return index < ramModels.Length ? ramModels[index] : "Unknown";
+        var ramModels = _cpu?.GetMemoryConfig().Modules;
+        if (ramModels != null) 
+        {
+            return index < ramModels.Capacity ? ramModels[(int)index].Capacity.ToString() : "Unknown";
+        }
+        return "Unknown";
     }
 
     /// <summary>
@@ -1283,14 +1410,16 @@ public sealed partial class ИнформацияPage
     /// </summary>
     private void HideAllSections()
     {
-        InfoCPUSectionMetrics.Visibility = Visibility.Collapsed;
+        CpuDetails.Visibility = Visibility.Collapsed;
         InfoGPUSectionMetrics.Visibility = Visibility.Collapsed;
-        InfoRAMSectionMetrics.Visibility = Visibility.Collapsed;
-        InfoVRMSectionMetrics.Visibility = Visibility.Collapsed;
+        RamDetails.Visibility = Visibility.Collapsed;
+        PowersSection.Visibility = Visibility.Collapsed;
+        CurrentsSection.Visibility = Visibility.Collapsed;
+        VrmDetails.Visibility = Visibility.Collapsed;
         InfoBATSectionMetrics.Visibility = Visibility.Collapsed;
-        InfoPSTSectionMetrics.Visibility = Visibility.Collapsed;
-        infoRAMMAINSection.Visibility = Visibility.Collapsed;
-        infoCPUMAINSection.Visibility = Visibility.Collapsed;
+        PowerStatesSection.Visibility = Visibility.Collapsed;
+        RamFrequencyDetails.Visibility = Visibility.Collapsed;
+        TimingsSection.Visibility = Visibility.Collapsed;
     }
 
     /// <summary>
@@ -1312,14 +1441,17 @@ public sealed partial class ИнформацияPage
         infoCPUSectionName.Text = sectionName;
         tbProcessor.Text = processorText;
 
-        InfoCPUSectionMetrics.Visibility = cpuVisible ? Visibility.Visible : Visibility.Collapsed;
+        PowersSection.Visibility = cpuVisible ? Visibility.Visible : Visibility.Collapsed;
+        CpuDetails.Visibility = cpuVisible ? Visibility.Visible : Visibility.Collapsed;
         InfoGPUSectionMetrics.Visibility = gpuVisible ? Visibility.Visible : Visibility.Collapsed;
-        InfoRAMSectionMetrics.Visibility = ramVisible ? Visibility.Visible : Visibility.Collapsed;
-        InfoVRMSectionMetrics.Visibility = vrmVisible ? Visibility.Visible : Visibility.Collapsed;
+        RamDetails.Visibility = ramVisible ? Visibility.Visible : Visibility.Collapsed;
+        TimingsSection.Visibility = ramVisible ? Visibility.Visible : Visibility.Collapsed;
+        CurrentsSection.Visibility = vrmVisible ? Visibility.Visible : Visibility.Collapsed;
+        VrmDetails.Visibility = vrmVisible ? Visibility.Visible : Visibility.Collapsed;
         InfoBATSectionMetrics.Visibility = batVisible ? Visibility.Visible : Visibility.Collapsed;
-        InfoPSTSectionMetrics.Visibility = pstVisible ? Visibility.Visible : Visibility.Collapsed;
-        infoCPUMAINSection.Visibility = cpuMainVisible ? Visibility.Visible : Visibility.Collapsed;
-        infoRAMMAINSection.Visibility = ramMainVisible ? Visibility.Visible : Visibility.Collapsed;
+        PowerStatesSection.Visibility = pstVisible ? Visibility.Visible : Visibility.Collapsed;
+        CpuCommonDetails.Visibility = cpuMainVisible ? Visibility.Visible : Visibility.Collapsed;
+        RamFrequencyDetails.Visibility = ramMainVisible ? Visibility.Visible : Visibility.Collapsed;
     }
 
     /// <summary>
@@ -1388,10 +1520,16 @@ public sealed partial class ИнформацияPage
             InfoMainCPUFreqGrid.RowDefinitions.Clear();
             InfoMainCPUFreqGrid.ColumnDefinitions.Clear();
 
-            // Количество видеокарт
             var gpuCounter = GetSystemInfo.GetGpuNames().Count;
 
             var threads = _numberOfLogicalProcessors;
+
+            var memoryCount = _cpu?.GetMemoryConfig().Modules.Count ?? 1;
+
+            if (memoryCount <= 0) 
+            {
+                memoryCount = 1;
+            }
 
             // Определяем количество элементов (coreCounter) в зависимости от выбранной секции
             var coreCounter = _selectedGroup switch
@@ -1405,7 +1543,7 @@ public sealed partial class ИнформацияPage
                 // Секция GFX
                 1 => gpuCounter, // Используем количество видеокарт
                 // Секция RAM
-                2 => RamModel.Text.Split('/').Length, // Используем количество плат ОЗУ
+                2 => memoryCount, // Используем количество плат ОЗУ
                 // Секция 3
                 3 => 4, // Фиксированное значение для секции 3
                 // Другие секции
@@ -1456,7 +1594,7 @@ public sealed partial class ИнформацияPage
                         // Секция GFX
                         1 => gpuCounter - coreCounter, // Используем оставшиеся видеокарты
                         // Секция RAM
-                        2 => RamModel.Text.Split('/').Length - coreCounter, // Используем оставшиеся платы ОЗУ
+                        2 => memoryCount - coreCounter, // Используем оставшиеся платы ОЗУ
                         // Секция 3
                         3 => 4 - coreCounter, // Фиксированное значение для секции 3
                         // Другие секции

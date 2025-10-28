@@ -62,6 +62,7 @@ public partial class App
 
     public static IntPtr Hwnd => WindowNative.GetWindowHandle(MainWindow);
 
+    public static bool EfficiencyModeAvailable => Environment.OSVersion.Version.Build >= 22631;
     public static WindowEx MainWindow
     {
         get;
@@ -180,7 +181,7 @@ public partial class App
         Process.Start(new ProcessStartInfo
         {
             FileName = "CrashHandler.exe",
-            Arguments = $"\"{e.Message} {e.StackTrace}\" -theme dark -appName \"Saku Overclock\" -iconPath \"{sakuLogo}\"",
+            Arguments = $"\"{e.Message} {e.StackTrace} {e.InnerException?.StackTrace}\" -theme dark -appName \"Saku Overclock\" -iconPath \"{sakuLogo}\"",
             Verb = "runas"
         });
     }

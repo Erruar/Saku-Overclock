@@ -879,7 +879,7 @@
     <value>Загрузка ЦП</value>
   </data>
   <data name="infoAFast.Text" xml:space="preserve">
-    <value>Вр. быстр. разгона</value>
+    <value>Время быстрого разгона</value>
   </data>
   <data name="infoAGPUTEMPC.Text" xml:space="preserve">
     <value>Текущая темп dGPU</value>
@@ -888,7 +888,7 @@
     <value>Макс темп dGPU</value>
   </data>
   <data name="infoASlow.Text" xml:space="preserve">
-    <value>Вр. долг. разгона</value>
+    <value>Время долгого разгона</value>
   </data>
   <data name="infoASOCEDCC.Text" xml:space="preserve">
     <value>Ток на SoC EDC</value>
@@ -909,7 +909,7 @@
     <value>Модель</value>
   </data>
   <data name="infoMModule.Text" xml:space="preserve">
-    <value>Количество модулей</value>
+    <value>Модули</value>
   </data>
   <data name="infoMProd.Text" xml:space="preserve">
     <value>Вендор</value>
@@ -2428,8 +2428,7 @@ Asus. Может не поддерживаться на
     <value>Отключен</value>
   </data>
   <data name="Info_PowerSumInfo_DisabledPState" xml:space="preserve">
-    <value>Отключен на 
-платформе</value>
+    <value>Отключен на платформе</value>
   </data>
   <data name="Tray_Cooler.Description" xml:space="preserve">
     <value>Управление кулерами и NBFC</value>
@@ -3273,5 +3272,17 @@ Asus. Может не поддерживаться на
   </data>
   <data name="Main_CantFindPreset.Content" xml:space="preserve">
     <value>Не видите здесь свой пресет?</value>
+  </data>
+  <data name="Info_VrmDynamicChangeTimings.Text" xml:space="preserve">
+    <value>На вашем устройстве время разгона процессора рассчитывается динамически в зависимости от нагрузки</value>
+  </data>
+  <data name="Info_VrmNoChangeTimings" xml:space="preserve">
+    <value>На вашем устройстве время разгона процессора статическое и может быть изменено</value>
+  </data>
+  <data name="Info_VrmNotFoundTimings" xml:space="preserve">
+    <value>На вашем устройстве недоступно время разгона процессора</value>
+  </data>
+  <data name="infoTiming.Text" xml:space="preserve">
+    <value>Тайминг</value>
   </data>
 </root>
