@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml.Navigation; 
+using Microsoft.UI.Xaml.Navigation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Views;
 
@@ -12,14 +12,14 @@ public partial class ShellViewModel : ObservableRecipient
     public bool IsBackEnabled
     {
         get => _isBackEnabled;
-        set => SetProperty(ref _isBackEnabled, value);
+        private set => SetProperty(ref _isBackEnabled, value);
     }
 
     private object? _selectedPage;
     public object? SelectedPage
     {
         get => _selectedPage;
-        set => SetProperty(ref _selectedPage, value);
+        private set => SetProperty(ref _selectedPage, value);
     }
 
     private List<string> _items;
@@ -47,7 +47,7 @@ public partial class ShellViewModel : ObservableRecipient
     {
         get;
     }
-    
+
 
     public INavigationViewService NavigationViewService
     {
@@ -60,7 +60,7 @@ public partial class ShellViewModel : ObservableRecipient
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
-    }  
+    }
 
     private void OnNavigated(object sender, NavigationEventArgs e)
     {
