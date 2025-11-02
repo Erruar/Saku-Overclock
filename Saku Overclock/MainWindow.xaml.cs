@@ -9,7 +9,6 @@ using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Services;
-using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using Windows.UI.ViewManagement;
@@ -27,7 +26,7 @@ public sealed partial class MainWindow
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
-    private bool _isActivated = false;
+    private bool _isActivated;
 
     public MainWindow()
     {
@@ -84,19 +83,19 @@ public sealed partial class MainWindow
         sakuLogoCommand.ExecuteRequested += GithubLink_ExecuteRequested;
 
         _ni = (TaskbarIcon)Application.Current.Resources["TrayIcon"];
-        _ni.ForceCreate(enablesEfficiencyMode: App.EfficiencyModeAvailable); 
+        _ni.ForceCreate(enablesEfficiencyMode: App.EfficiencyModeAvailable);
 
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _settings = new UISettings();
         _settings.ColorValuesChanged +=
             Settings_ColorValuesChanged;
-        Tray_Start();
+        _ = Tray_Start();
         Closed += Dispose_Tray;
     }
 
     #region Colours
 
-    // this handles updating the caption button colors correctly when indows system theme is changed
+    // this handles updating the caption button colors correctly when Windows system theme is changed
     // while the app is open
     private void Settings_ColorValuesChanged(UISettings sender, object args)
     {
@@ -125,7 +124,7 @@ public sealed partial class MainWindow
     {
         _niBackup?.Dispose();
 
-        if (_ni != null) 
+        if (_ni != null)
         {
             _ni.Visibility = Visibility.Visible;
             _ni.ForceCreate(enablesEfficiencyMode: App.EfficiencyModeAvailable);
@@ -165,7 +164,7 @@ public sealed partial class MainWindow
         _niBackup.ForceCreate(enablesEfficiencyMode: App.EfficiencyModeAvailable);
     }
 
-    private void Dispose_Tray(object sender, WindowEventArgs args)
+    private static void Dispose_Tray(object sender, WindowEventArgs args)
     {
         _ni?.Dispose();
         var workers = Process.GetProcessesByName("Saku Overclock");
@@ -177,7 +176,7 @@ public sealed partial class MainWindow
         }
     }
 
-    private void PowerMonOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    private static void PowerMonOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
         try
         {
@@ -195,7 +194,7 @@ public sealed partial class MainWindow
         }
     }
 
-    private void SettingsOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    private static void SettingsOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
@@ -204,7 +203,7 @@ public sealed partial class MainWindow
         App.MainWindow.WindowState = WindowState.Normal;
     }
 
-    private void ProfilesOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    private static void ProfilesOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
@@ -213,7 +212,7 @@ public sealed partial class MainWindow
         App.MainWindow.WindowState = WindowState.Normal;
     }
 
-    private void OverclockPageOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    private static void OverclockPageOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!);
@@ -222,7 +221,7 @@ public sealed partial class MainWindow
         App.MainWindow.WindowState = WindowState.Normal;
     }
 
-    private void InfoPageOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    private static void InfoPageOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ИнформацияViewModel).FullName!);
@@ -231,7 +230,7 @@ public sealed partial class MainWindow
         App.MainWindow.WindowState = WindowState.Normal;
     }
 
-    private void CoolerPageOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    private static void CoolerPageOpen_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(КулерViewModel).FullName!);
@@ -240,7 +239,7 @@ public sealed partial class MainWindow
         App.MainWindow.WindowState = WindowState.Normal;
     }
 
-    private void EcoMode_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    private void EcoMode_ExecuteRequested(object? sender, ExecuteRequestedEventArgs args)
     {
         SettingsService.Preset = -1;
         SettingsService.PremadeEcoActivated = true;
@@ -262,7 +261,7 @@ public sealed partial class MainWindow
                 AppContext.BaseDirectory));
     }
 
-    private void GithubLink_ExecuteRequested(object? _, ExecuteRequestedEventArgs args) =>
+    private static void GithubLink_ExecuteRequested(object? _, ExecuteRequestedEventArgs args) =>
         Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/") { UseShellExecute = true });
 
     private void ShowHideWindowCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
@@ -279,64 +278,92 @@ public sealed partial class MainWindow
         }
     }
 
-    private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
+    private static void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args)
     {
         _ni?.Dispose();
         App.MainWindow.Close();
         Environment.Exit(0);
     }
 
-    private async void Tray_Start() // Запустить все команды после запуска приложения если включен Автоприменять Разгон
+    private async Task Tray_Start() // Запустить все команды после запуска приложения если включен Авто-применять Разгон
     {
         SettingsService.LoadSettings();
 
-        OcFinder.LazyInitTdp(); 
+        OcFinder.LazyInitTdp();
 
-        if (SettingsService.ReapplyLatestSettingsOnAppLaunch && !SettingsService.AppFirstRun)
+        if (SettingsService.ReapplyLatestSettingsOnAppLaunch)
         {
             try
-            { 
+            {
                 SendSmuCommand.ApplyQuickSmuCommand(true);
             }
             catch (Exception ex)
             {
-                await LogHelper.LogError("[Mainwindow@Tray_Start]::Play_Invernate_QuickSMU_FAILED - " + ex.ToString());
+                await LogHelper.LogError("[Mainwindow@Tray_Start]::ApplyQuickSmuCommand_FAILED - " + ex);
             }
 
             try
             {
                 var profileFolderFile = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                    "\\SakuOverclock\\profile.json";
+                                    @"\SakuOverclock\profile.json";
                 if (File.Exists(profileFolderFile))
                 {
                     var profile = JsonConvert.DeserializeObject<Profile[]>(await File.ReadAllTextAsync(
                         Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                        @"\SakuOverclock\profile.json"))!;
+                        @"\SakuOverclock\profile.json"));
                     if (profile == null)
                     {
-                        var _profile = new Profile[1];
+                        var profiles = new Profile[1];
                         Directory.CreateDirectory(
                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                        File.WriteAllText(
+                        await File.WriteAllTextAsync(
                             Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                            JsonConvert.SerializeObject(_profile));
+                            JsonConvert.SerializeObject(profiles));
                         return;
                     }
-                    if (SettingsService.Preset < profile.Length && SettingsService.Preset != -1)
+
+                    var applyService = App.GetService<IApplyerService>();
+                    if (SettingsService.Preset != -1)
                     {
-                        await App.GetService<IApplyerService>().ApplyCustomPreset(profile[SettingsService.Preset]);
-                        if (profile[SettingsService.Preset].AutoPstate &&
-                        profile[SettingsService.Preset].EnablePstateEditor)
+                        if (SettingsService.Preset < profile.Length)
                         {
-                            ПараметрыPage.WritePstates();
+                            await applyService.ApplyCustomPreset(profile[SettingsService.Preset]);
+                            if (profile[SettingsService.Preset].AutoPstate &&
+                                profile[SettingsService.Preset].EnablePstateEditor)
+                            {
+                                ПараметрыPage.WritePstates();
+                            }
                         }
+                    }
+                    else
+                    {
+                        var presetType = PresetType.Balance;
+
+                        if (SettingsService.PremadeMaxActivated)
+                        {
+                            presetType = PresetType.Max;
+                        }
+                        else if (SettingsService.PremadeSpeedActivated)
+                        {
+                            presetType = PresetType.Performance;
+                        }
+                        else if (SettingsService.PremadeEcoActivated)
+                        {
+                            presetType = PresetType.Eco;
+                        }
+                        else if (SettingsService.PremadeMinActivated)
+                        {
+                            presetType = PresetType.Min;
+                        }
+
+                        await applyService.ApplyPremadePreset(presetType, (OptimizationLevel)SettingsService.PremadeOptimizationLevel);
                     }
                 }
             }
             catch (Exception ex)
             {
-                await LogHelper.LogError("[Mainwindow@Tray_Start]::Apply_Last_Settings_FAILED - " + ex.ToString());
-            } 
+                await LogHelper.LogError("[Mainwindow@Tray_Start]::Apply_Last_Settings_FAILED - " + ex);
+            }
         }
         try
         {
@@ -349,7 +376,7 @@ public sealed partial class MainWindow
                 }
 
                 // После того как _contentLoaded стал true, выполняем условие
-                if (SettingsService.AutostartType == 1 || SettingsService.AutostartType == 3)
+                if (SettingsService.AutostartType is 1 or 3)
                 {
                     this.Hide();
                 }
@@ -361,7 +388,7 @@ public sealed partial class MainWindow
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError("[Mainwindow@Tray_Start]::App_Hide_And_UpdateChecker_FATAL - " + ex.ToString());
+            await LogHelper.LogError("[Mainwindow@Tray_Start]::App_Hide_And_UpdateChecker_FATAL - " + ex);
         }
     }
 
