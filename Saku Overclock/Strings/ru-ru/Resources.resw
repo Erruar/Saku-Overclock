@@ -963,6 +963,9 @@
   <data name="AdvancedCooler_Curve_Tresh.Text" xml:space="preserve">
     <value>Температурные зависимости</value>
   </data>
+  <data name="AdvancedCooler_CurveMenu.Text" xml:space="preserve">
+    <value>Кривая кулера</value>
+  </data>
   <data name="AdvancedCooler_Custom.Text" xml:space="preserve">
     <value>Новая конфигурация</value>
   </data>
@@ -1851,7 +1854,7 @@ Overclock будут проигнорированы,
 запущенный Rivatuner Statistics Server</value>
   </data>
   <data name="InfoBattery.Text" xml:space="preserve">
-    <value>Батарея</value>
+    <value>Уровень заряда</value>
   </data>
   <data name="InfoBatteryAC" xml:space="preserve">
     <value>От сети</value>

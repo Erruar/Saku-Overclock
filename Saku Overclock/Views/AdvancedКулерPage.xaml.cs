@@ -16,8 +16,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes; 
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers; 
-using Saku_Overclock.SMUEngine;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
 using Path = System.IO.Path;
@@ -42,7 +41,7 @@ public sealed partial class AdvancedКулерPage
         InitializeComponent();
 
         SettingsService.NbfcFlagConsoleCheckSpeedRunning =
-            false; // Старые флаги для выключения автообновления информации в фоне программы
+            false; // Старые флаги для выключения авто-обновления информации в фоне программы
         SettingsService.FlagRyzenAdjConsoleTemperatureCheckRunning = false;
         SettingsService.SaveSettings();
 
@@ -66,11 +65,11 @@ public sealed partial class AdvancedКулерPage
             CurveFan1.Visibility = Visibility.Collapsed;
             CurveFan2.Visibility = Visibility.Collapsed;
             return;
-        } // Если путь не существует - не продолжать инициализуцию
+        } // Если путь не существует - не продолжать инициализацию
 
         // Получить все XML-файлы в этой папке
         var xmlFiles = Directory.GetFiles(folderPath, "*.xml"); // Все xml файлы
-        Others_CC.Items.Clear(); // Очистить старые элементы настройки кривой
+        OthersCoolerConfigs.Items.Clear(); // Очистить старые элементы настройки кривой
         foreach (var xmlFile in xmlFiles)
         {
             var fileItem = new MenuFlyoutItem
@@ -86,8 +85,8 @@ public sealed partial class AdvancedКулерPage
                 CommandParameter = xmlFile
             };
             // Добавить MenuFlyoutItem в MenuFlyoutSubItem
-            Others_CC.Items.Add(fileItem);
-            Copy_CC.Items.Add(copyItem);
+            OthersCoolerConfigs.Items.Add(fileItem);
+            CopyFromOthersCoolerConfigs.Items.Add(copyItem);
         }
     }
 
@@ -132,9 +131,9 @@ public sealed partial class AdvancedКулерPage
             FanDef.Children.Clear();
             FanDef1.Children.Clear();
             var fanDefGrid = FanDef;
-            for (var fdsa = 0; fdsa < 2; fdsa++)
+            for (var fanDefinitionGrid = 0; fanDefinitionGrid < 2; fanDefinitionGrid++)
             {
-                if (fdsa != 0)
+                if (fanDefinitionGrid != 0)
                 {
                     fanDefGrid = FanDef1;
                 }
@@ -203,7 +202,7 @@ public sealed partial class AdvancedКулерPage
                         }
                     }
                 };
-                var fanspeedButton = new Button
+                var fanSpeedButton = new Button
                 {
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top,
@@ -237,13 +236,13 @@ public sealed partial class AdvancedКулерPage
                 };
                 Grid.SetRow(minimumButton, 0);
                 Grid.SetRow(maximumButton, 0);
-                Grid.SetRow(fanspeedButton, 0);
+                Grid.SetRow(fanSpeedButton, 0);
                 Grid.SetColumn(minimumButton, 0);
                 Grid.SetColumn(maximumButton, 2);
-                Grid.SetColumn(fanspeedButton, 4);
+                Grid.SetColumn(fanSpeedButton, 4);
                 fanDefGrid.Children.Add(minimumButton);
                 fanDefGrid.Children.Add(maximumButton);
-                fanDefGrid.Children.Add(fanspeedButton);
+                fanDefGrid.Children.Add(fanSpeedButton);
             }
 
             ExtFan1C.Points.Clear();
@@ -255,7 +254,7 @@ public sealed partial class AdvancedКулерPage
             {
                 var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" +
                                      SettingsService.NbfcConfigXmlName + ".xml";
-                Config_Name1.Text = SettingsService.NbfcConfigXmlName;
+                CoolerConfigurationName.Text = SettingsService.NbfcConfigXmlName;
                 if (File.Exists(configFilePath))
                 {
                     // Загрузка XML-документа из файла
@@ -290,7 +289,7 @@ public sealed partial class AdvancedКулерPage
                             // Добавление точек на соответствующий Polyline в соответствии с текущими значениями и идентификатором FanConfiguration
                             AddThresholdToPolyline((i + 1).ToString(), downThreshold, upThreshold, fanSpeed);
 
-                            //При каждом Tresholds отрисовывать NumberBox
+                            // Для каждого Thresholds создать NumberBox
                             // 1.1 Создаем и настраиваем NumberBox'ы
                             var downThresholdBox = new NumberBox
                             {
@@ -362,19 +361,19 @@ public sealed partial class AdvancedКулерPage
                     if (fanConfigurations.Count == 1)
                     {
                         CurveFan2.Visibility = Visibility.Collapsed;
-                        myListButton1.Visibility = Visibility.Collapsed;
+                        Fan1ToggleCurve.Visibility = Visibility.Collapsed;
                         FanDef1.Visibility = Visibility.Collapsed;
                     }
                     else
                     {
                         CurveFan2.Visibility = Visibility.Visible;
-                        myListButton1.Visibility = Visibility.Visible;
+                        Fan1ToggleCurve.Visibility = Visibility.Visible;
                         FanDef1.Visibility = Visibility.Visible;
                     }
                 }
                 else
                 {
-                    AdvancedCooler_Curve_Tresholds.Visibility = Visibility.Collapsed;
+                    CurveThresholdsStackPanel.Visibility = Visibility.Collapsed;
                     CurveDesc.Text = "AdvancedCooler_CurveDescUnavailable".GetLocalized();
 
                     await ShowNbfcDialogAsync();
@@ -492,23 +491,12 @@ public sealed partial class AdvancedКулерPage
                 // Убедиться, что файл полностью закрыт перед запуском
                 if (File.Exists(downloadPath))
                 {
-                label_8:
-                    try
+                    for (var e = 1; e < 5; e++)
                     {
-                        // Запуск загруженного установочного файла с правами администратора
-                        Process.Start(new ProcessStartInfo
+                        if (TryToRunNbfcInstaller(downloadPath))
                         {
-                            FileName = downloadPath,
-                            Verb = "runas" // Запуск от имени администратора
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        await App.MainWindow.ShowMessageDialogAsync(
-                            "Cooler_DownloadNBFC_ErrorDesc".GetLocalized() + $": {ex.Message}", "Error".GetLocalized());
-                        await Task.Delay(2000);
-                        goto
-                            label_8; // Повторить задачу открытия автообновления приложения, в случае если возникла ошибка доступа
+                            break;
+                        }
                     }
                 }
 
@@ -528,6 +516,26 @@ public sealed partial class AdvancedКулерPage
         {
             PageService.ReloadPage(typeof(AdvancedКулерViewModel).FullName!); // Вызов метода перезагрузки страницы
         }
+    }
+
+    private static bool TryToRunNbfcInstaller(string downloadPath)
+    {
+        try
+        {
+            // Запуск загруженного установочного файла с правами администратора
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = downloadPath,
+                Verb = "runas" // Запуск от имени администратора
+            });
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
+            return false; // Повторить задачу открытия авто-обновления приложения, в случае если возникла ошибка доступа
+        }
+
+        return true;
     }
 
     private void AddThresholdToPolyline(string fanName, double minTemp, double maxTemp, double fanSpeed)
@@ -567,14 +575,14 @@ public sealed partial class AdvancedКулерPage
 
     private void Tabs_AddTabButtonClick(TabView sender, object args)
     {
-        var contextMenu = (MenuFlyout)Resources["TabContextM"];
+        var contextMenu = (MenuFlyout)Resources["FlyoutMenu"];
         // Отобразить контекстное меню относительно кнопки
         contextMenu.ShowAt(sender, _cursorPosition);
     }
 
     private void Tabs_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
     {
-        if (args.Tab == Example_1Tab || args.Tab == FanC_Tab)
+        if (args.Tab == ExampleTab || args.Tab == FanCurvesTab)
         {
             args.Tab.Visibility = Visibility.Collapsed;
         }
@@ -656,14 +664,14 @@ public sealed partial class AdvancedКулерPage
 
     private void Example_Click(object sender, RoutedEventArgs e)
     {
-        Example_1Tab.Visibility = Visibility.Visible;
-        MainTab.SelectedItem = Example_1Tab;
+        ExampleTab.Visibility = Visibility.Visible;
+        MainTab.SelectedItem = ExampleTab;
     }
 
     private void Curve_Click(object sender, RoutedEventArgs e)
     {
-        FanC_Tab.Visibility = Visibility.Visible;
-        MainTab.SelectedItem = FanC_Tab;
+        FanCurvesTab.Visibility = Visibility.Visible;
+        MainTab.SelectedItem = FanCurvesTab;
     }
 
     private void Create_Example_Click(object sender, RoutedEventArgs e)
@@ -709,34 +717,34 @@ public sealed partial class AdvancedКулерPage
 
     private void GridView_ItemClick1(object sender, ItemClickEventArgs e)
     {
-        PolilyneChange(ExtFan1C, e);
+        PolylineChange(ExtFan1C, e);
     }
 
     private void GridView_ItemClick2(object sender, ItemClickEventArgs e)
     {
-        PolilyneChange(ExtFan2C, e);
+        PolylineChange(ExtFan2C, e);
     }
 
-    private void PolilyneChange(Polyline pln, ItemClickEventArgs e)
+    private void PolylineChange(Polyline pln, ItemClickEventArgs e)
     {
         var rect = (Rectangle)e.ClickedItem;
         var color = ((SolidColorBrush)rect.Fill).Color;
         pln.Stroke = new SolidColorBrush(color);
-        Task.Delay(10).ContinueWith(_ => myListButton.Flyout.Hide(), TaskScheduler.FromCurrentSynchronizationContext());
-        Task.Delay(10).ContinueWith(_ => myListButton1.Flyout.Hide(),
+        Task.Delay(10).ContinueWith(_ => Fan0ToggleCurve.Flyout.Hide(), TaskScheduler.FromCurrentSynchronizationContext());
+        Task.Delay(10).ContinueWith(_ => Fan1ToggleCurve.Flyout.Hide(),
             TaskScheduler.FromCurrentSynchronizationContext());
     }
 
     private void MyListButton_IsCheckedChanged(ToggleSplitButton sender,
         ToggleSplitButtonIsCheckedChangedEventArgs args)
     {
-        ExtFan1C.Visibility = myListButton.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+        ExtFan1C.Visibility = Fan0ToggleCurve.IsChecked ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void MyListButton1_IsCheckedChanged(ToggleSplitButton sender,
         ToggleSplitButtonIsCheckedChangedEventArgs args)
     {
-        ExtFan2C.Visibility = myListButton1.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+        ExtFan2C.Visibility = Fan1ToggleCurve.IsChecked ? Visibility.Visible : Visibility.Collapsed;
     }
 
     #endregion
@@ -1008,7 +1016,7 @@ public sealed partial class AdvancedКулерPage
         }
     }
 
-    private async Task ReplaceNumberB(string foundValue, double newValue, int unicalId, int fanCount)
+    private async Task ReplaceNumberB(string foundValue, double newValue, int uid, int fanCount)
     {
         var currentFanDef = FanDef;
         var rowCounter = 0; // Счетчик строк в Grid
@@ -1030,7 +1038,7 @@ public sealed partial class AdvancedКулерPage
                     // Обход каждого элемента TemperatureThreshold внутри FanConfiguration
                     foreach (var thresholdElement in thresholdElements)
                     {
-                        if (rowCounter == unicalId) // ID Row совпадает с найденным значением
+                        if (rowCounter == uid) // ID Row совпадает с найденным значением
                         {
                             if (currentFanDef == FanDef && fanCount == 1 && i == 0) //Если первый кулер
                             {

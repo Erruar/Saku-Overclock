@@ -954,6 +954,9 @@ for selected config:</value>
   <data name="AdvancedCooler_Curve_Tresh.Text" xml:space="preserve">
     <value>Temperature tresholds</value>
   </data>
+  <data name="AdvancedCooler_CurveMenu.Text" xml:space="preserve">
+    <value>Fan Curve</value>
+  </data>
   <data name="AdvancedCooler_Custom.Text" xml:space="preserve">
     <value>Create Custom</value>
   </data>
@@ -1812,7 +1815,7 @@ Requires Rivatuner Statistics Server
 to be installed and running</value>
   </data>
   <data name="InfoBattery.Text" xml:space="preserve">
-    <value>Battery</value>
+    <value>Charge level</value>
   </data>
   <data name="InfoBatteryAC" xml:space="preserve">
     <value>AC</value>

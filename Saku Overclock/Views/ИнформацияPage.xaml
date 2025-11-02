@@ -11,9 +11,9 @@
         <Style TargetType="ToggleButton" BasedOn="{StaticResource ActiveButton}"/>
     </Page.Resources>
 
-    <Grid x:Name="ContentArea" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200" Margin="0,0,-12,0">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200" Margin="0,0,-12,0">
         <TextBlock x:Uid="Info_Name" Text="Информация" FontSize="30" Margin="-48,-95,0,0"/>
-        <TeachingTip x:Name="Info_RTSSTeacherTip" Target="{x:Bind infoRTSSButton}" Title="You have enabled RTSS metrics!" Subtitle="Now you can easily minimize Saku Overclock to tray menu and all information will be updated automatically. Saku Overclock will switch to the mode of reduced consumption of laptop resources">
+        <TeachingTip x:Name="RtssTeacherTip" Target="{x:Bind RtssButton}" Title="You have enabled Rtss metrics!" Subtitle="Now you can easily minimize Saku Overclock to tray menu and all information will be updated automatically. Saku Overclock will switch to the mode of reduced consumption of laptop resources">
             <TeachingTip.IconSource>
                 <SymbolIconSource>
                     <SymbolIconSource.Symbol>
@@ -36,7 +36,8 @@
                             <RepositionThemeTransition />
                         </TransitionCollection>
                     </StackPanel.ChildrenTransitions>
-                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20" Grid.Row="0" x:Name="CpuBannerButton" Tag="0" Click="BannerButton_Click" CornerRadius="14">
+                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20"
+                            x:Name="CpuBannerButton" Tag="0" Click="BannerButton_Click" CornerRadius="14">
                         <Grid>
                             <Grid HorizontalAlignment="Left" Margin="-5,1,0,0" CornerRadius="7" Width="60">
                                 <Polygon Margin="0,-1,0,-4" x:Name="CpuBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -102,11 +103,12 @@ StrokeThickness="1.5" >
                                         </Grid>
                                     </Flyout>
                                 </Button.Flyout>
-                                <FontIcon Margin="-7,-1,-5,-5" x:Name="CpuExpandFontIcon" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                                <FontIcon Margin="-7,-1,-5,-5"
+                                          Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xF0D8;"/>
                             </Button>
                         </Grid>
                     </Button>
-                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="VrmBannerButton" Tag="3" Click="BannerButton_Click" BorderBrush="Transparent" Grid.Row="1" CornerRadius="14">
+                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="VrmBannerButton" Tag="3" Click="BannerButton_Click" BorderBrush="Transparent" CornerRadius="14">
                         <Grid>
                             <Grid HorizontalAlignment="Left" Margin="-5,1,0,0" CornerRadius="7" Width="60">
                                 <Polygon Margin="0,-1,0,-4" x:Name="VrmBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -128,11 +130,11 @@ StrokeThickness="1.5">
                                         </LinearGradientBrush>
                                     </Polygon.Fill>
                                 </Polygon>
-                                <TextBlock x:Name="infoAVRMUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="VrmUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
                             </Grid>
                             <StackPanel HorizontalAlignment="Left" Width="90" Margin="60,0,0,0" Orientation="Vertical">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" Text="VRM"/>
-                                <TextBlock FontWeight="Light" FontSize="13" x:Name="infoVRMUsageBanner" Text="Unknown"/>
+                                <TextBlock FontWeight="Light" FontSize="13" x:Name="VrmUsageBanner" Text="Unknown"/>
                             </StackPanel>
                             <Button Visibility="Collapsed" x:Name="VrmExpandButton" x:Uid="infoExpandGraph" ToolTipService.ToolTip="Expand the graph" Margin="20,0,-20,-20" Width="32" Height="32" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="Transparent">
                                 <Button.RenderTransform>
@@ -164,20 +166,21 @@ StrokeThickness="1.5" >
                                                         </LinearGradientBrush>
                                                     </Polygon.Fill>
                                                 </Polygon>
-                                                <TextBlock x:Name="infoAVRMUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="141,0,0,10" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                                                <TextBlock x:Name="VrmUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="141,0,0,10" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                                             </Grid>
                                             <StackPanel Orientation="Vertical" Width="122"  Margin="310,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                                                 <TextBlock FontWeight="Black" FontSize="23" Text="VRM"/>
-                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="infoIVRMUsageBigBanner" Text="0%"/>
+                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="VrmUsageBigBanner" Text="0%"/>
                                             </StackPanel>
                                         </Grid>
                                     </Flyout>
                                 </Button.Flyout>
-                                <FontIcon x:Name="VrmExpandFontIcon" Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                                <FontIcon Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xF0D8;"/>
                             </Button>
                         </Grid>
                     </Button>
-                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="GpuBannerButton" Tag="1" Click="BannerButton_Click" BorderBrush="Transparent" Grid.Row="2" CornerRadius="14">
+                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="GpuBannerButton" Tag="1" Click="BannerButton_Click" BorderBrush="Transparent"
+                            CornerRadius="14">
                         <Grid>
                             <Grid HorizontalAlignment="Left" Margin="-5,1,0,0" CornerRadius="7" Width="60">
                                 <Polygon Margin="0,-1,0,-4" x:Name="GpuBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -244,11 +247,11 @@ StrokeThickness="1.5" >
                                         </Grid>
                                     </Flyout>
                                 </Button.Flyout>
-                                <FontIcon x:Name="GpuExpandFontIcon" Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                                <FontIcon Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xF0D8;"/>
                             </Button>
                         </Grid>
                     </Button>
-                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="RamBannerButton" Tag="2" Click="BannerButton_Click" BorderBrush="Transparent" Grid.Row="3" CornerRadius="14">
+                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="RamBannerButton" Tag="2" Click="BannerButton_Click" BorderBrush="Transparent" CornerRadius="14">
                         <Grid>
                             <Grid HorizontalAlignment="Left" Margin="-5,1,0,0" CornerRadius="7" Width="60">
                                 <Polygon Margin="0,-1,0,-4" x:Name="RamBannerPolygon" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -270,11 +273,11 @@ StrokeThickness="1.5">
                                         </LinearGradientBrush>
                                     </Polygon.Fill>
                                 </Polygon>
-                                <TextBlock x:Name="infoARAMUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="RamUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
                             </Grid>
                             <StackPanel HorizontalAlignment="Left" Width="90" Margin="60,0,0,0" Orientation="Vertical">
                                 <TextBlock FontWeight="Medium" Margin="0,-3,0,0" x:Uid="InfoRAM" Text="RAM"/>
-                                <TextBlock FontWeight="Light" FontSize="13" x:Name="InfoRAMUsage" Text="?GB"/>
+                                <TextBlock FontWeight="Light" FontSize="13" x:Name="RamUsage" Text="?GB"/>
                             </StackPanel>
                             <Button Visibility="Collapsed" x:Name="RamExpandButton" x:Uid="infoExpandGraph" ToolTipService.ToolTip="Expand the graph" Margin="20,0,-20,-20" Width="32" Height="32" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="Transparent">
                                 <Button.RenderTransform>
@@ -306,20 +309,21 @@ StrokeThickness="1.5" >
                                                         </LinearGradientBrush>
                                                     </Polygon.Fill>
                                                 </Polygon>
-                                                <TextBlock x:Name="infoARAMUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="141,0,0,10" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                                                <TextBlock x:Name="RamUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="141,0,0,10" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                                             </Grid>
                                             <StackPanel Orientation="Vertical" Width="122"  Margin="310,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
                                                 <TextBlock FontWeight="Black" FontSize="23" x:Uid="InfoRAM" Text="RAM"/>
-                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="infoIRAMUsageBigBanner" Text="0%"/>
+                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="RamUsageBigBanner" Text="0%"/>
                                             </StackPanel>
                                         </Grid>
                                     </Flyout>
                                 </Button.Flyout>
-                                <FontIcon x:Name="RamExpandFontIcon"  Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                                <FontIcon Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xF0D8;"/>
                             </Button>
                         </Grid>
                     </Button>
-                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="BatBannerButton" Tag="4" Click="BannerButton_Click"  BorderBrush="Transparent" Grid.Row="4" CornerRadius="14">
+                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="BatBannerButton" Tag="4" Click="BannerButton_Click"  BorderBrush="Transparent"
+                            CornerRadius="14">
                         <Grid>
                             <Grid HorizontalAlignment="Left" Margin="-5,1,0,0" CornerRadius="7" Width="60">
                                 <Polygon x:Name="BatBannerPolygon" Margin="0,-1,0,-4" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -341,11 +345,11 @@ StrokeThickness="1.5">
                                         </LinearGradientBrush>
                                     </Polygon.Fill>
                                 </Polygon>
-                                <TextBlock x:Name="infoABATUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="BatUsageBannerPolygonText" Foreground="BlanchedAlmond" Margin="4,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
                             </Grid>
                             <StackPanel HorizontalAlignment="Left" Width="90" Margin="60,0,0,0" Orientation="Vertical">
-                                <TextBlock FontWeight="Medium" Margin="0,-3,0,0" x:Uid="InfoBattery" Text="Battery"/>
-                                <TextBlock FontWeight="Light" FontSize="13" x:Name="InfoBATUsage" Text="?%"/>
+                                <TextBlock FontWeight="Medium" Margin="0,-3,0,0" x:Uid="Main_Battery" Text="Battery"/>
+                                <TextBlock FontWeight="Light" FontSize="13" x:Name="BatteryUsage" Text="?%"/>
                             </StackPanel>
                             <Button Visibility="Collapsed" x:Name="BatExpandButton" x:Uid="infoExpandGraph" ToolTipService.ToolTip="Expand the graph" Margin="20,0,-20,-20" Width="32" Height="32" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="Transparent">
                                 <Button.RenderTransform>
@@ -377,20 +381,21 @@ StrokeThickness="1.5" >
                                                         </LinearGradientBrush>
                                                     </Polygon.Fill>
                                                 </Polygon>
-                                                <TextBlock x:Name="infoABATUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="141,0,0,10" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                                                <TextBlock x:Name="BatUsageBigBannerPolygonText" Foreground="BlanchedAlmond" Margin="141,0,0,10" FontSize="19" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                                             </Grid>
                                             <StackPanel Orientation="Vertical" Width="122"  Margin="310,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                                <TextBlock FontWeight="Black" FontSize="23" x:Uid="InfoBattery" Text="Battery"/>
-                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="infoIBATUsageBigBanner" Text="0%"/>
+                                                <TextBlock FontWeight="Black" FontSize="23" x:Uid="Main_Battery" Text="Battery"/>
+                                                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" FontSize="17" x:Name="BatteryUsageBigBanner" Text="0%"/>
                                             </StackPanel>
                                         </Grid>
                                     </Flyout>
                                 </Button.Flyout>
-                                <FontIcon x:Name="BatExpandFontIcon" Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                                <FontIcon Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xF0D8;"/>
                             </Button>
                         </Grid>
                     </Button>
-                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="PstBannerButton" Tag="5" Click="BannerButton_Click" BorderBrush="Transparent" Grid.Row="5" CornerRadius="14">
+                    <Button HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" PointerEntered="BannerButton_PointerEntered" PointerExited="BannerButton_PointerEntered" Translation="0,0,20" Background="Transparent" x:Name="PstBannerButton" Tag="5" Click="BannerButton_Click" BorderBrush="Transparent"
+                            CornerRadius="14">
                         <Grid>
                             <Grid HorizontalAlignment="Left" Margin="-5,1,0,0" CornerRadius="7" Width="60">
                                 <Polygon x:Name="PstBannerPolygon" Margin="0,-1,0,-4" Width="60" Points="0,100 10,40 20,40 60,40 60,100"
@@ -457,7 +462,7 @@ StrokeThickness="1.5" >
                                         </Grid>
                                     </Flyout>
                                 </Button.Flyout>
-                                <FontIcon x:Name="PstExpandFontIcon" Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xE92D;"/>
+                                <FontIcon Margin="-7,-1,-5,-5" Foreground="{ThemeResource AccentAAFillColorSecondaryBrush}" Glyph="&#xF0D8;"/>
                             </Button>
                         </Grid>
                     </Button>
@@ -469,13 +474,13 @@ StrokeThickness="1.5" >
                         </FontIcon>
                         <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="5,2,0,0" Text="Инструменты" />
                     </StackPanel>
-                    <ToggleButton BorderBrush="{ThemeResource ControlAltFillColorSecondary}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,8,0,0" CornerRadius="10" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="RtssButton_Click" x:Name="infoRTSSButton" x:Uid="InfoARTSSTooltip" ToolTipService.ToolTip="Enable RTSS updater">
+                    <ToggleButton BorderBrush="{ThemeResource ControlAltFillColorSecondary}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,8,0,0" CornerRadius="10" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="RtssButton_Click" x:Name="RtssButton" x:Uid="InfoARTSSTooltip" ToolTipService.ToolTip="Enable RTSS updater">
                         <Grid>
                             <FontIcon HorizontalAlignment="Left" Glyph="&#xE7AC;"/>
                             <TextBlock HorizontalAlignment="Center" Padding="7,0,0,0" x:Uid="InfoARTSSShowText" FontWeight="SemiLight" Text="Show RTSS metrics"/>
                         </Grid>
                     </ToggleButton>
-                    <ToggleButton BorderBrush="{ThemeResource ControlAltFillColorSecondary}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,5,0,0" CornerRadius="10" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="NiIconsButton_Click"  x:Name="infoNiIconsButton" x:Uid="InfoANiIcons" ToolTipService.ToolTip="Enable RTSS updater">
+                    <ToggleButton BorderBrush="{ThemeResource ControlAltFillColorSecondary}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,5,0,10" CornerRadius="10" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Click="NiIconsButton_Click"  x:Name="NiIconsButton" x:Uid="InfoANiIcons" ToolTipService.ToolTip="Enable RTSS updater">
                         <Grid>
                             <FontIcon HorizontalAlignment="Left" Glyph="&#xE735;"/>
                             <TextBlock HorizontalAlignment="Center" Padding="7,0,0,0" FontWeight="SemiLight" Text="TrayMon"/>
@@ -506,9 +511,9 @@ StrokeThickness="1.5" >
                     </Grid.RowDefinitions>
                     <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Row="0">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock HorizontalAlignment="Left" x:Name="infoCPUSectionName" FontWeight="Bold" FontSize="24" x:Uid="InfoCPU" Text="ЦП"/>
-                            <Grid Margin="10,1,0,-5" CornerRadius="10" Translation="0,0,28" Shadow="{StaticResource SharedShadow}" Visibility="{Binding ElementName=infoCPUSectionComboBox, Path=Visibility, Mode=OneWay}">
-                                <ComboBox Margin="1,0,0,0" CornerRadius="10" Style="{ThemeResource AcrylicComboBoxStyle}" Width="134.5" SelectedIndex="0" SelectionChanged="CpuSection_SelectionChanged" x:Name="infoCPUSectionComboBox">
+                            <TextBlock HorizontalAlignment="Left" x:Name="CpuSectionName" FontWeight="Bold" FontSize="24" x:Uid="InfoCPU" Text="ЦП"/>
+                            <Grid Margin="10,1,0,-5" CornerRadius="10" Translation="0,0,28" Shadow="{StaticResource SharedShadow}" Visibility="{Binding ElementName=CpuSectionComboBox, Path=Visibility, Mode=OneWay}">
+                                <ComboBox Margin="1,0,0,0" CornerRadius="10" Style="{ThemeResource AcrylicComboBoxStyle}" Width="134.5" SelectedIndex="0" SelectionChanged="CpuSection_SelectionChanged" x:Name="CpuSectionComboBox">
                                     <ComboBoxItem x:Uid="InfoCPUComboFreq" Content="Frequency"/>
                                     <ComboBoxItem x:Uid="InfoCPUComboVolt" Content="Voltages"/>
                                     <ComboBoxItem x:Uid="InfoCPUComboPowr" Content="Powers"/>
@@ -516,11 +521,11 @@ StrokeThickness="1.5" >
                                 </ComboBox>
                             </Grid>
                         </StackPanel>
-                        <TextBlock VerticalAlignment="Bottom" FontWeight="SemiBold" x:Name="tbProcessor" HorizontalAlignment="Right"/>
+                        <TextBlock VerticalAlignment="Bottom" FontWeight="SemiBold" x:Name="ProcessorName" HorizontalAlignment="Right"/>
                         <TextBlock VerticalAlignment="Bottom" FontWeight="SemiBold" Visibility="Collapsed" HorizontalAlignment="Right">AMD Ryzen 7 4800H with Radeon Vega Mobile Gfx</TextBlock>
                     </Grid>
                     <Grid Margin="0,10,0,0" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid x:Name="InfoMainCPUFreqGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid x:Name="MainSensorsGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.ChildrenTransitions>
                                 <TransitionCollection>
                                     <EntranceThemeTransition/>
@@ -535,7 +540,7 @@ StrokeThickness="1.5" >
                             </TransitionCollection>
                         </Grid.ChildrenTransitions>
 
-                        <StackPanel Margin="0,0,3,0" x:Name="InfoGPUSectionMetrics" Visibility="Collapsed" Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right">
+                        <StackPanel Margin="0,0,3,0" x:Name="GpuSectionMetrics" Visibility="Collapsed" Orientation="Vertical" HorizontalAlignment="Right">
                             <StackPanel Orientation="Horizontal">
                                 <StackPanel MinWidth="122" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                     <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoAFREQCPU" Text="Frequency" FontWeight="Light"/>
@@ -549,61 +554,26 @@ StrokeThickness="1.5" >
                             <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
                                 <StackPanel MinWidth="122" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                     <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoAActualL" Text="Real Power" FontWeight="Light"/>
-                                    <TextBlock Margin="6,-2,7,4" x:Name="tbAclualPowerL" Text="?W/?W" FontWeight="Medium"/>
+                                    <TextBlock Margin="6,-2,7,4" x:Name="ActualPowerLimit" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
-                                <StackPanel MinWidth="122" Margin="5,0,0,0" x:Name="infoAPUPowerMetric" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
+                                <StackPanel MinWidth="122" Margin="5,0,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                     <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoAAPUPower" Text="APU Power" FontWeight="Light"/>
-                                    <TextBlock Margin="6,-2,7,4" x:Name="tbAPUL" Text="?W/?W" FontWeight="Medium"/>
+                                    <TextBlock Margin="6,-2,7,4" x:Name="ApuPowerLimit" Text="?W/?W" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel MinWidth="227" Margin="0,7,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoADGPUTemp" Text="dGPU Temperature" FontWeight="Light"/>
-                                <TextBlock HorizontalAlignment="Left" Margin="6,-2,7,4" Width="200" x:Name="DgpuMaxTempLimit" Text="?C/?C" FontWeight="Medium"/>
+                                <TextBlock HorizontalAlignment="Left" Margin="6,-2,7,4" Width="200" x:Name="DiscreteGpuMaxTempLimit" Text="?C/?C" FontWeight="Medium"/>
                             </StackPanel>
                             <StackPanel MinWidth="227" Margin="0,7,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoAAPUTemp" Text="APU Temperature" FontWeight="Light"/>
-                                <TextBlock HorizontalAlignment="Left" Margin="6,-2,7,4" Width="200" x:Name="IgpuMaxTempLimit" Text="?C/?C" FontWeight="Medium"/>
+                                <TextBlock HorizontalAlignment="Left" Margin="6,-2,7,4" Width="200" x:Name="IntegratedGpuMaxTempLimit" Text="?C/?C" FontWeight="Medium"/>
                             </StackPanel>
                             <StackPanel MinWidth="227" Margin="0,7,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoACPUTEMPL" Text="CPU Temperature" FontWeight="Light"/>
                                 <TextBlock HorizontalAlignment="Left" Margin="6,-2,7,4" Width="200" x:Name="CpuMaxTemp" TextWrapping="Wrap" Text="?C/?C" FontWeight="Medium"/>
                             </StackPanel>
                             
-                        </StackPanel>
-
-                        <StackPanel Margin="0,0,3,0" x:Name="InfoBATSectionMetrics" Visibility="Collapsed" Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel MinWidth="111" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="InfoBattery" Text="Battery" FontWeight="Light"/>
-                                    <TextBlock Margin="6,-2,7,4" x:Name="tbBAT" Text="???%" FontWeight="Medium"/>
-                                </StackPanel>
-                                <StackPanel Margin="5,0,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoABATChargeRate" Text="Charge Rate" FontWeight="Light"/>
-                                    <TextBlock Margin="6,-2,7,4" x:Name="tbBATChargeRate" TextWrapping="Wrap" Text="-??W" FontWeight="Medium"/>
-                                </StackPanel>
-                            </StackPanel>
-                            <StackPanel Margin="0,7,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoABATState" Text="State" FontWeight="Light"/>
-                                <TextBlock Margin="6,-2,7,4" x:Name="tbBATState" Text="????????" FontWeight="Medium"/>
-                            </StackPanel>
-                            <StackPanel Margin="0,7,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoABATRemainTime" Text="Remaining time:" FontWeight="Light"/>
-                                <TextBlock Margin="6,-2,7,4" x:Name="tbBATTime" TextWrapping="Wrap" Text="?h ??m ??s" FontWeight="Medium"/>
-                            </StackPanel>
-                            <StackPanel  Orientation="Horizontal">
-                                <StackPanel Margin="0,7,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoABATCycles" Text="Cycles" FontWeight="Light"/>
-                                    <TextBlock Margin="6,-2,7,4" x:Name="tbBATCycles" Text="???" TextWrapping="Wrap" FontWeight="Medium"/>
-                                </StackPanel>
-                                <StackPanel MinWidth="110" Margin="5,7,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
-                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoABATWear" Text="Wear level" FontWeight="Light"/>
-                                    <TextBlock Margin="6,-2,7,4" x:Name="tbBATHealth" Text="??%" FontWeight="Medium"/>
-                                </StackPanel>
-                            </StackPanel>
-                            <StackPanel Margin="0,7,0,0" Orientation="Vertical" Background="{ThemeResource ControlStrokeColorDefaultBrush}" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
-                                <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Margin="6,2,4,4" x:Uid="infoABATFullCapacity" Text="Full Capacity" FontWeight="Light"/>
-                                <TextBlock Margin="6,-2,7,4" x:Name="tbBATCapacity" TextWrapping="Wrap" Text="?????mah/?????mah" FontWeight="Medium"/>
-                            </StackPanel>
                         </StackPanel>
 
                         <StackPanel Margin="-3,0,0,0" Orientation="Vertical">
@@ -712,7 +682,7 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoARAMMemCLK" VerticalAlignment="Center">MEM CLK</TextBlock>
                                             <ProgressBar CornerRadius="8" Maximum="0.1" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="MemoryFrequencyBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbMEMCLOCK" VerticalAlignment="Center"/>
+                                                       x:Name="MemoryClock" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid MinHeight="30">
@@ -726,7 +696,7 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoARAMInfFabric" VerticalAlignment="Center">Infinity Fabric</TextBlock>
                                             <ProgressBar CornerRadius="8" Maximum="0.1" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="InfinityFabricBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbFabricClock" VerticalAlignment="Center"/>
+                                                       x:Name="InfinityFabricClock" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -740,7 +710,7 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoARAMSoCVolt" VerticalAlignment="Center">SoC Voltage</TextBlock>
                                             <ProgressBar CornerRadius="8" Maximum="0.1" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="SocVoltageBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbSOCVOLT" VerticalAlignment="Center"/>
+                                                       x:Name="SocVoltage" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -754,7 +724,78 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoARAMSoCPower" VerticalAlignment="Center">SoC Power</TextBlock>
                                             <ProgressBar CornerRadius="8" Maximum="0.1" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="SocPowerBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbSOCPOWER" VerticalAlignment="Center"/>
+                                                       x:Name="SocPower" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <!-- Секция Батарея -->
+                                <Grid Margin="6,0,1,0" Background="{ThemeResource ControlStrokeColorDefaultBrush}" Grid.Column="0" x:Name="BatteryDetails" Visibility="Collapsed"
+                                     HorizontalAlignment="Stretch" Height="Auto" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Заголовок -->
+                                    <TextBlock Grid.Row="0" Margin="11,7,0,6"
+                                               Foreground="{ThemeResource TextFillColorSecondary}" 
+                                               FontWeight="SemiBold">Батарея</TextBlock>
+
+                                    <!-- Контент -->
+                                    <StackPanel Margin="0,12,12,8" Spacing="11" Grid.Row="1">
+                                        <Grid Height="30">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="130"/>
+                                                <ColumnDefinition Width="*" MaxWidth="162"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Margin="11,3,0,3" 
+                                                       Foreground="{ThemeResource TextFillColorSecondary}" 
+                                                       x:Uid="InfoBattery" VerticalAlignment="Center">Battery percent</TextBlock>
+                                            <ProgressBar CornerRadius="8" Maximum="100" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="BatteryPercentBar"/>
+                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
+                                                       x:Name="BatteryPercent" VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <Grid MinHeight="30">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="130"/>
+                                                <ColumnDefinition Width="*" MaxWidth="162"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Margin="11,3,0,3" TextWrapping="Wrap"
+                                                       Foreground="{ThemeResource TextFillColorSecondary}" 
+                                                       x:Uid="infoABATChargeRate" VerticalAlignment="Center">Charge Rate</TextBlock>
+                                            <ProgressBar CornerRadius="8" Maximum="1" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="BatteryChargeRateBar"/>
+                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
+                                                       x:Name="BatteryChargeRate" VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <Grid Height="30">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="130"/>
+                                                <ColumnDefinition Width="*" MaxWidth="162"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Margin="11,3,0,3" 
+                                                       Foreground="{ThemeResource TextFillColorSecondary}" 
+                                                       x:Uid="infoABATWear" VerticalAlignment="Center">Wear level</TextBlock>
+                                            <ProgressBar CornerRadius="8" Maximum="100" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="BatteryHealthBar"/>
+                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
+                                                       x:Name="BatteryHealth" VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <Grid MinHeight="30">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="130"/>
+                                                <ColumnDefinition Width="*" MaxWidth="162"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Margin="11,3,0,3" TextWrapping="Wrap"
+                                                       Foreground="{ThemeResource TextFillColorSecondary}" 
+                                                       x:Uid="infoABATCycles" VerticalAlignment="Center">Cycles</TextBlock>
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
+                                                       x:Name="BatteryCycles" VerticalAlignment="Center"/>
                                         </Grid>
                                     </StackPanel>
                                 </Grid>
@@ -785,7 +826,7 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoAStapmL" VerticalAlignment="Center">STAPM Power</TextBlock>
                                             <ProgressBar HorizontalAlignment="Stretch" CornerRadius="8" MinHeight="16" Grid.Column="1" x:Name="StapmLimitBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbStapmL" VerticalAlignment="Center"/>
+                                                       x:Name="StapmPowerLimit" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -799,7 +840,7 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoAActualL" VerticalAlignment="Center">Real Power</TextBlock>
                                             <ProgressBar CornerRadius="8" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="ActualLimitBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbActualL" VerticalAlignment="Center"/>
+                                                       x:Name="ActualPowerLimitText" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -813,7 +854,7 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoAAVGL" VerticalAlignment="Center">Average Power</TextBlock>
                                             <ProgressBar CornerRadius="8" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="AverageLimitBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbAVGL" VerticalAlignment="Center"/>
+                                                       x:Name="AveragePowerLimit" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -827,7 +868,7 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoAVRMEDCC" VerticalAlignment="Center">VRM EDC Current</TextBlock>
                                             <ProgressBar CornerRadius="8" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="VrmEdcBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbVRMEDCL" VerticalAlignment="Center"/>
+                                                       x:Name="VrmEdcCurrent1" VerticalAlignment="Center"/>
                                         </Grid>
                                     </StackPanel>
                                 </Grid>
@@ -858,7 +899,7 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoAVRMEDCC" VerticalAlignment="Center">EDC Current</TextBlock>
                                             <ProgressBar Value="{Binding ElementName=VrmEdcBar, Path=Value}" Maximum="{Binding ElementName=VrmEdcBar, Path=Maximum}" HorizontalAlignment="Stretch" CornerRadius="8" MinHeight="16" Grid.Column="1"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbVRMEDCVRML" VerticalAlignment="Center"/>
+                                                       x:Name="VrmEdcCurrent" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -872,7 +913,7 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoAVRMTDCC" VerticalAlignment="Center">TDC Current</TextBlock>
                                             <ProgressBar CornerRadius="8" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="VrmTdcBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbVRMTDCL" VerticalAlignment="Center"/>
+                                                       x:Name="VrmTdcCurrent" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -886,7 +927,7 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoASOCEDCC" VerticalAlignment="Center">EDC SoC Current</TextBlock>
                                             <ProgressBar CornerRadius="8" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="SocEdcBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbSOCEDCL" VerticalAlignment="Center"/>
+                                                       x:Name="SocEdcCurrent" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -900,7 +941,7 @@ StrokeThickness="1.5" >
                                                        x:Uid="infoASOCTDCC" VerticalAlignment="Center">TDC SoC Current</TextBlock>
                                             <ProgressBar CornerRadius="8" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="SocTdcBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbSOCTDCL" VerticalAlignment="Center"/>
+                                                       x:Name="SocTdcCurrent" VerticalAlignment="Center"/>
                                         </Grid>
                                     </StackPanel>
                                 </Grid>
@@ -950,10 +991,10 @@ StrokeThickness="1.5" >
                                                 <Run x:Uid="infoAPSTState"/>
                                                 <Run Text="P0"/>
                                             </TextBlock>
-                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
                                                        VerticalAlignment="Center">
-                                                <Run x:Name="PowerState_0"/>
-                                                <Run Foreground="{ThemeResource TextFillColorTertiary}" FontSize="13" x:Name="PowerState_0_Desc"/>
+                                                <Run x:Name="PowerState0"/>
+                                                <Run Foreground="{ThemeResource TextFillColorTertiary}" FontSize="13" x:Name="PowerState0Desc"/>
                                             </TextBlock>
                                         </Grid>
 
@@ -968,10 +1009,10 @@ StrokeThickness="1.5" >
                                                 <Run x:Uid="infoAPSTState"/>
                                                 <Run Text="P1"/>
                                             </TextBlock>
-                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
                                                        VerticalAlignment="Center">
-                                                <Run x:Name="PowerState_1"/>
-                                                <Run Foreground="{ThemeResource TextFillColorTertiary}" FontSize="13" x:Name="PowerState_1_Desc"/>
+                                                <Run x:Name="PowerState1"/>
+                                                <Run Foreground="{ThemeResource TextFillColorTertiary}" FontSize="13" x:Name="PowerState1Desc"/>
                                             </TextBlock>
                                         </Grid>
 
@@ -986,10 +1027,10 @@ StrokeThickness="1.5" >
                                                 <Run x:Uid="infoAPSTState"/>
                                                 <Run Text="P2"/>
                                             </TextBlock>
-                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
                                                        VerticalAlignment="Center">
-                                                <Run x:Name="PowerState_2"/>
-                                                <Run Foreground="{ThemeResource TextFillColorTertiary}" FontSize="13" x:Name="PowerState_2_Desc"/>
+                                                <Run x:Name="PowerState2"/>
+                                                <Run Foreground="{ThemeResource TextFillColorTertiary}" FontSize="13" x:Name="PowerState2Desc"/>
                                             </TextBlock>
                                         </Grid>
                                     </StackPanel>
@@ -1030,8 +1071,8 @@ StrokeThickness="1.5" >
                                                 <Run x:Uid="infoTiming"/>
                                                 <Run Text="tCL"/>
                                             </TextBlock>
-                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbTCL" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
+                                                       x:Name="Tcl" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -1045,8 +1086,8 @@ StrokeThickness="1.5" >
                                                 <Run x:Uid="infoTiming"/>
                                                 <Run Text="tRCDWR"/>
                                             </TextBlock>
-                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbTRCDWR" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
+                                                       x:Name="Trcdwr" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -1060,8 +1101,8 @@ StrokeThickness="1.5" >
                                                 <Run x:Uid="infoTiming"/>
                                                 <Run Text="tRCDRD"/>
                                             </TextBlock>
-                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbTRCDRD" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
+                                                       x:Name="Trcdrd" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -1075,8 +1116,8 @@ StrokeThickness="1.5" >
                                                 <Run x:Uid="infoTiming"/>
                                                 <Run Text="tRP"/>
                                             </TextBlock>
-                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbTRP" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
+                                                       x:Name="Trp" VerticalAlignment="Center"/>
                                         </Grid>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Margin="0,12,12,8" Spacing="11" Grid.Row="1">
@@ -1091,8 +1132,8 @@ StrokeThickness="1.5" >
                                                 <Run x:Uid="infoTiming"/>
                                                 <Run Text="tRAS"/>
                                             </TextBlock>
-                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbTRAS" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
+                                                       x:Name="Tras" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
@@ -1106,8 +1147,66 @@ StrokeThickness="1.5" >
                                                 <Run x:Uid="infoTiming"/>
                                                 <Run Text="tRC"/>
                                             </TextBlock>
-                                            <TextBlock Grid.Column="2" Margin="11,3,0,3" 
-                                                       x:Name="tbTRC" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
+                                                       x:Name="Trc" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                                
+                                <!-- Секция Состояние батареи -->
+                                <Grid Visibility="Collapsed" Margin="5,0,0,0" Background="{ThemeResource ControlStrokeColorDefaultBrush}" Grid.Column="1" x:Name="BatteryStateSection"
+                                      HorizontalAlignment="Stretch" Height="Auto" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ChildrenTransitions>
+                                        <TransitionCollection>
+                                            <RepositionThemeTransition />
+                                        </TransitionCollection>
+                                    </Grid.ChildrenTransitions>
+
+                                    <!-- Заголовок -->
+                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" 
+                                               Foreground="{ThemeResource TextFillColorSecondary}" 
+                                               FontWeight="SemiBold">Состояние батареи</TextBlock>
+
+                                    <!-- Контент -->
+                                    <StackPanel Margin="0,12,12,8" Spacing="11" Grid.Row="1">
+                                        <Grid MinHeight="30">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="120"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Margin="11,3,0,3" TextWrapping="Wrap"
+                                                       Foreground="{ThemeResource TextFillColorSecondary}" 
+                                                       x:Uid="infoABATRemainTime" VerticalAlignment="Center">Remaining time</TextBlock>
+                                            <TextBlock Grid.Column="1" Margin="11,-11,0,3" 
+                                                       x:Name="BatteryTime" VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <Grid Height="30">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="120"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Margin="11,3,0,3" x:Uid="infoABATState"
+                                                       Foreground="{ThemeResource TextFillColorSecondary}" 
+                                                       VerticalAlignment="Center" Text="State"/>
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
+                                                       x:Name="BatteryState" VerticalAlignment="Center"/>
+                                        </Grid>
+
+                                        <Grid Height="30">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="120"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Margin="11,3,0,3" x:Uid="infoABATFullCapacity"
+                                                       Foreground="{ThemeResource TextFillColorSecondary}" 
+                                                       VerticalAlignment="Center" Text="Full Capacity"/>
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
+                                                       x:Name="BatteryCapacity" VerticalAlignment="Center"/>
                                         </Grid>
                                     </StackPanel>
                                 </Grid>
@@ -1153,7 +1252,7 @@ StrokeThickness="1.5" >
                                                        Foreground="{ThemeResource TextFillColorSecondary}"
                                                        x:Uid="infoASlow" TextWrapping="Wrap"
                                                        VerticalAlignment="Center">Slow Time</TextBlock>
-                                            <TextBlock x:Name="tbSlow"
+                                            <TextBlock x:Name="SlowFrequencyRiseTime"
                                                        Grid.Column="1"
                                                        Margin="11,3,0,3"
                                                        TextWrapping="Wrap"
@@ -1177,7 +1276,7 @@ StrokeThickness="1.5" >
                                                        Foreground="{ThemeResource TextFillColorSecondary}"
                                                        x:Uid="infoAFast" TextWrapping="Wrap"
                                                        VerticalAlignment="Center">Fast Time</TextBlock>
-                                            <TextBlock x:Name="tbFast"
+                                            <TextBlock x:Name="FastFrequencyRiseTime"
                                                        Grid.Column="1"
                                                        Margin="11,3,0,3"
                                                        VerticalAlignment="Center"/>
@@ -1229,9 +1328,10 @@ StrokeThickness="1.5" >
                                                FontWeight="SemiBold">Характеристики</TextBlock>
 
                                     <!-- Контент -->
-                                    <StackPanel Margin="0,12,12,8" Padding="0,0,0,4" Spacing="11" Grid.Row="1">
+                                    <StackPanel Margin="0,12,12,8" Padding="0,0,0,4" Spacing="11" Grid.Row="1"
+                                                Grid.Column="0">
                                         <!-- Codename -->
-                                        <Grid x:Name="tbCode" MinHeight="30">
+                                        <Grid x:Name="CpuCodenameSection" MinHeight="30">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="120"/>
                                                 <ColumnDefinition Width="*"/>
@@ -1240,7 +1340,7 @@ StrokeThickness="1.5" >
                                                        Foreground="{ThemeResource TextFillColorSecondary}" 
                                                        x:Uid="infoCodeC" VerticalAlignment="Center">Codename</TextBlock>
                                             <TextBlock Grid.Column="1" Margin="11,3,0,3" 
-                                                       x:Name="tbCodename" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                       x:Name="CpuCodename" TextWrapping="Wrap" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <!-- Cores -->
@@ -1253,7 +1353,7 @@ StrokeThickness="1.5" >
                                                        Foreground="{ThemeResource TextFillColorSecondary}" 
                                                        x:Uid="infoCoresC" VerticalAlignment="Center">Cores</TextBlock>
                                             <TextBlock Grid.Column="1" Margin="11,3,0,3" 
-                                                       x:Name="tbCores" VerticalAlignment="Center"/>
+                                                       x:Name="CpuCores" VerticalAlignment="Center"/>
                                         </Grid>
 
                                        
@@ -1268,7 +1368,7 @@ StrokeThickness="1.5" >
                                                        Foreground="{ThemeResource TextFillColorSecondary}" 
                                                        x:Uid="infoBaseC" VerticalAlignment="Center">Base Clock</TextBlock>
                                             <TextBlock Grid.Column="1" Margin="11,3,0,3" 
-                                                       x:Name="tbBaseClock" VerticalAlignment="Center"/>
+                                                       x:Name="CpuBaseClock" VerticalAlignment="Center"/>
                                         </Grid>
                                         <!-- L2 Cache -->
                                         <Grid Height="30">
@@ -1299,7 +1399,7 @@ StrokeThickness="1.5" >
                                     </StackPanel>
                                     <StackPanel VerticalAlignment="Top" Margin="2,12,12,8" Padding="0,0,0,4" Spacing="11" Grid.Column="1" Grid.Row="1">
                                         <!-- SMU -->
-                                        <Grid x:Name="infoSMU" Height="30">
+                                        <Grid x:Name="SmuVersionSection" Height="30">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="120"/>
                                                 <ColumnDefinition Width="*"/>
@@ -1308,7 +1408,7 @@ StrokeThickness="1.5" >
                                                        Foreground="{ThemeResource TextFillColorSecondary}" 
                                                        x:Uid="infoSMU" VerticalAlignment="Center">SMU</TextBlock>
                                             <TextBlock Grid.Column="1" Margin="11,3,0,3" 
-                                                       x:Name="tbSMU" VerticalAlignment="Center"/>
+                                                       x:Name="SmuVersion" VerticalAlignment="Center"/>
                                         </Grid>
                                         <!-- Threads -->
                                         <Grid Height="30">
@@ -1320,7 +1420,7 @@ StrokeThickness="1.5" >
                                                                        Foreground="{ThemeResource TextFillColorSecondary}" 
                                                                        x:Uid="infoThreadC" VerticalAlignment="Center">Threads</TextBlock>
                                             <TextBlock Grid.Column="1" Margin="11,3,0,3" 
-                                                                       x:Name="tbThreads" VerticalAlignment="Center"/>
+                                                                       x:Name="CpuThreads" VerticalAlignment="Center"/>
                                         </Grid>
                                         <!-- L1 Cache -->
                                         <Grid Height="30">
@@ -1383,7 +1483,8 @@ StrokeThickness="1.5" >
                                                FontWeight="SemiBold">Дополнительно</TextBlock>
 
                                     <!-- Контент -->
-                                    <StackPanel Margin="0,12,12,8" Padding="0,0,0,4" Spacing="11" Grid.Row="1">
+                                    <StackPanel Margin="0,12,12,8" Padding="0,0,0,4" Spacing="11" Grid.Row="1"
+                                                Grid.Column="0">
                                         <!-- Modules -->
                                         <Grid MinHeight="30">
                                             <Grid.ColumnDefinitions>
@@ -1394,7 +1495,7 @@ StrokeThickness="1.5" >
                                                        Foreground="{ThemeResource TextFillColorSecondary}" 
                                                        x:Uid="infoMModule" VerticalAlignment="Center">Modules</TextBlock>
                                             <TextBlock Grid.Column="1" Margin="11,3,0,3" 
-                                                       x:Name="tbSlots" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                       x:Name="RamSlots" TextWrapping="Wrap" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <!-- Producer -->
@@ -1407,7 +1508,7 @@ StrokeThickness="1.5" >
                                                        Foreground="{ThemeResource TextFillColorSecondary}" 
                                                        x:Uid="infoMProd" VerticalAlignment="Center">Producer</TextBlock>
                                             <TextBlock Grid.Column="1" Margin="11,3,0,3" 
-                                                       x:Name="tbRAMProducer" VerticalAlignment="Center"/>
+                                                       x:Name="RamProducer" VerticalAlignment="Center"/>
                                         </Grid>
                                     </StackPanel>
                                     <StackPanel VerticalAlignment="Top" Margin="2,12,12,8" Padding="0,0,0,4" Spacing="11" Grid.Column="1" Grid.Row="1">
@@ -1421,7 +1522,7 @@ StrokeThickness="1.5" >
                                                        Foreground="{ThemeResource TextFillColorSecondary}" 
                                                        x:Uid="infoAFREQCPU" VerticalAlignment="Center">Frequency</TextBlock>
                                             <TextBlock Grid.Column="1" Margin="11,3,0,3" 
-                                                       x:Name="tbRAM" VerticalAlignment="Center"/>
+                                                       x:Name="RamFrequency" VerticalAlignment="Center"/>
                                         </Grid>
                                         <!-- Model -->
                                         <Grid>

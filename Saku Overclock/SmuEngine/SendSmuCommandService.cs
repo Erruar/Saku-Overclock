@@ -360,7 +360,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                             // Выяснить какая команда стоит до знака равно
                             var ryzenAdjCommandString =
                                 command.Split('=')[0]
-                                       .Replace("=",  null)
+                                       .Replace("=", null)
                                        .Replace("--", null);
                             if (command[(ryzenAdjCommand.IndexOf('=') + 1)..]
                                 .Contains(',')) // Если это составная команда с не нулевым аргументом
@@ -371,8 +371,8 @@ public class SendSmuCommandService : ISendSmuCommandService
                                 {
                                     await ApplySettings(ryzenAdjCommandString, 0x0, commaValue); // Применить только второй аргумент
                                 }
-                                else if (parts.Length == 3 && uint.TryParse(parts[0], out var commaValue0) 
-                                                           && uint.TryParse(parts[1], out var commaValue1) 
+                                else if (parts.Length == 3 && uint.TryParse(parts[0], out var commaValue0)
+                                                           && uint.TryParse(parts[1], out var commaValue1)
                                                            && uint.TryParse(parts[2], out var commaValue2))
                                 {
                                     await ApplySettings(ryzenAdjCommandString, commaValue0, commaValue1, commaValue2); // Применить все три аргумента
@@ -394,7 +394,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                                     !ryzenAdjCommandString.Contains("coper") &&
                                     !ryzenAdjCommandString.Contains("cogfx"))
                                 {
-                                    await ApplySettings(ryzenAdjCommandString, 0x0); 
+                                    await ApplySettings(ryzenAdjCommandString, 0x0);
                                 }
                                 else
                                 {
@@ -511,8 +511,8 @@ public class SendSmuCommandService : ISendSmuCommandService
                         ПараметрыPage.ApplyInfo += "\n" + "Param_SMU_Command".GetLocalized() + "\"" +
                                                    CommandNameParser(commandName) + "\" " +
                                                    "Param_SMU_Command_Unavailable".GetLocalized();
-                    } 
-                } 
+                    }
+                }
             }
             else
             {
@@ -546,7 +546,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             _cpu ??= CpuSingleton.GetInstance();
 
             SetCodeNameGeneration();
-            
+
             if (mailbox == 0)
             {
                 addrMsg = RsmuCmd;
@@ -568,11 +568,11 @@ public class SendSmuCommandService : ISendSmuCommandService
             {
                 return SMU.Status.OK; // Пропускаем команду но возвращаем OK, для безопасности системы
             }
-            if (Codename == CodeName.RavenRidge && 
-                (  commandName == "min-gfxclk" || commandName == "max-gfxclk" 
-                || commandName == "min-socclk-frequency" || commandName == "max-socclk-frequency" 
-                || commandName == "min-fclk-frequency"   || commandName == "max-fclk-frequency" 
-                || commandName == "min-vcn"  || commandName == "max-vcn" 
+            if (Codename == CodeName.RavenRidge &&
+                (commandName == "min-gfxclk" || commandName == "max-gfxclk"
+                || commandName == "min-socclk-frequency" || commandName == "max-socclk-frequency"
+                || commandName == "min-fclk-frequency" || commandName == "max-fclk-frequency"
+                || commandName == "min-vcn" || commandName == "max-vcn"
                 || commandName == "min-lclk" || commandName == "max-lclk"))
             {
                 // 0 - SoC-clk
@@ -581,10 +581,10 @@ public class SendSmuCommandService : ISendSmuCommandService
                 // 3 - Lclk
                 // 4 - Gfx-clk
                 var mode = commandName.Contains("socclk") ? 0 : (
-                           commandName.Contains("fclk"  ) ? 1 : (
-                           commandName.Contains("vcn"   ) ? 2 : (
-                           commandName.Contains("lclk"  ) ? 3 : (
-                           commandName.Contains("gfx"   ) ? 4 : 3))));
+                           commandName.Contains("fclk") ? 1 : (
+                           commandName.Contains("vcn") ? 2 : (
+                           commandName.Contains("lclk") ? 3 : (
+                           commandName.Contains("gfx") ? 4 : 3))));
 
                 RavenSetSubsystemMinMaxFrequency(args, _cpu.smu, mode, commandName.Contains("max"));
 
@@ -599,7 +599,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         {
             await LogHelper.TraceIt_TraceError("[SendSmuCommand]@SmuCommandsSafeApply - " + ex.ToString() + $"\nCMD: {command}.{commandName}, ARGS{args[0]}.{args[1]},MSG:{addrMsg}, ARG:{addrArg}, RSP: {addrRsp}");
             ПараметрыPage.ApplyInfo += "\n" + "Param_SMU_Command".GetLocalized() + CommandNameParser(commandName) +
-                                       "Param_SMU_Command_Error".GetLocalized(); 
+                                       "Param_SMU_Command_Error".GetLocalized();
             return null;
         }
     }
@@ -712,7 +712,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             _ => "1"
         };
     }
-    
+
     #endregion
 
     #region Send Smu command range
@@ -829,11 +829,11 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// </summary>
     private bool IsOlderGeneration()
     {
-        _isOlderGeneration ??= _cpu?.info.codeName == CodeName.Picasso    ||
+        _isOlderGeneration ??= _cpu?.info.codeName == CodeName.Picasso ||
                                _cpu?.info.codeName == CodeName.RavenRidge ||
-                               _cpu?.info.codeName == CodeName.Dali       ||
-                               _cpu?.info.codeName == CodeName.Cezanne    ||
-                               _cpu?.info.codeName == CodeName.Renoir     ||
+                               _cpu?.info.codeName == CodeName.Dali ||
+                               _cpu?.info.codeName == CodeName.Cezanne ||
+                               _cpu?.info.codeName == CodeName.Renoir ||
                                _cpu?.info.codeName == CodeName.Lucienne;
 
         return _isOlderGeneration == true; // Использовать кешированное значение вместо постоянного прогона функций
@@ -904,8 +904,8 @@ public class SendSmuCommandService : ISendSmuCommandService
                  codeName == CodeName.Phoenix2 ||
                  codeName == CodeName.HawkPoint ||
                  codeName == CodeName.StrixPoint ||
-                 codeName == CodeName.StrixHalo || 
-                 codeName == CodeName.KrackanPoint || 
+                 codeName == CodeName.StrixHalo ||
+                 codeName == CodeName.KrackanPoint ||
                  codeName == CodeName.KrackanPoint2)
         {
             Socket_FT6_FP7_FP8_FP11();
@@ -1201,7 +1201,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                 LogHelper.TraceIt_TraceError("[SendSmuCommand+OCFinder]@Unable_To_Set_CurveOptimizerUndervolting_STATUS - " + status);
                 return false;
             }
-            else 
+            else
             {
                 return true;
             }
@@ -1320,7 +1320,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("slow-limit",                        true,  0x6a), // Args: Power AC [mW], Power DC [mW] use with caution!
             ("tctl-temp",                         true,  0x7c),
 /*  DPTC  */("vrm-current",                       true,  0x67), // Args: Cpu core, Nb, Gfx
-            ("vrmmax-current",                    true,  0x6b), 
+            ("vrmmax-current",                    true,  0x6b),
             ("psi0-current",                      true,  0x82), // Args: Cpu core, Nb, Gfx use with caution!
             ("prochot-deassertion-ramp",          true,  0x81), // Min value 0 max value 100
 
@@ -1607,7 +1607,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         if (Codename == CodeName.StrixPoint || Codename == CodeName.StrixHalo)
         {
             _codenameGeneration = "FP8";
-            
+
             Mp1Cmd = 0x3B10928;
             Mp1Rsp = 0x3B10978;
             Mp1Arg = 0x3B10998;
@@ -1662,7 +1662,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("psi0soc-current",                   false, 0x3d),
             ("psi3cpu_current",                   true,  0x20),
             ("psi3gfx_current",                   true,  0x21),
-            ("prochot-deassertion-ramp",          true,  0x22), 
+            ("prochot-deassertion-ramp",          true,  0x22),
 
             ("skin-temp-limit",                   true,  0x4a), // Use instead of STAPM
             ("apu-slow-limit",                    true,  0x23),
@@ -1832,7 +1832,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("set-boost-limit-frequency",         true,  0x2b), // Works very cool!
             ("set-vddoff-vid",                    true,  0x4b),
             ("set-fll-btc-enable",                true,  0x37), // 0 - True, 1 - False
-            ("get-sustained-power-and-thm-limit", true,  0x23), 
+            ("get-sustained-power-and-thm-limit", true,  0x23),
             ("get-overclocking-support",          false, 0x6f), // From Ryzen Master Raphael
             ("get-max-cpu-clk",                   false, 0x6e),
             ("get-min-gfx-clk",                   false, 0xCe),
@@ -1843,9 +1843,9 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("get-cogfx-options",                 false, 0xD7),
             ("get-pbo-fused-vrmsoc-current",      false, 0xD9), // Possibly unavailable, need to check on other motherboards
             ("get-pbo-fused-vrmtdc-limit",        false, 0xDb),
-            ("get-pbo-fused-slow-limit",          false, 0xDc), 
-            ("get-pbo-fused-apu-slow-limit",      false, 0xDa), 
-            ("get-pbo-fused-tctl-temp",           false, 0xDe) 
+            ("get-pbo-fused-slow-limit",          false, 0xDc),
+            ("get-pbo-fused-apu-slow-limit",      false, 0xDa),
+            ("get-pbo-fused-tctl-temp",           false, 0xDe)
         ];
     }
 
