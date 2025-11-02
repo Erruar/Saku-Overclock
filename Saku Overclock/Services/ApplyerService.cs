@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
@@ -11,29 +6,18 @@ using Saku_Overclock.SMUEngine;
 using ZenStates.Core;
 
 namespace Saku_Overclock.Services;
-public class ApplyerService : IApplyerService
+public class ApplyerService(
+    IAppSettingsService settingsService,
+    ISendSmuCommandService sendSmuCommand,
+    IOcFinderService ocFinder)
+    : IApplyerService
 {
-    private readonly DispatcherTimer _timer;
+    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(3 * 1000) };
     private EventHandler<object>? _tickHandler;
-    private readonly IAppSettingsService _settingsService;
-    private readonly ISendSmuCommandService _sendSmuCommand;
-    private readonly IOcFinderService _ocFinder;
-
-    public ApplyerService(
-        IAppSettingsService settingsService,
-        ISendSmuCommandService sendSmuCommand,
-        IOcFinderService ocFinder)
-    {
-        _settingsService = settingsService;
-        _sendSmuCommand = sendSmuCommand;
-        _ocFinder = ocFinder;
-
-        _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(3 * 1000) };
-    }
 
     public async Task ApplyWithoutAdjLine(bool saveinfo) =>
-        await Apply(_settingsService.RyzenAdjLine, saveinfo,
-            _settingsService.ReapplyOverclock, _settingsService.ReapplyOverclockTimer);
+        await Apply(settingsService.RyzenAdjLine, saveinfo,
+            settingsService.ReapplyOverclock, settingsService.ReapplyOverclockTimer);
 
     public async Task Apply(string ryzenAdJline, bool saveinfo, bool reapplyOverclock,
         double reapplyOverclockTimer)
@@ -50,7 +34,7 @@ public class ApplyerService : IApplyerService
                 catch
                 {
                     await LogHelper.TraceIt_TraceError(
-                        "Время автообновления разгона некорректно и было исправлено на 3000 мс");
+                        "Время авто-обновления разгона некорректно и было исправлено на 3000 мс");
                     reapplyOverclockTimer = 3000;
                     _timer.Interval = TimeSpan.FromMilliseconds(reapplyOverclockTimer);
                 }
@@ -60,19 +44,19 @@ public class ApplyerService : IApplyerService
                     _timer.Tick -= _tickHandler;
                 }
 
-                _tickHandler = async (_, _) =>
+                _tickHandler = async void (_, _) =>
                 {
                     try
                     {
                         if (reapplyOverclock)
                         {
                             await Process(ryzenAdJline, false);
-                            _sendSmuCommand?.ApplyQuickSmuCommand(true);
+                            sendSmuCommand.ApplyQuickSmuCommand(true);
                         }
                     }
                     catch (Exception ex)
                     {
-                        await LogHelper.LogError("[Applyer]::Overclock_Settings_Reapply_FAIL - " + ex.ToString());
+                        await LogHelper.LogError("[Applyer]::Overclock_Settings_Reapply_FAIL - " + ex);
                     }
                 };
 
@@ -88,7 +72,7 @@ public class ApplyerService : IApplyerService
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError("[Applyer]::Overclock_Settings_FirstApply_FAIL - " + ex.ToString());
+            await LogHelper.LogError("[Applyer]::Overclock_Settings_FirstApply_FAIL - " + ex);
         }
     }
 
@@ -97,13 +81,13 @@ public class ApplyerService : IApplyerService
         try
         {
             var adjline = ParseOverclockProfile(profile);
-            _settingsService.RyzenAdjLine = adjline;
-            _settingsService.SaveSettings();
-            await Apply(adjline, saveInfo, _settingsService.ReapplyOverclock, _settingsService.ReapplyOverclockTimer);
+            settingsService.RyzenAdjLine = adjline;
+            settingsService.SaveSettings();
+            await Apply(adjline, saveInfo, settingsService.ReapplyOverclock, settingsService.ReapplyOverclockTimer);
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError("[Applyer]::ApplyProfile_FAIL - " + ex.ToString());
+            await LogHelper.LogError("[Applyer]::ApplyProfile_FAIL - " + ex);
         }
     }
 
@@ -111,13 +95,13 @@ public class ApplyerService : IApplyerService
     {
         try
         {
-            var preset = _ocFinder.CreatePreset(presetType, optimizationLevel);
-            _settingsService.RyzenAdjLine = preset.CommandString;
-            await Apply(preset.CommandString, false, _settingsService.ReapplyOverclock, _settingsService.ReapplyOverclockTimer);
+            var preset = ocFinder.CreatePreset(presetType, optimizationLevel);
+            settingsService.RyzenAdjLine = preset.CommandString;
+            await Apply(preset.CommandString, false, settingsService.ReapplyOverclock, settingsService.ReapplyOverclockTimer);
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError("[Applyer]::ApplyPreset_FAIL - " + ex.ToString());
+            await LogHelper.LogError("[Applyer]::ApplyPreset_FAIL - " + ex);
         }
     }
 
@@ -127,19 +111,19 @@ public class ApplyerService : IApplyerService
         {
             await Task.Run(() =>
             {
-                _sendSmuCommand?.Translate(adjLine, saveinfo);
+                sendSmuCommand.Translate(adjLine, saveinfo);
             });
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError("[Applyer]::Overclock_Settings_Apply_FAIL - " + ex.ToString());
+            await LogHelper.LogError("[Applyer]::Overclock_Settings_Apply_FAIL - " + ex);
         }
     }
 
     private string ParseOverclockProfile(Profile profile)
     {
         var cpu = CpuSingleton.GetInstance();
-        var isBristol = cpu?.info.codeName == Cpu.CodeName.BristolRidge;
+        var isBristol = cpu.info.codeName == Cpu.CodeName.BristolRidge;
         var adjline = "";
 
         // CPU settings
@@ -390,10 +374,10 @@ public class ApplyerService : IApplyerService
         }
 
         // CO GFX
-        if (profile.Cogfx && cpu != null)
+        if (profile.Cogfx)
         {
-            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = _sendSmuCommand.ReturnCoGfx(false);
-            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = _sendSmuCommand.ReturnCoGfx(true);
+            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoGfx(false);
+            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoGfx(true);
 
             for (var i = 0; i < cpu.info.topology.physicalCores; i++)
             {
@@ -407,12 +391,12 @@ public class ApplyerService : IApplyerService
                 }
             }
 
-            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = _sendSmuCommand.ReturnCoPer(false);
-            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = _sendSmuCommand.ReturnCoPer(true);
+            cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoPer(false);
+            cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoPer(true);
         }
 
         // CO Per Core
-        if (profile.Comode && profile.Coprefmode != 0 && cpu != null)
+        if (profile.Comode && profile.Coprefmode != 0)
         {
             adjline += ProcessCoperSettings(profile, cpu);
         }
@@ -453,22 +437,22 @@ public class ApplyerService : IApplyerService
     {
         var adjline = "";
 
-        if (profile.Coper0) adjline += $" --set-coper={0 | ((int)profile.Coper0Value & 0xFFFF)} ";
-        if (profile.Coper1) adjline += $" --set-coper={1048576 | ((int)profile.Coper1Value & 0xFFFF)} ";
-        if (profile.Coper2) adjline += $" --set-coper={2097152 | ((int)profile.Coper2Value & 0xFFFF)} ";
-        if (profile.Coper3) adjline += $" --set-coper={3145728 | ((int)profile.Coper3Value & 0xFFFF)} ";
-        if (profile.Coper4) adjline += $" --set-coper={4194304 | ((int)profile.Coper4Value & 0xFFFF)} ";
-        if (profile.Coper5) adjline += $" --set-coper={5242880 | ((int)profile.Coper5Value & 0xFFFF)} ";
-        if (profile.Coper6) adjline += $" --set-coper={6291456 | ((int)profile.Coper6Value & 0xFFFF)} ";
-        if (profile.Coper7) adjline += $" --set-coper={7340032 | ((int)profile.Coper7Value & 0xFFFF)} ";
-        if (profile.Coper8) adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.Coper8Value & 0xFFFF)} ";
-        if (profile.Coper9) adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.Coper9Value & 0xFFFF)} ";
-        if (profile.Coper10) adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.Coper10Value & 0xFFFF)} ";
-        if (profile.Coper11) adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.Coper11Value & 0xFFFF)} ";
-        if (profile.Coper12) adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.Coper12Value & 0xFFFF)} ";
-        if (profile.Coper13) adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.Coper13Value & 0xFFFF)} ";
-        if (profile.Coper14) adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.Coper14Value & 0xFFFF)} ";
-        if (profile.Coper15) adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.Coper15Value & 0xFFFF)} ";
+        if (profile.Coper0) { adjline += $" --set-coper={0 | ((int)profile.Coper0Value & 0xFFFF)} "; }
+        if (profile.Coper1) { adjline += $" --set-coper={1048576 | ((int)profile.Coper1Value & 0xFFFF)} "; }
+        if (profile.Coper2) { adjline += $" --set-coper={2097152 | ((int)profile.Coper2Value & 0xFFFF)} "; }
+        if (profile.Coper3) { adjline += $" --set-coper={3145728 | ((int)profile.Coper3Value & 0xFFFF)} "; }
+        if (profile.Coper4) { adjline += $" --set-coper={4194304 | ((int)profile.Coper4Value & 0xFFFF)} "; }
+        if (profile.Coper5) { adjline += $" --set-coper={5242880 | ((int)profile.Coper5Value & 0xFFFF)} "; }
+        if (profile.Coper6) { adjline += $" --set-coper={6291456 | ((int)profile.Coper6Value & 0xFFFF)} "; }
+        if (profile.Coper7) { adjline += $" --set-coper={7340032 | ((int)profile.Coper7Value & 0xFFFF)} "; }
+        if (profile.Coper8) { adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((0 % 8) & 15)) << 20) | ((int)profile.Coper8Value & 0xFFFF)} "; }
+        if (profile.Coper9) { adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((1 % 8) & 15)) << 20) | ((int)profile.Coper9Value & 0xFFFF)} "; }
+        if (profile.Coper10) { adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((2 % 8) & 15)) << 20) | ((int)profile.Coper10Value & 0xFFFF)} "; }
+        if (profile.Coper11) { adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((3 % 8) & 15)) << 20) | ((int)profile.Coper11Value & 0xFFFF)} "; }
+        if (profile.Coper12) { adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((4 % 8) & 15)) << 20) | ((int)profile.Coper12Value & 0xFFFF)} "; }
+        if (profile.Coper13) { adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((5 % 8) & 15)) << 20) | ((int)profile.Coper13Value & 0xFFFF)} "; }
+        if (profile.Coper14) { adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((6 % 8) & 15)) << 20) | ((int)profile.Coper14Value & 0xFFFF)} "; }
+        if (profile.Coper15) { adjline += $" --set-coper={(((((1 << 4) | ((0 % 1) & 15)) << 4) | ((7 % 8) & 15)) << 20) | ((int)profile.Coper15Value & 0xFFFF)} "; }
 
         return adjline;
     }
@@ -477,14 +461,14 @@ public class ApplyerService : IApplyerService
     {
         var adjline = "";
 
-        if (profile.Coper0) adjline += $" --set-coper={0 | ((int)profile.Coper0Value & 0xFFFF)} ";
-        if (profile.Coper1) adjline += $" --set-coper={(1 << 20) | ((int)profile.Coper1Value & 0xFFFF)} ";
-        if (profile.Coper2) adjline += $" --set-coper={(2 << 20) | ((int)profile.Coper2Value & 0xFFFF)} ";
-        if (profile.Coper3) adjline += $" --set-coper={(3 << 20) | ((int)profile.Coper3Value & 0xFFFF)} ";
-        if (profile.Coper4) adjline += $" --set-coper={(4 << 20) | ((int)profile.Coper4Value & 0xFFFF)} ";
-        if (profile.Coper5) adjline += $" --set-coper={(5 << 20) | ((int)profile.Coper5Value & 0xFFFF)} ";
-        if (profile.Coper6) adjline += $" --set-coper={(6 << 20) | ((int)profile.Coper6Value & 0xFFFF)} ";
-        if (profile.Coper7) adjline += $" --set-coper={(7 << 20) | ((int)profile.Coper7Value & 0xFFFF)} ";
+        if (profile.Coper0) { adjline += $" --set-coper={0 | ((int)profile.Coper0Value & 0xFFFF)} "; }
+        if (profile.Coper1) { adjline += $" --set-coper={(1 << 20) | ((int)profile.Coper1Value & 0xFFFF)} "; }
+        if (profile.Coper2) { adjline += $" --set-coper={(2 << 20) | ((int)profile.Coper2Value & 0xFFFF)} "; }
+        if (profile.Coper3) { adjline += $" --set-coper={(3 << 20) | ((int)profile.Coper3Value & 0xFFFF)} "; }
+        if (profile.Coper4) { adjline += $" --set-coper={(4 << 20) | ((int)profile.Coper4Value & 0xFFFF)} "; }
+        if (profile.Coper5) { adjline += $" --set-coper={(5 << 20) | ((int)profile.Coper5Value & 0xFFFF)} "; }
+        if (profile.Coper6) { adjline += $" --set-coper={(6 << 20) | ((int)profile.Coper6Value & 0xFFFF)} "; }
+        if (profile.Coper7) { adjline += $" --set-coper={(7 << 20) | ((int)profile.Coper7Value & 0xFFFF)} "; }
 
         return adjline;
     }
@@ -493,8 +477,8 @@ public class ApplyerService : IApplyerService
 
     private void ProcessIrusanovMethod(Profile profile, Cpu cpu)
     {
-        cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = _sendSmuCommand.ReturnCoPer(false);
-        cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = _sendSmuCommand.ReturnCoPer(true);
+        cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoPer(false);
+        cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoPer(true);
 
         var options = new Dictionary<int, double>
         {
@@ -530,42 +514,42 @@ public class ApplyerService : IApplyerService
         }
     }
 
-    private string ProcessSmuFeatures(Profile profile)
+    private static string ProcessSmuFeatures(Profile profile)
     {
         var adjline = "";
 
-        if (profile.SmuFeatureCclk) adjline += " --enable-feature=1";
-        else adjline += " --disable-feature=1";
+        if (profile.SmuFeatureCclk) { adjline += " --enable-feature=1"; }
+        else { adjline += " --disable-feature=1"; }
 
-        if (profile.SmuFeatureData) adjline += " --enable-feature=4";
-        else adjline += " --disable-feature=4";
+        if (profile.SmuFeatureData) { adjline += " --enable-feature=4"; }
+        else { adjline += " --disable-feature=4"; }
 
-        if (profile.SmuFeaturePpt) adjline += " --enable-feature=8";
-        else adjline += " --disable-feature=8";
+        if (profile.SmuFeaturePpt) { adjline += " --enable-feature=8"; }
+        else { adjline += " --disable-feature=8"; }
 
-        if (profile.SmuFeatureTdc) adjline += " --enable-feature=16";
-        else adjline += " --disable-feature=16";
+        if (profile.SmuFeatureTdc) { adjline += " --enable-feature=16"; }
+        else { adjline += " --disable-feature=16"; }
 
-        if (profile.SmuFeatureThermal) adjline += " --enable-feature=32";
-        else adjline += " --disable-feature=32";
+        if (profile.SmuFeatureThermal) { adjline += " --enable-feature=32"; }
+        else { adjline += " --disable-feature=32"; }
 
-        if (profile.SmuFeaturePowerDown) adjline += " --enable-feature=256";
-        else adjline += " --disable-feature=256";
+        if (profile.SmuFeaturePowerDown) { adjline += " --enable-feature=256"; }
+        else { adjline += " --disable-feature=256"; }
 
-        if (profile.SmuFeatureProchot) adjline += " --enable-feature=0,32";
-        else adjline += " --disable-feature=0,32";
+        if (profile.SmuFeatureProchot) { adjline += " --enable-feature=0,32"; }
+        else { adjline += " --disable-feature=0,32"; }
 
-        if (profile.SmuFeatureStapm) adjline += " --enable-feature=0,128";
-        else adjline += " --disable-feature=0,128";
+        if (profile.SmuFeatureStapm) { adjline += " --enable-feature=0,128"; }
+        else { adjline += " --disable-feature=0,128"; }
 
-        if (profile.SmuFeatureCStates) adjline += " --enable-feature=0,256";
-        else adjline += " --disable-feature=0,256";
+        if (profile.SmuFeatureCStates) { adjline += " --enable-feature=0,256"; }
+        else { adjline += " --disable-feature=0,256"; }
 
-        if (profile.SmuFeatureGfxDutyCycle) adjline += " --enable-feature=0,512";
-        else adjline += " --disable-feature=0,512";
+        if (profile.SmuFeatureGfxDutyCycle) { adjline += " --enable-feature=0,512"; }
+        else { adjline += " --disable-feature=0,512"; }
 
-        if (profile.SmuFeatureAplusA) adjline += " --enable-feature=0,1024";
-        else adjline += " --disable-feature=0,1024";
+        if (profile.SmuFeatureAplusA) { adjline += " --enable-feature=0,1024"; }
+        else { adjline += " --disable-feature=0,1024"; }
 
         return adjline;
     }
