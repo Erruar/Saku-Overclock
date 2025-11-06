@@ -218,7 +218,7 @@
     <value>Только чтение скорости</value>
   </data>
   <data name="Info_Autoupdate.Content" xml:space="preserve">
-    <value>Автообновлять каждые (Мс)</value>
+    <value>Авто-обновлять каждые (Мс)</value>
   </data>
   <data name="Info_Name.Text" xml:space="preserve">
     <value>Системные показатели</value>
@@ -263,7 +263,7 @@
     <value>Скрывать в трей</value>
   </data>
   <data name="Main_Disc.Text" xml:space="preserve">
-    <value>Дискордик</value>
+    <value>Дискорд</value>
   </data>
   <data name="Main_Info.Text" xml:space="preserve">
     <value>Показатели</value>
@@ -573,13 +573,13 @@
 многие производители ставят 20, но вы 
 можете поэкспериментировать</value>
   </data>
-  <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
+  <data name="Param_CPU_Description.Text" xml:space="preserve">
     <value>Настройка лимитов потребления и контроля температуры</value>
   </data>
-  <data name="Param_GPU_Pdesc.Text" xml:space="preserve">
+  <data name="Param_GPU_Description.Text" xml:space="preserve">
     <value>Изменение частот подсистем процессора</value>
   </data>
-  <data name="Param_VRM_Pdesc.Text" xml:space="preserve">
+  <data name="Param_VRM_Description.Text" xml:space="preserve">
     <value>Управление токами подсистемы питания</value>
   </data>
   <data name="Cooler_Autoupdate.ToolTipService.ToolTip" xml:space="preserve">
@@ -624,7 +624,7 @@
   <data name="Param_reapplyps_desc.Text" xml:space="preserve">
     <value>При запуске программа будет применять эти параметры, при включенном автоприменении</value>
   </data>
-  <data name="Param_States_Pdesc.Text" xml:space="preserve">
+  <data name="Param_States_Description.Text" xml:space="preserve">
     <value>Производительные состояния процессора</value>
   </data>
   <data name="Param_turbo.Text" xml:space="preserve">
@@ -737,7 +737,7 @@
   <data name="Param_ADV_a9.Text" xml:space="preserve">
     <value>Общий лимит потребления </value>
   </data>
-  <data name="Param_ADV_Pdesc.Text" xml:space="preserve">
+  <data name="Param_ADV_Description.Text" xml:space="preserve">
     <value>Управление режимами производительности, OC Mode и PBO</value>
   </data>
   <data name="Param_ADV_Text.Text" xml:space="preserve">
@@ -1855,6 +1855,24 @@ Overclock будут проигнорированы,
   </data>
   <data name="InfoBattery.Text" xml:space="preserve">
     <value>Уровень заряда</value>
+  </data>
+  <data name="InfoBatterySuggestion.Text" xml:space="preserve">
+    <value>Совет</value>
+  </data>
+  <data name="InfoBatterySuggestion_HighChargeLevel.Text" xml:space="preserve">
+    <value>Для продления срока службы рекомендуется отключить зарядку при достижении</value>
+  </data>
+  <data name="InfoBatterySuggestion_LowChargeLevel.Text" xml:space="preserve">
+    <value>Низкий заряд батареи. Рекомендуется подключить адаптер питания при заряде менее чем</value>
+  </data>
+  <data name="InfoBatterySuggestion_NormalChargeLevel.Text" xml:space="preserve">
+    <value>Для максимальной автономности уменьшите яркость и используйте пресет "Эко" или "Минимум"</value>
+  </data>
+  <data name="InfoBatterySuggestion_Normal.Text" xml:space="preserve">
+    <value>Батарея в порядке.</value>
+  </data>
+  <data name="InfoBatterySuggestion_BadHealth.Text" xml:space="preserve">
+    <value>Степень износа батареи высокая. Рассмотрите возможность замены батареи.</value>
   </data>
   <data name="InfoBatteryAC" xml:space="preserve">
     <value>От сети</value>
@@ -3158,7 +3176,7 @@ Asus. Может не поддерживаться на
   <data name="Param_AdvancedFreqDesc.Text" xml:space="preserve">
     <value>Зафиксируйте частоты системы на заданном уровне</value>
   </data>
-  <data name="Param_ADV_PdescBristol" xml:space="preserve">
+  <data name="Param_ADV_DescriptionBristol" xml:space="preserve">
     <value>Управление режимами производительности</value>
   </data>
   <data name="Preset_ApplicableSettings.Text" xml:space="preserve">

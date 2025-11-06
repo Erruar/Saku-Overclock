@@ -478,7 +478,7 @@ public sealed partial class ПараметрыPage
                     Ccd2Expander.Visibility = Visibility.Collapsed;
                     ActionButtonMon.Visibility = Visibility.Collapsed;
 
-                    ParamAdvParametersBlock.Text = "Param_ADV_PdescBristol".GetLocalized();
+                    ParamAdvParametersBlock.Text = "Param_ADV_DescriptionBristol".GetLocalized();
 
                     var elements = VisualTreeHelper.FindVisualChildren<TextBlock>(VrmOptionsGrid);
                     foreach (var element in elements)

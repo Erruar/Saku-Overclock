@@ -84,6 +84,10 @@ public sealed partial class ИнформацияPage
     private int _vrmTimingIteration; // Текущая итерация проверки таймингов
     private static readonly string StaticTimingsText = "Info_VrmNoChangeTimings".GetLocalized(); // Статические тайминги
     private static readonly string TimingsNotFoundText = "Info_VrmNotFoundTimings".GetLocalized(); // Не удалось обнаружить тайминги
+    private static readonly string HighChargeLevel = "InfoBatterySuggestion_HighChargeLevel/Text".GetLocalized(); // Высокий уровень заряда
+    private static readonly string LowChargeLevel = "InfoBatterySuggestion_LowChargeLevel/Text".GetLocalized(); // Низкий уровень заряда
+    private static readonly string NormalChargeLevel = "InfoBatterySuggestion_NormalChargeLevel/Text".GetLocalized(); // Низкий уровень заряда
+    private static readonly string BatteryBadHealth = "InfoBatterySuggestion_BadHealth/Text".GetLocalized(); // Низкий уровень заряда
 
     private Button[] _allBannerButtons = [];
     private Button[] _allExpandButtons = [];
@@ -160,8 +164,8 @@ public sealed partial class ИнформацияPage
     {
         try
         {
-            var (name, baseclock) = GetSystemInfo.ReadCpuInformation();
-            CpuBaseClock.Text = $"{baseclock} MHz";
+            var (name, baseClock) = GetSystemInfo.ReadCpuInformation();
+            CpuBaseClock.Text = $"{baseClock} MHz";
             CpuThreads.Text = Environment.ProcessorCount.ToString();
 
             _cpuName = _cpu == null ? name : _cpu.info.cpuName;
@@ -253,7 +257,13 @@ public sealed partial class ИнформацияPage
             }
 
             BatteryHealth.Text = _sensorsInformation.BatteryHealth;
-            BatteryHealthBar.Value = 100 - (double)GetSystemInfo.GetBatteryHealth() * 100;
+            
+            var batteryHealth = 100 - (double)GetSystemInfo.GetBatteryHealth() * 100;
+            BatteryHealthBar.Value = batteryHealth;
+            if (batteryHealth > 50 && BatteryGoodCondition.Text != BatteryBadHealth)
+            { 
+                BatteryGoodCondition.Text = BatteryBadHealth;
+            }
             BatteryCycles.Text = _sensorsInformation.BatteryCycles;
             BatteryCapacity.Text = _sensorsInformation.BatteryCapacity;
             _batName = _sensorsInformation.BatteryName ?? "Unknown";
@@ -348,7 +358,7 @@ public sealed partial class ИнформацияPage
     /// <summary>
     ///  Основной метод чтения P-States
     /// </summary>
-    private void ReadPstate()
+    private void ReadPowerStates()
     {
         try
         {
@@ -367,11 +377,10 @@ public sealed partial class ИнформацияPage
                     1 => PowerState1Desc,
                     _ => PowerState2Desc
                 };
-                
-                var pstateId = i;
+
                 try
                 {
-                    if (_cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), ref eax, ref edx) ==
+                    if (_cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + i), ref eax, ref edx) ==
                         false)
                     {
                         App.MainWindow.ShowMessageDialogAsync("Error while reading CPU Pstate", "Critical Error");
@@ -475,7 +484,7 @@ public sealed partial class ИнформацияPage
 
             await LoadCpuInformation();
             await LoadRamInformation();
-            ReadPstate();
+            ReadPowerStates();
 
             if (CpuBannerButton.Shadow != new ThemeShadow())
             {
@@ -632,12 +641,28 @@ public sealed partial class ИнформацияPage
                 }
                 
                 BatteryPercent.Text = _sensorsInformation.BatteryPercent;
-                BatteryPercentBar.Value = (double)GetSystemInfo.GetBatteryPercent();
+                var batteryPercent = (double)GetSystemInfo.GetBatteryPercent();
+                BatteryPercentBar.Value = batteryPercent;
+                if (batteryPercent > 80 && BatteryHighChargeLevel.Text != HighChargeLevel)
+                {
+                    BatteryHighChargeLevel.Text = HighChargeLevel;
+                    BatteryHighChargeLevel_Desc.Text = "80-85%";
+                }
+                else if (batteryPercent <= 20 && BatteryHighChargeLevel.Text != LowChargeLevel)
+                {
+                    BatteryHighChargeLevel.Text = LowChargeLevel;
+                    BatteryHighChargeLevel_Desc.Text = "20%";
+                }
+                else if (batteryPercent is > 20 and <= 80 && BatteryHighChargeLevel.Text != NormalChargeLevel)
+                {
+                    BatteryHighChargeLevel.Text = NormalChargeLevel;
+                    BatteryHighChargeLevel_Desc.Text = string.Empty;
+                }
+                
                 BatteryTime.Text = _sensorsInformation.BatteryLifeTime < 0 ? 
                     _batFromWall : 
                     GetSystemInfo.ConvertBatteryLifeTime(_sensorsInformation.BatteryLifeTime);
                 BatteryUsageBigBanner.Text = BatteryUsage.Text = BatteryPercent.Text + " " + BatteryChargeRate.Text + "\n" + BatteryTime.Text;
-                BatteryState.Text = _sensorsInformation.BatteryState;
                 
                 currBatRate = Math.Abs(_sensorsInformation.BatteryChargeRate);
                 previousMaxBatRate = (int)_maxBatRate;
@@ -1422,6 +1447,7 @@ public sealed partial class ИнформацияPage
         VrmDetails.Visibility = Visibility.Collapsed;
         BatteryStateSection.Visibility = Visibility.Collapsed;
         BatteryDetails.Visibility = Visibility.Collapsed;
+        BatterySuggestionDetails.Visibility = Visibility.Collapsed;
         PowerStatesSection.Visibility = Visibility.Collapsed;
         RamFrequencyDetails.Visibility = Visibility.Collapsed;
         TimingsSection.Visibility = Visibility.Collapsed;
@@ -1455,6 +1481,7 @@ public sealed partial class ИнформацияPage
         VrmDetails.Visibility = vrmVisible ? Visibility.Visible : Visibility.Collapsed;
         BatteryStateSection.Visibility = batVisible ? Visibility.Visible : Visibility.Collapsed;
         BatteryDetails.Visibility = batVisible ? Visibility.Visible : Visibility.Collapsed;
+        BatterySuggestionDetails.Visibility = batVisible ? Visibility.Visible : Visibility.Collapsed;
         PowerStatesSection.Visibility = pstVisible ? Visibility.Visible : Visibility.Collapsed;
         CpuCommonDetails.Visibility = cpuMainVisible ? Visibility.Visible : Visibility.Collapsed;
         RamFrequencyDetails.Visibility = ramMainVisible ? Visibility.Visible : Visibility.Collapsed;

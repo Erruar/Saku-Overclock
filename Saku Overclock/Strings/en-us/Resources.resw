@@ -186,7 +186,7 @@
     <value>&lt;toast launch="action=ToastClick"&gt;
   &lt;visual&gt;
     &lt;binding template="ToastGeneric"&gt;
-      &lt;text&gt;Eco mode applyed!&lt;/text&gt;
+      &lt;text&gt;Eco mode applied!&lt;/text&gt;
       &lt;text&gt;&lt;/text&gt;
       &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/noteco.ico"/&gt;
     &lt;/binding&gt;
@@ -248,7 +248,7 @@
     <value>Saved presets:</value>
   </data>
   <data name="Settings_Apply_Start_Desc.Text" xml:space="preserve">
-    <value>Autoapply latest settings when opening</value>
+    <value>Auto-apply latest settings when opening</value>
   </data>
   <data name="Settings_Auto_Reapply.Text" xml:space="preserve">
     <value>Reapply latest applied settings every few seconds</value>
@@ -421,7 +421,7 @@ All presets have autosaving</value>
     <value>Speed</value>
   </data>
   <data name="Info_Text.ToolTipService.ToolTip" xml:space="preserve">
-    <value>About the Setted and Current values: Setted is the value that you set in the program for the processor. Theoretically, the processor should reach it under load. Current is the value that shows the current value of this parameter right now</value>
+    <value>About the Set and Current values: Set is the value that you set in the program for the processor. Theoretically, the processor should reach it under load. Current is the value that shows the current value of this parameter right now</value>
   </data>
   <data name="Param_Edit_Preset.ToolTipService.ToolTip" xml:space="preserve">
     <value>Edit preset name
@@ -563,13 +563,13 @@ default, vendors set this value to 20,
 but you can try experimenting 
 with this value</value>
   </data>
-  <data name="Param_CPU_Pdesc.Text" xml:space="preserve">
+  <data name="Param_CPU_Description.Text" xml:space="preserve">
     <value>Setting power limits and temperature control</value>
   </data>
-  <data name="Param_GPU_Pdesc.Text" xml:space="preserve">
+  <data name="Param_GPU_Description.Text" xml:space="preserve">
     <value>Cpu subsystems frequency overclocking</value>
   </data>
-  <data name="Param_VRM_Pdesc.Text" xml:space="preserve">
+  <data name="Param_VRM_Description.Text" xml:space="preserve">
     <value>Current management of the power subsystem</value>
   </data>
   <data name="Cooler_Autoupdate.ToolTipService.ToolTip" xml:space="preserve">
@@ -613,7 +613,7 @@ once</value>
   <data name="Param_reapplyps_desc.Text" xml:space="preserve">
     <value>App will reapply this settings while starting if reapply enabled in settings</value>
   </data>
-  <data name="Param_States_Pdesc.Text" xml:space="preserve">
+  <data name="Param_States_Description.Text" xml:space="preserve">
     <value>Edit all CPU P-States</value>
   </data>
   <data name="Param_turbo.Text" xml:space="preserve">
@@ -1767,10 +1767,10 @@ AND DO NOT TOUCH IT!</value>
     <value>APU Temperature</value>
   </data>
   <data name="infoABATChargeRate.Text" xml:space="preserve">
-    <value>Charge rate</value>
+    <value>Current charge rate</value>
   </data>
   <data name="infoABATCycles.Text" xml:space="preserve">
-    <value>Cycles</value>
+    <value>Cycle count</value>
   </data>
   <data name="infoABATFullCapacity.Text" xml:space="preserve">
     <value>Full Capacity</value>
@@ -1817,8 +1817,26 @@ to be installed and running</value>
   <data name="InfoBattery.Text" xml:space="preserve">
     <value>Charge level</value>
   </data>
+  <data name="InfoBatterySuggestion.Text" xml:space="preserve">
+    <value>Suggestion</value>
+  </data>
+  <data name="InfoBatterySuggestion_Normal.Text" xml:space="preserve">
+    <value>Battery is in good condition.</value>
+  </data>
+  <data name="InfoBatterySuggestion_BadHealth.Text" xml:space="preserve">
+    <value>The battery has a high wear level. Consider replacing the battery.</value>
+  </data>
+  <data name="InfoBatterySuggestion_HighChargeLevel.Text" xml:space="preserve">
+    <value>To make the battery last longer, turn off charging when it's</value>
+  </data>
+  <data name="InfoBatterySuggestion_LowChargeLevel.Text" xml:space="preserve">
+    <value>The battery is almost empty. You should connect the charger when the battery is less than</value>
+  </data>
+  <data name="InfoBatterySuggestion_NormalChargeLevel.Text" xml:space="preserve">
+    <value>To maximize battery life, use "Eco" or "Minimum" preset and lower your brightness</value>
+  </data>
   <data name="InfoBatteryAC" xml:space="preserve">
-    <value>AC</value>
+    <value>On AC Power</value>
   </data>
   <data name="InfoBatteryName" xml:space="preserve">
     <value>Battery</value>

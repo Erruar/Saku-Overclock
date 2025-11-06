@@ -79,7 +79,7 @@ public class ZenstatesCoreProvider : IDataProvider
             CpuTemperaturePerCore = _tempPerCoreCache,
             CpuPowerPerCore = _powerPerCoreCache,
 
-            // Параметры которые есть не на каждом процессоре
+            // Параметры, которые есть не на каждом процессоре
             ApuSlowLimit = GetSensorValue("ApuSlowLimit", _tableVersion),
             ApuSlowValue = GetSensorValue("ApuSlowValue", _tableVersion),
             VrmPsiValue = GetSensorValue("VrmPsiValue", _tableVersion),
@@ -128,6 +128,41 @@ public class ZenstatesCoreProvider : IDataProvider
     /// </summary>
     private static readonly Dictionary<uint, List<(uint Offset, string Name)>> SupportedPmTableVersions = new()
     {
+        {
+            0x001E0004, [
+                (0, "CpuStapmLimit"),
+                (1, "CpuStapmValue"),
+                (2, "CpuFastLimit"),
+                (3, "CpuFastValue"),
+                (4, "CpuSlowLimit"),
+                (5, "CpuSlowLimit"),
+                (6, "VrmTdcLimit"),
+                (7, "VrmTdcValue"),
+                (8, "SocTdcLimit"),
+                (9, "SocTdcValue"),
+                (10, "VrmEdcLimit"),
+                (11, "VrmEdcValue"),
+                (13, "SocEdcLimit"),
+                (14, "SocEdcValue"),
+                (17, "VrmPsiValue"),
+                (19, "VrmPsiSocValue"),
+                (22, "CpuTempLimit"),
+                (23, "CpuTempValue"),
+                (67, "SocPower"),
+                (65, "SocVoltage"),
+                (30, "ApuTempLimit"),
+                (150, "ApuVoltage"),
+                (151, "ApuTempValue"),
+                (151, "ApuTemperature"),
+                (154, "ApuFrequency"),
+                (376, "CpuSlowTimeValue"),
+                (377, "CpuStapmTimeValue"),
+                (96, "CpuPowerStart"),
+                (104, "CpuVoltageStart"),
+                (108, "CpuTemperatureStart"),
+                (120, "CpuFrequencyStart")
+            ]
+        },
         // Zen
         {
             0x00190001, [

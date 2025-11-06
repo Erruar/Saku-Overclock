@@ -28,7 +28,7 @@
                 <ColumnDefinition Width="24"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ScrollViewer Padding="0,0,10,0" Grid.Column="0" Margin="0,0,-10,0"
+            <ScrollViewer Padding="0,0,17,0" Grid.Column="0" Margin="0,0,-17,0"
                           HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
                     <StackPanel.ChildrenTransitions>
@@ -489,14 +489,14 @@ StrokeThickness="1.5" >
                 </StackPanel>
             </ScrollViewer>
             <controls:GridSplitter Grid.Column="1"
-                               Width="16"
+                               Width="16" Opacity="0.3"
                                HorizontalAlignment="Stretch"
                                ResizeBehavior="PreviousAndNext"
-                               ResizeDirection="Columns"
+                               ResizeDirection="Columns" Margin="0,0,0,13"
                                VerticalAlignment="Stretch"
                                Background="Transparent">
                 <controls:GridSplitter.RenderTransform>
-                    <TranslateTransform X="0" />
+                    <TranslateTransform X="12"/>
                 </controls:GridSplitter.RenderTransform>
             </controls:GridSplitter>
             <ScrollViewer Padding="20,10,20,0" Margin="0,-3,-28,9" IsTabStop="False" CornerRadius="16"
@@ -784,18 +784,6 @@ StrokeThickness="1.5" >
                                             <ProgressBar CornerRadius="8" Maximum="100" MinHeight="16" HorizontalAlignment="Stretch" Grid.Column="1" x:Name="BatteryHealthBar"/>
                                             <TextBlock Grid.Column="2" Margin="11,3,0,3" 
                                                        x:Name="BatteryHealth" VerticalAlignment="Center"/>
-                                        </Grid>
-
-                                        <Grid MinHeight="30">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="130"/>
-                                                <ColumnDefinition Width="*" MaxWidth="162"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Margin="11,3,0,3" TextWrapping="Wrap"
-                                                       Foreground="{ThemeResource TextFillColorSecondary}" 
-                                                       x:Uid="infoABATCycles" VerticalAlignment="Center">Cycles</TextBlock>
-                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
-                                                       x:Name="BatteryCycles" VerticalAlignment="Center"/>
                                         </Grid>
                                     </StackPanel>
                                 </Grid>
@@ -1175,37 +1163,37 @@ StrokeThickness="1.5" >
                                     <StackPanel Margin="0,12,12,8" Spacing="11" Grid.Row="1">
                                         <Grid MinHeight="30">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="120"/>
-                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="6*"/>
+                                                <ColumnDefinition Width="7*"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Margin="11,3,0,3" TextWrapping="Wrap"
                                                        Foreground="{ThemeResource TextFillColorSecondary}" 
                                                        x:Uid="infoABATRemainTime" VerticalAlignment="Center">Remaining time</TextBlock>
-                                            <TextBlock Grid.Column="1" Margin="11,-11,0,3" 
+                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
                                                        x:Name="BatteryTime" VerticalAlignment="Center"/>
                                         </Grid>
 
-                                        <Grid Height="30">
+                                        <Grid MinHeight="30">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="120"/>
-                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="6*"/>
+                                                <ColumnDefinition Width="7*"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Margin="11,3,0,3" x:Uid="infoABATState"
+                                            <TextBlock Grid.Column="0" Margin="11,13,0,3" TextWrapping="Wrap"
                                                        Foreground="{ThemeResource TextFillColorSecondary}" 
-                                                       VerticalAlignment="Center" Text="State"/>
-                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
-                                                       x:Name="BatteryState" VerticalAlignment="Center"/>
+                                                       x:Uid="infoABATCycles" VerticalAlignment="Center">Cycles</TextBlock>
+                                            <TextBlock Grid.Column="1" Margin="11,13,0,3" 
+                                                       x:Name="BatteryCycles" VerticalAlignment="Center"/>
                                         </Grid>
 
                                         <Grid Height="30">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="120"/>
-                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="6*"/>
+                                                <ColumnDefinition Width="7*"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0" Margin="11,3,0,3" x:Uid="infoABATFullCapacity"
+                                            <TextBlock Grid.Column="0" Margin="11,17,0,0" x:Uid="infoABATFullCapacity"
                                                        Foreground="{ThemeResource TextFillColorSecondary}" 
                                                        VerticalAlignment="Center" Text="Full Capacity"/>
-                                            <TextBlock Grid.Column="1" Margin="11,3,0,3" 
+                                            <TextBlock Grid.Column="1" Margin="11,17,0,0" 
                                                        x:Name="BatteryCapacity" VerticalAlignment="Center"/>
                                         </Grid>
                                     </StackPanel>
@@ -1537,6 +1525,55 @@ StrokeThickness="1.5" >
                                                                        x:Name="RamModel" VerticalAlignment="Center"/>
                                         </Grid>
                                     </StackPanel>
+                                </Grid>
+
+                            </Grid>
+                            
+                            <!-- Секция Советы батареи -->
+                            <Grid Margin="6,8,1,23" x:Name="BatterySuggestionDetails">
+                                <!-- Секция Советы -->
+                                <Grid HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}" Height="Auto" CornerRadius="10" Shadow="{ThemeResource SharedShadow}" Translation="0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Заголовок -->
+                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" 
+                                               Foreground="{ThemeResource TextFillColorSecondary}" 
+                                               x:Uid="InfoBatterySuggestion" 
+                                               FontWeight="SemiBold">Совет</TextBlock>
+
+                                    <!-- Контент -->
+                                    <Grid Grid.Row="1"
+                                          Grid.Column="0"
+                                          Grid.ColumnSpan="2"
+                                          HorizontalAlignment="Stretch"
+                                          Margin="12,0,12,12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Grid.Column="0"
+                                                  Glyph="&#xE946;" Foreground="{ThemeResource TextFillColorSecondary}"
+                                                  VerticalAlignment="Center"
+                                                  Margin="-3,-1,0,0">
+                                            <FontIcon.RenderTransform>
+                                                <ScaleTransform ScaleX="0.8" ScaleY="0.8" CenterX="16" CenterY="16"/>
+                                            </FontIcon.RenderTransform>
+                                        </FontIcon>
+                                        <TextBlock Grid.Column="1"
+                                                   TextWrapping="Wrap"
+                                                   Margin="8,0,0,0">
+                                            <Run x:Name="BatteryGoodCondition" x:Uid="InfoBatterySuggestion_Normal"/>
+                                            <Run x:Name="BatteryHighChargeLevel" x:Uid="InfoBatterySuggestion_HighChargeLevel"/>
+                                            <Run x:Name="BatteryHighChargeLevel_Desc" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" Text="80-85%"/>
+                                        </TextBlock>
+                                    </Grid>
                                 </Grid>
 
                             </Grid>
