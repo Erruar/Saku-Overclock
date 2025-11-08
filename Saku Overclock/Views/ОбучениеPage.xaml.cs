@@ -409,7 +409,7 @@ public sealed partial class ОбучениеPage : Page
         {
             Title = "Пропустить диагностику?",
             Content = "Вы всегда сможете создать пресеты с OC Finder позже",
-            CloseButtonText = "Cancel".GetLocalized(),
+            CloseButtonText = "CancelThis/Text".GetLocalized(),
             PrimaryButtonText = "Да, пропустить",
             DefaultButton = ContentDialogButton.Close
         };

@@ -202,7 +202,6 @@ public sealed partial class КулерPage
                     else
                     {
                         CpuFanRpm.Text = Cooler_Fan1_Manual.Value.ToString(CultureInfo.InvariantCulture) + "%";
-                        AppSettings.NbfcFlagConsoleCheckSpeedRunning = false;
                     }
 
                     AppSettings.SaveSettings();
@@ -275,7 +274,7 @@ public sealed partial class КулерPage
         {
             Title = "Warning".GetLocalized(),
             Content = stackPanel,
-            CloseButtonText = "Cancel".GetLocalized(),
+            CloseButtonText = "CancelThis/Text".GetLocalized(),
             PrimaryButtonText = "Next".GetLocalized(),
             DefaultButton = ContentDialogButton.Close,
             IsPrimaryButtonEnabled = false // Первоначально кнопка "Далее" неактивна
@@ -1170,7 +1169,6 @@ public sealed partial class КулерPage
                 }
 
                 fanRpmTextBlock.Text = fanInvar + "%";
-                AppSettings.NbfcFlagConsoleCheckSpeedRunning = false;
 
                 AppSettings.SaveSettings();
             }

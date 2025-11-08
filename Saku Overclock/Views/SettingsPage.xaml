@@ -51,7 +51,7 @@
 
                         <Grid Margin="0,2,0,0" Height="50" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                             <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
-                                <FontIcon Glyph="&#xED1A;"/>
+                                <FontIcon Glyph="&#xE92C;"/>
                                 <TextBlock VerticalAlignment="Center" Margin="16,0,0,0" x:Uid="Settings_AppHide">Параметры скрытия</TextBlock>
                             </StackPanel>
                             <Grid VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,-6,17,0" Shadow="{StaticResource SharedShadow}" CornerRadius="15" Translation="0,0,20">
@@ -384,7 +384,7 @@
 
                         <Grid x:Uid="Settings_RTSS_Enable_Desc" PointerPressed="ToggleTheSwitchByTag" Tag="RtssSettingsEnable" Margin="0,10,0,0" Height="50" HorizontalAlignment="Stretch" CornerRadius="15" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                             <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
-                                <FontIcon Glyph="&#xE735;"/>
+                                <FontIcon Glyph="&#xE71D;"/>
                                 <TextBlock VerticalAlignment="Center" Margin="16,0,0,0" x:Uid="Settings_RTSS_Enable" Text="Мониторинг в играх с RTSS"/>
                             </StackPanel>
                             <ToggleSwitch x:Uid="Settings_RTSS_Enable_Desc" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0" OffContent="" OnContent="" x:Name="RtssSettingsEnable" Toggled="RtssSettings_Toggled"/>
@@ -828,7 +828,7 @@
                         
                         <Grid PointerPressed="ToggleTheSwitchByTag" Tag="EnableKeybindingsSetting" Margin="0,10,0,0" Height="50" HorizontalAlignment="Stretch" CornerRadius="15" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                             <StackPanel Margin="17,0,0,0" HorizontalAlignment="Left" Orientation="Horizontal">
-                                <FontIcon Glyph="&#xE735;"/>
+                                <FontIcon Glyph="&#xE92E;"/>
                                 <TextBlock VerticalAlignment="Center" Margin="16,0,0,0" x:Uid="Settings_Keybinds_Enable" Text="Использовать комбинации клавиш"/>
                             </StackPanel>
                             <ToggleSwitch IsOn="True" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,-97,0" OffContent="" OnContent="" x:Name="EnableKeybindingsSetting" Toggled="EnableKeybinds_Toggled"/>

@@ -189,8 +189,6 @@ public sealed partial class ГлавнаяPage
                     File.WriteAllText(
                         Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
                         JsonConvert.SerializeObject(_profile));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
                     App.MainWindow.Close();
                 }
 
@@ -687,7 +685,7 @@ public sealed partial class ГлавнаяPage
 
                         Apply_Teach.Target = ApplyButton;
                         Apply_Teach.Title = "Apply_Success".GetLocalized();
-                        Apply_Teach.Subtitle = "Apply_Success_Desc".GetLocalized();
+                        Apply_Teach.Subtitle = "";
                         Apply_Teach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
                         Apply_Teach.IsOpen = true;
                         await LogHelper.Log("Apply_Success".GetLocalized());
@@ -760,7 +758,7 @@ public sealed partial class ГлавнаяPage
 
                                 Apply_Teach.Target = ApplyButton;
                                 Apply_Teach.Title = "Apply_Success".GetLocalized();
-                                Apply_Teach.Subtitle = "Apply_Success_Desc".GetLocalized();
+                                Apply_Teach.Subtitle = "";
                                 Apply_Teach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
                                 Apply_Teach.IsOpen = true;
                                 var infoSet = InfoBarSeverity.Success;

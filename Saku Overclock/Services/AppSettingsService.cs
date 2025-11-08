@@ -254,18 +254,6 @@ public class AppSettingsService : IAppSettingsService
         set;
     } = 110.0; // Скорость второго кулера (>100 = авто)
 
-    public bool NbfcFlagConsoleCheckSpeedRunning
-    {
-        get;
-        set;
-    } = false; // Флаг действий с консолью NBFC
-
-    public bool FlagRyzenAdjConsoleTemperatureCheckRunning
-    {
-        get;
-        set;
-    } = false; // Флаг действий с консолью RyzenADJ
-
     public string NbfcAnswerSpeedFan1
     {
         get;

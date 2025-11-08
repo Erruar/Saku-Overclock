@@ -9,6 +9,7 @@ public sealed class CopyButton : Button
     public CopyButton()
     {
         DefaultStyleKey = typeof(CopyButton);
+        Translation = new System.Numerics.Vector3(0, 0, 20);
     }
 
     private void CopyButton_Click(object sender, RoutedEventArgs e)

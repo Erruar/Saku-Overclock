@@ -1,6 +1,4 @@
 ﻿using System.Globalization;
-using System.Numerics;
-using System.Reflection;
 using System.Xml.Linq;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
@@ -8,16 +6,13 @@ using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Text;
-using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Shapes; 
+using Microsoft.UI.Xaml.Shapes;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
 using Path = System.IO.Path;
 using TextConstants = Microsoft.UI.Text.TextConstants;
@@ -35,84 +30,29 @@ public sealed partial class AdvancedКулерPage
 {
     private Point _cursorPosition; // Точка, для отображения Flyout, чтобы его точно расположить при нажатии на кнопку +
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
+    private const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\"; // Путь к NBFC
 
     public AdvancedКулерPage()
     {
         InitializeComponent();
-
-        SettingsService.NbfcFlagConsoleCheckSpeedRunning =
-            false; // Старые флаги для выключения авто-обновления информации в фоне программы
-        SettingsService.FlagRyzenAdjConsoleTemperatureCheckRunning = false;
-        SettingsService.SaveSettings();
-
-        Loaded += AdvancedКулерPage_Loaded;
-    }
-
-    private void AdvancedКулерPage_Loaded(object sender, RoutedEventArgs e)
-    {
-        Load_example(); // Загрузка примера из файла
-        LoadFanCurvesFromConfig(); // Загрузить кривые
-        Init_Configs(); // Инициализация конфигов NBFC
+        Loaded += async (_, _) =>
+        { 
+            await LoadFanCurvesFromConfig(); 
+        };
     }
 
     #region Initialization
-    private void Init_Configs() // Инициализация конфигов NBFC
-    {
-        // Найти XML конфиги
-        const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\"; // Путь к NBFC
-        if (!File.Exists(folderPath))
-        {
-            CurveFan1.Visibility = Visibility.Collapsed;
-            CurveFan2.Visibility = Visibility.Collapsed;
-            return;
-        } // Если путь не существует - не продолжать инициализацию
 
-        // Получить все XML-файлы в этой папке
-        var xmlFiles = Directory.GetFiles(folderPath, "*.xml"); // Все xml файлы
-        OthersCoolerConfigs.Items.Clear(); // Очистить старые элементы настройки кривой
-        foreach (var xmlFile in xmlFiles)
-        {
-            var fileItem = new MenuFlyoutItem
-            {
-                Text = Path.GetFileName(xmlFile),
-                Command = new RelayCommand<string>(HandleFileItemClick!),
-                CommandParameter = xmlFile
-            };
-            var copyItem = new MenuFlyoutItem
-            {
-                Text = Path.GetFileName(xmlFile),
-                Command = new RelayCommand<string>(CreateFromFile!),
-                CommandParameter = xmlFile
-            };
-            // Добавить MenuFlyoutItem в MenuFlyoutSubItem
-            OthersCoolerConfigs.Items.Add(fileItem);
-            CopyFromOthersCoolerConfigs.Items.Add(copyItem);
-        }
-    }
 
-    private void Load_example()
+    /// <summary>
+    /// Получить текст файла
+    /// </summary>
+    private static string GetXmlFileContent(string filePath, TabViewItem? newTab)
     {
-        // Путь к файлу конфига
-        var pathToConfig = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly()
-                                                              .Location)!,
-                                        @"C:\Program Files (x86)\NoteBook FanControl\Configs\ASUS Vivobook X580VD.xml"); 
-        try
-        {
-            if (File.Exists(pathToConfig))
-            {
-                ReadEx.Text = File.ReadAllText(pathToConfig);
-                ReadEx.Text = ReadEx.Text.Replace("<?xml version=\"1.0\"?>", "\n");
-            }
+        if (!File.Exists(filePath)) 
+        { 
+            return "Failed to find file"; 
         }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private static string GetXmlFileContent(string filePath, TabViewItem newTab) // Получить текст файла
-    {
-        if (!File.Exists(filePath)) { return "Failed to find file"; }
 
         try
         {
@@ -120,11 +60,14 @@ public sealed partial class AdvancedКулерPage
         }
         catch
         {
-            return File.ReadAllText(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" + newTab.Header + ".xml");
+            return File.ReadAllText(folderPath + newTab?.Header + ".xml");
         }
     }
 
-    private async void LoadFanCurvesFromConfig() // Загрузить кривые из конфига
+    /// <summary>
+    /// Загружает кривые из конфига
+    /// </summary>
+    private async Task LoadFanCurvesFromConfig()
     {
         try
         {
@@ -250,145 +193,144 @@ public sealed partial class AdvancedКулерPage
             var currentFanDef = FanDef;
             // Создаем списки для текущего FanConfiguration 
             var rowCounter = 1; // Счетчик строк в Grid
-            try
-            {
-                var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" +
+
+            var configFilePath = folderPath +
                                      SettingsService.NbfcConfigXmlName + ".xml";
-                CoolerConfigurationName.Text = SettingsService.NbfcConfigXmlName;
-                if (File.Exists(configFilePath))
+            CoolerConfigurationName.Text = SettingsService.NbfcConfigXmlName;
+            if (File.Exists(configFilePath))
+            {
+                // Загрузка XML-документа из файла
+                var configXml = XDocument.Load(configFilePath);
+
+                // Извлечение всех FanConfiguration-элементов в документе
+                var fanConfigurations = configXml.Descendants("FanConfiguration").ToList();
+
+                // Обход каждого FanConfiguration-элемента в файле
+                for (var i = 0; i < fanConfigurations.Count; i++)
                 {
-                    // Загрузка XML-документа из файла
-                    var configXml = XDocument.Load(configFilePath);
-
-                    // Извлечение всех FanConfiguration-элементов в документе
-                    var fanConfigurations = configXml.Descendants("FanConfiguration").ToList();
-
-                    // Обход каждого FanConfiguration-элемента в файле
-                    for (var i = 0; i < fanConfigurations.Count; i++)
+                    // Извлечение элементов TemperatureThresholds
+                    var thresholdElements = fanConfigurations[i].Descendants("TemperatureThreshold");
+                    // Обход каждого элемента TemperatureThreshold внутри FanConfiguration
+                    foreach (var thresholdElement in thresholdElements)
                     {
-                        // Извлечение элементов TemperatureThresholds
-                        var thresholdElements = fanConfigurations[i].Descendants("TemperatureThreshold");
-                        // Обход каждого элемента TemperatureThreshold внутри FanConfiguration
-                        foreach (var thresholdElement in thresholdElements)
+                        // Извлечение значений UpThreshold, DownThreshold и FanSpeed из текущего элемента
+                        var upThreshold = double.Parse(thresholdElement.Element("UpThreshold")!.Value);
+                        var downThreshold = double.Parse(thresholdElement.Element("DownThreshold")!.Value);
+                        var fanSpeed = 0.0;
+                        try
                         {
-                            // Извлечение значений UpThreshold, DownThreshold и FanSpeed из текущего элемента
-                            var upThreshold = double.Parse(thresholdElement.Element("UpThreshold")!.Value);
-                            var downThreshold = double.Parse(thresholdElement.Element("DownThreshold")!.Value);
-                            var fanSpeed = 0.0;
-                            try
-                            {
-                                // Округление значения FanSpeed до ближайшего целого числа
-                                fanSpeed = double.Parse(thresholdElement.Element("FanSpeed")!.Value.Trim(),
-                                    CultureInfo.InvariantCulture);
-                            }
-                            catch (Exception ex)
-                            {
-                                await LogHelper.TraceIt_TraceError(ex);
-                            }
-
-                            // Добавление точек на соответствующий Polyline в соответствии с текущими значениями и идентификатором FanConfiguration
-                            AddThresholdToPolyline((i + 1).ToString(), downThreshold, upThreshold, fanSpeed);
-
-                            // Для каждого Thresholds создать NumberBox
-                            // 1.1 Создаем и настраиваем NumberBox'ы
-                            var downThresholdBox = new NumberBox
-                            {
-                                HorizontalAlignment = HorizontalAlignment.Left,
-                                VerticalAlignment = VerticalAlignment.Top,
-                                Width = 65,
-                                Value = double.Parse(thresholdElement.Element("DownThreshold")!.Value),
-                                Name = $"DownThresholdBox_{rowCounter - 1}",
-                                Margin = rowCounter == 0
-                                    ? new Thickness(0, 65, 0, 0)
-                                    : new Thickness(0, 5, 0, 0) // Уникальное имя для идентификации NumberBox'а
-                            };
-                            Grid.SetRow(downThresholdBox, rowCounter);
-                            Grid.SetColumn(downThresholdBox, 0);
-
-                            var upThresholdBox = new NumberBox
-                            {
-                                HorizontalAlignment = HorizontalAlignment.Left,
-                                VerticalAlignment = VerticalAlignment.Top,
-                                Width = 65,
-                                Value = double.Parse(thresholdElement.Element("UpThreshold")!.Value),
-                                Name = $"UpThresholdBox_{rowCounter - 1}",
-                                Margin = rowCounter == 0 ? new Thickness(0, 65, 0, 0) : new Thickness(0, 5, 0, 0)
-                            };
-                            Grid.SetRow(upThresholdBox, rowCounter);
-                            Grid.SetColumn(upThresholdBox, 2);
-                            var fanSpeedBox = new NumberBox
-                            {
-                                HorizontalAlignment = HorizontalAlignment.Left,
-                                VerticalAlignment = VerticalAlignment.Top,
-                                Width = 65,
-                                Value = double.Parse(thresholdElement.Element("FanSpeed")!.Value.Trim(),
-                                    CultureInfo.InvariantCulture),
-                                Name = $"FanSpeedBox_{rowCounter - 1}",
-                                Margin = rowCounter == 0 ? new Thickness(0, 65, 0, 0) : new Thickness(0, 5, 0, 0)
-                            };
-                            Grid.SetRow(fanSpeedBox, rowCounter);
-                            Grid.SetColumn(fanSpeedBox, 4);
-                            var fanDefNow = currentFanDef == FanDef ? 1 : 2;
-                            // 1.2 Добавляем вызовы методов при изменении значений NumberBox'ов
-                            downThresholdBox.ValueChanged += (s, args) => DownThresholdValueChanged(args,
-                                int.Parse(s.Name.ToString().Replace("DownThresholdBox_", "")), fanDefNow);
-                            upThresholdBox.ValueChanged += (s, args) => UpThresholdValueChanged(args,
-                                int.Parse(s.Name.ToString().Replace("UpThresholdBox_", "")), fanDefNow);
-                            fanSpeedBox.ValueChanged += (s, args) => FanSpeedValueChanged(args,
-                                int.Parse(s.Name.ToString().Replace("FanSpeedBox_", "")), fanDefNow);
-
-                            // 1.3 Добавляем NumberBox'ы в текущий Grid и списки
-                            currentFanDef.Children.Add(downThresholdBox);
-                            currentFanDef.Children.Add(upThresholdBox);
-                            currentFanDef.Children.Add(fanSpeedBox);
-
-                            // Увеличиваем счетчик строк
-                            rowCounter++;
+                            // Округление значения FanSpeed до ближайшего целого числа
+                            fanSpeed = double.Parse(thresholdElement.Element("FanSpeed")!.Value.Trim(),
+                                CultureInfo.InvariantCulture);
+                        }
+                        catch (Exception ex)
+                        {
+                            await LogHelper.LogError(ex);
                         }
 
-                        // 2. Переключаемся на следующий FanDef, InvFanC и FanConfiguration
-                        if (currentFanDef == FanDef)
+                        // Добавление точек на соответствующий Polyline в соответствии с текущими значениями и идентификатором FanConfiguration
+                        AddPointToCoolerCurve((i + 1).ToString(), downThreshold, upThreshold, fanSpeed);
+
+                        // Для каждого Thresholds создать NumberBox
+                        // 1.1 Создаем и настраиваем NumberBox'ы
+                        var downThresholdBox = new NumberBox
                         {
-                            rowCounter = 1;
-                            currentFanDef = FanDef1;
-                        }
-                        else
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            VerticalAlignment = VerticalAlignment.Top,
+                            Width = 65,
+                            Value = double.Parse(thresholdElement.Element("DownThreshold")!.Value),
+                            Name = $"DownThresholdBox_{rowCounter - 1}",
+                            Margin = rowCounter == 0
+                                ? new Thickness(0, 65, 0, 0)
+                                : new Thickness(0, 5, 0, 0) // Уникальное имя для идентификации NumberBox'а
+                        };
+                        Grid.SetRow(downThresholdBox, rowCounter);
+                        Grid.SetColumn(downThresholdBox, 0);
+
+                        var upThresholdBox = new NumberBox
                         {
-                            break; // Прерываем цикл, так как у нас нет следующих элементов
-                        }
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            VerticalAlignment = VerticalAlignment.Top,
+                            Width = 65,
+                            Value = double.Parse(thresholdElement.Element("UpThreshold")!.Value),
+                            Name = $"UpThresholdBox_{rowCounter - 1}",
+                            Margin = rowCounter == 0 ? new Thickness(0, 65, 0, 0) : new Thickness(0, 5, 0, 0)
+                        };
+                        Grid.SetRow(upThresholdBox, rowCounter);
+                        Grid.SetColumn(upThresholdBox, 2);
+                        var fanSpeedBox = new NumberBox
+                        {
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            VerticalAlignment = VerticalAlignment.Top,
+                            Width = 65,
+                            Value = double.Parse(thresholdElement.Element("FanSpeed")!.Value.Trim(),
+                                CultureInfo.InvariantCulture),
+                            Name = $"FanSpeedBox_{rowCounter - 1}",
+                            Margin = rowCounter == 0 ? new Thickness(0, 65, 0, 0) : new Thickness(0, 5, 0, 0)
+                        };
+                        Grid.SetRow(fanSpeedBox, rowCounter);
+                        Grid.SetColumn(fanSpeedBox, 4);
+                        var fanDefNow = currentFanDef == FanDef ? 1 : 2;
+                        // 1.2 Добавляем вызовы методов при изменении значений NumberBox'ов
+                        downThresholdBox.ValueChanged += (s, args) => DownThresholdValueChanged(args,
+                            int.Parse(s.Name.ToString().Replace("DownThresholdBox_", "")), fanDefNow);
+                        upThresholdBox.ValueChanged += (s, args) => UpThresholdValueChanged(args,
+                            int.Parse(s.Name.ToString().Replace("UpThresholdBox_", "")), fanDefNow);
+                        fanSpeedBox.ValueChanged += (s, args) => FanSpeedValueChanged(args,
+                            int.Parse(s.Name.ToString().Replace("FanSpeedBox_", "")), fanDefNow);
+
+                        // 1.3 Добавляем NumberBox'ы в текущий Grid и списки
+                        currentFanDef.Children.Add(downThresholdBox);
+                        currentFanDef.Children.Add(upThresholdBox);
+                        currentFanDef.Children.Add(fanSpeedBox);
+
+                        // Увеличиваем счетчик строк
+                        rowCounter++;
                     }
 
-                    if (fanConfigurations.Count == 1)
+                    // 2. Переключаемся на следующий FanDef, InvFanC и FanConfiguration
+                    if (currentFanDef == FanDef)
                     {
-                        CurveFan2.Visibility = Visibility.Collapsed;
-                        Fan1ToggleCurve.Visibility = Visibility.Collapsed;
-                        FanDef1.Visibility = Visibility.Collapsed;
+                        rowCounter = 1;
+                        currentFanDef = FanDef1;
                     }
                     else
                     {
-                        CurveFan2.Visibility = Visibility.Visible;
-                        Fan1ToggleCurve.Visibility = Visibility.Visible;
-                        FanDef1.Visibility = Visibility.Visible;
+                        break; // Прерываем цикл, так как у нас нет следующих элементов
                     }
+                }
+
+                if (fanConfigurations.Count == 1)
+                {
+                    CurveFan2.Visibility = Visibility.Collapsed;
+                    Fan1ToggleCurve.Visibility = Visibility.Collapsed;
+                    FanDef1.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    CurveThresholdsStackPanel.Visibility = Visibility.Collapsed;
-                    CurveDesc.Text = "AdvancedCooler_CurveDescUnavailable".GetLocalized();
-
-                    await ShowNbfcDialogAsync();
+                    CurveFan2.Visibility = Visibility.Visible;
+                    Fan1ToggleCurve.Visibility = Visibility.Visible;
+                    FanDef1.Visibility = Visibility.Visible;
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine("Error loading fan curves from config: " + ex.Message);
+                CurveThresholdsStackPanel.Visibility = Visibility.Collapsed;
+                CurveDesc.Text = "AdvancedCooler_CurveDescUnavailable".GetLocalized();
+
+                await ShowNbfcDialogAsync();
             }
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e);
+            await LogHelper.LogError("Error loading fan curves from config");
+            await LogHelper.LogError(e);
         }
     }
+    
+    /// <summary>
+    /// Показывает диалог загрузки Nbfc
+    /// </summary>
     private async Task ShowNbfcDialogAsync()
     {
         // Создаем элементы интерфейса, которые понадобятся в диалоге
@@ -442,7 +384,7 @@ public sealed partial class AdvancedКулерPage
         {
             Title = "Warning".GetLocalized(),
             Content = stackPanel,
-            CloseButtonText = "Cancel".GetLocalized(),
+            CloseButtonText = "CancelThis/Text".GetLocalized(),
             PrimaryButtonText = "Next".GetLocalized(),
             DefaultButton = ContentDialogButton.Close,
             IsPrimaryButtonEnabled = false // Первоначально кнопка "Далее" неактивна
@@ -518,6 +460,9 @@ public sealed partial class AdvancedКулерPage
         }
     }
 
+    /// <summary>
+    /// Пытается запустить установщик Nbfc
+    /// </summary>
     private static bool TryToRunNbfcInstaller(string downloadPath)
     {
         try
@@ -526,19 +471,22 @@ public sealed partial class AdvancedКулерPage
             Process.Start(new ProcessStartInfo
             {
                 FileName = downloadPath,
-                Verb = "runas" // Запуск от имени администратора
+                Verb = "runas"
             });
         }
         catch (Exception ex)
         {
             LogHelper.LogError(ex);
-            return false; // Повторить задачу открытия авто-обновления приложения, в случае если возникла ошибка доступа
+            return false; // Повторить задачу открытия установщика, в случае если возникла ошибка доступа
         }
 
         return true;
     }
 
-    private void AddThresholdToPolyline(string fanName, double minTemp, double maxTemp, double fanSpeed)
+    /// <summary>
+    /// Рисует точки на кривой кулера
+    /// </summary>
+    private void AddPointToCoolerCurve(string fanName, double minTemp, double maxTemp, double fanSpeed)
     {
         var normalizedX1 = (int)fanSpeed;
         var normalizedY1 = 100 - minTemp;
@@ -561,120 +509,55 @@ public sealed partial class AdvancedКулерPage
 
     #region Event Handlers
 
-    private void NormalMode_Click(object sender, RoutedEventArgs e) // Вернуться в обычный режим управления NBFC
-    {
-        var navigationService = App.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(КулерViewModel).FullName!);
-    }
-
-    private void TabView_PointerMoved(object sender, PointerRoutedEventArgs e)
-    {
-        // Сохранить текущее положение курсора
-        _cursorPosition = e.GetCurrentPoint(MainTab).Position;
-    }
-
-    private void Tabs_AddTabButtonClick(TabView sender, object args)
-    {
-        var contextMenu = (MenuFlyout)Resources["FlyoutMenu"];
-        // Отобразить контекстное меню относительно кнопки
-        contextMenu.ShowAt(sender, _cursorPosition);
-    }
-
-    private void Tabs_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
-    {
-        if (args.Tab == ExampleTab || args.Tab == FanCurvesTab)
-        {
-            args.Tab.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            MainTab.TabItems.Remove(args.Tab);
-        }
-
-        // Ищем следующий видимый элемент и устанавливаем его в качестве текущего
-        var foundVisibleTab = false;
-        for (var i = 0; i < MainTab.TabItems.Count; i++)
-        {
-            if (MainTab.TabItems[i] is UIElement { Visibility: Visibility.Visible })
-            {
-                MainTab.SelectedIndex = i;
-                foundVisibleTab = true;
-                break;
-            }
-        }
-
-        // Если нет видимых вкладок, создаем новую
-        if (!foundVisibleTab)
-        {
-            // Создаем новую вкладку
-            var newTab = new TabViewItem
-            {
-                Header = "Empty",
-                IconSource = new SymbolIconSource { Symbol = Symbol.Placeholder },
-                Content = new TextBlock { Text = "There is no any Tabs, open a new one" }
-            };
-            // Добавляем вкладку в TabView и устанавливаем новую вкладку в качестве текущей
-            MainTab.TabItems.Add(newTab);
-            MainTab.SelectedItem = newTab;
-        }
-    }
-
-    private void CopyPath_Click(object sender, RoutedEventArgs e) // Скопировать путь
-    {
-        var package = new DataPackage();
-        package.SetText(ReadEx.Text);
-        Clipboard.SetContent(package);
-    }
-
+    /// <summary>
+    /// Изменяет значение нижнего порога температуры кривой кулера
+    /// </summary>
     private async void DownThresholdValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
     {
         try
         {
-            await ReplaceNumberB("DownThreshold", args.NewValue, values, fan);
+            await UpdateNbfcFanCurveValues("DownThreshold", args.NewValue, values, fan);
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e);
+            await LogHelper.LogError(e);
         }
     }
 
+    /// <summary>
+    /// Изменяет значение верхнего порога температуры кривой кулера
+    /// </summary>
     private async void UpThresholdValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
     {
         try
         {
-            await ReplaceNumberB("UpThreshold", args.NewValue, values, fan);
+            await UpdateNbfcFanCurveValues("UpThreshold", args.NewValue, values, fan);
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e);
+            await LogHelper.LogError(e);
         }
     }
 
+    /// <summary>
+    /// Изменяет значение скорости вращения кулера
+    /// </summary>
     private async void FanSpeedValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
     {
         try
         {
-            await ReplaceNumberB("FanSpeed", args.NewValue, values, fan);
+            await UpdateNbfcFanCurveValues("FanSpeed", args.NewValue, values, fan);
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e);
+            await LogHelper.LogError(e);
         }
     }
 
-    private void Example_Click(object sender, RoutedEventArgs e)
-    {
-        ExampleTab.Visibility = Visibility.Visible;
-        MainTab.SelectedItem = ExampleTab;
-    }
-
-    private void Curve_Click(object sender, RoutedEventArgs e)
-    {
-        FanCurvesTab.Visibility = Visibility.Visible;
-        MainTab.SelectedItem = FanCurvesTab;
-    }
-
-    private void Create_Example_Click(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// Создаёт конфигурацию управления кулером из примера
+    /// </summary>
+    private void CreateConfigurationFromExample_Click(object sender, RoutedEventArgs e)
     {
         const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
         const string baseFileName = "ASUS Vivobook X580VD.xml";
@@ -691,10 +574,12 @@ public sealed partial class AdvancedКулерPage
         // Создаем новый файл
         var newFilePath = Path.Combine(folderPath, newFileName);
         File.Copy(Path.Combine(folderPath, baseFileName), newFilePath);
-        HandleFileItemClick(Path.Combine(folderPath, newFilePath));
-        Init_Configs();
+        OpenConfigurationFromFile(Path.Combine(folderPath, newFilePath));
     }
 
+    /// <summary>
+    /// Создаёт пустую конфигурацию управления кулером
+    /// </summary>
     private void Create_Null_Click(object sender, RoutedEventArgs e)
     {
         var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
@@ -704,54 +589,67 @@ public sealed partial class AdvancedКулерPage
             var fileName = $"Custom{i}.xml";
             var filePath = Path.Combine(folderPath, fileName);
 
-            if (!File.Exists(filePath))
+            if (!File.Exists(filePath)) // Файл с указанным именем не существует, создаем его
             {
-                // Файл с указанным именем не существует, создаем его
                 File.Create(filePath).Close();
-                HandleFileItemClick(filePath);
-                Init_Configs();
+                OpenConfigurationFromFile(filePath);
                 break;
             }
         }
     }
 
-    private void GridView_ItemClick1(object sender, ItemClickEventArgs e)
+    /// <summary>
+    /// Обработчик изменения цвета кривой кулера
+    /// </summary>
+    private void ChangeCoolerCurveColor_ItemClick(object sender, ItemClickEventArgs e)
     {
-        PolylineChange(ExtFan1C, e);
+        if (((FrameworkElement)sender).Tag.ToString() == "1")
+        {
+            PolylineChange(ExtFan1C, e);
+        }
+        else
+        {
+            PolylineChange(ExtFan2C, e);
+        }
     }
 
-    private void GridView_ItemClick2(object sender, ItemClickEventArgs e)
+    /// <summary>
+    /// Изменяет цвет кривой кулера
+    /// </summary>
+    private void PolylineChange(Polyline polyline, ItemClickEventArgs e)
     {
-        PolylineChange(ExtFan2C, e);
+        if (e.ClickedItem is Rectangle rectangle && rectangle.Fill is SolidColorBrush brush)
+        {
+            polyline.Stroke = new SolidColorBrush(brush.Color);
+            Fan0ToggleCurve.Flyout?.Hide();
+            Fan1ToggleCurve.Flyout?.Hide();
+        }
     }
 
-    private void PolylineChange(Polyline pln, ItemClickEventArgs e)
-    {
-        var rect = (Rectangle)e.ClickedItem;
-        var color = ((SolidColorBrush)rect.Fill).Color;
-        pln.Stroke = new SolidColorBrush(color);
-        Task.Delay(10).ContinueWith(_ => Fan0ToggleCurve.Flyout.Hide(), TaskScheduler.FromCurrentSynchronizationContext());
-        Task.Delay(10).ContinueWith(_ => Fan1ToggleCurve.Flyout.Hide(),
-            TaskScheduler.FromCurrentSynchronizationContext());
-    }
-
-    private void MyListButton_IsCheckedChanged(ToggleSplitButton sender,
+    /// <summary>
+    /// Изменяет видимость кривой кулера
+    /// </summary>
+    private void ChangeCoolerCurveVisibility_Checked(ToggleSplitButton sender,
         ToggleSplitButtonIsCheckedChangedEventArgs args)
     {
-        ExtFan1C.Visibility = Fan0ToggleCurve.IsChecked ? Visibility.Visible : Visibility.Collapsed;
-    }
-
-    private void MyListButton1_IsCheckedChanged(ToggleSplitButton sender,
-        ToggleSplitButtonIsCheckedChangedEventArgs args)
-    {
-        ExtFan2C.Visibility = Fan1ToggleCurve.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+        if (sender.Tag.ToString() == "1")
+        {
+            ExtFan1C.Visibility = Fan0ToggleCurve.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+        }
+        else
+        {
+            ExtFan2C.Visibility = Fan1ToggleCurve.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+        }
     }
 
     #endregion
 
     #region XML-Config Utils
 
-    private void CreateFromFile(string baseFileName)
+    /// <summary>
+    /// Создаёт копию файла конфигурации
+    /// </summary>
+    private void CopyConfigurationFile(string baseFileName)
     {
         const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
 
@@ -767,11 +665,13 @@ public sealed partial class AdvancedКулерPage
         // Создаем новый файл
         var newFilePath = Path.Combine(folderPath, newFileName);
         File.Copy(Path.Combine(folderPath, baseFileName), newFilePath);
-        HandleFileItemClick(Path.Combine(folderPath, newFilePath));
-        Init_Configs();
+        OpenConfigurationFromFile(Path.Combine(folderPath, newFilePath));
     }
 
-    private void HandleFileItemClick(string filePath)
+    /// <summary>
+    /// Добавляет в список вкладок новую вкладку с редактором кода конфигурации
+    /// </summary>
+    private void OpenConfigurationFromFile(string filePath)
     {
         // Извлечь имя файла без расширения
         var tabName = Path.GetFileNameWithoutExtension(filePath);
@@ -780,249 +680,214 @@ public sealed partial class AdvancedКулерPage
         var newTab = new TabViewItem
         {
             Header = tabName,
-            IconSource = new FontIconSource { Glyph = "\uE78C" } // Unicode-код для иконки
-        };
-
-        // Создать Grid с кнопкой и RichEditBox
-        var tabContent = new Grid();
-        var copyButton = new CopyButton
-        {
-            VerticalAlignment = VerticalAlignment.Top,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Height = 40,
-            Width = 40,
-            Content = "\uE8C8"
-        };
-        AutomationProperties.SetName(copyButton, "Copy link");
-        // Создать кнопку для копирования в буфер обмена
-        var copyButtonGrid = new Grid
-        {
-            VerticalAlignment = VerticalAlignment.Top,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Height = 40,
-            Width = 40,
-            Margin = new Thickness(0, 3, -2, 0),
-            Children =
-            {
-                new Border
-                {
-                    CornerRadius = new CornerRadius(4),
-                    Width = 40,
-                    Height = 40,
-                    Shadow = new ThemeShadow(),
-                    Translation = new Vector3(0, 0, 20)
-                },
-                copyButton
+            IconSource = new FontIconSource 
+            { 
+                Glyph = "\uE78C" 
             }
         };
-        // Добавить обработчик события для кнопки
-        copyButton.Click += (_, _) =>
+
+        var defaultCornerRadius = new CornerRadius(12);
+
+        // Создать Grid с кнопкой и RichEditBox
+        var tabContent = new Grid() 
         {
-            // Копировать текст в буфер обмена
-            var textToCopy = GetXmlFileContent(filePath, newTab);
-            var dataPackage = new DataPackage();
-            dataPackage.SetText(textToCopy);
-            Clipboard.SetContent(dataPackage);
+            CornerRadius = new CornerRadius(12),
+            Margin = new Thickness(0, 0, -19, -3),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch
+        };
+
+        var saveBar = new MenuFlyoutItem()
+        {
+            Text = "Save".GetLocalized(),
+            KeyboardAccelerators =
+            {
+                new KeyboardAccelerator()
+                {
+                    Modifiers = Windows.System.VirtualKeyModifiers.Control,
+                    Key = Windows.System.VirtualKey.S
+                }
+            }
+        };
+        var renameBar = new MenuFlyoutItem()
+        {
+            Text = "Rename".GetLocalized(),
+            Tag = folderPath + newTab.Header + ".xml"
+        };
+        var copyBar = new MenuFlyoutItem()
+        {
+            Text = "AdvancedCooler_CopyAllAction".GetLocalized(),
+            Tag = filePath
+        };
+        var deleteBar = new MenuFlyoutItem()
+        {
+            Text = "Delete".GetLocalized(),
+            Tag = folderPath + newTab.Header + ".xml"
+        };
+        var closeBar = new MenuFlyoutItem()
+        {
+            Text = "AdvancedCooler_CloseFileAction".GetLocalized()
+        };
+
+        var menuBar = new MenuBar()
+        {
+            CornerRadius = new CornerRadius(8, 8, 0, 0),
+            Height = 35,
+            Margin = new Thickness(0, -3, 0, 0),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Top,
+            Items =
+            {
+                new MenuBarItem()
+                {
+                    Title = "AdvancedCooler_FileOptionsAction".GetLocalized(),
+                    Items = 
+                    {
+                        saveBar,
+                        renameBar,
+                        deleteBar,
+                        closeBar
+                    }
+                },
+                new MenuBarItem()
+                {
+                    Title = "AdvancedCooler_CopyAction".GetLocalized(),
+                    Items =
+                    {
+                        copyBar
+                    }
+                },
+            }
         };
 
         // Создать RichEditBox и загрузить в него содержимое файла .xml
         var xmlContent = new RichEditBox
         {
-            Margin = new Thickness(0, 0, -19, -3),
+            Margin = new Thickness(0, 35, 0, 0),
             VerticalAlignment = VerticalAlignment.Stretch,
-            HorizontalAlignment = HorizontalAlignment.Stretch
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            CornerRadius = new CornerRadius(0, 0, 12, 12)
         };
         xmlContent.Document.SetText(TextSetOptions.None, GetXmlFileContent(filePath, newTab));
-        // Создать кнопку для сохранения
-        var saveButton = new Button
+        
+        // Добавить обработчики событий для элементов меню
+        renameBar.Click += RenameConfigurationClick;
+        deleteBar.Click += DeleteConfigurationClick;
+        copyBar.Click += CopyConfigurationClick;
+        closeBar.Click += (_, _) =>
         {
-            VerticalAlignment = VerticalAlignment.Top,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Height = 40,
-            Width = 40,
-            Shadow = new ThemeShadow(),
-            Translation = new Vector3(0, 0, 20),
-            Margin = new Thickness(0, 3, 43, 0),
-            Content = new ContentControl
-            {
-                Content = new FontIcon
-                {
-                    FontFamily = BackButtonGlyph.FontFamily,
-                    Glyph = "\uE74E",
-                    Margin = new Thickness(-4, -2, -5, -5)
-                }
-            }
+            renameBar.Click -= RenameConfigurationClick;
+            deleteBar.Click -= DeleteConfigurationClick;
+            copyBar.Click -= CopyConfigurationClick;
         };
-        saveButton.Click += (_, _) => SaveRichEditBoxContentToFile(xmlContent, filePath, newTab);
-        // Создать кнопку для переименования
-        var renameButton = new Button
-        {
-            VerticalAlignment = VerticalAlignment.Top,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Height = 40,
-            Width = 40,
-            Margin = new Thickness(0, 3, 89, 0),
-            Shadow = new ThemeShadow(),
-            Translation = new Vector3(0, 0, 20),
-            Content = new ContentControl
-            {
-                Content = new FontIcon
-                {
-                    FontFamily = BackButtonGlyph.FontFamily,
-                    Glyph = "\uE70F",
-                    Margin = new Thickness(-4, -2, -5, -5)
-                }
-            }
-        };
-        renameButton.Click += (_, _) =>
-        {
-            ShowRenameDialog(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" + newTab.Header + ".xml", newTab);
-        };
+
         // Добавить элементы в Grid
         tabContent.Children.Add(xmlContent);
-        tabContent.Children.Add(copyButtonGrid);
-        tabContent.Children.Add(saveButton);
-        tabContent.Children.Add(renameButton);
+        tabContent.Children.Add(menuBar);
 
         // Установить содержимое вкладки
         newTab.Content = tabContent;
-
-        // Добавить вкладку в TabView
-        MainTab.TabItems.Add(newTab);
-
-        // Выбрать только что созданную вкладку
-        MainTab.SelectedItem = newTab;
     }
 
-    private async void ShowRenameDialog(string filePath, TabViewItem tabItem)
+    /// <summary>
+    /// Копирует текст конфига в буфер обмена
+    /// </summary>
+    private void CopyConfigurationClick(object sender, RoutedEventArgs e)
+    {
+        var textToCopy = GetXmlFileContent((sender as FrameworkElement)?.Tag.ToString() ?? "", null);
+        var dataPackage = new DataPackage();
+        dataPackage.SetText(textToCopy);
+        Clipboard.SetContent(dataPackage);
+    }
+
+    /// <summary>
+    /// Отобразит диалог изменения имени конфига
+    /// </summary>
+    private async void RenameConfigurationClick(object sender, RoutedEventArgs e)
     {
         try
         {
-            // Проверяем, что файл имеет в себе имя "Custom"
-            var isCustomFile = Path.GetFileNameWithoutExtension(filePath).StartsWith("Custom");
+            var filePath = (sender as FrameworkElement)?.Tag.ToString() ?? "";
 
-            // Создать ContentDialog
             var renameDialog = new ContentDialog
             {
-                Title = isCustomFile
-                    ? "AdvancedCooler_Del_Action".GetLocalized()
-                    : "AdvancedCooler_Del_Action_Rename".GetLocalized(),
-                Content = new TextBox { PlaceholderText = "New_Name".GetLocalized() },
+                Title = "AdvancedCooler_DeleteAction_Rename".GetLocalized(),
+                Content = new TextBox
+                {
+                    PlaceholderText = "New_Name".GetLocalized()
+                },
                 PrimaryButtonText = "Rename".GetLocalized(),
-                CloseButtonText = "Cancel".GetLocalized(),
-                DefaultButton = ContentDialogButton.Close
+                CloseButtonText = "CancelThis/Text".GetLocalized(),
+                DefaultButton = ContentDialogButton.Primary
             };
-            if (isCustomFile)
-            {
-                renameDialog.SecondaryButtonText = "Delete".GetLocalized();
-            }
 
             if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
             {
                 renameDialog.XamlRoot = XamlRoot;
             }
 
-            // Отобразить ContentDialog и обработать результат
             var result = await renameDialog.ShowAsync();
-            // Если файл имеет в себе имя "Custom", добавляем опцию "Удалить файл"
-            if (result == ContentDialogResult.Secondary)
+            if (result == ContentDialogResult.Primary) // Переименовать файл и вкладку
             {
-                await Task.Delay(1000);
-                var deleteConfirmationDialog = new ContentDialog
+                var outText = ((TextBox)renameDialog.Content).Text;
+                if (!string.IsNullOrWhiteSpace(outText)) // Проверить, корректность нового имени
                 {
-                    Title = "AdvancedCooler_Del_Action_Delete".GetLocalized(),
-                    Content = "AdvancedCooler_Del_Action_Sure".GetLocalized(),
-                    PrimaryButtonText = "Delete".GetLocalized(),
-                    CloseButtonText = "Cancel".GetLocalized(),
-                    DefaultButton = ContentDialogButton.Close
-                };
-                if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-                {
-                    deleteConfirmationDialog.XamlRoot = XamlRoot;
+                    File.Move(filePath, Path.Combine(Path.GetDirectoryName(filePath) ?? @"C:\", outText + ".xml"));
                 }
-
-                var deleteConfirmationResult = await deleteConfirmationDialog.ShowAsync();
-                if (deleteConfirmationResult == ContentDialogResult.Primary)
-                {
-                    // Удалить файл
-                    try
-                    {
-                        File.Delete(filePath);
-                        // Удалить вкладку
-                        MainTab.TabItems.Remove(tabItem);
-                        Init_Configs();
-                    }
-                    catch
-                    {
-                        Init_Configs();
-                    }
-                }
-            }
-
-
-            if (result == ContentDialogResult.Primary)
-            {
-                var textBox = (TextBox)renameDialog.Content;
-
-                // Проверить, что введено новое имя
-                if (!string.IsNullOrWhiteSpace(textBox.Text))
-                {
-                    var newName = textBox.Text + ".xml";
-                    try
-                    {
-                        // Переименовать файл
-                        File.Move(filePath, Path.Combine(Path.GetDirectoryName(filePath)!, newName));
-
-                        // Переименовать вкладку
-                        tabItem.Header = textBox.Text;
-                        Init_Configs();
-                    }
-                    catch
-                    {
-                        Init_Configs();
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            await LogHelper.TraceIt_TraceError(e);
-        }
-    }
-
-    private static async void SaveRichEditBoxContentToFile(RichEditBox richEditBox, string filePath,
-        TabViewItem tabItem)
-    {
-        try
-        {
-            // Получить текст из RichEditBox
-            var documentRange = richEditBox.Document.GetRange(0, TextConstants.MaxUnitCount);
-            documentRange.GetText(TextGetOptions.None, out var content);
-            // Сохранить текст в файл
-            try
-            {
-                await FileIO.WriteTextAsync(await StorageFile.GetFileFromPathAsync(filePath), content);
-            }
-            catch
-            {
-                await FileIO.WriteTextAsync(
-                    await StorageFile.GetFileFromPathAsync(@"C:\Program Files (x86)\NoteBook FanControl\Configs\" +
-                                                           tabItem.Header + ".xml"), content);
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Ошибка при сохранении файла: {ex.Message}");
+            await LogHelper.LogError(ex);
         }
     }
 
-    private async Task ReplaceNumberB(string foundValue, double newValue, int uid, int fanCount)
+    /// <summary>
+    /// Отобразит диалог удаления конфига
+    /// </summary>
+    private async void DeleteConfigurationClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var filePath = (sender as FrameworkElement)?.Tag.ToString() ?? "";
+
+            var fileName = Path.GetFileName(filePath);
+
+            var deleteConfirmationDialog = new ContentDialog
+            {
+                Title = "AdvancedCooler_DeleteAction_Delete".GetLocalized(),
+                Content = fileName + " " + "AdvancedCooler_DeleteAction_Sure".GetLocalized(),
+                PrimaryButtonText = "Delete".GetLocalized(),
+                CloseButtonText = "CancelThis/Text".GetLocalized(),
+                DefaultButton = ContentDialogButton.Primary
+            };
+            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+            {
+                deleteConfirmationDialog.XamlRoot = XamlRoot;
+            }
+
+            var deleteConfirmationResult = await deleteConfirmationDialog.ShowAsync();
+            if (deleteConfirmationResult == ContentDialogResult.Primary) // Удалить файл и вкладку
+            {
+                File.Delete(filePath);
+            }
+        }
+        catch (Exception ex)
+        {
+            await LogHelper.LogError(ex);
+        }
+    }
+
+    /// <summary>
+    /// Сохраняет изменения кривой кулера
+    /// </summary>
+    private async Task UpdateNbfcFanCurveValues(string foundValue, double newValue, int uid, int fanCount)
     {
         var currentFanDef = FanDef;
         var rowCounter = 0; // Счетчик строк в Grid
         try
         {
-            var configFilePath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\" + SettingsService.NbfcConfigXmlName +
+            var configFilePath = folderPath + SettingsService.NbfcConfigXmlName +
                                  ".xml";
             if (File.Exists(configFilePath))
             {
@@ -1125,14 +990,14 @@ public sealed partial class AdvancedКулерPage
                 var messageDialog = new MessageDialog("File not found: " + configFilePath);
                 await messageDialog.ShowAsync();
             }
+
+            await LoadFanCurvesFromConfig();
         }
         catch (Exception ex)
         {
             await App.MainWindow.ShowMessageDialogAsync(
                 "Unable to found or save any values in selected config: " + ex.Message, "Critical Error!");
         }
-
-        LoadFanCurvesFromConfig();
     }
 
     #endregion

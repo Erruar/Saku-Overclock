@@ -1282,8 +1282,6 @@ public sealed partial class ShellPage
             File.WriteAllText(
                 Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
                 JsonConvert.SerializeObject(_profile));
-            App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                AppContext.BaseDirectory));
         }
     }
 

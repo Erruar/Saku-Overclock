@@ -36,8 +36,6 @@ public sealed partial class ПресетыPage
     public ПресетыPage()
     {
         InitializeComponent();
-        AppSettings.NbfcFlagConsoleCheckSpeedRunning = false;
-        AppSettings.FlagRyzenAdjConsoleTemperatureCheckRunning = false;
         AppSettings.SaveSettings();
         _dataUpdater = App.BackgroundUpdater!;
         _dataUpdater.DataUpdated += OnDataUpdated;
@@ -795,9 +793,6 @@ public sealed partial class ПресетыPage
                     File.WriteAllText(
                         Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
                         JsonConvert.SerializeObject(_profile));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                    App.MainWindow.Close();
                 }
 
                 break;
@@ -1281,7 +1276,7 @@ public sealed partial class ПресетыPage
         {
             Title = "Param_Profile_New_Name/Content".GetLocalized(),
             XamlRoot = XamlRoot,
-            CloseButtonText = "Cancel".GetLocalized(),
+            CloseButtonText = "CancelThis/Text".GetLocalized(),
             PrimaryButtonText = "Param_Profile_New_Name/Content".GetLocalized(),
             Content = content,
             DefaultButton = ContentDialogButton.Close
@@ -1436,7 +1431,7 @@ public sealed partial class ПресетыPage
             {
                 Title = "Param_DelPreset_Text".GetLocalized(),
                 Content = "Param_DelPreset_Desc".GetLocalized(),
-                CloseButtonText = "Cancel".GetLocalized(),
+                CloseButtonText = "CancelThis/Text".GetLocalized(),
                 PrimaryButtonText = "Delete".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
             };
@@ -1545,7 +1540,7 @@ public sealed partial class ПресетыPage
             XamlRoot = XamlRoot,
             PrimaryButtonText = "Param_Profile_Edit_Name/Content".GetLocalized(),
             SecondaryButtonText = "Param_Profile_Delete_Profile/Content".GetLocalized(),
-            CloseButtonText = "Cancel".GetLocalized(),
+            CloseButtonText = "CancelThis/Text".GetLocalized(),
             DefaultButton = ContentDialogButton.Close,
             Content = content
         };
@@ -1839,7 +1834,7 @@ public sealed partial class ПресетыPage
                     {
                         ApplyTeach.Target = ApplyButton;
                         ApplyTeach.Title = "Apply_Success".GetLocalized();
-                        ApplyTeach.Subtitle = "Apply_Success_Desc".GetLocalized();
+                        ApplyTeach.Subtitle = "";
                         ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
                         ApplyTeach.IsOpen = true;
                         var infoSet = InfoBarSeverity.Success;
@@ -1894,7 +1889,7 @@ public sealed partial class ПресетыPage
 
         ApplyTeach.Target = ApplyButton;
         ApplyTeach.Title = "Apply_Success".GetLocalized();
-        ApplyTeach.Subtitle = "Apply_Success_Desc".GetLocalized();
+        ApplyTeach.Subtitle = "";
         ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
         ApplyTeach.IsOpen = true;
         await LogHelper.Log("Apply_Success".GetLocalized());

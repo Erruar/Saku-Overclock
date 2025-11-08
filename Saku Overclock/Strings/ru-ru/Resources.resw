@@ -120,9 +120,6 @@
   <data name="AppDisplayName" xml:space="preserve">
     <value>Saku Overclock</value>
   </data>
-  <data name="AppDescription" xml:space="preserve">
-    <value>Saku Overclock</value>
-  </data>
   <data name="Shell_Главная.Content" xml:space="preserve">
     <value>Главная</value>
   </data>
@@ -749,29 +746,11 @@
   <data name="Set_succ" xml:space="preserve">
     <value>Применение успешно!</value>
   </data>
-  <data name="Add_Target_Max.Subtitle" xml:space="preserve">
-    <value>Нельзя добавить больше пресетов!</value>
-  </data>
-  <data name="Add_Target_Max.Title" xml:space="preserve">
-    <value>Ошибка добавления</value>
-  </data>
   <data name="Add_Target_Error.Subtitle" xml:space="preserve">
-    <value>Нельзя добавить пресет без имени!</value>
+    <value>Укажите имя пресета</value>
   </data>
   <data name="Add_Target_Error.Title" xml:space="preserve">
-    <value>Ошибка добавления</value>
-  </data>
-  <data name="ADV_Auto.Text" xml:space="preserve">
-    <value>Автоматически</value>
-  </data>
-  <data name="ADV_Change.Text" xml:space="preserve">
-    <value>                                        Не стоит менять!!!</value>
-  </data>
-  <data name="Apply_Target.Subtitle" xml:space="preserve">
-    <value>Разгон успешно применён</value>
-  </data>
-  <data name="Apply_Target.Title" xml:space="preserve">
-    <value>Параметры применены!</value>
+    <value>Пресет должен иметь имя</value>
   </data>
   <data name="Delete_Target_Error.Subtitle" xml:space="preserve">
     <value>Нельзя удалить несохранённый пресет!</value>
@@ -923,21 +902,6 @@
   <data name="Cooler_suggesttip.Title" xml:space="preserve">
     <value>Эти конфигурации возможно вам подойдут:</value>
   </data>
-  <data name="AppNotificationCrash" xml:space="preserve">
-    <value>&lt;toast launch="action=ToastClick"&gt;
-  &lt;visual&gt;
-    &lt;binding template="ToastGeneric"&gt;
-      &lt;text&gt;Не найдены файлы конфигурации&lt;/text&gt;
-      &lt;text&gt;Приложение уже создало для вас пару новых. Перезагрузите приложение чтобы применить изменения&lt;/text&gt;
-      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
-    &lt;/binding&gt;
-  &lt;/visual&gt;
-  &lt;actions&gt;
-    &lt;action content="Перезапуск" arguments="action=Settings"/&gt;
-    &lt;action content="Тех. Поддержка" arguments="action=Message"/&gt;
-  &lt;/actions&gt;
-&lt;/toast&gt;</value>
-  </data>
   <data name="AdvancedCooler_Configs.Text" xml:space="preserve">
     <value>Конфигурации</value>
   </data>
@@ -945,7 +909,7 @@
     <value>Кривая кулера</value>
   </data>
   <data name="AdvancedCooler_CurveDesc.Text" xml:space="preserve">
-    <value>Здесь вы можете изменить кривую
+    <value>Здесь вы можете изменить поведение кулеров для выбранной
 конфигурации:</value>
   </data>
   <data name="AdvancedCooler_CurveText.Text" xml:space="preserve">
@@ -957,49 +921,14 @@
   <data name="AdvancedCooler_Curve_Fan2.Text" xml:space="preserve">
     <value>Кулер 2</value>
   </data>
-  <data name="AdvancedCooler_Curve_Tresh.Margin" xml:space="preserve">
-    <value>390,78,0,0</value>
-  </data>
-  <data name="AdvancedCooler_Curve_Tresh.Text" xml:space="preserve">
-    <value>Температурные зависимости</value>
-  </data>
   <data name="AdvancedCooler_CurveMenu.Text" xml:space="preserve">
     <value>Кривая кулера</value>
   </data>
   <data name="AdvancedCooler_Custom.Text" xml:space="preserve">
     <value>Новая конфигурация</value>
   </data>
-  <data name="AdvancedCooler_Custom_Em.Text" xml:space="preserve">
-    <value>Новая пустая конфигурация</value>
-  </data>
-  <data name="AdvancedCooler_Custom_Ex.Text" xml:space="preserve">
-    <value>Создать из примера</value>
-  </data>
-  <data name="AdvancedCooler_Custom_Fr.Text" xml:space="preserve">
-    <value>Скопировать из конфигурации</value>
-  </data>
-  <data name="AdvancedCooler_Del_Action" xml:space="preserve">
-    <value>Выберите действие</value>
-  </data>
-  <data name="AdvancedCooler_Del_Action_Delete" xml:space="preserve">
-    <value>Удалить файл</value>
-  </data>
-  <data name="AdvancedCooler_Del_Action_Rename" xml:space="preserve">
-    <value>Переименовать файл и вкладку</value>
-  </data>
-  <data name="AdvancedCooler_Del_Action_Sure" xml:space="preserve">
-    <value>Вы уверены в удалении?</value>
-  </data>
-  <data name="AdvancedCooler_Normal.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Обычный режим
-Вернуться обратно в обычный режим:
-Оптимизация кулера</value>
-  </data>
-  <data name="AdvancedCooler_Others.Text" xml:space="preserve">
-    <value>Другие конфигурации</value>
-  </data>
   <data name="AdvancedCooler_Page.Text" xml:space="preserve">
-    <value>Оптимизация кулера ⟩ Расширенный режим</value>
+    <value>Редактор кривой кулера</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Отмена</value>
@@ -1023,7 +952,7 @@
     <value>Удалить</value>
   </data>
   <data name="New_Name" xml:space="preserve">
-    <value>Новое имя</value>
+    <value>Введите новое имя</value>
   </data>
   <data name="Open" xml:space="preserve">
     <value>Открыть!</value>
@@ -1160,6 +1089,15 @@
   <data name="Info_CPU_text.Text" xml:space="preserve">
     <value>Информация </value>
   </data>
+  <data name="Info_CommonMetrics.Text" xml:space="preserve">
+    <value>Основные показатели</value>
+  </data>
+  <data name="Info_CurrentSensors.Text" xml:space="preserve">
+    <value>Токовые показатели</value>
+  </data>
+  <data name="Info_Tools.Text" xml:space="preserve">
+    <value>Инструменты</value>
+  </data>
   <data name="Info_RAM_desc.Text" xml:space="preserve">
     <value>Свойства оперативной памяти</value>
   </data>
@@ -1206,16 +1144,13 @@
     <value>Начать с</value>
   </data>
   <data name="Apply_Success" xml:space="preserve">
-    <value>Значения применены успешно!</value>
-  </data>
-  <data name="Apply_Success_Desc" xml:space="preserve">
-    <value>Все параметры применены без ошибок</value>
+    <value>Пресет применён</value>
   </data>
   <data name="Apply_Warn" xml:space="preserve">
-    <value>Значения применены с ошибками!</value>
+    <value>Частично применено</value>
   </data>
   <data name="Apply_Warn_Desc" xml:space="preserve">
-    <value>Вы применили параметры, но:</value>
+    <value>Не все параметры удалось применить:</value>
   </data>
   <data name="Param_CPU_c7.Text" xml:space="preserve">
     <value>Максимальная температура cHTC</value>
@@ -1354,21 +1289,6 @@
   </data>
   <data name="Shell_Preset_Speed" xml:space="preserve">
     <value>Скорость</value>
-  </data>
-  <data name="AppNotificationCrash_CPU" xml:space="preserve">
-    <value>&lt;toast launch="action=ToastClick"&gt;
-  &lt;visual&gt;
-    &lt;binding template="ToastGeneric"&gt;
-      &lt;text&gt;IO Драйвер не загружен&lt;/text&gt;
-      &lt;text&gt;Приложение не будет работать. Windows блокирует замену драйвера CPU. Проверьте вашу Windows или отключите Secure boot в BIOS и "Изоляцию ядва" в приложении Безопасность windows&lt;/text&gt;
-      &lt;image placement="appLogoOverride" hint-crop="circle" src="{0}Assets/WindowIcon.ico"/&gt;
-    &lt;/binding&gt;
-  &lt;/visual&gt;
-  &lt;actions&gt;
-    &lt;action content="Rerun app" arguments="action=Settings"/&gt;
-    &lt;action content="Get help" arguments="action=Message"/&gt;
-  &lt;/actions&gt;
-&lt;/toast&gt;</value>
   </data>
   <data name="ThemeAdvanced.Text" xml:space="preserve">
     <value>Расширенные параметры темы</value>
@@ -2712,6 +2632,15 @@ Asus. Может не поддерживаться на
   <data name="Main_Battery.Text" xml:space="preserve">
     <value>Батарея</value>
   </data>
+  <data name="Info_BatteryState.Text" xml:space="preserve">
+    <value>Состояние батареи</value>
+  </data>
+  <data name="Info_PowerStates.Text" xml:space="preserve">
+    <value>Производительные состояния</value>
+  </data>
+  <data name="Info_PowerSensors.Text" xml:space="preserve">
+    <value>Показатели мощности</value>
+  </data>
   <data name="Main_MaxVrmCurrent.Text" xml:space="preserve">
     <value>VRM EDC</value>
   </data>
@@ -3305,5 +3234,59 @@ Asus. Может не поддерживаться на
   </data>
   <data name="infoTiming.Text" xml:space="preserve">
     <value>Тайминг</value>
+  </data>
+  <data name="Param_ADV_Pdesc.Text" xml:space="preserve">
+    <value>Управление режимами производительности, OC Mode и PBO</value>
+  </data>
+  <data name="Param_ADV_PdescBristol" xml:space="preserve">
+    <value>Управление режимами производительности</value>
+  </data>
+  <data name="AdvancedCooler_CustomConfigurationEmpty.Text" xml:space="preserve">
+    <value>Новая пустая конфигурация</value>
+  </data>
+  <data name="AdvancedCooler_CustomConfigurationExample.Text" xml:space="preserve">
+    <value>Создать из примера</value>
+  </data>
+  <data name="AdvancedCooler_CustomConfigurationFrom.Text" xml:space="preserve">
+    <value>Скопировать из конфигурации</value>
+  </data>
+  <data name="AdvancedCooler_DeleteAction" xml:space="preserve">
+    <value>Выберите действие</value>
+  </data>
+  <data name="AdvancedCooler_DeleteAction_Delete" xml:space="preserve">
+    <value>Удалить файл конфигурации?</value>
+  </data>
+  <data name="AdvancedCooler_DeleteAction_Rename" xml:space="preserve">
+    <value>Переименовать файл</value>
+  </data>
+  <data name="AdvancedCooler_DeleteAction_Sure" xml:space="preserve">
+    <value>будет удалён без возможности восстановления</value>
+  </data>
+  <data name="AdvancedCooler_CurveThreshold.Margin" xml:space="preserve">
+    <value>390,78,0,0</value>
+  </data>
+  <data name="AdvancedCooler_CurveThreshold.Text" xml:space="preserve">
+    <value>Температурные зависимости</value>
+  </data>
+  <data name="AdvancedCooler_CustomConfigurationOther.Text" xml:space="preserve">
+    <value>Другие конфигурации</value>
+  </data>
+  <data name="AdvancedCooler_BackToNormalMode.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Назад к основным настройкам кулера</value>
+  </data>
+  <data name="Param_Suggestion_KeepAuto.Text" xml:space="preserve">
+    <value>Автоматически</value>
+  </data>
+  <data name="AdvancedCooler_CloseFileAction" xml:space="preserve">
+    <value>Закрыть файл</value>
+  </data>
+  <data name="AdvancedCooler_FileOptionsAction" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="AdvancedCooler_CopyAction" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="AdvancedCooler_CopyAllAction" xml:space="preserve">
+    <value>Скопировать всё</value>
   </data>
 </root>

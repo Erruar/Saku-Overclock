@@ -592,7 +592,7 @@ StrokeThickness="1.5" >
                                     </Grid.RowDefinitions>
 
                                     <!-- Заголовок -->
-                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" 
+                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" x:Uid="Info_CommonMetrics"
                                                Foreground="{ThemeResource TextFillColorSecondary}" 
                                                FontWeight="SemiBold">Основные показатели</TextBlock>
 
@@ -738,7 +738,7 @@ StrokeThickness="1.5" >
                                     </Grid.RowDefinitions>
 
                                     <!-- Заголовок -->
-                                    <TextBlock Grid.Row="0" Margin="11,7,0,6"
+                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" x:Uid="Main_Battery"
                                                Foreground="{ThemeResource TextFillColorSecondary}" 
                                                FontWeight="SemiBold">Батарея</TextBlock>
 
@@ -797,7 +797,7 @@ StrokeThickness="1.5" >
                                     </Grid.RowDefinitions>
 
                                     <!-- Заголовок -->
-                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" 
+                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" x:Uid="Info_PowerSensors"
                                                Foreground="{ThemeResource TextFillColorSecondary}" 
                                                FontWeight="SemiBold">Показатели мощности</TextBlock>
 
@@ -870,7 +870,7 @@ StrokeThickness="1.5" >
                                     </Grid.RowDefinitions>
 
                                     <!-- Заголовок -->
-                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" 
+                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" x:Uid="Info_CurrentSensors"
                                                Foreground="{ThemeResource TextFillColorSecondary}" 
                                                FontWeight="SemiBold">Токовые показатели</TextBlock>
 
@@ -948,7 +948,7 @@ StrokeThickness="1.5" >
                                     </Grid.ChildrenTransitions>
 
                                     <!-- Заголовок -->
-                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" 
+                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" x:Uid="Info_PowerStates"
                                                Foreground="{ThemeResource TextFillColorSecondary}" 
                                                FontWeight="SemiBold">Производительные состояния</TextBlock>
 
@@ -1155,7 +1155,7 @@ StrokeThickness="1.5" >
                                     </Grid.ChildrenTransitions>
 
                                     <!-- Заголовок -->
-                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" 
+                                    <TextBlock Grid.Row="0" Margin="11,7,0,6" x:Uid="Info_BatteryState"
                                                Foreground="{ThemeResource TextFillColorSecondary}" 
                                                FontWeight="SemiBold">Состояние батареи</TextBlock>
 

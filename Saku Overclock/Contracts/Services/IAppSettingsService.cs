@@ -235,18 +235,6 @@ public interface IAppSettingsService
         set;
     } // Скорость второго кулера (>100 = авто)
 
-    bool NbfcFlagConsoleCheckSpeedRunning
-    {
-        get;
-        set;
-    } // Флаг действий с консолью NBFC
-
-    bool FlagRyzenAdjConsoleTemperatureCheckRunning
-    {
-        get;
-        set;
-    } // Флаг действий с консолью RyzenADJ
-
     string NbfcAnswerSpeedFan1
     {
         get;

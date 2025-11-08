@@ -79,9 +79,6 @@ public sealed partial class ПараметрыPage
         ProfileLoad();
 
         _indexprofile = AppSettings.Preset;
-        AppSettings.NbfcFlagConsoleCheckSpeedRunning = false;
-        AppSettings.FlagRyzenAdjConsoleTemperatureCheckRunning = false;
-        AppSettings.SaveSettings();
 
         if (AppSettings.Preset == -1)
         {
@@ -95,8 +92,6 @@ public sealed partial class ПараметрыPage
         catch (Exception ex)
         {
             LogHelper.TraceIt_TraceError(ex);
-            App.GetService<IAppNotificationService>()
-                .Show(string.Format("AppNotificationCrash_CPU".GetLocalized(), AppContext.BaseDirectory));
         }
 
         Loaded += ПараметрыPage_Loaded;
@@ -230,9 +225,6 @@ public sealed partial class ПараметрыPage
                         Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                         @"\SakuOverclock\smusettings.json",
                         JsonConvert.SerializeObject(_smusettings, Formatting.Indented));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                    App.MainWindow.Close();
                 }
 
                 break;
@@ -255,9 +247,6 @@ public sealed partial class ПараметрыPage
                     File.WriteAllText(
                         Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
                         JsonConvert.SerializeObject(_profile));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
-                    App.MainWindow.Close();
                 }
 
                 break;
@@ -2201,7 +2190,7 @@ public sealed partial class ПараметрыPage
             {
                 var newQuickCommand = new ContentDialog
                 {
-                    Title = "AdvancedCooler_Del_Action".GetLocalized(),
+                    Title = "AdvancedCooler_DeleteAction".GetLocalized(),
                     Content = new Grid
                     {
                         Children =
@@ -2249,7 +2238,7 @@ public sealed partial class ПараметрыPage
                         }
                     },
                     PrimaryButtonText = "Save".GetLocalized(),
-                    CloseButtonText = "Cancel".GetLocalized(),
+                    CloseButtonText = "CancelThis/Text".GetLocalized(),
                     DefaultButton = ContentDialogButton.Close
                 };
                 if (destination != 0)
@@ -2464,7 +2453,7 @@ public sealed partial class ПараметрыPage
             {
                 var newQuickCommand = new ContentDialog
                 {
-                    Title = "AdvancedCooler_Del_Action".GetLocalized(),
+                    Title = "AdvancedCooler_DeleteAction".GetLocalized(),
                     Content = new Grid
                     {
                         Children =
@@ -2477,7 +2466,7 @@ public sealed partial class ПараметрыPage
                         }
                     },
                     PrimaryButtonText = "Apply".GetLocalized(),
-                    CloseButtonText = "Cancel".GetLocalized(),
+                    CloseButtonText = "CancelThis/Text".GetLocalized(),
                     DefaultButton = ContentDialogButton.Close
                 };
                 if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
@@ -5295,14 +5284,14 @@ public sealed partial class ПараметрыPage
             if (SettingsViewModel.VersionId != 5) // Если версия не Debug Lanore
             {
                 ApplyTooltip.Title = "Apply_Success".GetLocalized();
-                ApplyTooltip.Subtitle = "Apply_Success_Desc".GetLocalized();
+                ApplyTooltip.Subtitle = "";
             }
             else
 #pragma warning disable CS0162 // Unreachable code detected
             // ReSharper disable once HeuristicUnreachableCode
             {
                 ApplyTooltip.Title = "Apply_Success".GetLocalized();
-                ApplyTooltip.Subtitle = "Apply_Success_Desc".GetLocalized() + AppSettings.RyzenAdjLine;
+                ApplyTooltip.Subtitle = "" + AppSettings.RyzenAdjLine;
             }
 #pragma warning restore CS0162 // Unreachable code detected
             ApplyTooltip.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
@@ -5349,50 +5338,41 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            if (SaveProfileN.Text != "")
+            if (!string.IsNullOrWhiteSpace(SaveProfileN.Text))
             {
                 ProfileLoad();
-                try
+                ActionButtonSave.Flyout.Hide();
+                AppSettings.Preset += 1;
+                _indexprofile += 1;
+                _waitforload = true;
+                ProfileCom.Items.Add(SaveProfileN.Text);
+                ProfileCom.SelectedItem = SaveProfileN.Text;
+                if (_profile.Length == 0)
                 {
-                    ActionButtonSave.Flyout.Hide();
-                    AppSettings.Preset += 1;
-                    _indexprofile += 1;
-                    _waitforload = true;
-                    ProfileCom.Items.Add(SaveProfileN.Text);
-                    ProfileCom.SelectedItem = SaveProfileN.Text;
-                    if (_profile.Length == 0)
-                    {
-                        _profile = new Profile[1];
-                        _profile[0] = new Profile { Profilename = SaveProfileN.Text };
-                    }
-                    else
-                    {
-                        var profileList = new List<Profile>(_profile)
+                    _profile = new Profile[1];
+                    _profile[0] = new Profile { Profilename = SaveProfileN.Text };
+                }
+                else
+                {
+                    var profileList = new List<Profile>(_profile)
                         {
                             new()
                             {
                                 Profilename = SaveProfileN.Text
                             }
                         };
-                        _profile = [.. profileList];
-                    }
+                    _profile = [.. profileList];
+                }
 
-                    _waitforload = false;
-                    NotificationsService.Notifies ??= [];
-                    NotificationsService.Notifies.Add(new Notify
-                    {
-                        Title = "SaveSuccessTitle".GetLocalized(),
-                        Msg = "SaveSuccessDesc".GetLocalized() + " " + SaveProfileN.Text,
-                        Type = InfoBarSeverity.Success
-                    });
-                    NotificationsService.SaveNotificationsSettings();
-                }
-                catch
+                _waitforload = false;
+                NotificationsService.Notifies ??= [];
+                NotificationsService.Notifies.Add(new Notify
                 {
-                    AddTooltipMax.IsOpen = true;
-                    await Task.Delay(3000);
-                    AddTooltipMax.IsOpen = false;
-                }
+                    Title = "SaveSuccessTitle".GetLocalized(),
+                    Msg = "SaveSuccessDesc".GetLocalized() + " " + SaveProfileN.Text,
+                    Type = InfoBarSeverity.Success
+                });
+                NotificationsService.SaveNotificationsSettings();
             }
             else
             {
@@ -5500,7 +5480,7 @@ public sealed partial class ПараметрыPage
             {
                 Title = "Param_DelPreset_Text".GetLocalized(),
                 Content = "Param_DelPreset_Desc".GetLocalized(),
-                CloseButtonText = "Cancel".GetLocalized(),
+                CloseButtonText = "CancelThis/Text".GetLocalized(),
                 PrimaryButtonText = "Delete".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
             };
@@ -5996,7 +5976,7 @@ public sealed partial class ПараметрыPage
                         {
                             Title = "Param_ChPstates_Text".GetLocalized(),
                             Content = "Param_ChPstates_Desc".GetLocalized(),
-                            CloseButtonText = "Cancel".GetLocalized(),
+                            CloseButtonText = "CancelThis/Text".GetLocalized(),
                             PrimaryButtonText = "Change".GetLocalized(),
                             DefaultButton = ContentDialogButton.Close
                         };
@@ -6019,7 +5999,7 @@ public sealed partial class ПараметрыPage
                         {
                             Title = "Param_ChPstates_Text".GetLocalized(),
                             Content = "Param_ChPstates_Desc".GetLocalized(),
-                            CloseButtonText = "Cancel".GetLocalized(),
+                            CloseButtonText = "CancelThis/Text".GetLocalized(),
                             PrimaryButtonText = "Change".GetLocalized(),
                             SecondaryButtonText = "Without_P0".GetLocalized(),
                             DefaultButton = ContentDialogButton.Close

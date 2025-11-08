@@ -165,8 +165,6 @@ public class SendSmuCommandService : ISendSmuCommandService
                             Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                             @"\SakuOverclock\smusettings.json",
                             JsonConvert.SerializeObject(_smuSettings, Formatting.Indented));
-                        App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                            AppContext.BaseDirectory));
                     }
 
                     break;
@@ -191,8 +189,6 @@ public class SendSmuCommandService : ISendSmuCommandService
                     File.WriteAllText(
                         Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
                         JsonConvert.SerializeObject(_profile));
-                    App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationCrash".GetLocalized(),
-                        AppContext.BaseDirectory));
                 }
 
                 break;

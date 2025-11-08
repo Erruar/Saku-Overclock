@@ -2558,7 +2558,7 @@
                                                         Shadow="{ThemeResource SharedShadow}">
                                                 <TextBlock Margin="8,4,8,0"
                                                            Foreground="{ThemeResource TextFillColorSecondary}"
-                                                           Text="Автоматически" x:Uid="ADV_Auto"/>
+                                                           Text="Автоматически" x:Uid="Param_Suggestion_KeepAuto"/>
                                             </StackPanel>
                                         </Grid>
                                     </Grid>
@@ -2613,7 +2613,7 @@
                                                         Shadow="{ThemeResource SharedShadow}">
                                                 <TextBlock Margin="8,4,8,0"
                                                            Foreground="{ThemeResource TextFillColorSecondary}"
-                                                           Text="Автоматически" x:Uid="ADV_Auto"/>
+                                                           Text="Автоматически" x:Uid="Param_Suggestion_KeepAuto"/>
                                             </StackPanel>
                                         </Grid>
                                     </Grid>
@@ -2737,7 +2737,7 @@
                                                         Shadow="{ThemeResource SharedShadow}">
                                                 <TextBlock Margin="8,4,8,0"
                                                            Foreground="{ThemeResource TextFillColorSecondary}"
-                                                           Text="Автоматически" x:Uid="ADV_Auto"/>
+                                                           Text="Автоматически" x:Uid="Param_Suggestion_KeepAuto"/>
                                             </StackPanel>
                                         </Grid>
                                     </Grid>
@@ -3035,7 +3035,7 @@
                                                         Shadow="{ThemeResource SharedShadow}">
                                                 <TextBlock Margin="8,4,8,0"
                                                            Foreground="{ThemeResource TextFillColorSecondary}"
-                                                           Text="Автоматически" x:Uid="ADV_Auto"/>
+                                                           Text="Автоматически" x:Uid="Param_Suggestion_KeepAuto"/>
                                             </StackPanel>
                                         </Grid>
                                     </Grid>
@@ -5183,7 +5183,7 @@
                                                                 <SymbolIcon Symbol="Rename"/>
                                                             </MenuFlyoutItem.Icon>
                                                         </MenuFlyoutItem>
-                                                        <MenuFlyoutItem x:Uid="CancelThis" Text="Canc">
+                                                        <MenuFlyoutItem x:Uid="CancelThis" Text="Cancel">
                                                             <MenuFlyoutItem.Icon>
                                                                 <SymbolIcon Symbol="Cancel"/>
                                                             </MenuFlyoutItem.Icon>
@@ -5618,7 +5618,7 @@
                                TextAlignment="Center" Margin="0,20,0,0" Text="Сообщить о проблеме"/>
                 </StackPanel>
             </Grid>
-            <TeachingTip Grid.Row="0" x:Uid="Apply_Target" x:Name="ApplyTooltip" IsOpen="False" Margin="300,-10,0,0"
+            <TeachingTip Grid.Row="0" x:Name="ApplyTooltip" IsOpen="False" Margin="300,-10,0,0"
                          Title="Значения применены!"
                          Subtitle="Вы успешно применили разгон">
                 <TeachingTip.IconSource>
@@ -5638,11 +5638,6 @@
             </TeachingTip>
             <TeachingTip Grid.Row="0" x:Uid="Add_Target_Error" x:Name="AddTooltipError" IsOpen="False"
                          Margin="300,-10,0,0">
-                <TeachingTip.IconSource>
-                    <SymbolIconSource Symbol="Add"/>
-                </TeachingTip.IconSource>
-            </TeachingTip>
-            <TeachingTip Grid.Row="0" x:Uid="Add_Target_Max" x:Name="AddTooltipMax" IsOpen="False" Margin="300,-10,0,0">
                 <TeachingTip.IconSource>
                     <SymbolIconSource Symbol="Add"/>
                 </TeachingTip.IconSource>

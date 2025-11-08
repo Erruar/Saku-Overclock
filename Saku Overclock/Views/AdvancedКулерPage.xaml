@@ -7,522 +7,421 @@
     xmlns:local="using:Saku_Overclock.Styles"
     mc:Ignorable="d">
     <Page.Resources>
-        <ThemeShadow x:Name="SharedShadow"></ThemeShadow>
-        <MenuFlyout x:Key="FlyoutMenu">
-            <MenuFlyoutItem Text="Readme" Click="Example_Click">
-                <MenuFlyoutItem.Icon>
-                    <FontIcon Glyph="&#xe718;"/>
-                </MenuFlyoutItem.Icon>
-            </MenuFlyoutItem>
-            <MenuFlyoutSubItem x:Uid="AdvancedCooler_Configs" Text="Configs">
-                <MenuFlyoutSubItem.Icon>
-                    <FontIcon Glyph="&#xe8b7;"/>
-                </MenuFlyoutSubItem.Icon>
-                <MenuFlyoutItem x:Uid="AdvancedCooler_CurveMenu" Text="Fan Curve" Click="Curve_Click">
-                    <MenuFlyoutItem.Icon>
-                        <FontIcon Glyph="&#xe932;"/>
-                    </MenuFlyoutItem.Icon>
-                </MenuFlyoutItem>
-                <MenuFlyoutSubItem x:Uid="AdvancedCooler_Others" x:Name="OthersCoolerConfigs" Text="Other Configs">
-                    <MenuFlyoutSubItem.Icon>
-                        <FontIcon Glyph="&#xe74c;"/>
-                    </MenuFlyoutSubItem.Icon>
-                </MenuFlyoutSubItem>
-                <MenuFlyoutSubItem x:Uid="AdvancedCooler_Custom" Text="Create Custom">
-                    <MenuFlyoutSubItem.Icon>
-                        <FontIcon Glyph="&#xe792;"/>
-                    </MenuFlyoutSubItem.Icon>
-                    <MenuFlyoutItem x:Uid="AdvancedCooler_Custom_Ex" Text="Config From Example" Click="Create_Example_Click">
-                        <MenuFlyoutItem.Icon>
-                            <FontIcon Glyph="&#xe78c;"/>
-                        </MenuFlyoutItem.Icon>
-                    </MenuFlyoutItem>
-                    <MenuFlyoutItem x:Uid="AdvancedCooler_Custom_Em" Text="Empty Config" Click="Create_Null_Click">
-                        <MenuFlyoutItem.Icon>
-                            <FontIcon Glyph="&#xe78c;"/>
-                        </MenuFlyoutItem.Icon>
-                    </MenuFlyoutItem>
-                    <MenuFlyoutSubItem x:Uid="AdvancedCooler_Custom_Fr" x:Name="CopyFromOthersCoolerConfigs" Text="Copy Config From">
-                        <MenuFlyoutSubItem.Icon>
-                            <FontIcon Glyph="&#xe78c;"/>
-                        </MenuFlyoutSubItem.Icon>
-                    </MenuFlyoutSubItem>
-                </MenuFlyoutSubItem>
-            </MenuFlyoutSubItem>
-        </MenuFlyout>
+        <ThemeShadow x:Name="SharedShadow"/>
     </Page.Resources>
-    <!--Pages can be added as references or inline-->
     <Grid Margin="-48,0,-28,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
-        <TextBlock Text="Advanced cooler tweaking" x:Uid="AdvancedCooler_Page" FontSize="30" Margin="0,-95,0,0"/>
-        <ContentControl HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-            <TabView Margin="0,-55,0,0" x:Name="MainTab" Background="{ThemeResource LayerOnMicaBaseAltFillColorTransparentBrush}" AddTabButtonClick="Tabs_AddTabButtonClick" PointerMoved="TabView_PointerMoved" TabCloseRequested="Tabs_TabCloseRequested" CloseButtonOverlayMode="OnPointerOver" TabWidthMode="SizeToContent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-                <TabView.TabItems>
-                    <TabViewItem Header="Readme" x:Name="ExampleTab">
-                        <TabViewItem.IconSource>
-                            <FontIconSource Glyph="&#xe718;"/>
-                        </TabViewItem.IconSource>
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto">
-                            <ScrollViewer IsTabStop="False"
-         UseSystemFocusVisuals="False"
-         VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-         VerticalScrollMode="Auto" Margin="0,0,-20,14">
-                                <Grid>
-                                    <Expander  VerticalAlignment="Bottom" Opacity="0" IsEnabled="False">
-                                        <Expander.Header>
-                                            <Grid Height="65" Width="2000">
-                                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Glyph="&#xee92;"/>
-                                                <TextBlock Margin="35,12,0,0" FontWeight="SemiBold" VerticalAlignment="Top" Text="Unknown"/>
-                                                <TextBlock Margin="35,30,0,0" FontWeight="Light" VerticalAlignment="Top" Text="Unknown expander? It fixes auto margin error!!!"/>
-                                            </Grid>
-                                        </Expander.Header>
-                                    </Expander>
-                                    <TextBlock FontWeight="Bold" Text="This is example of config"/>
-                                    <RichTextBlock>
-                                        <Paragraph>
-                                            <Run x:Name="ReadEx"></Run>
-                                        </Paragraph>
-                                    </RichTextBlock>
-                                    <Border Width="40" Height="40" CornerRadius="4" Shadow="{StaticResource SharedShadow}" Translation="0,0,20" Margin="0,0,19,0" VerticalAlignment="Top" HorizontalAlignment="Right"></Border>
-                                    <local:CopyButton Click="CopyPath_Click" 
-                                                      Margin="0,0,19,0" VerticalAlignment="Top"
-                                                      AutomationProperties.Name="Copy link" 
-                                                      Content="&#xE8C8;"
-                                                      ToolTipService.ToolTip="Copy"
-                                                      HorizontalAlignment="Right" Height="40" Width="40"/>
-                                </Grid>
-                            </ScrollViewer>
+        <TextBlock Text="Fan curve editor" x:Uid="AdvancedCooler_Page" FontSize="30" Margin="0,-95,0,0"/>
+        <Grid HorizontalAlignment="Stretch" Margin="0,-55,0,0">
+            <ScrollViewer Margin="0,0,-21,15" IsTabStop="False"
+                          UseSystemFocusVisuals="False"
+                          VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch"
+                          VerticalScrollMode="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" x:Name="CurveDesc" x:Uid="AdvancedCooler_CurveDesc" Text="There you can change laptop fans behavior &#10;for selected config:" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
+                    <TextBlock Grid.Row="0" Text="Config not found!" Margin="120,22,0,0" x:Name="CoolerConfigurationName" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
+                    <!-- Собственно кривая кулеров 1 -->
+                    <Grid Grid.Row="0" Margin="0,100,0,0" x:Name="CurveFan1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="22"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="t℃" Margin="0,-24,0,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Fan 1" x:Uid="AdvancedCooler_Curve_Fan1" FontWeight="ExtraBold" FontSize="18" Margin="60,-24,-160,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                        <StackPanel  Orientation="Vertical" Margin="-10,-6,0,5">
+                            <TextBlock Text="100" HorizontalAlignment="Right" Margin="0,1,0,0"/>
+                            <TextBlock Text="90" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                            <TextBlock Text="80" HorizontalAlignment="Right" Margin="0,6,0,0"/>
+                            <TextBlock Text="70" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                            <TextBlock Text="60" HorizontalAlignment="Right" Margin="0,7,0,0"/>
+                            <TextBlock Text="50" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                            <TextBlock Text="40" HorizontalAlignment="Right" Margin="0,6,0,0"/>
+                            <TextBlock Text="30" HorizontalAlignment="Right" Margin="0,6,0,0"/>
+                            <TextBlock Text="20" HorizontalAlignment="Right" Margin="0,6,0,0"/>
+                            <TextBlock Text="10" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                            <TextBlock Text="0" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text=" " HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top"  Margin="10,0,5,0">
+                            <TextBlock Text="0" Margin="2,0,0,0"/>
+                            <TextBlock Text="10" Margin="7,0,0,0"/>
+                            <TextBlock Text="20" Margin="10,0,0,0"/>
+                            <TextBlock Text="30" Margin="9,0,0,0"/>
+                            <TextBlock Text="40" Margin="9,0,0,0"/>
+                            <TextBlock Text="50" Margin="9,0,0,0"/>
+                            <TextBlock Text="60" Margin="9,0,0,0"/>
+                            <TextBlock Text="70" Margin="9,0,0,0"/>
+                            <TextBlock Text="80" Margin="9,0,0,0"/>
+                            <TextBlock Text="90" Margin="9,0,0,0"/>
+                            <TextBlock Text="100  RPM (%)" Margin="5,0,0,0"/>
+                        </StackPanel>
+
+                        <Canvas Grid.Row="0" Grid.Column="1" Margin="10,5,0,0">
+                            <!-- Влево вправо-->
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="100" X2="100" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="10" X2="100" Y2="10"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="20" X2="100" Y2="20" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="30" X2="100" Y2="30"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="40" X2="100" Y2="40" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="50" X2="100" Y2="50"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="60" X2="100" Y2="60" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="70" X2="100" Y2="70"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="80" X2="100" Y2="80" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="90" X2="100" Y2="90"/>
+                            </ContentControl>
+                            <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="0" X2="100" Y2="0" StrokeDashArray="2 2"/>
+                            <!-- Вверх-вниз-->
+                            <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="0" X2="0" Y2="100"/>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="10" Y1="0" X2="10" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="20" Y1="0" X2="20" Y2="105" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="30" Y1="0" X2="30" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="40" Y1="0" X2="40" Y2="105" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="50" Y1="0" X2="50" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="60" Y1="0" X2="60" Y2="105" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="70" Y1="0" X2="70" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="80" Y1="0" X2="80" Y2="105" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="90" Y1="0" X2="90" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="100" Y1="0" X2="100" Y2="105" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <!--Кривые-->
+                            <Polyline x:Name="ExtFan1C" Opacity="1" Stroke="Pink" StrokeThickness="1" Points="0,100"/>
+                            <Canvas.RenderTransform>
+                                <ScaleTransform ScaleX="2.5" ScaleY="2.5"/>
+                            </Canvas.RenderTransform>
+                        </Canvas>
+                    </Grid>
+                    <!-- Собственно кривая кулеров 2 -->
+                    <Grid Margin="0,20,0,0" x:Name="CurveFan2" Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="22"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="t℃" Margin="0,-10,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Fan 2" x:Uid="AdvancedCooler_Curve_Fan2" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="-10,-6,0,5">
+                            <TextBlock Text="100" HorizontalAlignment="Right" Margin="0,2,0,0"/>
+                            <TextBlock Text="90" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                            <TextBlock Text="80" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                            <TextBlock Text="70" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                            <TextBlock Text="60" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                            <TextBlock Text="50" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                            <TextBlock Text="40" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                            <TextBlock Text="30" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                            <TextBlock Text="20" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                            <TextBlock Text="10" HorizontalAlignment="Right" Margin="0,4,0,0"/>
+                            <TextBlock Text="0" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text=" " HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="10,7,5,0">
+                            <TextBlock Text="0" Margin="2,0,0,0"/>
+                            <TextBlock Text="10" Margin="7,0,0,0"/>
+                            <TextBlock Text="20" Margin="10,0,0,0"/>
+                            <TextBlock Text="30" Margin="9,0,0,0"/>
+                            <TextBlock Text="40" Margin="9,0,0,0"/>
+                            <TextBlock Text="50" Margin="9,0,0,0"/>
+                            <TextBlock Text="60" Margin="9,0,0,0"/>
+                            <TextBlock Text="70" Margin="9,0,0,0"/>
+                            <TextBlock Text="80" Margin="9,0,0,0"/>
+                            <TextBlock Text="90" Margin="9,0,0,0"/>
+                            <TextBlock Text="100  RPM (%)" Margin="5,0,0,0"/>
+                        </StackPanel>
+                        <Canvas Grid.Row="1" Grid.Column="1" Margin="10,5,0,0">
+                            <!-- Влево вправо-->
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="100" X2="100" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="10" X2="100" Y2="10"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="20" X2="100" Y2="20" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="30" X2="100" Y2="30"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="40" X2="100" Y2="40" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="50" X2="100" Y2="50"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="60" X2="100" Y2="60" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="70" X2="100" Y2="70"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="80" X2="100" Y2="80" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="90" X2="100" Y2="90"/>
+                            </ContentControl>
+                            <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="0" X2="100" Y2="0" StrokeDashArray="2 2"/>
+                            <!-- Вверх-вниз-->
+                            <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="0" X2="0" Y2="100"/>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="10" Y1="0" X2="10" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="20" Y1="0" X2="20" Y2="105" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="30" Y1="0" X2="30" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="40" Y1="0" X2="40" Y2="105" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="50" Y1="0" X2="50" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="60" Y1="0" X2="60" Y2="105" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="70" Y1="0" X2="70" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="80" Y1="0" X2="80" Y2="105" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="90" Y1="0" X2="90" Y2="100"/>
+                            </ContentControl>
+                            <ContentControl>
+                                <Line Stroke="Gray" StrokeThickness="0.5" X1="100" Y1="0" X2="100" Y2="105" StrokeDashArray="2 2"/>
+                            </ContentControl>
+                            <!--Кривые-->
+                            <Polyline x:Name="ExtFan2C" Stroke="Purple" Opacity="1" StrokeThickness="1" Points="0,100"/>
+                            <Canvas.RenderTransform>
+                                <ScaleTransform ScaleX="2.5" ScaleY="2.5"/>
+                            </Canvas.RenderTransform>
+                        </Canvas>
+                    </Grid>
+                    <!-- Всё что ниже кривых -->
+                    <StackPanel Grid.Row="0" Margin="140,-45,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="CurveThresholdsStackPanel">
+                        <TextBlock  FontWeight="Bold" FontSize="18" x:Uid="AdvancedCooler_CurveThreshold" Text="Temperature thresholds"/>
+                        <ToggleSplitButton Width="205" IsChecked="True" Tag="1" IsCheckedChanged="ChangeCoolerCurveVisibility_Checked" x:Name="Fan0ToggleCurve" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,12,0,0">
+                            <Grid>
+                                <ContentControl>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Margin="-5,0,-5,0" Glyph="&#xEDAD;"/>
+                                </ContentControl>
+                                <TextBlock Text="Fan 1" x:Uid="AdvancedCooler_Curve_Fan1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
+                            </Grid>
+
+                            <ToggleSplitButton.Flyout>
+                                <Flyout Placement="Bottom">
+                                    <!-- flyout content -->
+                                    <GridView Tag="1" ItemClick="ChangeCoolerCurveColor_ItemClick" IsItemClickEnabled="True">
+                                        <GridView.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
+                                            </ItemsPanelTemplate>
+                                        </GridView.ItemsPanel>
+                                        <GridView.Resources>
+                                            <Style TargetType="Rectangle">
+                                                <Setter Property="Width" Value="40"/>
+                                                <Setter Property="Height" Value="40"/>
+                                                <Setter Property="RadiusX" Value="4"/>
+                                                <Setter Property="RadiusY" Value="4"/>
+                                            </Style>
+                                        </GridView.Resources>
+                                        <GridView.Items>
+                                            <Rectangle Fill="Gray"/>
+                                            <Rectangle Fill="Black"/>
+                                            <Rectangle Fill="Brown"/>
+                                            <Rectangle Fill="Red"/>
+                                            <Rectangle Fill="Coral"/>
+                                            <Rectangle Fill="Orange"/>
+                                            <Rectangle Fill="Yellow"/>
+                                            <Rectangle Fill="Green"/>
+                                            <Rectangle Fill="LawnGreen"/>
+                                            <Rectangle Fill="Lime"/>
+                                            <Rectangle Fill="LimeGreen"/>
+                                            <Rectangle Fill="Blue"/>
+                                            <Rectangle Fill="Indigo"/>
+                                            <Rectangle Fill="Violet"/>
+                                            <Rectangle Fill="Pink"/>
+                                            <Rectangle Fill="White"/>
+                                        </GridView.Items>
+                                    </GridView>
+                                </Flyout>
+                            </ToggleSplitButton.Flyout>
+                        </ToggleSplitButton>
+                        <Grid x:Name="FanDef" VerticalAlignment="Top" Margin="420,6,0,0" HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="65"/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" x:Uid="AdvancedCooler_Curve_Fan1" FontSize="20" Margin="0,19,0,0" Text="Fan 1"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,44,-195,0" Text="     Min           Max           SPD"/>
                         </Grid>
-                    </TabViewItem>
-                    <TabViewItem x:Uid="AdvancedCooler_Curve" Header="Fan Curve" x:Name="FanCurvesTab" IsClosable="True">
-                        <TabViewItem.IconSource>
-                            <FontIconSource Glyph="&#xe932;"/>
-                        </TabViewItem.IconSource>
-                        <Grid HorizontalAlignment="Stretch">
-                            <ScrollViewer Margin="0,0,-21,15" IsTabStop="False"
-         UseSystemFocusVisuals="False"
-         VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch"
-         VerticalScrollMode="Auto">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <TextBlock x:Uid="AdvancedCooler_CurveText" Text="Fan curve editor" FontWeight="Light" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="21"/>
-                                    <TextBlock Grid.Row="0" x:Name="CurveDesc" x:Uid="AdvancedCooler_CurveDesc" Text="There you can change laptop fans behavior &#10;for selected config:" Margin="0,28,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
-                                    <TextBlock Grid.Row="0" Text="Config not found!" Margin="148,50,0,0" x:Name="CoolerConfigurationName" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
-                                    <!-- Собственно кривая кулеров 1 -->
-                                    <Grid Grid.Row="0" Margin="0,87,0,0" x:Name="CurveFan1">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="22"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Text="t℃" Margin="0,-10,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Fan 1" x:Uid="AdvancedCooler_Curve_Fan1" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
-                                            <StackPanel  Orientation="Vertical" Margin="-10,-6,0,5">
-                                                <TextBlock Text="100" HorizontalAlignment="Right" Margin="0,1,0,0"/>
-                                                <TextBlock Text="90" HorizontalAlignment="Right" Margin="0,4,0,0"/>
-                                                <TextBlock Text="80" HorizontalAlignment="Right" Margin="0,6,0,0"/>
-                                                <TextBlock Text="70" HorizontalAlignment="Right" Margin="0,5,0,0"/>
-                                                <TextBlock Text="60" HorizontalAlignment="Right" Margin="0,7,0,0"/>
-                                                <TextBlock Text="50" HorizontalAlignment="Right" Margin="0,4,0,0"/>
-                                                <TextBlock Text="40" HorizontalAlignment="Right" Margin="0,6,0,0"/>
-                                                <TextBlock Text="30" HorizontalAlignment="Right" Margin="0,6,0,0"/>
-                                                <TextBlock Text="20" HorizontalAlignment="Right" Margin="0,6,0,0"/>
-                                                <TextBlock Text="10" HorizontalAlignment="Right" Margin="0,4,0,0"/>
-                                                <TextBlock Text="0" HorizontalAlignment="Right" Margin="0,5,0,0"/>
-                                            </StackPanel> 
-                                            <TextBlock Text=" " HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                                            <StackPanel Orientation="Horizontal" Margin="27,-27,-490,0">
-                                                <TextBlock Text="0" Margin="5,0,0,0"/>
-                                                <TextBlock Text="10" Margin="10,0,0,0"/>
-                                                <TextBlock Text="20" Margin="10,0,0,0"/>
-                                                <TextBlock Text="30" Margin="7,0,0,0"/>
-                                                <TextBlock Text="40" Margin="10,0,0,0"/>
-                                                <TextBlock Text="50" Margin="10,0,0,0"/>
-                                                <TextBlock Text="60" Margin="10,0,0,0"/>
-                                                <TextBlock Text="70" Margin="10,0,0,0"/>
-                                                <TextBlock Text="80" Margin="10,0,0,0"/>
-                                                <TextBlock Text="90" Margin="10,0,0,0"/>
-                                                <TextBlock Text="100  RPM (%)" Margin="7,0,0,0"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                        
-                                        <Canvas Grid.Row="1" Grid.Column="1" Margin="10,5,0,0">
-                                            <!-- Влево вправо-->
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="100" X2="100" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="10" X2="100" Y2="10"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="20" X2="100" Y2="20" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="30" X2="100" Y2="30"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="40" X2="100" Y2="40" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="50" X2="100" Y2="50"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="60" X2="100" Y2="60" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="70" X2="100" Y2="70"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="80" X2="100" Y2="80" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="90" X2="100" Y2="90"/>
-                                            </ContentControl>
-                                            <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="0" X2="100" Y2="0" StrokeDashArray="2 2"/>
-                                            <!-- Вверх-вниз-->
-                                            <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="0" X2="0" Y2="100"/>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="10" Y1="0" X2="10" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="20" Y1="0" X2="20" Y2="105" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="30" Y1="0" X2="30" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="40" Y1="0" X2="40" Y2="105" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="50" Y1="0" X2="50" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="60" Y1="0" X2="60" Y2="105" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="70" Y1="0" X2="70" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="80" Y1="0" X2="80" Y2="105" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="90" Y1="0" X2="90" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="100" Y1="0" X2="100" Y2="105" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <!--Кривые-->
-                                            <Polyline x:Name="ExtFan1C" Opacity="1" Stroke="Pink" StrokeThickness="1" Points="0,100"/>
-                                            <Canvas.RenderTransform>
-                                                <ScaleTransform ScaleX="2.5" ScaleY="2.5"/>
-                                            </Canvas.RenderTransform>
-                                        </Canvas>
-                                    </Grid>
-                                    <!-- Собственно кривая кулеров 2 -->
-                                    <Grid Margin="0,-280,0,0" x:Name="CurveFan2" Grid.Row="1">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="22"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Text="t℃" Margin="0,-10,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Fan 2" x:Uid="AdvancedCooler_Curve_Fan2" FontWeight="ExtraBold" FontSize="18" Margin="60,-10,-160,0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="-10,-6,0,5">
-                                            <TextBlock Text="100" HorizontalAlignment="Right" Margin="0,2,0,0"/>
-                                            <TextBlock Text="90" HorizontalAlignment="Right" Margin="0,4,0,0"/>
-                                            <TextBlock Text="80" HorizontalAlignment="Right" Margin="0,5,0,0"/>
-                                            <TextBlock Text="70" HorizontalAlignment="Right" Margin="0,4,0,0"/>
-                                            <TextBlock Text="60" HorizontalAlignment="Right" Margin="0,5,0,0"/>
-                                            <TextBlock Text="50" HorizontalAlignment="Right" Margin="0,4,0,0"/>
-                                            <TextBlock Text="40" HorizontalAlignment="Right" Margin="0,5,0,0"/>
-                                            <TextBlock Text="30" HorizontalAlignment="Right" Margin="0,4,0,0"/>
-                                            <TextBlock Text="20" HorizontalAlignment="Right" Margin="0,5,0,0"/>
-                                            <TextBlock Text="10" HorizontalAlignment="Right" Margin="0,4,0,0"/>
-                                            <TextBlock Text="0" HorizontalAlignment="Right" Margin="0,5,0,0"/>
-                                        </StackPanel>
-
-                                        <TextBlock Grid.Row="2" Grid.Column="0" Text=" " HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="10,0,5,0">
-                                            <TextBlock Text="0" Margin="2,0,0,0"/>
-                                            <TextBlock Text="10" Margin="7,0,0,0"/>
-                                            <TextBlock Text="20" Margin="10,0,0,0"/>
-                                            <TextBlock Text="30" Margin="7,0,0,0"/>
-                                            <TextBlock Text="40" Margin="10,0,0,0"/>
-                                            <TextBlock Text="50" Margin="8,0,0,0"/>
-                                            <TextBlock Text="60" Margin="10,0,0,0"/>
-                                            <TextBlock Text="70" Margin="7,0,0,0"/>
-                                            <TextBlock Text="80" Margin="10,0,0,0"/>
-                                            <TextBlock Text="90" Margin="7,0,0,0"/>
-                                            <TextBlock Text="100  RPM (%)" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                        <Canvas Grid.Row="1" Grid.Column="1" Margin="10,5,0,0">
-                                            <!-- Влево вправо-->
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="100" X2="100" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="10" X2="100" Y2="10"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="20" X2="100" Y2="20" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="30" X2="100" Y2="30"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="40" X2="100" Y2="40" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="50" X2="100" Y2="50"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="60" X2="100" Y2="60" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="70" X2="100" Y2="70"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="80" X2="100" Y2="80" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="90" X2="100" Y2="90"/>
-                                            </ContentControl>
-                                            <Line Stroke="Gray" StrokeThickness="0.5" X1="-5" Y1="0" X2="100" Y2="0" StrokeDashArray="2 2"/>
-                                            <!-- Вверх-вниз-->
-                                            <Line Stroke="Gray" StrokeThickness="0.5" X1="0" Y1="0" X2="0" Y2="100"/>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="10" Y1="0" X2="10" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="20" Y1="0" X2="20" Y2="105" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="30" Y1="0" X2="30" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="40" Y1="0" X2="40" Y2="105" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="50" Y1="0" X2="50" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="60" Y1="0" X2="60" Y2="105" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="70" Y1="0" X2="70" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="80" Y1="0" X2="80" Y2="105" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="90" Y1="0" X2="90" Y2="100"/>
-                                            </ContentControl>
-                                            <ContentControl>
-                                                <Line Stroke="Gray" StrokeThickness="0.5" X1="100" Y1="0" X2="100" Y2="105" StrokeDashArray="2 2"/>
-                                            </ContentControl>
-                                            <!--Кривые-->
-                                            <Polyline x:Name="ExtFan2C" Stroke="Purple" Opacity="1" StrokeThickness="1" Points="0,100"/>
-                                            <Canvas.RenderTransform>
-                                                <ScaleTransform ScaleX="2.5" ScaleY="2.5"/>
-                                            </Canvas.RenderTransform>
-                                        </Canvas>
-                                    </Grid>
-                                    <!-- Всё что ниже кривых -->
-                                    <StackPanel Grid.Row="0" Margin="140,-45,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="CurveThresholdsStackPanel">
-                                        <TextBlock  FontWeight="Bold" FontSize="18" x:Uid="AdvancedCooler_Curve_Tresh" Text="Temperature thresholds"/>
-                                        <ToggleSplitButton Width="205" IsChecked="True" IsCheckedChanged="MyListButton_IsCheckedChanged" x:Name="Fan0ToggleCurve" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,12,0,0">
-                                            <Grid>
-                                                <ContentControl>
-                                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Margin="-5,0,-5,0" Glyph="&#xEDAD;"/>
-                                                </ContentControl>
-                                                <TextBlock Text="Fan 1" x:Uid="AdvancedCooler_Curve_Fan1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
-                                            </Grid>
-
-                                            <ToggleSplitButton.Flyout>
-                                                <Flyout Placement="Bottom">
-                                                    <!-- flyout content -->
-                                                    <GridView ItemClick="GridView_ItemClick1" IsItemClickEnabled="True">
-                                                        <GridView.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
-                                                            </ItemsPanelTemplate>
-                                                        </GridView.ItemsPanel>
-                                                        <GridView.Resources>
-                                                            <Style TargetType="Rectangle">
-                                                                <Setter Property="Width" Value="40"/>
-                                                                <Setter Property="Height" Value="40"/>
-                                                                <Setter Property="RadiusX" Value="4"/>
-                                                                <Setter Property="RadiusY" Value="4"/>
-                                                            </Style>
-                                                        </GridView.Resources>
-                                                        <GridView.Items>
-                                                            <Rectangle Fill="Gray"/>
-                                                            <Rectangle Fill="Black"/>
-                                                            <Rectangle Fill="Brown"/>
-                                                            <Rectangle Fill="Red"/>
-                                                            <Rectangle Fill="Coral"/>
-                                                            <Rectangle Fill="Orange"/>
-                                                            <Rectangle Fill="Yellow"/>
-                                                            <Rectangle Fill="Green"/>
-                                                            <Rectangle Fill="LawnGreen"/>
-                                                            <Rectangle Fill="Lime"/>
-                                                            <Rectangle Fill="LimeGreen"/>
-                                                            <Rectangle Fill="Blue"/>
-                                                            <Rectangle Fill="Indigo"/>
-                                                            <Rectangle Fill="Violet"/>
-                                                            <Rectangle Fill="Pink"/>
-                                                            <Rectangle Fill="White"/>
-                                                        </GridView.Items>
-                                                    </GridView>
-                                                </Flyout>
-                                            </ToggleSplitButton.Flyout>
-                                        </ToggleSplitButton>
-                                        <Grid x:Name="FanDef" VerticalAlignment="Top" Margin="420,6,0,0" HorizontalAlignment="Left">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="65"/>
-                                                <ColumnDefinition Width="5"/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition Width="5"/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                            </Grid.RowDefinitions>
-
-                                            <TextBlock Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" x:Uid="AdvancedCooler_Curve_Fan1" FontSize="20" Margin="0,19,0,0" Text="Fan 1"/>
-                                            <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,44,-195,0" Text="     Min           Max           SPD"/>
-                                        </Grid>
-                                        <ToggleSplitButton IsChecked="True" Width="205" IsCheckedChanged="MyListButton1_IsCheckedChanged" x:Name="Fan1ToggleCurve" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,33,0,0">
-                                            <Grid>
-                                                <ContentControl>
-                                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Margin="-5,0,-5,0" Glyph="&#xEDAD;"/>
-                                                </ContentControl>
-                                                <TextBlock Text="Fan 2" x:Uid="AdvancedCooler_Curve_Fan2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
-                                            </Grid>
-                                            <ToggleSplitButton.Flyout>
-                                                <Flyout Placement="Bottom">
-                                                    <!-- flyout content -->
-                                                    <GridView ItemClick="GridView_ItemClick2" IsItemClickEnabled="True">
-                                                        <GridView.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
-                                                            </ItemsPanelTemplate>
-                                                        </GridView.ItemsPanel>
-                                                        <GridView.Resources>
-                                                            <Style TargetType="Rectangle">
-                                                                <Setter Property="Width" Value="40"/>
-                                                                <Setter Property="Height" Value="40"/>
-                                                                <Setter Property="RadiusX" Value="4"/>
-                                                                <Setter Property="RadiusY" Value="4"/>
-                                                            </Style>
-                                                        </GridView.Resources>
-                                                        <GridView.Items>
-                                                            <Rectangle Fill="Gray"/>
-                                                            <Rectangle Fill="Black"/>
-                                                            <Rectangle Fill="Brown"/>
-                                                            <Rectangle Fill="Red"/>
-                                                            <Rectangle Fill="Coral"/>
-                                                            <Rectangle Fill="Orange"/>
-                                                            <Rectangle Fill="Yellow"/>
-                                                            <Rectangle Fill="Green"/>
-                                                            <Rectangle Fill="LawnGreen"/>
-                                                            <Rectangle Fill="Lime"/>
-                                                            <Rectangle Fill="LimeGreen"/>
-                                                            <Rectangle Fill="Blue"/>
-                                                            <Rectangle Fill="Indigo"/>
-                                                            <Rectangle Fill="Violet"/>
-                                                            <Rectangle Fill="Pink"/>
-                                                            <Rectangle Fill="White"/>
-                                                        </GridView.Items>
-                                                    </GridView>
-                                                </Flyout>
-                                            </ToggleSplitButton.Flyout>
-                                        </ToggleSplitButton>
-                                        <Grid x:Name="FanDef1" VerticalAlignment="Top" Margin="420,6,0,0" HorizontalAlignment="Left">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="65"/>
-                                                <ColumnDefinition Width="5"/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition Width="5"/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                            </Grid.RowDefinitions>
-                                            <TextBlock Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" x:Uid="AdvancedCooler_Curve_Fan2" FontSize="20" Margin="0,19,0,0" Text="Fan 2"/>
-                                            <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,44,-195,0" Text="     Min           Max           SPD"/>
-                                        </Grid> 
-                                    </StackPanel>
-                                </Grid>
-                            </ScrollViewer>
+                        <ToggleSplitButton IsChecked="True" Width="205" Tag="2" IsCheckedChanged="ChangeCoolerCurveVisibility_Checked" x:Name="Fan1ToggleCurve" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="420,33,0,0">
+                            <Grid>
+                                <ContentControl>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Margin="-5,0,-5,0" Glyph="&#xEDAD;"/>
+                                </ContentControl>
+                                <TextBlock Text="Fan 2" x:Uid="AdvancedCooler_Curve_Fan2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="21,0,0,0"/>
+                            </Grid>
+                            <ToggleSplitButton.Flyout>
+                                <Flyout Placement="Bottom">
+                                    <!-- flyout content -->
+                                    <GridView Tag="2" ItemClick="ChangeCoolerCurveColor_ItemClick" IsItemClickEnabled="True">
+                                        <GridView.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
+                                            </ItemsPanelTemplate>
+                                        </GridView.ItemsPanel>
+                                        <GridView.Resources>
+                                            <Style TargetType="Rectangle">
+                                                <Setter Property="Width" Value="40"/>
+                                                <Setter Property="Height" Value="40"/>
+                                                <Setter Property="RadiusX" Value="4"/>
+                                                <Setter Property="RadiusY" Value="4"/>
+                                            </Style>
+                                        </GridView.Resources>
+                                        <GridView.Items>
+                                            <Rectangle Fill="Gray"/>
+                                            <Rectangle Fill="Black"/>
+                                            <Rectangle Fill="Brown"/>
+                                            <Rectangle Fill="Red"/>
+                                            <Rectangle Fill="Coral"/>
+                                            <Rectangle Fill="Orange"/>
+                                            <Rectangle Fill="Yellow"/>
+                                            <Rectangle Fill="Green"/>
+                                            <Rectangle Fill="LawnGreen"/>
+                                            <Rectangle Fill="Lime"/>
+                                            <Rectangle Fill="LimeGreen"/>
+                                            <Rectangle Fill="Blue"/>
+                                            <Rectangle Fill="Indigo"/>
+                                            <Rectangle Fill="Violet"/>
+                                            <Rectangle Fill="Pink"/>
+                                            <Rectangle Fill="White"/>
+                                        </GridView.Items>
+                                    </GridView>
+                                </Flyout>
+                            </ToggleSplitButton.Flyout>
+                        </ToggleSplitButton>
+                        <Grid x:Name="FanDef1" VerticalAlignment="Top" Margin="420,6,0,0" HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="65"/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold" x:Uid="AdvancedCooler_Curve_Fan2" FontSize="20" Margin="0,19,0,0" Text="Fan 2"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,44,-195,0" Text="     Min           Max           SPD"/>
                         </Grid>
-                    </TabViewItem>
-                </TabView.TabItems>
-            </TabView>
-        </ContentControl>
-
-        <Button Shadow="{StaticResource SharedShadow}" Translation="0,0,20" VerticalAlignment="Bottom" Click="NormalMode_Click" HorizontalAlignment="Right" Height="40" Width="40" Margin="0,0,-1,15" x:Uid="AdvancedCooler_Normal" ToolTipService.ToolTip="Normal mode">
-            <Grid>
-                <ContentControl>
-                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Left" Margin="-5,0,-5,0" x:Name="BackButtonGlyph" Glyph="&#xe90f;"/>
-                </ContentControl>
-            </Grid>
-        </Button>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Page>

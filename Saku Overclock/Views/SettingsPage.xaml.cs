@@ -812,7 +812,7 @@ public sealed partial class SettingsPage
                         gifText
                     }
                 },
-                CloseButtonText = "Cancel".GetLocalized(),
+                CloseButtonText = "CancelThis/Text".GetLocalized(),
                 PrimaryButtonText = "ThemeSelect".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close
             };
