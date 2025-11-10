@@ -36,6 +36,11 @@
 
     <a href="#-about-the-project"><strong>👉 Explore full features list</strong></a>
 
+> [!IMPORTANT]
+> Closed testing of Saku Overclock Release is currently underway.
+> If you want to follow the development, check out Discord!
+* **Our Discord** - [Saku Overclock Community](https://discord.com/invite/eFcP6TSjEZ)
+
 ## 🖥️ Interface Preview
 Here's how Saku Overclock looks in action:
 
