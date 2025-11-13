@@ -1,7 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using LiveChartsCore.Defaults;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -12,13 +15,9 @@ using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
-using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.UI.Text;
-using Brush = Microsoft.UI.Xaml.Media.Brush;
-using Color = Windows.UI.Color;
-using Image = Microsoft.UI.Xaml.Controls.Image;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
@@ -31,8 +30,6 @@ public sealed partial class ГлавнаяPage
     private static readonly IApplyerService _applyer = App.GetService<IApplyerService>();
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
-    private List<double>? _segmentLengths; // Хранит длины всех сегментов
-    private double _totalLength; // Общая длина кривой
     private int _currentMode; // Хранит режим, который выбрал пользователь, то, где стоял курсор при нажатии на блок, чтобы показать тултип с дополнительной информацией о просматриемом блоке
     private bool _waitForTip;
     private bool _waitForCheck;
@@ -45,7 +42,6 @@ public sealed partial class ГлавнаяPage
     {
         App.GetService<ГлавнаяViewModel>();
         InitializeComponent();
-        CalculateSegmentLengths();
         _dataUpdater = App.BackgroundUpdater!;
         _dataUpdater.DataUpdated += OnDataUpdated;
         Unloaded += (_, _) =>
@@ -338,160 +334,44 @@ public sealed partial class ГлавнаяPage
         });
     }
 
-    // Функция для вычисления точки на кубической кривой Безье
-    private static PointF GetBezierPoint(PointF start, Point p1, Point p2, Point end, double t)
-    {
-        var x = Math.Pow(1 - t, 3) * start.X +
-                3 * Math.Pow(1 - t, 2) * t * p1.X +
-                3 * (1 - t) * Math.Pow(t, 2) * p2.X +
-                Math.Pow(t, 3) * end.X;
 
-        var y = Math.Pow(1 - t, 3) * start.Y +
-                3 * Math.Pow(1 - t, 2) * t * p1.Y +
-                3 * (1 - t) * Math.Pow(t, 2) * p2.Y +
-                Math.Pow(t, 3) * end.Y;
+    public ObservableCollection<int> Values { get; set; } = [];
 
-        return new PointF((float)x, (float)y);
-    }
-
-    // Функция для линейной интерполяции между двумя точками
-    private static PointF InterpolatePoint(Point start, Point end, double t)
-    {
-        var x = start.X + t * (end.X - start.X);
-        var y = start.Y + t * (end.Y - start.Y);
-        return new PointF((float)x, (float)y);
-    }
-
-    // Предварительный расчет длин сегментов
-    private void CalculateSegmentLengths()
-    {
-        _segmentLengths = [];
-
-        // Определяем контрольные точки кривой
-        var startPoint = new Point(0, 50);
-        var controlPoints = new List<(Point p1, Point p2, Point p3)>
-        {
-            (new Point(20, 30), new Point(50, 30), new Point(70, 40)),
-            (new Point(90, 50), new Point(100, 50), new Point(120, 43)),
-            (new Point(160, 13), new Point(160, 10), new Point(220, 5))
-        };
-
-        // Вычисляем длины Bezier-сегментов
-        foreach (var (p1, p2, p3) in controlPoints)
-        {
-            var length = ApproximateBezierLength(startPoint, p1, p2, p3);
-            _segmentLengths.Add(length);
-            startPoint = p3; // Обновляем начальную точку для следующего сегмента
-        }
-
-        // Добавляем длину последнего Line-сегмента
-        var endPoint = new Point(230, 5);
-        var lineLength = Distance(startPoint, endPoint);
-        _segmentLengths.Add(lineLength);
-
-        // Вычисляем общую длину кривой
-        _totalLength = _segmentLengths.Sum();
-    }
-
-    // Функция для приближенного вычисления длины кривой Безье
-    private static double ApproximateBezierLength(PointF start, Point p1, Point p2, Point end)
-    {
-        const int steps = 100; // Количество шагов для аппроксимации
-        double length = 0;
-        var previousPoint = start;
-
-        for (var i = 1; i <= steps; i++)
-        {
-            var t = i / (double)steps;
-            var currentPoint = GetBezierPoint(start, p1, p2, end, t);
-            length += Distance(previousPoint, currentPoint);
-            previousPoint = currentPoint;
-        }
-
-        return length;
-    }
-
-    // Функция для вычисления расстояния между двумя точками
-    private static double Distance(PointF p1, PointF p2)
-    {
-        double dx = p2.X - p1.X;
-        double dy = p2.Y - p1.Y;
-        return Math.Sqrt(dx * dx + dy * dy);
-    }
+    public object Sync { get; } = new object();
+    private static Thickness NormalThickness = new(-25, -40, -25, 0);
+    private static Thickness AdjustedThickness = new(-25, -80, -25, 0);
 
     // Обновление положения точки
     private void UpdatePointPosition(double temperature)
     {
-        if (temperature <= 0 || temperature > 97)
+        if (temperature < 40)
         {
-            temperature = 97;
+            AdjustChartThickness(AdjustedThickness);
         }
-
-        // Предполагаем, что температура изменяется от 0 до 100
-        var fraction = temperature / 100.0;
-
-        // Вычисляем расстояние, которое соответствует текущей температуре
-        var targetLength = fraction * _totalLength;
-
-        // Находим сегмент, на котором находится точка
-        double accumulatedLength = 0;
-        for (var i = 0; i < _segmentLengths!.Count; i++)
+        else if (temperature > 45)
         {
-            var segmentLength = _segmentLengths[i];
-            if (accumulatedLength + segmentLength >= targetLength)
+            AdjustChartThickness(NormalThickness);
+        }
+        if (temperature <= 0 || temperature > 100)
+        {
+            temperature = 100;
+        }
+        lock (Sync)
+        {
+            Values.Add((int)temperature);
+            if (Values.Count > 10)
             {
-                // Точка находится на этом сегменте
-                var segmentFraction = (targetLength - accumulatedLength) / segmentLength;
-
-                // Определяем тип сегмента и вычисляем точку
-                PointF point;
-                if (i < _segmentLengths.Count - 1)
-                {
-                    // Bezier-сегмент
-                    var (p1, p2, p3) = GetControlPointsForSegment(i);
-                    var startPoint = GetStartPointForSegment(i);
-                    point = GetBezierPoint(startPoint, p1, p2, p3, segmentFraction);
-                }
-                else
-                {
-                    // Line-сегмент
-                    var startPoint = GetStartPointForSegment(i);
-                    var endPoint = new Point(230, 5);
-                    point = InterpolatePoint(startPoint, endPoint, segmentFraction);
-                }
-
-                // Обновляем положение точки
-                PointTransform.X = point.X - 7; // Центрируем точку по ширине
-                PointTransform.Y = point.Y - 7; // Центрируем точку по высоте
-                return;
+                Values.RemoveAt(0);
             }
-
-            accumulatedLength += segmentLength;
         }
     }
 
-    // Вспомогательные функции для получения контрольных точек и начальной точки сегмента
-    private static (Point p1, Point p2, Point p3) GetControlPointsForSegment(int index)
+    private void AdjustChartThickness(Thickness thickness)
     {
-        var controlPoints = new List<(Point p1, Point p2, Point p3)>
+        if (Chart.Margin != thickness)
         {
-            (new Point(20, 30), new Point(50, 30), new Point(70, 40)),
-            (new Point(90, 50), new Point(100, 50), new Point(120, 43)),
-            (new Point(160, 13), new Point(160, 10), new Point(220, 5))
-        };
-        return controlPoints[index];
-    }
-
-    private static Point GetStartPointForSegment(int index)
-    {
-        var points = new List<Point>
-        {
-            new(0, 50),
-            new(70, 40),
-            new(120, 43),
-            new(220, 5)
-        };
-        return points[index];
+            Chart.Margin = thickness;
+        }
     }
 
     #endregion

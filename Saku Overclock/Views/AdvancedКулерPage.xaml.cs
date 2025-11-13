@@ -1,46 +1,51 @@
-﻿using System.Globalization;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Xml.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
+using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.SkiaSharpView;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Shapes;
+using Octokit;
+using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Helpers;
+using Saku_Overclock.Services;
+using Saku_Overclock.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Text;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Shapes;
-using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers;
-using Saku_Overclock.ViewModels;
+using Application = Microsoft.UI.Xaml.Application;
+using FileMode = System.IO.FileMode;
 using Path = System.IO.Path;
 using TextConstants = Microsoft.UI.Text.TextConstants;
 using TextGetOptions = Microsoft.UI.Text.TextGetOptions;
 using TextSetOptions = Microsoft.UI.Text.TextSetOptions;
-using Octokit;
-using Saku_Overclock.Services;
-using System.Diagnostics;
-using Application = Microsoft.UI.Xaml.Application;
-using FileMode = System.IO.FileMode;
 
 namespace Saku_Overclock.Views;
 
 public sealed partial class AdvancedКулерPage
 {
-    private Point _cursorPosition; // Точка, для отображения Flyout, чтобы его точно расположить при нажатии на кнопку +
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
     private const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\"; // Путь к NBFC
 
     public AdvancedКулерPage()
     {
+        App.GetService<AdvancedКулерViewModel>();
         InitializeComponent();
         Loaded += async (_, _) =>
         { 
-            await LoadFanCurvesFromConfig(); 
+            await LoadFanCurvesFromConfig();
         };
     }
-
+    
     #region Initialization
 
 

@@ -1188,7 +1188,7 @@ public sealed partial class ShellPage
                 ? ElementTheme.Light
                 : ElementTheme.Dark;
             themeMobil.SwitchThemeCommand.Execute(themeLight);
-            if (_themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustomBg)
+            if (_themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustomBg || _themeSelectorService.Themes[AppSettings.ThemeType].ThemeName.Contains("Theme_"))
             {
                 var themeBackground = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeBackground;
 
