@@ -18,6 +18,7 @@ using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
 using Windows.UI.Text;
+using ZenStates.Core;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
@@ -37,6 +38,7 @@ public sealed partial class ГлавнаяPage
     private string _doubleClickApplyPrev = string.Empty;
     private int _lastAppliedPreset = -2; // Начальное значение, которое точно не совпадёт
     private string _lastAppliedProfileName = string.Empty;
+    private readonly Cpu? _cpu;
 
     public ГлавнаяPage()
     {
@@ -44,6 +46,16 @@ public sealed partial class ГлавнаяPage
         InitializeComponent();
         _dataUpdater = App.BackgroundUpdater!;
         _dataUpdater.DataUpdated += OnDataUpdated;
+
+        try
+        {
+            _cpu = CpuSingleton.GetInstance();
+        }
+        catch (Exception e) 
+        {
+            LogHelper.LogError(e);
+        }
+
         Unloaded += (_, _) =>
         {
             _dataUpdater.DataUpdated -= OnDataUpdated;
@@ -55,10 +67,20 @@ public sealed partial class ГлавнаяPage
     {
         try
         {
-            Info_CpuName.Text = CpuSingleton.GetInstance().systemInfo.CpuName;
-            Info_CpuCores.Text = CpuSingleton.GetInstance().info.topology.cores + "C/" +
-                                 CpuSingleton.GetInstance().info.topology.logicalCores + "T";
             LoadProfiles();
+
+            // Принудительная блокировка автомасштабирования
+            Chart.YAxes.First().MinLimit = 0;
+            Chart.YAxes.First().MaxLimit = 100;
+
+            if (_cpu == null) 
+            {
+                return; 
+            }
+
+            Info_CpuName.Text = _cpu.systemInfo.CpuName;
+            Info_CpuCores.Text = _cpu.info.topology.cores + "C/" +
+                                 _cpu.info.topology.logicalCores + "T";
         }
         catch (Exception ex)
         {
@@ -338,20 +360,12 @@ public sealed partial class ГлавнаяPage
     public ObservableCollection<int> Values { get; set; } = [];
 
     public object Sync { get; } = new object();
-    private static Thickness NormalThickness = new(-25, -40, -25, 0);
-    private static Thickness AdjustedThickness = new(-25, -80, -25, 0);
 
-    // Обновление положения точки
+    /// <summary>
+    /// Обновление положения точки температуры на графике
+    /// </summary>
     private void UpdatePointPosition(double temperature)
     {
-        if (temperature < 40)
-        {
-            AdjustChartThickness(AdjustedThickness);
-        }
-        else if (temperature > 45)
-        {
-            AdjustChartThickness(NormalThickness);
-        }
         if (temperature <= 0 || temperature > 100)
         {
             temperature = 100;
@@ -363,14 +377,6 @@ public sealed partial class ГлавнаяPage
             {
                 Values.RemoveAt(0);
             }
-        }
-    }
-
-    private void AdjustChartThickness(Thickness thickness)
-    {
-        if (Chart.Margin != thickness)
-        {
-            Chart.Margin = thickness;
         }
     }
 
@@ -719,15 +725,17 @@ public sealed partial class ГлавнаяPage
                     Main_AdditionalInfo3Desc.Text = "BIOS:";
                     try
                     {
-                        Main_AdditionalInfo1Name.Text = CpuSingleton.GetInstance().systemInfo.MbName;
-                        Main_AdditionalInfo2Name.Text = CpuSingleton.GetInstance().systemInfo.MbVendor;
-                        Main_AdditionalInfo3Name.Text = CpuSingleton.GetInstance().systemInfo.BiosVersion;
+                        if (_cpu != null)
+                        {
+                            Main_AdditionalInfo1Name.Text = _cpu.systemInfo.MbName;
+                            Main_AdditionalInfo2Name.Text = _cpu.systemInfo.MbVendor;
+                            Main_AdditionalInfo3Name.Text = _cpu.systemInfo.BiosVersion;
+                        }
                     }
                     catch (Exception ex)
                     {
                         await LogHelper.LogError(ex);
                     }
-
                     break;
                 case 2:
                     Main_Teach.Target = TemperaturePlacer;
@@ -744,15 +752,18 @@ public sealed partial class ГлавнаяPage
                     Main_AdditionalInfo3Desc.Text = "SMT:";
                     try
                     {
-                        Main_AdditionalInfo2Name.Text = CpuSingleton.GetInstance().info.topology.cores.ToString();
-                        Main_AdditionalInfo3Name.Text = CpuSingleton.GetInstance().systemInfo.SMT.ToString()
-                            .Replace("True", "Cooler_Service_Enabled/Content".GetLocalized()).Replace("False", "Cooler_Service_Disabled/Content".GetLocalized()); // Просто перевод, не для настроек кулера
+                        if (_cpu != null)
+                        {
+                            Main_AdditionalInfo2Name.Text = _cpu.info.topology.cores.ToString();
+                            Main_AdditionalInfo3Name.Text = _cpu.systemInfo.SMT.ToString()
+                                .Replace("True", "Cooler_Service_Enabled/Content".GetLocalized())
+                                .Replace("False", "Cooler_Service_Disabled/Content".GetLocalized()); // Просто перевод, не для настроек кулера
+                        }
                     }
                     catch (Exception ex)
                     {
                         await LogHelper.LogError(ex);
                     }
-
                     break;
                 case 4:
                     Main_Teach.Target = FrequencyPlacer;
