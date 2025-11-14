@@ -148,7 +148,20 @@ public partial class App
             Current.Exit();
         }
 
-        UnhandledException += (s,e) => { HandleCriticalError(e.Exception); };
+        UnhandledException += (s,e) => 
+        {
+            // Перехватываем исключения от LiveCharts (баг с PointerCapture)
+            if (((e.Exception is NullReferenceException)
+                && e.Exception.Source == "LiveChartsCore.SkiaSharpView.WinUI") ||
+                ((e.Exception is ArgumentException)
+                && e.Exception.Source == "WinRT.Runtime"))
+            {
+                e.Handled = true; // TODO: Удалить когда LiveCharts починят (issue #2035)
+                return;
+            }
+
+            HandleCriticalError(e.Exception); 
+        };
     }
 
     #region JSON and Initialization
