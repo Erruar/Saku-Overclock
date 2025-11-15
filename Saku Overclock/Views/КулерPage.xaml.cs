@@ -276,7 +276,7 @@ public sealed partial class КулерPage
             Content = stackPanel,
             CloseButtonText = "CancelThis/Text".GetLocalized(),
             PrimaryButtonText = "Next".GetLocalized(),
-            DefaultButton = ContentDialogButton.Close,
+            DefaultButton = ContentDialogButton.Primary,
             IsPrimaryButtonEnabled = false // Первоначально кнопка "Далее" неактивна
         };
 
@@ -291,61 +291,63 @@ public sealed partial class КулерPage
             downloadButton.IsEnabled = false;
             progressBar.Opacity = 1.0;
 
-            var client = new GitHubClient(new ProductHeaderValue("SakuOverclock"));
-            var releases = await client.Repository.Release.GetAll("hirschmann", "nbfc");
-            var latestRelease = releases[0];
-
-            var downloadUrl = latestRelease.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe"))?.BrowserDownloadUrl;
-            if (downloadUrl != null)
+            try
             {
-                var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
-                response.EnsureSuccessStatusCode();
+                var client = new GitHubClient(new ProductHeaderValue("SakuOverclock"));
+                var releases = await client.Repository.Release.GetAll("hirschmann", "nbfc");
+                var latestRelease = releases[0];
+                var release = latestRelease.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe"));
 
-                var totalBytes = response.Content.Headers.ContentLength ?? 1;
-                var downloadPath = Path.Combine(Path.GetTempPath(), "NBFC");
-
-                var fileStream = new FileStream(downloadPath, FileMode.Create, FileAccess.Write,
-                    FileShare.None);
-                var downloadStream = await response.Content.ReadAsStreamAsync();
-                var buffer = new byte[8192];
-                int bytesRead;
-                long totalRead = 0;
-
-                while ((bytesRead = await downloadStream.ReadAsync(buffer)) > 0)
+                if (release == null)
                 {
-                    await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
-                    totalRead += bytesRead;
-                    progressBar.Value = (double)totalRead / totalBytes * 100;
+                    await LogHelper.TraceIt_TraceError(
+                        "Cooler_DownloadNBFC_NoFileFound".GetLocalized());
+                    return;
                 }
 
-                await Task.Delay(1000); // Задержка в 1 секунду
-                // Убедиться, что файл полностью закрыт перед запуском
-                if (File.Exists(downloadPath))
+                var downloadUrl = release.BrowserDownloadUrl;
+                var downloadPath = Path.Combine(Path.GetTempPath(), release.Name); // Используем оригинальное имя файла
+
+                // Скачивание файла с гарантированным освобождением ресурсов
                 {
-                label_8:
-                    try
+                    using var httpClient = new HttpClient();
+                    using var response = await httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
+                    response.EnsureSuccessStatusCode();
+
+                    var totalBytes = response.Content.Headers.ContentLength ?? -1L;
+                    var buffer = new byte[8192];
+                    var totalRead = 0L;
+
+                    await using var fileStream = new FileStream(downloadPath, FileMode.Create, FileAccess.Write,
+                                     FileShare.None, 8192, true);
+                    await using var downloadStream = await response.Content.ReadAsStreamAsync();
+                    int bytesRead;
+                    while ((bytesRead = await downloadStream.ReadAsync(buffer)) > 0)
                     {
-                        // Запуск загруженного установочного файла с правами администратора
-                        Process.Start(new ProcessStartInfo
+                        await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+                        totalRead += bytesRead;
+
+                        // Обновление прогресс-бара
+                        if (totalBytes > 0)
                         {
-                            FileName = downloadPath,
-                            Verb = "runas" // Запуск от имени администратора
-                        });
+                            progressBar.Value = (double)totalRead / totalBytes * 100;
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        await App.MainWindow.ShowMessageDialogAsync(
-                            "Cooler_DownloadNBFC_ErrorDesc".GetLocalized() + $": {ex.Message}", "Error".GetLocalized());
-                        await Task.Delay(2000);
-                        goto
-                            label_8; // Повторить задачу открытия автообновления приложения, в случае если возникла ошибка доступа
-                    }
+
+                    await fileStream.FlushAsync();
+                    // Гарантированное закрытие потоков
                 }
 
+                // Дополнительная задержка для полного освобождения файла системой
+                await Task.Delay(500);
+
+                // Запуск установщика с повторными попытками
+                await LaunchNBFCInstallerWithRetry(downloadPath);
+
+                // Обновление UI после успешной загрузки
                 downloadButton.Opacity = 0.0;
                 progressBar.Opacity = 0.0;
-                // Изменение текста диалога и активация кнопки "Далее"
+
                 nbfcDialog.Content = new TextBlock
                 {
                     Text = "Cooler_DownloadNBFC_AfterDesc".GetLocalized(),
@@ -353,11 +355,65 @@ public sealed partial class КулерPage
                 };
                 nbfcDialog.IsPrimaryButtonEnabled = true;
             }
+            catch (Exception ex)
+            {
+                await LogHelper.TraceIt_TraceError(
+                    "Cooler_DownloadNBFC_ErrorDesc".GetLocalized() + $": {ex.Message}");
+
+                // Восстановление UI при ошибке
+                downloadButton.IsEnabled = true;
+                progressBar.Opacity = 0.0;
+            }
         };
         var result = await nbfcDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
             PageService.ReloadPage(typeof(КулерViewModel).FullName!); // Вызов метода перезагрузки страницы
+        }
+    }
+
+    /// <summary>
+    /// Вспомогательный метод для запуска установщика
+    /// </summary>
+    private static async Task LaunchNBFCInstallerWithRetry(string filePath)
+    {
+        const int maxRetries = 5;
+
+        for (var retryCount = 0; retryCount < maxRetries; retryCount++)
+        {
+            try
+            {
+                if (!File.Exists(filePath))
+                {
+                    throw new FileNotFoundException("Installer file not found", filePath);
+                }
+
+                // Проверка доступности файла
+                await using (File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    // Файл доступен
+                }
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = filePath,
+                    Verb = "runas",
+                    UseShellExecute = true
+                });
+
+                return;
+            }
+            catch (Exception ex)
+            {
+                if (retryCount >= maxRetries - 1)
+                {
+                    await LogHelper.LogError(
+                        "Cooler_DownloadNBFC_ErrorDesc".GetLocalized() + $": {ex.Message}");
+                    return;
+                }
+
+                await Task.Delay(2000);
+            }
         }
     }
 

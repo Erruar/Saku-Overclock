@@ -35,7 +35,7 @@ public sealed partial class ПараметрыPage
 {
     private FontIcon? _smuSymbol1; // тоже самое что и SMUSymbol
     private List<SmuAddressSet>? _matches; // Совпадения адресов SMU 
-    private static Smusettings _smusettings = new(); // Загрузка настроек быстрых команд SMU
+    private static Smusettings? _smusettings = new(); // Загрузка настроек быстрых команд SMU
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
@@ -71,6 +71,12 @@ public sealed partial class ПараметрыPage
         get;
         set;
     } = "";
+
+    public static bool SettingsApplied
+    {
+        get;
+        set;
+    } = false;
 
     public ПараметрыPage()
     {
@@ -1140,7 +1146,7 @@ public sealed partial class ПараметрыPage
             _waitforload = false;
 
             SmuSettingsLoad();
-            if (_smusettings.Note != string.Empty)
+            if (_smusettings != null && _smusettings.Note != string.Empty)
             {
                 SmuNotes.Document.SetText(TextSetOptions.FormatRtf, _smusettings.Note.TrimEnd());
                 ChangeRichEditBoxTextColor(SmuNotes, GetColorFromBrush(TextColor.Foreground));
@@ -1164,7 +1170,7 @@ public sealed partial class ПараметрыPage
     private void Init_QuickSMU()
     {
         SmuSettingsLoad();
-        if (_smusettings.QuickSmuCommands == null)
+        if (_smusettings == null || _smusettings.QuickSmuCommands == null)
         {
             return;
         }
@@ -1904,7 +1910,14 @@ public sealed partial class ПараметрыPage
     //SMU КОМАНДЫ
     private void ApplySettings(int mode, int commandIndex)
     {
+        SmuSettingsLoad();
+        if (_smusettings == null)
+        {
+            return;
+        }
+
         _commandReturnedValue = false;
+
         try
         {
             uint[]? args;
@@ -1913,9 +1926,9 @@ public sealed partial class ПараметрыPage
             uint addrRsp;
             uint addrArg;
             uint command;
+
             if (mode != 0)
             {
-                SmuSettingsLoad();
                 args = Utils.MakeCmdArgs();
                 userArgs = _smusettings.QuickSmuCommands![commandIndex].Argument.Trim().Split(',');
                 TryConvertToUint(_smusettings.MailBoxes![_smusettings.QuickSmuCommands![commandIndex].MailIndex].Cmd,
@@ -1939,6 +1952,7 @@ public sealed partial class ПараметрыPage
             _testMailbox.SMU_ADDR_MSG = addrMsg;
             _testMailbox.SMU_ADDR_RSP = addrRsp;
             _testMailbox.SMU_ADDR_ARG = addrArg;
+
             for (var i = 0; i < userArgs.Length; i++)
             {
                 if (i == args.Length)
@@ -1949,6 +1963,7 @@ public sealed partial class ПараметрыPage
                 TryConvertToUint(userArgs[i], out var temp);
                 args[i] = temp;
             }
+
             var argsBefore = args.ToArray();
 
             Task.Run(async () =>
@@ -1958,6 +1973,7 @@ public sealed partial class ПараметрыPage
                     $"Address MSG: {_testMailbox.SMU_ADDR_MSG}\n" +
                     $"Address RSP: {_testMailbox.SMU_ADDR_RSP}\n" +
                     $"Address ARG: {_testMailbox.SMU_ADDR_ARG}"));
+
             var status = _cpu?.smu.SendSmuCommand(_testMailbox, command, ref args);
             if (status != SMU.Status.OK)
             {
@@ -1967,6 +1983,7 @@ public sealed partial class ПараметрыPage
                              + "Param_SMU_Args".GetLocalized() + (TextBoxArg0.Text.Contains("0x")
                                  ? TextBoxArg0.Text
                                  : "0x" + TextBoxArg0.Text);
+
                 if (status == SMU.Status.CMD_REJECTED_PREREQ)
                 {
                     ApplyInfo += "\n" + "SMUErrorRejected".GetLocalized();
@@ -1976,6 +1993,7 @@ public sealed partial class ПараметрыPage
                     ApplyInfo += "\n" + "SMUErrorNoCMD".GetLocalized();
                 }
             }
+
             if (args[0] != argsBefore[0] || args[1] != argsBefore[1] || args[2] != argsBefore[2])
             {
                 _commandReturnedValue = true;
@@ -1985,7 +2003,7 @@ public sealed partial class ПараметрыPage
         }
         catch (Exception ex)
         {
-            Task.Run(async () => await LogHelper.LogError($"Applying user SMU settings error: {ex.Message}"));
+            LogHelper.LogError($"Applying user SMU settings error: {ex.Message}");
             ApplyInfo += "\n" + "SMUErrorDesc".GetLocalized();
         }
     }
@@ -2123,10 +2141,7 @@ public sealed partial class ПараметрыPage
             };
             var cmdText = new TextBox
             {
-                /* Margin = new Thickness(0, 152, 0, 0),*/
                 PlaceholderText = "Command".GetLocalized(),
-                /*HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top, */
                 Width = 176,
                 CornerRadius = new CornerRadius(10),
                 Translation = new System.Numerics.Vector3(0, 0, 12),
@@ -2134,7 +2149,6 @@ public sealed partial class ПараметрыPage
             };
             var argText = new TextBox
             {
-                /*Margin = new Thickness(180, 152, 0, 0),*/
                 PlaceholderText = "Arguments".GetLocalized(),
                 Width = 179,
                 CornerRadius = new CornerRadius(10),
@@ -2170,6 +2184,11 @@ public sealed partial class ПараметрыPage
                 if (destination != 0)
                 {
                     SmuSettingsLoad();
+                    if (_smusettings == null)
+                    {
+                        return;
+                    }
+
                     _smuSymbol = _smusettings.QuickSmuCommands![rowindex].Symbol;
                     _smuSymbol1.Glyph = _smusettings.QuickSmuCommands![rowindex].Symbol;
                     comboSelSmu.SelectedIndex = _smusettings.QuickSmuCommands![rowindex].MailIndex;
@@ -2362,7 +2381,7 @@ public sealed partial class ПараметрыPage
                         if (result == ContentDialogResult.Secondary)
                         {
                             SmuSettingsLoad();
-                            _smusettings.QuickSmuCommands!.RemoveAt(rowindex);
+                            _smusettings?.QuickSmuCommands?.RemoveAt(rowindex);
                             SmuSettingsSave();
                             Init_QuickSMU();
                         }
@@ -2486,6 +2505,7 @@ public sealed partial class ПараметрыPage
                     if (result == ContentDialogResult.Primary)
                     {
                         SmuSettingsLoad();
+                        _smusettings ??= new Smusettings();
                         var saveIndex = comboSelSmu.SelectedIndex;
                         for (var i = 0; i < comboSelSmu.Items.Count; i++)
                         {
@@ -2583,7 +2603,6 @@ public sealed partial class ПараметрыPage
 
         
         SendSmuCommand.RangeCompleted -= CloseRangeStarted;
-        
     }
 
     private void SymbolButton_Click(object sender, RoutedEventArgs e) => SymbolFlyout.ShowAt(sender as Button);
@@ -2619,6 +2638,7 @@ public sealed partial class ПараметрыPage
         SmuSettingsLoad();
         var documentRange = SmuNotes.Document.GetRange(0, TextConstants.MaxUnitCount);
         documentRange.GetText(TextGetOptions.FormatRtf, out var content);
+        _smusettings ??= new Smusettings();
         _smusettings.Note = content.TrimEnd();
         SmuSettingsSave();
     }
@@ -4644,6 +4664,8 @@ public sealed partial class ПараметрыPage
     {
         try
         {
+            SettingsApplied = false;
+
             var isBristol = _cpu?.info.codeName == Cpu.CodeName.BristolRidge;
 
             if (NormalUserMode.Visibility == Visibility.Visible)
@@ -5274,7 +5296,18 @@ public sealed partial class ПараметрыPage
                 ApplySettings(0, 0);
             }
 
-            await Task.Delay(1000);
+            var timerCounter = 0;
+            while (SettingsApplied == false)
+            {
+                await Task.Delay(50);
+
+                timerCounter++;
+                if (timerCounter == 140)
+                {
+                    break;
+                }
+            }
+
             var timer = 1000;
             if (ApplyInfo != string.Empty)
             {

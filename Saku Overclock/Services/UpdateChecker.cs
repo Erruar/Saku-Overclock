@@ -263,7 +263,7 @@ public abstract partial class UpdateChecker
                     throw new FileNotFoundException("Installer file not found", filePath);
                 }
 
-                // Проверка, что файл не заблокирован
+                // Проверка доступности файла
                 await using (File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     // Файл доступен

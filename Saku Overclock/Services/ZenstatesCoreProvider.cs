@@ -11,7 +11,7 @@ public class ZenstatesCoreProvider : IDataProvider
 {
     private float _currentCpuLoad;
     private int _globalCoreCounter = -1;
-    private readonly Cpu _cpu = CpuSingleton.GetInstance();
+    private readonly Cpu? _cpu;
     private uint _tableVersion;
 
     // Переиспользуемые массивы для предотвращения аллокаций
@@ -29,12 +29,29 @@ public class ZenstatesCoreProvider : IDataProvider
         public const string CpuPowerStart = "CpuPowerStart";
     }
 
+    public ZenstatesCoreProvider() 
+    {
+        try
+        {
+            _cpu = CpuSingleton.GetInstance();
+        }
+        catch (Exception e)
+        {
+            LogHelper.LogError(e);
+        }
+    }
+
     /// <summary>
     ///     Реализация получения информации через Zenstates Core
     /// </summary>
     /// <returns>SensorsInformation</returns>
     public SensorsInformation GetDataAsync()
     {
+        if (_cpu == null) 
+        { 
+            return new SensorsInformation(); 
+        }
+
         RefreshPowerTable();
 
         if (_globalCoreCounter == -1)
@@ -105,7 +122,7 @@ public class ZenstatesCoreProvider : IDataProvider
     /// <summary>
     ///     Возвращает таблицу PowerTable целиком для дальнейшей обработки, например для методов OC Finder
     /// </summary>
-    public float[]? GetPowerTable() => _cpu.powerTable?.Table;
+    public float[]? GetPowerTable() => _cpu?.powerTable?.Table;
 
     /// <summary>
     ///     Обновляет PowerTable
@@ -114,7 +131,7 @@ public class ZenstatesCoreProvider : IDataProvider
     {
         try
         {
-            _cpu.RefreshPowerTable();
+            _cpu?.RefreshPowerTable();
         }
         catch
         {
@@ -387,7 +404,7 @@ public class ZenstatesCoreProvider : IDataProvider
     /// </summary>
     private float GetSensorValue(string sensorName, uint tableVersion, float fallbackValue = 0f)
     {
-        if (_cpu.powerTable?.Table == null)
+        if (_cpu?.powerTable?.Table == null)
         {
             return fallbackValue;
         }
@@ -425,7 +442,7 @@ public class ZenstatesCoreProvider : IDataProvider
     /// </summary>
     private float GetVrmValue(string baseSensorName, uint tableVersion)
     {
-        if (_cpu.powerTable?.Table == null)
+        if (_cpu?.powerTable?.Table == null)
         {
             return 0f;
         }
@@ -456,7 +473,7 @@ public class ZenstatesCoreProvider : IDataProvider
     /// </summary>
     private float GetVrmLimit(string baseSensorName, uint tableVersion)
     {
-        if (_cpu.powerTable?.Table == null)
+        if (_cpu?.powerTable?.Table == null)
         {
             return 0f;
         }
@@ -496,7 +513,7 @@ public class ZenstatesCoreProvider : IDataProvider
         double sumClk = 0, sumVolt = 0;
         int validClk = 0, validVolt = 0;
 
-        for (var core = 0; core < _cpu.info.topology.cores; core++)
+        for (var core = 0; core < _cpu?.info.topology.cores; core++)
         {
             // Частота
             var clk = GetCoreMetric(startFreqIndex, core, 0.2, 8.0);
@@ -552,7 +569,7 @@ public class ZenstatesCoreProvider : IDataProvider
     /// </summary>
     private int GetStartIndex(string sensorName)
     {
-        if (_cpu.powerTable?.Table == null)
+        if (_cpu?.powerTable?.Table == null)
         {
             return -1;
         }
@@ -582,7 +599,7 @@ public class ZenstatesCoreProvider : IDataProvider
     /// </summary>
     private void BuildActiveCoreMapping(int startIndex)
     {
-        if (_cpu.powerTable?.Table == null || startIndex == -1)
+        if (_cpu?.powerTable?.Table == null || startIndex == -1)
         {
             _activeCoreToPhysicalIndex.Clear();
             return;
@@ -611,39 +628,56 @@ public class ZenstatesCoreProvider : IDataProvider
     /// </summary>
     private double GetCoreMetric(int startIndex, int logicalCore, double minValid, double maxValid)
     {
-        // Убедимся, что маппинг построен
-        if (_activeCoreToPhysicalIndex.Capacity == 0 ||
-            !_activeCoreToPhysicalIndex.ContainsKey(startIndex))
+        try
         {
-            BuildActiveCoreMapping(startIndex);
-        }
+            // Убедимся, что маппинг построен
+            if (_activeCoreToPhysicalIndex.Capacity == 0 ||
+                !_activeCoreToPhysicalIndex.ContainsKey(startIndex))
+            {
+                BuildActiveCoreMapping(startIndex);
+            }
 
-        // Проверяем доступность значения
-        if (logicalCore < 0 ||
-            logicalCore > _globalCoreCounter ||
-            _activeCoreToPhysicalIndex[startIndex].Length < logicalCore ||
-            !_activeCoreToPhysicalIndex.TryGetValue(startIndex, out var values) ||
-            values.Length < logicalCore)
+            // Проверяем наличие ключа и получаем значения
+            if (!_activeCoreToPhysicalIndex.TryGetValue(startIndex, out var values))
+            {
+                return 0;
+            }
+
+            // Проверяем доступность значения
+            if (logicalCore < 0 ||
+                logicalCore >= _globalCoreCounter ||
+                values == null ||
+                values.Length <= logicalCore)
+            {
+                return 0;
+            }
+
+            var physicalTableIndex = values[logicalCore];
+
+            if (_cpu == null || _cpu.powerTable == null || _cpu.powerTable.Table == null)
+            {
+                return 0;
+            }
+
+            if (physicalTableIndex >= _cpu.powerTable.Table.Length || physicalTableIndex < 0)
+            {
+                return 0;
+            }
+
+            var value = _cpu.powerTable.Table[physicalTableIndex];
+
+            // Дополнительная проверка на валидность (на случай, если 0 — валидное значение)
+            if (value >= minValid && value <= maxValid)
+            {
+                return value;
+            }
+
+            return 0;
+        }
+        catch
         {
             return 0;
         }
-
-        var physicalTableIndex = values[logicalCore];
-
-        if (physicalTableIndex >= _cpu.powerTable!.Table.Length)
-        {
-            return 0;
-        }
-
-        var value = _cpu.powerTable.Table[physicalTableIndex];
-
-        // Дополнительная проверка на валидность (на случай, если 0 — валидное значение)
-        if (value >= minValid && value <= maxValid)
-        {
-            return value;
-        }
-
-        return 0;
     }
 
     /// <summary>

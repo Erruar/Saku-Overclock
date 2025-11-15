@@ -57,7 +57,7 @@ public sealed partial class ShellPage
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
-    private Profile[] _profile = new Profile[1]; // Класс с профилями параметров разгона пользователя
+    private Profile[]? _profile = new Profile[1]; // Класс с профилями параметров разгона пользователя
 
     private AppWindow MAppWindow
     {
@@ -404,6 +404,7 @@ public sealed partial class ShellPage
                             if (stringFrom != null)
                             {
                                 ProfileLoad();
+                                _profile ??= new Profile[1];
                                 var commandActions = new Dictionary<string, Action>
                                 {
                                     {
@@ -836,7 +837,10 @@ public sealed partial class ShellPage
     {
         ProfileLoad();
 
-        var presetsCollection = _profile.Select(securedProfile => securedProfile.Profilename).ToList();
+        var presetsCollection = (_profile ?? [])
+            .Where(p => p != null)
+            .Select(p => p.Profilename ?? "")
+            .ToList();
 
         presetsCollection.Add("PremadeSsAMin");
         presetsCollection.Add("PremadeSsAEco");
@@ -877,9 +881,12 @@ public sealed partial class ShellPage
         {
             ViewModel.SelectedIndex = AppSettings.Preset;
 
-            if (_profile.Length > AppSettings.Preset)
+            if (_profile != null &&
+                AppSettings.Preset >= 0 &&
+                AppSettings.Preset < _profile.Length &&
+                _profile[AppSettings.Preset] != null)
             {
-                ViewModel.SelectedItem = _profile[AppSettings.Preset].Profilename;
+                ViewModel.SelectedItem = _profile[AppSettings.Preset].Profilename ?? "";
             }
             else
             {
@@ -1038,7 +1045,7 @@ public sealed partial class ShellPage
         {
             ProfileLoad();
 
-            if (_profile.Length == 0)
+            if (_profile == null || _profile.Length == 0)
             {
                 MandarinAddNotification("TraceIt_Error".GetLocalized(),
                     "No custom profiles available", InfoBarSeverity.Warning);
@@ -1131,7 +1138,7 @@ public sealed partial class ShellPage
         {
             ProfileLoad();
 
-            if (profileIndex < 0 || profileIndex >= _profile.Length)
+            if (profileIndex < 0 || _profile == null || profileIndex >= _profile.Length)
             {
                 MandarinAddNotification("TraceIt_Error".GetLocalized(),
                     $"Invalid custom profile index: {profileIndex}", InfoBarSeverity.Error);
@@ -1600,6 +1607,9 @@ public sealed partial class ShellPage
         }
     }
 
+    /// <summary>
+    /// Устанавливает интерактивные области в TitleBar окна, меняет состояние лого
+    /// </summary>
     private void SetRegionsForCustomTitleBar()
     {
         if (AppSettings.FixedTitleBar)
@@ -1607,27 +1617,51 @@ public sealed partial class ShellPage
             TitleIcon_PointerEntered(null, null);
             _fixedTitleBar = true;
         }
-        var scaleAdjustment =
-            AppTitleBar.XamlRoot.RasterizationScale; // Specify the interactive regions of the title bar.
-        RightPaddingColumn.Width = new GridLength(MAppWindow.TitleBar.RightInset / scaleAdjustment);
-        LeftPaddingColumn.Width = new GridLength(MAppWindow.TitleBar.LeftInset / scaleAdjustment);
 
-        var transform = TitleIcon.TransformToVisual(null);
-        var bounds = transform.TransformBounds(new Rect(0, 0,
-            TitleIcon.ActualWidth,
-            TitleIcon.ActualHeight));
-        var searchBoxRect = GetRect(bounds, scaleAdjustment);
+        if (AppTitleBar?.XamlRoot == null)
+        {
+            LogHelper.LogError("AppTitleBar.XamlRoot is null!");
+            return;
+        }
 
-        transform = RingerNotificationGrid.TransformToVisual(null);
-        bounds = transform.TransformBounds(new Rect(0, 0,
-            RingerNotificationGrid.ActualWidth,
-            RingerNotificationGrid.ActualHeight));
-        var ringerNotifRect = GetRect(bounds, scaleAdjustment);
+        if (MAppWindow?.TitleBar == null)
+        {
+            LogHelper.LogError("MAppWindow.TitleBar is null!");
+            return;
+        }
 
-        var rectArray = new[] { searchBoxRect, ringerNotifRect };
+        var scaleAdjustment = AppTitleBar.XamlRoot.RasterizationScale;
+        if (double.IsNaN(scaleAdjustment) || double.IsInfinity(scaleAdjustment))
+        {
+            LogHelper.LogError($"Invalid RasterizationScale: {scaleAdjustment}");
+            return;
+        }
+        try
+        {
+            RightPaddingColumn.Width = new GridLength(MAppWindow.TitleBar.RightInset / scaleAdjustment);
+            LeftPaddingColumn.Width = new GridLength(MAppWindow.TitleBar.LeftInset / scaleAdjustment);
 
-        var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(MAppWindow.Id);
-        nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
+            var transform = TitleIcon.TransformToVisual(null);
+            var bounds = transform.TransformBounds(new Rect(0, 0,
+                TitleIcon.ActualWidth,
+                TitleIcon.ActualHeight));
+            var searchBoxRect = GetRect(bounds, scaleAdjustment);
+
+            transform = RingerNotificationGrid.TransformToVisual(null);
+            bounds = transform.TransformBounds(new Rect(0, 0,
+                RingerNotificationGrid.ActualWidth,
+                RingerNotificationGrid.ActualHeight));
+            var ringerNotifRect = GetRect(bounds, scaleAdjustment);
+
+            var rectArray = new[] { searchBoxRect, ringerNotifRect };
+
+            var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(MAppWindow.Id);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
+        }
     }
 
     private static RectInt32 GetRect(Rect bounds, double scale)

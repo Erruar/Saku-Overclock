@@ -129,10 +129,9 @@ public class SendSmuCommandService : ISendSmuCommandService
             _profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(
                 Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json")) ?? [];
         }
-        catch (Exception ex)
+        catch
         {
             JsonRepair('p');
-            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -171,14 +170,14 @@ public class SendSmuCommandService : ISendSmuCommandService
                 }
             case 'p':
 
-                _profile = new Profile[1];
+                _profile = [];
                 try
                 {
                     Directory.CreateDirectory(
                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(
                         Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                        JsonConvert.SerializeObject(_profile));
+                        "[]");
                 }
                 catch
                 {
@@ -188,7 +187,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
                     File.WriteAllText(
                         Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                        JsonConvert.SerializeObject(_profile));
+                        "[]");
                 }
 
                 break;
@@ -414,6 +413,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                     }
                 }
 
+                ПараметрыPage.SettingsApplied = true;
                 _dangerSettingsApplied = true;
                 _saveInfo = false;
             }
@@ -654,58 +654,81 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// </summary>
     private string CommandNameParser(string commandName)
     {
+        if (commandName == "enable-feature" || commandName == "disable-feature")
+        {
+            ProfileLoad();
+        }
+
+        var conditionMet = AppSettings.Preset >= 0 &&
+           _profile != null &&
+           AppSettings.Preset < _profile.Length &&
+           _profile[AppSettings.Preset] != null &&
+           _profile[AppSettings.Preset].Gpu16;
+
+        static string L(string name) 
+        {
+            try
+            {
+                return name.GetLocalized() ?? "Unknown";
+            }
+            catch
+            {
+                return "Unknown";
+            }
+        }
+
         return commandName switch
         {
-            "enable-feature" => (AppSettings.Preset > -1 && _profile[AppSettings.Preset] != null && _profile[AppSettings.Preset].Gpu16) ? "Param_GPU_g16/Text".GetLocalized() : "Param_SMU_Func_Text/Text".GetLocalized(),
-            "disable-feature" => (AppSettings.Preset > -1 && _profile[AppSettings.Preset] != null && _profile[AppSettings.Preset].Gpu16) ? "Param_GPU_g16/Text".GetLocalized() : "Param_SMU_Func_Text/Text".GetLocalized(),
-            "stapm-limit" => "Param_CPU_c2/Text".GetLocalized(),
-            "vrm-current" => "Param_VRM_v2/Text".GetLocalized(),
-            "vrmmax-current" => "Param_VRM_v1/Text".GetLocalized(),
-            "tctl-temp" => "Param_CPU_c1/Text".GetLocalized(),
-            "pbo-scalar" => "Param_ADV_a15/Text".GetLocalized(),
-            "oc-clk" => "Param_ADV_a11/Text".GetLocalized(),
-            "per-core-oc-clk" => "Param_ADV_a11/Text".GetLocalized(),
-            "oc-volt" => "Param_ADV_a12/Text".GetLocalized(),
-            "set-coall" => "Param_CO_O1/Text".GetLocalized(),
-            "set-cogfx" => "Param_CO_O2/Text".GetLocalized(),
-            "set-coper" => "Param_CCD1_CO_Section/Text".GetLocalized(),
-            "enable-oc" => "Param_ADV_a14_E/Content".GetLocalized(),
-            "disable-oc" => "Param_ADV_a14_E/Content".GetLocalized(),
-            "stapm-time" => "Param_CPU_c5/Text".GetLocalized(),
-            "fast-limit" => "Param_CPU_c3/Text".GetLocalized(),
-            "slow-limit" => "Param_CPU_c4/Text".GetLocalized(),
-            "slow-time" => "Param_CPU_c6/Text".GetLocalized(),
-            "cHTC-temp" => "Param_CPU_c7/Text".GetLocalized(),
-            "apu-skin-temp" => "Param_ADV_a6/Text".GetLocalized(),
-            "vrmsoc-current" => "Param_VRM_v4/Text".GetLocalized(),
-            "vrmsocmax-current" => "Param_VRM_v3/Text".GetLocalized(),
-            "prochot-deassertion-ramp" => "Param_VRM_v7/Text".GetLocalized(),
-            "psi3cpu_current" => "Param_ADV_a4/Text".GetLocalized(),
-            "psi3gfx_current" => "Param_ADV_a5/Text".GetLocalized(),
-            "gfx-clk" => "Param_ADV_a10/Text".GetLocalized(),
-            "power-saving" => "Param_ADV_a13_E/Content".GetLocalized(),
-            "max-performance" => "Param_ADV_a13_U/Content".GetLocalized(),
-            "apu-slow-limit" => "Param_ADV_a8/Text".GetLocalized(),
-            "dgpu-skin-temp" => "Param_ADV_a7/Text".GetLocalized(),
-            "psi0-current" => "Param_VRM_v5/Text".GetLocalized(),
-            "psi0soc-current" => "Param_VRM_v6/Text".GetLocalized(),
-            "skin-temp-limit" => "Param_ADV_a9/Text".GetLocalized(),
-            "max-cpuclk" => "Param_GPU_g12/Text".GetLocalized(),
-            "min-cpuclk" => "Param_GPU_g11/Text".GetLocalized(),
-            "max-gfxclk" => "Param_GPU_g10/Text".GetLocalized(),
-            "min-gfxclk" => "Param_GPU_g9/Text".GetLocalized(),
-            "max-socclk-frequency" => "Param_GPU_g2/Text".GetLocalized(),
-            "min-socclk-frequency" => "Param_GPU_g1/Text".GetLocalized(),
-            "max-fclk-frequency" => "Param_GPU_g4/Text".GetLocalized(),
-            "min-fclk-frequency" => "Param_GPU_g3/Text".GetLocalized(),
-            "max-vcn" => "Param_GPU_g6/Text".GetLocalized(),
-            "min-vcn" => "Param_GPU_g5/Text".GetLocalized(),
-            "max-lclk" => "Param_GPU_g8/Text".GetLocalized(),
-            "min-lclk" => "Param_GPU_g7/Text".GetLocalized(),
-            "setcpu-freqto-ramstate" => "Param_GPU_g16/Text".GetLocalized(),
-            "stopcpu-freqto-ramstate" => "Param_GPU_g16/Text".GetLocalized(),
-            "set-gpuclockoverdrive-byvid" => "Param_ADV_a10/Text".GetLocalized(),
-            _ => "1"
+            "enable-feature" => conditionMet ? L("Param_GPU_g16/Text") : L("Param_SMU_Func_Text/Text"),
+            "disable-feature" => conditionMet ? L("Param_GPU_g16/Text") : L("Param_SMU_Func_Text/Text"),
+            "stapm-limit" => L("Param_CPU_c2/Text"),
+            "vrm-current" => L("Param_VRM_v2/Text"),
+            "vrmmax-current" => L("Param_VRM_v1/Text"),
+            "tctl-temp" => L("Param_CPU_c1/Text"),
+            "pbo-scalar" => L("Param_ADV_a15/Text"),
+            "oc-clk" => L("Param_ADV_a11/Text"),
+            "per-core-oc-clk" => L("Param_ADV_a11/Text"),
+            "oc-volt" => L("Param_ADV_a12/Text"),
+            "set-coall" => L("Param_CO_O1/Text"),
+            "set-cogfx" => L("Param_CO_O2/Text"),
+            "set-coper" => L("Param_CCD1_CO_Section/Text"),
+            "enable-oc" => L("Param_ADV_a14_E/Content"),
+            "disable-oc" => L("Param_ADV_a14_E/Content"),
+            "stapm-time" => L("Param_CPU_c5/Text"),
+            "fast-limit" => L("Param_CPU_c3/Text"),
+            "slow-limit" => L("Param_CPU_c4/Text"),
+            "slow-time" => L("Param_CPU_c6/Text"),
+            "cHTC-temp" => L("Param_CPU_c7/Text"),
+            "apu-skin-temp" => L("Param_ADV_a6/Text"),
+            "vrmsoc-current" => L("Param_VRM_v4/Text"),
+            "vrmsocmax-current" => L("Param_VRM_v3/Text"),
+            "prochot-deassertion-ramp" => L("Param_VRM_v7/Text"),
+            "psi3cpu_current" => L("Param_ADV_a4/Text"),
+            "psi3gfx_current" => L("Param_ADV_a5/Text"),
+            "gfx-clk" => L("Param_ADV_a10/Text"),
+            "power-saving" => L("Param_ADV_a13_E/Content"),
+            "max-performance" => L("Param_ADV_a13_U/Content"),
+            "apu-slow-limit" => L("Param_ADV_a8/Text"),
+            "dgpu-skin-temp" => L("Param_ADV_a7/Text"),
+            "psi0-current" => L("Param_VRM_v5/Text"),
+            "psi0soc-current" => L("Param_VRM_v6/Text"),
+            "skin-temp-limit" => L("Param_ADV_a9/Text"),
+            "max-cpuclk" => L("Param_GPU_g12/Text"),
+            "min-cpuclk" => L("Param_GPU_g11/Text"),
+            "max-gfxclk" => L("Param_GPU_g10/Text"),
+            "min-gfxclk" => L("Param_GPU_g9/Text"),
+            "max-socclk-frequency" => L("Param_GPU_g2/Text"),
+            "min-socclk-frequency" => L("Param_GPU_g1/Text"),
+            "max-fclk-frequency" => L("Param_GPU_g4/Text"),
+            "min-fclk-frequency" => L("Param_GPU_g3/Text"),
+            "max-vcn" => L("Param_GPU_g6/Text"),
+            "min-vcn" => L("Param_GPU_g5/Text"),
+            "max-lclk" => L("Param_GPU_g8/Text"),
+            "min-lclk" => L("Param_GPU_g7/Text"),
+            "setcpu-freqto-ramstate" => L("Param_GPU_g16/Text"),
+            "stopcpu-freqto-ramstate" => L("Param_GPU_g16/Text"),
+            "set-gpuclockoverdrive-byvid" => L("Param_ADV_a10/Text"),
+            _ => "Unknown"
         };
     }
 

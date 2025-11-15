@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Globalization;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.Themes;
@@ -15,7 +14,6 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.ViewModels;
-using Windows.UI.Core;
 using Windows.UI.Text;
 using ZenStates.Core;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
@@ -24,28 +22,29 @@ namespace Saku_Overclock.Views;
 
 public sealed partial class ГлавнаяPage
 {
-    private readonly IBackgroundDataUpdater? _dataUpdater;
+    private readonly IBackgroundDataUpdater? _dataUpdater; // Обновление данных сенсоров системы
 
-    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
-    private static readonly IApplyerService _applyer = App.GetService<IApplyerService>();
+    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
+    private static readonly IApplyerService _applyer = App.GetService<IApplyerService>(); // Применения пресетов
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     
-    private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
+    private static Profile[] _profile = new Profile[1]; // Кастомные пресеты (всегда по умолчанию будет 1 профиль)
     
-    private readonly Cpu? _cpu;
+    private readonly Cpu? _cpu; // Ядро приложения, здесь используется для получения информации о названии процессора, ядрах, SMT и пр.
     
     private int _currentMode; // Хранит режим, который выбрал пользователь, то, где стоял курсор при нажатии на блок, чтобы показать тултип с дополнительной информацией о просматриемом блоке
-    private bool _waitForCheck;
-    private int _tipVersion = 0;
-    private bool _isAnimating = false;
-    private string _doubleClickApplyPrev = string.Empty;
-    private int _lastAppliedPreset = -2; // Начальное значение, которое точно не совпадёт
-    private string _lastAppliedProfileName = string.Empty;
-    private double _maxCpuFreq = 1d;
-    private bool _isFirstLoad = true;
-    private bool _isWindowVisible = true;
+    private bool _userSwitchPreset; // Временно выключает отмену выделения ToggleButton пресета, для его смены пользователем
+    private int _tipVersion = 0; // Версия TeachingTip, проверка открытия нужного TeachingTip, при быстром нажатии
+    private bool _isAnimating = false; // Идёт ли сейчас анимация TeachingTip
+    private string _doubleClickApplyPrev = string.Empty; // Проверка на имя прошлого пресета, если совпадает, то при двойном клике по пресету он применится
+    private int _lastAppliedPreset = -2; // Начальное значение последнего применённого пресета, которое точно не совпадёт
+    private string _lastAppliedProfileName = string.Empty; // Защита от переприменения пресета при многократном нажатии на кнопку применить
+    private double _maxCpuFreq = 1d; // Кешируемая максимальная частота процессора, используется в индикаторах, чтобы показать процент от максимальной частоты
+    private bool _isTemperatureChartFirstLoad = true; // Показатель первой загрузки графика температуры
+    private bool _isWindowVisible = true; // Показатель видимости окна
+    private bool _isHelpButtonsExpanded; // Показатели отображения кнопок помощи возле блока "Не видите свой пресет?"
 
-    private readonly string _batteryUnavailable = "Main_BatteryUnavailable".GetLocalized();
+    private readonly string _batteryUnavailable = "Main_BatteryUnavailable".GetLocalized(); // Кешированные строки перевода
     private readonly string _ghzInfo = "infoAGHZ".GetLocalized();
     private readonly string _powerSumDisabled = "Info_PowerSumInfo_Disabled".GetLocalized();
     private readonly string _fromWall = "InfoBatteryAC".GetLocalized();
@@ -54,8 +53,11 @@ public sealed partial class ГлавнаяPage
     {
         App.GetService<ГлавнаяViewModel>();
         InitializeComponent();
-        _dataUpdater = App.BackgroundUpdater!;
-        _dataUpdater.DataUpdated += OnDataUpdated;
+        _dataUpdater = App.BackgroundUpdater;
+        if (_dataUpdater != null)
+        {
+            _dataUpdater.DataUpdated += OnDataUpdated;
+        }
 
         try
         {
@@ -73,29 +75,18 @@ public sealed partial class ГлавнаяPage
 
     }
 
-    private void ГлавнаяPage_Unloaded(object sender, RoutedEventArgs e)
-    {
-        // Отписка от всех событий для предотвращения утечек памяти
-        if (_dataUpdater != null) 
-        {
-            _dataUpdater.DataUpdated -= OnDataUpdated;
-        }
+    #region Page Initialization
 
-        App.MainWindow.WindowStateChanged -= OnVisibilityChanged;
+    #region Page Related
 
-        Unloaded -= ГлавнаяPage_Unloaded;
-        Loaded -= ГлавнаяPage_Loaded;
-    }
-    private void OnVisibilityChanged(object? s, WindowState e)
-    {
-        _isWindowVisible = App.MainWindow.WindowState != WindowState.Minimized;
-    }
-
+    /// <summary>
+    /// Обработчик загрузки интерфейса приложения
+    /// </summary>
     private void ГлавнаяPage_Loaded(object sender, RoutedEventArgs e)
     {
         try
         {
-            LoadProfiles();
+            LoadProfilesToPivot();
 
             // Принудительная блокировка автомасштабирования
             Chart.YAxes.First().MinLimit = 0;
@@ -128,10 +119,37 @@ public sealed partial class ГлавнаяPage
         }
     }
 
+    /// <summary>
+    /// Обработчик изменения состояния окна
+    /// </summary>
+    private void OnVisibilityChanged(object? s, WindowState e)
+        => _isWindowVisible = App.MainWindow.WindowState != WindowState.Minimized;
+
+    /// <summary>
+    /// Обработчик выгрузки страницы
+    /// </summary>
+    private void ГлавнаяPage_Unloaded(object sender, RoutedEventArgs e)
+    {
+        // Отписка от всех событий для предотвращения утечек памяти
+        if (_dataUpdater != null)
+        {
+            _dataUpdater.DataUpdated -= OnDataUpdated;
+        }
+
+        App.MainWindow.WindowStateChanged -= OnVisibilityChanged;
+
+        Unloaded -= ГлавнаяPage_Unloaded;
+        Loaded -= ГлавнаяPage_Loaded;
+    }
+
+    #endregion
 
     #region JSON and Initialization
 
-    private void LoadProfiles()
+    /// <summary>
+    /// Загружает все пресеты и выделяет активный пресет
+    /// </summary>
+    private void LoadProfilesToPivot()
     {
         ProfileLoad();
         Preset_Custom.Children.Clear();
@@ -211,6 +229,9 @@ public sealed partial class ГлавнаяPage
 
     #region JSON
 
+    /// <summary>
+    /// Загружает кастомные пресеты
+    /// </summary>
     private static void ProfileLoad()
     {
         try
@@ -220,40 +241,38 @@ public sealed partial class ГлавнаяPage
         }
         catch (Exception ex)
         {
-            JsonRepair('p');
-            LogHelper.LogWarn(ex.ToString());
+            LogHelper.LogWarn(ex);
+            ProfileJsonRepair();
         }
     }
 
-    private static void JsonRepair(char file)
+    /// <summary>
+    /// Чинит файл кастомных пресетов (при необходимости)
+    /// </summary>
+    private static void ProfileJsonRepair()
     {
-        switch (file)
+        _profile = new Profile[1];
+        try
         {
-            case 'p':
-                _profile = [];
-                try
-                {
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                        JsonConvert.SerializeObject(_profile));
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\profile.json");
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                        JsonConvert.SerializeObject(_profile));
-                    App.MainWindow.Close();
-                }
-
-                break;
+            Directory.CreateDirectory(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                JsonConvert.SerializeObject(_profile));
+        }
+        catch
+        {
+            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                        @"\SakuOverclock\profile.json");
+            Directory.CreateDirectory(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
+                JsonConvert.SerializeObject(_profile));
         }
     }
+
+    #endregion
 
     #endregion
 
@@ -261,6 +280,9 @@ public sealed partial class ГлавнаяPage
 
     #region Updater
 
+    /// <summary>
+    /// Обновляет показатели сенсоров системы в реальном времени
+    /// </summary>
     private void OnDataUpdated(object? sender, SensorsInformation info)
     {
         // Кэшируем максимальную частоту
@@ -269,7 +291,7 @@ public sealed partial class ГлавнаяPage
             _maxCpuFreq = info.CpuFrequency;
         }
 
-        // Используем TryEnqueue с приоритетом Low для некритичных обновлений
+        // Обновляем UI только в UI потоке!
         DispatcherQueue.TryEnqueue(() =>
         {
             // Не обновляем UI если окно скрыто/минимизировано
@@ -290,6 +312,9 @@ public sealed partial class ГлавнаяPage
         });
     }
 
+    /// <summary>
+    /// Обновляет состояние показателей системы
+    /// </summary>
     private void UpdateMainIndicators(SensorsInformation info)
     {
         Indicators_Temp.Text = $"{Math.Round(info.CpuTempValue, 1):F1}C";
@@ -299,7 +324,7 @@ public sealed partial class ГлавнаяPage
         Indicators_Busy_Ring.Value = info.CpuUsage;
         Indicators_Freq_Ring.Value = info.CpuFrequency / _maxCpuFreq * 100;
 
-        UpdateChartPointPosition((int)info.CpuTempValue);
+        UpdateTemperatureChartPointPosition((int)info.CpuTempValue);
 
         Indicators_Fast.Text = info.CpuFastValue == 0
             ? _powerSumDisabled
@@ -315,10 +340,15 @@ public sealed partial class ГлавнаяPage
             ? info.VrmEdcValue / info.VrmEdcLimit * 100
             : 0;
 
+        Indicators_Ram.Text = info.RamBusy;
+        Indicators_Ram_Ring.Value = info.RamUsagePercent;
+
         UpdateBatteryInfo(info);
-        UpdateRamInfo(info);
     }
 
+    /// <summary>
+    /// Обновляет состояние показателей батареи
+    /// </summary>
     private void UpdateBatteryInfo(SensorsInformation info)
     {
         if (info.BatteryUnavailable)
@@ -341,18 +371,11 @@ public sealed partial class ГлавнаяPage
         }
     }
 
-    private void UpdateRamInfo(SensorsInformation info)
-    {
-        Indicators_Ram.Text = info.RamBusy;
-        Indicators_Ram_Ring.Value = info.RamUsagePercent;
-    }
-
+    /// <summary>
+    /// Обновляет значения сенсоров в открытом TeachingTip
+    /// </summary>
     private void UpdateAdditionalInfo(SensorsInformation info)
     {
-        var batteryTime = info.BatteryUnavailable ? string.Empty :
-            (info.BatteryLifeTime < 0 ? _fromWall :
-            GetSystemInfo.ConvertBatteryLifeTime(info.BatteryLifeTime));
-
         switch (_currentMode)
         {
             case 2:
@@ -406,34 +429,43 @@ public sealed partial class ГлавнаяPage
             case 8:
                 Main_AdditionalInfo1Name.Text = info.BatteryUnavailable ? _batteryUnavailable : info.BatteryHealth;
                 Main_AdditionalInfo2Name.Text = info.BatteryUnavailable ? _batteryUnavailable : info.BatteryCycles;
-                Main_AdditionalInfo3Name.Text = info.BatteryUnavailable ? _batteryUnavailable : batteryTime;
+                Main_AdditionalInfo3Name.Text = info.BatteryUnavailable ? _batteryUnavailable : (info.BatteryLifeTime < 0 ? 
+                    _fromWall :
+                    GetSystemInfo.ConvertBatteryLifeTime(info.BatteryLifeTime));
                 break;
         }
     }
 
+    /// <summary>
+    /// Точки графика температуры
+    /// </summary>
     public ObservableCollection<int> Values { get; set; } = [];
 
+    /// <summary>
+    /// lock-обьект для обновления точек графика температуры
+    /// </summary>
     public object Sync { get; } = new object();
 
     /// <summary>
     /// Обновление положения точки температуры на графике
     /// </summary>
-    private void UpdateChartPointPosition(int temperature)
+    private void UpdateTemperatureChartPointPosition(int temperature)
     {
         // Ограничиваем значение в диапазоне 0-100
         temperature = Math.Clamp(temperature, 0, 100);
 
         lock (Sync)
         {
-            if (_isFirstLoad)
+            if (_isTemperatureChartFirstLoad)
             {
-                // При первой загрузке заполняем весь график одинаковыми значениями
+                // При первой загрузке заполняем весь график одинаковыми значениями,
+                // чтобы график не казался непрогруженным
                 Values.Clear();
                 for (var i = 0; i < 10; i++)
                 {
                     Values.Add(temperature);
                 }
-                _isFirstLoad = false;
+                _isTemperatureChartFirstLoad = false;
             }
             else
             {
@@ -450,6 +482,10 @@ public sealed partial class ГлавнаяPage
     #endregion
 
     #region Event Handlers
+
+    /// <summary>
+    /// Изменяет отображение контента при небольшом размере окна
+    /// </summary>
     private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         var isCompact = e.NewSize.Height < 400;
@@ -469,38 +505,55 @@ public sealed partial class ГлавнаяPage
         DeviceInfoSign.Visibility = isCompact ? Visibility.Collapsed : Visibility.Visible;
         FrequentlyUsedSign.Visibility = isCompact ? Visibility.Collapsed : Visibility.Visible;
     }
+
     private static readonly (Thickness Main, Thickness Frequent) CompactGridMargins =
     (
         new Thickness( 00, -20, 0, 0),
         new Thickness(-10,  8, 0, 3)
     );
+
     private static readonly (Thickness Main, Thickness Frequent) NormalGridMargins =
     (
         new Thickness( 00, 20, 0, 0),
         new Thickness(-10, 05, 0, 3)
     );
 
+    /// <summary>
+    /// Открывает страницу управления пресетами
+    /// </summary>
     private void PresetsPage_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ПресетыViewModel).FullName!);
     }
 
+    /// <summary>
+    /// Открывает страницу разгон
+    /// </summary>
     private void OverclockPage_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(ПараметрыViewModel).FullName!);
     }
 
+    /// <summary>
+    /// Открывает страницу настроек приложения
+    /// </summary>
     private void SettingsPage_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
         navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
     }
 
+    /// <summary>
+    /// Переводит пользователя на страницу FAQ
+    /// </summary>
     private void FaqLink_Click(object sender, RoutedEventArgs e) => Process.Start(
         new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/wiki/FAQ") { UseShellExecute = true });
 
+    /// <summary>
+    /// Скрывает панель навигации Pivot и смезает её вверх
+    /// </summary>
     private void PivotProfiles_Loaded(object sender, RoutedEventArgs e)
     {
         var pivot = sender as Pivot;
@@ -516,14 +569,17 @@ public sealed partial class ГлавнаяPage
                     item.Visibility = Visibility.Collapsed;
                 }
                 content.Visibility = Visibility.Collapsed;
-                content.Margin = new Thickness(0,-20,0,0); // Сместит контент на несколько пикселей
+                content.Margin = new Thickness(0, -20, 0, 0);
             }
         }
     }
 
+    /// <summary>
+    /// Запрещает отмену выделения ToggleButton пресета
+    /// </summary>
     private void ToggleButton_Unchecked(object sender, RoutedEventArgs e)
     {
-        if (_waitForCheck)
+        if (_userSwitchPreset)
         {
             return;
         }
@@ -531,11 +587,14 @@ public sealed partial class ГлавнаяPage
         ((ToggleButton)sender).IsChecked = true;
     }
 
+    /// <summary>
+    /// Обработка выбора и активации пресета
+    /// </summary>
     private async void ToggleButton_Checked(object sender, RoutedEventArgs e)
     {
         try
         {
-            _waitForCheck = true;
+            _userSwitchPreset = true;
             var toggleButtons = VisualTreeHelper.FindVisualChildren<ToggleButton>(Preset_Pivot);
             foreach (var button in toggleButtons)
             {
@@ -569,14 +628,17 @@ public sealed partial class ГлавнаяPage
             _doubleClickApplyPrev = name + desc;
 
             await Task.Delay(20);
-            _waitForCheck = false;
+            _userSwitchPreset = false;
         }
         catch (Exception ex)
         {
             await LogHelper.LogError(ex);
         }
-    } 
+    }
 
+    /// <summary>
+    /// Обработка применения пресета
+    /// </summary>
     private async void Apply_Click(object? sender, RoutedEventArgs? e)
     {
         // Анимация запускается всегда
@@ -748,9 +810,15 @@ public sealed partial class ГлавнаяPage
         }
     }
 
+    /// <summary>
+    /// Переключает режим отображения Pivot (готовые и свои пресеты)
+    /// </summary>
     private void SwitchPivot_Click(object sender, RoutedEventArgs e) => 
         Preset_Pivot.SelectedIndex = Preset_Pivot.SelectedIndex == 1 ? 0 : 1;
 
+    /// <summary>
+    /// Переключает название возле Pivot (готовые и свои пресеты)
+    /// </summary>
     private void Preset_Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e) => 
         PresetsSign.Text = Preset_Pivot.SelectedIndex == 0 ? 
         "Main_OwnProfiles/Text".GetLocalized() : 
@@ -758,6 +826,9 @@ public sealed partial class ГлавнаяPage
 
     #region Mouse Events & Blocks behavior
 
+    /// <summary>
+    /// Открывает выбранный пользователем TeachingTip, с защитой от быстрых нажатий
+    /// </summary>
     private async void SetPlacerTipAsync(int currMode)
     {
         try
@@ -769,7 +840,10 @@ public sealed partial class ГлавнаяPage
             while (_isAnimating)
             {
                 await Task.Delay(50);
-                if (currentVersion != _tipVersion) return;
+                if (currentVersion != _tipVersion)
+                {
+                    return;
+                }
             }
 
             if (Main_Teach.IsOpen)
@@ -780,11 +854,17 @@ public sealed partial class ГлавнаяPage
                 _isAnimating = false;
             }
 
-            if (currentVersion != _tipVersion) return;
+            if (currentVersion != _tipVersion)
+            {
+                return;
+            }
 
             SetPlacerContent(currMode);
 
-            if (currentVersion != _tipVersion) return;
+            if (currentVersion != _tipVersion)
+            {
+                return;
+            }
 
             _isAnimating = true;
             Main_Teach.IsOpen = true;
@@ -797,6 +877,9 @@ public sealed partial class ГлавнаяPage
         }
     }
 
+    /// <summary>
+    /// Обновляет описание контента в TeachingTip
+    /// </summary>
     private void SetPlacerContent(int currMode)
     {
         switch (currMode)
@@ -887,17 +970,18 @@ public sealed partial class ГлавнаяPage
         }
     }
 
+    /// <summary>
+    /// Открывает нужный пользователю TeachingTip
+    /// </summary>
     private void TooltipPlacer_PointerPressed(object sender, PointerRoutedEventArgs e) =>
         SetPlacerTipAsync(int.Parse((string)((FrameworkElement)sender).Tag));
 
-    #endregion
-
-    #endregion
-
-    private bool _isExpanded;
+    /// <summary>
+    /// Сворачивает/разворачивает кнопки помощи возле блока "Не видите свой пресет?"
+    /// </summary>
     private void ExpandButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_isExpanded)
+        if (_isHelpButtonsExpanded)
         {
             CollapseStoryboard.Begin();
         }
@@ -906,6 +990,11 @@ public sealed partial class ГлавнаяPage
             ExpandStoryboard.Begin();
         }
 
-        _isExpanded = !_isExpanded;
+        _isHelpButtonsExpanded = !_isHelpButtonsExpanded;
     }
+
+    #endregion
+
+    #endregion
+
 }

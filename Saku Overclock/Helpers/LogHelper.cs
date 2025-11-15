@@ -179,6 +179,7 @@ internal static class LogHelper
 
     public static Task Log(string message) => LogToFile($"[DEBUG] {message}", "Logs");
     public static Task LogWarn(string message) => LogToFile($"[WARNING] {message}", "Logs");
+    public static Task LogWarn(Exception exception) => LogToFile($"[WARNING] exception: {exception}\ninner exception: {exception.InnerException}", "Logs");
     public static Task LogError(string message) => LogToFile($"[ERROR] {message}", "Logs");
-    public static Task LogError(Exception exception) => LogToFile($"[ERROR] {exception}", "Logs");
+    public static Task LogError(Exception exception) => LogToFile($"[ERROR] exception: {exception}\ninner exception: {exception.InnerException}", "Logs");
 }

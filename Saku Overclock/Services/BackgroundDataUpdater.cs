@@ -61,6 +61,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     private string? _cachedBatteryCycles;
     private string? _cachedBatteryHealth;
     private bool _cachedBatteryUnavailable;
+    private int _currentUpdateErrorCycle;
+    private const int MaxErrorsWhileUpdating = 5;
 
     private readonly string _stapmText = "Settings_ni_Values_STAPM".GetLocalized();
     private readonly string _fastText = "Settings_ni_Values_Fast".GetLocalized();
@@ -93,7 +95,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         }
         catch (Exception ex)
         {
-            LogHelper.LogError($"BackgroundDataUpdater - Невозможно создать иконки TrayMon! {ex}");
+            LogHelper.LogError($"(BackgroundDataUpdater@Updater_Task) Невозможно создать иконки TrayMon! {ex}");
         }
 
         _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -106,8 +108,9 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 {
                     if (_dataProvider == null)
                     {
-                        await LogHelper.LogError("DataProvider не инициализирован!");
-                        return;
+                        await LogHelper.LogError("[BackgroundDataUpdater+Updater_Task]@ DataProvider не инициализирован");
+                        _cts.Cancel();
+                        break;
                     }
 
                     var info = _dataProvider.GetDataAsync();
@@ -131,7 +134,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                     catch (Exception ex)
                     {
                         info.BatteryUnavailable = true;
-                        await LogHelper.LogError($"Данные батареи не обновлены: {ex}");
+                        await LogHelper.LogError($"[BackgroundDataUpdater+Updater_Task]@ Данные батареи не обновлены: {ex}");
                     }
 
                     (info.RamTotal, info.RamBusy, info.RamUsagePercent, info.RamUsage) = GetRamInfo();
@@ -147,7 +150,18 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 }
                 catch (Exception ex)
                 {
-                    await LogHelper.LogError($"Ошибка обновления данных: {ex}");
+                    _currentUpdateErrorCycle++;
+
+                    if (_currentUpdateErrorCycle > MaxErrorsWhileUpdating) 
+                    {
+                        _cts.Cancel();
+                        await LogHelper.TraceIt_TraceError($"[BackgroundDataUpdater+Updater_Task]@ Остановлен из-зв превышения количества ошибок");
+                        break;
+                    }
+                    else
+                    {
+                        await LogHelper.LogError($"[BackgroundDataUpdater+Updater_Task]@ Ошибка обновления данных: {ex}");
+                    }
                 }
 
                 try

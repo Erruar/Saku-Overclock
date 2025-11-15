@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 using ZenStates.Core;
 using static ZenStates.Core.Cpu;
@@ -246,7 +247,7 @@ public class OcFinderService : IOcFinderService
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private readonly IDataProvider? _dataProvider = App.GetService<IDataProvider>();
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
-    private readonly Cpu _cpu;
+    private readonly Cpu? _cpu;
 
     private const bool ForceTraining = false;
     private bool _isInitialized;
@@ -267,7 +268,14 @@ public class OcFinderService : IOcFinderService
 
     public OcFinderService()
     {
-        _cpu = CpuSingleton.GetInstance();
+        try
+        {
+            _cpu = CpuSingleton.GetInstance();
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
+        }
         InitializeArchitectureProfiles();
     }
 
@@ -281,7 +289,7 @@ public class OcFinderService : IOcFinderService
             return;
         }
 
-        var cpuPower = SendSmuCommand.ReturnCpuPowerLimit(_cpu.smu);
+        var cpuPower = _cpu != null ? SendSmuCommand.ReturnCpuPowerLimit(_cpu.smu) : 35;
         CheckUndervoltingFeature();
         var powerTable = _dataProvider?.GetPowerTable();
         var powerTableCheckError = false;
@@ -346,6 +354,10 @@ public class OcFinderService : IOcFinderService
         if (_isUndervoltingChecked)
         {
             return _isUndervoltingAvailable;
+        }
+        if (_cpu == null)
+        {
+            return false;
         }
 
         _isUndervoltingAvailable = SendSmuCommand.ReturnUndervoltingAvailability(_cpu.smu);
