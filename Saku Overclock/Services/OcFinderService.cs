@@ -338,7 +338,7 @@ public class OcFinderService : IOcFinderService
             _validatedCpuPower = 45d;
         }
 
-        if (_cpu.info.codeName == CodeName.BristolRidge)
+        if (_cpu?.info.codeName == CodeName.BristolRidge)
         {
             _validatedCpuPower = 35d;
         }
@@ -610,13 +610,13 @@ public class OcFinderService : IOcFinderService
 
         sb.Append($"--fast-limit={(int)(fast * 1000)} ");
 
-        if (_cpu.info.codeName != CodeName.BristolRidge)
+        if (_cpu?.info.codeName != CodeName.BristolRidge)
         {
             sb.Append($"--tctl-temp={tempLimit} ");
 
             // DragonRange is laptop CPU but with Desktop silicon and has Stapm limit
             var codenameGen = SendSmuCommand.GetCodeNameGeneration();
-            if ((codenameGen == "AM5" && _cpu.info.codeName == CodeName.DragonRange) || codenameGen != "AM5")
+            if ((codenameGen == "AM5" && _cpu?.info.codeName == CodeName.DragonRange) || codenameGen != "AM5")
             {
                 sb.Append($"--stapm-limit={(int)(stapm * 1000)} ");
             }
