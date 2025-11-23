@@ -107,7 +107,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
 
 ### 🎮 Gallery
 <details>
-  <summary>Main</summary>
+  <summary>Main  <sup><kbd>Click Here</kbd></sup></summary>
   <ol>
     <h1>🖥️Main page showcase</h1>
     <p>The main page of my application will greet you at launch</p>
