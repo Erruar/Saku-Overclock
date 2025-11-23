@@ -12,25 +12,25 @@
         <Button x:Name="HiddenButton" Visibility="Collapsed"/>
         <Style TargetType="ToggleButton" BasedOn="{StaticResource ActiveButton}"/>
     </Page.Resources>
-    <Grid x:Name="ContentArea" Margin="-48,-65,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
-        <TeachingTip x:Name="Main_Teach" IsOpen="False">
+    <Grid Margin="-48,-65,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
+        <TeachingTip x:Name="MainTeach" IsOpen="False">
             <StackPanel Orientation="Vertical">
-                <TextBlock FontWeight="Bold" FontSize="16" TextWrapping="Wrap" x:Name="Main_AdditionalInfoDesc" Text="Информация об устройстве"/>
+                <TextBlock FontWeight="Bold" FontSize="16" TextWrapping="Wrap" x:Name="MainAdditionalInfoDesc" Text="Информация об устройстве"/>
                 <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
-                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" x:Name="Main_AdditionalInfo1Desc" Text="Модель:"/>
-                    <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" x:Name="Main_AdditionalInfo1Name"/>
+                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" x:Name="MainAdditionalInfo1Desc" Text="Модель:"/>
+                    <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" x:Name="MainAdditionalInfo1Name"/>
                 </StackPanel>
                 <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
-                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" x:Name="Main_AdditionalInfo2Desc" Text="Производитель:"/>
-                    <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" x:Name="Main_AdditionalInfo2Name"/>
+                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" x:Name="MainAdditionalInfo2Desc" Text="Производитель:"/>
+                    <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" x:Name="MainAdditionalInfo2Name"/>
                 </StackPanel>
                 <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
-                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" x:Name="Main_AdditionalInfo3Desc" Text="Версия BIOS:"/>
-                    <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" x:Name="Main_AdditionalInfo3Name"/>
+                    <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" x:Name="MainAdditionalInfo3Desc" Text="Версия BIOS:"/>
+                    <TextBlock Margin="5,0,0,0" TextWrapping="Wrap" x:Name="MainAdditionalInfo3Name"/>
                 </StackPanel>
             </StackPanel>
         </TeachingTip>
-        <TeachingTip x:Name="Apply_Teach" IsOpen="False"/>
+        <TeachingTip x:Name="ApplyTeach" IsOpen="False"/>
         <StackPanel Orientation="Horizontal" Margin="0,-14,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
             <StackPanel Orientation="Horizontal" Padding="0,3,0,0">
                 <TextBlock FontSize="27" Text="Saku Overclock" FontWeight="ExtraBold" VerticalAlignment="Top" HorizontalAlignment="Left"/>
@@ -93,8 +93,8 @@ Text="{Binding Version}">
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <StackPanel Grid.Row="0" Margin="10,-20,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
-                                    <TextBlock FontWeight="SemiBold" Text="Ryzen 9 8945HS \w Radeon 890M" x:Name="Info_CpuName" TextWrapping="Wrap"/>
-                                    <TextBlock FontWeight="Bold" FontSize="20" Text="8С/16T" x:Name="Info_CpuCores"/>
+                                    <TextBlock FontWeight="SemiBold" Text="Ryzen 9 8945HS \w Radeon 890M" x:Name="InfoCpuName" TextWrapping="Wrap"/>
+                                    <TextBlock FontWeight="Bold" FontSize="20" Text="8С/16T" x:Name="InfoCpuCores"/>
                                 </StackPanel>
                             </Grid>
                         </Grid>
@@ -106,7 +106,7 @@ Text="{Binding Version}">
                             </Grid.RowDefinitions>
                             <StackPanel Grid.Row="0" Margin="10,-20,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
                                 <TextBlock FontWeight="SemiBold" x:Uid="Main_CpuTemp" Text="Температура процессора" TextWrapping="Wrap"/>
-                                <TextBlock FontWeight="Bold" FontSize="20" x:Name="Indicators_Temp" Text="43С"/>
+                                <TextBlock FontWeight="Bold" FontSize="20" x:Name="IndicatorsTemp" Text="43С"/>
                             </StackPanel>
                             <Grid Grid.Row="1">
                                 <lvc:CartesianChart Margin="-25,-40,-25,0" x:Name="Chart"
@@ -162,10 +162,10 @@ Text="{Binding Version}">
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
                                         <TextBlock FontWeight="SemiBold" x:Uid="Main_CpuLoad" Text="Загрузка процессора" TextWrapping="Wrap"/>
-                                        <TextBlock FontWeight="Bold" FontSize="20" x:Name="Indicators_Busy" Text="70%"/>
+                                        <TextBlock FontWeight="Bold" FontSize="20" x:Name="IndicatorsBusy" Text="70%"/>
                                     </StackPanel>
                                     <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                        <ProgressRing x:Name="Indicators_Busy_Ring" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                        <ProgressRing x:Name="IndicatorsBusyRing" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
                                         <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE94C;"/>
                                     </Grid>
                                 </Grid>
@@ -177,10 +177,10 @@ Text="{Binding Version}">
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Margin="10,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
                                         <TextBlock FontWeight="SemiBold" x:Uid="Main_CpuFreq" Text="Частота процессора" TextWrapping="Wrap"/>
-                                        <TextBlock FontWeight="Bold" FontSize="20" x:Name="Indicators_Freq" Text="5.7 ГГц"/>
+                                        <TextBlock FontWeight="Bold" FontSize="20" x:Name="IndicatorsFreq" Text="5.7 ГГц"/>
                                     </StackPanel>
                                     <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                        <ProgressRing Value="70" Maximum="100" Minimum="0" x:Name="Indicators_Freq_Ring" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                        <ProgressRing Value="70" Maximum="100" Minimum="0" x:Name="IndicatorsFreqRing" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
                                         <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xECAD;"/>
                                     </Grid>
                                 </Grid>
@@ -195,7 +195,7 @@ Text="{Binding Version}">
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition MaxHeight="75"/>
                                 </Grid.RowDefinitions>
-                                <Grid Grid.Row="0" x:Name="SegmentsGrid" VerticalAlignment="Stretch" Margin="-10,8,0,0">
+                                <Grid Grid.Row="0" VerticalAlignment="Stretch" Margin="-10,8,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition MaxHeight="75"/>
                                     </Grid.RowDefinitions>
@@ -213,10 +213,10 @@ Text="{Binding Version}">
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,1,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
                                             <TextBlock FontWeight="SemiBold" x:Uid="Main_RamUsage" Text="RAM Usage" TextWrapping="Wrap"/>
-                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_Ram" Text="7.8Gb"/>
+                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="IndicatorsRam" Text="7.8Gb"/>
                                         </StackPanel>
                                         <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                            <ProgressRing x:Name="Indicators_Ram_Ring" Value="20" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                            <ProgressRing x:Name="IndicatorsRamRing" Value="20" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
                                             <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE81E;"/>
                                         </Grid>
                                     </Grid>
@@ -228,10 +228,10 @@ Text="{Binding Version}">
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,1,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
                                             <TextBlock FontWeight="SemiBold" x:Uid="Main_RealPower" Text="Real power" TextWrapping="Wrap"/>
-                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_Fast" Text="0"/>
+                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="IndicatorsFast" Text="0"/>
                                         </StackPanel>
                                         <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                            <ProgressRing x:Name="Indicators_Fast_Ring" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                            <ProgressRing x:Name="IndicatorsFastRing" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
                                             <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xEC4A;"/>
                                         </Grid>
                                     </Grid>
@@ -243,11 +243,11 @@ Text="{Binding Version}">
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,1,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
                                             <TextBlock FontWeight="SemiBold" x:Uid="Main_Battery" Text="Battery" TextWrapping="Wrap"/>
-                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_BatteryPercent" Text="N/A"/>
+                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="IndicatorsBatteryPercent" Text="N/A"/>
                                         </StackPanel>
                                         <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                            <ProgressRing x:Name="Indicators_BatteryPercent_Ring" Value="0" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
-                                            <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE83F;"/>
+                                            <ProgressRing x:Name="IndicatorsBatteryPercentRing" Value="0" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                            <FontIcon x:Name="IndicatorsBatteryPercentIcon" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xE83F;"/>
                                         </Grid>
                                     </Grid>
                                     <Grid Grid.Row="0" Grid.Column="3" Margin="5,0,10,0" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Background="{Binding ElementName=HiddenButton, Path=Background}" BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}" BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
@@ -258,10 +258,10 @@ Text="{Binding Version}">
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="10,1,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0" Orientation="Vertical">
                                             <TextBlock FontWeight="SemiBold" x:Uid="Main_MaxVrmCurrent" Text="VRM EDC" TextWrapping="Wrap"/>
-                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="Indicators_VrmEdc" Text="0"/>
+                                            <TextBlock FontWeight="Bold" FontSize="18" x:Name="IndicatorsVrmEdc" Text="0"/>
                                         </StackPanel>
                                         <Grid Grid.Column="1" Margin="-10,0,0,0">
-                                            <ProgressRing x:Name="Indicators_VrmEdc_Ring" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
+                                            <ProgressRing x:Name="IndicatorsVrmEdcRing" Value="70" Maximum="100" Minimum="0" Width="60" Height="60" IsIndeterminate="False" Background="{ThemeResource PostAcrylicBrush}"/>
                                             <FontIcon VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Glyph="&#xF7B0;"/>
                                         </Grid>
                                     </Grid>
@@ -347,7 +347,7 @@ Text="{Binding Version}">
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid HorizontalAlignment="Stretch" Grid.Column="1" CornerRadius="16" Margin="0,0,10,5" Shadow="{StaticResource SharedShadow}" Translation="0,0,20">
+            <Grid HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1" CornerRadius="16" Margin="0,0,10,5" Shadow="{StaticResource SharedShadow}" Translation="0,0,20">
                 <Grid CornerRadius="8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                     <Grid.Transitions>
                         <TransitionCollection>
@@ -367,16 +367,16 @@ Text="{Binding Version}">
                         </Grid.RowDefinitions>
                         <Pivot Grid.Row="0" Loaded="PivotProfiles_Loaded" Margin="-10,0,-10,15" 
                                HorizontalAlignment="Center" HorizontalContentAlignment="Stretch"
-                               x:Name="Preset_Pivot" SelectionChanged="Preset_Pivot_SelectionChanged">
+                               x:Name="PresetPivot" SelectionChanged="Preset_Pivot_SelectionChanged">
                             <PivotItem Margin="0,4,0,7">
                                 <PivotItem.Header>
                                     <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_OwnProfiles" Text="Свои"/>
                                 </PivotItem.Header>
-                                <ScrollViewer Grid.Row="0" Margin="0,0,10,0" Padding="0,0,-10,0">
+                                <ScrollViewer Margin="0,0,10,0" Padding="0,0,-10,0">
                                     <StackPanel Margin="20,0,20,0" Orientation="Vertical" HorizontalAlignment="Stretch">
                                         <StackPanel Orientation="Vertical" 
                                                     HorizontalAlignment="Stretch" IsHitTestVisible="True"
-                                                    x:Name="Preset_Custom">
+                                                    x:Name="PresetCustom">
                                             <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                                 <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                     <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xE718;"/>
@@ -388,7 +388,7 @@ Text="{Binding Version}">
                                             </ToggleButton>
                                         </StackPanel>
                                         <HyperlinkButton x:Uid="Main_CantFindPreset" Margin="-8,0,0,0" Click="ExpandButton_Click" Foreground="{ThemeResource TextFillColorSecondary}">Не видите здесь свой пресет?</HyperlinkButton>
-                                        <Grid x:Name="ExpandGrid" Margin="0,2,0,0" HorizontalAlignment="Stretch">
+                                        <Grid x:Name="ExpandGrid" Visibility="Collapsed" Margin="0,2,0,0" HorizontalAlignment="Stretch">
                                             <Grid.Resources>
                                                 <Storyboard x:Name="CollapseStoryboard">
                                                     <DoubleAnimation Storyboard.TargetName="ExpandGrid"
@@ -412,7 +412,7 @@ Text="{Binding Version}">
                                             <Button CornerRadius="14" VerticalAlignment="Stretch" Click="PresetsPage_Click" HorizontalAlignment="Stretch" Margin="0,0,4,0" Grid.Column="0" Translation="0,0,10" Shadow="{ThemeResource SharedShadow}">
                                                 <TextBlock x:Uid="Main_PresetPage" TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Управление пресетами"/>
                                             </Button>
-                                            <Button CornerRadius="14" VerticalAlignment="Stretch" Click="SwitchPivot_Click" HorizontalAlignment="Stretch" Margin="4,0,0,0" Grid.Column="1" Translation="0,0,10" Shadow="{ThemeResource SharedShadow}">
+                                            <Button CornerRadius="14" VerticalAlignment="Stretch" Tag="FromHelpButtons" Click="SwitchPivot_Click" HorizontalAlignment="Stretch" Margin="4,0,0,0" Grid.Column="1" Translation="0,0,10" Shadow="{ThemeResource SharedShadow}">
                                                 <TextBlock x:Uid="Main_PremadeProfiles" TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Готовые пресеты"/>
                                             </Button>
                                         </Grid>
@@ -425,7 +425,7 @@ Text="{Binding Version}">
                                 </PivotItem.Header>
                                 <ScrollViewer Margin="0,0,10,0" Padding="0,0,-10,0" VerticalScrollBarVisibility="Visible">
                                     <StackPanel Margin="20,-3,20,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">
-                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Max" Tag="Preset_Max" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="PresetMax" Tag="Preset_Max" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,3,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                             <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                 <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xEcad;"/>
                                                 <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
@@ -434,7 +434,7 @@ Text="{Binding Version}">
                                                 </StackPanel>
                                             </Grid>
                                         </ToggleButton>
-                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Speed" Tag="Preset_Speed" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="PresetSpeed" Tag="Preset_Speed" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                             <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                 <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xe945;"/>
                                                 <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
@@ -443,7 +443,7 @@ Text="{Binding Version}">
                                                 </StackPanel>
                                             </Grid>
                                         </ToggleButton>
-                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Balance" Tag="Preset_Balance" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="PresetBalance" Tag="Preset_Balance" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                             <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                 <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec49;"/>
                                                 <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
@@ -452,7 +452,7 @@ Text="{Binding Version}">
                                                 </StackPanel>
                                             </Grid>
                                         </ToggleButton>
-                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Eco" Tag="Preset_Eco" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="PresetEco" Tag="Preset_Eco" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                             <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                 <FontIcon HorizontalAlignment="Left" Margin="7,0,0,0" Glyph="&#xec0a;"/>
                                                 <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
@@ -461,7 +461,7 @@ Text="{Binding Version}">
                                                 </StackPanel>
                                             </Grid>
                                         </ToggleButton>
-                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="Preset_Min" Tag="Preset_Min" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,7" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                        <ToggleButton Shadow="{StaticResource SharedShadow}" Translation="0,0,20" CornerRadius="16" x:Name="PresetMin" Tag="Preset_Min" Unchecked="ToggleButton_Unchecked" Checked="ToggleButton_Checked" Margin="0,7,0,7" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
                                             <Grid HorizontalAlignment="Stretch" Margin="-5,-5,-5,-5">
                                                 <FontIcon HorizontalAlignment="Left" Margin="6,0,0,0" Glyph="&#xebc0;"/>
                                                 <StackPanel HorizontalAlignment="Left" Margin="36,5,5,5" Orientation="Vertical">
@@ -534,7 +534,7 @@ Text="{Binding Version}">
 
                     </Grid>
 
-                    <Button Click="SwitchPivot_Click" x:Name="SwitchPivot" CornerRadius="16" Width="32" Height="32" HorizontalAlignment="Right" Margin="14,13,11,0" VerticalAlignment="Top">
+                    <Button Click="SwitchPivot_Click" CornerRadius="16" Width="32" Height="32" HorizontalAlignment="Right" Margin="14,13,11,0" VerticalAlignment="Top">
                         <Button.RenderTransform>
                             <ScaleTransform ScaleX="0.9" ScaleY="0.9" CenterX="16" CenterY="16"/>
                         </Button.RenderTransform>
