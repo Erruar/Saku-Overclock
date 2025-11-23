@@ -183,7 +183,7 @@ public class SensorsInformation
     {
         get; set;
     }
-    public string? BatteryState
+    public int BatteryState
     {
         get; set;
     }
@@ -228,4 +228,45 @@ public class SensorsInformation
     }
 
     #endregion
+
+    #region Nvidia GPU Information
+    public bool IsNvidiaGpuAvailable
+    {
+        get; set;
+    }
+    public string? NvidiaDriverVersion
+    {
+        get; set;
+    }
+    public string? NvidiaVramSize
+    {
+        get; set;
+    }
+    public string? NvidiaVramType
+    {
+        get; set;
+    }
+    public string? NvidiaVramWidth
+    {
+        get; set;
+    }
+    public double NvidiaVramFrequency
+    {
+        get; set;
+    }
+    public double NvidiaGpuUsage
+    {
+        get; set;
+    }
+    public double NvidiaGpuFrequency
+    {
+        get; set;
+    }
+    public double NvidiaGpuTemperature
+    {
+        get; set;
+    }
+
+    #endregion
+
 }

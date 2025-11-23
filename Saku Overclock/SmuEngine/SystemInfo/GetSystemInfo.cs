@@ -5,6 +5,9 @@ using System.Runtime.Intrinsics.X86;
 using System.Text;
 using Microsoft.Win32;
 using Saku_Overclock.Helpers;
+using ZenStates.Core;
+using ZenStates.Core.DRAM;
+using static ZenStates.Core.DRAM.MemoryConfig;
 
 namespace Saku_Overclock.SMUEngine;
 
@@ -68,7 +71,7 @@ internal class GetSystemInfo
             {
                 var pData = battery.Properties["BatteryStatus"];
 
-                if (pData != null && pData.Value != null && Enum.IsDefined(typeof(BatteryStatus), pData.Value))
+                if (pData is { Value: not null } && Enum.IsDefined(typeof(BatteryStatus), pData.Value))
                 {
                     status = (BatteryStatus)pData.Value;
                 }
@@ -380,6 +383,18 @@ internal class GetSystemInfo
 
     #region Motherboard and GPU Information
 
+    /// <summary>
+    /// Возвращает все необходимые статические метрики
+    /// </summary>
+    /// <returns>(CpuName, CpuBaseClock), IntegratedGpuName, DiscreteGpuName,
+    /// (L1CacheSize, L2CacheSize, L3CacheSize), InstructionSets, CpuCaption</returns>
+    public static ((string, string), string?, string?, (double, double, double), string?, string?) GetCommonMetrics()
+    {
+        return (ReadCpuInformation(), GetIntegratedGpuName(), GetDiscreteGpuName(),
+            (CalculateCacheSize(CacheLevel.Level1), CalculateCacheSize(CacheLevel.Level2), CalculateCacheSize(CacheLevel.Level3)),
+            InstructionSets(), GetCpuCaption());
+    }
+
     private static readonly Guid GUID_DEVCLASS_DISPLAY = new("4d36e968-e325-11ce-bfc1-08002be10318");
     private const uint DIGCF_PRESENT = 0x00000002;
     private const uint SPDRP_DEVICEDESC = 0x00000000;
@@ -456,6 +471,229 @@ internal class GetSystemInfo
         return result;
     }
 
+    public static string? GetIntegratedGpuName() => GetGpuNames()
+                .FirstOrDefault(key => key.StartsWith("AMD"));
+
+    public static string? GetDiscreteGpuName() => GetGpuNames()
+                .FirstOrDefault(key => key.StartsWith("nvidia", 
+                    StringComparison.CurrentCultureIgnoreCase));
+
+    public static (string, string) GetRegistryGpuDriverInformation(string gpuName, bool isNvidia = false)
+    {
+        try
+        {
+            using var videoKey = Registry.LocalMachine.OpenSubKey(
+                @"SYSTEM\ControlSet001\Control\Video");
+
+            if (videoKey == null)
+            {
+                LogHelper.LogError("[GetSystemInfo+GetRegistryGpuDriverInformation]@ videoKey is Null. Skipping");
+                return ("-GB", "Unknown");
+            }
+
+            foreach (var providerKey in videoKey.GetSubKeyNames())
+            {
+                using var providerSubKey = videoKey.OpenSubKey(providerKey);
+                if (providerSubKey == null)
+                {
+                    LogHelper.LogError("[GetSystemInfo+GetRegistryGpuDriverInformation]@ providerSubKey is Null. Skipping");
+                    continue;
+                }
+
+                foreach (var gpuKey in providerSubKey.GetSubKeyNames())
+                {
+                    using var gpuSubKey = providerSubKey.OpenSubKey(gpuKey);
+                    if (gpuSubKey == null)
+                    {
+                        LogHelper.LogError("[GetSystemInfo+GetRegistryGpuDriverInformation]@ gpuSubKey is Null. Skipping");
+                        continue;
+                    }
+
+                    var registryGpuName = gpuSubKey.GetValue(isNvidia 
+                        ? "HardwareInformation.AdapterString" : "DriverDesc");
+                    if (registryGpuName as string == gpuName)
+                    {
+                        var driverVersion = gpuSubKey.GetValue(isNvidia ? "DriverVersion" : "RadeonSoftwareVersion") as string;
+                        var memorySizeValue = gpuSubKey.GetValue("HardwareInformation.qwMemorySize");
+                        if (!string.IsNullOrEmpty(driverVersion))
+                        {
+                            var memorySize = "-GB";
+                            if (memorySizeValue is long memorySizeBytes)
+                            {
+                                if (memorySizeBytes > 0)
+                                {
+                                    // Делим на 1024 три раза для перевода в гигабайты
+                                    memorySize = (memorySizeBytes / 1024.0 / 1024.0 / 1024.0) + "GB";
+                                }
+                            }
+                            else
+                            {
+                                LogHelper.LogWarn("[GetSystemInfo+GetRegistryGpuDriverInformation]@ memorySizeValue is not a long type");
+                                if (int.TryParse(memorySizeValue as string, out var memorySizeFromString))
+                                {
+                                    memorySize = (memorySizeFromString / 1024.0 / 1024.0 / 1024.0) + "GB";
+                                }
+                            }
+
+                            if (isNvidia)
+                            {
+                                driverVersion = ParseNvidiaDriverVersion(driverVersion);
+                            }
+
+                            return (memorySize, driverVersion);
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
+        }
+
+        return ("-GB", "Unknown");
+    }
+
+    public static string GetAmdGpuDriverVersion(string gpuName)
+    {
+        try
+        {
+            using var videoKey = Registry.LocalMachine.OpenSubKey(
+                @"SYSTEM\ControlSet001\Control\Video");
+
+            if (videoKey == null)
+            {
+                return "Unknown";
+            }
+
+            foreach (var providerKey in videoKey.GetSubKeyNames())
+            {
+                using var providerSubKey = videoKey.OpenSubKey(providerKey);
+                if (providerSubKey == null)
+                {
+                    continue;
+                }
+
+                foreach (var gpuKey in providerSubKey.GetSubKeyNames())
+                {
+                    using var gpuSubKey = providerSubKey.OpenSubKey(gpuKey);
+                    if (gpuSubKey == null)
+                    {
+                        continue;
+                    }
+
+                    var registryGpuName = gpuSubKey.GetValue("DriverDesc");
+                    if (registryGpuName as string == gpuName)
+                    {
+                        var driverVersion = gpuSubKey.GetValue("RadeonSoftwareVersion") as string;
+                        if (!string.IsNullOrEmpty(driverVersion))
+                        {
+                            return driverVersion;
+                        }
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // Игнорируем ошибки реестра
+        }
+
+        return "Unknown";
+    }
+
+    public static double GetGpuVramSize(string gpuName)
+    {
+        try
+        {
+            using var videoKey = Registry.LocalMachine.OpenSubKey(
+                @"SYSTEM\ControlSet001\Control\Video");
+
+            if (videoKey == null)
+            {
+                LogHelper.LogError("[GetSystemInfo+GetGpuVramSize]@ videoKey is Null. Skipping");
+                return 0;
+            }
+
+            foreach (var providerKey in videoKey.GetSubKeyNames())
+            {
+                using var providerSubKey = videoKey.OpenSubKey(providerKey);
+                if (providerSubKey == null)
+                {
+                    LogHelper.LogError("[GetSystemInfo+GetGpuVramSize]@ providerSubKey is Null. Skipping");
+                    continue;
+                }
+
+                foreach (var gpuKey in providerSubKey.GetSubKeyNames())
+                {
+                    using var gpuSubKey = providerSubKey.OpenSubKey(gpuKey);
+                    if (gpuSubKey == null)
+                    {
+                        LogHelper.LogError("[GetSystemInfo+GetGpuVramSize]@ gpuSubKey is Null. Skipping");
+                        continue;
+                    }
+
+                    var registryGpuName = gpuSubKey.GetValue("HardwareInformation.AdapterString");
+                    LogHelper.LogError("[GetSystemInfo+GetGpuVramSize]@ gpuSubKey = " + registryGpuName + "\nRequired GPU: " + gpuName);
+                    if (registryGpuName as string == gpuName)
+                    {
+                        var memorySizeValue = gpuSubKey.GetValue("HardwareInformation.qwMemorySize");
+                        if (memorySizeValue != null && memorySizeValue is long memorySizeBytes)
+                        {
+                            if (memorySizeBytes > 0)
+                            {
+                                // Делим на 1024 три раза для перевода в гигабайты
+                                return memorySizeBytes / 1024.0 / 1024.0 / 1024.0;
+                            }
+                        }
+                        if (memorySizeValue != null)
+                        {
+                            LogHelper.LogError("[GetSystemInfo+GetGpuVramSize]@ memorySizeValue is not long");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex) 
+        {
+            LogHelper.LogError(ex);
+        }
+
+        return 0;
+    }
+
+    public static string ParseNvidiaDriverVersion(string version)
+    {
+        if (string.IsNullOrWhiteSpace(version))
+        {
+            LogHelper.LogError("[ParseNvidiaDriverVersion]@ Empty string");
+            return string.Empty;
+        }
+
+        var parts = version.Split('.');
+
+        if (parts.Length != 4)
+        {
+            LogHelper.LogError("[ParseNvidiaDriverVersion]@ Wrong part count");
+            return string.Empty;
+        }
+
+
+        if (!int.TryParse(parts[2], out var c) || !int.TryParse(parts[3], out var dddd))
+        {
+            LogHelper.LogError("[ParseNvidiaDriverVersion]@ Parse failed");
+            return string.Empty;
+        }
+
+        var internalMajor = c * 100 + (dddd / 100);
+        var major = internalMajor - 1000;
+        var minor = dddd % 100;
+
+        return $"{major}.{minor:D2}";
+    }
+
+
+
     public static string? Product
     {
         get
@@ -509,10 +747,10 @@ internal class GetSystemInfo
         return cacheSizes;
     }
 
-    public static double CalculateCacheSize(GetSystemInfo.CacheLevel level)
+    public static double CalculateCacheSize(CacheLevel level)
     {
         var sum = 0u;
-        foreach (var number in GetSystemInfo.GetCacheSizes(level))
+        foreach (var number in GetCacheSizes(level))
         {
             sum += number;
         }
@@ -571,6 +809,62 @@ internal class GetSystemInfo
         {
             return false;
         }
+    }
+
+    public static string GetCpuCaption() => Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER")?.Replace(", AuthenticAMD", "") ?? string.Empty;
+
+    /// <summary>
+    ///  Возвращает основные свойства оперативной памяти
+    /// </summary>
+    /// <param name="memoryConfig">Конфигурация памяти</param>
+    /// <param name="memorySpeed">Скорость MemoryClock</param>
+    /// <param name="umcBase">Значение адреса umcBase</param>
+    /// <param name="umcOffset1">Значение адреса umcOffset1</param>
+    /// <param name="umcOffset2">Значение адреса umcOffset2</param>
+    /// <returns>Capacity, MemoryType, Speed, Producer, Model, ModulesCount, 
+    /// (tcl, trcdwr, trcdrd, tras, trp, trc)</returns>
+    public static (double, MemType, double, string?, string?, int, 
+        (uint, uint, uint, uint, uint, uint)) 
+        GetMemoryInformation(MemoryConfig memoryConfig, float? memorySpeed, 
+                             uint umcBase, uint umcOffset1, uint umcOffset2)
+    {
+        var capacity = memoryConfig.TotalCapacity.SizeInBytes / 1073741824;
+
+        var speed = memorySpeed * 2 ?? 0;
+        var freqFromRatio = (memoryConfig.Type == MemType.DDR4 ?
+                             Utils.GetBits(umcBase, 0, 7) / 3 :
+                             Utils.GetBits(umcBase, 0, 16) / 100)
+                             * 200;
+
+        if (speed == 0 || freqFromRatio > speed)
+        {
+            speed = freqFromRatio;
+        }
+
+        var modules = memoryConfig.Modules;
+
+        var producer = modules.Count == 0
+            ? "Unknown"
+            : string.Join(" / ", modules
+                .Select(m => m?.Manufacturer ?? "Unknown")
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Distinct());
+
+        var model = modules.Count == 0
+            ? "Unknown"
+            : string.Join(" / ", modules
+                .Select(m => m?.PartNumber ?? "Unknown")
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Distinct());
+
+        var tcl = Utils.GetBits(umcOffset1, 0, 6);
+        var trcdwr = Utils.GetBits(umcOffset1, 24, 6);
+        var trcdrd = Utils.GetBits(umcOffset1, 16, 6);
+        var tras = Utils.GetBits(umcOffset1, 8, 7);
+        var trp = Utils.GetBits(umcOffset2, 16, 6);
+        var trc = Utils.GetBits(umcOffset2, 0, 8);
+
+        return (capacity, memoryConfig.Type, speed, producer, model, modules.Count, (tcl, trcdwr, trcdrd, tras, trp, trc));
     }
 
     #endregion
