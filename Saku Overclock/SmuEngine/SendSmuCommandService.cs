@@ -1738,17 +1738,28 @@ public class SendSmuCommandService : ISendSmuCommandService
         Commands =
         [
             // Store the commands
-            ("fast-limit",      false, 0x64), // PPT limit
-            ("vrm-current",     false, 0x65),
-            ("vrmmax-current",  false, 0x66),
-            ("tctl-temp",       false, 0x68), 
-/*   OC   */("pbo-scalar",      false, 0x6a),
-/* Options*/("oc-clk",          false, 0x6c),
-            ("per-core-oc-clk", false, 0x6d),
-            ("oc-volt",         false, 0x6e),
-            ("enable-oc",       true,  0x23),
-            ("enable-oc",       false, 0x6b),
-            ("disable-oc",      true,  0x24)
+            // Those commands are 100% tested
+            // Tested on: Ryzen 5 1600
+            // SMU command map for early AM4 socket (last update: 2025-11-23)
+            ("enable-feature",                    true,  0x09),
+            ("fast-limit",                        false, 0x64), // PPT limit
+            ("fast-limit",                        true,  0x31), // PPT limit
+            ("vrm-current",                       false, 0x65),
+            ("vrmmax-current",                    false, 0x66),
+            ("tctl-temp",                         false, 0x68), 
+/*   OC   */("pbo-scalar",                        false, 0x6a),
+/* Options*/("oc-clk",                            false, 0x6c),
+            ("oc-clk",                            true,  0x39),
+            ("per-core-oc-clk",                   false, 0x6d),
+            ("oc-volt",                           false, 0x6e),
+            ("oc-volt",                           true,  0x38),
+            ("enable-oc",                         true,  0x23),
+            ("enable-oc",                         false, 0x6b),
+            ("disable-oc",                        true,  0x24),
+            ("get-sustained-power-and-thm-limit", true,  0x36),
+            ("setcpu-freqto-ramstate",            true,  0x23),
+/*  AcBtc */("stopcpu-freqto-ramstate",           true,  0x24),
+            ("stopcpu-freqto-ramstate",           true,  0x25),
         ];
     }
 
