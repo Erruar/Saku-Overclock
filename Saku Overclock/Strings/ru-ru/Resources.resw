@@ -130,7 +130,7 @@
     <value>Разгон</value>
   </data>
   <data name="Shell_Информация.Content" xml:space="preserve">
-    <value>Показатели</value>
+    <value>Мониторинг</value>
   </data>
   <data name="Settings_Personalization.Text" xml:space="preserve">
     <value>Персонализация</value>
@@ -218,7 +218,7 @@
     <value>Авто-обновлять каждые (Мс)</value>
   </data>
   <data name="Info_Name.Text" xml:space="preserve">
-    <value>Системные показатели</value>
+    <value>Мониторинг показателей</value>
   </data>
   <data name="Info_Refresh.ToolTipService.ToolTip" xml:space="preserve">
     <value>Обновить</value>
@@ -263,7 +263,7 @@
     <value>Дискорд</value>
   </data>
   <data name="Main_Info.Text" xml:space="preserve">
-    <value>Показатели</value>
+    <value>Мониторинг</value>
   </data>
   <data name="Main_Param.Text" xml:space="preserve">
     <value>Разгон</value>
@@ -779,14 +779,8 @@
   <data name="Unsaved_Target.Title" xml:space="preserve">
     <value>Ошибка изменения</value>
   </data>
-  <data name="infoAActualC.Text" xml:space="preserve">
-    <value>Текущее реальное потр</value>
-  </data>
   <data name="infoAActualL.Text" xml:space="preserve">
     <value>Реальная мощн.</value>
-  </data>
-  <data name="infoAAVGC.Text" xml:space="preserve">
-    <value>Текущее среднее потр</value>
   </data>
   <data name="infoAAVGL.Text" xml:space="preserve">
     <value>Средняя мощн.</value>
@@ -836,18 +830,6 @@
   <data name="infoThreadC.Text" xml:space="preserve">
     <value>Потоки</value>
   </data>
-  <data name="infoAAPUC.Text" xml:space="preserve">
-    <value>Текущее потр APU</value>
-  </data>
-  <data name="infoAAPUL.Text" xml:space="preserve">
-    <value>Лимит потр APU</value>
-  </data>
-  <data name="infoAAPUTEMPC.Text" xml:space="preserve">
-    <value>Текущая темп APU</value>
-  </data>
-  <data name="infoAAPUTEMPL.Text" xml:space="preserve">
-    <value>Макс темп APU</value>
-  </data>
   <data name="infoACPUTEMPC.Text" xml:space="preserve">
     <value>Текущая темп CPU</value>
   </data>
@@ -856,6 +838,9 @@
   </data>
   <data name="infoACPUUSAGE.Text" xml:space="preserve">
     <value>Загрузка ЦП</value>
+  </data>
+  <data name="infoDiscreteGpuUsage.Text" xml:space="preserve">
+    <value>Загрузка ГП</value>
   </data>
   <data name="infoAFast.Text" xml:space="preserve">
     <value>Время быстрого разгона</value>
@@ -1088,6 +1073,21 @@
   </data>
   <data name="Info_CPU_text.Text" xml:space="preserve">
     <value>Информация </value>
+  </data>
+  <data name="Info_GPU_VramFrequency.Text" xml:space="preserve">
+    <value>Частота памяти</value>
+  </data>
+  <data name="Info_GPU_VramSize.Text" xml:space="preserve">
+    <value>Объём видеопамяти</value>
+  </data>
+  <data name="Info_GPU_VramType.Text" xml:space="preserve">
+    <value>Тип памяти</value>
+  </data>
+  <data name="Info_GPU_VramWidth.Text" xml:space="preserve">
+    <value>Ширина памяти</value>
+  </data>
+  <data name="Info_GPU_DriverVersion.Text" xml:space="preserve">
+    <value>Версия драйвера</value>
   </data>
   <data name="Info_CommonMetrics.Text" xml:space="preserve">
     <value>Основные показатели</value>
@@ -1720,10 +1720,10 @@ Overclock будут проигнорированы,
     <value>ОЗУ</value>
   </data>
   <data name="infoAAPUPower.Text" xml:space="preserve">
-    <value>Мощность APU</value>
+    <value>Мощность</value>
   </data>
   <data name="infoAAPUTemp.Text" xml:space="preserve">
-    <value>Температура APU</value>
+    <value>Температура</value>
   </data>
   <data name="infoABATChargeRate.Text" xml:space="preserve">
     <value>Мощность зарядки</value>
@@ -2393,7 +2393,7 @@ Asus. Может не поддерживаться на
     <value>Детализированная информация о состоянии компьютера</value>
   </data>
   <data name="Tray_Information.Label" xml:space="preserve">
-    <value>Информация</value>
+    <value>Мониторинг</value>
   </data>
   <data name="Tray_Overclock.Description" xml:space="preserve">
     <value>Свои пресеты и не только</value>

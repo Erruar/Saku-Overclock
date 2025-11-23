@@ -130,7 +130,7 @@
     <value>Overclock page</value>
   </data>
   <data name="Shell_Информация.Content" xml:space="preserve">
-    <value>Information page</value>
+    <value>Monitoring</value>
   </data>
   <data name="Settings_Personalization.Text" xml:space="preserve">
     <value>Personalization</value>
@@ -218,7 +218,7 @@
     <value>Refresh every (Milliseconds)</value>
   </data>
   <data name="Info_Name.Text" xml:space="preserve">
-    <value>Information page</value>
+    <value>Sensor monitoring</value>
   </data>
   <data name="Info_Refresh.ToolTipService.ToolTip" xml:space="preserve">
     <value>Refresh</value>
@@ -263,7 +263,7 @@
     <value>Discord</value>
   </data>
   <data name="Main_Info.Text" xml:space="preserve">
-    <value>Information</value>
+    <value>Monitoring</value>
   </data>
   <data name="Main_Param.Text" xml:space="preserve">
     <value>Parameters</value>
@@ -770,14 +770,8 @@ power output</value>
   <data name="Unsaved_Target.Title" xml:space="preserve">
     <value>Edit profile error</value>
   </data>
-  <data name="infoAActualC.Text" xml:space="preserve">
-    <value>Actual Current</value>
-  </data>
   <data name="infoAActualL.Text" xml:space="preserve">
     <value>Actual Power</value>
-  </data>
-  <data name="infoAAVGC.Text" xml:space="preserve">
-    <value>Average Current</value>
   </data>
   <data name="infoAAVGL.Text" xml:space="preserve">
     <value>Average Power</value>
@@ -827,18 +821,6 @@ power output</value>
   <data name="infoThreadC.Text" xml:space="preserve">
     <value>Threads</value>
   </data>
-  <data name="infoAAPUC.Text" xml:space="preserve">
-    <value>APU Current</value>
-  </data>
-  <data name="infoAAPUL.Text" xml:space="preserve">
-    <value>APU Limit</value>
-  </data>
-  <data name="infoAAPUTEMPC.Text" xml:space="preserve">
-    <value>APU Curr Temp</value>
-  </data>
-  <data name="infoAAPUTEMPL.Text" xml:space="preserve">
-    <value>APU Max Temp</value>
-  </data>
   <data name="infoACPUTEMPC.Text" xml:space="preserve">
     <value>CPU Curr Temp</value>
   </data>
@@ -847,6 +829,9 @@ power output</value>
   </data>
   <data name="infoACPUUSAGE.Text" xml:space="preserve">
     <value>CPU Usage</value>
+  </data>
+  <data name="infoDiscreteGpuUsage.Text" xml:space="preserve">
+    <value>GPU Usage</value>
   </data>
   <data name="infoAFast.Text" xml:space="preserve">
     <value>Fast frequency rise time</value>
@@ -1072,6 +1057,21 @@ Changing P0 state have more chances to crash your system</value>
   </data>
   <data name="Info_CPU_text.Text" xml:space="preserve">
     <value>Power information</value>
+  </data>
+  <data name="Info_GPU_VramFrequency.Text" xml:space="preserve">
+    <value>VRAM frequency</value>
+  </data>
+  <data name="Info_GPU_VramSize.Text" xml:space="preserve">
+    <value>VRAM Size</value>
+  </data>
+  <data name="Info_GPU_VramType.Text" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Info_GPU_VramWidth.Text" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="Info_GPU_DriverVersion.Text" xml:space="preserve">
+    <value>Driver version</value>
   </data>
   <data name="Info_CommonMetrics.Text" xml:space="preserve">
     <value>Common metrics</value>
@@ -1682,10 +1682,10 @@ AND DO NOT TOUCH IT!</value>
     <value>RAM</value>
   </data>
   <data name="infoAAPUPower.Text" xml:space="preserve">
-    <value>APU Power</value>
+    <value>Power</value>
   </data>
   <data name="infoAAPUTemp.Text" xml:space="preserve">
-    <value>APU Temperature</value>
+    <value>Temperature</value>
   </data>
   <data name="infoABATChargeRate.Text" xml:space="preserve">
     <value>Current charge rate</value>
@@ -2379,7 +2379,7 @@ set the value to 0</value>
     <value>Detail information about your device</value>
   </data>
   <data name="Tray_Information.Label" xml:space="preserve">
-    <value>Information page</value>
+    <value>Monitoring</value>
   </data>
   <data name="Tray_Overclock.Description" xml:space="preserve">
     <value>Set your overclocking options whatever you want</value>
