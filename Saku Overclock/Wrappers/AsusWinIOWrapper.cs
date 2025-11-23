@@ -2,10 +2,11 @@
 
 namespace Saku_Overclock.Wrappers;
 
-public static class AsusWinIOWrapper
+public static class AsusWinIoWrapper
 {
     private const string DllName = "AWinIo64.dll";
-    private static bool IsDllRunning;
+
+    private static bool _isDllRunning;
     /*Included AsusWinIO64.dll is licenced to (c) ASUSTek COMPUTER INC*/
     /*ASUS System Control Interface is necessary for this software to work - ASUS System Analysis service must be running. It's automatically installed with MyASUS app.*/
 
@@ -13,49 +14,71 @@ public static class AsusWinIOWrapper
 
     public static void Init_WinIo()
     {
-        if (!IsDllRunning)
+        if (_isDllRunning)
         {
-            InitializeWinIo();
-            IsDllRunning = true;
+            return;
         }
+
+        InitializeWinIo();
+        _isDllRunning = true;
     }
 
     public static void Cleanup_WinIo()
     {
-        if (IsDllRunning)
+        if (!_isDllRunning)
         {
-            ShutdownWinIo();
-            IsDllRunning = false;
+            return;
         }
+
+        ShutdownWinIo();
+        _isDllRunning = false;
     }
 
     #endregion
 
     #region DLL Imports
 
+    /// <summary>
+    ///     Инициализация dll
+    /// </summary>
     [DllImport(DllName)]
-    private static extern void InitializeWinIo(); // Инит функции
+    private static extern void InitializeWinIo();
 
+    /// <summary>
+    ///     Освобождение dll
+    /// </summary>
     [DllImport(DllName)]
-    private static extern void ShutdownWinIo(); // Выход из функции
+    private static extern void ShutdownWinIo();
 
+    /// <summary>
+    ///     Узнать количество кулеров
+    /// </summary>
     [DllImport(DllName)]
-    public static extern int HealthyTable_FanCounts(); // Узнать количество кулеров
+    public static extern int HealthyTable_FanCounts();
 
+    /// <summary>
+    ///     Установить индекс текущего кулера для управления установленным кулером
+    /// </summary>
     [DllImport(DllName)]
-    public static extern void HealthyTable_SetFanIndex(byte index); // Установить индекс текущего кулера для управления установленным кулером
+    public static extern void HealthyTable_SetFanIndex(byte index);
 
+    /// <summary>
+    ///     Установть скорость кулера
+    /// </summary>
     [DllImport(DllName)]
-    public static extern int HealthyTable_FanRPM(); // Установть скорость кулера
+    public static extern int HealthyTable_FanRPM();
 
+    /// <summary>
+    ///     Установить тестовый, диагностический режим
+    /// </summary>
     [DllImport(DllName)]
-    public static extern void HealthyTable_SetFanTestMode(char mode); // Установить тестовый, диагностический режим
+    public static extern void HealthyTable_SetFanTestMode(char mode);
 
+    /// <summary>
+    ///     Установить минимальную скорость
+    /// </summary>
     [DllImport(DllName)]
-    public static extern void HealthyTable_SetFanPwmDuty(short duty); // Установить минимальную скорость
+    public static extern void HealthyTable_SetFanPwmDuty(short duty);
 
-    [DllImport(DllName)]
-    public static extern ulong Thermal_Read_Cpu_Temperature(); // Узнать текущую температуру процессора
-    
-    #endregion 
+    #endregion
 }

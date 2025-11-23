@@ -76,7 +76,7 @@ public sealed partial class ПараметрыPage
     {
         get;
         set;
-    } = false;
+    }
 
     public ПараметрыPage()
     {
@@ -556,6 +556,8 @@ public sealed partial class ПараметрыPage
                     Ccd1Expander.Visibility = Visibility.Collapsed; //Убрать Оптимизатор кривой
                     Ccd2Expander.Visibility = Visibility.Collapsed;
                     CoExpander.Visibility = Visibility.Collapsed;
+                    LaptopsHtcTemp.Visibility = Visibility.Collapsed;
+                    LaptopsHtcTempDesc.Visibility = Visibility.Collapsed;
                     DesktopCpu_AM4_HideUnavailableParameters();
                 }
 
@@ -5910,33 +5912,30 @@ public sealed partial class ПараметрыPage
 
     private void TargetNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
+        var name = sender.Tag.ToString();
+            
+        if (name != null)
         {
-            
-            var name = sender.Tag.ToString();
-            
-            if (name != null)
+            object sliderObject;
+
+            try
             {
-                object sliderObject;
+                sliderObject = FindName(name);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.TraceIt_TraceError(ex);
+                return;
+            }
 
-                try
+            if (sliderObject is Slider slider)
+            {
+                if (slider.Maximum < sender.Value)
                 {
-                    sliderObject = FindName(name);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.TraceIt_TraceError(ex);
-                    return;
-                }
-
-                if (sliderObject is Slider slider)
-                {
-                    if (slider.Maximum < sender.Value)
-                    {
-                        slider.Maximum = FromValueToUpperFive(sender.Value);
-                    }
+                    slider.Maximum = FromValueToUpperFive(sender.Value);
                 }
             }
-        }
+        }        
     }
 
     private void BackToNormalMode_Click(object sender, RoutedEventArgs e)

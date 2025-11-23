@@ -1,17 +1,21 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
+using Windows.Foundation.Metadata;
+using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
+using Saku_Overclock.Services;
 using Saku_Overclock.SMUEngine;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
-using Windows.Foundation.Metadata;
 using static ZenStates.Core.Cpu;
 using Task = System.Threading.Tasks.Task;
 
@@ -20,17 +24,20 @@ namespace Saku_Overclock.Views;
 public sealed partial class ПресетыPage
 {
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
-    private static readonly IApplyerService _applyer = App.GetService<IApplyerService>();
+    private static readonly IApplyerService Applyer = App.GetService<IApplyerService>();
     private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений 
     private bool _waitforload = true; // Ожидание окончательной смены профиля на другой. Активируется при смене профиля 
     private static Profile[] _profile = new Profile[1]; // Всегда по умолчанию будет 1 профиль
-    private int _indexprofile = 0; // Выбранный профиль
+    private int _indexprofile; // Выбранный профиль
     private readonly IBackgroundDataUpdater? _dataUpdater;
     private CodeName? _codeName;
-    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
+
+    private static readonly IAppNotificationService
+        NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
+
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
-    private static bool? _isPlatformPC = false;
+    private static bool? _isPlatformPc = false;
     private string _doubleClickApply = string.Empty;
 
     public ПресетыPage()
@@ -49,18 +56,18 @@ public sealed partial class ПресетыPage
     private void ПресетыPage_Loaded(object sender, RoutedEventArgs e)
     {
         _waitforload = false;
-        SelectedProfile_Description.Text = "Preset_Min_Desc/Text".GetLocalized();
+        SelectedProfileDescription.Text = "Preset_Min_Desc/Text".GetLocalized();
 
         try
         {
-            _isPlatformPC = SendSmuCommand.IsPlatformPc();
+            _isPlatformPc = SendSmuCommand.IsPlatformPc();
         }
         catch (Exception ex)
         {
             LogHelper.LogError(ex);
         }
 
-        LoadProfiles();
+        _ = LoadProfiles();
 
         // Загрузить остальные UI элементы, функции блока "Дополнительно"
         try
@@ -71,6 +78,7 @@ public sealed partial class ПресетыPage
         {
             AutostartCom.SelectedIndex = 0;
         }
+
         try
         {
             HideCom.SelectedIndex = AppSettings.HidingType;
@@ -80,14 +88,17 @@ public sealed partial class ПресетыPage
             HideCom.SelectedIndex = 2;
         }
 
-        ReapplyOptionsSetOnly(AppSettings.ReapplyOverclock ? ReapplyOptions_Enabled : ReapplyOptions_Disabled);
-        AutoApplyOptionsSetOnly(AppSettings.ReapplyLatestSettingsOnAppLaunch ? AutoApplyOptions_Enabled : AutoApplyOptions_Disabled);
-        TrayMonSetOnly(AppSettings.NiIconsEnabled ? TrayMonFeat_Enabled : TrayMonFeat_Disabled);
-        RtssOverlaySetOnly(AppSettings.RtssMetricsEnabled ? RtssOverlay_Enabled : RtssOverlay_Disabled);
-        StreamStabilizerSetOnly(AppSettings.StreamStabilizerEnabled ? StreamStabilizer_Smart : StreamStabilizer_Disabled);
+        ReapplyOptionsSetOnly(AppSettings.ReapplyOverclock ? ReapplyOptionsEnabled : ReapplyOptionsDisabled);
+        AutoApplyOptionsSetOnly(AppSettings.ReapplyLatestSettingsOnAppLaunch
+            ? AutoApplyOptionsEnabled
+            : AutoApplyOptionsDisabled);
+        TrayMonSetOnly(AppSettings.NiIconsEnabled ? TrayMonFeatEnabled : TrayMonFeatDisabled);
+        RtssOverlaySetOnly(AppSettings.RtssMetricsEnabled ? RtssOverlayEnabled : RtssOverlayDisabled);
+        StreamStabilizerSetOnly(
+            AppSettings.StreamStabilizerEnabled ? StreamStabilizerSmart : StreamStabilizerDisabled);
 
-        Premade_OptimizationLevel.SelectedIndex = AppSettings.PremadeOptimizationLevel;
-        
+        PremadeOptimizationLevel.SelectedIndex = AppSettings.PremadeOptimizationLevel;
+
         if (AppSettings.StreamStabilizerEnabled)
         {
             StreamStabilizerModeCombo.SelectedIndex = AppSettings.StreamStabilizerType;
@@ -101,15 +112,16 @@ public sealed partial class ПресетыPage
 
         if (OcFinder.IsUndervoltingAvailable() && AppSettings.PremadeOptimizationLevel == 2)
         {
-            Premade_PremadeCurveOptimizer_StackPanel.Visibility = Visibility.Visible;
+            PremadeCurveOptimizerStackPanel.Visibility = Visibility.Visible;
         }
         else
         {
-            Premade_PremadeCurveOptimizer_StackPanel.Visibility = Visibility.Collapsed;
+            PremadeCurveOptimizerStackPanel.Visibility = Visibility.Collapsed;
         }
-        CurveOptimizerLevel_Slider.Value = AppSettings.PremadeCurveOptimizerOverrideLevel;
 
-        Premade_OptimizationLevelDesc.Text = Premade_OptimizationLevel.SelectedIndex switch
+        CurveOptimizerLevelSlider.Value = AppSettings.PremadeCurveOptimizerOverrideLevel;
+
+        PremadeOptimizationLevelDesc.Text = PremadeOptimizationLevel.SelectedIndex switch
         {
             0 => "Preset_OptimizationLevel_Base_Desc".GetLocalized(),
             1 => "Preset_OptimizationLevel_Average_Desc".GetLocalized(),
@@ -117,45 +129,48 @@ public sealed partial class ПресетыPage
             _ => "Preset_OptimizationLevel_Base_Desc".GetLocalized()
         };
 
-        CurveOptimizerCustom_Grid.Visibility = OcFinder.IsUndervoltingAvailable() ? Visibility.Visible : Visibility.Collapsed;
-        if (CurveOptimizerCustom_Grid.Visibility == Visibility.Collapsed)
+        CurveOptimizerCustomGrid.Visibility =
+            OcFinder.IsUndervoltingAvailable() ? Visibility.Visible : Visibility.Collapsed;
+        if (CurveOptimizerCustomGrid.Visibility == Visibility.Collapsed)
         {
             CurveOptimizerCustom.IsOn = false;
         }
 
         if (AppSettings.ProfilespageViewModeBeginner)
         {
-            BeginnerOptions_Button.IsChecked = true;
-            AdvancedOptions_Button.IsChecked = false;
+            BeginnerOptionsButton.IsChecked = true;
+            AdvancedOptionsButton.IsChecked = false;
         }
         else
         {
-            BeginnerOptions_Button.IsChecked = false;
-            AdvancedOptions_Button.IsChecked = true;
+            BeginnerOptionsButton.IsChecked = false;
+            AdvancedOptionsButton.IsChecked = true;
         }
-        ToolTipService.SetToolTip(AdvancedOptions_Button, "Param_ProMode".GetLocalized());
-        ToolTipService.SetToolTip(BeginnerOptions_Button, "Param_NewbieMode".GetLocalized());
+
+        ToolTipService.SetToolTip(AdvancedOptionsButton, "Param_ProMode".GetLocalized());
+        ToolTipService.SetToolTip(BeginnerOptionsButton, "Param_NewbieMode".GetLocalized());
 
         _isLoaded = true;
 
         var cpu = CpuSingleton.GetInstance();
         _codeName = cpu.info.codeName;
-        if (_codeName != CodeName.RavenRidge && _codeName != CodeName.Dali && _codeName != CodeName.Picasso && _codeName != CodeName.FireFlight && SettingsViewModel.VersionId != 5)
+        if (_codeName != CodeName.RavenRidge && _codeName != CodeName.Dali && _codeName != CodeName.Picasso &&
+            _codeName != CodeName.FireFlight && SettingsViewModel.VersionId != 5)
         {
-            AdvancedGpu_OptionsPanelGrid_0.Visibility = Visibility.Collapsed;
-            AdvancedGpu_OptionsPanelGrid_1.Visibility = Visibility.Collapsed;
-            AdvancedGpu_OptionsPanel_0.Visibility = Visibility.Collapsed;
-            AdvancedGpu_OptionsPanel_1.Height = new GridLength(0);
-            AdvancedGpu_OptionsPanel_2.Visibility = Visibility.Collapsed;
-            AdvancedGpu_OptionsPanel_3.Height = new GridLength(0);
+            AdvancedGpuOptionsPanelGrid0.Visibility = Visibility.Collapsed;
+            AdvancedGpuOptionsPanelGrid1.Visibility = Visibility.Collapsed;
+            AdvancedGpuOptionsPanel0.Visibility = Visibility.Collapsed;
+            AdvancedGpuOptionsPanel1.Height = new GridLength(0);
+            AdvancedGpuOptionsPanel2.Visibility = Visibility.Collapsed;
+            AdvancedGpuOptionsPanel3.Height = new GridLength(0);
         }
-
     }
 
     #region JSON and Initialization
 
     #region Initialization
-    private async void LoadProfiles()
+
+    private async Task LoadProfiles()
     {
         // Загрузить профили перед началом работы с ними
         ProfileLoad();
@@ -186,35 +201,35 @@ public sealed partial class ПресетыPage
         // Готовые Пресеты
         ProfilesControl.Items.Add(new ProfileItem
         {
-            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeMaxActivated,
+            IsSelected = AppSettings is { Preset: -1, PremadeMaxActivated: true },
             IconGlyph = "\uEcad",
             Text = "Preset_Max_Name/Text".GetLocalized(), // Maximum
             Description = "Preset_Max_Desc/Text".GetLocalized()
         });
         ProfilesControl.Items.Add(new ProfileItem
         {
-            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeSpeedActivated,
+            IsSelected = AppSettings is { Preset: -1, PremadeSpeedActivated: true },
             IconGlyph = "\ue945",
             Text = "Preset_Speed_Name/Text".GetLocalized(), // Speed
             Description = "Preset_Speed_Desc/Text".GetLocalized()
         });
         ProfilesControl.Items.Add(new ProfileItem
         {
-            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeBalanceActivated,
+            IsSelected = AppSettings is { Preset: -1, PremadeBalanceActivated: true },
             IconGlyph = "\uec49",
             Text = "Preset_Balance_Name/Text".GetLocalized(), // Balance
             Description = "Preset_Balance_Desc/Text".GetLocalized()
         });
         ProfilesControl.Items.Add(new ProfileItem
         {
-            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeEcoActivated,
+            IsSelected = AppSettings is { Preset: -1, PremadeEcoActivated: true },
             IconGlyph = "\uec0a",
             Text = "Preset_Eco_Name/Text".GetLocalized(), // Eco
             Description = "Preset_Eco_Desc/Text".GetLocalized()
         });
         ProfilesControl.Items.Add(new ProfileItem
         {
-            IsSelected = AppSettings.Preset == -1 && AppSettings.PremadeMinActivated,
+            IsSelected = AppSettings is { Preset: -1, PremadeMinActivated: true },
             IconGlyph = "\uebc0",
             Text = "Preset_Min_Name/Text".GetLocalized(), // Minimum
             Description = "Preset_Min_Desc/Text".GetLocalized()
@@ -227,84 +242,84 @@ public sealed partial class ПресетыPage
         {
             if (item.IsSelected)
             {
-                SelectedProfile_Name.Text = item.Text;
+                SelectedProfileName.Text = item.Text;
 
                 // Обход отсутствия описания, при помощи записывания имени пресета в описание. Чтобы не отображать два раза одну и ту же строку, описание пресета скрывается (так как его нет)
-                SelectedProfile_Description.Text = item.Description != item.Text ? item.Description : string.Empty;
+                SelectedProfileDescription.Text = item.Description != item.Text ? item.Description : string.Empty;
                 if (item.Description == item.Text)
                 {
-                    SelectedProfile_Description.Visibility = Visibility.Collapsed;
-                    EditCurrent_ButtonsStackPanel.Margin = new Thickness(0, 0, -13, -10);
-                    EditCurrent_ButtonsStackPanel.VerticalAlignment = VerticalAlignment.Top;
-                    SelectedProfile_TextsStackPanel.VerticalAlignment = VerticalAlignment.Center;
+                    SelectedProfileDescription.Visibility = Visibility.Collapsed;
+                    EditCurrentButtonsStackPanel.Margin = new Thickness(0, 0, -13, -10);
+                    EditCurrentButtonsStackPanel.VerticalAlignment = VerticalAlignment.Top;
+                    SelectedProfileTextsStackPanel.VerticalAlignment = VerticalAlignment.Center;
                 }
                 else
                 {
-                    SelectedProfile_Description.Visibility = Visibility.Visible;
-                    EditCurrent_ButtonsStackPanel.Margin = new Thickness(0, 17, -13, -10);
-                    EditCurrent_ButtonsStackPanel.VerticalAlignment = VerticalAlignment.Center;
-                    SelectedProfile_TextsStackPanel.VerticalAlignment = VerticalAlignment.Top;
+                    SelectedProfileDescription.Visibility = Visibility.Visible;
+                    EditCurrentButtonsStackPanel.Margin = new Thickness(0, 17, -13, -10);
+                    EditCurrentButtonsStackPanel.VerticalAlignment = VerticalAlignment.Center;
+                    SelectedProfileTextsStackPanel.VerticalAlignment = VerticalAlignment.Top;
                 }
 
                 if ((item.Text == "Preset_Max_Name/Text".GetLocalized() &&
-                item.Description == "Preset_Max_Desc/Text".GetLocalized()) ||
-                (item.Text == "Preset_Speed_Name/Text".GetLocalized() &&
-                item.Description == "Preset_Speed_Desc/Text".GetLocalized()) ||
-                (item.Text == "Preset_Balance_Name/Text".GetLocalized() &&
-                item.Description == "Preset_Balance_Desc/Text".GetLocalized()) ||
-                (item.Text == "Preset_Eco_Name/Text".GetLocalized() &&
-                item.Description == "Preset_Eco_Desc/Text".GetLocalized()) ||
-                (item.Text == "Preset_Min_Name/Text".GetLocalized() &&
-                item.Description == "Preset_Min_Desc/Text".GetLocalized())
-                )
+                     item.Description == "Preset_Max_Desc/Text".GetLocalized()) ||
+                    (item.Text == "Preset_Speed_Name/Text".GetLocalized() &&
+                     item.Description == "Preset_Speed_Desc/Text".GetLocalized()) ||
+                    (item.Text == "Preset_Balance_Name/Text".GetLocalized() &&
+                     item.Description == "Preset_Balance_Desc/Text".GetLocalized()) ||
+                    (item.Text == "Preset_Eco_Name/Text".GetLocalized() &&
+                     item.Description == "Preset_Eco_Desc/Text".GetLocalized()) ||
+                    (item.Text == "Preset_Min_Name/Text".GetLocalized() &&
+                     item.Description == "Preset_Min_Desc/Text".GetLocalized())
+                   )
                 {
-                    ProfileSettings_StackPanel.Visibility = Visibility.Collapsed;
-                    ProfileSettings_BeginnerView.Visibility = Visibility.Visible;
-                    ProfileSettings_BeginnerView.Margin = new Thickness(0, -5, 0, 0);
-                    PremadeProfile_AffectsOn.Visibility = Visibility.Visible;
-                    ProfileSettings_BeginnerView_SettingsStackPanel.Visibility = Visibility.Collapsed;
+                    ProfileSettingsStackPanel.Visibility = Visibility.Collapsed;
+                    ProfileSettingsBeginnerView.Visibility = Visibility.Visible;
+                    ProfileSettingsBeginnerView.Margin = new Thickness(0, -5, 0, 0);
+                    PremadeProfileAffectsOn.Visibility = Visibility.Visible;
+                    ProfileSettingsBeginnerViewSettingsStackPanel.Visibility = Visibility.Collapsed;
                     EditProfileButton.Visibility = Visibility.Collapsed;
-                    ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Collapsed;
+                    ProfileSettingsChangeViewStackPanel.Visibility = Visibility.Collapsed;
 
-                    var optimizationLevel = Premade_OptimizationLevel.SelectedIndex switch
+                    var optimizationLevel = PremadeOptimizationLevel.SelectedIndex switch
                     {
-                        0 => Services.OptimizationLevel.Basic,
-                        1 => Services.OptimizationLevel.Standard,
-                        2 => Services.OptimizationLevel.Deep,
-                        _ => Services.OptimizationLevel.Basic
+                        0 => OptimizationLevel.Basic,
+                        1 => OptimizationLevel.Standard,
+                        2 => OptimizationLevel.Deep,
+                        _ => OptimizationLevel.Basic
                     };
 
-                    Services.PresetMetrics metrics;
+                    PresetMetrics metrics;
 
                     if (item.Text == "Preset_Max_Name/Text".GetLocalized())
                     {
-                        metrics = OcFinder.GetPresetMetrics(Services.PresetType.Max, optimizationLevel);
-                        await HelpWithShowPreset(Services.PresetType.Max);
+                        metrics = OcFinder.GetPresetMetrics(PresetType.Max, optimizationLevel);
+                        await HelpWithShowPreset(PresetType.Max);
                     }
                     else if (item.Text == "Preset_Speed_Name/Text".GetLocalized())
                     {
-                        metrics = OcFinder.GetPresetMetrics(Services.PresetType.Performance, optimizationLevel);
-                        await HelpWithShowPreset(Services.PresetType.Performance);
+                        metrics = OcFinder.GetPresetMetrics(PresetType.Performance, optimizationLevel);
+                        await HelpWithShowPreset(PresetType.Performance);
                     }
                     else if (item.Text == "Preset_Balance_Name/Text".GetLocalized())
                     {
-                        metrics = OcFinder.GetPresetMetrics(Services.PresetType.Balance, optimizationLevel);
-                        await HelpWithShowPreset(Services.PresetType.Balance);
+                        metrics = OcFinder.GetPresetMetrics(PresetType.Balance, optimizationLevel);
+                        await HelpWithShowPreset(PresetType.Balance);
                     }
                     else if (item.Text == "Preset_Eco_Name/Text".GetLocalized())
                     {
-                        metrics = OcFinder.GetPresetMetrics(Services.PresetType.Eco, optimizationLevel);
-                        await HelpWithShowPreset(Services.PresetType.Eco);
+                        metrics = OcFinder.GetPresetMetrics(PresetType.Eco, optimizationLevel);
+                        await HelpWithShowPreset(PresetType.Eco);
                     }
                     else
                     {
-                        metrics = OcFinder.GetPresetMetrics(Services.PresetType.Min, optimizationLevel);
-                        await HelpWithShowPreset(Services.PresetType.Min);
+                        metrics = OcFinder.GetPresetMetrics(PresetType.Min, optimizationLevel);
+                        await HelpWithShowPreset(PresetType.Min);
                     }
 
-                    Preset_PerformanceBar.Value = 50 + metrics.PerformanceScore;
-                    Preset_EnergyEfficiencyBar.Value = 50 + metrics.EfficiencyScore;
-                    Preset_TemperaturesBar.Value = 50 + metrics.ThermalScore;
+                    PresetPerformanceBar.Value = 50 + metrics.PerformanceScore;
+                    PresetEnergyEfficiencyBar.Value = 50 + metrics.EfficiencyScore;
+                    PresetTemperaturesBar.Value = 50 + metrics.ThermalScore;
 
                     /*Preset_Options_Temp.Text = options.ThermalOptions;
                     Preset_Options_Power.Text = options.PowerOptions;
@@ -312,79 +327,80 @@ public sealed partial class ПресетыPage
                 }
                 else
                 {
-                    ProfileSettings_BeginnerView_SettingsStackPanel.Visibility = Visibility.Visible;
-                    ProfileSettings_BeginnerView.Margin = new Thickness(0, 0, 0, 0);
+                    ProfileSettingsBeginnerViewSettingsStackPanel.Visibility = Visibility.Visible;
+                    ProfileSettingsBeginnerView.Margin = new Thickness(0, 0, 0, 0);
                     if (AppSettings.ProfilespageViewModeBeginner)
                     {
-                        BeginnerOptions_Button.IsChecked = true;
-                        AdvancedOptions_Button.IsChecked = false;
-                        ProfileSettings_StackPanel.Visibility = Visibility.Collapsed;
-                        ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
-                        ProfileSettings_BeginnerView.Visibility = Visibility.Visible;
-                        PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed;
+                        BeginnerOptionsButton.IsChecked = true;
+                        AdvancedOptionsButton.IsChecked = false;
+                        ProfileSettingsStackPanel.Visibility = Visibility.Collapsed;
+                        ProfileSettingsChangeViewStackPanel.Visibility = Visibility.Visible;
+                        ProfileSettingsBeginnerView.Visibility = Visibility.Visible;
+                        PremadeProfileAffectsOn.Visibility = Visibility.Collapsed;
                         EditProfileButton.Visibility = Visibility.Visible;
                     }
                     else
                     {
-                        BeginnerOptions_Button.IsChecked = false;
-                        AdvancedOptions_Button.IsChecked = true;
-                        ProfileSettings_StackPanel.Visibility = Visibility.Visible;
-                        ProfileSettings_BeginnerView.Visibility = Visibility.Collapsed;
-                        ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
-                        PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed;
+                        BeginnerOptionsButton.IsChecked = false;
+                        AdvancedOptionsButton.IsChecked = true;
+                        ProfileSettingsStackPanel.Visibility = Visibility.Visible;
+                        ProfileSettingsBeginnerView.Visibility = Visibility.Collapsed;
+                        ProfileSettingsChangeViewStackPanel.Visibility = Visibility.Visible;
+                        PremadeProfileAffectsOn.Visibility = Visibility.Collapsed;
                         EditProfileButton.Visibility = Visibility.Visible;
                     }
                 }
             }
         }
+
         if (AppSettings.Preset != -1)
         {
             await MainInitAsync(AppSettings.Preset);
         }
     }
 
-    private async Task HelpWithShowPreset(Services.PresetType type)
+    private async Task HelpWithShowPreset(PresetType type)
     {
-        if (!_isLoaded) 
+        if (!_isLoaded)
         {
             await Task.Delay(700);
         }
 
-        Preset_HW_Gaming.Visibility = Visibility.Collapsed;
-        Preset_HW_Striming.Visibility = Visibility.Collapsed;
-        Preset_HW_HardWorkload.Visibility = Visibility.Collapsed;
-        Preset_HW_OfficeWorkload.Visibility = Visibility.Collapsed;
-        Preset_HW_LightGaming.Visibility = Visibility.Collapsed;
-        Preset_HW_Videos.Visibility = Visibility.Collapsed;
-        Preset_HW_ColumnHelper1.Width = GridLength.Auto;
-        Preset_HW_ColumnHelper2.Width = GridLength.Auto;
+        PresetHwGaming.Visibility = Visibility.Collapsed;
+        PresetHwStreaming.Visibility = Visibility.Collapsed;
+        PresetHwHardWorkload.Visibility = Visibility.Collapsed;
+        PresetHwOfficeWorkload.Visibility = Visibility.Collapsed;
+        PresetHwLightGaming.Visibility = Visibility.Collapsed;
+        PresetHwVideos.Visibility = Visibility.Collapsed;
+        PresetHwColumnHelper1.Width = GridLength.Auto;
+        PresetHwColumnHelper2.Width = GridLength.Auto;
         switch (type)
         {
-            case Services.PresetType.Min:
-                Preset_HW_OfficeWorkload.Visibility = Visibility.Visible;
-                Preset_HW_Videos.Visibility = Visibility.Visible;
-                Preset_HW_ColumnHelper2.Width = new GridLength(0);
+            case PresetType.Min:
+                PresetHwOfficeWorkload.Visibility = Visibility.Visible;
+                PresetHwVideos.Visibility = Visibility.Visible;
+                PresetHwColumnHelper2.Width = new GridLength(0);
                 break;
-            case Services.PresetType.Eco:
-                Preset_HW_OfficeWorkload.Visibility = Visibility.Visible;
-                Preset_HW_Videos.Visibility = Visibility.Visible;
-                Preset_HW_LightGaming.Visibility = Visibility.Visible;
+            case PresetType.Eco:
+                PresetHwOfficeWorkload.Visibility = Visibility.Visible;
+                PresetHwVideos.Visibility = Visibility.Visible;
+                PresetHwLightGaming.Visibility = Visibility.Visible;
                 break;
-            case Services.PresetType.Balance:
-                Preset_HW_Gaming.Visibility = Visibility.Visible;
-                Preset_HW_OfficeWorkload.Visibility = Visibility.Visible;
-                Preset_HW_Videos.Visibility = Visibility.Visible;
-                Preset_HW_Striming.Visibility = Visibility.Visible;
-                Preset_HW_ColumnHelper1.Width = new GridLength(0);
-                Preset_HW_ColumnHelper2.Width = new GridLength(0);
+            case PresetType.Balance:
+                PresetHwGaming.Visibility = Visibility.Visible;
+                PresetHwOfficeWorkload.Visibility = Visibility.Visible;
+                PresetHwVideos.Visibility = Visibility.Visible;
+                PresetHwStreaming.Visibility = Visibility.Visible;
+                PresetHwColumnHelper1.Width = new GridLength(0);
+                PresetHwColumnHelper2.Width = new GridLength(0);
                 break;
-            case Services.PresetType.Performance:
-            case Services.PresetType.Max:
-                Preset_HW_Gaming.Visibility = Visibility.Visible;
-                Preset_HW_Striming.Visibility = Visibility.Visible;
-                Preset_HW_OfficeWorkload.Visibility = Visibility.Visible;
-                Preset_HW_Videos.Visibility = Visibility.Visible;
-                Preset_HW_HardWorkload.Visibility = Visibility.Visible;
+            case PresetType.Performance:
+            case PresetType.Max:
+                PresetHwGaming.Visibility = Visibility.Visible;
+                PresetHwStreaming.Visibility = Visibility.Visible;
+                PresetHwOfficeWorkload.Visibility = Visibility.Visible;
+                PresetHwVideos.Visibility = Visibility.Visible;
+                PresetHwHardWorkload.Visibility = Visibility.Visible;
                 break;
         }
     }
@@ -396,39 +412,39 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         try
         {
-            if (_profile[index].Cpu1Value > c1v.Maximum)
+            if (_profile[index].Cpu1Value > C1V.Maximum)
             {
-                c1v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu1Value);
+                C1V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu1Value);
             }
 
-            if (_profile[index].Cpu2Value > BaseTdp_Slider.Maximum)
+            if (_profile[index].Cpu2Value > BaseTdpSlider.Maximum)
             {
-                BaseTdp_Slider.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu2Value);
+                BaseTdpSlider.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu2Value);
             }
 
-            if (_profile[index].Cpu2Value > c2v.Maximum)
+            if (_profile[index].Cpu2Value > C2V.Maximum)
             {
-                c2v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu2Value);
+                C2V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu2Value);
             }
 
-            if (_profile[index].Cpu3Value > c3v.Maximum)
+            if (_profile[index].Cpu3Value > C3V.Maximum)
             {
-                c3v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu3Value);
+                C3V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu3Value);
             }
 
-            if (_profile[index].Cpu4Value > c4v.Maximum)
+            if (_profile[index].Cpu4Value > C4V.Maximum)
             {
-                c4v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu4Value);
+                C4V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu4Value);
             }
 
-            if (_profile[index].Cpu5Value > c5v.Maximum)
+            if (_profile[index].Cpu5Value > C5V.Maximum)
             {
-                c5v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu5Value);
+                C5V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu5Value);
             }
 
-            if (_profile[index].Cpu6Value > c6v.Maximum)
+            if (_profile[index].Cpu6Value > C6V.Maximum)
             {
-                c6v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu6Value);
+                C6V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Cpu6Value);
             }
 
             if (_profile[index].Vrm1Value > V1V.Maximum)
@@ -451,14 +467,14 @@ public sealed partial class ПресетыPage
                 V4V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Vrm4Value);
             }
 
-            if (_profile[index].Gpu9Value > g9v.Maximum)
+            if (_profile[index].Gpu9Value > G9V.Maximum)
             {
-                g9v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Gpu9Value);
+                G9V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Gpu9Value);
             }
 
-            if (_profile[index].Gpu10Value > g10v.Maximum)
+            if (_profile[index].Gpu10Value > G10V.Maximum)
             {
-                g10v.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Gpu10Value);
+                G10V.Maximum = ПараметрыPage.FromValueToUpperFive(_profile[index].Gpu10Value);
             }
         }
         catch (Exception ex)
@@ -471,21 +487,23 @@ public sealed partial class ПресетыPage
             // Заранее скомпилированная функция увеличения TDP, созданная специально для фирменной функции Smart TDP
             var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * _profile[index].Cpu2Value + 0.21631949);
 
-            c2.IsChecked = _profile[index].Cpu2;
-            c2v.Value = _profile[index].Cpu2Value;
+            C2.IsChecked = _profile[index].Cpu2;
+            C2V.Value = _profile[index].Cpu2Value;
 
-            BaseTdp_Slider.Value = _profile[index].Cpu2Value;
+            BaseTdpSlider.Value = _profile[index].Cpu2Value;
             if (_profile[index].Cpu2 && _profile[index].Cpu3 && _profile[index].Cpu4 &&
-                _profile[index].Cpu2Value == _profile[index].Cpu4Value && _profile[index].Cpu3Value == fineTunedTdp)
+                (int)_profile[index].Cpu2Value == (int)_profile[index].Cpu4Value &&
+                (int)_profile[index].Cpu3Value == fineTunedTdp)
             {
                 SmartTdp.IsOn = true;
             }
             else
             {
-                if (_isPlatformPC != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
+                if (_isPlatformPc != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
                 {
                     // Так как на компьютерах невозможно выставить другие Power лимиты
-                    if (!_profile[index].Cpu2 && !_profile[index].Cpu4 && _profile[index].Cpu3Value == fineTunedTdp)
+                    if (!_profile[index].Cpu2 && !_profile[index].Cpu4 &&
+                        (int)_profile[index].Cpu3Value == fineTunedTdp)
                     {
                         SmartTdp.IsOn = true;
                     }
@@ -496,90 +514,93 @@ public sealed partial class ПресетыPage
                 }
             }
 
-            c1.IsChecked = _profile[index].Cpu1;
-            c1v.Value = _profile[index].Cpu1Value;
-            c3.IsChecked = _profile[index].Cpu3;
-            c3v.Value = _profile[index].Cpu3Value;
-            c4.IsChecked = _profile[index].Cpu4;
-            c4v.Value = _profile[index].Cpu4Value;
-            c5.IsChecked = _profile[index].Cpu5;
-            c5v.Value = _profile[index].Cpu5Value;
-            c6.IsChecked = _profile[index].Cpu6;
-            c6v.Value = _profile[index].Cpu6Value;
+            C1.IsChecked = _profile[index].Cpu1;
+            C1V.Value = _profile[index].Cpu1Value;
+            C3.IsChecked = _profile[index].Cpu3;
+            C3V.Value = _profile[index].Cpu3Value;
+            C4.IsChecked = _profile[index].Cpu4;
+            C4V.Value = _profile[index].Cpu4Value;
+            C5.IsChecked = _profile[index].Cpu5;
+            C5V.Value = _profile[index].Cpu5Value;
+            C6.IsChecked = _profile[index].Cpu6;
+            C6V.Value = _profile[index].Cpu6Value;
 
 
             if (IsRavenFamily())
             {
-                if (_profile[index].Gpu10 == true && _profile[index].Gpu9 == true && _profile[index].Gpu10Value == 1200)
+                if (_profile[index].Gpu10 && _profile[index].Gpu9 && (int)_profile[index].Gpu10Value == 1200)
                 {
-                    if (_profile[index].Gpu9Value == 800)
+                    if ((int)_profile[index].Gpu9Value == 800)
                     {
-                        IgpuEnchancementCombo.SelectedIndex = 1;
+                        IntegratedGpuEnchantmentCombo.SelectedIndex = 1;
                     }
-                    if (_profile[index].Gpu9Value == 1000)
+
+                    if ((int)_profile[index].Gpu9Value == 1000)
                     {
-                        IgpuEnchancementCombo.SelectedIndex = 2;
+                        IntegratedGpuEnchantmentCombo.SelectedIndex = 2;
                     }
                 }
                 else
                 {
-                    IgpuEnchancementCombo.SelectedIndex = 0;
+                    IntegratedGpuEnchantmentCombo.SelectedIndex = 0;
                 }
             }
             else
             {
-                if (_profile[index].Advncd10 == true)
+                if (_profile[index].Advncd10)
                 {
-                    if (_profile[index].Advncd10Value == 1750)
+                    if ((int)_profile[index].Advncd10Value == 1750)
                     {
-                        IgpuEnchancementCombo.SelectedIndex = 1;
+                        IntegratedGpuEnchantmentCombo.SelectedIndex = 1;
                     }
-                    if (_profile[index].Advncd10Value == 2200)
+
+                    if ((int)_profile[index].Advncd10Value == 2200)
                     {
-                        IgpuEnchancementCombo.SelectedIndex = 2;
+                        IntegratedGpuEnchantmentCombo.SelectedIndex = 2;
                     }
                 }
                 else
                 {
-                    IgpuEnchancementCombo.SelectedIndex = 0;
+                    IntegratedGpuEnchantmentCombo.SelectedIndex = 0;
                 }
             }
 
             if (!_profile[index].Cpu5 && !_profile[index].Cpu6)
             {
-                TurboSetOnly(Turbo_LightModeToggle);
+                TurboSetOnly(TurboLightModeToggle);
             }
             else
             {
                 if ((_profile[index].Cpu5 && !_profile[index].Cpu6) || (!_profile[index].Cpu5 && _profile[index].Cpu6))
                 {
-                    TurboSetOnly(Turbo_LightModeToggle);
+                    TurboSetOnly(TurboLightModeToggle);
                 }
+
                 if (_profile[index].Cpu5 && _profile[index].Cpu6)
                 {
-                    if (_profile[index].Cpu5Value == 400 && _profile[index].Cpu6Value == 3)
+                    if ((int)_profile[index].Cpu5Value == 400 && (int)_profile[index].Cpu6Value == 3)
                     {
-                        TurboSetOnly(Turbo_BalanceModeToggle);
+                        TurboSetOnly(TurboBalanceModeToggle);
                     }
-                    else if (_profile[index].Cpu5Value == 5000 && _profile[index].Cpu6Value == 1)
+                    else if ((int)_profile[index].Cpu5Value == 5000 && (int)_profile[index].Cpu6Value == 1)
                     {
-                        TurboSetOnly(Turbo_HeavyModeToggle);
+                        TurboSetOnly(TurboHeavyModeToggle);
                     }
                     else
                     {
-                        TurboSetOnly(Turbo_LightModeToggle);
+                        TurboSetOnly(TurboLightModeToggle);
                     }
                 }
                 else
                 {
-                    TurboSetOnly(Turbo_LightModeToggle);
+                    TurboSetOnly(TurboLightModeToggle);
                 }
             }
 
             if (_profile[index].Coall)
             {
                 CurveOptimizerCustom.IsOn = true;
-                CurveOptimizerLevelCustom_Slider.Value = _profile[index].Coallvalue;
+                CurveOptimizerLevelCustomSlider.Value = _profile[index].Coallvalue;
             }
             else
             {
@@ -594,10 +615,10 @@ public sealed partial class ПресетыPage
             V3V.Value = _profile[index].Vrm3Value;
             V4.IsChecked = _profile[index].Vrm4;
             V4V.Value = _profile[index].Vrm4Value;
-            g9v.Value = _profile[index].Gpu9Value;
-            g9.IsChecked = _profile[index].Gpu9;
-            g10v.Value = _profile[index].Gpu10Value;
-            g10.IsChecked = _profile[index].Gpu10;
+            G9V.Value = _profile[index].Gpu9Value;
+            G9.IsChecked = _profile[index].Gpu9;
+            G10V.Value = _profile[index].Gpu10Value;
+            G10.IsChecked = _profile[index].Gpu10;
         }
         catch
         {
@@ -613,133 +634,88 @@ public sealed partial class ПресетыPage
 
     private void TurboSetOnly(ToggleButton button)
     {
-        Turbo_LightModeToggle.IsChecked = false;
-        Turbo_BalanceModeToggle.IsChecked = false;
-        Turbo_HeavyModeToggle.IsChecked = false;
-
-        switch (button.Name)
-        {
-            case "Turbo_LightModeToggle":
-                Turbo_LightModeToggle.IsChecked = true;
-                break;
-            case "Turbo_BalanceModeToggle":
-                Turbo_BalanceModeToggle.IsChecked = true;
-                break;
-            case "Turbo_HeavyModeToggle":
-                Turbo_HeavyModeToggle.IsChecked = true;
-                break;
-        }
+        TurboLightModeToggle.IsChecked = false;
+        TurboBalanceModeToggle.IsChecked = false;
+        TurboHeavyModeToggle.IsChecked = false;
+       
+        button.IsChecked = true;
     }
 
     private void StreamStabilizerSetOnly(ToggleButton button)
     {
-        StreamStabilizer_Disabled.IsChecked = false;
-        StreamStabilizer_Smart.IsChecked = false;
+        StreamStabilizerDisabled.IsChecked = false;
+        StreamStabilizerSmart.IsChecked = false;
 
-        switch (button.Name)
-        {
-            case "StreamStabilizer_Disabled":
-                StreamStabilizer_Disabled.IsChecked = true;
-                break;
-            case "StreamStabilizer_Smart":
-                StreamStabilizer_Smart.IsChecked = true;
-                break;
-        }
+        button.IsChecked = true;
     }
+
     private void ReapplyOptionsSetOnly(ToggleButton button)
     {
-        ReapplyOptions_Disabled.IsChecked = false;
-        ReapplyOptions_Enabled.IsChecked = false;
-
-        switch (button.Name)
-        {
-            case "ReapplyOptions_Disabled":
-                ReapplyOptions_Disabled.IsChecked = true;
-                break;
-            case "ReapplyOptions_Enabled":
-                ReapplyOptions_Enabled.IsChecked = true;
-                break;
-        }
+        ReapplyOptionsDisabled.IsChecked = false;
+        ReapplyOptionsEnabled.IsChecked = false;
+        
+        button.IsChecked = true;
     }
+
     private void RtssOverlaySetOnly(ToggleButton button)
     {
-        RtssOverlay_Disabled.IsChecked = false;
-        RtssOverlay_Enabled.IsChecked = false;
+        RtssOverlayDisabled.IsChecked = false;
+        RtssOverlayEnabled.IsChecked = false;
 
-        switch (button.Name)
-        {
-            case "RtssOverlay_Disabled":
-                RtssOverlay_Disabled.IsChecked = true;
-                break;
-            case "RtssOverlay_Enabled":
-                RtssOverlay_Enabled.IsChecked = true;
-                break;
-        }
+        button.IsChecked = true;
     }
+
     private void TrayMonSetOnly(ToggleButton button)
     {
-        TrayMonFeat_Disabled.IsChecked = false;
-        TrayMonFeat_Enabled.IsChecked = false;
+        TrayMonFeatDisabled.IsChecked = false;
+        TrayMonFeatEnabled.IsChecked = false;
 
-        switch (button.Name)
-        {
-            case "TrayMonFeat_Disabled":
-                TrayMonFeat_Disabled.IsChecked = true;
-                break;
-            case "TrayMonFeat_Enabled":
-                TrayMonFeat_Enabled.IsChecked = true;
-                break;
-        }
+        button.IsChecked = true;
     }
+
     private void AutoApplyOptionsSetOnly(ToggleButton button)
     {
-        AutoApplyOptions_Disabled.IsChecked = false;
-        AutoApplyOptions_Enabled.IsChecked = false;
+        AutoApplyOptionsDisabled.IsChecked = false;
+        AutoApplyOptionsEnabled.IsChecked = false;
 
-        switch (button.Name)
-        {
-            case "AutoApplyOptions_Disabled":
-                AutoApplyOptions_Disabled.IsChecked = true;
-                break;
-            case "AutoApplyOptions_Enabled":
-                AutoApplyOptions_Enabled.IsChecked = true;
-                break;
-        }
+        button.IsChecked = true;
     }
 
     private void OnDataUpdated(object? sender, SensorsInformation info)
     {
         DispatcherQueue.TryEnqueue(() =>
         {
-            TdpLimitSensor_Text.Text = Math.Round(info.CpuFastLimit) + "W";
-            TdpValueSensor_Text.Text = Math.Round(info.CpuFastValue).ToString();
-            CpuFreqSensor_Text.Text = Math.Round(info.CpuFrequency, 1).ToString();
+            TdpLimitSensorText.Text = $"{info.CpuFastLimit:F0}W";
+            TdpValueSensorText.Text = $"{info.CpuFastValue:F0}";
+            CpuFreqSensorText.Text = $"{info.CpuFrequency:F1}";
 
             var updateSmallSign = true;
 
             if (info.ApuTemperature == 0)
             {
                 updateSmallSign = false;
-                TempSensors_StackPanel.Margin = new Thickness(7, 0, 0, 5);
-                TempSensors_StackPanel.VerticalAlignment = VerticalAlignment.Bottom;
-                GpuTempSensor_StackPanel.Visibility = Visibility.Collapsed;
-                CpuTempSensor_CaptionText.Visibility = Visibility.Collapsed;
-                CpuTempSensor_BigCaptionText.Visibility = Visibility.Visible;
-                CpuTempSensor_Text.FontSize = 38;
-                CpuTempSensor_Text.Margin = new Thickness(4, -8, 0, 0);
-                CpuTempSensor_Text.FontWeight = new Windows.UI.Text.FontWeight(700);
+                TempSensorsStackPanel.Margin = new Thickness(7, 0, 0, 5);
+                TempSensorsStackPanel.VerticalAlignment = VerticalAlignment.Bottom;
+                GpuTempSensorStackPanel.Visibility = Visibility.Collapsed;
+                CpuTempSensorCaptionText.Visibility = Visibility.Collapsed;
+                CpuTempSensorBigCaptionText.Visibility = Visibility.Visible;
+                CpuTempSensorText.FontSize = 38;
+                CpuTempSensorText.Margin = new Thickness(4, -8, 0, 0);
+                CpuTempSensorText.FontWeight = new FontWeight(700);
             }
             else
             {
-                GpuTempSensor_Text.Text = Math.Round(info.ApuTemperature) + "C";
+                GpuTempSensorText.Text = Math.Round(info.ApuTemperature) + "C";
             }
 
-            CpuTempSensor_Text.Text = Math.Round(info.CpuTempValue) + (updateSmallSign ? "C" : string.Empty);
+            CpuTempSensorText.Text = Math.Round(info.CpuTempValue) + (updateSmallSign ? "C" : string.Empty);
         });
     }
+
     #endregion
 
     #region JSON voids
+
     private static void ProfileSave()
     {
         try
@@ -806,52 +782,65 @@ public sealed partial class ПресетыPage
     #region Event Handlers
 
     #region Additional Functions
+
     private void ReapplyOptions_Toggled(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded || _waitforload) { return; }
+        if (!_isLoaded || _waitforload)
+        {
+            return;
+        }
 
         var toggle = sender as ToggleButton;
-        if (ReapplyOptions_Disabled.IsChecked == false
-            && ReapplyOptions_Enabled.IsChecked == false)
+        if (toggle == null)
         {
-            toggle!.IsChecked = true;
+            return;
+        }
+        
+        if (ReapplyOptionsDisabled.IsChecked == false
+            && ReapplyOptionsEnabled.IsChecked == false)
+        {
+            toggle.IsChecked = true;
         }
         else
         {
-            if (toggle!.Name == "ReapplyOptions_Disabled")
+            if (toggle.Name == "ReapplyOptionsDisabled")
             {
-                ReapplyOptionsSetOnly(ReapplyOptions_Disabled);
+                ReapplyOptionsSetOnly(ReapplyOptionsDisabled);
                 AppSettings.ReapplyOverclock = false;
             }
-            else if (toggle.Name == "ReapplyOptions_Enabled")
+            else if (toggle.Name == "ReapplyOptionsEnabled")
             {
-                ReapplyOptionsSetOnly(ReapplyOptions_Enabled);
+                ReapplyOptionsSetOnly(ReapplyOptionsEnabled);
                 AppSettings.ReapplyOverclock = true;
             }
         }
 
         AppSettings.SaveSettings();
     }
+
     private void RtssOverlaySwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded || _waitforload) { return; }
+        if (!_isLoaded || _waitforload)
+        {
+            return;
+        }
 
         var toggle = sender as ToggleButton;
-        if (RtssOverlay_Disabled.IsChecked == false
-            && RtssOverlay_Enabled.IsChecked == false)
+        if (RtssOverlayDisabled.IsChecked == false
+            && RtssOverlayEnabled.IsChecked == false)
         {
             toggle!.IsChecked = true;
         }
         else
         {
-            if (toggle!.Name == "RtssOverlay_Disabled")
+            if (toggle!.Name == "RtssOverlayDisabled")
             {
-                RtssOverlaySetOnly(RtssOverlay_Disabled);
+                RtssOverlaySetOnly(RtssOverlayDisabled);
                 AppSettings.RtssMetricsEnabled = false;
             }
-            else if (toggle.Name == "RtssOverlay_Enabled")
+            else if (toggle.Name == "RtssOverlayEnabled")
             {
-                RtssOverlaySetOnly(RtssOverlay_Enabled);
+                RtssOverlaySetOnly(RtssOverlayEnabled);
                 AppSettings.RtssMetricsEnabled = true;
             }
         }
@@ -861,24 +850,27 @@ public sealed partial class ПресетыPage
 
     private void TrayMonFeatSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded || _waitforload) { return; }
+        if (!_isLoaded || _waitforload)
+        {
+            return;
+        }
 
         var toggle = sender as ToggleButton;
-        if (TrayMonFeat_Disabled.IsChecked == false
-            && TrayMonFeat_Enabled.IsChecked == false)
+        if (TrayMonFeatDisabled.IsChecked == false
+            && TrayMonFeatEnabled.IsChecked == false)
         {
             toggle!.IsChecked = true;
         }
         else
         {
-            if (toggle!.Name == "TrayMonFeat_Disabled")
+            if (toggle!.Name == "TrayMonFeatDisabled")
             {
-                TrayMonSetOnly(TrayMonFeat_Disabled);
+                TrayMonSetOnly(TrayMonFeatDisabled);
                 AppSettings.NiIconsEnabled = false;
             }
-            else if (toggle.Name == "TrayMonFeat_Enabled")
+            else if (toggle.Name == "TrayMonFeatEnabled")
             {
-                TrayMonSetOnly(TrayMonFeat_Enabled);
+                TrayMonSetOnly(TrayMonFeatEnabled);
                 AppSettings.NiIconsEnabled = true;
             }
         }
@@ -888,24 +880,27 @@ public sealed partial class ПресетыPage
 
     private void AutoApplyOptions_Toggled(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded || _waitforload) { return; }
+        if (!_isLoaded || _waitforload)
+        {
+            return;
+        }
 
         var toggle = sender as ToggleButton;
-        if (AutoApplyOptions_Disabled.IsChecked == false
-            && AutoApplyOptions_Enabled.IsChecked == false)
+        if (AutoApplyOptionsDisabled.IsChecked == false
+            && AutoApplyOptionsEnabled.IsChecked == false)
         {
             toggle!.IsChecked = true;
         }
         else
         {
-            if (toggle!.Name == "AutoApplyOptions_Disabled")
+            if (toggle!.Name == "AutoApplyOptionsDisabled")
             {
-                AutoApplyOptionsSetOnly(AutoApplyOptions_Disabled);
+                AutoApplyOptionsSetOnly(AutoApplyOptionsDisabled);
                 AppSettings.ReapplyLatestSettingsOnAppLaunch = false;
             }
-            else if (toggle.Name == "AutoApplyOptions_Enabled")
+            else if (toggle.Name == "AutoApplyOptionsEnabled")
             {
-                AutoApplyOptionsSetOnly(AutoApplyOptions_Enabled);
+                AutoApplyOptionsSetOnly(AutoApplyOptionsEnabled);
                 AppSettings.ReapplyLatestSettingsOnAppLaunch = true;
             }
         }
@@ -915,19 +910,22 @@ public sealed partial class ПресетыPage
 
     private void StreamStabilizerSwitch_Toggled(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded || _waitforload) { return; }
+        if (!_isLoaded || _waitforload)
+        {
+            return;
+        }
 
         var toggle = sender as ToggleButton;
-        if (StreamStabilizer_Disabled.IsChecked == false
-            && StreamStabilizer_Smart.IsChecked == false)
+        if (StreamStabilizerDisabled.IsChecked == false
+            && StreamStabilizerSmart.IsChecked == false)
         {
             toggle!.IsChecked = true;
         }
         else
         {
-            if (toggle!.Name == "StreamStabilizer_Disabled")
+            if (toggle!.Name == "StreamStabilizerDisabled")
             {
-                StreamStabilizerSetOnly(StreamStabilizer_Disabled);
+                StreamStabilizerSetOnly(StreamStabilizerDisabled);
                 AppSettings.StreamStabilizerEnabled = false;
 
                 StreamStabilizerTargetMHzGrid.Visibility = Visibility.Collapsed;
@@ -935,13 +933,13 @@ public sealed partial class ПресетыPage
 
                 SetPowerConfig("PROCTHROTTLEMIN 100");
                 SetPowerConfig("PROCTHROTTLEMAX 100");
-                SetPowerConfig($"PROCFREQMAX 0");
+                SetPowerConfig("PROCFREQMAX 0");
                 SavePowerConfig();
                 SavePowerConfig();
             }
-            else if (toggle.Name == "StreamStabilizer_Smart")
+            else if (toggle.Name == "StreamStabilizerSmart")
             {
-                StreamStabilizerSetOnly(StreamStabilizer_Smart);
+                StreamStabilizerSetOnly(StreamStabilizerSmart);
                 AppSettings.StreamStabilizerEnabled = true;
 
                 StreamStabilizerModeCombo_SelectionChanged(null, null);
@@ -950,6 +948,7 @@ public sealed partial class ПресетыPage
 
         AppSettings.SaveSettings();
     }
+
     private void AutostartCom_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (!_isLoaded)
@@ -976,39 +975,56 @@ public sealed partial class ПресетыPage
         {
             return;
         }
+
         AppSettings.HidingType = HideCom.SelectedIndex;
         AppSettings.SaveSettings();
     }
 
     private void AnimatedToggleButton_Click(object sender, RoutedEventArgs e)
     {
+        if (AppSettings.ProfilespageViewModeBeginner && BeginnerOptionsButton.IsChecked == false)
+        {
+            BeginnerOptionsButton.IsChecked = true;
+            return;
+        }
+        
+        if (!AppSettings.ProfilespageViewModeBeginner && AdvancedOptionsButton.IsChecked == false)
+        {
+            AdvancedOptionsButton.IsChecked = true;
+            return;
+        }
+        
         AppSettings.ProfilespageViewModeBeginner = !AppSettings.ProfilespageViewModeBeginner;
         AppSettings.SaveSettings();
         if (AppSettings.ProfilespageViewModeBeginner)
         {
-            BeginnerOptions_Button.IsChecked = true;
-            AdvancedOptions_Button.IsChecked = false;
-            ProfileSettings_StackPanel.Visibility = Visibility.Collapsed;
-            ProfileSettings_BeginnerView.Visibility = Visibility.Visible;
-            PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed;
+            BeginnerOptionsButton.IsChecked = true;
+            AdvancedOptionsButton.IsChecked = false;
+            ProfileSettingsStackPanel.Visibility = Visibility.Collapsed;
+            ProfileSettingsBeginnerView.Visibility = Visibility.Visible;
+            PremadeProfileAffectsOn.Visibility = Visibility.Collapsed;
             EditProfileButton.Visibility = Visibility.Visible;
-            ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
+            ProfileSettingsChangeViewStackPanel.Visibility = Visibility.Visible;
         }
         else
         {
-            BeginnerOptions_Button.IsChecked = false;
-            AdvancedOptions_Button.IsChecked = true;
-            ProfileSettings_StackPanel.Visibility = Visibility.Visible;
-            ProfileSettings_BeginnerView.Visibility = Visibility.Collapsed;
-            PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed;
+            BeginnerOptionsButton.IsChecked = false;
+            AdvancedOptionsButton.IsChecked = true;
+            ProfileSettingsStackPanel.Visibility = Visibility.Visible;
+            ProfileSettingsBeginnerView.Visibility = Visibility.Collapsed;
+            PremadeProfileAffectsOn.Visibility = Visibility.Collapsed;
             EditProfileButton.Visibility = Visibility.Visible;
-            ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
+            ProfileSettingsChangeViewStackPanel.Visibility = Visibility.Visible;
         }
     }
 
     private void BaseTdp_Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (!_isLoaded || _waitforload) { return; }
+        if (!_isLoaded || _waitforload)
+        {
+            return;
+        }
+
         ChangedBaseTdp_Value();
     }
 
@@ -1016,50 +1032,57 @@ public sealed partial class ПресетыPage
 
     private void ChangedBaseTdp_Value()
     {
-        if (_waitforload) { return; }
+        if (_waitforload)
+        {
+            return;
+        }
+
         ProfileLoad();
         var index = _indexprofile == -1 ? 0 : _indexprofile;
 
         // Заранее скомпилированная функция увеличения TDP, созданная специально для фирменной функции Smart TDP
-        var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * BaseTdp_Slider.Value + 0.21631949);
+        var fineTunedTdp = ПараметрыPage.FromValueToUpperFive(1.17335141 * BaseTdpSlider.Value + 0.21631949);
 
-        c2.IsChecked = true;
+        C2.IsChecked = true;
         _profile[index].Cpu2 = true;
-        c3.IsChecked = true;
+        C3.IsChecked = true;
         _profile[index].Cpu3 = true;
-        c4.IsChecked = true;
+        C4.IsChecked = true;
         _profile[index].Cpu4 = true;
 
-        if (fineTunedTdp > c3v.Maximum || BaseTdp_Slider.Value > c2v.Maximum || BaseTdp_Slider.Value > c4v.Maximum)
+        if (fineTunedTdp > C3V.Maximum || BaseTdpSlider.Value > C2V.Maximum || BaseTdpSlider.Value > C4V.Maximum)
         {
-            c2v.Maximum = ПараметрыPage.FromValueToUpperFive(BaseTdp_Slider.Value);
-            c3v.Maximum = ПараметрыPage.FromValueToUpperFive(fineTunedTdp);
-            c4v.Maximum = ПараметрыPage.FromValueToUpperFive(BaseTdp_Slider.Value);
+            C2V.Maximum = ПараметрыPage.FromValueToUpperFive(BaseTdpSlider.Value);
+            C3V.Maximum = ПараметрыPage.FromValueToUpperFive(fineTunedTdp);
+            C4V.Maximum = ПараметрыPage.FromValueToUpperFive(BaseTdpSlider.Value);
         }
-        c2v.Value = BaseTdp_Slider.Value;
-        _profile[index].Cpu2Value = BaseTdp_Slider.Value;
 
-        c4v.Value = BaseTdp_Slider.Value;
-        _profile[index].Cpu4Value = BaseTdp_Slider.Value;
+        C2V.Value = BaseTdpSlider.Value;
+        _profile[index].Cpu2Value = BaseTdpSlider.Value;
+
+        C4V.Value = BaseTdpSlider.Value;
+        _profile[index].Cpu4Value = BaseTdpSlider.Value;
 
         if (SmartTdp.IsOn)
         {
-            c3v.Value = fineTunedTdp;
+            C3V.Value = fineTunedTdp;
             _profile[index].Cpu3Value = fineTunedTdp;
         }
         else
         {
-            c3v.Value = BaseTdp_Slider.Value;
-            _profile[index].Cpu3Value = BaseTdp_Slider.Value;
+            C3V.Value = BaseTdpSlider.Value;
+            _profile[index].Cpu3Value = BaseTdpSlider.Value;
         }
-        if (_isPlatformPC != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
+
+        if (_isPlatformPc != false && SettingsViewModel.VersionId != 5) // Если устройство - не ноутбук
         {
             // Так как на компьютерах невозможно выставить другие Power лимиты
-            c2.IsChecked = false; // Отключить STAPM
+            C2.IsChecked = false; // Отключить STAPM
             _profile[index].Cpu2 = false;
-            c4.IsChecked = false; // Отключить Slow лимит
+            C4.IsChecked = false; // Отключить Slow лимит
             _profile[index].Cpu4 = false;
         }
+
         ProfileSave();
     }
 
@@ -1069,12 +1092,15 @@ public sealed partial class ПресетыPage
     // Выбора режима усиления Турбобуста процессора: Авто, Умный, Сильный. Устанавливает параметры времени разгона процессора в зависимости от выбранной настройки
     private void Turbo_OtherModeToggle_Click(object sender, RoutedEventArgs e)
     {
-        if (!_isLoaded || _waitforload) { return; }
+        if (!_isLoaded || _waitforload)
+        {
+            return;
+        }
 
         var toggle = sender as ToggleButton;
-        if (Turbo_LightModeToggle.IsChecked == false
-            && Turbo_BalanceModeToggle.IsChecked == false
-            && Turbo_HeavyModeToggle.IsChecked == false)
+        if (TurboLightModeToggle.IsChecked == false
+            && TurboBalanceModeToggle.IsChecked == false
+            && TurboHeavyModeToggle.IsChecked == false)
         {
             toggle!.IsChecked = true;
         }
@@ -1085,68 +1111,68 @@ public sealed partial class ПресетыPage
             {
                 return;
             }
-            else
-            {
-                index = AppSettings.Preset;
-            }
+
+            index = AppSettings.Preset;
 
             ProfileLoad();
 
-            if (toggle!.Name == "Turbo_LightModeToggle")
+            if (toggle!.Name == "TurboLightModeToggle")
             {
-                TurboSetOnly(Turbo_LightModeToggle);
+                TurboSetOnly(TurboLightModeToggle);
                 _profile[index].Cpu5 = false;
                 _profile[index].Cpu6 = false;
-                c5.IsChecked = false;
-                c6.IsChecked = false;
+                C5.IsChecked = false;
+                C6.IsChecked = false;
             }
-            else if (toggle.Name == "Turbo_BalanceModeToggle")
+            else if (toggle.Name == "TurboBalanceModeToggle")
             {
-                TurboSetOnly(Turbo_BalanceModeToggle);
+                TurboSetOnly(TurboBalanceModeToggle);
                 _profile[index].Cpu5 = true;
                 _profile[index].Cpu6 = true;
                 _profile[index].Cpu5Value = 400;
                 _profile[index].Cpu6Value = 3;
-                c5.IsChecked = true;
-                c6.IsChecked = true;
-                c5v.Value = 400;
-                c6v.Value = 3;
+                C5.IsChecked = true;
+                C6.IsChecked = true;
+                C5V.Value = 400;
+                C6V.Value = 3;
             }
-            else if (toggle.Name == "Turbo_HeavyModeToggle")
+            else if (toggle.Name == "TurboHeavyModeToggle")
             {
-                TurboSetOnly(Turbo_HeavyModeToggle);
+                TurboSetOnly(TurboHeavyModeToggle);
                 _profile[index].Cpu5 = true;
                 _profile[index].Cpu6 = true;
                 _profile[index].Cpu5Value = 5000;
                 _profile[index].Cpu6Value = 1;
-                c5.IsChecked = true;
-                c6.IsChecked = true;
-                c5v.Maximum = 5000;
-                c5v.Value = 5000;
-                c6v.Value = 1;
+                C5.IsChecked = true;
+                C6.IsChecked = true;
+                C5V.Maximum = 5000;
+                C5V.Value = 5000;
+                C6V.Value = 1;
             }
         }
 
         ProfileSave();
     }
 
-    private void IgpuEnchancementCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void IntegratedGpuEnchantmentCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (!_isLoaded || _waitforload) { return; }
-        int index;
+        if (!_isLoaded || _waitforload)
+        {
+            return;
+        }
+
         if (AppSettings.Preset == -1)
         {
             return;
         }
-        else
-        {
-            index = AppSettings.Preset;
-        }
+
+        var index = AppSettings.Preset;
         if (_codeName == null)
         {
             return;
         }
-        switch (IgpuEnchancementCombo.SelectedIndex)
+
+        switch (IntegratedGpuEnchantmentCombo.SelectedIndex)
         {
             case 0:
                 if (IsRavenFamily())
@@ -1158,6 +1184,7 @@ public sealed partial class ПресетыPage
                 {
                     _profile[index].Advncd10 = false;
                 }
+
                 break;
             case 1:
                 if (IsRavenFamily())
@@ -1172,6 +1199,7 @@ public sealed partial class ПресетыPage
                     _profile[index].Advncd10 = true;
                     _profile[index].Advncd10Value = 1750;
                 }
+
                 break;
             case 2:
                 if (IsRavenFamily())
@@ -1186,8 +1214,10 @@ public sealed partial class ПресетыPage
                     _profile[index].Advncd10 = true;
                     _profile[index].Advncd10Value = 2200;
                 }
+
                 break;
         }
+
         ProfileSave();
     }
 
@@ -1197,6 +1227,7 @@ public sealed partial class ПресетыPage
                                     _codeName == CodeName.Dali ||
                                     _codeName == CodeName.Picasso ||
                                     _codeName == CodeName.FireFlight;
+
     private void TryAdvancedButton_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = App.GetService<INavigationService>();
@@ -1206,6 +1237,7 @@ public sealed partial class ПресетыPage
     #endregion
 
     #region Profile Management
+
     private async void AddProfileButton_Click(object sender, RoutedEventArgs e)
     {
         try
@@ -1230,7 +1262,7 @@ public sealed partial class ПресетыPage
             Width = 60,
             CornerRadius = new CornerRadius(16),
             Shadow = (ThemeShadow)Resources["SharedShadow"],
-            Translation = new System.Numerics.Vector3(0, 0, 14),
+            Translation = new Vector3(0, 0, 14),
             Content = glyphIcon
         };
 
@@ -1241,7 +1273,7 @@ public sealed partial class ПресетыPage
             CornerRadius = new CornerRadius(9),
             Width = 250,
             Shadow = (ThemeShadow)Resources["SharedShadow"],
-            Translation = new System.Numerics.Vector3(0, 0, 10)
+            Translation = new Vector3(0, 0, 10)
         };
 
         var descBox = new TextBox
@@ -1251,7 +1283,7 @@ public sealed partial class ПресетыPage
             Width = 250,
             Margin = new Thickness(0, 6, 0, 0),
             Shadow = (ThemeShadow)Resources["SharedShadow"],
-            Translation = new System.Numerics.Vector3(0, 0, 10)
+            Translation = new Vector3(0, 0, 10)
         };
 
         // Стек с текстбоксами и кнопкой
@@ -1283,21 +1315,19 @@ public sealed partial class ПресетыPage
         };
 
         // --- Обработчики ---
-        ItemClickEventHandler itemClickHandler = null!;
-        RoutedEventHandler clickHandler = null!;
 
-        // Обработчик выбора иконки — обновляем сразу!
-        itemClickHandler = (sender, e) =>
+        // Обработчик выбора иконки — обновляем иконку при выборе сразу
+        ItemClickEventHandler itemClickHandler = (_, e) =>
         {
             var clickedGlyph = (FontIcon)e.ClickedItem;
             if (clickedGlyph != null)
             {
                 selectedGlyph = clickedGlyph.Glyph;
-                glyphIcon.Glyph = selectedGlyph; // Обновляем иконку в реальном времени
+                glyphIcon.Glyph = selectedGlyph;
             }
         };
 
-        clickHandler = (s, e) =>
+        RoutedEventHandler clickHandler = (_, _) =>
         {
             // Подписываемся на выбор иконки
             SelectionGrid.ItemClick -= itemClickHandler; // Избегаем дублирования
@@ -1314,12 +1344,12 @@ public sealed partial class ПресетыPage
         iconButton.Click -= clickHandler;
         SelectionGrid.ItemClick -= itemClickHandler;
 
-        // --- Логика результата ---
         if (result == ContentDialogResult.Primary)
         {
             await AddPreset(nameBox.Text, descBox.Text, selectedGlyph);
         }
     }
+
     private async Task AddPreset(string presetName, string presetDesc, string glyph)
     {
         if (presetName != "")
@@ -1334,19 +1364,20 @@ public sealed partial class ПресетыPage
                 if (_profile.Length == 0)
                 {
                     _profile = new Profile[1];
-                    _profile[0] = new Profile { Profilename = presetName, Profiledesc = presetDesc, Profileicon = glyph };
+                    _profile[0] = new Profile
+                        { Profilename = presetName, Profiledesc = presetDesc, Profileicon = glyph };
                 }
                 else
                 {
                     var profileList = new List<Profile>(_profile)
+                    {
+                        new()
                         {
-                            new()
-                            {
-                                Profilename = presetName,
-                                Profiledesc = presetDesc,
-                                Profileicon = glyph
-                            }
-                        };
+                            Profilename = presetName,
+                            Profiledesc = presetDesc,
+                            Profileicon = glyph
+                        }
+                    };
                     _profile = [.. profileList];
                 }
 
@@ -1379,14 +1410,15 @@ public sealed partial class ПресетыPage
 
         AppSettings.SaveSettings();
         ProfileSave();
-        LoadProfiles();
+        await LoadProfiles();
     }
 
     private async void EditProfileButton_Click(string profileName, string profileDesc, string glyph)
     {
         try
         {
-            await LogHelper.Log($"Editing profile name: From \"{_profile[_indexprofile].Profilename}\" To \"{profileName}\"");
+            await LogHelper.Log(
+                $"Editing profile name: From \"{_profile[_indexprofile].Profilename}\" To \"{profileName}\"");
             if (profileName != "")
             {
                 ProfileLoad();
@@ -1395,7 +1427,7 @@ public sealed partial class ПресетыPage
                 _profile[_indexprofile].Profileicon = glyph;
                 ProfileSave();
                 _waitforload = true;
-                LoadProfiles();
+                await LoadProfiles();
                 _waitforload = false;
                 NotificationsService.Notifies ??= [];
                 NotificationsService.Notifies.Add(new Notify
@@ -1415,6 +1447,7 @@ public sealed partial class ПресетыPage
                     Type = InfoBarSeverity.Error
                 });
             }
+
             NotificationsService.SaveNotificationsSettings();
         }
         catch (Exception exception)
@@ -1422,7 +1455,8 @@ public sealed partial class ПресетыPage
             await LogHelper.TraceIt_TraceError(exception);
         }
     }
-    private async void DeleteProfileButton_Click(object? sender, RoutedEventArgs? e)
+
+    private async void DeleteProfileButton_Click()
     {
         try
         {
@@ -1447,7 +1481,8 @@ public sealed partial class ПресетыPage
             {
                 var indexprofile = AppSettings.Preset > -1 ? AppSettings.Preset : 0;
 
-                await LogHelper.Log($"Showing delete profile dialog: deleting profile \"{_profile[indexprofile].Profilename}\"");
+                await LogHelper.Log(
+                    $"Showing delete profile dialog: deleting profile \"{_profile[indexprofile].Profilename}\"");
 
                 ProfileLoad();
 
@@ -1461,7 +1496,7 @@ public sealed partial class ПресетыPage
 
                 AppSettings.Preset = _profile.Length > 0 ? 0 : -1;
                 _indexprofile = AppSettings.Preset;
-                
+
 
                 NotificationsService.Notifies ??= [];
                 NotificationsService.Notifies.Add(new Notify
@@ -1473,7 +1508,7 @@ public sealed partial class ПресетыPage
                 NotificationsService.SaveNotificationsSettings();
 
                 ProfileSave();
-                LoadProfiles();
+                await LoadProfiles();
             }
         }
         catch (Exception exception)
@@ -1481,9 +1516,18 @@ public sealed partial class ПресетыPage
             await LogHelper.TraceIt_TraceError(exception);
         }
     }
+
     private async void EditProfileButton_Click_1(object sender, RoutedEventArgs e)
     {
-        await OpenEditProfileDialog_Click(_profile[_indexprofile].Profilename, _profile[_indexprofile].Profiledesc, _profile[_indexprofile].Profileicon);
+        try
+        {
+            await OpenEditProfileDialog_Click(_profile[_indexprofile].Profilename, _profile[_indexprofile].Profiledesc,
+                _profile[_indexprofile].Profileicon);
+        }
+        catch (Exception ex)
+        {
+            await LogHelper.LogWarn(ex);
+        }
     }
 
     private async Task OpenEditProfileDialog_Click(string profileName, string profileDesc, string profileIcon)
@@ -1496,7 +1540,7 @@ public sealed partial class ПресетыPage
             Width = 60,
             CornerRadius = new CornerRadius(16),
             Shadow = (ThemeShadow)Resources["SharedShadow"],
-            Translation = new System.Numerics.Vector3(0, 0, 14),
+            Translation = new Vector3(0, 0, 14),
             Content = glyph
         };
 
@@ -1508,7 +1552,7 @@ public sealed partial class ПресетыPage
             CornerRadius = new CornerRadius(9),
             Width = 280,
             Shadow = (ThemeShadow)Resources["SharedShadow"],
-            Translation = new System.Numerics.Vector3(0, 0, 10)
+            Translation = new Vector3(0, 0, 10)
         };
 
         var descBox = new TextBox
@@ -1519,7 +1563,7 @@ public sealed partial class ПресетыPage
             Width = 280,
             Margin = new Thickness(0, 6, 0, 0),
             Shadow = (ThemeShadow)Resources["SharedShadow"],
-            Translation = new System.Numerics.Vector3(0, 0, 10)
+            Translation = new Vector3(0, 0, 10)
         };
 
         var fieldsPanel = new StackPanel();
@@ -1546,21 +1590,21 @@ public sealed partial class ПресетыPage
         };
 
         // --- Обработчики ---
-        ItemClickEventHandler itemClickHandler = null!;
-        RoutedEventHandler clickHandler = null!;
 
-        // Обработчик выбора иконки — обновляем сразу!
-        itemClickHandler = (sender, e) =>
+        // Обработчик выбора иконки — обновляем сразу
+        ItemClickEventHandler itemClickHandler = (_, e) =>
         {
             var selectedGlyph = (FontIcon)e.ClickedItem;
-            if (selectedGlyph != null)
+            if (selectedGlyph == null)
             {
-                profileIcon = selectedGlyph.Glyph;
-                glyph.Glyph = profileIcon; // Обновляем иконку в реальном времени
+                return;
             }
+
+            profileIcon = selectedGlyph.Glyph;
+            glyph.Glyph = profileIcon;
         };
 
-        clickHandler = (s, e) =>
+        RoutedEventHandler clickHandler = (_, _) =>
         {
             // Подписываемся на выбор иконки
             SelectionGrid.ItemClick -= itemClickHandler; // Избегаем дублирования
@@ -1585,7 +1629,7 @@ public sealed partial class ПресетыPage
         }
         else if (result == ContentDialogResult.Secondary)
         {
-            DeleteProfileButton_Click(null, null);
+            DeleteProfileButton_Click();
         }
     }
 
@@ -1599,150 +1643,157 @@ public sealed partial class ПресетыPage
 
     private async void ProfilesControl_SelectionChanged(object sender, SelectionChangedEventArgs? e)
     {
-        var selectedItem = (sender as ProfileSelector)!.SelectedItem;
-
-        if (selectedItem != null)
+        try
         {
-            // Корректное отображение описания, даже если оно маленькое (чтобы Grid изменил свой размер корректно и слова не обрывались)
-            ProfileSettings_InfoRow.Height = new GridLength(0);
-            ProfileSettings_InfoRow.Height = GridLength.Auto;
+            var selectedItem = (sender as ProfileSelector)?.SelectedItem;
 
-            SelectedProfile_Name.Text = selectedItem.Text;
+            if (selectedItem == null)
+            {
+                return;
+            }
+
+            // Корректное отображение описания, даже если оно маленькое (чтобы Grid изменил свой размер корректно и слова не обрывались)
+            ProfileSettingsInfoRow.Height = new GridLength(0);
+            ProfileSettingsInfoRow.Height = GridLength.Auto;
+
+            SelectedProfileName.Text = selectedItem.Text;
 
             // Обход отсутствия описания, при помощи записывания имени пресета в описание. Чтобы не отображать два раза одну и ту же строку, описание пресета скрывается (так как его нет)
-            SelectedProfile_Description.Text = selectedItem.Description != selectedItem.Text ? selectedItem.Description : string.Empty;
+            SelectedProfileDescription.Text = selectedItem.Description != selectedItem.Text
+                ? selectedItem.Description
+                : string.Empty;
 
             if (e != null)
             {
-                if (_doubleClickApply == SelectedProfile_Name.Text + SelectedProfile_Description.Text)
+                if (_doubleClickApply == SelectedProfileName.Text + SelectedProfileDescription.Text)
                 {
                     ApplyButton_Click(null, null);
                 }
-                _doubleClickApply = SelectedProfile_Name.Text + SelectedProfile_Description.Text;
+
+                _doubleClickApply = SelectedProfileName.Text + SelectedProfileDescription.Text;
             }
-            
+
             if (selectedItem.Description == selectedItem.Text)
             {
-                SelectedProfile_Description.Visibility = Visibility.Collapsed;
-                EditCurrent_ButtonsStackPanel.Margin = new Thickness(0, 0, -13, -10);
-                EditCurrent_ButtonsStackPanel.VerticalAlignment = VerticalAlignment.Top;
-                SelectedProfile_TextsStackPanel.VerticalAlignment = VerticalAlignment.Center;
+                SelectedProfileDescription.Visibility = Visibility.Collapsed;
+                EditCurrentButtonsStackPanel.Margin = new Thickness(0, 0, -13, -10);
+                EditCurrentButtonsStackPanel.VerticalAlignment = VerticalAlignment.Top;
+                SelectedProfileTextsStackPanel.VerticalAlignment = VerticalAlignment.Center;
             }
             else
             {
-                SelectedProfile_Description.Visibility = Visibility.Visible;
-                EditCurrent_ButtonsStackPanel.Margin = new Thickness(0, 17, -13, -10);
-                EditCurrent_ButtonsStackPanel.VerticalAlignment = VerticalAlignment.Center;
-                SelectedProfile_TextsStackPanel.VerticalAlignment = VerticalAlignment.Top;
+                SelectedProfileDescription.Visibility = Visibility.Visible;
+                EditCurrentButtonsStackPanel.Margin = new Thickness(0, 17, -13, -10);
+                EditCurrentButtonsStackPanel.VerticalAlignment = VerticalAlignment.Center;
+                SelectedProfileTextsStackPanel.VerticalAlignment = VerticalAlignment.Top;
             }
 
             if ((selectedItem.Text == "Preset_Max_Name/Text".GetLocalized() &&
-                selectedItem.Description == "Preset_Max_Desc/Text".GetLocalized()) ||
+                 selectedItem.Description == "Preset_Max_Desc/Text".GetLocalized()) ||
                 (selectedItem.Text == "Preset_Speed_Name/Text".GetLocalized() &&
-                selectedItem.Description == "Preset_Speed_Desc/Text".GetLocalized()) ||
+                 selectedItem.Description == "Preset_Speed_Desc/Text".GetLocalized()) ||
                 (selectedItem.Text == "Preset_Balance_Name/Text".GetLocalized() &&
-                selectedItem.Description == "Preset_Balance_Desc/Text".GetLocalized()) ||
+                 selectedItem.Description == "Preset_Balance_Desc/Text".GetLocalized()) ||
                 (selectedItem.Text == "Preset_Eco_Name/Text".GetLocalized() &&
-                selectedItem.Description == "Preset_Eco_Desc/Text".GetLocalized()) ||
+                 selectedItem.Description == "Preset_Eco_Desc/Text".GetLocalized()) ||
                 (selectedItem.Text == "Preset_Min_Name/Text".GetLocalized() &&
-                selectedItem.Description == "Preset_Min_Desc/Text".GetLocalized())
-                )
+                 selectedItem.Description == "Preset_Min_Desc/Text".GetLocalized())
+               )
             {
-                var optimizationLevel = Premade_OptimizationLevel.SelectedIndex switch
+                var optimizationLevel = PremadeOptimizationLevel.SelectedIndex switch
                 {
-                    0 => Services.OptimizationLevel.Basic,
-                    1 => Services.OptimizationLevel.Standard,
-                    2 => Services.OptimizationLevel.Deep,
-                    _ => Services.OptimizationLevel.Basic
+                    0 => OptimizationLevel.Basic,
+                    1 => OptimizationLevel.Standard,
+                    2 => OptimizationLevel.Deep,
+                    _ => OptimizationLevel.Basic
                 };
 
-                Services.PresetConfiguration preset;
+                PresetConfiguration preset;
 
                 if (selectedItem.Text == "Preset_Max_Name/Text".GetLocalized())
                 {
-                    preset = OcFinder.CreatePreset(Services.PresetType.Max, optimizationLevel);
-                    await HelpWithShowPreset(Services.PresetType.Max);
+                    preset = OcFinder.CreatePreset(PresetType.Max, optimizationLevel);
+                    await HelpWithShowPreset(PresetType.Max);
                 }
                 else if (selectedItem.Text == "Preset_Speed_Name/Text".GetLocalized())
                 {
-                    preset = OcFinder.CreatePreset(Services.PresetType.Performance, optimizationLevel);
-                    await HelpWithShowPreset(Services.PresetType.Performance);
+                    preset = OcFinder.CreatePreset(PresetType.Performance, optimizationLevel);
+                    await HelpWithShowPreset(PresetType.Performance);
                 }
                 else if (selectedItem.Text == "Preset_Balance_Name/Text".GetLocalized())
                 {
-                    preset = OcFinder.CreatePreset(Services.PresetType.Balance, optimizationLevel);
-                    await HelpWithShowPreset(Services.PresetType.Balance);
+                    preset = OcFinder.CreatePreset(PresetType.Balance, optimizationLevel);
+                    await HelpWithShowPreset(PresetType.Balance);
                 }
                 else if (selectedItem.Text == "Preset_Eco_Name/Text".GetLocalized())
                 {
-                    preset = OcFinder.CreatePreset(Services.PresetType.Eco, optimizationLevel);
-                    await HelpWithShowPreset(Services.PresetType.Eco);
+                    preset = OcFinder.CreatePreset(PresetType.Eco, optimizationLevel);
+                    await HelpWithShowPreset(PresetType.Eco);
                 }
                 else
                 {
-                    preset = OcFinder.CreatePreset(Services.PresetType.Min, optimizationLevel);
-                    await HelpWithShowPreset(Services.PresetType.Min);
+                    preset = OcFinder.CreatePreset(PresetType.Min, optimizationLevel);
+                    await HelpWithShowPreset(PresetType.Min);
                 }
 
-                Preset_PerformanceBar.Value = 50 + preset.Metrics.PerformanceScore;
-                Preset_EnergyEfficiencyBar.Value = 50 + preset.Metrics.EfficiencyScore;
-                Preset_TemperaturesBar.Value = 50 + preset.Metrics.ThermalScore;
+                PresetPerformanceBar.Value = 50 + preset.Metrics.PerformanceScore;
+                PresetEnergyEfficiencyBar.Value = 50 + preset.Metrics.EfficiencyScore;
+                PresetTemperaturesBar.Value = 50 + preset.Metrics.ThermalScore;
 
-                Preset_Options_Temp.Text = preset.Options.ThermalOptions;
-                Preset_Options_Power.Text = preset.Options.PowerOptions;
-                Preset_Options_Currents.Text = preset.Options.CurrentOptions;
+                PresetOptionsTemp.Text = preset.Options.ThermalOptions;
+                PresetOptionsPower.Text = preset.Options.PowerOptions;
+                PresetOptionsCurrents.Text = preset.Options.CurrentOptions;
 
-                Preset_Options_CommandLine.Blocks.Clear();
+                PresetOptionsCommandLine.Blocks.Clear();
 
                 var paragraph = new Paragraph();
                 foreach (var text in preset.CommandString.Split("\n"))
                 {
-                    if (!string.IsNullOrWhiteSpace(text)) 
+                    if (!string.IsNullOrWhiteSpace(text))
                     {
-                        var run = new Run() { Text = text };
+                        var run = new Run { Text = text };
                         paragraph.Inlines.Add(run);
                     }
                 }
 
-                Preset_Options_CommandLine.Blocks.Add(paragraph);
+                PresetOptionsCommandLine.Blocks.Add(paragraph);
 
-                ProfileSettings_StackPanel.Visibility = Visibility.Collapsed;
-                ProfileSettings_BeginnerView.Visibility = Visibility.Visible;
-                ProfileSettings_BeginnerView.Margin = new Thickness(0, -5, 0, 0);
-                PremadeProfile_AffectsOn.Visibility = Visibility.Visible;
-                ProfileSettings_BeginnerView_SettingsStackPanel.Visibility = Visibility.Collapsed;
+                ProfileSettingsStackPanel.Visibility = Visibility.Collapsed;
+                ProfileSettingsBeginnerView.Visibility = Visibility.Visible;
+                ProfileSettingsBeginnerView.Margin = new Thickness(0, -5, 0, 0);
+                PremadeProfileAffectsOn.Visibility = Visibility.Visible;
+                ProfileSettingsBeginnerViewSettingsStackPanel.Visibility = Visibility.Collapsed;
                 EditProfileButton.Visibility = Visibility.Collapsed;
-                ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Collapsed;
+                ProfileSettingsChangeViewStackPanel.Visibility = Visibility.Collapsed;
             }
             else
             {
-                ProfileSettings_BeginnerView_SettingsStackPanel.Visibility = Visibility.Visible;
-                ProfileSettings_BeginnerView.Margin = new Thickness(0, 0, 0, 0);
+                ProfileSettingsBeginnerViewSettingsStackPanel.Visibility = Visibility.Visible;
+                ProfileSettingsBeginnerView.Margin = new Thickness(0, 0, 0, 0);
 
                 if (AppSettings.ProfilespageViewModeBeginner)
                 {
-                    BeginnerOptions_Button.IsChecked = true;
-                    AdvancedOptions_Button.IsChecked = false;
-                    ProfileSettings_StackPanel.Visibility = Visibility.Collapsed;
-                    ProfileSettings_BeginnerView.Visibility = Visibility.Visible;
-                    PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed;
-                    EditProfileButton.Visibility = Visibility.Visible;
-                    ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
+                    BeginnerOptionsButton.IsChecked = true;
+                    AdvancedOptionsButton.IsChecked = false;
+                    ProfileSettingsStackPanel.Visibility = Visibility.Collapsed;
+                    ProfileSettingsBeginnerView.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    BeginnerOptions_Button.IsChecked = false;
-                    AdvancedOptions_Button.IsChecked = true;
-                    ProfileSettings_StackPanel.Visibility = Visibility.Visible;
-                    ProfileSettings_BeginnerView.Visibility = Visibility.Collapsed;
-                    PremadeProfile_AffectsOn.Visibility = Visibility.Collapsed;
-                    EditProfileButton.Visibility = Visibility.Visible;
-                    ProfileSettings_ChangeViewStackPanel.Visibility = Visibility.Visible;
+                    BeginnerOptionsButton.IsChecked = false;
+                    AdvancedOptionsButton.IsChecked = true;
+                    ProfileSettingsStackPanel.Visibility = Visibility.Visible;
+                    ProfileSettingsBeginnerView.Visibility = Visibility.Collapsed;
                 }
+
+                PremadeProfileAffectsOn.Visibility = Visibility.Collapsed;
+                EditProfileButton.Visibility = Visibility.Visible;
+                ProfileSettingsChangeViewStackPanel.Visibility = Visibility.Visible;
 
                 for (var i = 0; i < _profile.Length; i++)
                 {
-                    if ((_profile[i].Profiledesc == selectedItem.Description || _profile[i].Profilename == selectedItem.Description) &&
+                    if ((_profile[i].Profiledesc == selectedItem.Description ||
+                         _profile[i].Profilename == selectedItem.Description) &&
                         _profile[i].Profilename == selectedItem.Text &&
                         _profile[i].Profileicon == selectedItem.IconGlyph)
                     {
@@ -1755,156 +1806,179 @@ public sealed partial class ПресетыPage
                 }
             }
         }
+        catch (Exception ex)
+        {
+            await LogHelper.LogWarn(ex);
+        }
     }
 
     private async void ApplyButton_Click(object? sender, RoutedEventArgs? e)
     {
-        var endMode = "Balance";
-        ProfileItem? selectedItem = null;
-        foreach (var item in ProfilesControl.Items)
+        try
         {
-            if (item.IsSelected)
+            var endMode = "Balance";
+            ProfileItem? selectedItem = null;
+            foreach (var item in ProfilesControl.Items)
             {
-                selectedItem = item;
-            }
-        }
-        if (selectedItem == null) { return; }
-        if (selectedItem.Text == "Preset_Max_Name/Text".GetLocalized() &&
-                selectedItem.Description == "Preset_Max_Desc/Text".GetLocalized())
-        {
-            endMode = "Max";
-        }
-        else
-        if (selectedItem.Text == "Preset_Speed_Name/Text".GetLocalized() &&
-                selectedItem.Description == "Preset_Speed_Desc/Text".GetLocalized())
-        {
-            endMode = "Speed";
-        }
-        else
-        if (selectedItem.Text == "Preset_Balance_Name/Text".GetLocalized() &&
-        selectedItem.Description == "Preset_Balance_Desc/Text".GetLocalized())
-        {
-            endMode = "Balance";
-        }
-        else
-        if (selectedItem.Text == "Preset_Eco_Name/Text".GetLocalized() &&
-        selectedItem.Description == "Preset_Eco_Desc/Text".GetLocalized())
-        {
-            endMode = "Eco";
-        }
-        else
-        if (selectedItem.Text == "Preset_Min_Name/Text".GetLocalized() &&
-        selectedItem.Description == "Preset_Min_Desc/Text".GetLocalized())
-        {
-            endMode = "Min";
-        }
-        else
-        {
-            var name = selectedItem.Text;
-            var desc = selectedItem.Description;
-            var icon = selectedItem.IconGlyph;
-            for (var i = 0; i < _profile.Length; i++)
-            {
-                var profile = _profile[i];
-                if (profile.Profilename == name &&
-                    (profile.Profiledesc == desc || profile.Profilename == desc) &&
-                    (profile.Profileicon == icon ||
-                     profile.Profileicon == "\uE718"))
+                if (item.IsSelected)
                 {
-                    ПараметрыPage.ApplyInfo = string.Empty;
-                    await _applyer.ApplyCustomPreset(profile, true);
+                    selectedItem = item;
+                }
+            }
 
-                    NotificationsService.Notifies ??= [];
-                    NotificationsService.Notifies.Add(new Notify
-                    {
-                        Title = "Profile_APPLIED",
-                        Msg = "DEBUG MESSAGE",
-                        Type = InfoBarSeverity.Informational
-                    });
-                    NotificationsService.SaveNotificationsSettings();
+            if (selectedItem == null)
+            {
+                return;
+            }
 
-
-                    await Task.Delay(1000);
-                    var timer = 1000;
-                    if (ПараметрыPage.ApplyInfo != string.Empty)
+            if (selectedItem.Text == "Preset_Max_Name/Text".GetLocalized() &&
+                selectedItem.Description == "Preset_Max_Desc/Text".GetLocalized())
+            {
+                endMode = "Max";
+            }
+            else if (selectedItem.Text == "Preset_Speed_Name/Text".GetLocalized() &&
+                     selectedItem.Description == "Preset_Speed_Desc/Text".GetLocalized())
+            {
+                endMode = "Speed";
+            }
+            else if (selectedItem.Text == "Preset_Balance_Name/Text".GetLocalized() &&
+                     selectedItem.Description == "Preset_Balance_Desc/Text".GetLocalized())
+            {
+                endMode = "Balance";
+            }
+            else if (selectedItem.Text == "Preset_Eco_Name/Text".GetLocalized() &&
+                     selectedItem.Description == "Preset_Eco_Desc/Text".GetLocalized())
+            {
+                endMode = "Eco";
+            }
+            else if (selectedItem.Text == "Preset_Min_Name/Text".GetLocalized() &&
+                     selectedItem.Description == "Preset_Min_Desc/Text".GetLocalized())
+            {
+                endMode = "Min";
+            }
+            else
+            {
+                var name = selectedItem.Text;
+                var desc = selectedItem.Description;
+                var icon = selectedItem.IconGlyph;
+                foreach (var profile in _profile)
+                {
+                    if (profile.Profilename == name &&
+                        (profile.Profiledesc == desc || profile.Profilename == desc) &&
+                        (profile.Profileicon == icon ||
+                         profile.Profileicon == "\uE718"))
                     {
-                        timer *= ПараметрыPage.ApplyInfo.Split('\n').Length + 1;
-                    }
-                    DispatcherQueue.TryEnqueue(async () =>
-                    {
-                        ApplyTeach.Target = ApplyButton;
-                        ApplyTeach.Title = "Apply_Success".GetLocalized();
-                        ApplyTeach.Subtitle = "";
-                        ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-                        ApplyTeach.IsOpen = true;
-                        var infoSet = InfoBarSeverity.Success;
-                        if (ПараметрыPage.ApplyInfo != string.Empty)
-                        {
-                            await LogHelper.Log(ПараметрыPage.ApplyInfo);
-                            ApplyTeach.Title = "Apply_Warn".GetLocalized();
-                            ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + ПараметрыPage.ApplyInfo;
-                            ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
-                            await Task.Delay(timer);
-                            ApplyTeach.IsOpen = false;
-                            infoSet = InfoBarSeverity.Warning;
-                        }
-                        else
-                        {
-                            await LogHelper.Log("Apply_Success".GetLocalized());
-                            await Task.Delay(3000);
-                            ApplyTeach.IsOpen = false;
-                        }
+                        ПараметрыPage.ApplyInfo = string.Empty;
+                        await Applyer.ApplyCustomPreset(profile, true);
 
                         NotificationsService.Notifies ??= [];
                         NotificationsService.Notifies.Add(new Notify
                         {
-                            Title = ApplyTeach.Title,
-                            Msg = ApplyTeach.Subtitle + (ПараметрыPage.ApplyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
-                            Type = infoSet
+                            Title = "Profile_APPLIED",
+                            Msg = "DEBUG MESSAGE",
+                            Type = InfoBarSeverity.Informational
                         });
                         NotificationsService.SaveNotificationsSettings();
-                    });
-                    return;
+
+
+                        await Task.Delay(1000);
+                        var timer = 1000;
+                        var applyInfo = ПараметрыPage.ApplyInfo;
+                        if (applyInfo != string.Empty)
+                        {
+                            timer *= applyInfo.Split('\n').Length + 1;
+                        }
+
+                        DispatcherQueue.TryEnqueue(async void () =>
+                        {
+                            try
+                            {
+                                ApplyTeach.Target = ApplyButton;
+                                ApplyTeach.Title = "Apply_Success".GetLocalized();
+                                ApplyTeach.Subtitle = "";
+                                ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                                ApplyTeach.IsOpen = true;
+                                var infoSet = InfoBarSeverity.Success;
+                                if (applyInfo != string.Empty)
+                                {
+                                    await LogHelper.Log(applyInfo);
+                                    ApplyTeach.Title = "Apply_Warn".GetLocalized();
+                                    ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + applyInfo;
+                                    ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
+                                    await Task.Delay(timer);
+                                    ApplyTeach.IsOpen = false;
+                                    infoSet = InfoBarSeverity.Warning;
+                                }
+                                else
+                                {
+                                    await LogHelper.Log("Apply_Success".GetLocalized());
+                                    await Task.Delay(3000);
+                                    ApplyTeach.IsOpen = false;
+                                }
+
+                                NotificationsService.Notifies ??= [];
+                                NotificationsService.Notifies.Add(new Notify
+                                {
+                                    Title = ApplyTeach.Title,
+                                    Msg = ApplyTeach.Subtitle + (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                                    Type = infoSet
+                                });
+                                NotificationsService.SaveNotificationsSettings();
+                            }
+                            catch (Exception ex)
+                            {
+                                await LogHelper.LogError(ex);
+                            }
+                        });
+                        return;
+                    }
                 }
             }
+
+            ShellPage.SelectPremadePreset(endMode);
+
+            var (_, _, _, settings, _) = ShellPage.PremadedPresets[endMode];
+
+            AppSettings.RyzenAdjLine = settings;
+            AppSettings.SaveSettings();
+
+            await Applyer.ApplyWithoutAdjLine(true);
+
+            NotificationsService.Notifies ??= [];
+            NotificationsService.Notifies.Add(new Notify
+            {
+                Title = "Profile_APPLIED",
+                Msg = "DEBUG MESSAGE",
+                Type = InfoBarSeverity.Informational
+            });
+            NotificationsService.SaveNotificationsSettings();
+
+            ApplyTeach.Target = ApplyButton;
+            ApplyTeach.Title = "Apply_Success".GetLocalized();
+            ApplyTeach.Subtitle = "";
+            ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+            ApplyTeach.IsOpen = true;
+            await LogHelper.Log("Apply_Success".GetLocalized());
+            await Task.Delay(3000);
+            ApplyTeach.IsOpen = false;
         }
-
-        ShellPage.SelectPremadePreset(endMode);
-
-        var (_, _, _, settings, _) = ShellPage.PremadedPresets[endMode];
-
-        AppSettings.RyzenAdjLine = settings;
-        AppSettings.SaveSettings();
-
-        await _applyer.ApplyWithoutAdjLine(true);
-
-        NotificationsService.Notifies ??= [];
-        NotificationsService.Notifies.Add(new Notify
+        catch (Exception ex)
         {
-            Title = "Profile_APPLIED",
-            Msg = "DEBUG MESSAGE",
-            Type = InfoBarSeverity.Informational
-        });
-        NotificationsService.SaveNotificationsSettings();
-
-        ApplyTeach.Target = ApplyButton;
-        ApplyTeach.Title = "Apply_Success".GetLocalized();
-        ApplyTeach.Subtitle = "";
-        ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-        ApplyTeach.IsOpen = true;
-        await LogHelper.Log("Apply_Success".GetLocalized());
-        await Task.Delay(3000);
-        ApplyTeach.IsOpen = false;
+            await LogHelper.LogWarn(ex);
+        }
     }
 
     private void Premade_OptimizationLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (!_isLoaded) { return; }
+        if (!_isLoaded)
+        {
+            return;
+        }
 
-        AppSettings.PremadeOptimizationLevel = Premade_OptimizationLevel.SelectedIndex;
+        AppSettings.PremadeOptimizationLevel = PremadeOptimizationLevel.SelectedIndex;
         AppSettings.SaveSettings();
 
-        Premade_OptimizationLevelDesc.Text = Premade_OptimizationLevel.SelectedIndex switch
+        PremadeOptimizationLevelDesc.Text = PremadeOptimizationLevel.SelectedIndex switch
         {
             0 => "Preset_OptimizationLevel_Base_Desc".GetLocalized(),
             1 => "Preset_OptimizationLevel_Average_Desc".GetLocalized(),
@@ -1912,13 +1986,13 @@ public sealed partial class ПресетыPage
             _ => "Preset_OptimizationLevel_Base_Desc".GetLocalized()
         };
 
-        if (OcFinder.IsUndervoltingAvailable() && Premade_OptimizationLevel.SelectedIndex == 2)
+        if (OcFinder.IsUndervoltingAvailable() && PremadeOptimizationLevel.SelectedIndex == 2)
         {
-            Premade_PremadeCurveOptimizer_StackPanel.Visibility = Visibility.Visible;
+            PremadeCurveOptimizerStackPanel.Visibility = Visibility.Visible;
         }
         else
         {
-            Premade_PremadeCurveOptimizer_StackPanel.Visibility = Visibility.Collapsed;
+            PremadeCurveOptimizerStackPanel.Visibility = Visibility.Collapsed;
         }
 
         ProfilesControl_SelectionChanged(ProfilesControl, null);
@@ -1926,25 +2000,36 @@ public sealed partial class ПресетыPage
 
     private void CurveOptimizerLevel_Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (!_isLoaded) { return; }
+        if (!_isLoaded)
+        {
+            return;
+        }
 
-        AppSettings.PremadeCurveOptimizerOverrideLevel = (int)CurveOptimizerLevel_Slider.Value;
+        AppSettings.PremadeCurveOptimizerOverrideLevel = (int)CurveOptimizerLevelSlider.Value;
         AppSettings.SaveSettings();
     }
 
     private void CurveOptimizerLevelCustom_Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
     {
-        if (_waitforload) { return; }
+        if (_waitforload)
+        {
+            return;
+        }
+
         ProfileLoad();
         var index = _indexprofile == -1 ? 0 : _indexprofile;
 
-        _profile[index].Coallvalue = CurveOptimizerLevelCustom_Slider.Value;
+        _profile[index].Coallvalue = CurveOptimizerLevelCustomSlider.Value;
         ProfileSave();
     }
 
     private void CurveOptimizerCustom_Toggled(object sender, RoutedEventArgs e)
     {
-        if (_waitforload) { return; }
+        if (_waitforload)
+        {
+            return;
+        }
+
         ProfileLoad();
         var index = _indexprofile == -1 ? 0 : _indexprofile;
 
@@ -1954,7 +2039,10 @@ public sealed partial class ПресетыPage
 
     private void StreamStabilizerModeCombo_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
     {
-        if (!_isLoaded) { return; }
+        if (!_isLoaded)
+        {
+            return;
+        }
 
         AppSettings.StreamStabilizerType = StreamStabilizerModeCombo.SelectedIndex;
 
@@ -1971,29 +2059,29 @@ public sealed partial class ПресетыPage
 
                 AppSettings.StreamStabilizerMaxMHz = (int)StreamStabilizerTargetMhz.Value;
 
-                break;// Target MHz
+                break; // Target MHz
             case 2:
                 StreamStabilizerTargetMHzGrid.Visibility = Visibility.Collapsed;
                 StreamStabilizerTargetPercentOfMHzGrid.Visibility = Visibility.Visible;
 
                 SetPowerConfig($"PROCTHROTTLEMIN {(int)StreamStabilizerTargetPercent.Value}");
                 SetPowerConfig($"PROCTHROTTLEMAX {(int)StreamStabilizerTargetPercent.Value}");
-                SetPowerConfig($"PROCFREQMAX 0");
+                SetPowerConfig("PROCFREQMAX 0");
                 SavePowerConfig();
 
                 AppSettings.StreamStabilizerMaxPercentMHz = (int)StreamStabilizerTargetPercent.Value;
 
-                break;// Target % of MHz
+                break; // Target % of MHz
             default:
                 StreamStabilizerTargetMHzGrid.Visibility = Visibility.Collapsed;
                 StreamStabilizerTargetPercentOfMHzGrid.Visibility = Visibility.Collapsed;
 
                 SetPowerConfig("PROCTHROTTLEMIN 99");
                 SetPowerConfig("PROCTHROTTLEMAX 99");
-                SetPowerConfig($"PROCFREQMAX 0");
+                SetPowerConfig("PROCFREQMAX 0");
                 SavePowerConfig();
 
-                break;// Base lock
+                break; // Base lock
         }
 
         AppSettings.SaveSettings();
@@ -2002,7 +2090,10 @@ public sealed partial class ПресетыPage
 
     private void StreamStabilizerTargetMhz_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
-        if (!_isLoaded) { return; }
+        if (!_isLoaded)
+        {
+            return;
+        }
 
         SetPowerConfig("PROCTHROTTLEMIN 100");
         SetPowerConfig("PROCTHROTTLEMAX 100");
@@ -2015,20 +2106,23 @@ public sealed partial class ПресетыPage
 
     private void StreamStabilizerTargetPercent_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
-        if (!_isLoaded) { return; }
+        if (!_isLoaded)
+        {
+            return;
+        }
 
         SetPowerConfig($"PROCTHROTTLEMIN {(int)StreamStabilizerTargetPercent.Value}");
         SetPowerConfig($"PROCTHROTTLEMAX {(int)StreamStabilizerTargetPercent.Value}");
-        SetPowerConfig($"PROCFREQMAX 0");
+        SetPowerConfig("PROCFREQMAX 0");
         SavePowerConfig();
 
         AppSettings.StreamStabilizerMaxPercentMHz = (int)StreamStabilizerTargetPercent.Value;
         AppSettings.SaveSettings();
-    } 
+    }
 
     #region PowerConfig Helpers
 
-    public static void SetPowerConfig(string arguments)
+    private static void SetPowerConfig(string arguments)
     {
         _ = Task.Run(() =>
         {
@@ -2043,7 +2137,7 @@ public sealed partial class ПресетыPage
         });
     }
 
-    public static void SavePowerConfig()
+    private static void SavePowerConfig()
     {
         _ = Task.Run(() =>
         {
@@ -2060,11 +2154,13 @@ public sealed partial class ПресетыPage
 
     #endregion
 
-    private void CurveOptimizerCustom_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) => CurveOptimizerCustom.IsOn = !CurveOptimizerCustom.IsOn;
+    private void CurveOptimizerCustom_PointerPressed(object sender, PointerRoutedEventArgs e) =>
+        CurveOptimizerCustom.IsOn = !CurveOptimizerCustom.IsOn;
 
     #region Advanced View Page Controllers
 
     #region Sliders
+
     //Параметры процессора, при изменении слайдеров
     //Максимальная температура CPU (C)
     private void C1_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -2077,7 +2173,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].Cpu1Value = c1v.Value;
+            _profile[_indexprofile].Cpu1Value = C1V.Value;
             ProfileSave();
         }
     }
@@ -2093,7 +2189,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].Cpu2Value = c2v.Value;
+            _profile[_indexprofile].Cpu2Value = C2V.Value;
             ProfileSave();
         }
     }
@@ -2109,7 +2205,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].Cpu3Value = c3v.Value;
+            _profile[_indexprofile].Cpu3Value = C3V.Value;
             ProfileSave();
         }
     }
@@ -2125,7 +2221,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].Cpu4Value = c4v.Value;
+            _profile[_indexprofile].Cpu4Value = C4V.Value;
             ProfileSave();
         }
     }
@@ -2141,7 +2237,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].Cpu5Value = c5v.Value;
+            _profile[_indexprofile].Cpu5Value = C5V.Value;
             ProfileSave();
         }
     }
@@ -2157,7 +2253,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].Cpu6Value = c6v.Value;
+            _profile[_indexprofile].Cpu6Value = C6V.Value;
             ProfileSave();
         }
     }
@@ -2233,7 +2329,7 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].Gpu9Value = g9v.Value;
+            _profile[_indexprofile].Gpu9Value = G9V.Value;
             ProfileSave();
         }
     }
@@ -2248,13 +2344,15 @@ public sealed partial class ПресетыPage
         ProfileLoad();
         if (_indexprofile != -1)
         {
-            _profile[_indexprofile].Gpu10Value = g10v.Value;
+            _profile[_indexprofile].Gpu10Value = G10V.Value;
             ProfileSave();
         }
     }
+
     #endregion
 
     #region CheckBoxes
+
     //Параметры процессора
     //Максимальная температура CPU (C)
     private void C1_Checked(object sender, RoutedEventArgs e)
@@ -2265,11 +2363,11 @@ public sealed partial class ПресетыPage
         }
 
         ProfileLoad();
-        var check = c1.IsChecked == true;
+        var check = C1.IsChecked == true;
         if (_indexprofile != -1)
         {
             _profile[_indexprofile].Cpu1 = check;
-            _profile[_indexprofile].Cpu1Value = c1v.Value;
+            _profile[_indexprofile].Cpu1Value = C1V.Value;
             ProfileSave();
         }
     }
@@ -2283,11 +2381,11 @@ public sealed partial class ПресетыPage
         }
 
         ProfileLoad();
-        var check = c2.IsChecked == true;
+        var check = C2.IsChecked == true;
         if (_indexprofile != -1)
         {
             _profile[_indexprofile].Cpu2 = check;
-            _profile[_indexprofile].Cpu2Value = c2v.Value;
+            _profile[_indexprofile].Cpu2Value = C2V.Value;
             ProfileSave();
         }
     }
@@ -2301,11 +2399,11 @@ public sealed partial class ПресетыPage
         }
 
         ProfileLoad();
-        var check = c3.IsChecked == true;
+        var check = C3.IsChecked == true;
         if (_indexprofile != -1)
         {
             _profile[_indexprofile].Cpu3 = check;
-            _profile[_indexprofile].Cpu3Value = c3v.Value;
+            _profile[_indexprofile].Cpu3Value = C3V.Value;
             ProfileSave();
         }
     }
@@ -2319,11 +2417,11 @@ public sealed partial class ПресетыPage
         }
 
         ProfileLoad();
-        var check = c4.IsChecked == true;
+        var check = C4.IsChecked == true;
         if (_indexprofile != -1)
         {
             _profile[_indexprofile].Cpu4 = check;
-            _profile[_indexprofile].Cpu4Value = c4v.Value;
+            _profile[_indexprofile].Cpu4Value = C4V.Value;
             ProfileSave();
         }
     }
@@ -2337,11 +2435,11 @@ public sealed partial class ПресетыPage
         }
 
         ProfileLoad();
-        var check = c5.IsChecked == true;
+        var check = C5.IsChecked == true;
         if (_indexprofile != -1)
         {
             _profile[_indexprofile].Cpu5 = check;
-            _profile[_indexprofile].Cpu5Value = c5v.Value;
+            _profile[_indexprofile].Cpu5Value = C5V.Value;
             ProfileSave();
         }
     }
@@ -2355,11 +2453,11 @@ public sealed partial class ПресетыPage
         }
 
         ProfileLoad();
-        var check = c6.IsChecked == true;
+        var check = C6.IsChecked == true;
         if (_indexprofile != -1)
         {
             _profile[_indexprofile].Cpu6 = check;
-            _profile[_indexprofile].Cpu6Value = c6v.Value;
+            _profile[_indexprofile].Cpu6Value = C6V.Value;
             ProfileSave();
         }
     }
@@ -2446,11 +2544,11 @@ public sealed partial class ПресетыPage
         }
 
         ProfileLoad();
-        var check = g9.IsChecked == true;
+        var check = G9.IsChecked == true;
         if (_indexprofile != -1)
         {
             _profile[_indexprofile].Gpu9 = check;
-            _profile[_indexprofile].Gpu9Value = g9v.Value;
+            _profile[_indexprofile].Gpu9Value = G9V.Value;
             ProfileSave();
         }
     }
@@ -2464,18 +2562,20 @@ public sealed partial class ПресетыPage
         }
 
         ProfileLoad();
-        var check = g10.IsChecked == true;
+        var check = G10.IsChecked == true;
         if (_indexprofile != -1)
         {
             _profile[_indexprofile].Gpu10 = check;
-            _profile[_indexprofile].Gpu10Value = g10v.Value;
+            _profile[_indexprofile].Gpu10Value = G10V.Value;
             ProfileSave();
         }
     }
+
     #endregion
 
     #region NumberBoxes
-    private void C2t_FocusEngaged(object sender, object args)
+
+    private void TargetNumberBox_FocusEngaged(object sender, object args)
     {
         if (sender is NumberBox numberBox)
         {
@@ -2483,7 +2583,7 @@ public sealed partial class ПресетыPage
         }
     }
 
-    private void C2t_FocusDisengaged(object sender, object args)
+    private void TargetNumberBox_FocusDisengaged(object sender, object args)
     {
         if (sender is NumberBox numberBox)
         {
@@ -2491,46 +2591,37 @@ public sealed partial class ПресетыPage
         }
     }
 
-    private void C2t_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+    private void TargetNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
+        var name = sender.Tag.ToString();
+            
+        if (name != null)
         {
-            object slider;
-            if (sender.Name.Contains('v'))
+            object sliderObject;
+
+            try
             {
-                slider = FindName(sender.Name.Replace('t', 'V').Replace('v', 'V'));
+                sliderObject = FindName(name);
             }
-            else
+            catch (Exception ex)
             {
-                try
-                {
-                    slider = FindName(sender.Name.Replace('t', 'v'));
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.TraceIt_TraceError(ex);
-                    return;
-                }
+                LogHelper.TraceIt_TraceError(ex);
+                return;
             }
 
-            if (slider is Slider slider1)
+            if (sliderObject is Slider slider)
             {
-                if (slider1.Maximum < sender.Value)
+                if (slider.Maximum < sender.Value)
                 {
-                    slider1.Maximum = ПараметрыPage.FromValueToUpperFive(sender.Value);
+                    slider.Maximum = ПараметрыPage.FromValueToUpperFive(sender.Value);
                 }
             }
-        }
+        }        
     }
 
-
-
-
-
-
     #endregion
 
     #endregion
 
     #endregion
-
 }

@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using Windows.Foundation.Metadata;
@@ -13,7 +12,6 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
@@ -2472,7 +2470,7 @@ public sealed partial class SettingsPage
 
         if (s is ToggleButton toggleButton)
         {
-            if (toggleButton.Name == "RTSS_AllCompact_Toggle")
+            if (toggleButton.Name == "RtssAllCompactToggle")
             {
                 _isLoaded = false;
                 RtssSakuProfileCompactToggle.IsChecked = RtssAllCompactToggle.IsChecked;
@@ -2506,47 +2504,47 @@ public sealed partial class SettingsPage
                 _isLoaded = true;
             }
 
-            if (toggleButton.Name == "RTSS_MainColor_CompactToggle")
+            if (toggleButton.Name == "RtssMainColorCompactToggle")
             {
                 RtssSettings.RTSS_Elements[0].UseCompact = toggleButton.IsChecked == true;
             }
 
-            if (toggleButton.Name == "RTSS_AllCompact_Toggle")
+            if (toggleButton.Name == "RtssAllCompactToggle")
             {
                 RtssSettings.RTSS_Elements[1].UseCompact = toggleButton.IsChecked == true;
             }
 
-            if (toggleButton.Name == "RTSS_SakuProfile_CompactToggle")
+            if (toggleButton.Name == "RtssSakuProfileCompactToggle")
             {
                 RtssSettings.RTSS_Elements[2].UseCompact = toggleButton.IsChecked == true;
             }
 
-            if (toggleButton.Name == "RTSS_StapmFastSlow_CompactToggle")
+            if (toggleButton.Name == "RtssStapmFastSlowCompactToggle")
             {
                 RtssSettings.RTSS_Elements[3].UseCompact = toggleButton.IsChecked == true;
             }
 
-            if (toggleButton.Name == "RTSS_EDCThermUsage_CompactToggle")
+            if (toggleButton.Name == "RtssEdcThermUsageCompactToggle")
             {
                 RtssSettings.RTSS_Elements[4].UseCompact = toggleButton.IsChecked == true;
             }
 
-            if (toggleButton.Name == "RTSS_CPUClocks_CompactToggle")
+            if (toggleButton.Name == "RtssCpuClocksCompactToggle")
             {
                 RtssSettings.RTSS_Elements[5].UseCompact = toggleButton.IsChecked == true;
             }
 
-            if (toggleButton.Name == "RTSS_AVGCPUClockVolt_CompactToggle")
+            if (toggleButton.Name == "RtssAvgCpuClockVoltCompactToggle")
             {
                 RtssSettings.RTSS_Elements[6].UseCompact = toggleButton.IsChecked == true;
             }
 
-            if (toggleButton.Name == "RTSS_APUClockVoltTemp_CompactToggle")
+            if (toggleButton.Name == "RtssApuClockVoltTempCompactToggle")
             {
                 RtssSettings.RTSS_Elements[7].UseCompact = toggleButton.IsChecked == true;
             }
 
-            if (toggleButton.Name == "RTSS_FrameRate_CompactToggle")
+            if (toggleButton.Name == "RtssFrameRateCompactToggle")
             {
                 RtssSettings.RTSS_Elements[8].UseCompact = toggleButton.IsChecked == true;
             }
@@ -2554,47 +2552,47 @@ public sealed partial class SettingsPage
 
         if (s is CheckBox checkBox)
         {
-            if (checkBox.Name == "RTSS_MainColor_Checkbox")
+            if (checkBox.Name == "RtssMainColorCheckbox")
             {
                 RtssSettings.RTSS_Elements[0].Enabled = checkBox.IsChecked == true;
             }
 
-            if (checkBox.Name == "RTSS_SecondColor_Checkbox")
+            if (checkBox.Name == "RtssSecondColorCheckbox")
             {
                 RtssSettings.RTSS_Elements[1].Enabled = checkBox.IsChecked == true;
             }
 
-            if (checkBox.Name == "RTSS_SakuOverclockProfile_Checkbox")
+            if (checkBox.Name == "RtssSakuOverclockProfileCheckbox")
             {
                 RtssSettings.RTSS_Elements[2].Enabled = checkBox.IsChecked == true;
             }
 
-            if (checkBox.Name == "RTSS_StapmFastSlow_Checkbox")
+            if (checkBox.Name == "RtssStapmFastSlowCheckbox")
             {
                 RtssSettings.RTSS_Elements[3].Enabled = checkBox.IsChecked == true;
             }
 
-            if (checkBox.Name == "RTSS_EDCThermUsage_Checkbox")
+            if (checkBox.Name == "RtssEdcThermUsageCheckbox")
             {
                 RtssSettings.RTSS_Elements[4].Enabled = checkBox.IsChecked == true;
             }
 
-            if (checkBox.Name == "RTSS_CPUClocks_Checkbox")
+            if (checkBox.Name == "RtssCpuClocksCheckbox")
             {
                 RtssSettings.RTSS_Elements[5].Enabled = checkBox.IsChecked == true;
             }
 
-            if (checkBox.Name == "RTSS_AVGCPUClockVolt_Checkbox")
+            if (checkBox.Name == "RtssAvgCpuClockVoltCheckbox")
             {
                 RtssSettings.RTSS_Elements[6].Enabled = checkBox.IsChecked == true;
             }
 
-            if (checkBox.Name == "RTSS_APUClockVoltTemp_Checkbox")
+            if (checkBox.Name == "RtssApuClockVoltTempCheckbox")
             {
                 RtssSettings.RTSS_Elements[7].Enabled = checkBox.IsChecked == true;
             }
 
-            if (checkBox.Name == "RTSS_FrameRate_Checkbox")
+            if (checkBox.Name == "RtssFrameRateCheckbox")
             {
                 RtssSettings.RTSS_Elements[8].Enabled = checkBox.IsChecked == true;
             }
@@ -2602,37 +2600,37 @@ public sealed partial class SettingsPage
 
         if (s is TextBox textBox)
         {
-            if (textBox.Name == "RTSS_SakuOverclockProfile_TextBox")
+            if (textBox.Name == "RtssSakuOverclockProfileTextBox")
             {
                 RtssSettings.RTSS_Elements[2].Name = textBox.Text;
             }
 
-            if (textBox.Name == "RTSS_StapmFastSlow_TextBox")
+            if (textBox.Name == "RtssStapmFastSlowTextBox")
             {
                 RtssSettings.RTSS_Elements[3].Name = textBox.Text;
             }
 
-            if (textBox.Name == "RTSS_EDCThermUsage_TextBox")
+            if (textBox.Name == "RtssEdcThermUsageTextBox")
             {
                 RtssSettings.RTSS_Elements[4].Name = textBox.Text;
             }
 
-            if (textBox.Name == "RTSS_CPUClocks_TextBox")
+            if (textBox.Name == "RtssCpuClocksTextBox")
             {
                 RtssSettings.RTSS_Elements[5].Name = textBox.Text;
             }
 
-            if (textBox.Name == "RTSS_AVGCPUClockVolt_TextBox")
+            if (textBox.Name == "RtssAvgCpuClockVoltTextBox")
             {
                 RtssSettings.RTSS_Elements[6].Name = textBox.Text;
             }
 
-            if (textBox.Name == "RTSS_APUClockVoltTemp_TextBox")
+            if (textBox.Name == "RtssApuClockVoltTempTextBox")
             {
                 RtssSettings.RTSS_Elements[7].Name = textBox.Text;
             }
 
-            if (textBox.Name == "RTSS_FrameRate_TextBox")
+            if (textBox.Name == "RtssFrameRateTextBox")
             {
                 RtssSettings.RTSS_Elements[8].Name = textBox.Text;
             }
@@ -2640,55 +2638,55 @@ public sealed partial class SettingsPage
 
         if (s is ColorPicker colorPicker)
         {
-            if (colorPicker.Name == "RTSS_MainColor_ColorPicker")
+            if (colorPicker.Name == "RtssMainColorColorPicker")
             {
                 RtssSettings.RTSS_Elements[0].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
-            if (colorPicker.Name == "RTSS_SecondColor_ColorPicker")
+            if (colorPicker.Name == "RtssSecondColorColorPicker")
             {
                 RtssSettings.RTSS_Elements[1].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
-            if (colorPicker.Name == "RTSS_SakuOverclockProfile_ColorPicker")
+            if (colorPicker.Name == "RtssSakuOverclockProfileColorPicker")
             {
                 RtssSettings.RTSS_Elements[2].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
-            if (colorPicker.Name == "RTSS_StapmFastSlow_ColorPicker")
+            if (colorPicker.Name == "RtssStapmFastSlowColorPicker")
             {
                 RtssSettings.RTSS_Elements[3].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
-            if (colorPicker.Name == "RTSS_EDCThermUsage_ColorPicker")
+            if (colorPicker.Name == "RtssEdcThermUsageColorPicker")
             {
                 RtssSettings.RTSS_Elements[4].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
-            if (colorPicker.Name == "RTSS_CPUClocks_ColorPicker")
+            if (colorPicker.Name == "RtssCpuClocksColorPicker")
             {
                 RtssSettings.RTSS_Elements[5].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
-            if (colorPicker.Name == "RTSS_AVGCPUClockVolt_ColorPicker")
+            if (colorPicker.Name == "RtssAvgCpuClockVoltColorPicker")
             {
                 RtssSettings.RTSS_Elements[6].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
-            if (colorPicker.Name == "RTSS_APUClockVoltTemp_ColorPicker")
+            if (colorPicker.Name == "RtssApuClockVoltTempColorPicker")
             {
                 RtssSettings.RTSS_Elements[7].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
-            if (colorPicker.Name == "RTSS_FrameRate_ColorPicker")
+            if (colorPicker.Name == "RtssFrameRateColorPicker")
             {
                 RtssSettings.RTSS_Elements[8].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";

@@ -34,7 +34,7 @@ public sealed partial class AsusКулерPage
 
     private void AsusКулерPage_Unloaded(object sender, RoutedEventArgs e)
     {
-        AsusWinIOWrapper.Cleanup_WinIo();
+        AsusWinIoWrapper.Cleanup_WinIo();
         _isPageLoaded = false;
         StopTempUpdate();
         _dataUpdater.DataUpdated -= OnDataUpdated;
@@ -42,7 +42,7 @@ public sealed partial class AsusКулерPage
 
     private void AsusКулерPage_Loaded(object sender, RoutedEventArgs e)
     {
-        AsusWinIOWrapper.Init_WinIo();
+        AsusWinIoWrapper.Init_WinIo();
         Fan1.Value = SettingsService.AsusModeFan1UserFanSpeedRpm;
         switch (SettingsService.AsusModeSelectedMode)
         {
@@ -187,7 +187,7 @@ public sealed partial class AsusКулерPage
 
         if (toggleButton.IsChecked == true)
         {
-            AsusWinIOWrapper.Init_WinIo();
+            AsusWinIoWrapper.Init_WinIo();
             switch (toggleButton.Name)
             {
                 case "AsusFans_ManualToggle":
@@ -239,9 +239,9 @@ public sealed partial class AsusКулерPage
 
     private static void SetFanSpeed(byte value, byte fanIndex = 0)
     {
-        AsusWinIOWrapper.HealthyTable_SetFanIndex(fanIndex);
-        AsusWinIOWrapper.HealthyTable_SetFanTestMode((char)(value > 0 ? 0x01 : 0x00));
-        AsusWinIOWrapper.HealthyTable_SetFanPwmDuty(value);
+        AsusWinIoWrapper.HealthyTable_SetFanIndex(fanIndex);
+        AsusWinIoWrapper.HealthyTable_SetFanTestMode((char)(value > 0 ? 0x01 : 0x00));
+        AsusWinIoWrapper.HealthyTable_SetFanPwmDuty(value);
     }
 
     private static async void SetFanSpeeds(byte value)
@@ -250,7 +250,7 @@ public sealed partial class AsusКулерPage
         {
             if (_fanCount == -1 && _unavailableFlag == false)
             {
-                _fanCount = AsusWinIOWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
+                _fanCount = AsusWinIoWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
             }
 
             for (byte fanIndex = 0; fanIndex < _fanCount; fanIndex++)
@@ -275,12 +275,12 @@ public sealed partial class AsusКулерPage
     {
         if (_setFanIndex != fanIndex)
         {
-            AsusWinIOWrapper.HealthyTable_SetFanIndex(fanIndex);
+            AsusWinIoWrapper.HealthyTable_SetFanIndex(fanIndex);
             _setFanIndex =
                 fanIndex; // Лишний раз не использовать, после использования задать значение, которое было использовано
         }
 
-        var fanSpeed = AsusWinIOWrapper.HealthyTable_FanRPM();
+        var fanSpeed = AsusWinIoWrapper.HealthyTable_FanRPM();
         return fanSpeed;
     }
 
@@ -290,7 +290,7 @@ public sealed partial class AsusКулерPage
 
         if (_fanCount == -1 && _unavailableFlag == false)
         {
-            _fanCount = AsusWinIOWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
+            _fanCount = AsusWinIoWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
         }
 
         for (byte fanIndex = 0; fanIndex < _fanCount; fanIndex++)
@@ -302,7 +302,7 @@ public sealed partial class AsusКулерPage
         return fanSpeeds;
     }
 
-    private static int HealthyTable_FanCounts() => AsusWinIOWrapper.HealthyTable_FanCounts();
+    private static int HealthyTable_FanCounts() => AsusWinIoWrapper.HealthyTable_FanCounts();
 
     #endregion
 }

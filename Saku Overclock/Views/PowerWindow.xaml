@@ -79,13 +79,13 @@
                                     <ColumnDefinition Width="90"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Index" x:Name="IndexName" 
+                                <TextBlock Text="Index"
                                            VerticalAlignment="Center" 
                                            HorizontalAlignment="Center"
                                            Margin="5,0,0,0" 
                                            Grid.Column="0" x:Uid="PowerMon_Index"
                                            FontWeight="Bold"/>
-                                <TextBlock Text="Offset" x:Name="OffsetName" 
+                                <TextBlock Text="Offset"
                                            VerticalAlignment="Center" 
                                            HorizontalAlignment="Center" 
                                            Grid.Column="1" x:Uid="PowerMon_Offset"
@@ -95,7 +95,7 @@
                                            HorizontalAlignment="Center" 
                                            Grid.Column="2" 
                                            FontWeight="Bold"/>
-                                <TextBlock Text="Quick Note" x:Name="NoteName" 
+                                <TextBlock Text="Quick Note"
                                            VerticalAlignment="Center" 
                                            HorizontalAlignment="Center" 
                                            Grid.Column="3" x:Uid="PowerMon_Note"

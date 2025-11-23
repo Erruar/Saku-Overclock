@@ -1,6 +1,5 @@
 ﻿using System.Buffers;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Saku_Overclock.Wrappers;
 
@@ -23,17 +22,17 @@ public static class RtssHandler
             UpdateOSD(text.Replace("<Br>", "\n"));
         }
     }
+
     public static unsafe void ChangeOsdTextSpan(ReadOnlySpan<char> text)
     {
         var byteBuffer = ArrayPool<byte>.Shared.Rent(text.Length * 3 + 1); // В UTF-8 до 3 байт на символ
 
         try
         {
-            var byteCount = 0;
             fixed (char* charPtr = text)
             fixed (byte* bytePtr = byteBuffer)
             {
-                byteCount = ConvertToUtf8(charPtr, text.Length, bytePtr, byteBuffer.Length - 1);
+                var byteCount = ConvertToUtf8(charPtr, text.Length, bytePtr, byteBuffer.Length - 1);
 
                 if (!_isRtssInitialized)
                 {

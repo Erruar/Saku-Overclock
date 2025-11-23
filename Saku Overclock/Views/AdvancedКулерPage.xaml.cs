@@ -1,11 +1,12 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
 using System.Xml.Linq;
-using CommunityToolkit.Mvvm.ComponentModel;
+using Windows.Foundation;
+using Windows.Foundation.Metadata;
+using Windows.UI.Popups;
+using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
 using Octokit;
@@ -13,61 +14,31 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation;
-using Windows.Foundation.Metadata;
-using Windows.Storage;
-using Windows.UI.Popups;
-using Windows.UI.Text;
 using Application = Microsoft.UI.Xaml.Application;
 using FileMode = System.IO.FileMode;
 using Path = System.IO.Path;
-using TextConstants = Microsoft.UI.Text.TextConstants;
-using TextGetOptions = Microsoft.UI.Text.TextGetOptions;
-using TextSetOptions = Microsoft.UI.Text.TextSetOptions;
 
 namespace Saku_Overclock.Views;
 
 public sealed partial class AdvancedКулерPage
 {
     private static readonly IAppSettingsService SettingsService = App.GetService<IAppSettingsService>();
-    private const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\"; // Путь к NBFC
+    private const string FolderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs\"; // Путь к NBFC
 
     public AdvancedКулерPage()
     {
         App.GetService<AdvancedКулерViewModel>();
         InitializeComponent();
         Loaded += async (_, _) =>
-        { 
+        {
             await LoadFanCurvesFromConfig();
         };
     }
-    
+
     #region Initialization
 
-
     /// <summary>
-    /// Получить текст файла
-    /// </summary>
-    private static string GetXmlFileContent(string filePath, TabViewItem? newTab)
-    {
-        if (!File.Exists(filePath)) 
-        { 
-            return "Failed to find file"; 
-        }
-
-        try
-        {
-            return File.ReadAllText(filePath);
-        }
-        catch
-        {
-            return File.ReadAllText(folderPath + newTab?.Header + ".xml");
-        }
-    }
-
-    /// <summary>
-    /// Загружает кривые из конфига
+    ///     Загружает кривые из конфига
     /// </summary>
     private async Task LoadFanCurvesFromConfig()
     {
@@ -196,8 +167,8 @@ public sealed partial class AdvancedКулерPage
             // Создаем списки для текущего FanConfiguration 
             var rowCounter = 1; // Счетчик строк в Grid
 
-            var configFilePath = folderPath +
-                                     SettingsService.NbfcConfigXmlName + ".xml";
+            var configFilePath = FolderPath +
+                                 SettingsService.NbfcConfigXmlName + ".xml";
             CoolerConfigurationName.Text = SettingsService.NbfcConfigXmlName;
             if (File.Exists(configFilePath))
             {
@@ -329,9 +300,9 @@ public sealed partial class AdvancedКулерPage
             await LogHelper.LogError(e);
         }
     }
-    
+
     /// <summary>
-    /// Показывает диалог загрузки Nbfc
+    ///     Показывает диалог загрузки Nbfc
     /// </summary>
     private async Task ShowNbfcDialogAsync()
     {
@@ -463,7 +434,7 @@ public sealed partial class AdvancedКулерPage
     }
 
     /// <summary>
-    /// Пытается запустить установщик Nbfc
+    ///     Пытается запустить установщик Nbfc
     /// </summary>
     private static bool TryToRunNbfcInstaller(string downloadPath)
     {
@@ -486,7 +457,7 @@ public sealed partial class AdvancedКулерPage
     }
 
     /// <summary>
-    /// Рисует точки на кривой кулера
+    ///     Рисует точки на кривой кулера
     /// </summary>
     private void AddPointToCoolerCurve(string fanName, double minTemp, double maxTemp, double fanSpeed)
     {
@@ -512,7 +483,7 @@ public sealed partial class AdvancedКулерPage
     #region Event Handlers
 
     /// <summary>
-    /// Изменяет значение нижнего порога температуры кривой кулера
+    ///     Изменяет значение нижнего порога температуры кривой кулера
     /// </summary>
     private async void DownThresholdValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
     {
@@ -527,7 +498,7 @@ public sealed partial class AdvancedКулерPage
     }
 
     /// <summary>
-    /// Изменяет значение верхнего порога температуры кривой кулера
+    ///     Изменяет значение верхнего порога температуры кривой кулера
     /// </summary>
     private async void UpThresholdValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
     {
@@ -542,7 +513,7 @@ public sealed partial class AdvancedКулерPage
     }
 
     /// <summary>
-    /// Изменяет значение скорости вращения кулера
+    ///     Изменяет значение скорости вращения кулера
     /// </summary>
     private async void FanSpeedValueChanged(NumberBoxValueChangedEventArgs args, int values, int fan)
     {
@@ -557,70 +528,17 @@ public sealed partial class AdvancedКулерPage
     }
 
     /// <summary>
-    /// Создаёт конфигурацию управления кулером из примера
+    ///     Обработчик изменения цвета кривой кулера
     /// </summary>
-    private void CreateConfigurationFromExample_Click(object sender, RoutedEventArgs e)
-    {
-        const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
-        const string baseFileName = "ASUS Vivobook X580VD.xml";
-
-        // Находим первое свободное имя файла
-        var index = 1;
-        string newFileName;
-        do
-        {
-            newFileName = $"Custom{index}.xml";
-            index++;
-        } while (File.Exists(Path.Combine(folderPath, newFileName)));
-
-        // Создаем новый файл
-        var newFilePath = Path.Combine(folderPath, newFileName);
-        File.Copy(Path.Combine(folderPath, baseFileName), newFilePath);
-        OpenConfigurationFromFile(Path.Combine(folderPath, newFilePath));
-    }
+    private void ChangeCoolerCurveColor_ItemClick(object sender, ItemClickEventArgs e) =>
+        PolylineChange(((FrameworkElement)sender).Tag.ToString() == "1" ? ExtFan1C : ExtFan2C, e);
 
     /// <summary>
-    /// Создаёт пустую конфигурацию управления кулером
-    /// </summary>
-    private void Create_Null_Click(object sender, RoutedEventArgs e)
-    {
-        var folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
-
-        for (var i = 1;; i++)
-        {
-            var fileName = $"Custom{i}.xml";
-            var filePath = Path.Combine(folderPath, fileName);
-
-            if (!File.Exists(filePath)) // Файл с указанным именем не существует, создаем его
-            {
-                File.Create(filePath).Close();
-                OpenConfigurationFromFile(filePath);
-                break;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Обработчик изменения цвета кривой кулера
-    /// </summary>
-    private void ChangeCoolerCurveColor_ItemClick(object sender, ItemClickEventArgs e)
-    {
-        if (((FrameworkElement)sender).Tag.ToString() == "1")
-        {
-            PolylineChange(ExtFan1C, e);
-        }
-        else
-        {
-            PolylineChange(ExtFan2C, e);
-        }
-    }
-
-    /// <summary>
-    /// Изменяет цвет кривой кулера
+    ///     Изменяет цвет кривой кулера
     /// </summary>
     private void PolylineChange(Polyline polyline, ItemClickEventArgs e)
     {
-        if (e.ClickedItem is Rectangle rectangle && rectangle.Fill is SolidColorBrush brush)
+        if (e.ClickedItem is Rectangle { Fill: SolidColorBrush brush })
         {
             polyline.Stroke = new SolidColorBrush(brush.Color);
             Fan0ToggleCurve.Flyout?.Hide();
@@ -629,7 +547,7 @@ public sealed partial class AdvancedКулерPage
     }
 
     /// <summary>
-    /// Изменяет видимость кривой кулера
+    ///     Изменяет видимость кривой кулера
     /// </summary>
     private void ChangeCoolerCurveVisibility_Checked(ToggleSplitButton sender,
         ToggleSplitButtonIsCheckedChangedEventArgs args)
@@ -649,239 +567,7 @@ public sealed partial class AdvancedКулерPage
     #region XML-Config Utils
 
     /// <summary>
-    /// Создаёт копию файла конфигурации
-    /// </summary>
-    private void CopyConfigurationFile(string baseFileName)
-    {
-        const string folderPath = @"C:\Program Files (x86)\NoteBook FanControl\Configs";
-
-        // Находим первое свободное имя файла
-        var index = 1;
-        string newFileName;
-        do
-        {
-            newFileName = $"Custom{index}.xml";
-            index++;
-        } while (File.Exists(Path.Combine(folderPath, newFileName)));
-
-        // Создаем новый файл
-        var newFilePath = Path.Combine(folderPath, newFileName);
-        File.Copy(Path.Combine(folderPath, baseFileName), newFilePath);
-        OpenConfigurationFromFile(Path.Combine(folderPath, newFilePath));
-    }
-
-    /// <summary>
-    /// Добавляет в список вкладок новую вкладку с редактором кода конфигурации
-    /// </summary>
-    private void OpenConfigurationFromFile(string filePath)
-    {
-        // Извлечь имя файла без расширения
-        var tabName = Path.GetFileNameWithoutExtension(filePath);
-
-        // Создать новую вкладку
-        var newTab = new TabViewItem
-        {
-            Header = tabName,
-            IconSource = new FontIconSource 
-            { 
-                Glyph = "\uE78C" 
-            }
-        };
-
-        var defaultCornerRadius = new CornerRadius(12);
-
-        // Создать Grid с кнопкой и RichEditBox
-        var tabContent = new Grid() 
-        {
-            CornerRadius = new CornerRadius(12),
-            Margin = new Thickness(0, 0, -19, -3),
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch
-        };
-
-        var saveBar = new MenuFlyoutItem()
-        {
-            Text = "Save".GetLocalized(),
-            KeyboardAccelerators =
-            {
-                new KeyboardAccelerator()
-                {
-                    Modifiers = Windows.System.VirtualKeyModifiers.Control,
-                    Key = Windows.System.VirtualKey.S
-                }
-            }
-        };
-        var renameBar = new MenuFlyoutItem()
-        {
-            Text = "Rename".GetLocalized(),
-            Tag = folderPath + newTab.Header + ".xml"
-        };
-        var copyBar = new MenuFlyoutItem()
-        {
-            Text = "AdvancedCooler_CopyAllAction".GetLocalized(),
-            Tag = filePath
-        };
-        var deleteBar = new MenuFlyoutItem()
-        {
-            Text = "Delete".GetLocalized(),
-            Tag = folderPath + newTab.Header + ".xml"
-        };
-        var closeBar = new MenuFlyoutItem()
-        {
-            Text = "AdvancedCooler_CloseFileAction".GetLocalized()
-        };
-
-        var menuBar = new MenuBar()
-        {
-            CornerRadius = new CornerRadius(8, 8, 0, 0),
-            Height = 35,
-            Margin = new Thickness(0, -3, 0, 0),
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Top,
-            Items =
-            {
-                new MenuBarItem()
-                {
-                    Title = "AdvancedCooler_FileOptionsAction".GetLocalized(),
-                    Items = 
-                    {
-                        saveBar,
-                        renameBar,
-                        deleteBar,
-                        closeBar
-                    }
-                },
-                new MenuBarItem()
-                {
-                    Title = "AdvancedCooler_CopyAction".GetLocalized(),
-                    Items =
-                    {
-                        copyBar
-                    }
-                },
-            }
-        };
-
-        // Создать RichEditBox и загрузить в него содержимое файла .xml
-        var xmlContent = new RichEditBox
-        {
-            Margin = new Thickness(0, 35, 0, 0),
-            VerticalAlignment = VerticalAlignment.Stretch,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            CornerRadius = new CornerRadius(0, 0, 12, 12)
-        };
-        xmlContent.Document.SetText(TextSetOptions.None, GetXmlFileContent(filePath, newTab));
-        
-        // Добавить обработчики событий для элементов меню
-        renameBar.Click += RenameConfigurationClick;
-        deleteBar.Click += DeleteConfigurationClick;
-        copyBar.Click += CopyConfigurationClick;
-        closeBar.Click += (_, _) =>
-        {
-            renameBar.Click -= RenameConfigurationClick;
-            deleteBar.Click -= DeleteConfigurationClick;
-            copyBar.Click -= CopyConfigurationClick;
-        };
-
-        // Добавить элементы в Grid
-        tabContent.Children.Add(xmlContent);
-        tabContent.Children.Add(menuBar);
-
-        // Установить содержимое вкладки
-        newTab.Content = tabContent;
-    }
-
-    /// <summary>
-    /// Копирует текст конфига в буфер обмена
-    /// </summary>
-    private void CopyConfigurationClick(object sender, RoutedEventArgs e)
-    {
-        var textToCopy = GetXmlFileContent((sender as FrameworkElement)?.Tag.ToString() ?? "", null);
-        var dataPackage = new DataPackage();
-        dataPackage.SetText(textToCopy);
-        Clipboard.SetContent(dataPackage);
-    }
-
-    /// <summary>
-    /// Отобразит диалог изменения имени конфига
-    /// </summary>
-    private async void RenameConfigurationClick(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            var filePath = (sender as FrameworkElement)?.Tag.ToString() ?? "";
-
-            var renameDialog = new ContentDialog
-            {
-                Title = "AdvancedCooler_DeleteAction_Rename".GetLocalized(),
-                Content = new TextBox
-                {
-                    PlaceholderText = "New_Name".GetLocalized()
-                },
-                PrimaryButtonText = "Rename".GetLocalized(),
-                CloseButtonText = "CancelThis/Text".GetLocalized(),
-                DefaultButton = ContentDialogButton.Primary
-            };
-
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                renameDialog.XamlRoot = XamlRoot;
-            }
-
-            var result = await renameDialog.ShowAsync();
-            if (result == ContentDialogResult.Primary) // Переименовать файл и вкладку
-            {
-                var outText = ((TextBox)renameDialog.Content).Text;
-                if (!string.IsNullOrWhiteSpace(outText)) // Проверить, корректность нового имени
-                {
-                    File.Move(filePath, Path.Combine(Path.GetDirectoryName(filePath) ?? @"C:\", outText + ".xml"));
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.LogError(ex);
-        }
-    }
-
-    /// <summary>
-    /// Отобразит диалог удаления конфига
-    /// </summary>
-    private async void DeleteConfigurationClick(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            var filePath = (sender as FrameworkElement)?.Tag.ToString() ?? "";
-
-            var fileName = Path.GetFileName(filePath);
-
-            var deleteConfirmationDialog = new ContentDialog
-            {
-                Title = "AdvancedCooler_DeleteAction_Delete".GetLocalized(),
-                Content = fileName + " " + "AdvancedCooler_DeleteAction_Sure".GetLocalized(),
-                PrimaryButtonText = "Delete".GetLocalized(),
-                CloseButtonText = "CancelThis/Text".GetLocalized(),
-                DefaultButton = ContentDialogButton.Primary
-            };
-            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-            {
-                deleteConfirmationDialog.XamlRoot = XamlRoot;
-            }
-
-            var deleteConfirmationResult = await deleteConfirmationDialog.ShowAsync();
-            if (deleteConfirmationResult == ContentDialogResult.Primary) // Удалить файл и вкладку
-            {
-                File.Delete(filePath);
-            }
-        }
-        catch (Exception ex)
-        {
-            await LogHelper.LogError(ex);
-        }
-    }
-
-    /// <summary>
-    /// Сохраняет изменения кривой кулера
+    ///     Сохраняет изменения кривой кулера
     /// </summary>
     private async Task UpdateNbfcFanCurveValues(string foundValue, double newValue, int uid, int fanCount)
     {
@@ -889,7 +575,7 @@ public sealed partial class AdvancedКулерPage
         var rowCounter = 0; // Счетчик строк в Grid
         try
         {
-            var configFilePath = folderPath + SettingsService.NbfcConfigXmlName +
+            var configFilePath = FolderPath + SettingsService.NbfcConfigXmlName +
                                  ".xml";
             if (File.Exists(configFilePath))
             {

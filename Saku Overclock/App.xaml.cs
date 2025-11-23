@@ -148,7 +148,7 @@ public partial class App
             Current.Exit();
         }
 
-        UnhandledException += (s,e) => 
+        UnhandledException += (_,e) => 
         {
             // Перехватываем исключения от LiveCharts (баг с PointerCapture)
             if (((e.Exception is NullReferenceException)
@@ -168,19 +168,26 @@ public partial class App
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        BackgroundUpdater = GetService<IBackgroundDataUpdater>();
-        _ = BackgroundUpdater.StartAsync(GlobalCts.Token);
-        base.OnLaunched(args);
-        GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(),
-            AppContext.BaseDirectory));
-
-        await GetService<IActivationService>().ActivateAsync(args);
-
-        await Task.Delay(1500);
-        await Task.Run(() =>
+        try
         {
-            SetPriorityClass(Process.GetCurrentProcess().Handle, /*NORMAL_PRIORITY_CLASS*/0x20);
-        });
+            BackgroundUpdater = GetService<IBackgroundDataUpdater>();
+            _ = BackgroundUpdater.StartAsync(GlobalCts.Token);
+            base.OnLaunched(args);
+            GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(),
+                AppContext.BaseDirectory));
+
+            await GetService<IActivationService>().ActivateAsync(args);
+
+            await Task.Delay(1500);
+            await Task.Run(() =>
+            {
+                SetPriorityClass(Process.GetCurrentProcess().Handle, /*NORMAL_PRIORITY_CLASS*/0x20);
+            });
+        }
+        catch (Exception e)
+        {
+            await LogHelper.LogError(e);
+        }
     }
 
     /// <summary>

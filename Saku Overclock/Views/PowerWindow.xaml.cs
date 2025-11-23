@@ -15,12 +15,12 @@ internal partial class PowerWindow : IDisposable
     private Powercfg? _notes;
     private ObservableCollection<PowerMonitorItem>? _powerGridItems;
     private readonly IDataProvider? _dataProvider = App.GetService<IDataProvider>();
-    private bool _isInitialized = false;
+    private bool _isInitialized;
     private float[]? _rawData; // Сырые данные
-    private int _currentPage = 0;
-    private const int PAGE_SIZE = 50; // Показываем только 50 элементов за раз
-    private int _totalItems = 0;
-    private bool _isLoading = false;
+    private int _currentPage;
+    private const int PageSize = 50; // Показываем только 50 элементов за раз
+    private int _totalItems;
+    private bool _isLoading;
 
     public PowerWindow()
     {
@@ -99,8 +99,8 @@ internal partial class PowerWindow : IDisposable
         {
             _powerGridItems?.Clear();
 
-            var startIndex = page * PAGE_SIZE;
-            var endIndex = Math.Min(startIndex + PAGE_SIZE, _totalItems);
+            var startIndex = page * PageSize;
+            var endIndex = Math.Min(startIndex + PageSize, _totalItems);
 
             for (var i = startIndex; i < endIndex; i++)
             {
@@ -130,7 +130,7 @@ internal partial class PowerWindow : IDisposable
 
     private void UpdatePageInfo()
     {
-        var totalPages = (_totalItems + PAGE_SIZE - 1) / PAGE_SIZE;
+        var totalPages = (_totalItems + PageSize - 1) / PageSize;
         PageInfo.Text = "PowerMon_Page".GetLocalized() + $"{_currentPage + 1}/{totalPages}";
 
         PrevPageButton.IsEnabled = _currentPage > 0;
@@ -148,7 +148,8 @@ internal partial class PowerWindow : IDisposable
 
         try
         {
-            var basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock", "PowerMon");
+            var basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock",
+                "PowerMon");
             Directory.CreateDirectory(basePath);
 
             var filePath = Path.Combine(basePath, "powercfg.json");
@@ -162,7 +163,8 @@ internal partial class PowerWindow : IDisposable
 
     private void NoteLoad()
     {
-        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock", "PowerMon", "powercfg.json");
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock",
+            "PowerMon", "powercfg.json");
 
         if (File.Exists(filePath))
         {
@@ -189,13 +191,13 @@ internal partial class PowerWindow : IDisposable
 
     public void Dispose()
     {
-        _powerCfgTimer?.Stop();
+        _powerCfgTimer.Stop();
         GC.SuppressFinalize(this);
     }
 
     private void PowerWindow_Closed(object sender, WindowEventArgs args)
     {
-        _powerCfgTimer?.Stop();
+        _powerCfgTimer.Stop();
         _powerGridItems?.Clear();
         _powerGridItems = null;
         _notes = null;
@@ -222,6 +224,7 @@ internal partial class PowerWindow : IDisposable
 
         RefreshCurrentPage();
     }
+
     private void NumericUpDownInterval_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
     {
         if (!_isInitialized || _isLoading)
@@ -248,41 +251,54 @@ internal partial class PowerWindow : IDisposable
             LoadPage(_currentPage - 1);
             UpdatePageInfo();
             MainScroll.ChangeView(
-            horizontalOffset: null,
-            verticalOffset: MainScroll.ScrollableHeight - 1,
-            zoomFactor: null);
+                horizontalOffset: null,
+                verticalOffset: MainScroll.ScrollableHeight - 1,
+                zoomFactor: null);
         }
     }
 
     private void NextPage_Click(object sender, RoutedEventArgs e)
     {
-        var totalPages = (_totalItems + PAGE_SIZE - 1) / PAGE_SIZE;
+        var totalPages = (_totalItems + PageSize - 1) / PageSize;
         if (_currentPage < totalPages - 1)
         {
             LoadPage(_currentPage + 1);
             UpdatePageInfo();
-            MainScroll.ChangeView(null,1,null);
+            MainScroll.ChangeView(null, 1, null);
         }
     }
-    private bool MaxedOut;
+
+    private bool _maxedOut;
+
     private async void MainScroll_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
     {
-        // писать код сюда
-        if (!e.IsIntermediate) // Проверяем, что прокрутка завершена
+        try
         {
+            if (e.IsIntermediate) // Проверяем, что прокрутка завершена
+            {
+                return;
+            }
+
             var scrollViewer = sender as ScrollViewer;
-            var totalPages = (_totalItems + PAGE_SIZE - 1) / PAGE_SIZE;
+            var totalPages = (_totalItems + PageSize - 1) / PageSize;
 
             // Если долистали до самого низа и есть следующая страница
-            if (scrollViewer!.VerticalOffset >= scrollViewer.ScrollableHeight &&
+            if (scrollViewer == null)
+            {
+                return;
+            }
+
+            if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight &&
                 _currentPage < totalPages - 1)
             {
-                if (!MaxedOut && scrollViewer!.VerticalOffset == scrollViewer.ScrollableHeight)
+                if (!_maxedOut && (int)(scrollViewer.VerticalOffset * 100) ==
+                    (int)(scrollViewer.ScrollableHeight * 100))
                 {
-                    MaxedOut = true;
+                    _maxedOut = true;
                     return;
                 }
-                MaxedOut = false;
+
+                _maxedOut = false;
                 if (totalPages - 1 == _currentPage + 1)
                 {
                     scrollViewer.ChangeView(null, 1, null);
@@ -303,11 +319,12 @@ internal partial class PowerWindow : IDisposable
                     // Перемещаем к началу новой страницы
                     scrollViewer.ChangeView(null, 1, null);
                 }
-                
             }
             // Если долистали до самого верха и есть предыдущая страница
             else if (scrollViewer.VerticalOffset <= 0 &&
-                     _currentPage > 0 && totalPages - 1 != _currentPage) // Конвертировать в правильный индекс, если страница не последняя
+                     _currentPage > 0 &&
+                     totalPages - 1 !=
+                     _currentPage) // Конвертировать в правильный индекс, если страница не последняя
             {
                 LoadPage(_currentPage - 1);
                 UpdatePageInfo();
@@ -315,13 +332,17 @@ internal partial class PowerWindow : IDisposable
                 scrollViewer.ChangeView(null, scrollViewer.ScrollableHeight - 1, null);
             }
         }
+        catch (Exception ex)
+        {
+            await LogHelper.LogWarn(ex);
+        }
     }
 
     private void GoToPage_Click(object sender, RoutedEventArgs e)
     {
         if (int.TryParse(PageInput.Text, out var page))
         {
-            var totalPages = (_totalItems + PAGE_SIZE - 1) / PAGE_SIZE;
+            var totalPages = (_totalItems + PageSize - 1) / PageSize;
             page = Math.Max(1, Math.Min(page, totalPages)) - 1; // Конвертировать в правильный индекс
 
             if (page != _currentPage)
@@ -343,15 +364,20 @@ internal partial class PowerWindow : IDisposable
 
         public string? Index
         {
-            get; set;
+            get;
+            set;
         }
+
         public string? Offset
         {
-            get; set;
+            get;
+            set;
         }
+
         public int RealIndex
         {
-            get; set;
+            get;
+            set;
         } // Реальный индекс в массиве
 
         public string? Value
@@ -419,14 +445,12 @@ internal partial class PowerWindow : IDisposable
                 }
 
                 // Сохраняем заметки если изменились
-                if (item.Note != _notes?.Notelist[realIndex])
+                if (item.Note != _notes?.Notelist[realIndex]
+                    && _notes != null && realIndex < _notes.Notelist.Count)
                 {
-                    if (_notes != null && realIndex < _notes.Notelist.Count)
-                    {
-                        _notes.Notelist[realIndex] = item.Note ?? " ";
-                        // Отложенное сохранение
-                        Task.Run(NoteSave);
-                    }
+                    _notes.Notelist[realIndex] = item.Note ?? " ";
+                    // Отложенное сохранение
+                    Task.Run(NoteSave);
                 }
             }
         }

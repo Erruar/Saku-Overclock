@@ -117,21 +117,21 @@ public sealed partial class КулерPage
         {
             if (AppSettings.IsNbfcModeEnabled)
             {
-                AsusOptions_Button.IsChecked = true;
+                AsusOptionsButton.IsChecked = true;
                 _selectedModeAsus = true;
-                NbfcOptions_Button.IsChecked = false;
+                NbfcOptionsButton.IsChecked = false;
             }
             else
             {
                 _selectedModeAsus = false;
-                AsusOptions_Button.IsChecked = false;
-                NbfcOptions_Button.IsChecked = true;
+                AsusOptionsButton.IsChecked = false;
+                NbfcOptionsButton.IsChecked = true;
             }
             const string
                 folderPath =
                     @"C:\Program Files (x86)\NoteBook FanControl\Configs"; // Получить папку, в которой хранятся файлы XML с конфигами
             var xmlFiles = Directory.GetFiles(folderPath, "*.xml");
-            Selfan.Items.Clear();
+            ConfigSelectorComboBox.Items.Clear();
             foreach (var xmlFile in xmlFiles)
             {
                 var fileName = Path.GetFileNameWithoutExtension(xmlFile);
@@ -145,10 +145,10 @@ public sealed partial class КулерPage
                     Content = fileName,
                     Tag = xmlFile
                 };
-                Selfan.Items.Add(item);
+                ConfigSelectorComboBox.Items.Add(item);
                 if (AppSettings.NbfcConfigXmlName == fileName)
                 {
-                    Selfan.SelectedItem = item;
+                    ConfigSelectorComboBox.SelectedItem = item;
                 }
             }
         }
@@ -169,18 +169,18 @@ public sealed partial class КулерPage
             {
                 if (AppSettings.AsusCoolerServiceType == 2 || ServiceCombo.SelectedIndex == 2)
                 {
-                    Cooler_Fan1_Manual.Value = AppSettings.AsusModeFan1UserFanSpeedRpm;
-                    Cooler_Fan2_Manual.Value = AppSettings.AsusModeFan2UserFanSpeedRpm;
+                    CoolerFan1Manual.Value = AppSettings.AsusModeFan1UserFanSpeedRpm;
+                    CoolerFan2Manual.Value = AppSettings.AsusModeFan2UserFanSpeedRpm;
 
                     NbfcFanSetSpeed();
-                    if (Cooler_Fan1_Manual.Value > 100)
+                    if (CoolerFan1Manual.Value > 100)
                     {
                         UpdatePageFanRpms();
                         AppSettings.AsusModeFan1UserFanSpeedRpm = 110.0;
                     }
                     else
                     {
-                        CpuFanRpm.Text = Cooler_Fan1_Manual.Value.ToString(CultureInfo.InvariantCulture) + "%"; 
+                        CpuFanRpm.Text = CoolerFan1Manual.Value.ToString(CultureInfo.InvariantCulture) + "%"; 
                     }
 
                     AppSettings.SaveSettings();
@@ -190,18 +190,18 @@ public sealed partial class КулерPage
             {
                 if (AppSettings.NbfcServiceType == 2 || ServiceCombo.SelectedIndex == 2)
                 {
-                    Cooler_Fan1_Manual.Value = AppSettings.NbfcFan1UserFanSpeedRpm;
-                    Cooler_Fan2_Manual.Value = AppSettings.NbfcFan2UserFanSpeedRpm;
+                    CoolerFan1Manual.Value = AppSettings.NbfcFan1UserFanSpeedRpm;
+                    CoolerFan2Manual.Value = AppSettings.NbfcFan2UserFanSpeedRpm;
 
                     NbfcFanSetSpeed();
-                    if (Cooler_Fan1_Manual.Value > 100)
+                    if (CoolerFan1Manual.Value > 100)
                     {
                         UpdatePageFanRpms();
                         AppSettings.NbfcFan1UserFanSpeedRpm = 110.0;
                     }
                     else
                     {
-                        CpuFanRpm.Text = Cooler_Fan1_Manual.Value.ToString(CultureInfo.InvariantCulture) + "%";
+                        CpuFanRpm.Text = CoolerFan1Manual.Value.ToString(CultureInfo.InvariantCulture) + "%";
                     }
 
                     AppSettings.SaveSettings();
@@ -423,12 +423,12 @@ public sealed partial class КулерPage
         {
             try
             {
-                AsusWinIOWrapper.Init_WinIo(); // Инит управления кулерами на ноутбуках Asus, если не загружен - Unavailable
-                var fanCount = AsusWinIOWrapper.HealthyTable_FanCounts();
+                AsusWinIoWrapper.Init_WinIo(); // Инит управления кулерами на ноутбуках Asus, если не загружен - Unavailable
+                var fanCount = AsusWinIoWrapper.HealthyTable_FanCounts();
                 if (fanCount == -1)
                 {
                     _unavailableFlag = true;
-                    AsusOptions_Button.IsEnabled = false;
+                    AsusOptionsButton.IsEnabled = false;
                     AsusUnavailable.Visibility = Visibility.Visible;
                     ToolTipService.SetToolTip(AsusUnavailable, "Cooler_AsusModeUnsupportedSign".GetLocalized());
                 }
@@ -455,8 +455,8 @@ public sealed partial class КулерPage
                     AppSettings is { NbfcFan1UserFanSpeedRpm: <= 100, NbfcFan2UserFanSpeedRpm: <= 100 } &&
                     AppSettings.NbfcFan1UserFanSpeedRpm - AppSettings.NbfcFan2UserFanSpeedRpm == 0 ? 4 : 0;
 
-                Cooler_Fan1_Manual.Value = AppSettings.NbfcFan1UserFanSpeedRpm;
-                Cooler_Fan2_Manual.Value = AppSettings.NbfcFan2UserFanSpeedRpm;
+                CoolerFan1Manual.Value = AppSettings.NbfcFan1UserFanSpeedRpm;
+                CoolerFan2Manual.Value = AppSettings.NbfcFan2UserFanSpeedRpm;
 
                 for (var i = 0; i < 2; i++)
                 {
@@ -464,17 +464,17 @@ public sealed partial class КулерPage
                     switch (doubleFan)
                     {
                         case 90d:
-                            SelectOnly(i == 0 ? Nbfc_TurboToggle : Nbfc_TurboToggle1);
+                            SelectOnly(i == 0 ? NbfcTurboToggle : NbfcTurboToggle1);
                             break;
                         case 57d:
-                            SelectOnly(i == 0 ? Nbfc_BalanceToggle : Nbfc_BalanceToggle1);
+                            SelectOnly(i == 0 ? NbfcBalanceToggle : NbfcBalanceToggle1);
                             break;
                         case 37d:
-                            SelectOnly(i == 0 ? Nbfc_QuietToggle : Nbfc_QuietToggle1);
+                            SelectOnly(i == 0 ? NbfcQuietToggle : NbfcQuietToggle1);
                             break;
                         default:
-                            SelectOnly(i == 0 ? Nbfc_AutoToggle : Nbfc_AutoToggle1);
-                            (i == 0 ? Cooler_Fan1_SliderGrid : Cooler_Fan2_SliderGrid).Visibility = Visibility.Visible;
+                            SelectOnly(i == 0 ? NbfcAutoToggle : NbfcAutoToggle1);
+                            (i == 0 ? CoolerFan1SliderGrid : CoolerFan2SliderGrid).Visibility = Visibility.Visible;
                             break;
                     }
                 }
@@ -488,8 +488,8 @@ public sealed partial class КулерPage
                         NbfcUnavailable.Visibility = Visibility.Visible;
                         CoolerManagementGrid.Visibility = Visibility.Collapsed;
                         CoolerManagementTypeGrid.Visibility = Visibility.Collapsed;
-                        Cooler_Curve_Fan1.Visibility = Visibility.Collapsed;
-                        Cooler_Curve_Fan2.Visibility = Visibility.Collapsed;
+                        CoolerCurveFan1.Visibility = Visibility.Collapsed;
+                        CoolerCurveFan2.Visibility = Visibility.Collapsed;
 
                         await ShowNbfcDialogAsync();
                     }
@@ -514,7 +514,7 @@ public sealed partial class КулерPage
     {
         StopTempUpdate();
         StopAsusWinIOUpdate();
-        AsusWinIOWrapper.Cleanup_WinIo();
+        AsusWinIoWrapper.Cleanup_WinIo();
         _isNbfcNotLoaded = false;
     }
 
@@ -539,59 +539,59 @@ public sealed partial class КулерPage
     {
         switch (name.Name)
         {
-            case "Nbfc_QuietToggle":
-                Nbfc_QuietToggle.IsChecked = true;
-                Nbfc_BalanceToggle.IsChecked = false;
-                Nbfc_TurboToggle.IsChecked = false;
-                Nbfc_AutoToggle.IsChecked = false;
+            case "NbfcQuietToggle":
+                NbfcQuietToggle.IsChecked = true;
+                NbfcBalanceToggle.IsChecked = false;
+                NbfcTurboToggle.IsChecked = false;
+                NbfcAutoToggle.IsChecked = false;
                 break;
-            case "Nbfc_BalanceToggle":
-                Nbfc_QuietToggle.IsChecked = false;
-                Nbfc_BalanceToggle.IsChecked = true;
-                Nbfc_TurboToggle.IsChecked = false;
-                Nbfc_AutoToggle.IsChecked = false;
+            case "NbfcBalanceToggle":
+                NbfcQuietToggle.IsChecked = false;
+                NbfcBalanceToggle.IsChecked = true;
+                NbfcTurboToggle.IsChecked = false;
+                NbfcAutoToggle.IsChecked = false;
                 break;
-            case "Nbfc_TurboToggle":
-                Nbfc_QuietToggle.IsChecked = false;
-                Nbfc_BalanceToggle.IsChecked = false;
-                Nbfc_TurboToggle.IsChecked = true;
-                Nbfc_AutoToggle.IsChecked = false;
+            case "NbfcTurboToggle":
+                NbfcQuietToggle.IsChecked = false;
+                NbfcBalanceToggle.IsChecked = false;
+                NbfcTurboToggle.IsChecked = true;
+                NbfcAutoToggle.IsChecked = false;
                 break;
-            case "Nbfc_AutoToggle":
-                Nbfc_QuietToggle.IsChecked = false;
-                Nbfc_BalanceToggle.IsChecked = false;
-                Nbfc_TurboToggle.IsChecked = false;
-                Nbfc_AutoToggle.IsChecked = true;
+            case "NbfcAutoToggle":
+                NbfcQuietToggle.IsChecked = false;
+                NbfcBalanceToggle.IsChecked = false;
+                NbfcTurboToggle.IsChecked = false;
+                NbfcAutoToggle.IsChecked = true;
                 break;
-            case "Nbfc_QuietToggle1":
-                Nbfc_QuietToggle1.IsChecked = true;
-                Nbfc_BalanceToggle1.IsChecked = false;
-                Nbfc_TurboToggle1.IsChecked = false;
-                Nbfc_AutoToggle1.IsChecked = false;
+            case "NbfcQuietToggle1":
+                NbfcQuietToggle1.IsChecked = true;
+                NbfcBalanceToggle1.IsChecked = false;
+                NbfcTurboToggle1.IsChecked = false;
+                NbfcAutoToggle1.IsChecked = false;
                 break;
-            case "Nbfc_BalanceToggle1":
-                Nbfc_QuietToggle1.IsChecked = false;
-                Nbfc_BalanceToggle1.IsChecked = true;
-                Nbfc_TurboToggle1.IsChecked = false;
-                Nbfc_AutoToggle1.IsChecked = false;
+            case "NbfcBalanceToggle1":
+                NbfcQuietToggle1.IsChecked = false;
+                NbfcBalanceToggle1.IsChecked = true;
+                NbfcTurboToggle1.IsChecked = false;
+                NbfcAutoToggle1.IsChecked = false;
                 break;
-            case "Nbfc_TurboToggle1":
-                Nbfc_QuietToggle1.IsChecked = false;
-                Nbfc_BalanceToggle1.IsChecked = false;
-                Nbfc_TurboToggle1.IsChecked = true;
-                Nbfc_AutoToggle1.IsChecked = false;
+            case "NbfcTurboToggle1":
+                NbfcQuietToggle1.IsChecked = false;
+                NbfcBalanceToggle1.IsChecked = false;
+                NbfcTurboToggle1.IsChecked = true;
+                NbfcAutoToggle1.IsChecked = false;
                 break;
-            case "Nbfc_AutoToggle1":
-                Nbfc_QuietToggle1.IsChecked = false;
-                Nbfc_BalanceToggle1.IsChecked = false;
-                Nbfc_TurboToggle1.IsChecked = false;
-                Nbfc_AutoToggle1.IsChecked = true;
+            case "NbfcAutoToggle1":
+                NbfcQuietToggle1.IsChecked = false;
+                NbfcBalanceToggle1.IsChecked = false;
+                NbfcTurboToggle1.IsChecked = false;
+                NbfcAutoToggle1.IsChecked = true;
                 break;
         }
     }
 
 
-    private async void Selfan_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void ConfigSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         try
         {
@@ -601,7 +601,7 @@ public sealed partial class КулерPage
             }
 
             await Task.Delay(200);
-            AppSettings.NbfcConfigXmlName = (string)((ComboBoxItem)Selfan.SelectedItem).Content;
+            AppSettings.NbfcConfigXmlName = (string)((ComboBoxItem)ConfigSelectorComboBox.SelectedItem).Content;
             AppSettings.SaveSettings();
             NbfcApplyFanConfig();
         }
@@ -869,10 +869,10 @@ public sealed partial class КулерPage
     {
         CpuFanTemp.Text = "CPU Temp " + Math.Round(_cpuTemp, 1) + "C";
         GpuFanTemp.Text = "GPU Temp " + (_gpuTemp == 0d ? "N/A" : Math.Round(_gpuTemp, 1) + "C");
-        TdpLimitSensor_Text.Text = Math.Round(_cpuTdpLim, 1) + "W";
-        TdpValueSensor_Text.Text = Math.Round(_cpuTdpVal, 1).ToString(CultureInfo.InvariantCulture);
-        CpuFreqSensor_Text.Text = Math.Round(_cpuFreq, 1).ToString(CultureInfo.InvariantCulture);
-        CpuCurrentSensor_Text.Text = Math.Round(_cpuCurrent, 1).ToString(CultureInfo.InvariantCulture);
+        TdpLimitSensorText.Text = Math.Round(_cpuTdpLim, 1) + "W";
+        TdpValueSensorText.Text = Math.Round(_cpuTdpVal, 1).ToString(CultureInfo.InvariantCulture);
+        CpuFreqSensorText.Text = Math.Round(_cpuFreq, 1).ToString(CultureInfo.InvariantCulture);
+        CpuCurrentSensorText.Text = Math.Round(_cpuCurrent, 1).ToString(CultureInfo.InvariantCulture);
     }
 
     private void OnDataUpdated(object? sender, SensorsInformation info)
@@ -959,109 +959,109 @@ public sealed partial class КулерPage
         {
             switch (toggleButton.Name)
             {
-                case "Nbfc_AutoToggle":
-                    Nbfc_TurboToggle.IsChecked = false;
-                    Nbfc_BalanceToggle.IsChecked = false;
-                    Nbfc_QuietToggle.IsChecked = false;
-                    Cooler_Fan1_SliderGrid.Visibility = Visibility.Visible;
+                case "NbfcAutoToggle":
+                    NbfcTurboToggle.IsChecked = false;
+                    NbfcBalanceToggle.IsChecked = false;
+                    NbfcQuietToggle.IsChecked = false;
+                    CoolerFan1SliderGrid.Visibility = Visibility.Visible;
 
                     if (CurveCombo.SelectedIndex == 4)
                     {
-                        AppSettings.NbfcFan2UserFanSpeedRpm = Cooler_Fan1_Manual.Value;
-                        Cooler_Fan2_Manual.Value = Cooler_Fan1_Manual.Value;
+                        AppSettings.NbfcFan2UserFanSpeedRpm = CoolerFan1Manual.Value;
+                        CoolerFan2Manual.Value = CoolerFan1Manual.Value;
                     }
-                    AppSettings.NbfcFan1UserFanSpeedRpm = Cooler_Fan1_Manual.Value;
+                    AppSettings.NbfcFan1UserFanSpeedRpm = CoolerFan1Manual.Value;
                     AppSettings.SaveSettings();
                     NbfcFanSetSpeed();
                     break;
-                case "Nbfc_TurboToggle":
-                    Nbfc_AutoToggle.IsChecked = false;
-                    Nbfc_BalanceToggle.IsChecked = false;
-                    Nbfc_QuietToggle.IsChecked = false;
-                    Cooler_Fan1_SliderGrid.Visibility = Visibility.Collapsed;
+                case "NbfcTurboToggle":
+                    NbfcAutoToggle.IsChecked = false;
+                    NbfcBalanceToggle.IsChecked = false;
+                    NbfcQuietToggle.IsChecked = false;
+                    CoolerFan1SliderGrid.Visibility = Visibility.Collapsed;
 
                     if (CurveCombo.SelectedIndex == 4)
                     {
                         AppSettings.NbfcFan2UserFanSpeedRpm = 90d;
-                        Cooler_Fan2_Manual.Value = 90d;
+                        CoolerFan2Manual.Value = 90d;
                     }
                     AppSettings.NbfcFan1UserFanSpeedRpm = 90d;
-                    Cooler_Fan1_Manual.Value = 90d;
+                    CoolerFan1Manual.Value = 90d;
                     AppSettings.SaveSettings();
                     NbfcFanSetSpeed();
                     break;
-                case "Nbfc_BalanceToggle":
-                    Nbfc_AutoToggle.IsChecked = false;
-                    Nbfc_TurboToggle.IsChecked = false;
-                    Nbfc_QuietToggle.IsChecked = false;
-                    Cooler_Fan1_SliderGrid.Visibility = Visibility.Collapsed;
+                case "NbfcBalanceToggle":
+                    NbfcAutoToggle.IsChecked = false;
+                    NbfcTurboToggle.IsChecked = false;
+                    NbfcQuietToggle.IsChecked = false;
+                    CoolerFan1SliderGrid.Visibility = Visibility.Collapsed;
 
                     if (CurveCombo.SelectedIndex == 4)
                     {
-                        Cooler_Fan2_Manual.Value = 57d;
+                        CoolerFan2Manual.Value = 57d;
                         AppSettings.NbfcFan2UserFanSpeedRpm = 57d;
                     }
-                    Cooler_Fan1_Manual.Value = 57d;
+                    CoolerFan1Manual.Value = 57d;
                     AppSettings.NbfcFan1UserFanSpeedRpm = 57d;
                     AppSettings.SaveSettings();
                     NbfcFanSetSpeed();
                     break;
-                case "Nbfc_QuietToggle":
-                    Nbfc_AutoToggle.IsChecked = false;
-                    Nbfc_TurboToggle.IsChecked = false;
-                    Nbfc_BalanceToggle.IsChecked = false;
-                    Cooler_Fan1_SliderGrid.Visibility = Visibility.Collapsed;
+                case "NbfcQuietToggle":
+                    NbfcAutoToggle.IsChecked = false;
+                    NbfcTurboToggle.IsChecked = false;
+                    NbfcBalanceToggle.IsChecked = false;
+                    CoolerFan1SliderGrid.Visibility = Visibility.Collapsed;
 
                     if (CurveCombo.SelectedIndex == 4)
                     {
-                        Cooler_Fan2_Manual.Value = 37d;
+                        CoolerFan2Manual.Value = 37d;
                         AppSettings.NbfcFan2UserFanSpeedRpm = 37d;
                     }
-                    Cooler_Fan1_Manual.Value = 37d;
+                    CoolerFan1Manual.Value = 37d;
                     AppSettings.NbfcFan1UserFanSpeedRpm = 37d;
                     AppSettings.SaveSettings();
                     NbfcFanSetSpeed();
                     break;
 
-                case "Nbfc_AutoToggle1":
-                    Nbfc_TurboToggle1.IsChecked = false;
-                    Nbfc_BalanceToggle1.IsChecked = false;
-                    Nbfc_QuietToggle1.IsChecked = false;
-                    Cooler_Fan2_SliderGrid.Visibility = Visibility.Visible;
+                case "NbfcAutoToggle1":
+                    NbfcTurboToggle1.IsChecked = false;
+                    NbfcBalanceToggle1.IsChecked = false;
+                    NbfcQuietToggle1.IsChecked = false;
+                    CoolerFan2SliderGrid.Visibility = Visibility.Visible;
 
-                    AppSettings.NbfcFan2UserFanSpeedRpm = Cooler_Fan2_Manual.Value;
+                    AppSettings.NbfcFan2UserFanSpeedRpm = CoolerFan2Manual.Value;
                     AppSettings.SaveSettings();
                     NbfcFanSetSpeed(1);
                     break;
-                case "Nbfc_TurboToggle1":
-                    Nbfc_AutoToggle1.IsChecked = false;
-                    Nbfc_BalanceToggle1.IsChecked = false;
-                    Nbfc_QuietToggle1.IsChecked = false;
-                    Cooler_Fan2_SliderGrid.Visibility = Visibility.Collapsed;
+                case "NbfcTurboToggle1":
+                    NbfcAutoToggle1.IsChecked = false;
+                    NbfcBalanceToggle1.IsChecked = false;
+                    NbfcQuietToggle1.IsChecked = false;
+                    CoolerFan2SliderGrid.Visibility = Visibility.Collapsed;
 
-                    Cooler_Fan2_Manual.Value = 90d;
+                    CoolerFan2Manual.Value = 90d;
                     AppSettings.NbfcFan2UserFanSpeedRpm = 90d;
                     AppSettings.SaveSettings();
                     NbfcFanSetSpeed(1);
                     break;
-                case "Nbfc_BalanceToggle1":
-                    Nbfc_AutoToggle1.IsChecked = false;
-                    Nbfc_TurboToggle1.IsChecked = false;
-                    Nbfc_QuietToggle1.IsChecked = false;
-                    Cooler_Fan2_SliderGrid.Visibility = Visibility.Collapsed;
+                case "NbfcBalanceToggle1":
+                    NbfcAutoToggle1.IsChecked = false;
+                    NbfcTurboToggle1.IsChecked = false;
+                    NbfcQuietToggle1.IsChecked = false;
+                    CoolerFan2SliderGrid.Visibility = Visibility.Collapsed;
 
-                    Cooler_Fan2_Manual.Value = 57d;
+                    CoolerFan2Manual.Value = 57d;
                     AppSettings.NbfcFan2UserFanSpeedRpm = 57d;
                     AppSettings.SaveSettings();
                     NbfcFanSetSpeed(1);
                     break;
-                case "Nbfc_QuietToggle1":
-                    Nbfc_BalanceToggle1.IsChecked = false;
-                    Nbfc_TurboToggle1.IsChecked = false;
-                    Nbfc_AutoToggle1.IsChecked = false;
-                    Cooler_Fan2_SliderGrid.Visibility = Visibility.Collapsed;
+                case "NbfcQuietToggle1":
+                    NbfcBalanceToggle1.IsChecked = false;
+                    NbfcTurboToggle1.IsChecked = false;
+                    NbfcAutoToggle1.IsChecked = false;
+                    CoolerFan2SliderGrid.Visibility = Visibility.Collapsed;
 
-                    Cooler_Fan2_Manual.Value = 37d;
+                    CoolerFan2Manual.Value = 37d;
                     AppSettings.NbfcFan2UserFanSpeedRpm = 37d;
                     AppSettings.SaveSettings();
                     NbfcFanSetSpeed(1);
@@ -1071,10 +1071,10 @@ public sealed partial class КулерPage
             AppSettings.SaveSettings();
         }
 
-        if ((Nbfc_QuietToggle.IsChecked == false && Nbfc_BalanceToggle.IsChecked == false &&
-            Nbfc_TurboToggle.IsChecked == false && Nbfc_AutoToggle.IsChecked == false) ||
-            (Nbfc_QuietToggle1.IsChecked == false && Nbfc_BalanceToggle1.IsChecked == false &&
-            Nbfc_TurboToggle1.IsChecked == false && Nbfc_AutoToggle1.IsChecked == false))
+        if ((NbfcQuietToggle.IsChecked == false && NbfcBalanceToggle.IsChecked == false &&
+            NbfcTurboToggle.IsChecked == false && NbfcAutoToggle.IsChecked == false) ||
+            (NbfcQuietToggle1.IsChecked == false && NbfcBalanceToggle1.IsChecked == false &&
+            NbfcTurboToggle1.IsChecked == false && NbfcAutoToggle1.IsChecked == false))
         {
             toggleButton.IsChecked = true;
         }
@@ -1083,39 +1083,39 @@ public sealed partial class КулерPage
     private void CurveCombo_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
     {
         if (!_isPageLoaded) { return; }
-        Cooler_Curve_Fan_Text.Text = Cooler_Curve_Fan_Text.Text.Replace("Cooler_Curve_Fan1_Part".GetLocalized(), string.Empty);
+        CoolerCurveFanText.Text = CoolerCurveFanText.Text.Replace("Cooler_Curve_Fan1_Part".GetLocalized(), string.Empty);
         switch (CurveCombo.SelectedIndex)
         {
             case 0: // Оба авто
-                Cooler_Curve_Fan1.Visibility = Visibility.Collapsed;
-                Cooler_Curve_Fan2.Visibility = Visibility.Collapsed;
+                CoolerCurveFan1.Visibility = Visibility.Collapsed;
+                CoolerCurveFan2.Visibility = Visibility.Collapsed;
                 AppSettings.NbfcFan1UserFanSpeedRpm = 110;
                 AppSettings.NbfcFan2UserFanSpeedRpm = 110;
                 break;
             case 1: // Фиксированный только первый 
 
-                Cooler_Curve_Fan_Text.Text += "Cooler_Curve_Fan1_Part".GetLocalized();
-                Cooler_Curve_Fan1.Visibility = Visibility.Visible;
-                Cooler_Curve_Fan2.Visibility = Visibility.Collapsed;
+                CoolerCurveFanText.Text += "Cooler_Curve_Fan1_Part".GetLocalized();
+                CoolerCurveFan1.Visibility = Visibility.Visible;
+                CoolerCurveFan2.Visibility = Visibility.Collapsed;
                 AppSettings.NbfcFan1UserFanSpeedRpm = AppSettings.NbfcFan1UserFanSpeedRpm > 100 ? 70 : AppSettings.NbfcFan1UserFanSpeedRpm;
                 AppSettings.NbfcFan2UserFanSpeedRpm = 110;
                 break;
             case 2: // Фиксированный только второй 
-                Cooler_Curve_Fan1.Visibility = Visibility.Collapsed;
-                Cooler_Curve_Fan2.Visibility = Visibility.Visible;
+                CoolerCurveFan1.Visibility = Visibility.Collapsed;
+                CoolerCurveFan2.Visibility = Visibility.Visible;
                 AppSettings.NbfcFan1UserFanSpeedRpm = 110;
                 AppSettings.NbfcFan2UserFanSpeedRpm = AppSettings.NbfcFan2UserFanSpeedRpm > 100 ? 70 : AppSettings.NbfcFan2UserFanSpeedRpm;
                 break;
             case 3: // Оба фиксированные но различные
-                Cooler_Curve_Fan_Text.Text += "Cooler_Curve_Fan1_Part".GetLocalized();
-                Cooler_Curve_Fan1.Visibility = Visibility.Visible;
-                Cooler_Curve_Fan2.Visibility = Visibility.Visible; // Потому что оба будут управляться с одного месте, с первого блока настроек
+                CoolerCurveFanText.Text += "Cooler_Curve_Fan1_Part".GetLocalized();
+                CoolerCurveFan1.Visibility = Visibility.Visible;
+                CoolerCurveFan2.Visibility = Visibility.Visible; // Потому что оба будут управляться с одного месте, с первого блока настроек
                 AppSettings.NbfcFan1UserFanSpeedRpm = AppSettings.NbfcFan1UserFanSpeedRpm > 100 ? 70 : AppSettings.NbfcFan1UserFanSpeedRpm;
                 AppSettings.NbfcFan2UserFanSpeedRpm = AppSettings.NbfcFan2UserFanSpeedRpm > 100 ? 50 : AppSettings.NbfcFan2UserFanSpeedRpm;
                 break;
             case 4: // Оба фиксированные
-                Cooler_Curve_Fan1.Visibility = Visibility.Visible;
-                Cooler_Curve_Fan2.Visibility = Visibility.Collapsed; // Потому что оба будут управляться с одного месте, с первого блока настроек
+                CoolerCurveFan1.Visibility = Visibility.Visible;
+                CoolerCurveFan2.Visibility = Visibility.Collapsed; // Потому что оба будут управляться с одного месте, с первого блока настроек
                 AppSettings.NbfcFan1UserFanSpeedRpm = AppSettings.NbfcFan1UserFanSpeedRpm > 100 ? 70 : AppSettings.NbfcFan1UserFanSpeedRpm;
                 AppSettings.NbfcFan2UserFanSpeedRpm = AppSettings.NbfcFan2UserFanSpeedRpm > 100 ? 70 : AppSettings.NbfcFan1UserFanSpeedRpm;
                 break;
@@ -1129,8 +1129,8 @@ public sealed partial class КулерPage
     {
         if (_unavailableFlag)
         {
-            NbfcOptions_Button.IsChecked = true;
-            AsusOptions_Button.IsChecked = false;
+            NbfcOptionsButton.IsChecked = true;
+            AsusOptionsButton.IsChecked = false;
             AppSettings.IsNbfcModeEnabled = false;
             AppSettings.SaveSettings();
             return;
@@ -1138,18 +1138,18 @@ public sealed partial class КулерPage
         AppSettings.IsNbfcModeEnabled = !AppSettings.IsNbfcModeEnabled;
         AppSettings.SaveSettings();
 
-        AsusOptions_Button.IsChecked = AppSettings.IsNbfcModeEnabled;
-        NbfcOptions_Button.IsChecked = !AppSettings.IsNbfcModeEnabled;
+        AsusOptionsButton.IsChecked = AppSettings.IsNbfcModeEnabled;
+        NbfcOptionsButton.IsChecked = !AppSettings.IsNbfcModeEnabled;
         _selectedModeAsus = AppSettings.IsNbfcModeEnabled;
 
-        Cooler_Config.Visibility = _selectedModeAsus ? Visibility.Collapsed : Visibility.Visible;
+        CoolerConfig.Visibility = _selectedModeAsus ? Visibility.Collapsed : Visibility.Visible;
         if (NbfcUnavailable.Visibility == Visibility.Visible && _selectedModeAsus)
         {
             NbfcUnavailable.Visibility = Visibility.Collapsed;
             CoolerManagementGrid.Visibility = Visibility.Visible;
             CoolerManagementTypeGrid.Visibility = Visibility.Visible;
-            Cooler_Curve_Fan1.Visibility = Visibility.Visible;
-            Cooler_Curve_Fan2.Visibility = Visibility.Visible;
+            CoolerCurveFan1.Visibility = Visibility.Visible;
+            CoolerCurveFan2.Visibility = Visibility.Visible;
         }
         else
         {
@@ -1158,8 +1158,8 @@ public sealed partial class КулерPage
                 NbfcUnavailable.Visibility = Visibility.Visible;
                 CoolerManagementGrid.Visibility = Visibility.Collapsed;
                 CoolerManagementTypeGrid.Visibility = Visibility.Collapsed;
-                Cooler_Curve_Fan1.Visibility = Visibility.Collapsed;
-                Cooler_Curve_Fan2.Visibility = Visibility.Collapsed;
+                CoolerCurveFan1.Visibility = Visibility.Collapsed;
+                CoolerCurveFan2.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -1170,13 +1170,13 @@ public sealed partial class КулерPage
         try
         {
             var fanNumber = 0;
-            var fanValue = Cooler_Fan1_Manual.Value;
+            var fanValue = CoolerFan1Manual.Value;
             var fanRpmTextBlock = CpuFanRpm;
 
-            if ((sender as Slider)!.Name == "Cooler_Fan2_Manual")
+            if ((sender as Slider)?.Name == "CoolerFan2Manual")
             {
                 fanNumber = 1;
-                fanValue = Cooler_Fan2_Manual.Value;
+                fanValue = CoolerFan2Manual.Value;
                 fanRpmTextBlock = GpuFanRpm;
             }
 
@@ -1209,7 +1209,7 @@ public sealed partial class КулерPage
                         {
                             AppSettings.NbfcFan2UserFanSpeedRpm = fanValue;
                         }
-                        Cooler_Fan2_Manual.Value = fanValue;
+                        CoolerFan2Manual.Value = fanValue;
                     }
                 }
                 else
@@ -1254,7 +1254,7 @@ public sealed partial class КулерPage
         var value = (byte)(percent / 100.0f * 255);
         if (_fanCount == -1 && _unavailableFlag == false)
         {
-            _fanCount = AsusWinIOWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
+            _fanCount = AsusWinIoWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
         }
         SetFanSpeed(value, fan);
     }
@@ -1265,7 +1265,7 @@ public sealed partial class КулерPage
         {
             if (_fanCount == -1 && _unavailableFlag == false)
             {
-                _fanCount = AsusWinIOWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
+                _fanCount = AsusWinIoWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
             }
 
             for (byte fanIndex = 0; fanIndex < _fanCount; fanIndex++)
@@ -1282,9 +1282,9 @@ public sealed partial class КулерPage
 
     private static void SetFanSpeed(byte value, byte fanIndex = 0)
     {
-        AsusWinIOWrapper.HealthyTable_SetFanIndex(fanIndex);
-        AsusWinIOWrapper.HealthyTable_SetFanTestMode((char)(value > 0 ? 0x01 : 0x00));
-        AsusWinIOWrapper.HealthyTable_SetFanPwmDuty(value);
+        AsusWinIoWrapper.HealthyTable_SetFanIndex(fanIndex);
+        AsusWinIoWrapper.HealthyTable_SetFanTestMode((char)(value > 0 ? 0x01 : 0x00));
+        AsusWinIoWrapper.HealthyTable_SetFanPwmDuty(value);
     }
 
     #endregion
@@ -1297,7 +1297,7 @@ public sealed partial class КулерPage
 
         if (_fanCount == -1 && _unavailableFlag == false)
         {
-            _fanCount = AsusWinIOWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
+            _fanCount = AsusWinIoWrapper.HealthyTable_FanCounts(); // Не обновлять лишний раз это значение
             if (_fanCount == -1)
             {
                 _unavailableFlag = true;
@@ -1317,12 +1317,12 @@ public sealed partial class КулерPage
     {
         if (_setFanIndex != fanIndex)
         {
-            AsusWinIOWrapper.HealthyTable_SetFanIndex(fanIndex);
+            AsusWinIoWrapper.HealthyTable_SetFanIndex(fanIndex);
             _setFanIndex =
                 fanIndex; // Лишний раз не использовать, после использования задать значение, которое было использовано
         }
 
-        var fanSpeed = AsusWinIOWrapper.HealthyTable_FanRPM();
+        var fanSpeed = AsusWinIoWrapper.HealthyTable_FanRPM();
         return fanSpeed;
     }
 

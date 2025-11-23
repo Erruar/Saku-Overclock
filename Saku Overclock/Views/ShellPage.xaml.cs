@@ -838,8 +838,7 @@ public sealed partial class ShellPage
         ProfileLoad();
 
         var presetsCollection = (_profile ?? [])
-            .Where(p => p != null)
-            .Select(p => p.Profilename ?? "")
+            .Select(p => p.Profilename)
             .ToList();
 
         presetsCollection.Add("PremadeSsAMin");
@@ -883,10 +882,9 @@ public sealed partial class ShellPage
 
             if (_profile != null &&
                 AppSettings.Preset >= 0 &&
-                AppSettings.Preset < _profile.Length &&
-                _profile[AppSettings.Preset] != null)
+                AppSettings.Preset < _profile.Length)
             {
-                ViewModel.SelectedItem = _profile[AppSettings.Preset].Profilename ?? "";
+                ViewModel.SelectedItem = _profile[AppSettings.Preset].Profilename;
             }
             else
             {
@@ -1195,13 +1193,15 @@ public sealed partial class ShellPage
                 ? ElementTheme.Light
                 : ElementTheme.Dark;
             themeMobil.SwitchThemeCommand.Execute(themeLight);
-            if (_themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustomBg || _themeSelectorService.Themes[AppSettings.ThemeType].ThemeName.Contains("Theme_"))
+            if (_themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustomBg ||
+                _themeSelectorService.Themes[AppSettings.ThemeType].ThemeName.Contains("Theme_"))
             {
                 var themeBackground = _themeSelectorService.Themes[AppSettings.ThemeType].ThemeBackground;
 
                 if (AppSettings.ThemeType > 2 &&
                     !string.IsNullOrEmpty(themeBackground) &&
-                    (themeBackground.Contains("http") || themeBackground.Contains("appx") || File.Exists(themeBackground)))
+                    (themeBackground.Contains("http") || themeBackground.Contains("appx") ||
+                     File.Exists(themeBackground)))
                 {
                     ThemeBackground.ImageSource = new BitmapImage(new Uri(themeBackground));
                 }
@@ -1608,7 +1608,7 @@ public sealed partial class ShellPage
     }
 
     /// <summary>
-    /// Устанавливает интерактивные области в TitleBar окна, меняет состояние лого
+    ///     Устанавливает интерактивные области в TitleBar окна, меняет состояние лого
     /// </summary>
     private void SetRegionsForCustomTitleBar()
     {
@@ -1624,7 +1624,7 @@ public sealed partial class ShellPage
             return;
         }
 
-        if (MAppWindow?.TitleBar == null)
+        if (MAppWindow.TitleBar == null)
         {
             LogHelper.LogError("MAppWindow.TitleBar is null!");
             return;
@@ -1636,6 +1636,7 @@ public sealed partial class ShellPage
             LogHelper.LogError($"Invalid RasterizationScale: {scaleAdjustment}");
             return;
         }
+
         try
         {
             RightPaddingColumn.Width = new GridLength(MAppWindow.TitleBar.RightInset / scaleAdjustment);
