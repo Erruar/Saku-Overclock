@@ -107,7 +107,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
 
 ### 🎮 Gallery
 <details>
-  <summary>Main  <sup><kbd>Click Here</kbd></sup></summary>
+  <summary><b>Main  </b><sup><kbd>Click to Expand</kbd></sup></summary>
   <ol>
     <h1>🖥️Main page showcase</h1>
     <p>The main page of my application will greet you at launch</p>
@@ -120,7 +120,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
 
 
 <details>
-  <summary>App Taskbar</summary>
+  <summary><b>App Taskbar</b></summary>
   <ol>
     <h1 align="center">Notifications</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/main-notifications.png"></img>
@@ -148,7 +148,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
 
 
 <details>
-  <summary>Premaded presets</summary>
+  <summary><b>Premaded presets</b></summary>
   <ol>
     <h1 align="center">Minimum premaded presets</h1>
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/preset/min.png"></img>
@@ -184,7 +184,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
 
 
 <details>
-  <summary>Overclock page</summary>
+  <summary><b>Overclock page</b></summary>
   <ol>
 
 ## 🎛️ Overclock page showcase
@@ -307,7 +307,7 @@ Access AMD's System Management Unit for unprecedented control over your processo
 
 
 <details>
-  <summary>Information page</summary>
+  <summary><b>Sensor monitoring</b></summary>
   <ol>
     <h1 align="center">Information page</h1>
    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/info/main.png"></img>
@@ -356,7 +356,7 @@ Access AMD's System Management Unit for unprecedented control over your processo
 
 
 <details>
-  <summary>Saku PowerMon Pro</summary>
+  <summary><b>Saku PowerMon Pro</b></summary>
   <ol>
     <h1 align="center">PowerMon main window</h1>
    <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/powermon/main.png"></img>
@@ -372,7 +372,7 @@ Access AMD's System Management Unit for unprecedented control over your processo
 
 
 <details>
-  <summary>Cooler page</summary>
+  <summary><b>Cooler tweaking</b></summary>
   <ol>
     <h1 align="center">🍃 Cooler tweaks page</h1> 
     <p>There you can adjust your cooler spinning with Notebook fan controller app or natively on Asus laptops with ASUS System Control Interface</p>
@@ -455,7 +455,7 @@ Done! You set up Cooler tweaks page.
 
 
 <details>
-  <summary>Settings</summary>
+  <summary><b>Settings</b></summary>
   <ol>
     <h1 align="center">⚙️ Settings page</h1>
     <h2>Behavior section</h2>
