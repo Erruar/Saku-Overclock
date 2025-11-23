@@ -32,6 +32,7 @@ public class RyzenadjProvider : IDataProvider
 
         if (_rypointer == IntPtr.Zero)
         {
+            LogHelper.LogError("_rypointer is Zero");
             IsPhysicallyUnavailable = true;
         }
     }
@@ -104,7 +105,7 @@ public class RyzenadjProvider : IDataProvider
 
     #region Get Provider Data
 
-    public SensorsInformation GetDataAsync()
+    public void GetData(ref SensorsInformation sensorsInformation)
     {
         if (_rypointer == IntPtr.Zero && !IsPhysicallyUnavailable)
         {
@@ -114,50 +115,48 @@ public class RyzenadjProvider : IDataProvider
         _ = refresh_table(_rypointer);
         // Здесь реализация получения данных через Ryzenadj 
         var (avgCoreClk, avgCoreVolt, clkPerClock, voltPerClock, tempPerClock, powerPerClock) = CalculateCoreMetrics();
-        return new SensorsInformation
-        {
-            CpuFamily = get_cpu_family(_rypointer).ToString(),
-            CpuStapmLimit = get_stapm_limit(_rypointer),
-            CpuStapmValue = get_stapm_value(_rypointer),
-            CpuFastLimit = get_fast_limit(_rypointer),
-            CpuFastValue = get_fast_value(_rypointer),
-            CpuSlowLimit = get_slow_limit(_rypointer),
-            CpuSlowValue = get_slow_value(_rypointer),
-            ApuSlowLimit = get_apu_slow_limit(_rypointer),
-            ApuSlowValue = get_apu_slow_value(_rypointer),
-            VrmTdcValue = get_vrm_current_value(_rypointer),
-            VrmTdcLimit = get_vrm_current(_rypointer),
-            VrmEdcValue = get_vrmmax_current_value(_rypointer),
-            VrmEdcLimit = get_vrmmax_current(_rypointer),
-            VrmPsiValue = get_psi0_current(_rypointer),
-            VrmPsiSocValue = get_psi0soc_current(_rypointer),
-            SocTdcValue = get_vrmsoc_current_value(_rypointer),
-            SocTdcLimit = get_vrmsoc_current(_rypointer),
-            SocEdcValue = get_vrmsocmax_current_value(_rypointer),
-            SocEdcLimit = get_vrmsocmax_current(_rypointer),
-            CpuTempValue = get_tctl_temp_value(_rypointer),
-            CpuTempLimit = get_tctl_temp(_rypointer),
-            ApuTempValue = get_apu_skin_temp_value(_rypointer),
-            ApuTempLimit = get_apu_skin_temp_limit(_rypointer),
-            DgpuTempValue = get_dgpu_skin_temp_value(_rypointer),
-            DgpuTempLimit = get_dgpu_skin_temp_limit(_rypointer),
-            CpuStapmTimeValue = get_stapm_time(_rypointer),
-            CpuSlowTimeValue = get_slow_time(_rypointer),
-            CpuUsage = get_cclk_busy_value(_rypointer),
-            ApuFrequency = get_gfx_clk(_rypointer),
-            ApuTemperature = get_gfx_temp(_rypointer),
-            ApuVoltage = get_gfx_volt(_rypointer),
-            MemFrequency = get_mem_clk(_rypointer),
-            FabricFrequency = get_fclk(_rypointer),
-            SocPower = get_soc_power(_rypointer),
-            SocVoltage = get_soc_volt(_rypointer),
-            CpuFrequency = avgCoreClk,
-            CpuVoltage = avgCoreVolt,
-            CpuFrequencyPerCore = clkPerClock,
-            CpuPowerPerCore = powerPerClock,
-            CpuTemperaturePerCore = tempPerClock,
-            CpuVoltagePerCore = voltPerClock
-        };
+
+        sensorsInformation.CpuFamily = get_cpu_family(_rypointer).ToString();
+        sensorsInformation.CpuStapmLimit = get_stapm_limit(_rypointer);
+        sensorsInformation.CpuStapmValue = get_stapm_value(_rypointer);
+        sensorsInformation.CpuFastLimit = get_fast_limit(_rypointer);
+        sensorsInformation.CpuFastValue = get_fast_value(_rypointer);
+        sensorsInformation.CpuSlowLimit = get_slow_limit(_rypointer);
+        sensorsInformation.CpuSlowValue = get_slow_value(_rypointer);
+        sensorsInformation.ApuSlowLimit = get_apu_slow_limit(_rypointer);
+        sensorsInformation.ApuSlowValue = get_apu_slow_value(_rypointer);
+        sensorsInformation.VrmTdcValue = get_vrm_current_value(_rypointer);
+        sensorsInformation.VrmTdcLimit = get_vrm_current(_rypointer);
+        sensorsInformation.VrmEdcValue = get_vrmmax_current_value(_rypointer);
+        sensorsInformation.VrmEdcLimit = get_vrmmax_current(_rypointer);
+        sensorsInformation.VrmPsiValue = get_psi0_current(_rypointer);
+        sensorsInformation.VrmPsiSocValue = get_psi0soc_current(_rypointer);
+        sensorsInformation.SocTdcValue = get_vrmsoc_current_value(_rypointer);
+        sensorsInformation.SocTdcLimit = get_vrmsoc_current(_rypointer);
+        sensorsInformation.SocEdcValue = get_vrmsocmax_current_value(_rypointer);
+        sensorsInformation.SocEdcLimit = get_vrmsocmax_current(_rypointer);
+        sensorsInformation.CpuTempValue = get_tctl_temp_value(_rypointer);
+        sensorsInformation.CpuTempLimit = get_tctl_temp(_rypointer);
+        sensorsInformation.ApuTempValue = get_apu_skin_temp_value(_rypointer);
+        sensorsInformation.ApuTempLimit = get_apu_skin_temp_limit(_rypointer);
+        sensorsInformation.DgpuTempValue = get_dgpu_skin_temp_value(_rypointer);
+        sensorsInformation.DgpuTempLimit = get_dgpu_skin_temp_limit(_rypointer);
+        sensorsInformation.CpuStapmTimeValue = get_stapm_time(_rypointer);
+        sensorsInformation.CpuSlowTimeValue = get_slow_time(_rypointer);
+        sensorsInformation.CpuUsage = get_cclk_busy_value(_rypointer);
+        sensorsInformation.ApuFrequency = get_gfx_clk(_rypointer);
+        sensorsInformation.ApuTemperature = get_gfx_temp(_rypointer);
+        sensorsInformation.ApuVoltage = get_gfx_volt(_rypointer);
+        sensorsInformation.MemFrequency = get_mem_clk(_rypointer);
+        sensorsInformation.FabricFrequency = get_fclk(_rypointer);
+        sensorsInformation.SocPower = get_soc_power(_rypointer);
+        sensorsInformation.SocVoltage = get_soc_volt(_rypointer);
+        sensorsInformation.CpuFrequency = avgCoreClk;
+        sensorsInformation.CpuVoltage = avgCoreVolt;
+        sensorsInformation.CpuFrequencyPerCore = clkPerClock;
+        sensorsInformation.CpuPowerPerCore = powerPerClock;
+        sensorsInformation.CpuTemperaturePerCore = tempPerClock;
+        sensorsInformation.CpuVoltagePerCore = voltPerClock;
     }
 
     private (double avgCoreClk, double avgCoreVolt, double[] clkPerClock, double[] voltPerClock, double[] tempPerClock,

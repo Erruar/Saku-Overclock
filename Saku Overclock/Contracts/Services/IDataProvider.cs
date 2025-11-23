@@ -1,14 +1,13 @@
-﻿using System.Threading.Tasks;
-using Saku_Overclock.SMUEngine;
+﻿using Saku_Overclock.SMUEngine;
 
 namespace Saku_Overclock.Contracts.Services;
 
 public interface IDataProvider
 {
     /// <summary>
-    /// Асинхронно получает обновлённые данные.
+    ///  Получает и обновляет данные сенсоров для мониторинга.
     /// </summary>
-    SensorsInformation GetDataAsync();
+    void GetData(ref SensorsInformation sensorsInformation);
 
     float[]? GetPowerTable();
 }

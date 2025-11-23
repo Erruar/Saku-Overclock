@@ -1,4 +1,6 @@
-﻿using Saku_Overclock.Contracts.Services;
+﻿using System.Diagnostics;
+using Saku_Overclock.Contracts.Services;
+using Saku_Overclock.Helpers;
 using Saku_Overclock.SMUEngine;
 
 namespace Saku_Overclock.Services;
@@ -32,7 +34,7 @@ public class CompositeDataProvider : IDataProvider
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка при получении данных через Ryzenadj: {ex.Message}");
+                LogHelper.LogError($"Ошибка при получении данных через Ryzenadj: {ex.Message}");
                 _fallbackMode = true;
             }
         }
@@ -42,25 +44,26 @@ public class CompositeDataProvider : IDataProvider
     }
 
     /// <summary>
-    /// Возвращает информацию с использованием Ryzenadj, если он доступен,
-    /// иначе – через Zenstates Core.
+    ///     Возвращает информацию с использованием Ryzenadj, если он доступен,
+    ///     иначе – через Zenstates Core.
     /// </summary>
-    public SensorsInformation GetDataAsync()
+    public void GetData(ref SensorsInformation sensorsInformation)
     {
         if (!_fallbackMode)
         {
             try
             {
-                return _ryzenadjProvider.GetDataAsync();
+                _ryzenadjProvider.GetData(ref sensorsInformation);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка при получении данных через Ryzenadj: {ex.Message}");
+                LogHelper.LogError($"Ошибка при получении данных через Ryzenadj: {ex.Message}");
                 _fallbackMode = true;
             }
+            return;
         }
 
         // Если мы в режиме fallback – используем Zenstates Core.
-        return _zenstatesProvider.GetDataAsync();
+        _zenstatesProvider.GetData(ref sensorsInformation);
     }
 }

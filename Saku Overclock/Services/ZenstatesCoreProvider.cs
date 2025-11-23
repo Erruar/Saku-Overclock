@@ -29,7 +29,7 @@ public class ZenstatesCoreProvider : IDataProvider
         public const string CpuPowerStart = "CpuPowerStart";
     }
 
-    public ZenstatesCoreProvider() 
+    public ZenstatesCoreProvider()
     {
         try
         {
@@ -45,11 +45,11 @@ public class ZenstatesCoreProvider : IDataProvider
     ///     Реализация получения информации через Zenstates Core
     /// </summary>
     /// <returns>SensorsInformation</returns>
-    public SensorsInformation GetDataAsync()
+    public void GetData(ref SensorsInformation sensorsInformation)
     {
-        if (_cpu == null) 
-        { 
-            return new SensorsInformation(); 
+        if (_cpu == null)
+        {
+            return;
         }
 
         RefreshPowerTable();
@@ -67,54 +67,68 @@ public class ZenstatesCoreProvider : IDataProvider
             _tableVersion = 0x00190001;
         }
 
+        if (_cpu.info.codeName is Cpu.CodeName.Raphael or Cpu.CodeName.DragonRange or Cpu.CodeName.StormPeak &&
+            _tableVersion != 0x00540004)
+        {
+            _tableVersion = 0x00540004;
+        }
+
+        if (_cpu.info.codeName is Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.Bergamo &&
+            _tableVersion != 0x00620205)
+        {
+            _tableVersion = 0x00620205;
+        }
+
+        if (_tableVersion is 0x00380705 or 0x00380605 or 0x00380505 or 0x00380005)
+        {
+            _tableVersion = 0x00380805;
+        }
+
         var (avgCoreClk, avgCoreVolt) = CalculateCoreMetrics();
 
-        return new SensorsInformation
-        {
-            CpuFamily = _cpu.info.codeName.ToString(),
-            CpuUsage = GetCoreLoad(),
-            CpuStapmLimit = GetSensorValue("CpuStapmLimit", _tableVersion),
-            CpuStapmValue = GetSensorValue("CpuStapmValue", _tableVersion),
-            CpuFastLimit = GetSensorValue("CpuFastLimit", _tableVersion),
-            CpuFastValue = GetSensorValue("CpuFastValue", _tableVersion),
-            CpuSlowLimit = GetSensorValue("CpuSlowLimit", _tableVersion),
-            CpuSlowValue = GetSensorValue("CpuSlowValue", _tableVersion),
-            VrmTdcValue = GetVrmValue("VrmTdcValue", _tableVersion),
-            VrmEdcValue = GetVrmValue("VrmEdcValue", _tableVersion),
-            VrmTdcLimit = GetVrmLimit("VrmTdcLimit", _tableVersion),
-            VrmEdcLimit = GetVrmLimit("VrmEdcLimit", _tableVersion),
-            CpuTempValue = GetSensorValue("CpuTempValue", _tableVersion, _cpu.GetCpuTemperature() ?? 0f),
-            CpuTempLimit = GetSensorValue("CpuTempLimit", _tableVersion, 100),
-            MemFrequency = _cpu.powerTable?.MCLK ?? 0,
-            FabricFrequency = _cpu.powerTable?.FCLK ?? 0,
-            SocPower = GetSensorValue("SocPower", _tableVersion, (_cpu.powerTable?.VDDCR_SOC ?? 0) * 10),
-            SocVoltage = _cpu.powerTable?.VDDCR_SOC ?? 0,
-            CpuFrequency = avgCoreClk,
-            CpuFrequencyPerCore = _clkPerCoreCache,
-            CpuVoltage = avgCoreVolt,
-            CpuVoltagePerCore = _voltPerCoreCache,
-            CpuTemperaturePerCore = _tempPerCoreCache,
-            CpuPowerPerCore = _powerPerCoreCache,
+        sensorsInformation.CpuFamily = _cpu.info.codeName.ToString();
+        sensorsInformation.CpuUsage = GetCoreLoad();
+        sensorsInformation.CpuStapmLimit = GetSensorValue("CpuStapmLimit", _tableVersion);
+        sensorsInformation.CpuStapmValue = GetSensorValue("CpuStapmValue", _tableVersion);
+        sensorsInformation.CpuFastLimit = GetSensorValue("CpuFastLimit", _tableVersion);
+        sensorsInformation.CpuFastValue = GetSensorValue("CpuFastValue", _tableVersion);
+        sensorsInformation.CpuSlowLimit = GetSensorValue("CpuSlowLimit", _tableVersion);
+        sensorsInformation.CpuSlowValue = GetSensorValue("CpuSlowValue", _tableVersion);
+        sensorsInformation.VrmTdcValue = GetVrmValue("VrmTdcValue", _tableVersion);
+        sensorsInformation.VrmEdcValue = GetVrmValue("VrmEdcValue", _tableVersion);
+        sensorsInformation.VrmTdcLimit = GetVrmLimit("VrmTdcLimit", _tableVersion);
+        sensorsInformation.VrmEdcLimit = GetVrmLimit("VrmEdcLimit", _tableVersion);
+        sensorsInformation.CpuTempValue = GetSensorValue("CpuTempValue", _tableVersion, _cpu.GetCpuTemperature() ?? 0f);
+        sensorsInformation.CpuTempLimit = GetSensorValue("CpuTempLimit", _tableVersion, 100);
+        sensorsInformation.MemFrequency = _cpu.powerTable?.MCLK ?? 0;
+        sensorsInformation.FabricFrequency = _cpu.powerTable?.FCLK ?? 0;
+        sensorsInformation.SocPower = GetSensorValue("SocPower", _tableVersion, (_cpu.powerTable?.VDDCR_SOC ?? 0) * 10);
+        sensorsInformation.SocVoltage = _cpu.powerTable?.VDDCR_SOC ?? 0;
+        sensorsInformation.CpuFrequency = avgCoreClk;
+        sensorsInformation.CpuFrequencyPerCore = _clkPerCoreCache;
+        sensorsInformation.CpuVoltage = avgCoreVolt;
+        sensorsInformation.CpuVoltagePerCore = _voltPerCoreCache;
+        sensorsInformation.CpuTemperaturePerCore = _tempPerCoreCache;
+        sensorsInformation.CpuPowerPerCore = _powerPerCoreCache;
 
-            // Параметры, которые есть не на каждом процессоре
-            ApuSlowLimit = GetSensorValue("ApuSlowLimit", _tableVersion),
-            ApuSlowValue = GetSensorValue("ApuSlowValue", _tableVersion),
-            VrmPsiValue = GetSensorValue("VrmPsiValue", _tableVersion),
-            VrmPsiSocValue = GetSensorValue("VrmPsiSocValue", _tableVersion),
-            SocTdcValue = GetSensorValue("SocTdcValue", _tableVersion),
-            SocTdcLimit = GetSensorValue("SocTdcLimit", _tableVersion),
-            SocEdcValue = GetSensorValue("SocEdcValue", _tableVersion),
-            SocEdcLimit = GetSensorValue("SocEdcLimit", _tableVersion),
-            ApuTempValue = GetSensorValue("ApuTempValue", _tableVersion),
-            ApuTempLimit = GetSensorValue("ApuTempLimit", _tableVersion),
-            DgpuTempValue = GetSensorValue("DgpuTempValue", _tableVersion),
-            DgpuTempLimit = GetSensorValue("DgpuTempLimit", _tableVersion),
-            CpuStapmTimeValue = GetSensorValue("CpuStapmTimeValue", _tableVersion),
-            CpuSlowTimeValue = GetSensorValue("CpuSlowTimeValue", _tableVersion),
-            ApuFrequency = GetSensorValue("ApuFrequency", _tableVersion),
-            ApuTemperature = GetSensorValue("ApuTemperature", _tableVersion),
-            ApuVoltage = GetSensorValue("ApuVoltage", _tableVersion)
-        };
+        // Параметры, которые есть не на каждом процессоре
+        sensorsInformation.ApuSlowLimit = GetSensorValue("ApuSlowLimit", _tableVersion);
+        sensorsInformation.ApuSlowValue = GetSensorValue("ApuSlowValue", _tableVersion);
+        sensorsInformation.VrmPsiValue = GetSensorValue("VrmPsiValue", _tableVersion);
+        sensorsInformation.VrmPsiSocValue = GetSensorValue("VrmPsiSocValue", _tableVersion);
+        sensorsInformation.SocTdcValue = GetSensorValue("SocTdcValue", _tableVersion);
+        sensorsInformation.SocTdcLimit = GetSensorValue("SocTdcLimit", _tableVersion);
+        sensorsInformation.SocEdcValue = GetSensorValue("SocEdcValue", _tableVersion);
+        sensorsInformation.SocEdcLimit = GetSensorValue("SocEdcLimit", _tableVersion);
+        sensorsInformation.ApuTempValue = GetSensorValue("ApuTempValue", _tableVersion);
+        sensorsInformation.ApuTempLimit = GetSensorValue("ApuTempLimit", _tableVersion);
+        sensorsInformation.DgpuTempValue = GetSensorValue("DgpuTempValue", _tableVersion);
+        sensorsInformation.DgpuTempLimit = GetSensorValue("DgpuTempLimit", _tableVersion);
+        sensorsInformation.CpuStapmTimeValue = GetSensorValue("CpuStapmTimeValue", _tableVersion);
+        sensorsInformation.CpuSlowTimeValue = GetSensorValue("CpuSlowTimeValue", _tableVersion);
+        sensorsInformation.ApuFrequency = GetSensorValue("ApuFrequency", _tableVersion);
+        sensorsInformation.ApuTemperature = GetSensorValue("ApuTemperature", _tableVersion);
+        sensorsInformation.ApuVoltage = GetSensorValue("ApuVoltage", _tableVersion);
     }
 
     #region Get Information voids
@@ -386,6 +400,44 @@ public class ZenstatesCoreProvider : IDataProvider
                 (97, "ApuVoltage"),
                 (98, "ApuTempValue"),
                 (98, "ApuTemperature"),
+                (2, "ApuSlowLimit"),
+                (99, "ApuSlowValue"),
+                (100, "ApuFrequency"),
+                (21, "SocPower"),
+                (52, "SocVoltage"),
+                (547, "CpuStapmTimeValue"),
+                (548, "CpuSlowTimeValue"),
+                (293, "CpuPowerStart"),
+                (309, "CpuVoltageStart"),
+                (325, "CpuTemperatureStart"),
+                (341, "CpuFrequencyStart")
+            ]
+        },
+        // Zen 5 (Special thanks for @Irusanov)
+        {
+            0x00620205, [
+                (0, "CpuStapmLimit"), // Match
+                (1, "CpuStapmValue"), // Match
+                (2, "CpuFastLimit"), // Match
+                (26, "CpuFastValue"),
+                (2, "CpuSlowLimit"), // Match
+                (3, "CpuSlowValue"), // Match
+                (8, "VrmTdcLimit"),
+                (8, "VrmEdcLimit"),
+                (48, "VrmTdcValue"),
+                (63, "VrmEdcValue"),
+                (53, "SocEdcValue"),
+                (53, "SocTdcValue"),
+                (8, "SocEdcLimit"),
+                (8, "SocTdcLimit"),
+                (10, "CpuTempLimit"),
+                (11, "CpuTempValue"), // Match
+                (10, "ApuTempLimit"), // Match
+                (97, "ApuVoltage"),
+                (98, "ApuTempValue"),
+                (98, "ApuTemperature"),
+                (2, "ApuSlowLimit"), // Match
+                (99, "ApuSlowValue"),
                 (100, "ApuFrequency"),
                 (21, "SocPower"),
                 (52, "SocVoltage"),
@@ -398,6 +450,8 @@ public class ZenstatesCoreProvider : IDataProvider
             ]
         }
     };
+
+    private bool _unsupportedPmTableAlert;
 
     /// <summary>
     ///     Получает значение сенсора по имени из PM таблицы
@@ -412,13 +466,17 @@ public class ZenstatesCoreProvider : IDataProvider
         // Проверяем, поддерживается ли версия таблицы
         if (!SupportedPmTableVersions.TryGetValue(tableVersion, out var sensorMap))
         {
-            LogHelper.LogWarn($"Unsupported PM table version: 0x{tableVersion:X8}");
+            if (!_unsupportedPmTableAlert)
+            {
+                LogHelper.LogWarn($"Unsupported PM table version: 0x{tableVersion:X8}");
+                _unsupportedPmTableAlert = true;
+            }
             return fallbackValue;
         }
 
         // Проверка на отсутствие сенсора
-        var (Offset, Name) = sensorMap.FirstOrDefault(x => x.Name == sensorName);
-        if (Name == null)
+        var (_, name) = sensorMap.FirstOrDefault(x => x.Name == sensorName);
+        if (name == null)
         {
             return fallbackValue;
         }
@@ -646,7 +704,6 @@ public class ZenstatesCoreProvider : IDataProvider
             // Проверяем доступность значения
             if (logicalCore < 0 ||
                 logicalCore >= _globalCoreCounter ||
-                values == null ||
                 values.Length <= logicalCore)
             {
                 return 0;

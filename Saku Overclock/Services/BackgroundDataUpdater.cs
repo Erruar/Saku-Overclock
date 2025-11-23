@@ -43,9 +43,19 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     private readonly Dictionary<string, TaskbarIcon>
         _trayIcons = []; // Хранилище включенных в данный момент иконок Ni-Icons
 
+    private readonly List<string> _cachedStaticNvidiaGpuInfo =
+    [
+        "Unknown", "Unknown", "Unknown", "Unknown"
+    ];
+
     // ReSharper disable once InconsistentNaming
     private readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
+
+    private SensorsInformation _sensorsInformation = new();
+
+    private NvidiaGpuMonitor? _nvidiaGpuMonitor;
+    private bool _cachedNvidiaGpuUnavailable;
 
     public event EventHandler<SensorsInformation>? DataUpdated;
     private NiIconsSettings _niicons = new(); // Конфиг с настройками Ni-Icons
@@ -55,11 +65,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     private readonly Lock _cacheLock = new();
     private readonly Lock _trayIconsLock = new(); // Отдельный объект для синхронизационной блокировки
 
-    private bool _batteryCached;
-    private string? _cachedBatteryName;
-    private string? _cachedBatteryCapacity;
-    private string? _cachedBatteryCycles;
-    private string? _cachedBatteryHealth;
     private bool _cachedBatteryUnavailable;
     private int _currentUpdateErrorCycle;
     private const int MaxErrorsWhileUpdating = 5;
@@ -95,53 +100,83 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         }
         catch (Exception ex)
         {
-            LogHelper.LogError($"(BackgroundDataUpdater@Updater_Task) Невозможно создать иконки TrayMon! {ex}");
+            LogHelper.LogError($"[BackgroundDataUpdater+Updater_Task]@ Невозможно создать иконки TrayMon! {ex}");
         }
 
         _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
         _updateTask = Task.Run(async () =>
         {
+            // Инициализируем статические данные один раз перед входом в цикл
+            try
+            {
+                // Получаем статические данные батареи
+                var (batteryName, batteryHealth, batteryCycles, batteryCapacity, batteryUnavailable)
+                    = await GetBatInfoStaticAsync();
+
+                _sensorsInformation.BatteryName = batteryName;
+                _sensorsInformation.BatteryHealth = batteryHealth;
+                _sensorsInformation.BatteryCycles = batteryCycles;
+                _sensorsInformation.BatteryCapacity = batteryCapacity;
+                _sensorsInformation.BatteryUnavailable = batteryUnavailable;
+            }
+            catch (Exception ex)
+            {
+                _sensorsInformation.BatteryUnavailable = true;
+                await LogHelper.LogError(
+                    $"[BackgroundDataUpdater+Updater_Task]@ Статические данные батареи не получены: {ex}");
+            }
+
+            // Получаем статические данные RAM
+            _sensorsInformation.RamTotal = GetRamTotal();
+
+            // Получаем статические данные Nvidia GPU
+            (_sensorsInformation.NvidiaDriverVersion, _sensorsInformation.NvidiaVramSize,
+                    _sensorsInformation.NvidiaVramType, _sensorsInformation.NvidiaVramWidth)
+                = GetNvidiaGpuStaticInfo();
+            _sensorsInformation.IsNvidiaGpuAvailable = !_cachedNvidiaGpuUnavailable;
+
             while (!_cts.Token.IsCancellationRequested)
             {
                 try
                 {
                     if (_dataProvider == null)
                     {
-                        await LogHelper.LogError("[BackgroundDataUpdater+Updater_Task]@ DataProvider не инициализирован");
-                        _cts.Cancel();
+                        await LogHelper.LogError(
+                            "[BackgroundDataUpdater+Updater_Task]@ DataProvider не инициализирован");
+                        await _cts.CancelAsync();
                         break;
                     }
 
-                    var info = _dataProvider.GetDataAsync();
+                    _dataProvider.GetData(ref _sensorsInformation);
+
+                    // Обновляем только динамические данные
                     try
                     {
-                        var (batteryName, batteryPercent, batteryState, 
-                            batteryHealth, batteryCycles, batteryCapacity,
-                            chargeRate, notTrack, batteryLifeTime) 
-                            = await GetBatInfoAsync();
+                        var (batteryPercent, batteryState, chargeRate, batteryLifeTime)
+                            = await GetBatInfoDynamicAsync();
 
-                        info.BatteryName = batteryName;
-                        info.BatteryUnavailable = notTrack;
-                        info.BatteryPercent = batteryPercent;
-                        info.BatteryState = batteryState;
-                        info.BatteryHealth = batteryHealth;
-                        info.BatteryCycles = batteryCycles;
-                        info.BatteryCapacity = batteryCapacity;
-                        info.BatteryChargeRate = chargeRate;
-                        info.BatteryLifeTime = batteryLifeTime;
+                        _sensorsInformation.BatteryPercent = batteryPercent;
+                        _sensorsInformation.BatteryState = batteryState;
+                        _sensorsInformation.BatteryChargeRate = chargeRate;
+                        _sensorsInformation.BatteryLifeTime = batteryLifeTime;
                     }
                     catch (Exception ex)
                     {
-                        info.BatteryUnavailable = true;
-                        await LogHelper.LogError($"[BackgroundDataUpdater+Updater_Task]@ Данные батареи не обновлены: {ex}");
+                        await LogHelper.LogError(
+                            $"[BackgroundDataUpdater+Updater_Task]@ Динамические данные батареи не обновлены: {ex}");
                     }
 
-                    (info.RamTotal, info.RamBusy, info.RamUsagePercent, info.RamUsage) = GetRamInfo();
+                    (_sensorsInformation.RamBusy, _sensorsInformation.RamUsagePercent, _sensorsInformation.RamUsage) =
+                        GetRamInfoDynamic();
 
-                    DataUpdated?.Invoke(this, info);
+                    (_sensorsInformation.NvidiaGpuUsage, _sensorsInformation.NvidiaGpuTemperature,
+                            _sensorsInformation.NvidiaGpuFrequency, _sensorsInformation.NvidiaVramFrequency)
+                        = GetNvidiaGpuDynamicInfo();
 
-                    UpdateTrayMonAndRtss(info);
+                    DataUpdated?.Invoke(this, _sensorsInformation);
+
+                    UpdateTrayMonAndRtss(_sensorsInformation);
                 }
                 catch (OperationCanceledException)
                 {
@@ -152,16 +187,15 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 {
                     _currentUpdateErrorCycle++;
 
-                    if (_currentUpdateErrorCycle > MaxErrorsWhileUpdating) 
+                    if (_currentUpdateErrorCycle > MaxErrorsWhileUpdating)
                     {
-                        _cts.Cancel();
-                        await LogHelper.TraceIt_TraceError($"[BackgroundDataUpdater+Updater_Task]@ Остановлен из-зв превышения количества ошибок");
+                        await _cts.CancelAsync();
+                        await LogHelper.TraceIt_TraceError(
+                            "[BackgroundDataUpdater+Updater_Task]@ Остановлен из-зв превышения количества ошибок");
                         break;
                     }
-                    else
-                    {
-                        await LogHelper.LogError($"[BackgroundDataUpdater+Updater_Task]@ Ошибка обновления данных: {ex}");
-                    }
+
+                    await LogHelper.LogError($"[BackgroundDataUpdater+Updater_Task]@ Ошибка обновления данных: {ex}");
                 }
 
                 try
@@ -198,76 +232,36 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
     private async Task<(
         string BatteryName,
-        string BatteryPercent,
-        string BatteryState,
         string BatteryHealth,
         string BatteryCycles,
         string BatteryCapacity,
-        double BatteryChargeRate,
-        bool BatteryUnavailable,
-        int BatteryLifeTime
-        )> GetBatInfoAsync()
+        bool BatteryUnavailable
+        )> GetBatInfoStaticAsync()
     {
         // Если данные о батарее помечены как недоступные, сразу возвращаем флаг и пустые строки
         if (_cachedBatteryUnavailable)
         {
-            return (string.Empty, string.Empty,
-                string.Empty, string.Empty,
-                string.Empty, string.Empty,
-                0,
-                true, 0);
+            return (string.Empty, string.Empty, string.Empty, string.Empty, true);
         }
 
         try
         {
-            bool notTrack;
             var batteryInfo = await Task.Run(() =>
             {
-                // Получаем часто меняющиеся параметры
-                var batteryPercent = GetSystemInfo.GetBatteryPercent() + "%";
-                var batteryState = GetSystemInfo.GetBatteryStatus().ToString();
-                var chargeRate = (double)(GetSystemInfo.GetBatteryRate() / 1000);
+                // Получаем статические данные батареи
+                var batteryHealth = $"{100 - GetSystemInfo.GetBatteryHealth() * 100:0.##}%";
+                var batteryCycles = GetSystemInfo.GetBatteryCycle().ToString();
 
-                // Время работы батареи
-                var batteryLifeTime = GetSystemInfo.GetBatteryLifeTime();
+                var fullChargeCapacity = GetSystemInfo.ReadFullChargeCapacity();
+                var designCapacity = GetSystemInfo.ReadDesignCapacity(out var notTrack);
+                var batteryCapacity = $"{fullChargeCapacity}mWh/{designCapacity}mWh";
 
-                // Переменные для кэшируемых значений
-                string batteryName;
-                string batteryCapacity;
-                string batteryCycles;
-                string batteryHealth;
+                var batteryName = GetSystemInfo.GetBatteryName() ?? "Unknown";
 
-                if (!_batteryCached)
-                {
-                    // Кешируем все необязательные данные
-                    batteryHealth = $"{100 - GetSystemInfo.GetBatteryHealth() * 100:0.##}%";
-                    batteryCycles = GetSystemInfo.GetBatteryCycle().ToString();
+                // Кешируем
+                _cachedBatteryUnavailable = notTrack;
 
-                    var fullChargeCapacity = GetSystemInfo.ReadFullChargeCapacity();
-                    var designCapacity = GetSystemInfo.ReadDesignCapacity(out notTrack);
-                    batteryCapacity = $"{fullChargeCapacity}mWh/{designCapacity}mWh";
-
-                    batteryName = GetSystemInfo.GetBatteryName() ?? "Unknown";
-
-                    _cachedBatteryName = batteryName;
-                    _cachedBatteryHealth = batteryHealth;
-                    _cachedBatteryCycles = batteryCycles;
-                    _cachedBatteryCapacity = batteryCapacity;
-                    _cachedBatteryUnavailable = notTrack;
-                    _batteryCached = true;
-                }
-                else
-                {
-                    batteryName = _cachedBatteryName ?? "Unknown";
-                    batteryHealth = _cachedBatteryHealth!;
-                    batteryCycles = _cachedBatteryCycles!;
-                    batteryCapacity = _cachedBatteryCapacity!;
-                    notTrack = _cachedBatteryUnavailable;
-                }
-
-                return (batteryName, batteryPercent, batteryState, 
-                    batteryHealth, batteryCycles, batteryCapacity,
-                    chargeRate, notTrack, batteryLifeTime);
+                return (batteryName, batteryHealth, batteryCycles, batteryCapacity, notTrack);
             });
 
             return batteryInfo;
@@ -275,11 +269,43 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         catch
         {
             // Батарея недоступна
-            return (string.Empty, string.Empty,
-                string.Empty, string.Empty,
-                string.Empty, string.Empty,
-                0,
-                true, 0);
+            _cachedBatteryUnavailable = true;
+            return (string.Empty, string.Empty, string.Empty, string.Empty, true);
+        }
+    }
+
+    private async Task<(
+        string BatteryPercent,
+        int BatteryState,
+        double BatteryChargeRate,
+        int BatteryLifeTime
+        )> GetBatInfoDynamicAsync()
+    {
+        // Если данные о батарее помечены как недоступные, сразу возвращаем пустые значения
+        if (_cachedBatteryUnavailable)
+        {
+            return (string.Empty, 10, 0, 0);
+        }
+
+        try
+        {
+            var batteryInfo = await Task.Run(() =>
+            {
+                // Получаем только часто меняющиеся параметры
+                var batteryPercent = GetSystemInfo.GetBatteryPercent() + "%";
+                var batteryState = (int)GetSystemInfo.GetBatteryStatus();
+                var chargeRate = (double)(GetSystemInfo.GetBatteryRate() / 1000);
+                var batteryLifeTime = GetSystemInfo.GetBatteryLifeTime();
+
+                return (batteryPercent, batteryState, chargeRate, batteryLifeTime);
+            });
+
+            return batteryInfo;
+        }
+        catch
+        {
+            // Батарея недоступна
+            return (string.Empty, 10, 0, 0);
         }
     }
 
@@ -287,12 +313,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
     #region Update RAM information voids
 
-    private static (
-        string RamTotal,
-        string RamBusy,
-        int RamUsagePercent,
-        string RamUsage
-        ) GetRamInfo()
+    private static string GetRamTotal()
     {
         try
         {
@@ -303,7 +324,36 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
             if (!GlobalMemoryStatusEx(ref memStatus))
             {
-                return ("Error", "Error", 0, "Error");
+                return "Error";
+            }
+
+            // Преобразуем из байтов в гигабайты
+            var totalRamGb = memStatus.ullTotalPhys / (1024.0 * 1024 * 1024);
+
+            return $"{totalRamGb:F1}GB";
+        }
+        catch
+        {
+            return "Error";
+        }
+    }
+
+    private static (
+        string RamBusy,
+        int RamUsagePercent,
+        string RamUsage
+        ) GetRamInfoDynamic()
+    {
+        try
+        {
+            var memStatus = new MemoryStatusEx
+            {
+                dwLength = (uint)Marshal.SizeOf<MemoryStatusEx>()
+            };
+
+            if (!GlobalMemoryStatusEx(ref memStatus))
+            {
+                return ("Error", 0, "Error");
             }
 
             // Преобразуем из байтов в гигабайты
@@ -312,7 +362,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
             var busyRamGb = totalRamGb - availRamGb;
 
             return (
-                $"{totalRamGb:F1}GB",
                 $"{busyRamGb:F1}GB",
                 (int)memStatus.dwMemoryLoad,
                 $"{(int)memStatus.dwMemoryLoad}%\n{busyRamGb:F1}GB/{totalRamGb:F1}GB"
@@ -320,7 +369,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         }
         catch
         {
-            return ("Error", "Error", 0, "Error");
+            return ("Error", 0, "Error");
         }
     }
 
@@ -341,6 +390,97 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx lpBuffer);
+
+    #endregion
+
+    #region Update Nvidia Gpu information voids
+
+    private bool InitializeNvidiaGpu()
+    {
+        if (_cachedNvidiaGpuUnavailable)
+        {
+            return false;
+        }
+
+        try
+        {
+            _nvidiaGpuMonitor ??= new NvidiaGpuMonitor();
+        }
+        catch
+        {
+            _cachedNvidiaGpuUnavailable = true;
+            return false;
+        }
+
+        return true;
+    }
+
+    private (
+        string DriverVersion,
+        string VramSize,
+        string VramType,
+        string VramWidth
+        ) GetNvidiaGpuStaticInfo()
+    {
+        try
+        {
+            if (InitializeNvidiaGpu() && _nvidiaGpuMonitor != null)
+            {
+                if (_cachedStaticNvidiaGpuInfo.Count > 0 && _cachedStaticNvidiaGpuInfo[0] == "Unknown")
+                {
+                    // Получить статические данные один раз
+                    var staticData = _nvidiaGpuMonitor.GetStaticData();
+                    _cachedStaticNvidiaGpuInfo[0] = staticData.DriverVersion;
+                    _cachedStaticNvidiaGpuInfo[1] = $"{staticData.TotalMemory:0.###}GB";
+                    _cachedStaticNvidiaGpuInfo[2] = staticData.MemoryType;
+                    _cachedStaticNvidiaGpuInfo[3] = $"{staticData.MemoryBitWidth} bit";
+                }
+
+
+                return (
+                    _cachedStaticNvidiaGpuInfo[0],
+                    _cachedStaticNvidiaGpuInfo[1],
+                    _cachedStaticNvidiaGpuInfo[2],
+                    _cachedStaticNvidiaGpuInfo[3]
+                );
+            }
+
+            return ("Error", "Error", "Error", "Error");
+        }
+        catch
+        {
+            return ("Error", "Error", "Error", "Error");
+        }
+    }
+
+    private (
+        double GpuUsageValue,
+        double GpuTemperature,
+        double GpuFrequency,
+        double VramFrequency
+        ) GetNvidiaGpuDynamicInfo()
+    {
+        try
+        {
+            if (InitializeNvidiaGpu() && _nvidiaGpuMonitor != null)
+            {
+                var runtime = _nvidiaGpuMonitor.GetRuntimeData();
+
+                return (
+                    runtime.GpuLoad,
+                    runtime.GpuTemperature,
+                    runtime.GpuCoreClock,
+                    runtime.MemoryClock
+                );
+            }
+
+            return (0, 0, 0, 0);
+        }
+        catch
+        {
+            return (0, 0, 0, 0);
+        }
+    }
 
     #endregion
 
@@ -805,22 +945,22 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
     private static readonly Dictionary<char, string> TransliterationMap = new()
     {
-        { 'а', "a"  }, { 'б', "b"   }, { 'в', "v"  }, { 'г', "g"  }, { 'д', "d"  },
-        { 'е', "e"  }, { 'ё', "yo"  }, { 'ж', "zh" }, { 'з', "z"  }, { 'и', "i"  },
-        { 'й', "y"  }, { 'к', "k"   }, { 'л', "l"  }, { 'м', "m"  }, { 'н', "n"  },
-        { 'о', "o"  }, { 'п', "p"   }, { 'р', "r"  }, { 'с', "s"  }, { 'т', "t"  },
-        { 'у', "u"  }, { 'ф', "f"   }, { 'х', "h"  }, { 'ц', "ts" }, { 'ч', "ch" },
-        { 'ш', "sh" }, { 'щ', "sch" }, { 'ъ', "'"  }, { 'ы', "i"  }, { 'ь', "'"  },
-        { 'э', "e"  }, { 'ю', "yu"  }, { 'я', "ya" },
+        { 'а', "a" }, { 'б', "b" }, { 'в', "v" }, { 'г', "g" }, { 'д', "d" },
+        { 'е', "e" }, { 'ё', "yo" }, { 'ж', "zh" }, { 'з', "z" }, { 'и', "i" },
+        { 'й', "y" }, { 'к', "k" }, { 'л', "l" }, { 'м', "m" }, { 'н', "n" },
+        { 'о', "o" }, { 'п', "p" }, { 'р', "r" }, { 'с', "s" }, { 'т', "t" },
+        { 'у', "u" }, { 'ф', "f" }, { 'х', "h" }, { 'ц', "ts" }, { 'ч', "ch" },
+        { 'ш', "sh" }, { 'щ', "sch" }, { 'ъ', "'" }, { 'ы', "i" }, { 'ь', "'" },
+        { 'э', "e" }, { 'ю', "yu" }, { 'я', "ya" },
 
         // Прописные буквы
-        { 'А', "A"  }, { 'Б', "B"   }, { 'В', "V"  }, { 'Г', "G"  }, { 'Д', "D"  },
-        { 'Е', "E"  }, { 'Ё', "Yo"  }, { 'Ж', "Zh" }, { 'З', "Z"  }, { 'И', "I"  },
-        { 'Й', "Y"  }, { 'К', "K"   }, { 'Л', "L"  }, { 'М', "M"  }, { 'Н', "N"  },
-        { 'О', "O"  }, { 'П', "P"   }, { 'Р', "R"  }, { 'С', "S"  }, { 'Т', "T"  },
-        { 'У', "U"  }, { 'Ф', "F"   }, { 'Х', "H"  }, { 'Ц', "Ts" }, { 'Ч', "Ch" },
-        { 'Ш', "Sh" }, { 'Щ', "Sch" }, { 'Ъ', "'"  }, { 'Ы', "I"  }, { 'Ь', "'"  },
-        { 'Э', "E"  }, { 'Ю', "Yu"  }, { 'Я', "Ya" }
+        { 'А', "A" }, { 'Б', "B" }, { 'В', "V" }, { 'Г', "G" }, { 'Д', "D" },
+        { 'Е', "E" }, { 'Ё', "Yo" }, { 'Ж', "Zh" }, { 'З', "Z" }, { 'И', "I" },
+        { 'Й', "Y" }, { 'К', "K" }, { 'Л', "L" }, { 'М', "M" }, { 'Н', "N" },
+        { 'О', "O" }, { 'П', "P" }, { 'Р', "R" }, { 'С', "S" }, { 'Т', "T" },
+        { 'У', "U" }, { 'Ф', "F" }, { 'Х', "H" }, { 'Ц', "Ts" }, { 'Ч', "Ch" },
+        { 'Ш', "Sh" }, { 'Щ', "Sch" }, { 'Ъ', "'" }, { 'Ы', "I" }, { 'Ь', "'" },
+        { 'Э', "E" }, { 'Ю', "Yu" }, { 'Я', "Ya" }
     };
 
 
@@ -1065,7 +1205,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
                     try
                     {
-                        notifyIcon.ForceCreate(enablesEfficiencyMode: App.EfficiencyModeAvailable);
+                        notifyIcon.ForceCreate(App.EfficiencyModeAvailable);
                     }
                     catch
                     {
