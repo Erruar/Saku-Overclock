@@ -1802,7 +1802,7 @@ public sealed partial class ПараметрыPage
                         if (_cpu?.ReadDword(smuRspAddress) == 0xFE)
                         {
                             // Send Get_SMU_Version command
-                            if (_cpu?.WriteDwordEx(start, 0x2) == true)
+                            if (_cpu?.RyzenSmu.SmuWriteReg(start, 0x2) == true) 
                             {
                                 Thread.Sleep(10);
                                 if (_cpu?.ReadDword(smuRspAddress) == 0x1)

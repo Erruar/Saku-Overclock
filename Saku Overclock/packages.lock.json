@@ -650,6 +650,15 @@
           "Microsoft.Win32.SystemEvents": "9.0.1"
         }
       },
+      "System.IO.FileSystem.AccessControl": {
+        "type": "Transitive",
+        "resolved": "5.0.0",
+        "contentHash": "SxHB3nuNrpptVk+vZ/F+7OHEpoHUIKKMl02bUmYHQr1r+glbZQxs7pRtsf4ENO29TVm2TH3AEeep2fJcy92oYw==",
+        "dependencies": {
+          "System.Security.AccessControl": "5.0.0",
+          "System.Security.Principal.Windows": "5.0.0"
+        }
+      },
       "System.Reflection.Metadata": {
         "type": "Transitive",
         "resolved": "9.0.1",
@@ -669,6 +678,15 @@
         "type": "Project",
         "dependencies": {
           "Newtonsoft.Json": "[13.0.2, )"
+        }
+      },
+      "zenstates-core": {
+        "type": "Project",
+        "dependencies": {
+          "System.IO.FileSystem.AccessControl": "[5.0.0, )",
+          "System.Management": "[6.0.0, )",
+          "System.ServiceProcess.ServiceController": "[6.0.0, )",
+          "System.Threading.AccessControl": "[6.0.0, )"
         }
       }
     },
@@ -762,6 +780,15 @@
         "type": "Transitive",
         "resolved": "9.0.10",
         "contentHash": "Jc+az1pTMujPLDn2j5eqSfzlO7j/T1K/LB7THxdfRWOxujE4zaitUqBs7sv1t6/xmmvpU6Xx3IofCs4owYH0yQ=="
+      },
+      "System.IO.FileSystem.AccessControl": {
+        "type": "Transitive",
+        "resolved": "5.0.0",
+        "contentHash": "SxHB3nuNrpptVk+vZ/F+7OHEpoHUIKKMl02bUmYHQr1r+glbZQxs7pRtsf4ENO29TVm2TH3AEeep2fJcy92oYw==",
+        "dependencies": {
+          "System.Security.AccessControl": "5.0.0",
+          "System.Security.Principal.Windows": "5.0.0"
+        }
       },
       "System.Security.AccessControl": {
         "type": "Transitive",
