@@ -13,8 +13,8 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
 using Saku_Overclock.JsonContainers.Helpers;
-using Saku_Overclock.SMUEngine;
-using Saku_Overclock.SMUEngine.SmuMailBoxes;
+using Saku_Overclock.SmuEngine;
+using Saku_Overclock.SmuEngine.SmuMailBoxes;
 using Saku_Overclock.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
@@ -25,7 +25,6 @@ using Button = Microsoft.UI.Xaml.Controls.Button;
 using CheckBox = Microsoft.UI.Xaml.Controls.CheckBox;
 using ComboBox = Microsoft.UI.Xaml.Controls.ComboBox;
 using Mailbox = ZenStates.Core.Mailbox;
-using Process = System.Diagnostics.Process;
 using TextBox = Microsoft.UI.Xaml.Controls.TextBox;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
@@ -43,7 +42,7 @@ public sealed partial class ПараметрыPage
     private static readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
     private int _indexprofile; // Выбранный профиль
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Все настройки приложения
-    private bool _isSearching; // Флаг выполнения поиска чтобы не сканировать адреса SMU
+    private bool _isSearching; // Флаг выполнения поиска чтобы не сканировать адреса SMU 
     private readonly List<string> _searchItems = [];
     private bool _isStapmTuneRequired;
     private string
@@ -58,9 +57,6 @@ public sealed partial class ПараметрыPage
     private readonly Mailbox _testMailbox = new(); // Новый адрес SMU
     private bool _commandReturnedValue; // Флаг если команда вернула значение
     private readonly bool _isPremadePresetApplied; // Флаг применённого готового пресета для его восстановления после покидания страницы Разгон
-
-    private static string?
-        _equalvid; // Преобразование из напряжения в его ID. Используется в секции Состояния CPU для указания напряжения P-State
 
     private static readonly List<double> PstatesFid = [0, 0, 0];
     private static readonly List<double> PstatesDid = [0, 0, 0];
@@ -275,12 +271,12 @@ public sealed partial class ПараметрыPage
         SlowRecommend1.Text = FastRecommend1.Text;
         SttRecommend0.Text = $"{data.Item4[0]}W";
         SttRecommend1.Text = $"{data.Item4[1]}W";
-        SlowTimeRecommend0.Text = $"{data.Item5[0]}S";
-        SlowTimeRecommend1.Text = $"{data.Item5[1]}S";
-        StapmTimeRecommend0.Text = $"{data.Item6[0]}S";
-        StapmTimeRecommend1.Text = $"{data.Item6[1]}S";
-        BdProchotTimeRecommend0.Text = $"{data.Item7[0]}mS";
-        BdProchotTimeRecommend0.Text = $"{data.Item7[1]}mS";
+        SlowTimeRecommend0.Text = $"{data.Item5[0]}s";
+        SlowTimeRecommend1.Text = $"{data.Item5[1]}s";
+        StapmTimeRecommend0.Text = $"{data.Item6[0]}s";
+        StapmTimeRecommend1.Text = $"{data.Item6[1]}s";
+        BdProchotTimeRecommend0.Text = $"{data.Item7[0]}ms";
+        BdProchotTimeRecommend0.Text = $"{data.Item7[1]}ms";
     }
     private void SlidersInit()
     {
@@ -1792,7 +1788,7 @@ public sealed partial class ПараметрыPage
             if (_cpu?.ReadDword(start) != 0xFFFFFFFF)
             {
                 // Send unknown command 0xFF to each pair of this start and possible response addresses
-                if (_cpu?.WriteDwordEx(start, 0xFF) == true)
+                if (_cpu?.RyzenSmu.SmuWriteReg(start, 0xFF) == true)
                 {
                     Thread.Sleep(10);
 
@@ -6080,7 +6076,7 @@ public sealed partial class ПараметрыPage
 
             if (cpu.info.family < Cpu.Family.FAMILY_17H) 
             {
-                return;
+                return; // Жёсткая защита от старых поколений
             }
 
             ProfileLoad();
@@ -6113,6 +6109,7 @@ public sealed partial class ПараметрыPage
                 var didtext = PstatesDid[p];
                 var fidtext = PstatesFid[p];
                 var vidtext = PstatesVid[p];
+                cpuVid = (uint)Math.Round((1.55 - vidtext / 1000) / 0.00625);
                 eax = ((iddDiv & 0xFF) << 30) | ((iddVal & 0xFF) << 22) | ((cpuVid & 0xFF) << 14) |
                       (((uint)Math.Round(didtext, 0) & 0xFF) << 8) | ((uint)Math.Round(fidtext, 0) & 0xFF);
                 if (NumaUtil.HighestNumaNode > 0)
@@ -6144,18 +6141,6 @@ public sealed partial class ПараметрыPage
                     App.GetService<IAppNotificationService>().Show(
                         $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error writing PState! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                 }
-
-                _equalvid = Math.Round((1.55 - vidtext / 1000) / 0.00625).ToString(CultureInfo.InvariantCulture);
-                var f = new Process();
-                f.StartInfo.UseShellExecute = false;
-                f.StartInfo.FileName = "ryzenps.exe";
-                f.StartInfo.Arguments = "-p=" + p + " -v=" + _equalvid;
-                f.StartInfo.CreateNoWindow = true;
-                f.StartInfo.RedirectStandardError = true;
-                f.StartInfo.RedirectStandardInput = true;
-                f.StartInfo.RedirectStandardOutput = true;
-                f.Start();
-                f.WaitForExit();
             }
 
             ReadPstate();

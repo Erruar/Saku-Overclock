@@ -4724,6 +4724,21 @@
                                                     <ComboBoxItem Content="43"/>
                                                     <ComboBoxItem Content="44"/>
                                                     <ComboBoxItem Content="45"/>
+                                                    <ComboBoxItem Content="46"/>
+                                                    <ComboBoxItem Content="47"/>
+                                                    <ComboBoxItem Content="48"/>
+                                                    <ComboBoxItem Content="49"/>
+                                                    <ComboBoxItem Content="50"/>
+                                                    <ComboBoxItem Content="51"/>
+                                                    <ComboBoxItem Content="52"/>
+                                                    <ComboBoxItem Content="53"/>
+                                                    <ComboBoxItem Content="54"/>
+                                                    <ComboBoxItem Content="55"/>
+                                                    <ComboBoxItem Content="56"/>
+                                                    <ComboBoxItem Content="57"/>
+                                                    <ComboBoxItem Content="58"/>
+                                                    <ComboBoxItem Content="59"/>
+                                                    <ComboBoxItem Content="60"/>
                                                 </ComboBox>
                                             </Grid>
 
@@ -4818,6 +4833,21 @@
                                                     <ComboBoxItem Content="43"/>
                                                     <ComboBoxItem Content="44"/>
                                                     <ComboBoxItem Content="45"/>
+                                                    <ComboBoxItem Content="46"/>
+                                                    <ComboBoxItem Content="47"/>
+                                                    <ComboBoxItem Content="48"/>
+                                                    <ComboBoxItem Content="49"/>
+                                                    <ComboBoxItem Content="50"/>
+                                                    <ComboBoxItem Content="51"/>
+                                                    <ComboBoxItem Content="52"/>
+                                                    <ComboBoxItem Content="53"/>
+                                                    <ComboBoxItem Content="54"/>
+                                                    <ComboBoxItem Content="55"/>
+                                                    <ComboBoxItem Content="56"/>
+                                                    <ComboBoxItem Content="57"/>
+                                                    <ComboBoxItem Content="58"/>
+                                                    <ComboBoxItem Content="59"/>
+                                                    <ComboBoxItem Content="60"/>
                                                 </ComboBox>
                                             </Grid>
                                             <Border Shadow="{ThemeResource SharedShadow}" Translation="0,0,12"
@@ -4910,6 +4940,21 @@
                                                     <ComboBoxItem Content="43"/>
                                                     <ComboBoxItem Content="44"/>
                                                     <ComboBoxItem Content="45"/>
+                                                    <ComboBoxItem Content="46"/>
+                                                    <ComboBoxItem Content="47"/>
+                                                    <ComboBoxItem Content="48"/>
+                                                    <ComboBoxItem Content="49"/>
+                                                    <ComboBoxItem Content="50"/>
+                                                    <ComboBoxItem Content="51"/>
+                                                    <ComboBoxItem Content="52"/>
+                                                    <ComboBoxItem Content="53"/>
+                                                    <ComboBoxItem Content="54"/>
+                                                    <ComboBoxItem Content="55"/>
+                                                    <ComboBoxItem Content="56"/>
+                                                    <ComboBoxItem Content="57"/>
+                                                    <ComboBoxItem Content="58"/>
+                                                    <ComboBoxItem Content="59"/>
+                                                    <ComboBoxItem Content="60"/>
                                                 </ComboBox>
                                             </Grid>
                                             <Border Shadow="{ThemeResource SharedShadow}" Translation="0,0,12"
