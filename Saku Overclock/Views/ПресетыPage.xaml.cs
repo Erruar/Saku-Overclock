@@ -13,7 +13,7 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
 using Saku_Overclock.Services;
-using Saku_Overclock.SMUEngine;
+using Saku_Overclock.SmuEngine;
 using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
 using static ZenStates.Core.Cpu;
@@ -691,7 +691,7 @@ public sealed partial class ПресетыPage
 
             var updateSmallSign = true;
 
-            if (info.ApuTemperature == 0)
+            if (info.ApuTempValue == 0)
             {
                 updateSmallSign = false;
                 TempSensorsStackPanel.Margin = new Thickness(7, 0, 0, 5);
@@ -705,7 +705,7 @@ public sealed partial class ПресетыPage
             }
             else
             {
-                GpuTempSensorText.Text = Math.Round(info.ApuTemperature) + "C";
+                GpuTempSensorText.Text = Math.Round(info.ApuTempValue) + "C";
             }
 
             CpuTempSensorText.Text = Math.Round(info.CpuTempValue) + (updateSmallSign ? "C" : string.Empty);

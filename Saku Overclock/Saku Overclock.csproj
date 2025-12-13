@@ -14,10 +14,10 @@
 	<Nullable>enable</Nullable>
 	<UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <AssemblyVersion>1.0.18.280</AssemblyVersion>
-    <FileVersion>1.0.18.280</FileVersion>
+    <AssemblyVersion>1.0.18.281</AssemblyVersion>
+    <FileVersion>1.0.18.281</FileVersion>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>  
-    <Version>1.0.18.280</Version>
+    <Version>1.0.18.281</Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
     <UseWPF>False</UseWPF>
@@ -64,16 +64,9 @@
     <None Remove="Assets\AsusCoolerIcons\CoolerIcon.png" />
     <None Remove="Assets\AsusCoolerIcons\QuietSpeed.png" />
     <None Remove="Assets\AsusCoolerIcons\TurboSpeed.png" />
-    <None Remove="exit.png" />
     <None Remove="info.bat" />
-    <None Remove="info.png" />
-    <None Remove="param.png" />
-    <None Remove="preset.png" />
     <None Remove="ProfileSwitcher\ProfileSwitcher.xaml" />
-    <None Remove="SakuLogo.json" />
     <None Remove="Services\Cpu.cs.bak.zip" />
-    <None Remove="show.png" />
-    <None Remove="startup.lnk" />
     <None Remove="Styles\ActiveButton.xaml" />
     <None Remove="Styles\ButtonCollapseLauncher.xaml" />
     <None Remove="Styles\ComboBoxCollapseLauncher.xaml" />
@@ -104,24 +97,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Assets\AsusCoolerIcons\TurboSpeed.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="exit.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="info.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="param.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="preset.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="show.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="startup.lnk">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="WindowIcon.ico">
@@ -279,30 +254,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="inpoutx64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="libryzenadj.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="nbfc\clipr.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\CommonServiceLocator.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\ec-probe.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\GalaSoft.MvvmLight.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\GalaSoft.MvvmLight.Extras.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\GalaSoft.MvvmLight.Platform.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\Hardcodet.Wpf.TaskbarNotification.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="nbfc\nbfc.exe">
@@ -315,51 +269,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="nbfc\NbfcService.exe.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\NLog.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\Plugins\OpenHardwareMonitorLib.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\Plugins\StagWare.Hardware.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\Plugins\StagWare.Hardware.LPC.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\Plugins\StagWare.Plugins.CpuTemperatureMonitor.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\Plugins\StagWare.Plugins.ECWindows.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\StagWare.BiosInfo.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\StagWare.FanControl.Configurations.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\StagWare.FanControl.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\StagWare.FanControl.Service.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\StagWare.Settings.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\System.IO.Abstractions.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\System.Windows.Interactivity.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\WinRing0x64.sys">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nbfc\Xceed.Wpf.Toolkit.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SakuRTSSCLI.dll">
@@ -392,12 +301,6 @@
     <Page Update="ProfileSwitcher\ProfileSwitcher.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Update="ryzenadj.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ryzenps.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="SakuRTSSCLI.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -410,12 +313,6 @@
     <Page Update="Views\PowerWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Update="WinRing0x64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="WinRing0x64.sys">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
@@ -477,11 +374,5 @@
   
   <ItemGroup>
     <Resource Remove="Views\ОбновлениеPage.xaml" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Content Include="SakuLogo.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 </Project>

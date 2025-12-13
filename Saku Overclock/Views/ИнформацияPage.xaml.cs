@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.SMUEngine;
+using Saku_Overclock.SmuEngine;
 using Saku_Overclock.Wrappers;
 using ZenStates.Core;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
@@ -688,8 +688,8 @@ public sealed partial class ИнформацияPage
             SetBarMaxValueHelper(AverageLimitBar, _sensorsInformation.CpuSlowValue, false,
                 _sensorsInformation.CpuSlowLimit);
 
-            FastFrequencyRiseTime.Text = $"{_sensorsInformation.CpuSlowTimeValue:0.###}S";
-            SlowFrequencyRiseTime.Text = $"{_sensorsInformation.CpuStapmTimeValue:0.###}S";
+            FastFrequencyRiseTime.Text = $"{_sensorsInformation.CpuSlowTimeValue:0.###}s";
+            SlowFrequencyRiseTime.Text = $"{_sensorsInformation.CpuStapmTimeValue:0.###}s";
 
             UpdateVrmTimingsDisplay(_sensorsInformation.CpuSlowTimeValue, _sensorsInformation.CpuStapmTimeValue);
 
@@ -805,7 +805,7 @@ public sealed partial class ИнформацияPage
             // Используем уже готовые значения с форматами
             var gfxClk = _sensorsInformation.ApuFrequency / 1000.0;
             var gfxVolt = _sensorsInformation.ApuVoltage;
-            var gfxTemp = _sensorsInformation.ApuTemperature;
+            var gfxTemp = _sensorsInformation.ApuTempValue;
 
             // обновление максимума
             var beforeMaxGfxClk = _maxGfxClock;

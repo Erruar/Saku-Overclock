@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
-using Saku_Overclock.SMUEngine;
+using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
 using ZenStates.Core;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;

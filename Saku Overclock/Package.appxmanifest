@@ -11,7 +11,7 @@
   IgnorableNamespaces="uap rescap genTemplate">
 
   <Identity
-    Name="129fe03a-4520-4c47-b74c-ba9210dc2f62"
+    Name="Saku-Overclock-App"
     Publisher="CN=Sakura"
     Version="1.0.18.0" />
     

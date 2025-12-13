@@ -1,4 +1,4 @@
-﻿namespace Saku_Overclock.SMUEngine;
+﻿namespace Saku_Overclock.SmuEngine;
 
 public class SensorsInformation
 {
@@ -133,10 +133,6 @@ public class SensorsInformation
         get; set;
     }
     public double ApuFrequency
-    {
-        get; set;
-    }
-    public double ApuTemperature
     {
         get; set;
     }

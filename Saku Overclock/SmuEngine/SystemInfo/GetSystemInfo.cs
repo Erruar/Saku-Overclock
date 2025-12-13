@@ -9,7 +9,7 @@ using ZenStates.Core;
 using ZenStates.Core.DRAM;
 using static ZenStates.Core.DRAM.MemoryConfig;
 
-namespace Saku_Overclock.SMUEngine;
+namespace Saku_Overclock.SmuEngine;
 
 internal class GetSystemInfo
 {

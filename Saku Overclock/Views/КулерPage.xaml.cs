@@ -8,7 +8,7 @@ using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Services;
-using Saku_Overclock.SMUEngine;
+using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Wrappers;
 using Windows.Foundation.Metadata;
@@ -878,7 +878,7 @@ public sealed partial class КулерPage
     private void OnDataUpdated(object? sender, SensorsInformation info)
     {
         _cpuTemp = info.CpuTempValue;
-        _gpuTemp = info.ApuTemperature;
+        _gpuTemp = info.ApuTempValue;
         _cpuTdpLim = info.CpuFastLimit;
         _cpuTdpVal = info.CpuFastValue;
         _cpuFreq = info.CpuFrequency;
@@ -1173,7 +1173,7 @@ public sealed partial class КулерPage
             var fanValue = CoolerFan1Manual.Value;
             var fanRpmTextBlock = CpuFanRpm;
 
-            if ((sender as Slider)?.Name == "CoolerFan2Manual")
+            if (sender is Slider { Name: "CoolerFan2Manual" })
             {
                 fanNumber = 1;
                 fanValue = CoolerFan2Manual.Value;

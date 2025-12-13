@@ -6,7 +6,7 @@ using Saku_Overclock.Views;
 using ZenStates.Core;
 using static ZenStates.Core.Cpu;
 
-namespace Saku_Overclock.SMUEngine;
+namespace Saku_Overclock.SmuEngine;
 
 /*Created by Serzhik Sakurazhima*/
 
@@ -1273,12 +1273,13 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// <summary>
     ///  Возвращает тип платформы по кодовому имени
     /// </summary>
-    private static bool? IsPlatformPCByCodename(CodeName codeName)
+    public static bool? IsPlatformPCByCodename(CodeName codeName)
     {
         if (Codename != codeName)
         {
             Codename = codeName;
         }
+
         return Codename switch
         {
             CodeName.BristolRidge or CodeName.SummitRidge or CodeName.PinnacleRidge => true,
@@ -1286,6 +1287,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             CodeName.Matisse or CodeName.Vermeer => true,
             CodeName.Renoir or CodeName.Lucienne or CodeName.Cezanne => false, // Renoir, Cezanne может быть PC!
             CodeName.VanGogh => false,
+            CodeName.KrackanPoint or CodeName.KrackanPoint2 => false,
             CodeName.Mendocino or CodeName.Rembrandt or CodeName.Phoenix or CodeName.Phoenix2 or CodeName.HawkPoint or CodeName.StrixPoint or CodeName.StrixHalo => false, // Phoenix может быть PC!
             CodeName.GraniteRidge or CodeName.Genoa or CodeName.Bergamo or CodeName.Raphael or CodeName.DragonRange => true,
             _ => null,// Устройство не определено
@@ -1853,7 +1855,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             ("per-core-oc-clk",                   false, 0x60),
             ("oc-volt",                           false, 0x61),
             ("set-coall",                         false, 0x07),
-            ("set-cogfx",                         false, 0xA7),
+            ("set-cogfx",                         false, 0xA7), // 0xA5 0x04B00190 ??? // 0x70 0x16DA PBO Max freq override
             ("set-coper",                         false, 0x06),
             ("set-coall",                         true,  0x36),
             ("set-coper",                         true,  0x35),

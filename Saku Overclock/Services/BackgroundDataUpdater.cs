@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
-using Saku_Overclock.SMUEngine;
+using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using Saku_Overclock.Wrappers;
@@ -801,7 +801,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
             "$cpu_usage$" => WriteFormattedDouble(sensorsInformation.CpuUsage, output),
             "$gfx_clock$" => WriteFormattedDouble(sensorsInformation.ApuFrequency, output),
             "$gfx_volt$" => WriteFormattedDouble(sensorsInformation.ApuVoltage, output),
-            "$gfx_temp$" => WriteFormattedDouble(sensorsInformation.ApuTemperature, output),
+            "$gfx_temp$" => WriteFormattedDouble(sensorsInformation.ApuTempValue, output),
             "$average_cpu_clock$" => WriteFormattedDouble(sensorsInformation.CpuFrequency, output),
             "$average_cpu_voltage$" => WriteFormattedDouble(sensorsInformation.CpuVoltage, output),
             _ => 0
@@ -993,7 +993,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                 sensorsInformation.CpuFrequency,
                 sensorsInformation.CpuVoltage,
                 sensorsInformation.ApuFrequency,
-                sensorsInformation.ApuTemperature,
+                sensorsInformation.ApuTempValue,
                 sensorsInformation.ApuVoltage
             };
 
@@ -1036,7 +1036,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
                     _cpuvoltText),
                 ("Settings_ni_Values_GFXCLK", sensorsInformation.ApuFrequency, "MHz", _niiconsMinMaxValues[8],
                     _gfxfreqText),
-                ("Settings_ni_Values_GFXTEMP", sensorsInformation.ApuTemperature, "C", _niiconsMinMaxValues[9],
+                ("Settings_ni_Values_GFXTEMP", sensorsInformation.ApuTempValue, "C", _niiconsMinMaxValues[9],
                     _gfxtempText),
                 ("Settings_ni_Values_GFXVOLT", sensorsInformation.ApuVoltage, "V", _niiconsMinMaxValues[10],
                     _gfxvoltText)

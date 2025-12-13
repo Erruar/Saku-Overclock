@@ -1,6 +1,6 @@
 ﻿using ZenStates.Core;
 
-namespace Saku_Overclock.SMUEngine;
+namespace Saku_Overclock.SmuEngine;
 public class CpuSingleton
 {
     private static readonly Cpu _cpu = new();

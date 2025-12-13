@@ -191,7 +191,7 @@ public sealed class NvidiaGpuMonitor
 
                 if (totalMemory == 0)
                 {
-                    totalMemory = SMUEngine.GetSystemInfo.GetGpuVramSize(data.GpuName);
+                    totalMemory = SmuEngine.GetSystemInfo.GetGpuVramSize(data.GpuName);
                     Helpers.LogHelper.LogError("Using Vram Size fallback " + totalMemory);
                 }
 
@@ -224,7 +224,7 @@ public sealed class NvidiaGpuMonitor
 
         if (string.IsNullOrWhiteSpace(data.DriverVersion) || data.TotalMemory == 0) 
         {
-            var (memSize, driver) = SMUEngine.GetSystemInfo.GetRegistryGpuDriverInformation(data.GpuName, true);
+            var (memSize, driver) = SmuEngine.GetSystemInfo.GetRegistryGpuDriverInformation(data.GpuName, true);
             if (string.IsNullOrWhiteSpace(data.DriverVersion))
             {
                 data.DriverVersion = driver;

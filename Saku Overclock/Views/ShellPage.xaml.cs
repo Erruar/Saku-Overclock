@@ -117,11 +117,11 @@ public sealed partial class ShellPage
     /// </summary>
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        /*if (AppSettings.AppFirstRun)
+       /* if (AppSettings.AppFirstRun)
         {
             HideNavigationBar();
             Icon.Visibility = Visibility.Collapsed;
-            RingerNotifGrid.Visibility = Visibility.Collapsed;
+            RingerNotificationGrid.Visibility = Visibility.Collapsed;
         }*/
 
         TitleBarHelper.UpdateTitleBar(RequestedTheme);

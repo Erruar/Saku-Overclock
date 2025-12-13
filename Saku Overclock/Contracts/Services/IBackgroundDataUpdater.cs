@@ -1,4 +1,4 @@
-﻿using Saku_Overclock.SMUEngine;
+﻿using Saku_Overclock.SmuEngine;
 
 namespace Saku_Overclock.Contracts.Services;
 

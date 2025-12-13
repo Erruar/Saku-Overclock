@@ -11,7 +11,7 @@ using Saku_Overclock.Core.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Models;
 using Saku_Overclock.Services;
-using Saku_Overclock.SMUEngine;
+using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Views;
 using WinRT.Interop;
@@ -102,17 +102,15 @@ public partial class App
                 services.AddSingleton<IActivationService, ActivationService>();
                 services.AddSingleton<IPageService, PageService>();
                 services.AddSingleton<INavigationService, NavigationService>();
-                services.AddSingleton<RyzenadjProvider>();
                 services.AddSingleton<ZenstatesCoreProvider>();
                 services.AddSingleton<ISendSmuCommandService, SendSmuCommandService>();
                 services.AddSingleton<IOcFinderService, OcFinderService>();
                 services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
-                services.AddSingleton<IDataProvider, CompositeDataProvider>(provider =>
-                {
-                    var ryzen = provider.GetRequiredService<RyzenadjProvider>();
-                    var zen = provider.GetRequiredService<ZenstatesCoreProvider>();
-                    return new CompositeDataProvider(ryzen, zen);
-                });
+                services.AddSingleton<ISensorIndexResolver, SensorIndexResolver>();
+                services.AddSingleton<ISensorReader, SensorReader>();
+                services.AddSingleton<CoreMetricsCalculator>();
+                services.AddSingleton<IDataProvider, ZenstatesCoreProvider>();
+                services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
                 // Views and ViewModels
                 services.AddTransient<SettingsViewModel>();
                 services.AddTransient<SettingsPage>();

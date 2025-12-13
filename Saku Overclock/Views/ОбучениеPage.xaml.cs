@@ -35,6 +35,7 @@ public sealed partial class ОбучениеPage : Page
         NotificationsService.SaveNotificationsSettings();
         MainWindow.Set_ContextMenu_Tray();
     }
+    
     private void OpenLicenseSection()
     {
         Pager.SelectedPageIndex = 0;
@@ -63,6 +64,7 @@ public sealed partial class ОбучениеPage : Page
         LicenseText.Children.Add(formattedText);
         showLicenseSection.Begin();
     }
+    
     private async void RunIntroSequence()
     {
         try
