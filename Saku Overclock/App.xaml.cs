@@ -62,7 +62,6 @@ public partial class App
 
     public static IntPtr Hwnd => WindowNative.GetWindowHandle(MainWindow);
 
-    public static bool EfficiencyModeAvailable => Environment.OSVersion.Version.Build >= 22631;
     public static WindowEx MainWindow
     {
         get;
@@ -95,17 +94,21 @@ public partial class App
                 services.AddSingleton<IAppNotificationService, AppNotificationService>();
                 services.AddSingleton<ILocalThemeSettingsService, LocalThemeSettingsService>();
                 services.AddSingleton<IAppSettingsService, AppSettingsService>();
+                services.AddSingleton<IPresetManagerService, PresetManagerService>();
+                services.AddSingleton<IUpdateCheckerService, UpdateCheckerService>();
+                services.AddSingleton<INotesWriterService, NotesWriterService>();
                 services.AddSingleton<IApplyerService, ApplyerService>();
+                services.AddSingleton<IKeyboardHotkeysService, KeyboardHotkeysService>();
+                services.AddSingleton<ITrayMenuService, TrayMenuService>();
+                services.AddSingleton<IWindowStateManagerService, WindowStateManagerService>();
                 services.AddSingleton<IRtssSettingsService, RtssSettingsService>();
                 services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
                 services.AddTransient<INavigationViewService, NavigationViewService>();
                 services.AddSingleton<IActivationService, ActivationService>();
                 services.AddSingleton<IPageService, PageService>();
                 services.AddSingleton<INavigationService, NavigationService>();
-                services.AddSingleton<ZenstatesCoreProvider>();
                 services.AddSingleton<ISendSmuCommandService, SendSmuCommandService>();
                 services.AddSingleton<IOcFinderService, OcFinderService>();
-                services.AddSingleton<IBackgroundDataUpdater, BackgroundDataUpdater>();
                 services.AddSingleton<ISensorIndexResolver, SensorIndexResolver>();
                 services.AddSingleton<ISensorReader, SensorReader>();
                 services.AddSingleton<CoreMetricsCalculator>();
@@ -118,8 +121,6 @@ public partial class App
                 services.AddTransient<КулерPage>();
                 services.AddTransient<AdvancedКулерViewModel>();
                 services.AddTransient<AdvancedКулерPage>();
-                services.AddTransient<AsusКулерViewModel>();
-                services.AddTransient<AsusКулерPage>();
                 services.AddTransient<ИнформацияViewModel>();
                 services.AddTransient<ИнформацияPage>();
                 services.AddTransient<ПараметрыViewModel>();
