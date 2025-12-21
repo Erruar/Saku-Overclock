@@ -4,32 +4,22 @@ using Saku_Overclock.SmuEngine;
 
 namespace Saku_Overclock.Services;
 
-public class ZenstatesCoreProvider : IDataProvider
+public class ZenstatesCoreProvider(
+    ISensorReader sensorReader,
+    ISensorIndexResolver indexResolver,
+    CoreMetricsCalculator metricsCalculator)
+    : IDataProvider
 {
-    private readonly ISensorReader _sensorReader;
-    private readonly ISensorIndexResolver _indexResolver;
-    private readonly CoreMetricsCalculator _metricsCalculator;
-
     private bool _isInitialized;
     private bool _unsupportedPmTableAlert;
 
-    public ZenstatesCoreProvider(
-        ISensorReader sensorReader,
-        ISensorIndexResolver indexResolver,
-        CoreMetricsCalculator metricsCalculator)
-    {
-        _sensorReader = sensorReader;
-        _indexResolver = indexResolver;
-        _metricsCalculator = metricsCalculator;
-    }
-
     /// <summary>
-    /// Реализация получения информации через Zenstates Core
+    ///     Реализация получения информации через Zenstates Core
     /// </summary>
     public void GetData(ref SensorsInformation sensorsInformation)
     {
         // Обновляем таблицу
-        if (!_sensorReader.RefreshTable())
+        if (!sensorReader.RefreshTable())
         {
             return;
         }
@@ -37,10 +27,10 @@ public class ZenstatesCoreProvider : IDataProvider
         // Инициализация при первом запуске
         if (!_isInitialized)
         {
-            var totalCores = _sensorReader.GetTotalCoresTopology();
+            var totalCores = sensorReader.GetTotalCoresTopology();
             if (totalCores > 0)
             {
-                _metricsCalculator.Initialize(totalCores);
+                metricsCalculator.Initialize(totalCores);
                 _isInitialized = true;
             }
             else
@@ -49,7 +39,7 @@ public class ZenstatesCoreProvider : IDataProvider
             }
         }
 
-        var tableVersion = _sensorReader.CurrentTableVersion;
+        var tableVersion = sensorReader.CurrentTableVersion;
 
         // Проверяем поддержку версии таблицы
         if (!IsSupportedTableVersion(tableVersion))
@@ -63,11 +53,11 @@ public class ZenstatesCoreProvider : IDataProvider
 
         // Получаем метрики процессора
         var (avgCoreClk, avgCoreVolt, clkPerCore, voltPerCore, tempPerCore, powerPerCore) =
-            _metricsCalculator.CalculateMetrics();
+            metricsCalculator.CalculateMetrics();
 
         // Базовая информация
-        sensorsInformation.CpuFamily = _sensorReader.GetCodeName();
-        sensorsInformation.CpuUsage = _metricsCalculator.GetCoreLoad();
+        sensorsInformation.CpuFamily = sensorReader.GetCodeName();
+        sensorsInformation.CpuUsage = metricsCalculator.GetCoreLoad();
 
         // Лимиты и значения STAPM/Fast/Slow
         sensorsInformation.CpuStapmLimit = GetSensorValue(SensorId.CpuStapmLimit);
@@ -84,18 +74,19 @@ public class ZenstatesCoreProvider : IDataProvider
         sensorsInformation.VrmEdcLimit = GetSensorValue(SensorId.VrmEdcLimit);
 
         // Температуры
-        var (cpuTempSuccess, cpuTempDirect) = _sensorReader.GetCpuTemperature();
-        sensorsInformation.CpuTempValue = GetSensorValue(SensorId.CpuTempValue, cpuTempSuccess ? (float)cpuTempDirect : 0f);
+        var (cpuTempSuccess, cpuTempDirect) = sensorReader.GetCpuTemperature();
+        sensorsInformation.CpuTempValue =
+            GetSensorValue(SensorId.CpuTempValue, cpuTempSuccess ? (float)cpuTempDirect : 0f);
         sensorsInformation.CpuTempLimit = GetSensorValue(SensorId.CpuTempLimit, 100);
 
         // Частоты памяти и фабрики (специальные поля)
-        var (mclkSuccess, mclkValue) = _sensorReader.ReadSpecialValue("MCLK");
-        var (fclkSuccess, fclkValue) = _sensorReader.ReadSpecialValue("FCLK");
+        var (mclkSuccess, mclkValue) = sensorReader.ReadSpecialValue(SensorReader.SpecialValueType.Mclk);
+        var (fclkSuccess, fclkValue) = sensorReader.ReadSpecialValue(SensorReader.SpecialValueType.Fclk);
         sensorsInformation.MemFrequency = mclkSuccess ? mclkValue : 0;
         sensorsInformation.FabricFrequency = fclkSuccess ? fclkValue : 0;
 
-        // SoC мощность и напряжение
-        var (socVoltSuccess, socVolt) = _sensorReader.ReadSpecialValue("VDDCR_SOC");
+        
+        var (socVoltSuccess, socVolt) = sensorReader.ReadSpecialValue(SensorReader.SpecialValueType.VddcrSoc);
         sensorsInformation.SocPower = GetSensorValue(SensorId.SocPower, socVoltSuccess ? (float)(socVolt * 10) : 0f);
         sensorsInformation.SocVoltage = socVoltSuccess ? socVolt : 0;
 
@@ -127,24 +118,24 @@ public class ZenstatesCoreProvider : IDataProvider
     }
 
     /// <summary>
-    /// Возвращает таблицу PowerTable для дальнейшей обработки (например, для OC Finder)
+    ///     Возвращает таблицу PowerTable для дальнейшей обработки (например, для OC Finder)
     /// </summary>
-    public float[]? GetPowerTable() => _sensorReader.GetFullTable();
+    public float[]? GetPowerTable() => sensorReader.GetFullTable();
 
     /// <summary>
-    /// Получает значение сенсора по идентификатору
+    ///     Получает значение сенсора по идентификатору
     /// </summary>
     private float GetSensorValue(SensorId sensorId, float fallbackValue = 0f)
     {
-        var tableVersion = _sensorReader.CurrentTableVersion;
-        var index = _indexResolver.ResolveIndex(tableVersion, sensorId);
+        var tableVersion = sensorReader.CurrentTableVersion;
+        var index = indexResolver.ResolveIndex(tableVersion, sensorId);
 
         if (index == -1)
         {
             return fallbackValue;
         }
 
-        var (success, value) = _sensorReader.ReadSensorByIndex(index);
+        var (success, value) = sensorReader.ReadSensorByIndex(index);
 
         if (!success || value == 0)
         {
@@ -155,22 +146,57 @@ public class ZenstatesCoreProvider : IDataProvider
     }
 
     /// <summary>
-    /// Проверяет, поддерживается ли версия таблицы
+    ///     Проверяет, поддерживается ли версия таблицы
     /// </summary>
     private static bool IsSupportedTableVersion(int tableVersion)
     {
         return tableVersion switch
         {
-            0x001E0004 => true,
-            0x00190001 => true,
-            0x00240803 => true,
-            0x00240903 => true,
-            0x00380904 => true,
-            0x00380905 => true,
-            0x00380804 => true,
-            0x00380805 => true,
-            0x00540004 => true,
-            0x00620205 => true,
+            0x001E0001 or // Raven, Dali, Picasso
+            0x001E0002 or
+            0x001E0003 or
+            0x001E0004 or
+            0x001E0005 or
+            0x001E000A or
+            0x001E0101 or // FireFlight
+            0x00190001 or // Summit Ridge, Pinnacle Ridge
+            0x00240803 or // Matisse
+            0x00240903 or
+            0x00370000 or // Renoir, Lucienne
+            0x00370001 or
+            0x00370002 or
+            0x00370003 or
+            0x00370004 or
+            0x00370005 or
+            0x00380005 or // Vermeer
+            0x00380505 or
+            0x00380605 or
+            0x00380705 or
+            0x00380804 or
+            0x00380805 or
+            0x00380904 or
+            0x00380905 or
+            0x003F0000 or // Van Gogh
+            0x00400001 or // Cezanne
+            0x00400002 or
+            0x00400003 or
+            0x00400004 or
+            0x00400005 or
+            0x00450004 or // Rembrandt, Mendocino
+            0x00450005 or
+            0x004C0003 or // Phoenix
+            0x004C0004 or
+            0x004C0005 or
+            0x004C0006 or // Phoenix, Phoenix 2
+            0x004C0007 or
+            0x004C0008 or // Phoenix, Krackan Point
+            0x004C0009 or // Hawk Point, Krackan Point 2
+            0x00540004 or // Raphael 7900
+            0x00540104 or // Raphael 7500, 7800
+            0x00540208 or // Dragon Range
+            0x00620105 or // Granite Ridge
+            0x00620205 or
+            0x0064020c => true, // Strix Halo
             _ => false
         };
     }
