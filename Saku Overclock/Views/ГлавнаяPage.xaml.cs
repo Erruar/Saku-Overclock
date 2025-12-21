@@ -18,6 +18,7 @@ using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
 using ZenStates.Core;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
+using Saku_Overclock.Services;
 
 namespace Saku_Overclock.Views;
 
@@ -29,11 +30,10 @@ public sealed partial class ГлавнаяPage
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
     private static readonly IApplyerService Applyer = App.GetService<IApplyerService>(); // Применения пресетов
+    private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>(); // Пресеты
 
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
-
-    private static Profile[] _profile = new Profile[1]; // Кастомные пресеты (всегда по умолчанию будет 1 профиль)
 
     private readonly Cpu?
         _cpu; // Ядро приложения, здесь используется для получения информации о названии процессора, ядрах, SMT и пр.
@@ -55,7 +55,7 @@ public sealed partial class ГлавнаяPage
         _lastAppliedPreset = -2; // Начальное значение последнего применённого пресета, которое точно не совпадёт
 
     private string
-        _lastAppliedProfileName =
+        _lastAppliedPresetName =
             string.Empty; // Защита от переприменения пресета при многократном нажатии на кнопку применить
 
     private double
@@ -77,6 +77,7 @@ public sealed partial class ГлавнаяPage
     {
         App.GetService<ГлавнаяViewModel>();
         InitializeComponent();
+        PresetManager.LoadSettings();
         _dataUpdater = App.BackgroundUpdater;
         if (_dataUpdater != null)
         {
@@ -109,7 +110,7 @@ public sealed partial class ГлавнаяPage
     {
         try
         {
-            LoadProfilesToPivot();
+            LoadPresetsToPivot();
 
             // Принудительная блокировка автомасштабирования
             Chart.YAxes.First().MinLimit = 0;
@@ -172,16 +173,15 @@ public sealed partial class ГлавнаяPage
     /// <summary>
     ///     Загружает все пресеты и выделяет активный пресет
     /// </summary>
-    private void LoadProfilesToPivot()
+    private void LoadPresetsToPivot()
     {
-        ProfileLoad();
         PresetCustom.Children.Clear();
-        foreach (var profile in _profile)
+        foreach (var preset in PresetManager.Presets)
         {
             var isChecked = AppSettings.Preset != -1 &&
-                            _profile[AppSettings.Preset].Profilename == profile.Profilename &&
-                            _profile[AppSettings.Preset].Profiledesc == profile.Profiledesc &&
-                            _profile[AppSettings.Preset].Profileicon == profile.Profileicon;
+                            PresetManager.Presets[AppSettings.Preset].Presetname == preset.Presetname &&
+                            PresetManager.Presets[AppSettings.Preset].Presetdesc == preset.Presetdesc &&
+                            PresetManager.Presets[AppSettings.Preset].Preseticon == preset.Preseticon;
 
             var toggleButton = new ToggleButton
             {
@@ -202,7 +202,7 @@ public sealed partial class ГлавнаяPage
                         {
                             HorizontalAlignment = HorizontalAlignment.Left,
                             Margin = new Thickness(7, 0, 0, 0),
-                            Glyph = profile.Profileicon == string.Empty ? "\uE718" : profile.Profileicon
+                            Glyph = preset.Preseticon == string.Empty ? "\uE718" : preset.Preseticon
                         },
                         new StackPanel
                         {
@@ -214,13 +214,13 @@ public sealed partial class ГлавнаяPage
                                 new TextBlock
                                 {
                                     FontWeight = new FontWeight(700),
-                                    Text = profile.Profilename
+                                    Text = preset.Presetname
                                 },
                                 new TextBlock
                                 {
                                     TextWrapping = TextWrapping.Wrap,
-                                    Text = profile.Profiledesc,
-                                    Visibility = profile.Profiledesc == string.Empty
+                                    Text = preset.Presetdesc,
+                                    Visibility = preset.Presetdesc == string.Empty
                                         ? Visibility.Collapsed
                                         : Visibility.Visible
                                 }
@@ -239,7 +239,7 @@ public sealed partial class ГлавнаяPage
             PresetCustom.Children.Add(toggleButton);
         }
 
-        if (AppSettings.Preset == -1)
+        if (AppSettings.Preset == -1 || PresetManager.Presets.Length == 0)
         {
             PresetPivot.SelectedIndex = 1;
             PresetMin.IsChecked = AppSettings.PremadeMinActivated;
@@ -249,53 +249,6 @@ public sealed partial class ГлавнаяPage
             PresetMax.IsChecked = AppSettings.PremadeMaxActivated;
         }
     }
-
-    #region JSON
-
-    /// <summary>
-    ///     Загружает кастомные пресеты
-    /// </summary>
-    private static void ProfileLoad()
-    {
-        try
-        {
-            _profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json"))!;
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogWarn(ex);
-            ProfileJsonRepair();
-        }
-    }
-
-    /// <summary>
-    ///     Чинит файл кастомных пресетов (при необходимости)
-    /// </summary>
-    private static void ProfileJsonRepair()
-    {
-        _profile = new Profile[1];
-        try
-        {
-            Directory.CreateDirectory(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                JsonConvert.SerializeObject(_profile));
-        }
-        catch
-        {
-            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                        @"\SakuOverclock\profile.json");
-            Directory.CreateDirectory(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-            File.WriteAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                JsonConvert.SerializeObject(_profile));
-        }
-    }
-
-    #endregion
 
     #endregion
 
@@ -601,7 +554,7 @@ public sealed partial class ГлавнаяPage
     /// <summary>
     ///     Скрывает панель навигации Pivot и смезает её вверх
     /// </summary>
-    private void PivotProfiles_Loaded(object sender, RoutedEventArgs e)
+    private void PivotPresets_Loaded(object sender, RoutedEventArgs e)
     {
         var pivot = sender as Pivot;
         var headers = VisualTreeHelper.FindVisualChildren<ContentPresenter>(pivot!);
@@ -704,50 +657,33 @@ public sealed partial class ГлавнаяPage
                     if (button.Tag != null && ((string)button.Tag).Contains("Preset_"))
                     {
                         var presetValue = -1;
-                        var endMode = "Balance";
+                        var presetType = PresetType.Balance;
                         switch (button.Tag)
                         {
                             case "Preset_Min":
-                                endMode = "Min";
+                                presetType = PresetType.Min;
                                 break;
                             case "Preset_Eco":
-                                endMode = "Eco";
+                                presetType = PresetType.Eco;
                                 break;
                             case "Preset_Balance":
-                                endMode = "Balance";
+                                presetType = PresetType.Balance;
                                 break;
                             case "Preset_Speed":
-                                endMode = "Speed";
+                                presetType = PresetType.Speed;
                                 break;
                             case "Preset_Max":
-                                endMode = "Max";
+                                presetType = PresetType.Max;
                                 break;
                         }
 
                         // Проверяем, изменился ли пресет
-                        if (_lastAppliedPreset != presetValue || _lastAppliedProfileName != endMode)
+                        if (_lastAppliedPreset != presetValue || _lastAppliedPresetName != presetType.ToString())
                         {
                             _lastAppliedPreset = presetValue;
-                            _lastAppliedProfileName = endMode;
+                            _lastAppliedPresetName = presetType.ToString();
 
-                            AppSettings.Preset = -1;
-                            ShellPage.SelectPremadePreset(endMode);
-
-                            var (_, _, _, settings, _) = ShellPage.PremadedPresets[endMode];
-
-                            AppSettings.RyzenAdjLine = settings;
-                            AppSettings.SaveSettings();
-
-                            await Applyer.ApplyWithoutAdjLine(false);
-
-                            NotificationsService.Notifies ??= [];
-                            NotificationsService.Notifies.Add(new Notify
-                            {
-                                Title = "Profile_APPLIED",
-                                Msg = "DEBUG MESSAGE",
-                                Type = InfoBarSeverity.Informational
-                            });
-                            NotificationsService.SaveNotificationsSettings();
+                            await Applyer.ApplyPremadePreset(presetType);
 
                             ApplyTeach.Target = ApplyButton;
                             ApplyTeach.Title = "Apply_Success".GetLocalized();
@@ -786,34 +722,25 @@ public sealed partial class ГлавнаяPage
                             icon = glyph.Glyph;
                         }
 
-                        for (var i = 0; i < _profile.Length; i++)
+                        for (var i = 0; i < PresetManager.Presets.Length; i++)
                         {
-                            var profile = _profile[i];
-                            if (profile.Profilename == name &&
-                                profile.Profiledesc == desc &&
-                                (profile.Profileicon == icon ||
-                                 profile.Profileicon == "\uE718"))
+                            var preset = PresetManager.Presets[i];
+                            if (preset.Presetname == name &&
+                                preset.Presetdesc == desc &&
+                                (preset.Preseticon == icon ||
+                                 preset.Preseticon == "\uE718"))
                             {
-                                // Проверяем, изменился ли профиль
-                                if (_lastAppliedPreset != i || _lastAppliedProfileName != name)
+                                // Проверяем, изменился ли пресет
+                                if (_lastAppliedPreset != i || _lastAppliedPresetName != name)
                                 {
                                     _lastAppliedPreset = i;
-                                    _lastAppliedProfileName = name;
+                                    _lastAppliedPresetName = name;
 
                                     AppSettings.Preset = i;
                                     AppSettings.SaveSettings();
 
                                     ПараметрыPage.ApplyInfo = string.Empty;
-                                    await Applyer.ApplyCustomPreset(profile, true);
-
-                                    NotificationsService.Notifies ??= [];
-                                    NotificationsService.Notifies.Add(new Notify
-                                    {
-                                        Title = "Profile_APPLIED",
-                                        Msg = "DEBUG MESSAGE",
-                                        Type = InfoBarSeverity.Informational
-                                    });
-                                    NotificationsService.SaveNotificationsSettings();
+                                    await Applyer.ApplyCustomPreset(preset, true);
 
                                     await Task.Delay(1000);
                                     var timer = 1000;
@@ -888,8 +815,8 @@ public sealed partial class ГлавнаяPage
     /// </summary>
     private void Preset_Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
         PresetsSign.Text = PresetPivot.SelectedIndex == 0
-            ? "Main_OwnProfiles/Text".GetLocalized()
-            : "Main_PremadeProfiles/Text".GetLocalized();
+            ? "Main_OwnPresets/Text".GetLocalized()
+            : "Main_PremadePresets/Text".GetLocalized();
 
     #region Mouse Events & Blocks behavior
 
