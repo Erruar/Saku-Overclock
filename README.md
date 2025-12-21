@@ -114,7 +114,7 @@ Switch between optimized configurations instantly. Share your perfect settings w
     <img alt="Picture" src="https://github.com/Erruar/Saku-Overclock/blob/master/Images/main/AppTheme.png"></img>
     <p align="center"><i>*background of the application automatically adjusts to the color of your wallpaper.</i></p>
     <h1>🖌️Themes that you like</h1>
-    <p  >My application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it or even change background to anything (including GIF)</p>
+    <p  >Application has many themes that you can customize for yourself or create your own unique themes that you like! You can adjust the transparency level of both the background image and the darkening mask after it or even change background to anything (including GIF)</p>
   </ol>
 </details>
 
@@ -501,12 +501,11 @@ The program was developed using the Universal Windows Platform (UWP) framework a
 
 ### ❓ What other components does Saku Overclock include?
  - **ZenStates-Core (C#)**: Provides access to all hidden overclocking options through memory addresses and system management unit (SMU). 
- - **Ryzenadj (C++)**: Custom version to display information about device sensors.
  - **Saku RTSS CLI (C++)**: Library that helps to change the in-game overlay to display information about your device's sensors and FPS.
  - **NBFC (C#)**: Executable to adjust cooler curves and speeds.
  - **Collapse Launcher elements (C#)**: Some code elements to improve UI/UX.
  - **inpoutx64.dll (C++)**: Library to obtain access to memory.
- - **winring0.dll (C++)**: Library for writing CPU specific MSRs.
+ - **PawnIO (pawn)**: Driver that provides universal hardware access to apply overclock settings.
 
 
 
