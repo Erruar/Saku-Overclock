@@ -12,7 +12,7 @@ public class SensorIndexResolver : ISensorIndexResolver
         try
         {
             var codeName = CpuSingleton.GetInstance().info.codeName;
-            _isLaptop = SendSmuCommandService.IsPlatformPCByCodename(codeName) == false;
+            _isLaptop = SendSmuCommandService.IsPlatformPcByCodename(codeName) == false;
         }
         catch
         {
@@ -64,10 +64,6 @@ public class SensorIndexResolver : ISensorIndexResolver
             SensorId.ApuFrequency => ResolveApuFrequency(tableVersion),
             SensorId.ApuVoltage => ResolveApuVoltage(tableVersion),
 
-            // Memory & Fabric
-            SensorId.MemFrequency => ResolveMemFrequency(tableVersion),
-            SensorId.FabricFrequency => ResolveFabricFrequency(tableVersion),
-
             // SoC Power & Voltage
             SensorId.SocPower => ResolveSocPower(tableVersion),
             SensorId.SocVoltage => ResolveSocVoltage(tableVersion),
@@ -86,7 +82,7 @@ public class SensorIndexResolver : ISensorIndexResolver
 
     private static int ResolveCpuStapmLimit(int ver)
     {
-        if (_isLaptop == true)
+        if (_isLaptop)
         {
             return 0;
         }
@@ -94,6 +90,7 @@ public class SensorIndexResolver : ISensorIndexResolver
         return ver switch
         {
             0x00540004 or    // Zen 4
+            0x00540104 or    // Zen 4
             0x00540208 or
             0x00620105 or 
             0x00620205 => 0, // Zen 5
@@ -103,7 +100,7 @@ public class SensorIndexResolver : ISensorIndexResolver
 
     private static int ResolveCpuStapmValue(int ver)
     {
-        if (_isLaptop == true)
+        if (_isLaptop)
         {
             return 1;
         }
@@ -111,6 +108,7 @@ public class SensorIndexResolver : ISensorIndexResolver
         return ver switch
         {
             0x00540004 or     // Zen 4
+            0x00540104 or     // Zen 4
             0x00540208 or
             0x00620105 or 
             0x00620205 => 1,  // Zen 5
@@ -120,7 +118,7 @@ public class SensorIndexResolver : ISensorIndexResolver
 
     private static int ResolveCpuFastLimit(int ver)
     {
-        if (_isLaptop == true)
+        if (_isLaptop)
         {
             return 2;
         }
@@ -135,6 +133,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x00380804 or
             0x00380805 => 0,
             0x00540004 or    // Zen 4
+            0x00540104 or    // Zen 4
             0x00540208 or
             0x00620105 or 
             0x00620205 => 2, // Zen 5
@@ -144,7 +143,7 @@ public class SensorIndexResolver : ISensorIndexResolver
 
     private static int ResolveCpuFastValue(int ver)
     {
-        if (_isLaptop == true)
+        if (_isLaptop)
         {
             return 3;
         }
@@ -159,6 +158,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x00380804 or
             0x00380805 => 29,
             0x00540004 or     // Zen 4
+            0x00540104 or
             0x00540208 or
             0x00620105 or 
             0x00620205 => 26, // Zen 5
@@ -168,7 +168,7 @@ public class SensorIndexResolver : ISensorIndexResolver
 
     private static int ResolveCpuSlowLimit(int ver)
     {
-        if (_isLaptop == true)
+        if (_isLaptop)
         {
             return 4;
         }
@@ -183,6 +183,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x00380804 or
             0x00380805 => 0,
             0x00540004 or    // Zen 4
+            0x00540104 or  
             0x00540208 or
             0x00620105 or 
             0x00620205 => 2, // Zen 5
@@ -192,7 +193,7 @@ public class SensorIndexResolver : ISensorIndexResolver
 
     private static int ResolveCpuSlowValue(int ver)
     {
-        if (_isLaptop == true)
+        if (_isLaptop)
         {
             return 5;
         }
@@ -208,6 +209,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x00380805 => 1,
 
             0x00540004 or    // Zen 4
+            0x00540104 or 
             0x00540208 or
             0x00620105 or 
             0x00620205 => 3, // Zen 5
@@ -253,6 +255,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x0064020c => 6,
 
             0x00540004 or    // Zen 4
+            0x00540104 or
             0x00540208 or
             0x00620105 or 
             0x00620205 => 2, // Zen 5
@@ -299,7 +302,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             // Hawk Point -> индекс 43
             0x004C0009 => 43,
 
-            0x00540004 => 99, // Zen 4
+            0x00540004 or      // Zen 4
+            0x00540104 => 99,
             0x00540208 => 100, // Dragon Range
             0x00620105 or 
             0x00620205 => 107, // Zen 5
@@ -356,6 +360,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0009 => 8,
 
             0x00540004 or    // Zen 4
+            0x00540104 or  
             0x00540208 or
             0x00620105 or 
             0x00620205 => 8, // Zen 5
@@ -409,6 +414,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0009 => 9,
 
             0x00540004 or    // Zen 4
+            0x00540104 or    // Zen 4
             0x00540208 or
             0x00620105 or 
             0x00620205 => 9, // Zen 5
@@ -461,7 +467,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0008 or
             0x004C0009 => 12,
 
-            0x00540004 => 61, // Zen 4
+            0x00540004 or     // Zen 4
+            0x00540104 => 61,
             0x00540208 => 62, // Dragon Range
             0x00620105 or     // Zen 5
             0x00620205 => 63,
@@ -514,7 +521,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0008 or
             0x004C0009 => 13,
 
-            0x00540004 => 63, // Zen 4
+            0x00540004 or     // Zen 4
+            0x00540104 => 63,
             0x00540208 => 64, // Dragon Range
             0x00620105 or     // Zen 5
             0x00620205 => 51, 
@@ -666,6 +674,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0009 => 10,
 
             0x00540004 or    // Zen 4
+            0x00540104 or 
             0x00540208 or
             0x00620105 or 
             0x00620205 => 8, // Zen 5
@@ -718,7 +727,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0008 or
             0x004C0009 => 11,
 
-            0x00540004 => 53, // Zen 4
+            0x00540004 or     // Zen 4
+            0x00540104 => 53,
             0x00540208 => 54, // Dragon Range
             0x00620105 or 
             0x00620205 => 55, // Zen 5
@@ -772,6 +782,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0009 => 14,
 
             0x00540004 or    // Zen 4
+            0x00540104 or 
             0x00540208 or
             0x00620105 or
             0x00620205 => 8, // Zen 5
@@ -824,7 +835,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0008 or
             0x004C0009 => 15,
 
-            0x00540004 => 53, // Zen 4
+            0x00540004 or     // Zen 4
+            0x00540104 => 53, 
             0x00540208 => 54, // Dragon Range
             0x00620105 or 
             0x00620205 => 55, // Zen 5
@@ -884,6 +896,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0009 => 16,
 
             0x00540004 or     // Zen 4
+            0x00540104 or 
             0x00540208 or
             0x00620105 or 
             0x00620205 => 10, // Zen 5
@@ -939,6 +952,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0009 => 17,
 
             0x00540004 or     // Zen 4
+            0x00540104 or
             0x00540208 or
             0x00620105 or 
             0x00620205 => 11, // Zen 5
@@ -985,6 +999,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x0064020c => 22,
 
             0x00540004 or     // Zen 4
+            0x00540104 or 
             0x00540208 or 
             0x00620105 or 
             0x00620205 => 10, // Zen 5
@@ -1050,7 +1065,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0009 => 214, // Hawk Point
             0x0064020c => 340, // Strix Halo tested
 
-            0x00540004 => 98,  // Zen 4
+            0x00540004 or      // Zen 4
+            0x00540104 => 98,
             0x00540208 => 99,  // Dragon Range
             0x00620105 or 
             0x00620205 => 106, // Zen 5
@@ -1168,8 +1184,9 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0009 => 582, // Hawk Point tested
 
             0x00540004 or      // Zen 4
+            0x00540104 or      // Incorrect
             0x00540208 or      // Incorrect
-            0x00620105 or 
+            0x00620105 or      // Incorrect
             0x00620205 => 547, // Zen 5 Incorrect
 
             _ => -1
@@ -1212,8 +1229,9 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0009 => 583, // Hawk Point tested
 
             0x00540004 or      // Zen 4
+            0x00540104 or      // Incorrect
             0x00540208 or      // Incorrect
-            0x00620105 or 
+            0x00620105 or      // Incorrect
             0x00620205 => 548, // Zen 5 Incorrect
 
             _ => -1
@@ -1261,7 +1279,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0009 => 216,
             0x0064020c => 342, // Strix Halo tested
 
-            0x00540004 => 100, // Zen 4
+            0x00540004 or      // Zen 4
+            0x00540104 => 100,
             0x00540208 => 101, // Dragon Range
             0x00620105 or
             0x00620205 => 108, // Zen 5
@@ -1308,33 +1327,12 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x0064020c => 339, // Strix Halo tested
 
 
-            0x00540004 => 97,  // Zen 4
+            0x00540004 or      // Zen 4
+            0x00540104 => 97,   
             0x00540208 => 98,  // Dragon Range
             0x00620105 or
             0x00620205 => 105, // Zen 5
 
-            _ => -1
-        };
-    }
-
-    #endregion
-
-    #region Memory & Fabric Resolvers
-
-    private static int ResolveMemFrequency(int ver)
-    {
-        return ver switch
-        {
-            // Эти значения берутся из cpu.powerTable.MCLK, не из индекса таблицы
-            _ => -1
-        };
-    }
-
-    private static int ResolveFabricFrequency(int ver)
-    {
-        return ver switch
-        {
-            // Эти значения берутся из cpu.powerTable.FCLK, не из индекса таблицы
             _ => -1
         };
     }
@@ -1392,6 +1390,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x004C0009 => 112, // Hawk Point
 
             0x00540004 or      // Zen 4
+            0x00540104 or
             0x00540208 or      // Dragon Range
             0x00620105 or
             0x00620205 => 21,  // Zen 5
@@ -1442,10 +1441,14 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x00450005 => 114,
 
             // Phoenix → индекс 110
+            0x004C0003 or
+            0x004C0004 or
+            0x004C0005 or
             0x004C0008 or
             0x004C0009 => 110, // Hawk Point
 
-            0x00540004 => 52,  // Zen 4
+            0x00540004 or
+            0x00540104 => 52,  // Zen 4
             0x00540208 => 53,  // Dragon Range
             0x00620105 or
             0x00620205 => 54,  // Zen 5
@@ -1495,6 +1498,9 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x00400005 => 240,
             0x00450004 or
             0x00450005 => 259,
+            0x004C0003 or
+            0x004C0004 or
+            0x004C0005 or
             0x004C0006 or
             0x004C0007 or
             0x004C0008 => 549,
@@ -1502,6 +1508,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x0064020c => 788, // Strix Halo tested
 
             0x00540004 => 341, // Zen 4
+            0x00540104 => 317,
             0x00540208 => 346, // Dragon Range
             0x00620105 => 325, // Zen 5
             0x00620205 => 349, 
@@ -1547,6 +1554,9 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x00400005 => 208,
             0x00450004 or
             0x00450005 => 227,
+            0x004C0003 or 
+            0x004C0004 or
+            0x004C0005 or
             0x004C0006 or
             0x004C0007 or
             0x004C0008 => 517,
@@ -1554,6 +1564,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x0064020c => 756, // Strix Halo tested
 
             0x00540004 => 309, // Zen 4
+            0x00540104 => 301,
             0x00540208 => 314, // Dragon Range
             0x00620105 => 309, // Zen 5
             0x00620205 => 317,
@@ -1599,6 +1610,9 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x00400005 => 216,
             0x00450004 or
             0x00450005 => 235,
+            0x004C0003 or
+            0x004C0004 or
+            0x004C0005 or
             0x004C0006 or
             0x004C0007 or
             0x004C0008 => 525,
@@ -1606,6 +1620,7 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x0064020c => 772, // Strix Halo tested
 
             0x00540004 => 325, // Zen 4
+            0x00540104 => 309,
             0x00540208 => 330, // Dragon Range
             0x00620105 => 317, // Zen 5
             0x00620205 => 333,
@@ -1651,13 +1666,17 @@ public class SensorIndexResolver : ISensorIndexResolver
             0x00400005 => 200,
             0x00450004 or
             0x00450005 => 219,
+            0x004C0003 or
+            0x004C0004 or
+            0x004C0005 or
             0x004C0006 or
             0x004C0007 or
             0x004C0008 => 509,
             0x004C0009 => 513,
             0x0064020c => 740, // Strix Halo tested
 
-            0x00540004 => 293, // Zen 4
+            0x00540004 or      // Zen 4
+            0x00540104 => 293,
             0x00540208 => 298, // Dragon Range
             0x00620105 or      // Zen 5
             0x00620205 => 301, 
