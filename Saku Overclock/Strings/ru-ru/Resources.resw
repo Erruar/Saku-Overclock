@@ -1266,13 +1266,13 @@
   <data name="Shell_Activate" xml:space="preserve">
     <value>Активировать</value>
   </data>
-  <data name="Shell_CustomProfiles" xml:space="preserve">
+  <data name="Shell_CustomPresets" xml:space="preserve">
     <value>Свои пресеты</value>
   </data>
   <data name="Shell_DeActivate" xml:space="preserve">
     <value>Активен</value>
   </data>
-  <data name="Shell_PremadedProfiles" xml:space="preserve">
+  <data name="Shell_PremadedPresets" xml:space="preserve">
     <value>Управление пресетами</value>
   </data>
   <data name="Shell_Preset_Balance" xml:space="preserve">
@@ -1361,6 +1361,9 @@
   </data>
   <data name="ThemeNotFoundBg" xml:space="preserve">
     <value>Фон темы не найден. Проверьте путь фона или измените его на другой</value>
+  </data>
+  <data name="ThemeNotFound" xml:space="preserve">
+    <value>Тема не найдена</value>
   </data>
   <data name="ThemeSelect" xml:space="preserve">
     <value>Установить фон</value>
@@ -1833,10 +1836,10 @@ Overclock будут проигнорированы,
   <data name="InfoRAM.Text" xml:space="preserve">
     <value>ОЗУ</value>
   </data>
-  <data name="Param_IncompatibleProfile.Message" xml:space="preserve">
+  <data name="Param_IncompatiblePreset.Message" xml:space="preserve">
     <value>Вы не можете изменять готовые пресеты! На то они и готовые. Выберите один из своих сохранённых пресетов</value>
   </data>
-  <data name="Param_IncompatibleProfile.Title" xml:space="preserve">
+  <data name="Param_IncompatiblePreset.Title" xml:space="preserve">
     <value>Упс... кажется вы делаете что-то не так!</value>
   </data>
   <data name="Param_Premaded" xml:space="preserve">
@@ -1851,7 +1854,7 @@ Overclock будут проигнорированы,
   <data name="Param_IncompatibleCPU.Text" xml:space="preserve">
     <value>Упс... кажется ваш процессор не поддерживается!</value>
   </data>
-  <data name="Param_UnsignedProfile" xml:space="preserve">
+  <data name="Param_UnsignedPreset" xml:space="preserve">
     <value>Мой пресет</value>
   </data>
   <data name="Settings_ni_Add_Element.Text" xml:space="preserve">
@@ -2016,13 +2019,13 @@ Overclock будут проигнорированы,
 Позволяет следить за состоянием ноутбука 
 без открытия дополнительных окон</value>
   </data>
-  <data name="Param_Profile_Edit_Name.Content" xml:space="preserve">
+  <data name="Param_Preset_Edit_Name.Content" xml:space="preserve">
     <value>Изменить пресет</value>
   </data>
-  <data name="Param_Profile_New_Name.Content" xml:space="preserve">
+  <data name="Param_Preset_New_Name.Content" xml:space="preserve">
     <value>Добавить пресет</value>
   </data>
-  <data name="Param_Profile_New_Name_Add.PlaceholderText" xml:space="preserve">
+  <data name="Param_Preset_New_Name_Add.PlaceholderText" xml:space="preserve">
     <value>Новое имя...</value>
   </data>
   <data name="Shell_Changelog.Text" xml:space="preserve">
@@ -2407,10 +2410,10 @@ Asus. Может не поддерживаться на
   <data name="Tray_PowerMon.Label" xml:space="preserve">
     <value>PowerMon Pro</value>
   </data>
-  <data name="Tray_Profiles.Description" xml:space="preserve">
+  <data name="Tray_Presets.Description" xml:space="preserve">
     <value>Управляйте готовыми и вашими пресетами</value>
   </data>
-  <data name="Tray_Profiles.Label" xml:space="preserve">
+  <data name="Tray_Presets.Label" xml:space="preserve">
     <value>Пресеты</value>
   </data>
   <data name="Tray_SakuLogo.Description" xml:space="preserve">
@@ -2449,13 +2452,13 @@ Asus. Может не поддерживаться на
   <data name="Settings_ni_TrayMonGradientColorSwitch.Content" xml:space="preserve">
     <value>Цвет</value>
   </data>
-  <data name="Shell_ProfileChanging" xml:space="preserve">
+  <data name="Shell_PresetChanging" xml:space="preserve">
     <value>Смена пресета</value>
   </data>
-  <data name="Shell_ProfileChanging_Custom" xml:space="preserve">
+  <data name="Shell_PresetChanging_Custom" xml:space="preserve">
     <value>Вы успешно переключили ваши пресеты на </value>
   </data>
-  <data name="Shell_ProfileChanging_Premade" xml:space="preserve">
+  <data name="Shell_PresetChanging_Premade" xml:space="preserve">
     <value>Вы успешно переключили готовые пресеты на </value>
   </data>
   <data name="Shell_RTSSChanging" xml:space="preserve">
@@ -2620,10 +2623,10 @@ Asus. Может не поддерживаться на
   <data name="Main_OverclockPage.Text" xml:space="preserve">
     <value>Разгон</value>
   </data>
-  <data name="Main_OwnProfiles.Text" xml:space="preserve">
+  <data name="Main_OwnPresets.Text" xml:space="preserve">
     <value>Свои пресеты</value>
   </data>
-  <data name="Main_PremadeProfiles.Text" xml:space="preserve">
+  <data name="Main_PremadePresets.Text" xml:space="preserve">
     <value>Готовые пресеты</value>
   </data>
   <data name="Main_Settings.Text" xml:space="preserve">
@@ -2864,10 +2867,10 @@ Asus. Может не поддерживаться на
   <data name="Param_DeveloperOptions_SmuCommand" xml:space="preserve">
     <value>Команда</value>
   </data>
-  <data name="Preset_SavedProfiles.Text" xml:space="preserve">
+  <data name="Preset_SavedPresets.Text" xml:space="preserve">
     <value>Сохранённые пресеты</value>
   </data>
-  <data name="Preset_SavedProfilesAddNew.Text" xml:space="preserve">
+  <data name="Preset_SavedPresetsAddNew.Text" xml:space="preserve">
     <value>Добавить </value>
   </data>
   <data name="Preset_UndervoltingDesc.ToolTipService.ToolTip" xml:space="preserve">
@@ -2878,10 +2881,10 @@ Asus. Может не поддерживаться на
 Эти параметры вашего пресета будут изменены:
 Оптимизатор кривой для всех ядер</value>
   </data>
-  <data name="Param_Profile_Delete_Profile.Content" xml:space="preserve">
+  <data name="Param_Preset_Delete_Preset.Content" xml:space="preserve">
     <value>Удалить пресет</value>
   </data>
-  <data name="Param_Profile_New_Desc_Add.PlaceholderText" xml:space="preserve">
+  <data name="Param_Preset_New_Desc_Add.PlaceholderText" xml:space="preserve">
     <value>Новое описание...</value>
   </data>
   <data name="Preset_BetterTurbo.Text" xml:space="preserve">
