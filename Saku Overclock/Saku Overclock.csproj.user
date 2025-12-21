@@ -38,7 +38,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Styles\ProfileSelector.xaml">
+    <Page Update="Styles\PresetSelector.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Styles\SliderCollapseLauncher.xaml">
@@ -52,9 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Styles\TrayIconResources.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\AsusКулерPage.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

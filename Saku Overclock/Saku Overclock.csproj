@@ -14,10 +14,10 @@
 	<Nullable>enable</Nullable>
 	<UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <AssemblyVersion>1.0.18.281</AssemblyVersion>
-    <FileVersion>1.0.18.281</FileVersion>
+    <AssemblyVersion>1.0.18.300</AssemblyVersion>
+    <FileVersion>1.0.18.300</FileVersion>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>  
-    <Version>1.0.18.281</Version>
+    <Version>1.0.18.300</Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
     <UseWPF>False</UseWPF>
@@ -65,7 +65,7 @@
     <None Remove="Assets\AsusCoolerIcons\QuietSpeed.png" />
     <None Remove="Assets\AsusCoolerIcons\TurboSpeed.png" />
     <None Remove="info.bat" />
-    <None Remove="ProfileSwitcher\ProfileSwitcher.xaml" />
+    <None Remove="PresetSwitcher\PresetSwitcher.xaml" />
     <None Remove="Services\Cpu.cs.bak.zip" />
     <None Remove="Styles\ActiveButton.xaml" />
     <None Remove="Styles\ButtonCollapseLauncher.xaml" />
@@ -73,10 +73,8 @@
     <None Remove="Styles\CopyButton.xaml" />
     <None Remove="Styles\NavigationSelector.xaml" />
     <None Remove="Styles\OptionsVisualizer.xaml" />
-    <None Remove="Styles\ProfileSelector.xaml" />
     <None Remove="Styles\ToggleButtonCollapseLauncher.xaml" />
     <None Remove="Views\AdvancedКулерPage.xaml" />
-    <None Remove="Views\AsusКулерPage.xaml" />
     <None Remove="Views\PowerWindow.xaml" />
     <None Remove="Views\КулерPage.xaml" />
     <None Remove="Views\ОбновлениеPage.xaml" />
@@ -286,7 +284,7 @@
     <Page Update="Styles\NavigationSelector.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Styles\ProfileSelector.xaml">
+    <Page Update="Styles\PresetSelector.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\ОбучениеPage.xaml">
@@ -295,10 +293,7 @@
     <None Update="ZenStates-Core.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Page Update="Views\AsusКулерPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="ProfileSwitcher\ProfileSwitcher.xaml">
+    <Page Update="PresetSwitcher\PresetSwitcher.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <None Update="SakuRTSSCLI.exe">
