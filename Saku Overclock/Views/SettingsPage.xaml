@@ -504,27 +504,27 @@
                             </Grid>
                             <!--RTSS_SecondColor end-->
 
-                            <!--RTSS_SakuOverclockProfile-->
+                            <!--RTSS_SakuOverclockPreset-->
                             <Grid Margin="0,3,0,0" Grid.Row="3" Grid.Column="0"
                                   Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                                <CheckBox x:Name="RtssSakuOverclockProfileCheckbox" Checked="RtssChanged_Checked" Unchecked="RtssChanged_Checked" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50,0,-50,0"/>
+                                <CheckBox x:Name="RtssSakuOverclockPresetCheckbox" Checked="RtssChanged_Checked" Unchecked="RtssChanged_Checked" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50,0,-50,0"/>
                             </Grid>
                             <Grid Margin="1,3,0,0" Grid.Column="1" Grid.Row="3" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                                <TextBox CornerRadius="14" x:Name="RtssSakuOverclockProfileTextBox" TextChanged="RtssChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="16,0,16,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="Saku Overclock RC-7: (Profile)"/>
+                                <TextBox CornerRadius="14" x:Name="RtssSakuOverclockPresetTextBox" TextChanged="RtssChanged_Checked" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" Margin="16,0,16,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="Saku Overclock RC-7: (Preset)"/>
                             </Grid>
                             <Grid Margin="1,3,0,0" Grid.Column="2" Grid.Row="3" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                                <Button x:Name="RtssSakuOverclockProfileButton" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                <Button x:Name="RtssSakuOverclockPresetButton" CornerRadius="20" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center"
                                         IsEnabled="{Binding ElementName=RtssSecondColorCheckbox, Path=IsChecked, Converter={StaticResource BooleanInverterConverter}, Mode=OneWay}"
                                         Opacity="{Binding ElementName=RtssSecondColorCheckbox, Path=IsChecked, Converter={StaticResource BooleanToOpacityConverter}, Mode=OneWay}">
-                                <Border Background="{Binding ElementName=RtssSakuOverclockProfileColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
-                                    <FontIcon Visibility="{Binding ElementName=RtssSakuOverclockProfileButton, Path=IsPointerOver, Mode=OneWay}" Foreground="{Binding ElementName=RtssSakuOverclockProfileColorPicker, Path=Color, Converter={StaticResource HexColorInverterConverter}, Mode=OneWay}" Glyph="&#xEF3C;"/>
+                                <Border Background="{Binding ElementName=RtssSakuOverclockPresetColorPicker, Path=Color, Converter={StaticResource ColorToBrushConverter}, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="32" Height="32" Margin="-12,-10,-12,-10">
+                                    <FontIcon Visibility="{Binding ElementName=RtssSakuOverclockPresetButton, Path=IsPointerOver, Mode=OneWay}" Foreground="{Binding ElementName=RtssSakuOverclockPresetColorPicker, Path=Color, Converter={StaticResource HexColorInverterConverter}, Mode=OneWay}" Glyph="&#xEF3C;"/>
                                 </Border>
                                 <Button.Flyout>
                                     <Flyout>
                                         <Grid>
                                             <ColorPicker ColorSpectrumShape="Box"
                                                          Color="#44AFAC"
-                                                         x:Name="RtssSakuOverclockProfileColorPicker"
+                                                         x:Name="RtssSakuOverclockPresetColorPicker"
                                                          IsMoreButtonVisible="False"
                                                          IsColorSliderVisible="True"
                                                          ColorChanged="RtssChanged_Checked"
@@ -539,11 +539,11 @@
                             </Button>
                             </Grid>
                             <Grid Margin="1,3,0,0" Grid.Column="3" Grid.Row="3" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                                <ToggleButton CornerRadius="14" Checked="RtssChanged_Checked" Unchecked="RtssChanged_Checked" x:Name="RtssSakuProfileCompactToggle" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Center" Width="52" Height="32">
-                                <FontIcon Glyph="{Binding ElementName=RtssSakuProfileCompactToggle, Path=IsChecked, Converter={StaticResource BooleanToGlyphConverter}}"/>
+                                <ToggleButton CornerRadius="14" Checked="RtssChanged_Checked" Unchecked="RtssChanged_Checked" x:Name="RtssSakuPresetCompactToggle" Shadow="{ThemeResource SharedShadow}" Translation="0,0,20" HorizontalAlignment="Center" Width="52" Height="32">
+                                <FontIcon Glyph="{Binding ElementName=RtssSakuPresetCompactToggle, Path=IsChecked, Converter={StaticResource BooleanToGlyphConverter}}"/>
                             </ToggleButton>
                             </Grid>
-                            <!--RTSS_SakuOverclockProfile end-->
+                            <!--RTSS_SakuOverclockPreset end-->
 
 
 
@@ -863,7 +863,7 @@
                                 </Grid>
                                 <Grid Margin="0,3,0,0" Grid.Row="1" Grid.Column="0"
                                       Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                                    <TextBlock FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="SemiBold" Margin="20,0,0,0" x:Uid="Settings_Keybinds_Elements_Custom" Text="Switch between custom user profiles"/>
+                                    <TextBlock FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="SemiBold" Margin="20,0,0,0" x:Uid="Settings_Keybinds_Elements_Custom" Text="Switch between custom user presets"/>
                                 </Grid>
                                 <Grid Margin="1,3,0,0" Grid.Row="1" Grid.Column="1" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                                     <Button Margin="21,0,0,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Center">
@@ -885,7 +885,7 @@
                                 </Grid>
                                 <Grid Margin="0,3,0,0" Grid.Row="2" Grid.Column="0"
                                       Background="{ThemeResource ControlStrokeColorDefaultBrush}">
-                                    <TextBlock FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="SemiBold" Margin="20,0,0,0" x:Uid="Settings_Keybinds_Elements_Premaded" Text="Switch between premade user profiles"/>
+                                    <TextBlock FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="SemiBold" Margin="20,0,0,0" x:Uid="Settings_Keybinds_Elements_Premaded" Text="Switch between premade user presets"/>
                                 </Grid>
                                 <Grid Margin="1,3,0,0" Grid.Row="2" Grid.Column="1" Background="{ThemeResource ControlStrokeColorDefaultBrush}">
                                     <Button Margin="21,0,0,0" Background="Transparent" BorderBrush="Transparent" CornerRadius="4" Height="45" HorizontalAlignment="Center">

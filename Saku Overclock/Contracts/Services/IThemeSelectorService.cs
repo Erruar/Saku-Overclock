@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Saku_Overclock.Styles;
+using static Saku_Overclock.Services.ThemeSelectorService;
 
 namespace Saku_Overclock.Contracts.Services;
 
@@ -10,16 +11,17 @@ public interface IThemeSelectorService
         get;
     }
 
-    public List<ThemeClass> Themes
+    List<ThemeClass> Themes
     {
         get;
     }
 
-    Task InitializeAsync();
+    void Initialize();
 
     Task SetThemeAsync(ElementTheme theme);
 
     Task SetRequestedThemeAsync();
+    Task<ThemeApplyResult> UpdateAppliedTheme(int themeType);
 
     void LoadThemeFromSettings();
     void SaveThemeInSettings();

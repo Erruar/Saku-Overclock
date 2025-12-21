@@ -14,9 +14,9 @@ public sealed class CopyButton : Button
 
     private void CopyButton_Click(object sender, RoutedEventArgs e)
     {
-        if (GetTemplateChild("CopyToClipboardSuccessAnimation") is Storyboard _storyBoard)
+        if (GetTemplateChild("CopyToClipboardSuccessAnimation") is Storyboard storyBoard)
         {
-            _storyBoard.Begin(); 
+            storyBoard.Begin(); 
         }
     }
 

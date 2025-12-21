@@ -16,13 +16,6 @@ namespace Saku_Overclock.ViewModels;
 
 public partial class SettingsViewModel : ObservableRecipient
 {
-    private ElementTheme _elementTheme;
-    public ElementTheme ElementTheme
-    {
-        get => _elementTheme;
-        set => SetProperty(ref _elementTheme, value);
-    }
-
     private string _versionDescription;
 
     public string VersionDescription
@@ -30,43 +23,22 @@ public partial class SettingsViewModel : ObservableRecipient
         get => _versionDescription;
         set => SetProperty(ref _versionDescription, value);
     }
-    public ICommand SwitchThemeCommand
-    {
-        get;
-    }
 
-    public const int VersionId = 0; //"Consumer Creative" = 0; "Release Candidate" = 1
+    public const int VersionId = 0;
     private static string? _versionString;
 
-    public SettingsViewModel(IThemeSelectorService themeSelectorService)
+    public SettingsViewModel()
     {
         _versionString = VersionId switch
         {
-            0 => "Consumer Creative", //Debug for tests, for all
-            1 => "Release Candidate", //For all
-            2 => "Release", //For all
-            5 => "Debug Lanore", //ONLY FOR TESTS
-            _ => "Unknown Version" //Yes
+            0 => "Consumer Creative", // Debug for tests, available for testers and pre-revisions
+            1 => "Release Candidate", // Available for everyone
+            2 => "Release", // Available for everyone
+            5 => "Debug Lanore", // Available only for internal testing
+            _ => "Unknown Version"
         };
-        _elementTheme = themeSelectorService.Theme;
-        _versionDescription = GetVersionDescription();
 
-        SwitchThemeCommand = new RelayCommand<ElementTheme>(
-            async void (param) =>
-            {
-                try
-                {
-                    if (ElementTheme != param)
-                    {
-                        ElementTheme = param;
-                        await themeSelectorService.SetThemeAsync(param);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await LogHelper.LogError(ex);
-                }
-            });
+        _versionDescription = GetVersionDescription();
     }
 
     private static string GetVersionDescription()
@@ -82,7 +54,7 @@ public partial class SettingsViewModel : ObservableRecipient
         {
             version = Assembly.GetExecutingAssembly().GetName().Version!;
         }
-        return $"{"AppDisplayName".GetLocalized()} {version.Major}.{version.Minor}.{version.Build}.{version.Revision} {_versionString}";
+        return $"{"AppDisplayName".GetLocalized()} {version} {_versionString}";
     }
 
 }

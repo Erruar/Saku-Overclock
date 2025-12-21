@@ -9,7 +9,7 @@ public interface IOcFinderService
     PresetMetrics GetPresetMetrics(PresetType type, OptimizationLevel level);
     PresetOptions GetPresetOptions(string preset);
 
-    void GeneratePremadeProfiles();
+    void GeneratePremadePresets();
     bool IsUndervoltingAvailable();
     void ClearMetricsCache();
     string CurveOptimizerGenerateStringHelper(int value);

@@ -41,13 +41,13 @@ public interface IAppSettingsService
         set;
     } // Флаг включены ли горячие клавиши в приложении или нет
 
-    string HotkeysSwitchingCustomProfiles
+    string HotkeysSwitchingCustomPresets
     {
         get;
         set;
     } // Список избранных переключаемых кастомных пресетов
 
-    string HotkeysSwitchingPremadeProfiles
+    string HotkeysSwitchingPremadePresets
     {
         get;
         set;
@@ -125,11 +125,11 @@ public interface IAppSettingsService
         set;
     } // Максимальный процент частоты процессора при использовании оптимизатора стрима
 
-    bool ProfilespageViewModeBeginner
+    bool PresetspageViewModeBeginner
     {
         get;
         set;
-    } // Текущий режим отображения настроек на странице управления профилями - Новичок, если false - Про
+    } // Текущий режим отображения настроек на странице управления пресетами - Новичок, если false - Про
 
     // Пресеты, готовые пресеты и параметры
     int Preset

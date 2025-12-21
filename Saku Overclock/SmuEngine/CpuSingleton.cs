@@ -3,13 +3,13 @@
 namespace Saku_Overclock.SmuEngine;
 public class CpuSingleton
 {
-    private static readonly Cpu _cpu = new();
+    private static readonly Cpu Cpu = new();
     private CpuSingleton()
     {
     }
 
     public static Cpu GetInstance()
     {
-        return _cpu;
+        return Cpu;
     }
 }

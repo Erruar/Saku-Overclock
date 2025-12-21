@@ -359,18 +359,18 @@ Text="{Binding Version}">
                             <RepositionThemeTransition/>
                         </TransitionCollection>
                     </Grid.ChildrenTransitions>
-                    <TextBlock x:Uid="Main_PremadeProfiles" x:Name="PresetsSign" Margin="14,16,0,0" FontWeight="SemiBold" FontSize="17" Text="Пресеты"/>
+                    <TextBlock x:Uid="Main_PremadePresets" x:Name="PresetsSign" Margin="14,16,0,0" FontWeight="SemiBold" FontSize="17" Text="Пресеты"/>
                     <Grid Margin="0,0,0,10">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition Height="55"/>
                         </Grid.RowDefinitions>
-                        <Pivot Grid.Row="0" Loaded="PivotProfiles_Loaded" Margin="-10,0,-10,15" 
+                        <Pivot Grid.Row="0" Loaded="PivotPresets_Loaded" Margin="-10,0,-10,15" 
                                HorizontalAlignment="Center" HorizontalContentAlignment="Stretch"
                                x:Name="PresetPivot" SelectionChanged="Preset_Pivot_SelectionChanged">
                             <PivotItem Margin="0,4,0,7">
                                 <PivotItem.Header>
-                                    <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_OwnProfiles" Text="Свои"/>
+                                    <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_OwnPresets" Text="Свои"/>
                                 </PivotItem.Header>
                                 <ScrollViewer Margin="0,0,10,0" Padding="0,0,-10,0">
                                     <StackPanel Margin="20,0,20,0" Orientation="Vertical" HorizontalAlignment="Stretch">
@@ -413,7 +413,7 @@ Text="{Binding Version}">
                                                 <TextBlock x:Uid="Main_PresetPage" TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Управление пресетами"/>
                                             </Button>
                                             <Button CornerRadius="14" VerticalAlignment="Stretch" Tag="FromHelpButtons" Click="SwitchPivot_Click" HorizontalAlignment="Stretch" Margin="4,0,0,0" Grid.Column="1" Translation="0,0,10" Shadow="{ThemeResource SharedShadow}">
-                                                <TextBlock x:Uid="Main_PremadeProfiles" TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Готовые пресеты"/>
+                                                <TextBlock x:Uid="Main_PremadePresets" TextWrapping="WrapWholeWords" TextAlignment="Center" Text="Готовые пресеты"/>
                                             </Button>
                                         </Grid>
                                     </StackPanel>
@@ -421,7 +421,7 @@ Text="{Binding Version}">
                             </PivotItem>
                             <PivotItem Margin="0,11,0,7">
                                 <PivotItem.Header>
-                                    <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_PremadeProfiles" Text="Готовые"/>
+                                    <TextBlock Margin="0,0,0,-8" FontSize="16" FontWeight="Bold" x:Uid="Main_PremadePresets" Text="Готовые"/>
                                 </PivotItem.Header>
                                 <ScrollViewer Margin="0,0,10,0" Padding="0,0,-10,0" VerticalScrollBarVisibility="Visible">
                                     <StackPanel Margin="20,-3,20,0" Orientation="Vertical" HorizontalAlignment="Stretch" IsHitTestVisible="True">

@@ -35,9 +35,9 @@
     </XamlUICommand>
     <XamlUICommand
         x:Key="Command4"
-        x:Uid="Tray_Profiles"
-        Label="Profiles"
-        Description="Profiles"
+        x:Uid="Tray_Presets"
+        Label="Presets"
+        Description="Presets"
         >
         <XamlUICommand.IconSource>
             <FontIconSource Glyph="&#xeadf;" />

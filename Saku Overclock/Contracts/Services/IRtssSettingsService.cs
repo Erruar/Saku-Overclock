@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Saku_Overclock.Services;
+﻿using Saku_Overclock.Services;
 
 namespace Saku_Overclock.Contracts.Services;
 internal interface IRtssSettingsService
@@ -11,7 +6,7 @@ internal interface IRtssSettingsService
     void SaveSettings();
     void LoadSettings();
 
-    List<RtssElementsClass> RTSS_Elements
+    List<RtssElementsClass> RtssElements
     {
         get; set;
     }

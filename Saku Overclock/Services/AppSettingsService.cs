@@ -60,13 +60,13 @@ public class AppSettingsService : IAppSettingsService
         set;
     } = true; // Флаг включены ли горячие клавиши в приложении или нет
 
-    public string HotkeysSwitchingCustomProfiles
+    public string HotkeysSwitchingCustomPresets
     {
         get;
         set;
     } = "All"; // Список избранных переключаемых кастомных пресетов
 
-    public string HotkeysSwitchingPremadeProfiles
+    public string HotkeysSwitchingPremadePresets
     {
         get;
         set;
@@ -145,7 +145,7 @@ public class AppSettingsService : IAppSettingsService
         set;
     } = 80; // Максимальный процент частоты процессора при использовании оптимизатора стрима
 
-    public bool ProfilespageViewModeBeginner
+    public bool PresetspageViewModeBeginner
     {
         get;
         set;

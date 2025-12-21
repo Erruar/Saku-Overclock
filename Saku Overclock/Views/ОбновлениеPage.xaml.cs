@@ -12,14 +12,17 @@ namespace Saku_Overclock.Views;
 
 public sealed partial class ОбновлениеPage
 {
-    private static Release? _newVersion = UpdateChecker.GetNewVersion();
+    private static readonly IUpdateCheckerService UpdateCheckerService = App.GetService<IUpdateCheckerService>();
+    private static readonly INotesWriterService NotesWriterService = App.GetService<INotesWriterService>();
     private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>();
+    private static readonly ITrayMenuService TrayMenuService = App.GetService<ITrayMenuService>();
+    private static Release? _newVersion = UpdateCheckerService.GetNewVersion();
 
     public ОбновлениеPage()
     {
         App.GetService<ОбновлениеViewModel>();
         InitializeComponent();
-        MainWindow.Remove_ContextMenu_Tray();
+        TrayMenuService.SetMinimalMode();
         HideNavigationBar();
 
         Loaded += (_, _) =>
@@ -43,25 +46,25 @@ public sealed partial class ОбновлениеPage
         {
             if (_newVersion == null)
             {
-                await UpdateChecker.CheckForUpdates();
-                _newVersion = UpdateChecker.GetNewVersion();
+                await UpdateCheckerService.CheckForUpdates();
+                _newVersion = UpdateCheckerService.GetNewVersion();
             }
 
             UpdateNewTime.Text = _newVersion?.PublishedAt!.Value
                 .UtcDateTime
                 .ToLocalTime()
                 .ToString("f", CultureInfo.CurrentUICulture);
-            UpdateNewVer.Text = UpdateChecker.ParseVersion(_newVersion?.TagName ?? "").ToString();
+            UpdateNewVer.Text = UpdateCheckerService.ParseVersion().ToString();
             MainChangelogContent.Children.Clear();
-            if (UpdateChecker.GitHubInfoString == string.Empty)
+            if (UpdateCheckerService.GetGithubInfoString() == string.Empty)
             {
-                await UpdateChecker.GenerateReleaseInfoString();
+                await UpdateCheckerService.CheckForUpdates();
             }
 
-            UpdateChecker.UpdateReleaseNotesBrushes(AccentTextBrush.Background,
+            NotesWriterService.UpdateReleaseNotesBrushes(AccentTextBrush.Background,
                 TextSecondaryBrush.Background,
                 ControlStrongBrush.Background);
-            await UpdateChecker.GenerateFormattedReleaseNotes(MainChangelogContent);
+            await NotesWriterService.GenerateFormattedReleaseNotes(MainChangelogContent);
         }
         catch (Exception e)
         {
@@ -104,7 +107,7 @@ public sealed partial class ОбновлениеPage
                 UpdateNewDownloadingLeftTime.Text = value.elapsed;
             });
 
-            await UpdateChecker.DownloadAndUpdate(_newVersion, progress);
+            await UpdateCheckerService.DownloadAndUpdate(_newVersion, progress);
         }
         catch (Exception exception)
         {

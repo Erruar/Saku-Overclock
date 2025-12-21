@@ -11,7 +11,7 @@
         <ThemeShadow x:Name="SharedShadow" />
     </UserControl.Resources>
     <Grid>
-        <!-- Просмотр настроек профиля -->
+        <!-- Просмотр настроек пресета -->
         <FlipView x:Name="FlipViewContainer" 
            Background="Transparent">
             <FlipView.ItemTemplate>

@@ -8,11 +8,11 @@ using Saku_Overclock.Contracts.Services;
 using WinRT.Interop;
 using Visual = Microsoft.UI.Composition.Visual;
 
-namespace Saku_Overclock.ProfileSwitcher;
+namespace Saku_Overclock.PresetSwitcher;
 
-public sealed partial class ProfileSwitcher
+public sealed partial class PresetSwitcher
 {
-    private static ProfileSwitcher? _instance;
+    private static PresetSwitcher? _instance;
     private readonly Visual _windowVisual;
 
     /// <summary>
@@ -21,7 +21,7 @@ public sealed partial class ProfileSwitcher
     private static CancellationTokenSource?
         _hideCts;
 
-    public ProfileSwitcher()
+    public PresetSwitcher()
     {
         InitializeComponent();
 
@@ -97,11 +97,11 @@ public sealed partial class ProfileSwitcher
     private const uint LwaAlpha = 0x02;
 
     public static async Task ShowOverlay(IThemeSelectorService themeSelectorService,
-        IAppSettingsService settingsService, string profileName, string? profileIcon = null, string? profileDesc = null)
+        IAppSettingsService settingsService, string presetName, string? presetIcon = null, string? presetDesc = null)
     {
         if (_instance == null)
         {
-            _instance = new ProfileSwitcher();
+            _instance = new PresetSwitcher();
         }
 
         if (_instance.Content is FrameworkElement rootElement)
@@ -122,23 +122,23 @@ public sealed partial class ProfileSwitcher
         _instance.MainOpacity.Opacity = themeSelectorService.Themes[settingsService.ThemeType].ThemeMaskOpacity;
 
         // Подготовка контента
-        _instance.ProfileText.Text = profileName;
-        _instance.ProfileIcon.Glyph = profileIcon ?? "\uE718";
+        _instance.PresetText.Text = presetName;
+        _instance.PresetIcon.Glyph = presetIcon ?? "\uE718";
 
-        if (profileDesc?.Length > 26)
+        if (presetDesc?.Length > 26)
         {
-            profileDesc = profileDesc[..26] + "...";
+            presetDesc = presetDesc[..26] + "...";
         }
 
-        _instance.ProfileDesc.Text = profileDesc ?? string.Empty;
+        _instance.PresetDesc.Text = presetDesc ?? string.Empty;
 
-        if (profileDesc == null || string.IsNullOrEmpty(profileDesc))
+        if (presetDesc == null || string.IsNullOrEmpty(presetDesc))
         {
-            _instance.ProfileDesc.Visibility = Visibility.Collapsed;
+            _instance.PresetDesc.Visibility = Visibility.Collapsed;
         }
         else
         {
-            _instance.ProfileDesc.Visibility = Visibility.Visible;
+            _instance.PresetDesc.Visibility = Visibility.Visible;
         }
 
         // Сбрасываем начальные значения для анимации при каждом вызове:

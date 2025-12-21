@@ -556,7 +556,7 @@ public sealed partial class SettingsPage
 
         if (_themeSelectorService.Themes.Count == 0)
         {
-            ViewModel.SwitchThemeCommand.Execute(ElementTheme.Default); // Список пуст -> системная тема
+            _themeSelectorService.SetThemeAsync(ElementTheme.Default); // Список пуст -> системная тема
             return;
         }
 
@@ -571,11 +571,11 @@ public sealed partial class SettingsPage
 
         if (AppSettings.ThemeType == 0)
         {
-            ViewModel.SwitchThemeCommand.Execute(ElementTheme.Default);
+            _themeSelectorService.SetThemeAsync(ElementTheme.Default);
         }
         else
         {
-            ViewModel.SwitchThemeCommand.Execute(selectedTheme.ThemeLight
+            _themeSelectorService.SetThemeAsync(selectedTheme.ThemeLight
                 ? ElementTheme.Light
                 : ElementTheme.Dark); // Переключение состояния темы, на светлую, тёмную
         }
@@ -2066,7 +2066,7 @@ public sealed partial class SettingsPage
     /// </summary>
     private void LoadRtssElements()
     {
-        for (var i = 0; i < RtssSettings.RTSS_Elements.Count; i++)
+        for (var i = 0; i < RtssSettings.RtssElements.Count; i++)
         {
             // Получаем элементы в зависимости от текущего значения i
             var toggleButton = RtssMainColorCompactToggle;
@@ -2089,10 +2089,10 @@ public sealed partial class SettingsPage
                     colorPicker = RtssSecondColorColorPicker;
                     break;
                 case 2:
-                    toggleButton = RtssSakuProfileCompactToggle;
-                    checkBox = RtssSakuOverclockProfileCheckbox;
-                    textBox = RtssSakuOverclockProfileTextBox;
-                    colorPicker = RtssSakuOverclockProfileColorPicker;
+                    toggleButton = RtssSakuPresetCompactToggle;
+                    checkBox = RtssSakuOverclockPresetCheckbox;
+                    textBox = RtssSakuOverclockPresetTextBox;
+                    colorPicker = RtssSakuOverclockPresetColorPicker;
                     break;
                 case 3:
                     toggleButton = RtssStapmFastSlowCompactToggle;
@@ -2135,25 +2135,25 @@ public sealed partial class SettingsPage
             // Применение значения ToggleButton
             if (toggleButton != null)
             {
-                toggleButton.IsChecked = RtssSettings.RTSS_Elements[i].UseCompact;
+                toggleButton.IsChecked = RtssSettings.RtssElements[i].UseCompact;
             }
 
             // Применение значения CheckBox
             if (checkBox != null)
             {
-                checkBox.IsChecked = RtssSettings.RTSS_Elements[i].Enabled;
+                checkBox.IsChecked = RtssSettings.RtssElements[i].Enabled;
             }
 
             // Применение значения TextBox
             if (textBox != null)
             {
-                textBox.Text = RtssSettings.RTSS_Elements[i].Name;
+                textBox.Text = RtssSettings.RtssElements[i].Name;
             }
 
             // Применение значения ColorPicker
             if (colorPicker != null)
             {
-                var color = RtssSettings.RTSS_Elements[i].Color;
+                var color = RtssSettings.RtssElements[i].Color;
                 var r = Convert.ToByte(color.Substring(1, 2), 16);
                 var g = Convert.ToByte(color.Substring(3, 2), 16);
                 var b = Convert.ToByte(color.Substring(5, 2), 16);
@@ -2173,70 +2173,70 @@ public sealed partial class SettingsPage
             "FFFFFF" // Добавляем белый цвет по умолчанию
         };
 
-        AddColorIfUnique(RtssSettings.RTSS_Elements[0].Color);
-        AddColorIfUnique(RtssSettings.RTSS_Elements[1].Color);
-        AddColorIfUnique(RtssSettings.RTSS_Elements[2].Color);
-        AddColorIfUnique(RtssSettings.RTSS_Elements[3].Color);
-        AddColorIfUnique(RtssSettings.RTSS_Elements[4].Color);
-        AddColorIfUnique(RtssSettings.RTSS_Elements[5].Color);
-        AddColorIfUnique(RtssSettings.RTSS_Elements[6].Color);
-        AddColorIfUnique(RtssSettings.RTSS_Elements[7].Color);
-        AddColorIfUnique(RtssSettings.RTSS_Elements[8].Color);
+        AddColorIfUnique(RtssSettings.RtssElements[0].Color);
+        AddColorIfUnique(RtssSettings.RtssElements[1].Color);
+        AddColorIfUnique(RtssSettings.RtssElements[2].Color);
+        AddColorIfUnique(RtssSettings.RtssElements[3].Color);
+        AddColorIfUnique(RtssSettings.RtssElements[4].Color);
+        AddColorIfUnique(RtssSettings.RtssElements[5].Color);
+        AddColorIfUnique(RtssSettings.RtssElements[6].Color);
+        AddColorIfUnique(RtssSettings.RtssElements[7].Color);
+        AddColorIfUnique(RtssSettings.RtssElements[8].Color);
 
         // Шаг 2: Создание CompactLib
         var compactLib = new bool[9];
-        compactLib[0] = RtssSettings.RTSS_Elements[0].UseCompact;
-        compactLib[1] = RtssSettings.RTSS_Elements[1].UseCompact;
-        compactLib[2] = RtssSettings.RTSS_Elements[1].UseCompact && RtssSettings.RTSS_Elements[1].Enabled
-            ? RtssSettings.RTSS_Elements[1].UseCompact
-            : RtssSettings.RTSS_Elements[2].UseCompact;
-        compactLib[3] = RtssSettings.RTSS_Elements[1].UseCompact && RtssSettings.RTSS_Elements[1].Enabled
-            ? RtssSettings.RTSS_Elements[1].UseCompact
-            : RtssSettings.RTSS_Elements[3].UseCompact;
-        compactLib[4] = RtssSettings.RTSS_Elements[1].UseCompact && RtssSettings.RTSS_Elements[1].Enabled
-            ? RtssSettings.RTSS_Elements[1].UseCompact
-            : RtssSettings.RTSS_Elements[4].UseCompact;
-        compactLib[5] = RtssSettings.RTSS_Elements[1].UseCompact && RtssSettings.RTSS_Elements[1].Enabled
-            ? RtssSettings.RTSS_Elements[1].UseCompact
-            : RtssSettings.RTSS_Elements[5].UseCompact;
-        compactLib[6] = RtssSettings.RTSS_Elements[1].UseCompact && RtssSettings.RTSS_Elements[1].Enabled
-            ? RtssSettings.RTSS_Elements[1].UseCompact
-            : RtssSettings.RTSS_Elements[6].UseCompact;
-        compactLib[7] = RtssSettings.RTSS_Elements[1].UseCompact && RtssSettings.RTSS_Elements[1].Enabled
-            ? RtssSettings.RTSS_Elements[1].UseCompact
-            : RtssSettings.RTSS_Elements[7].UseCompact;
-        compactLib[8] = RtssSettings.RTSS_Elements[1].UseCompact && RtssSettings.RTSS_Elements[1].Enabled
-            ? RtssSettings.RTSS_Elements[1].UseCompact
-            : RtssSettings.RTSS_Elements[8].UseCompact;
+        compactLib[0] = RtssSettings.RtssElements[0].UseCompact;
+        compactLib[1] = RtssSettings.RtssElements[1].UseCompact;
+        compactLib[2] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
+            ? RtssSettings.RtssElements[1].UseCompact
+            : RtssSettings.RtssElements[2].UseCompact;
+        compactLib[3] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
+            ? RtssSettings.RtssElements[1].UseCompact
+            : RtssSettings.RtssElements[3].UseCompact;
+        compactLib[4] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
+            ? RtssSettings.RtssElements[1].UseCompact
+            : RtssSettings.RtssElements[4].UseCompact;
+        compactLib[5] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
+            ? RtssSettings.RtssElements[1].UseCompact
+            : RtssSettings.RtssElements[5].UseCompact;
+        compactLib[6] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
+            ? RtssSettings.RtssElements[1].UseCompact
+            : RtssSettings.RtssElements[6].UseCompact;
+        compactLib[7] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
+            ? RtssSettings.RtssElements[1].UseCompact
+            : RtssSettings.RtssElements[7].UseCompact;
+        compactLib[8] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
+            ? RtssSettings.RtssElements[1].UseCompact
+            : RtssSettings.RtssElements[8].UseCompact;
 
         // Шаг 3: Создание EnableLib
         var enableLib = new bool[9];
-        enableLib[0] = RtssSettings.RTSS_Elements[0].Enabled;
-        enableLib[1] = RtssSettings.RTSS_Elements[1].Enabled;
-        enableLib[2] = RtssSettings.RTSS_Elements[2].Enabled;
-        enableLib[3] = RtssSettings.RTSS_Elements[3].Enabled;
-        enableLib[4] = RtssSettings.RTSS_Elements[4].Enabled;
-        enableLib[5] = RtssSettings.RTSS_Elements[5].Enabled;
-        enableLib[6] = RtssSettings.RTSS_Elements[6].Enabled;
-        enableLib[7] = RtssSettings.RTSS_Elements[7].Enabled;
-        enableLib[8] = RtssSettings.RTSS_Elements[8].Enabled;
+        enableLib[0] = RtssSettings.RtssElements[0].Enabled;
+        enableLib[1] = RtssSettings.RtssElements[1].Enabled;
+        enableLib[2] = RtssSettings.RtssElements[2].Enabled;
+        enableLib[3] = RtssSettings.RtssElements[3].Enabled;
+        enableLib[4] = RtssSettings.RtssElements[4].Enabled;
+        enableLib[5] = RtssSettings.RtssElements[5].Enabled;
+        enableLib[6] = RtssSettings.RtssElements[6].Enabled;
+        enableLib[7] = RtssSettings.RtssElements[7].Enabled;
+        enableLib[8] = RtssSettings.RtssElements[8].Enabled;
 
         // Шаг 4: Создание TextLib
         var textLib = new string[7];
-        textLib[0] = RtssSettings.RTSS_Elements[2].Name.TrimEnd(); // Saku Overclock Profile
-        textLib[1] = RtssSettings.RTSS_Elements[3].Name.TrimEnd(); // STAPM Fast Slow
-        textLib[2] = RtssSettings.RTSS_Elements[4].Name.TrimEnd(); // EDC Therm CPU Usage
-        textLib[3] = RtssSettings.RTSS_Elements[5].Name.TrimEnd(); // CPU Clocks
-        textLib[4] = RtssSettings.RTSS_Elements[6].Name.TrimEnd(); // AVG Clock Volt
-        textLib[5] = RtssSettings.RTSS_Elements[7].Name.TrimEnd(); // APU Clock Volt Temp
-        textLib[6] = RtssSettings.RTSS_Elements[8].Name.TrimEnd(); // Frame Rate
+        textLib[0] = RtssSettings.RtssElements[2].Name.TrimEnd(); // Saku Overclock Preset
+        textLib[1] = RtssSettings.RtssElements[3].Name.TrimEnd(); // STAPM Fast Slow
+        textLib[2] = RtssSettings.RtssElements[4].Name.TrimEnd(); // EDC Therm CPU Usage
+        textLib[3] = RtssSettings.RtssElements[5].Name.TrimEnd(); // CPU Clocks
+        textLib[4] = RtssSettings.RtssElements[6].Name.TrimEnd(); // AVG Clock Volt
+        textLib[5] = RtssSettings.RtssElements[7].Name.TrimEnd(); // APU Clock Volt Temp
+        textLib[6] = RtssSettings.RtssElements[8].Name.TrimEnd(); // Frame Rate
 
         // Шаг 5: Генерация строки AdvancedCodeEditor
         var advancedCodeEditor = new StringBuilder();
 
         /*public string AdvancedCodeEditor =
         "<C0=FFA0A0><C1=A0FFA0><C2=FC89AC><C3=fa2363><S1=70><S2=-50>\n" +
-        "<C0>Saku Overclock <C1>" + ViewModels.ГлавнаяViewModel.GetVersion() + ": <S0>$SelectedProfile$\n" +
+        "<C0>Saku Overclock <C1>" + ViewModels.ГлавнаяViewModel.GetVersion() + ": <S0>$SelectedPreset$\n" +
         "<S1><C2>STAPM, Fast, Slow: <C3><S0>$stapm_value$<S2>W<S1>$stapm_limit$W <S0>$fast_value$<S2>W<S1>$fast_limit$W <S0>$slow_value$<S2>W<S1>$slow_limit$W\n" +
         "<C2>EDC, Therm, CPU Usage: <C3><S0>$vrmedc_value$<S2>A<S1>$vrmedc_max$A <C3><S0>$cpu_temp_value$<S2>C<S1>$cpu_temp_max$C<C3><S0> $cpu_usage$<S2>%<S1>\n" +
         "<S1><C2>Clocks: $cpu_clock_cycle$<S1><C2>$currCore$:<S0><C3> $cpu_core_clock$<S2>GHz<S1>$cpu_core_voltage$V $cpu_clock_cycle_end$\n" +
@@ -2256,23 +2256,23 @@ public sealed partial class SettingsPage
 
         // 5.2 Вторая строка (Saku Overclock)
         // Пример второй строки:
-        // "<C0>Saku Overclock <C1>" + ViewModels.ГлавнаяViewModel.GetVersion() + ": <S0>$SelectedProfile$\n" +
+        // "<C0>Saku Overclock <C1>" + ViewModels.ГлавнаяViewModel.GetVersion() + ": <S0>$SelectedPreset$\n" +
         if (enableLib[2])
         {
-            var colorIndexMain = RtssSettings.RTSS_Elements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[2].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[2].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RTSS_Elements[0].Enabled
+            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[2].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[2].Color.Replace("#", "")).ToString();
+            var compactMain = RtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[2]
                     ? "<S1>"
                     : "<S0>";
             var compactSecond = compactLib[2] ? "<S2>" : "<S0>";
             advancedCodeEditor.Append(
-                $"<C{colorIndexMain}>{compactMain}{textLib[0]} {ГлавнаяViewModel.GetVersion()}: <C{colorIndexSecond}>{compactSecond}<S0>$SelectedProfile$\n");
+                $"<C{colorIndexMain}>{compactMain}{textLib[0]} {ГлавнаяViewModel.GetVersion()}: <C{colorIndexSecond}>{compactSecond}<S0>$SelectedPreset$\n");
         }
 
         // 5.3 Третья строка (STAPM Fast Slow)
@@ -2280,19 +2280,19 @@ public sealed partial class SettingsPage
         // "<S1><C2>STAPM, Fast, Slow: <C3><S0>$stapm_value$<S2>W<S1>$stapm_limit$W <S0>$fast_value$<S2>W<S1>$fast_limit$W <S0>$slow_value$<S2>W<S1>$slow_limit$W\n" +
         if (enableLib[3])
         {
-            var colorIndexMain = RtssSettings.RTSS_Elements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[3].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[3].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RTSS_Elements[0].Enabled
+            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[3].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[3].Color.Replace("#", "")).ToString();
+            var compactMain = RtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[3]
                     ? "<S1>"
                     : "<S0>";
             var compactSecond = compactLib[3] ? "<S2>" : "<S0>";
-            var compactSign = RtssSettings.RTSS_Elements[1].Enabled
+            var compactSign = RtssSettings.RtssElements[1].Enabled
                 ? compactLib[1] ? "" : "/"
                 : compactLib[3]
                     ? ""
@@ -2306,19 +2306,19 @@ public sealed partial class SettingsPage
         // "<C2>EDC, Therm, CPU Usage: <C3><S0>$vrmedc_value$<S2>A<S1>$vrmedc_max$A <C3><S0>$cpu_temp_value$<S2>C<S1>$cpu_temp_max$C<C3><S0> $cpu_usage$<S2>%<S1>\n" +
         if (enableLib[4])
         {
-            var colorIndexMain = RtssSettings.RTSS_Elements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[4].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[4].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RTSS_Elements[0].Enabled
+            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[4].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[4].Color.Replace("#", "")).ToString();
+            var compactMain = RtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[4]
                     ? "<S1>"
                     : "<S0>";
             var compactSecond = compactLib[4] ? "<S2>" : "<S0>";
-            var compactSign = RtssSettings.RTSS_Elements[1].Enabled
+            var compactSign = RtssSettings.RtssElements[1].Enabled
                 ? compactLib[1] ? "" : "/"
                 : compactLib[4]
                     ? ""
@@ -2332,19 +2332,19 @@ public sealed partial class SettingsPage
         // "<S1><C2>Clocks: $cpu_clock_cycle$<S1><C2>$currCore$:<S0><C3> $cpu_core_clock$<S2>GHz<S1>$cpu_core_voltage$V $cpu_clock_cycle_end$\n" +
         if (enableLib[5])
         {
-            var colorIndexMain = RtssSettings.RTSS_Elements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[5].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[5].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RTSS_Elements[0].Enabled
+            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[5].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[5].Color.Replace("#", "")).ToString();
+            var compactMain = RtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[5]
                     ? "<S1>"
                     : "<S0>";
             var compactSecond = compactLib[5] ? "<S2>" : "<S0>";
-            var compactSign = RtssSettings.RTSS_Elements[1].Enabled
+            var compactSign = RtssSettings.RtssElements[1].Enabled
                 ? compactLib[1] ? "" : "/"
                 : compactLib[5]
                     ? ""
@@ -2358,19 +2358,19 @@ public sealed partial class SettingsPage
         // "<C2>AVG Clock, Volt: <C3><S0>$average_cpu_clock$<S2>GHz<S1>$average_cpu_voltage$V" +
         if (enableLib[6])
         {
-            var colorIndexMain = RtssSettings.RTSS_Elements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[6].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[6].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RTSS_Elements[0].Enabled
+            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[6].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[6].Color.Replace("#", "")).ToString();
+            var compactMain = RtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[6]
                     ? "<S1>"
                     : "<S0>";
             var compactSecond = compactLib[6] ? "<S2>" : "<S0>";
-            var compactSign = RtssSettings.RTSS_Elements[1].Enabled
+            var compactSign = RtssSettings.RtssElements[1].Enabled
                 ? compactLib[1] ? "" : "/"
                 : compactLib[6]
                     ? ""
@@ -2384,19 +2384,19 @@ public sealed partial class SettingsPage
         // "<C2>APU Clock, Volt, Temp: <C3><S0>$gfx_clock$<S2>MHz<S1>$gfx_volt$V <S0>$gfx_temp$<S1>C\n" +
         if (enableLib[7])
         {
-            var colorIndexMain = RtssSettings.RTSS_Elements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[7].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[7].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RTSS_Elements[0].Enabled
+            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[7].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[7].Color.Replace("#", "")).ToString();
+            var compactMain = RtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[7]
                     ? "<S1>"
                     : "<S0>";
             var compactSecond = compactLib[7] ? "<S2>" : "<S0>";
-            var compactSign = RtssSettings.RTSS_Elements[1].Enabled
+            var compactSign = RtssSettings.RtssElements[1].Enabled
                 ? compactLib[1] ? "" : "/"
                 : compactLib[7]
                     ? ""
@@ -2410,12 +2410,12 @@ public sealed partial class SettingsPage
         // "<C2>Framerate <C3><S0>%FRAMERATE% %FRAMETIME%";*/
         if (enableLib[8])
         {
-            var colorIndexMain = RtssSettings.RTSS_Elements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[8].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RTSS_Elements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RTSS_Elements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RTSS_Elements[8].Color.Replace("#", "")).ToString();
+            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[8].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(RtssSettings.RtssElements[8].Color.Replace("#", "")).ToString();
             var compactMain = compactLib[8] ? "<S1>" : "<S0>";
             advancedCodeEditor.Append(
                 $"<C{colorIndexMain}>{compactMain}{textLib[6]}: <C{colorIndexSecond}><S0>%FRAMERATE% %FRAMETIME%");
@@ -2473,7 +2473,7 @@ public sealed partial class SettingsPage
             if (toggleButton.Name == "RtssAllCompactToggle")
             {
                 _isLoaded = false;
-                RtssSakuProfileCompactToggle.IsChecked = RtssAllCompactToggle.IsChecked;
+                RtssSakuPresetCompactToggle.IsChecked = RtssAllCompactToggle.IsChecked;
                 RtssStapmFastSlowCompactToggle.IsChecked = RtssAllCompactToggle.IsChecked;
                 RtssEdcThermUsageCompactToggle.IsChecked = RtssAllCompactToggle.IsChecked;
                 RtssCpuClocksCompactToggle.IsChecked = RtssAllCompactToggle.IsChecked;
@@ -2481,20 +2481,20 @@ public sealed partial class SettingsPage
                 RtssApuClockVoltTempCompactToggle.IsChecked = RtssAllCompactToggle.IsChecked;
                 RtssFrameRateCompactToggle.IsChecked = RtssAllCompactToggle.IsChecked;
 
-                RtssSettings.RTSS_Elements[1].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RTSS_Elements[2].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RTSS_Elements[3].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RTSS_Elements[4].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RTSS_Elements[5].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RTSS_Elements[6].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RTSS_Elements[7].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RTSS_Elements[8].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[1].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[2].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[3].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[4].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[5].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[6].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[7].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[8].UseCompact = toggleButton.IsChecked == true;
                 _isLoaded = true;
             }
             else
             {
                 _isLoaded = false;
-                RtssAllCompactToggle.IsChecked = RtssSakuProfileCompactToggle.IsChecked &
+                RtssAllCompactToggle.IsChecked = RtssSakuPresetCompactToggle.IsChecked &
                                                    RtssStapmFastSlowCompactToggle.IsChecked &
                                                    RtssEdcThermUsageCompactToggle.IsChecked &
                                                    RtssCpuClocksCompactToggle.IsChecked &
@@ -2506,47 +2506,47 @@ public sealed partial class SettingsPage
 
             if (toggleButton.Name == "RtssMainColorCompactToggle")
             {
-                RtssSettings.RTSS_Elements[0].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[0].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssAllCompactToggle")
             {
-                RtssSettings.RTSS_Elements[1].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[1].UseCompact = toggleButton.IsChecked == true;
             }
 
-            if (toggleButton.Name == "RtssSakuProfileCompactToggle")
+            if (toggleButton.Name == "RtssSakuPresetCompactToggle")
             {
-                RtssSettings.RTSS_Elements[2].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[2].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssStapmFastSlowCompactToggle")
             {
-                RtssSettings.RTSS_Elements[3].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[3].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssEdcThermUsageCompactToggle")
             {
-                RtssSettings.RTSS_Elements[4].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[4].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssCpuClocksCompactToggle")
             {
-                RtssSettings.RTSS_Elements[5].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[5].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssAvgCpuClockVoltCompactToggle")
             {
-                RtssSettings.RTSS_Elements[6].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[6].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssApuClockVoltTempCompactToggle")
             {
-                RtssSettings.RTSS_Elements[7].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[7].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssFrameRateCompactToggle")
             {
-                RtssSettings.RTSS_Elements[8].UseCompact = toggleButton.IsChecked == true;
+                RtssSettings.RtssElements[8].UseCompact = toggleButton.IsChecked == true;
             }
         }
 
@@ -2554,85 +2554,85 @@ public sealed partial class SettingsPage
         {
             if (checkBox.Name == "RtssMainColorCheckbox")
             {
-                RtssSettings.RTSS_Elements[0].Enabled = checkBox.IsChecked == true;
+                RtssSettings.RtssElements[0].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssSecondColorCheckbox")
             {
-                RtssSettings.RTSS_Elements[1].Enabled = checkBox.IsChecked == true;
+                RtssSettings.RtssElements[1].Enabled = checkBox.IsChecked == true;
             }
 
-            if (checkBox.Name == "RtssSakuOverclockProfileCheckbox")
+            if (checkBox.Name == "RtssSakuOverclockPresetCheckbox")
             {
-                RtssSettings.RTSS_Elements[2].Enabled = checkBox.IsChecked == true;
+                RtssSettings.RtssElements[2].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssStapmFastSlowCheckbox")
             {
-                RtssSettings.RTSS_Elements[3].Enabled = checkBox.IsChecked == true;
+                RtssSettings.RtssElements[3].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssEdcThermUsageCheckbox")
             {
-                RtssSettings.RTSS_Elements[4].Enabled = checkBox.IsChecked == true;
+                RtssSettings.RtssElements[4].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssCpuClocksCheckbox")
             {
-                RtssSettings.RTSS_Elements[5].Enabled = checkBox.IsChecked == true;
+                RtssSettings.RtssElements[5].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssAvgCpuClockVoltCheckbox")
             {
-                RtssSettings.RTSS_Elements[6].Enabled = checkBox.IsChecked == true;
+                RtssSettings.RtssElements[6].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssApuClockVoltTempCheckbox")
             {
-                RtssSettings.RTSS_Elements[7].Enabled = checkBox.IsChecked == true;
+                RtssSettings.RtssElements[7].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssFrameRateCheckbox")
             {
-                RtssSettings.RTSS_Elements[8].Enabled = checkBox.IsChecked == true;
+                RtssSettings.RtssElements[8].Enabled = checkBox.IsChecked == true;
             }
         }
 
         if (s is TextBox textBox)
         {
-            if (textBox.Name == "RtssSakuOverclockProfileTextBox")
+            if (textBox.Name == "RtssSakuOverclockPresetTextBox")
             {
-                RtssSettings.RTSS_Elements[2].Name = textBox.Text;
+                RtssSettings.RtssElements[2].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssStapmFastSlowTextBox")
             {
-                RtssSettings.RTSS_Elements[3].Name = textBox.Text;
+                RtssSettings.RtssElements[3].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssEdcThermUsageTextBox")
             {
-                RtssSettings.RTSS_Elements[4].Name = textBox.Text;
+                RtssSettings.RtssElements[4].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssCpuClocksTextBox")
             {
-                RtssSettings.RTSS_Elements[5].Name = textBox.Text;
+                RtssSettings.RtssElements[5].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssAvgCpuClockVoltTextBox")
             {
-                RtssSettings.RTSS_Elements[6].Name = textBox.Text;
+                RtssSettings.RtssElements[6].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssApuClockVoltTempTextBox")
             {
-                RtssSettings.RTSS_Elements[7].Name = textBox.Text;
+                RtssSettings.RtssElements[7].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssFrameRateTextBox")
             {
-                RtssSettings.RTSS_Elements[8].Name = textBox.Text;
+                RtssSettings.RtssElements[8].Name = textBox.Text;
             }
         }
 
@@ -2640,55 +2640,55 @@ public sealed partial class SettingsPage
         {
             if (colorPicker.Name == "RtssMainColorColorPicker")
             {
-                RtssSettings.RTSS_Elements[0].Color =
+                RtssSettings.RtssElements[0].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssSecondColorColorPicker")
             {
-                RtssSettings.RTSS_Elements[1].Color =
+                RtssSettings.RtssElements[1].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
-            if (colorPicker.Name == "RtssSakuOverclockProfileColorPicker")
+            if (colorPicker.Name == "RtssSakuOverclockPresetColorPicker")
             {
-                RtssSettings.RTSS_Elements[2].Color =
+                RtssSettings.RtssElements[2].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssStapmFastSlowColorPicker")
             {
-                RtssSettings.RTSS_Elements[3].Color =
+                RtssSettings.RtssElements[3].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssEdcThermUsageColorPicker")
             {
-                RtssSettings.RTSS_Elements[4].Color =
+                RtssSettings.RtssElements[4].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssCpuClocksColorPicker")
             {
-                RtssSettings.RTSS_Elements[5].Color =
+                RtssSettings.RtssElements[5].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssAvgCpuClockVoltColorPicker")
             {
-                RtssSettings.RTSS_Elements[6].Color =
+                RtssSettings.RtssElements[6].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssApuClockVoltTempColorPicker")
             {
-                RtssSettings.RTSS_Elements[7].Color =
+                RtssSettings.RtssElements[7].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssFrameRateColorPicker")
             {
-                RtssSettings.RTSS_Elements[8].Color =
+                RtssSettings.RtssElements[8].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
         }

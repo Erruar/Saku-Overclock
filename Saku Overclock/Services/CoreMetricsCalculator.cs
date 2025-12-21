@@ -31,14 +31,14 @@ public class CoreMetricsCalculator
     private readonly Dictionary<int, int[]> _activeCoreToPhysicalIndex = [];
 
     /// <summary>
-    /// Проверка на определённые версии Windows где время в простое необходимо считать отдельно
+    /// Проверка на определённые версии Windows, где время в простое необходимо считать отдельно
     /// </summary>
     private static readonly bool QueryIdleTimeSeparated =
         Environment.OSVersion.Version >= new Version(10, 0, 22621, 0) &&
         Environment.OSVersion.Version < new Version(10, 0, 26100, 0);
 
-    private readonly bool _isRavenFamily; 
-    private readonly bool _isHawkPointFamily; 
+    private readonly bool _isRavenFamily;
+    private readonly bool _isHawkPointFamily;
 
     public CoreMetricsCalculator(ISensorReader sensorReader, ISensorIndexResolver indexResolver)
     {
@@ -72,7 +72,7 @@ public class CoreMetricsCalculator
     public void Initialize(int coreCount)
     {
         _coreCount = coreCount;
-        _clkPerCoreCache = new double[coreCount];
+        _clkPerCoreCache = new double[_isRavenFamily && _coreCount == 2 ? 4 : _coreCount];
         _voltPerCoreCache = new double[coreCount];
         _tempPerCoreCache = new double[coreCount];
         _powerPerCoreCache = new double[coreCount];
@@ -82,7 +82,7 @@ public class CoreMetricsCalculator
     /// Рассчитывает все метрики процессора и возвращает средние значения
     /// </summary>
     public (double avgCoreClk, double avgCoreVolt, double[] clkPerCore, double[] voltPerCore,
-            double[] tempPerCore, double[] powerPerCore) CalculateMetrics()
+        double[] tempPerCore, double[] powerPerCore) CalculateMetrics()
     {
         if (_coreCount == 0)
         {
@@ -90,61 +90,73 @@ public class CoreMetricsCalculator
         }
 
         var tableVersion = _sensorReader.CurrentTableVersion;
-
-        var startFreqIndex = _indexResolver.ResolveIndex(tableVersion, SmuEngine.SensorId.CpuFrequencyStart);
-        var startVoltIndex = _indexResolver.ResolveIndex(tableVersion, SmuEngine.SensorId.CpuVoltageStart);
-        var startTempIndex = _indexResolver.ResolveIndex(tableVersion, SmuEngine.SensorId.CpuTemperatureStart);
-        var startPowerIndex = _indexResolver.ResolveIndex(tableVersion, SmuEngine.SensorId.CpuPowerStart);
+        var startFreqIndex = _indexResolver.ResolveIndex(tableVersion, SensorId.CpuFrequencyStart);
+        var startVoltIndex = _indexResolver.ResolveIndex(tableVersion, SensorId.CpuVoltageStart);
+        var startTempIndex = _indexResolver.ResolveIndex(tableVersion, SensorId.CpuTemperatureStart);
+        var startPowerIndex = _indexResolver.ResolveIndex(tableVersion, SensorId.CpuPowerStart);
 
         double sumClk = 0, sumVolt = 0;
         int validClk = 0, validVolt = 0;
 
-        for (var core = 0; core < _coreCount; core++)
+        // Для Raven с 2 ядрами читаем 4 потока для частоты, но только 2 ядра для остального
+        for (var core = 0; core < (_isRavenFamily && _coreCount == 2 ? 4 : _coreCount); core++)
         {
-            // Частота
-            var clk = GetCoreMetric(startFreqIndex, core, 0.2, 8.0);
-            if (clk > 0)
+            // Частота - может быть больше массива для Raven
+            if (core < _clkPerCoreCache.Length)
             {
-                _clkPerCoreCache[core] = Math.Round(clk, 3);
-                sumClk += _clkPerCoreCache[core];
-                validClk++;
-            }
-            else
-            {
-                // Fallback на GetCoreMulti
-                var (success, fallbackClk) = _sensorReader.GetCoreMulti(core);
-                if (success)
+                var clk = GetCoreMetric(startFreqIndex, core, 0.2, 8.0);
+                if (clk > 0)
                 {
-                    _clkPerCoreCache[core] = Math.Round(fallbackClk, 3);
-                    if (fallbackClk > 0.38)
+                    _clkPerCoreCache[core] = Math.Round(clk, 3);
+                    sumClk += _clkPerCoreCache[core];
+                    validClk++;
+                }
+                else
+                {
+                    // Fallback на GetCoreMulti
+                    var (success, fallbackClk) = _sensorReader.GetCoreMulti(core);
+                    if (success)
                     {
-                        sumClk += _clkPerCoreCache[core];
-                        validClk++;
+                        _clkPerCoreCache[core] = Math.Round(fallbackClk, 3);
+                        if (fallbackClk > 0.38)
+                        {
+                            sumClk += _clkPerCoreCache[core];
+                            validClk++;
+                        }
                     }
                 }
             }
 
             // Напряжение
-            var volt = GetCoreMetric(startVoltIndex, core, 0.4, 2.0);
-            if (volt > 0)
+            if (core < _voltPerCoreCache.Length)
             {
-                _voltPerCoreCache[core] = Math.Round(volt, 4);
-                sumVolt += _voltPerCoreCache[core];
-                validVolt++;
+                var volt = GetCoreMetric(startVoltIndex, core, 0.4, 2.0);
+                if (volt > 0)
+                {
+                    _voltPerCoreCache[core] = Math.Round(volt, 4);
+                    sumVolt += _voltPerCoreCache[core];
+                    validVolt++;
+                }
             }
 
             // Температура
-            var temp = GetCoreMetric(startTempIndex, core, -300, 150);
-            if (temp > 0)
+            if (core < _tempPerCoreCache.Length)
             {
-                _tempPerCoreCache[core] = Math.Round(temp, 2);
+                var temp = GetCoreMetric(startTempIndex, core, -300, 150);
+                if (temp > 0)
+                {
+                    _tempPerCoreCache[core] = Math.Round(temp, 2);
+                }
             }
 
             // Мощность
-            var power = GetCoreMetric(startPowerIndex, core, 0.001, 1000);
-            if (power > 0)
+            if (core < _powerPerCoreCache.Length)
             {
-                _powerPerCoreCache[core] = Math.Round(power, 2);
+                var power = GetCoreMetric(startPowerIndex, core, 0.001, 1000);
+                if (power > 0)
+                {
+                    _powerPerCoreCache[core] = Math.Round(power, 2);
+                }
             }
         }
 
@@ -179,7 +191,9 @@ public class CoreMetricsCalculator
             }
 
             // Проверяем доступность значения
-            if (logicalCore < 0 || logicalCore >= _coreCount || values.Length <= logicalCore)
+            if (logicalCore < 0 || logicalCore >=
+                (_isRavenFamily && _coreCount == 2 ? 4 : _coreCount)
+                || values.Length <= logicalCore)
             {
                 return 0;
             }
@@ -227,7 +241,7 @@ public class CoreMetricsCalculator
         }
 
         var mapping = new List<int>();
-        var coresCount = NormalizedCoreCound(startIndex);
+        var coresCount = NormalizedCoreCount(startIndex);
 
         for (var physIndex = 0; physIndex < coresCount; physIndex++)
         {
@@ -247,11 +261,11 @@ public class CoreMetricsCalculator
     }
 
     /// <summary>
-    /// нормализует количество ядер до фактического кличества в CCD/CCX.
+    /// Нормализует количество ядер до фактического количества в CCD/CCX.
     /// </summary>
     /// <param name="startIndex">Стартовый индекс последовательности слотов-индексов</param>
     /// <returns>Нормализованное количество ядер процессора</returns>
-    private int NormalizedCoreCound(int startIndex)
+    private int NormalizedCoreCount(int startIndex)
     {
         // Определение ядёр для корректного прохода по PM Table.
         // В PM Table AMD могут присутствовать "отключенные" (fused-off) ядра,
@@ -270,7 +284,7 @@ public class CoreMetricsCalculator
         }
 
         // Raven Ridge и совместимые семейства: при старте со смещения 121 читаем частоту процессора.
-        // 2-ядерные отображают последовательность ядра+потоки через нулевые значение (отключенные ядра),
+        // 2-ядерные отображают последовательность ядра+потоки через нулевое значение (отключенные ядра),
         // поэтому учитываем fused структуру как 8 слотов-индексов.
         if (_coreCount == 2 && _isRavenFamily && startIndex == 121)
         {
@@ -279,7 +293,7 @@ public class CoreMetricsCalculator
 
         // Общее правило для остальных Ryzen: младшие процессоры имеют "отключенные" (fused-off) ядра,
         // но PM Table сохраняет полный ряд значений для всего кристалла.
-        // Поэтому нормализуем количество слотов до фактического кличества в CCD/CCX.
+        // Поэтому нормализуем количество слотов до фактического количества в CCD/CCX.
         if (_coreCount > 8)
         {
             coresCount = 16;
@@ -287,6 +301,10 @@ public class CoreMetricsCalculator
         else if (_coreCount > 4)
         {
             coresCount = 8;
+        }
+        else if (_coreCount > 1)
+        {
+            coresCount = 4;
         }
 
         return coresCount;
@@ -385,7 +403,7 @@ public class CoreMetricsCalculator
     }
 
     /// <summary>
-    ///     Возвращает значение загрузки процессора в производительном состоянии и в простое (для более новыз систем)
+    ///     Возвращает значение загрузки процессора в производительном состоянии и в простое (для более новых систем)
     /// </summary>
     private static bool GetWindowsTimesFromIdleTimes(out long[] idle, out long[] total)
     {

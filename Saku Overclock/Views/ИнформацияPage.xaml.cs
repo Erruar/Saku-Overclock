@@ -254,7 +254,7 @@ public sealed partial class ИнформацияPage
 
             CpuCores.Text = _numberOfLogicalProcessors == _numberOfCores
                 ? _numberOfCores.ToString()
-                : GetSystemInfo.GetBigLITTLE(_numberOfCores);
+                : GetSystemInfo.GetBigLittle(_numberOfCores);
             CpuThreads.Text = $"{_numberOfLogicalProcessors:0}";
 
             IntegratedGpuName.Text = integratedGpuName;

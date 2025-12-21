@@ -204,11 +204,11 @@
                     </Button.Flyout>
                 </Button>
             </StackPanel>
-            <Grid Grid.Row="0" Margin="0,-90,-11,0" HorizontalAlignment="Right" x:Name="ProfilesGrid">
+            <Grid Grid.Row="0" Margin="0,-90,-11,0" HorizontalAlignment="Right" x:Name="PresetsGrid">
                 <Border CornerRadius="16" VerticalAlignment="Top" Height="40" Width="200" HorizontalAlignment="Right"
                         Shadow="{StaticResource SharedShadow}" Translation="0,0,20"/>
                 <ComboBox CornerRadius="16" HorizontalAlignment="Right" Style="{ThemeResource AcrylicComboBoxStyle}"
-                          Height="40" Width="200" x:Name="ProfileCom" SelectionChanged="ProfileCOM_SelectionChanged">
+                          Height="40" Width="200" x:Name="PresetCom" SelectionChanged="PresetCOM_SelectionChanged">
                     <ComboBox x:Uid="Param_PremadedCombo" IsEnabled="False"/>
                 </ComboBox>
             </Grid>
@@ -5641,7 +5641,7 @@
                     </Grid>
                 </Grid>
             </ScrollViewer>
-            <InfoBar Grid.Row="0" x:Name="ActionIncompatibleProfile" x:Uid="Param_IncompatibleProfile" IsOpen="False"
+            <InfoBar Grid.Row="0" x:Name="ActionIncompatiblePreset" x:Uid="Param_IncompatiblePreset" IsOpen="False"
                      IsClosable="False" IsIconVisible="True" Title="Упс... кажется вы делаете что-то не так!"
                      Message="Вы не можете изменять готовые пресеты! На то они и готовые. Выберите один из своих сохранённых пресетов"
                      VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -5748,35 +5748,35 @@
                 <Button.Flyout>
                     <Flyout>
                         <StackPanel>
-                            <TextBox x:Uid="Param_Profile_New_Name_Add" x:Name="SaveProfileN"
+                            <TextBox x:Uid="Param_Preset_New_Name_Add" x:Name="SavePresetN"
                                      PlaceholderText="Enter new name" CornerRadius="7,7,0,0" Width="150"/>
-                            <Button x:Uid="Param_Profile_New_Name" Click="Save_Click"
+                            <Button x:Uid="Param_Preset_New_Name" Click="Save_Click"
                                     Style="{ThemeResource AccentButtonStyle}" CornerRadius="0,0,7,7"
-                                    Width="{Binding ElementName=SaveProfileN, Path=ActualWidth}" Content="Edit name"/>
+                                    Width="{Binding ElementName=SavePresetN, Path=ActualWidth}" Content="Edit name"/>
                         </StackPanel>
                     </Flyout>
                 </Button.Flyout>
             </Button>
             <Button CornerRadius="9" Shadow="{StaticResource SharedShadow}" Translation="0,0,20"
-                    x:Name="EditProfileButton" x:Uid="Param_Edit_Preset" Grid.Row="1" HorizontalAlignment="Right"
+                    x:Name="EditPresetButton" x:Uid="Param_Edit_Preset" Grid.Row="1" HorizontalAlignment="Right"
                     Height="40" Width="40" Margin="0,0,139,0" ToolTipService.ToolTip="Изменить">
                 <!-- eccd	eb7e -->
                 <FontIcon HorizontalAlignment="Left" Margin="-3,0,-5,0" Glyph="&#xef15;"/>
                 <Button.Flyout>
                     <Flyout>
                         <StackPanel>
-                            <TextBox x:Uid="Param_Profile_New_Name_Add" x:Name="EditProfileN"
+                            <TextBox x:Uid="Param_Preset_New_Name_Add" x:Name="EditPresetN"
                                      PlaceholderText="Enter new name" CornerRadius="7,7,0,0" Width="150"/>
-                            <Button x:Uid="Param_Profile_Edit_Name" Click="Edit_Click"
+                            <Button x:Uid="Param_Preset_Edit_Name" Click="Edit_Click"
                                     Style="{ThemeResource AccentButtonStyle}" CornerRadius="0,0,7,7"
-                                    Width="{Binding ElementName=EditProfileN, Path=ActualWidth}" Content="Edit name"/>
+                                    Width="{Binding ElementName=EditPresetN, Path=ActualWidth}" Content="Edit name"/>
                         </StackPanel>
                     </Flyout>
                 </Button.Flyout>
             </Button>
             <Button CornerRadius="9" x:Name="ActionButtonShare" Grid.Row="1" HorizontalAlignment="Right"
                     Visibility="Collapsed" Height="40" Width="40" Margin="0,0,189,0"
-                    ToolTipService.ToolTip="Share profile">
+                    ToolTipService.ToolTip="Share preset">
                 <FontIcon HorizontalAlignment="Left" Margin="-5,0,-5,0" Glyph="&#xE72D;"/>
                 <Button.Flyout>
                     <Flyout>

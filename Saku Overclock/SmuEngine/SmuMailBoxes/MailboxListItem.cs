@@ -1,3 +1,5 @@
+using ZenStates.Core;
+
 namespace Saku_Overclock.SmuEngine.SmuMailBoxes;
 
 /*This is a modified processor driver file. Zen-States.Core Version is 1.6.8.1. Its author is https://github.com/irusanov
@@ -33,7 +35,7 @@ public class MailboxListItem
         ArgAddr = addressSet.ArgAddress;
     }
 
-    public MailboxListItem(string label, ZenStates.Core.Mailbox mailbox)
+    public MailboxListItem(string label, Mailbox mailbox)
     {
         Label = label;
         MsgAddr = mailbox.SMU_ADDR_MSG;

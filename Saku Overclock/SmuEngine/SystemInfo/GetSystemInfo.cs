@@ -16,8 +16,8 @@ internal class GetSystemInfo
     private static readonly ManagementObjectSearcher ComputerSsystemInfo = new("root\\CIMV2", "SELECT * FROM Win32_ComputerSystemProduct");
     private static List<string> _cachedGpuList = [];
     private static bool _doNotTrackBattery;
-    private static decimal _designCapacity = 0;
-    private static decimal _fullCapacity = 0;
+    private static decimal _designCapacity;
+    private static decimal _fullCapacity;
 
     #region Battery Information
 
@@ -171,10 +171,8 @@ internal class GetSystemInfo
                 return 0;
             }
         }
-        else
-        {
-            return _fullCapacity;
-        }
+
+        return _fullCapacity;
     }
 
     public static decimal ReadDesignCapacity(out bool doNotTrack)
@@ -222,12 +220,10 @@ internal class GetSystemInfo
                 return 0;
             }
         }
-        else
-        {
-            doNotTrack = false;
-            _doNotTrackBattery = false;
-            return _designCapacity;
-        }
+
+        doNotTrack = false;
+        _doNotTrackBattery = false;
+        return _designCapacity;
     }
 
     public static int GetBatteryCycle()
@@ -332,17 +328,17 @@ internal class GetSystemInfo
 
     #region OS Information
 
-    public static string? GetOSVersion()
+    public static string? GetOsVersion()
     {
         try
         {
             var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
-            var sCPUSerialNumber = "";
+            var sCpuSerialNumber = "";
             foreach (var naming in searcher.Get().Cast<ManagementObject>())
             {
-                sCPUSerialNumber = naming["Name"].ToString()?.Trim();
+                sCpuSerialNumber = naming["Name"].ToString()?.Trim();
             }
-            var endString = sCPUSerialNumber?.Split("Windows");
+            var endString = sCpuSerialNumber?.Split("Windows");
             if (endString != null && endString.Length > 1)
             {
                 return string.Concat("Windows ", endString[1].AsSpan(0, Math.Min(3, endString[1].Length)).Trim());
@@ -355,7 +351,7 @@ internal class GetSystemInfo
             return "Windows 10";
         }
     }
-    public static string GetBIOSVersion()
+    public static string GetBiosVersion()
     {
         try
         {
@@ -395,28 +391,28 @@ internal class GetSystemInfo
             InstructionSets(), GetCpuCaption());
     }
 
-    private static readonly Guid GUID_DEVCLASS_DISPLAY = new("4d36e968-e325-11ce-bfc1-08002be10318");
-    private const uint DIGCF_PRESENT = 0x00000002;
-    private const uint SPDRP_DEVICEDESC = 0x00000000;
+    private static readonly Guid GuidDevclassDisplay = new("4d36e968-e325-11ce-bfc1-08002be10318");
+    private const uint DigcfPresent = 0x00000002;
+    private const uint SpdrpDevicedesc = 0x00000000;
 
     [DllImport("setupapi.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern IntPtr SetupDiGetClassDevs(
-        ref Guid ClassGuid, IntPtr Enumerator, IntPtr hwndParent, uint Flags);
+        ref Guid classGuid, IntPtr enumerator, IntPtr hwndParent, uint flags);
 
     [DllImport("setupapi.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern bool SetupDiEnumDeviceInfo(
-        IntPtr DeviceInfoSet, uint MemberIndex, ref SP_DEVINFO_DATA DeviceInfoData);
+        IntPtr deviceInfoSet, uint memberIndex, ref SpDevinfoData deviceInfoData);
 
     [DllImport("setupapi.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern bool SetupDiGetDeviceRegistryProperty(
-        IntPtr DeviceInfoSet, ref SP_DEVINFO_DATA DeviceInfoData, uint Property,
-        out uint PropertyRegDataType, byte[] PropertyBuffer, uint PropertyBufferSize, out uint RequiredSize);
+        IntPtr deviceInfoSet, ref SpDevinfoData deviceInfoData, uint property,
+        out uint propertyRegDataType, byte[] propertyBuffer, uint propertyBufferSize, out uint requiredSize);
 
     [DllImport("setupapi.dll", SetLastError = true)]
-    private static extern bool SetupDiDestroyDeviceInfoList(IntPtr DeviceInfoSet);
+    private static extern bool SetupDiDestroyDeviceInfoList(IntPtr deviceInfoSet);
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct SP_DEVINFO_DATA
+    private struct SpDevinfoData
     {
         public uint cbSize;
         public Guid ClassGuid;
@@ -432,8 +428,8 @@ internal class GetSystemInfo
         }
 
         var result = new List<string>();
-        var guid = GUID_DEVCLASS_DISPLAY;
-        var hDevInfo = SetupDiGetClassDevs(ref guid, IntPtr.Zero, IntPtr.Zero, DIGCF_PRESENT);
+        var guid = GuidDevclassDisplay;
+        var hDevInfo = SetupDiGetClassDevs(ref guid, IntPtr.Zero, IntPtr.Zero, DigcfPresent);
 
         if (hDevInfo == IntPtr.Zero || hDevInfo == new IntPtr(-1))
         {
@@ -443,12 +439,12 @@ internal class GetSystemInfo
 
         try
         {
-            var devInfo = new SP_DEVINFO_DATA { cbSize = (uint)Marshal.SizeOf<SP_DEVINFO_DATA>() };
+            var devInfo = new SpDevinfoData { cbSize = (uint)Marshal.SizeOf<SpDevinfoData>() };
             var buffer = new byte[1024];
 
             for (uint i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, ref devInfo); i++)
             {
-                if (SetupDiGetDeviceRegistryProperty(hDevInfo, ref devInfo, SPDRP_DEVICEDESC,
+                if (SetupDiGetDeviceRegistryProperty(hDevInfo, ref devInfo, SpdrpDevicedesc,
                     out _, buffer, (uint)buffer.Length, out var requiredSize) && requiredSize > 2)
                 {
                     var name = Encoding.Unicode.GetString(buffer, 0, (int)requiredSize - 2);
@@ -758,7 +754,7 @@ internal class GetSystemInfo
         return sum / 1024.0;
     }
 
-    public static string GetBigLITTLE(int cores)
+    public static string GetBigLittle(int cores)
     {
         var cpuName = CpuSingleton.GetInstance().info.cpuName;
         if (cpuName.Contains("7540U") || cpuName.Contains("7440U"))
@@ -782,7 +778,7 @@ internal class GetSystemInfo
         {
             list += ", AVX2";
         }
-        if (CheckAVX512Support())
+        if (CheckAvx512Support())
         {
             list += ", AVX512";
         }
@@ -794,11 +790,11 @@ internal class GetSystemInfo
         return list;
     }
 
-    private static bool CheckAVX512Support()
+    private static bool CheckAvx512Support()
     {
         try
         {
-            if (CpuSingleton.GetInstance().info.codeName < ZenStates.Core.Cpu.CodeName.Raphael)
+            if (CpuSingleton.GetInstance().info.codeName < Cpu.CodeName.Raphael)
             {
                 return false;
             }
@@ -874,10 +870,10 @@ public static partial class NativeMethods
 {
 
     [LibraryImport("kernel32.dll")]
-    public static partial void GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
+    public static partial void GetSystemInfo(out SystemInfo lpSystemInfo);
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct SYSTEM_INFO
+    public struct SystemInfo
     {
         public ushort wProcessorArchitecture;
         public ushort wReserved;

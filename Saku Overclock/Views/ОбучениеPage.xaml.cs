@@ -3,7 +3,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Services;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
 using Saku_Overclock.JsonContainers;
@@ -13,7 +12,9 @@ namespace Saku_Overclock.Views;
 // ReSharper disable once RedundantExtendsListEntry
 public sealed partial class ОбучениеPage : Page
 {
-    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Класс с уведомлениями
+    private static readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления
+    private static readonly ITrayMenuService TrayMenuService = App.GetService<ITrayMenuService>(); // Управление треем
+    private static readonly INotesWriterService NotesWriterService = App.GetService<INotesWriterService>(); // Управление треем
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
@@ -33,7 +34,7 @@ public sealed partial class ОбучениеPage : Page
             Type = InfoBarSeverity.Informational
         });
         NotificationsService.SaveNotificationsSettings();
-        MainWindow.Set_ContextMenu_Tray();
+        TrayMenuService.RestoreDefaultMenu();
     }
     
     private void OpenLicenseSection()
@@ -60,7 +61,7 @@ public sealed partial class ОбучениеPage : Page
             showLicenseSection.Children.Add(fadeIn);
         }
 
-        var formattedText = UpdateChecker.FormatReleaseNotesAsRichText("LicenseText".GetLocalized());
+        var formattedText = NotesWriterService.FormatReleaseNotesAsRichText("LicenseText".GetLocalized());
         LicenseText.Children.Add(formattedText);
         showLicenseSection.Begin();
     }
@@ -407,7 +408,7 @@ public sealed partial class ОбучениеPage : Page
 
     private async void DisagreeTraining_Click(object sender, RoutedEventArgs e)
     {
-        var SkipDialog = new ContentDialog
+        var skipDialog = new ContentDialog
         {
             Title = "Пропустить диагностику?",
             Content = "Вы всегда сможете создать пресеты с OC Finder позже",
@@ -419,9 +420,9 @@ public sealed partial class ОбучениеPage : Page
         // the dialog's XamlRoot to the same XamlRoot as an element that is already present in the AppWindow.
         if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
         {
-            SkipDialog.XamlRoot = XamlRoot;
+            skipDialog.XamlRoot = XamlRoot;
         }
-        var result = await SkipDialog.ShowAsync();
+        var result = await skipDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
             ShowNavbarAndControls();

@@ -11,7 +11,6 @@ using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
 using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
-using Saku_Overclock.Views;
 using Saku_Overclock.Wrappers;
 using static Saku_Overclock.Views.ИнформацияPage;
 using Icon = System.Drawing.Icon;
@@ -26,6 +25,8 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
     private readonly IRtssSettingsService
         _rtssSettings = App.GetService<IRtssSettingsService>(); // Конфиг с настройками модуля RTSS
+    private readonly IApplyerService
+        _applyer = App.GetService<IApplyerService>();
 
     private readonly string _cachedAppVersion = ГлавнаяViewModel.GetVersion(); // Кешированная версия приложения
     private bool _isIconsCreated;
@@ -786,7 +787,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         return placeholder switch
         {
             "$AppVersion$" => WriteToSpan(_cachedAppVersion, output),
-            "$SelectedProfile$" => WriteTransliteratedProfile(output),
+            "$SelectedPreset$" => WriteTransliteratedPreset(output),
             // Числовые значения с форматированием
             "$stapm_value$" => WriteFormattedDouble(sensorsInformation.CpuStapmValue, output),
             "$stapm_limit$" => WriteFormattedDouble(sensorsInformation.CpuStapmLimit, output),
@@ -823,16 +824,16 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
     private static int WriteFormattedDouble(double value, Span<char> output) =>
         value.TryFormat(output, out var written, "0.###") ? written : 0;
 
-    private static int WriteTransliteratedProfile(Span<char> output)
+    private int WriteTransliteratedPreset(Span<char> output)
     {
-        var profile = ShellPage.SelectedProfile;
-        if (string.IsNullOrEmpty(profile))
+        var preset = _applyer.GetSelectedPresetName();
+        if (string.IsNullOrEmpty(preset))
         {
             return 0;
         }
 
         var written = 0;
-        foreach (var c in profile)
+        foreach (var c in preset)
         {
             if (TransliterationMap.TryGetValue(c, out var transliterated))
             {
@@ -1205,7 +1206,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
 
                     try
                     {
-                        notifyIcon.ForceCreate(App.EfficiencyModeAvailable);
+                        notifyIcon.ForceCreate(enablesEfficiencyMode: false);
                     }
                     catch
                     {

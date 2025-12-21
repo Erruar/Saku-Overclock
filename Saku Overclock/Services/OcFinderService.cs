@@ -19,7 +19,7 @@ public enum PresetType
     Min,
     Eco,
     Balance,
-    Performance,
+    Speed,
     Max
 }
 
@@ -147,7 +147,7 @@ public class PresetCurves
     } = new double[2]; // Только коэффициенты для fast = a * stapm + b
 }
 
-public class ArchitectureProfile
+public class ArchitecturePreset
 {
     public PresetCurves LaptopCurves
     {
@@ -260,7 +260,7 @@ public class OcFinderService : IOcFinderService
     private bool _isPlatformPc;
 
     private readonly SafetyLimits _safetyLimits = new();
-    private readonly Dictionary<string, ArchitectureProfile> _architectureProfiles = [];
+    private readonly Dictionary<string, ArchitecturePreset> _architecturePresets = [];
 
     // Кэш для метрик
     private readonly Dictionary<string, PresetMetrics> _metricsCache = [];
@@ -276,7 +276,7 @@ public class OcFinderService : IOcFinderService
         {
             LogHelper.LogError(ex);
         }
-        InitializeArchitectureProfiles();
+        InitializeArchitecturePresets();
     }
 
     /// <summary>
@@ -366,12 +366,12 @@ public class OcFinderService : IOcFinderService
     }
 
     /// <summary>
-    ///     Инициализация профилей архитектур с кривыми для каждого типа пресета
+    ///     Инициализация пресетов архитектур с кривыми для каждого типа пресета
     /// </summary>
-    private void InitializeArchitectureProfiles()
+    private void InitializeArchitecturePresets()
     {
-        // Базовый профиль (используется для всех архитектур как основа)
-        var baseProfile = new ArchitectureProfile
+        // Базовый пресет (используется для всех архитектур как основа)
+        var basePreset = new ArchitecturePreset
         {
             LaptopCurves = new PresetCurves
             {
@@ -395,62 +395,62 @@ public class OcFinderService : IOcFinderService
             ThermalMultiplier = 1.0
         };
 
-        // PreZen профиль
-        _architectureProfiles["PreZen"] = new ArchitectureProfile
+        // PreZen пресет
+        _architecturePresets["PreZen"] = new ArchitecturePreset
         {
-            LaptopCurves = baseProfile.LaptopCurves,
-            DesktopCurves = baseProfile.DesktopCurves,
+            LaptopCurves = basePreset.LaptopCurves,
+            DesktopCurves = basePreset.DesktopCurves,
             EfficiencyMultiplier = 0.9,
             ThermalMultiplier = 0.95,
             StapmBonus = 2.0, // Завышаеи мощность для старой архитектуры
             FastBonus = 1.0
         };
 
-        // Zen профиль
-        _architectureProfiles["Zen"] = new ArchitectureProfile
+        // Zen пресет
+        _architecturePresets["Zen"] = new ArchitecturePreset
         {
-            LaptopCurves = baseProfile.LaptopCurves,
-            DesktopCurves = baseProfile.DesktopCurves,
+            LaptopCurves = basePreset.LaptopCurves,
+            DesktopCurves = basePreset.DesktopCurves,
             EfficiencyMultiplier = 1.0,
             ThermalMultiplier = 1.0
         };
 
-        // Zen2 профиль
-        _architectureProfiles["Zen2"] = new ArchitectureProfile
+        // Zen2 пресет
+        _architecturePresets["Zen2"] = new ArchitecturePreset
         {
-            LaptopCurves = baseProfile.LaptopCurves,
-            DesktopCurves = baseProfile.DesktopCurves,
+            LaptopCurves = basePreset.LaptopCurves,
+            DesktopCurves = basePreset.DesktopCurves,
             EfficiencyMultiplier = 1.05,
             ThermalMultiplier = 1.0,
             StapmBonus = 1.0
         };
 
-        // Zen3 профиль (базовый)
-        _architectureProfiles["Zen3"] = new ArchitectureProfile
+        // Zen3 пресет (базовый)
+        _architecturePresets["Zen3"] = new ArchitecturePreset
         {
-            LaptopCurves = baseProfile.LaptopCurves,
-            DesktopCurves = baseProfile.DesktopCurves,
+            LaptopCurves = basePreset.LaptopCurves,
+            DesktopCurves = basePreset.DesktopCurves,
             EfficiencyMultiplier = 1.05,
             ThermalMultiplier = 1.0,
             StapmBonus = 1.5
         };
 
-        // Zen4 профиль (более эффективный)
-        _architectureProfiles["Zen4"] = new ArchitectureProfile
+        // Zen4 пресет (более эффективный)
+        _architecturePresets["Zen4"] = new ArchitecturePreset
         {
-            LaptopCurves = baseProfile.LaptopCurves,
-            DesktopCurves = baseProfile.DesktopCurves,
+            LaptopCurves = basePreset.LaptopCurves,
+            DesktopCurves = basePreset.DesktopCurves,
             EfficiencyMultiplier = 1.15,
             ThermalMultiplier = 1.10,
             StapmBonus = 2.5,
             FastBonus = 1.0
         };
 
-        // Zen5 профиль (самый эффективный)
-        _architectureProfiles["Zen5"] = new ArchitectureProfile
+        // Zen5 пресет (самый эффективный)
+        _architecturePresets["Zen5"] = new ArchitecturePreset
         {
-            LaptopCurves = baseProfile.LaptopCurves,
-            DesktopCurves = baseProfile.DesktopCurves,
+            LaptopCurves = basePreset.LaptopCurves,
+            DesktopCurves = basePreset.DesktopCurves,
             EfficiencyMultiplier = 1.25,
             ThermalMultiplier = 1.20,
             StapmBonus = 3.5,
@@ -459,23 +459,23 @@ public class OcFinderService : IOcFinderService
     }
 
     /// <summary>
-    ///     Получение профиля архитектуры на основе CPU
+    ///     Получение пресета архитектуры на основе CPU
     /// </summary>
-    private ArchitectureProfile GetArchitectureProfile()
+    private ArchitecturePreset GetArchitecturePreset()
     {
         var codenameGeneration = SendSmuCommand.GetCodeNameGeneration();
         return codenameGeneration switch
         {
-            "FP4" => _architectureProfiles["PreZen"],
-            "FP5" => _architectureProfiles["Zen"],
-            "FF3" => _architectureProfiles["Zen2"],
-            "FP6" => _architectureProfiles["Zen3"],
-            "FP7" => _architectureProfiles["Zen4"],
-            "FP8" => _architectureProfiles["Zen5"],
-            "AM4_V1" => _architectureProfiles["Zen2"],
-            "AM4_V2" => _architectureProfiles["Zen3"],
-            "AM5" => _architectureProfiles["Zen"],
-            _ => _architectureProfiles["Zen3"]
+            "FP4" => _architecturePresets["PreZen"],
+            "FP5" => _architecturePresets["Zen"],
+            "FF3" => _architecturePresets["Zen2"],
+            "FP6" => _architecturePresets["Zen3"],
+            "FP7" => _architecturePresets["Zen4"],
+            "FP8" => _architecturePresets["Zen5"],
+            "AM4_V1" => _architecturePresets["Zen2"],
+            "AM4_V2" => _architecturePresets["Zen3"],
+            "AM5" => _architecturePresets["Zen"],
+            _ => _architecturePresets["Zen3"]
         };
     }
 
@@ -495,7 +495,7 @@ public class OcFinderService : IOcFinderService
             PresetType.Min => curves.MinCurve,
             PresetType.Eco => curves.EcoCurve,
             PresetType.Balance => curves.BalanceCurve,
-            PresetType.Performance => curves.PerformanceCurve,
+            PresetType.Speed => curves.PerformanceCurve,
             PresetType.Max => curves.MaxCurve,
             _ => curves.BalanceCurve
         };
@@ -508,8 +508,8 @@ public class OcFinderService : IOcFinderService
     {
         LazyInitTdp();
 
-        var profile = GetArchitectureProfile();
-        var curves = _isPlatformPc ? profile.DesktopCurves : profile.LaptopCurves;
+        var preset = GetArchitecturePreset();
+        var curves = _isPlatformPc ? preset.DesktopCurves : preset.LaptopCurves;
 
         // Получаем кривую для конкретного типа пресета
         var presetCurve = GetCurveForPresetType(type, curves);
@@ -518,7 +518,7 @@ public class OcFinderService : IOcFinderService
         var stapmValue = CalculatePolynomial(presetCurve, _validatedCpuPower);
 
         // Добавляем архитектурный бонус
-        stapmValue += profile.StapmBonus;
+        stapmValue += preset.StapmBonus;
 
         // Модификация под уровень оптимизации (небольшая корректировка)
         var levelBonus = level switch
@@ -539,16 +539,16 @@ public class OcFinderService : IOcFinderService
 
         // Расчет Fast limit
         var fastValue = _isPlatformPc
-            ? stapmValue + profile.FastBonus
-            : FromValueToUpper(curves.FastMultipliers[0] * stapmValue + curves.FastMultipliers[1] + profile.FastBonus,
+            ? stapmValue + preset.FastBonus
+            : FromValueToUpper(curves.FastMultipliers[0] * stapmValue + curves.FastMultipliers[1] + preset.FastBonus,
                 3);
 
         // Температурные лимиты
         var tempLimit = level switch
         {
-            OptimizationLevel.Basic => Math.Min(ArchitectureProfile.MaxSafeTempBasic, GetBaseTempForPreset(type)),
-            OptimizationLevel.Standard => Math.Min(ArchitectureProfile.MaxSafeTempStandard, GetBaseTempForPreset(type)),
-            OptimizationLevel.Deep => Math.Min(ArchitectureProfile.MaxSafeTempDeep, GetBaseTempForPreset(type)),
+            OptimizationLevel.Basic => Math.Min(ArchitecturePreset.MaxSafeTempBasic, GetBaseTempForPreset(type)),
+            OptimizationLevel.Standard => Math.Min(ArchitecturePreset.MaxSafeTempStandard, GetBaseTempForPreset(type)),
+            OptimizationLevel.Deep => Math.Min(ArchitecturePreset.MaxSafeTempDeep, GetBaseTempForPreset(type)),
             _ => GetBaseTempForPreset(type)
         };
 
@@ -558,17 +558,15 @@ public class OcFinderService : IOcFinderService
         var commandString =
             BuildCommandString(stapmValue, fastValue, tempLimit, stapmTime, slowTime, prochotRamp, level);
 
-        var preset = new PresetConfiguration
+        return new PresetConfiguration
         {
             Type = type,
             Level = level,
             IsUndervoltingEnabled = level == OptimizationLevel.Deep && _isUndervoltingAvailable,
             CommandString = commandString,
-            Metrics = CalculateMetrics(type, level, stapmValue, tempLimit, profile),
+            Metrics = CalculateMetrics(type, level, stapmValue, tempLimit, preset),
             Options = GetPresetOptions(commandString)
         };
-
-        return preset;
     }
 
     private static int GetBaseTempForPreset(PresetType type) => type switch
@@ -576,7 +574,7 @@ public class OcFinderService : IOcFinderService
         PresetType.Min => 60,
         PresetType.Eco => 70,
         PresetType.Balance => 90,
-        PresetType.Performance => 90,
+        PresetType.Speed => 90,
         PresetType.Max => 100,
         _ => 80
     };
@@ -588,7 +586,7 @@ public class OcFinderService : IOcFinderService
             PresetType.Min => (900, 900, 2),
             PresetType.Eco => (500, 500, 2),
             PresetType.Balance => (300, 5, 20),
-            PresetType.Performance => (200, 3, 200),
+            PresetType.Speed => (200, 3, 200),
             PresetType.Max => (100, 2, 100),
             _ => (300, 5, 20)
         };
@@ -634,7 +632,7 @@ public class OcFinderService : IOcFinderService
             var tempLimitBr = tempLimit > 85 ? 84000 : tempLimit * 1000;
             sb.Append($"--tctl-temp={tempLimitBr} ");
             sb.Append($"--stapm-limit={(int)(stapm * 1000)},2,{stapmTime * 1000} ");
-            sb.Append("--max-performance=0 "); // Включит Max Performance режим
+            sb.Append("--max-performance=0 "); // Включит Max Speed режим
             sb.Append("--disable-feature=10 "); // Выключит Pkg-Pwr лимит
 
             if (level == OptimizationLevel.Deep)
@@ -667,7 +665,7 @@ public class OcFinderService : IOcFinderService
             : $" --set-coall={0x100000U - (uint)-value} ";
 
     private PresetMetrics CalculateMetrics(PresetType type, OptimizationLevel level, double stapm, int tempLimit,
-        ArchitectureProfile profile)
+        ArchitecturePreset preset)
     {
         var cacheKey = $"{type}_{level}_{stapm:F1}_{tempLimit}";
         if (_metricsCache.TryGetValue(cacheKey, out var cached))
@@ -720,8 +718,8 @@ public class OcFinderService : IOcFinderService
             thermalScore = (tempRatio - 1.0) * 200; // Температура сильно больше 
         }
 
-        // Применяем термальный множитель профиля
-        thermalScore *= profile.ThermalMultiplier;
+        // Применяем термальный множитель пресета
+        thermalScore *= preset.ThermalMultiplier;
 
         // === ЭНЕРГОЭФФЕКТИВНОСТЬ ===
 
@@ -734,17 +732,17 @@ public class OcFinderService : IOcFinderService
         // Корректировка на основе EfficiencyMultiplier
         // Высокий multiplier (1.25) = процессор эффективен на низких мощностях
         // Низкий multiplier (0.8) = процессор менее эффективен, но лучше масштабируется
-        if (profile.EfficiencyMultiplier > 1.0)
+        if (preset.EfficiencyMultiplier > 1.0)
         {
             // Эффективный процессор: лучше работает на низких мощностях
             if (powerRatio < 1.0)
             {
-                efficiencyBase *= profile.EfficiencyMultiplier;
+                efficiencyBase *= preset.EfficiencyMultiplier;
             }
             else
             {
                 // Меньше выигрыша от повышения мощности
-                efficiencyBase *= 2.0 - profile.EfficiencyMultiplier;
+                efficiencyBase *= 2.0 - preset.EfficiencyMultiplier;
             }
         }
         else
@@ -753,11 +751,11 @@ public class OcFinderService : IOcFinderService
             if (powerRatio > 1.0)
             {
                 // Больше выигрыша от повышения мощности
-                efficiencyBase *= 1.0 + (1.0 - profile.EfficiencyMultiplier);
+                efficiencyBase *= 1.0 + (1.0 - preset.EfficiencyMultiplier);
             }
             else
             {
-                efficiencyBase *= profile.EfficiencyMultiplier;
+                efficiencyBase *= preset.EfficiencyMultiplier;
             }
         }
 
@@ -883,7 +881,7 @@ public class OcFinderService : IOcFinderService
     private static int FromValueToUpper(double value, int upper) => (int)Math.Ceiling(value / upper) * upper;
 
     // Legacy методы для совместимости
-    public void GeneratePremadeProfiles()
+    public void GeneratePremadePresets()
     {
         if (_isInitialized && !ForceTraining)
         {
@@ -898,12 +896,12 @@ public class OcFinderService : IOcFinderService
     {
         if (!_isInitialized)
         {
-            GeneratePremadeProfiles();
+            GeneratePremadePresets();
         }
 
-        // Генерируем данные на основе Balance и Performance пресетов
+        // Генерируем данные на основе Balance и Speed пресетов
         var balancePreset = CreatePreset(PresetType.Balance, OptimizationLevel.Standard);
-        var performancePreset = CreatePreset(PresetType.Performance, OptimizationLevel.Standard);
+        var performancePreset = CreatePreset(PresetType.Speed, OptimizationLevel.Standard);
 
         // Извлекаем значения из строк команд (упрощенно)
         var balanceValues = ParseCommandString(balancePreset.CommandString);

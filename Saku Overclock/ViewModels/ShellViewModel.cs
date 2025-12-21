@@ -22,27 +22,6 @@ public partial class ShellViewModel : ObservableRecipient
         private set => SetProperty(ref _selectedPage, value);
     }
 
-    private List<string> _items;
-    public List<string> Presets
-    {
-        get => _items;
-        set => SetProperty(ref _items, value);
-    }
-
-    private string? _selectedItem;
-    public string? SelectedItem
-    {
-        get => _selectedItem;
-        set => SetProperty(ref _selectedItem, value);
-    }
-
-    private int _selectedIndex;
-    public int SelectedIndex
-    {
-        get => _selectedIndex;
-        set => SetProperty(ref _selectedIndex, value);
-    }
-
     public INavigationService NavigationService
     {
         get;
@@ -56,7 +35,6 @@ public partial class ShellViewModel : ObservableRecipient
 
     public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService)
     {
-        _items = [];
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;

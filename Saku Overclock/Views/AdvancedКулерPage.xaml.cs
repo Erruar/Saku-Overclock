@@ -429,7 +429,8 @@ public sealed partial class AdvancedКулерPage
         var result = await nbfcDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            PageService.ReloadPage(typeof(AdvancedКулерViewModel).FullName!); // Вызов метода перезагрузки страницы
+            var navigation = App.GetService<INavigationService>();
+            navigation.ReloadPage(typeof(AdvancedКулерViewModel).FullName!); // Вызов метода перезагрузки страницы
         }
     }
 

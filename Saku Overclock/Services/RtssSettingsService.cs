@@ -21,7 +21,7 @@ public class RtssSettingsService : IRtssSettingsService
         _fileService = fileService;
     }
 
-    public List<RtssElementsClass> RTSS_Elements
+    public List<RtssElementsClass> RtssElements
     {
         get;
         set;
@@ -104,7 +104,7 @@ public class RtssSettingsService : IRtssSettingsService
         set;
     } =
         "<C0=FFA0A0><C1=A0FFA0><C2=FC89AC><C3=fa2363><S1=70><S2=-50>\n" +
-        "<C0>Saku Overclock <C1>" + "$AppVersion$" + ": <S0>$SelectedProfile$\n" +
+        "<C0>Saku Overclock <C1>" + "$AppVersion$" + ": <S0>$SelectedPreset$\n" +
         "<S1><C2>STAPM, Fast, Slow: <C3><S0>$stapm_value$<S2>W<S1>$stapm_limit$W <S0>$fast_value$<S2>W<S1>$fast_limit$W <S0>$slow_value$<S2>W<S1>$slow_limit$W\n" +
         "<C2>EDC, Therm, CPU Usage: <C3><S0>$vrmedc_value$<S2>A<S1>$vrmedc_max$A <C3><S0>$cpu_temp_value$<S2>C<S1>$cpu_temp_max$C<C3><S0> $cpu_usage$<S2>%<S1>\n" +
         "<S1><C2>Clocks: $cpu_clock_cycle$<S1><C2>$currCore$:<S0><C3> $cpu_core_clock$<S2>GHz<S1>$cpu_core_voltage$V $cpu_clock_cycle_end$\n" +

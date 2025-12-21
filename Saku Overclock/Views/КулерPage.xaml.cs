@@ -342,7 +342,7 @@ public sealed partial class КулерPage
                 await Task.Delay(500);
 
                 // Запуск установщика с повторными попытками
-                await LaunchNBFCInstallerWithRetry(downloadPath);
+                await LaunchNbfcInstallerWithRetry(downloadPath);
 
                 // Обновление UI после успешной загрузки
                 downloadButton.Opacity = 0.0;
@@ -368,14 +368,15 @@ public sealed partial class КулерPage
         var result = await nbfcDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            PageService.ReloadPage(typeof(КулерViewModel).FullName!); // Вызов метода перезагрузки страницы
+            var navigation = App.GetService<INavigationService>();
+            navigation.ReloadPage(typeof(КулерViewModel).FullName!); // Вызов метода перезагрузки страницы
         }
     }
 
     /// <summary>
     /// Вспомогательный метод для запуска установщика
     /// </summary>
-    private static async Task LaunchNBFCInstallerWithRetry(string filePath)
+    private static async Task LaunchNbfcInstallerWithRetry(string filePath)
     {
         const int maxRetries = 5;
 
@@ -434,7 +435,7 @@ public sealed partial class КулерPage
                 }
                 else
                 {
-                    StartAsusWinIOUpdate();
+                    StartAsusWinIoUpdate();
                 }
             }
             catch (Exception exception)
@@ -513,7 +514,7 @@ public sealed partial class КулерPage
     private void Page_Unloaded(object sender, RoutedEventArgs e)
     {
         StopTempUpdate();
-        StopAsusWinIOUpdate();
+        StopAsusWinIoUpdate();
         AsusWinIoWrapper.Cleanup_WinIo();
         _isNbfcNotLoaded = false;
     }
@@ -829,7 +830,7 @@ public sealed partial class КулерPage
         _tempUpdateTimer.Start();
     }
 
-    private void StartAsusWinIOUpdate()
+    private void StartAsusWinIoUpdate()
     {
         if (_fanCount == 1)
         {
@@ -845,7 +846,7 @@ public sealed partial class КулерPage
 
     }
 
-    private void StopAsusWinIOUpdate()
+    private void StopAsusWinIoUpdate()
     {
         _rpmUpdateTimer?.Stop();
     }

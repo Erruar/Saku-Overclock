@@ -18,7 +18,6 @@ public class PageService : IPageService
         Configure<ИнформацияViewModel, ИнформацияPage>();
         Configure<КулерViewModel, КулерPage>();
         Configure<AdvancedКулерViewModel, AdvancedКулерPage>();
-        Configure<AsusКулерViewModel, AsusКулерPage>();
         Configure<SettingsViewModel, SettingsPage>();
         Configure<ОбновлениеViewModel, ОбновлениеPage>();
         Configure<ОбучениеViewModel, ОбучениеPage>();
@@ -36,33 +35,6 @@ public class PageService : IPageService
         }
 
         return pageType;
-    }
-
-    /// <summary>
-    ///     Метод перезагрузит страницу
-    /// </summary>
-    /// <param name="from">Класс ViewModel от нужной для перезагрузки страницы</param>
-    public static void ReloadPage(string from)
-    {
-        if (from.Contains("Shell"))
-        {
-            return;
-        }
-
-        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-        {
-            var navigationService = App.GetService<INavigationService>();
-            if (!from.Contains("Главная"))
-            {
-                navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
-            }
-            else
-            {
-                navigationService.NavigateTo(typeof(SettingsViewModel).FullName!, null, true);
-            }
-
-            navigationService.NavigateTo(from, null, true);
-        });
     }
 
     private void Configure<TViewModel, TView>()

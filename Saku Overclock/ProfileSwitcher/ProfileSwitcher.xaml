@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Window
-    x:Class="Saku_Overclock.ProfileSwitcher.ProfileSwitcher"
+    x:Class="Saku_Overclock.PresetSwitcher.PresetSwitcher"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -32,19 +32,19 @@
         Background="#FF2D2D2D"
         BorderBrush="Transparent"
         BorderThickness="0">
-                        <FontIcon FontSize="20" x:Name="ProfileIcon" Glyph="&#xE718;" Foreground="White" Margin="3,0,3,0"/>
+                        <FontIcon FontSize="20" x:Name="PresetIcon" Glyph="&#xE718;" Foreground="White" Margin="3,0,3,0"/>
                     </ToggleButton>
                     <!-- Текстовые элементы -->
                     <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Vertical">
                         <TextBlock 
-            x:Name="ProfileText" 
+            x:Name="PresetText" 
             FontWeight="ExtraBlack" 
             FontSize="16" 
-            Text="{x:Bind ProfileText.Text}"/>
+            Text="{x:Bind PresetText.Text}"/>
                         <TextBlock 
-            x:Name="ProfileDesc" 
+            x:Name="PresetDesc" 
             FontWeight="SemiBold" 
-            Text="Premade profile" />
+            Text="Premade preset" />
                     </StackPanel>
                 </StackPanel>
             </Grid> 
