@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Contracts.ViewModels;
 using Saku_Overclock.Helpers;
+using Saku_Overclock.ViewModels;
 
 namespace Saku_Overclock.Services;
 
@@ -96,6 +97,25 @@ public class NavigationService(IPageService pageService) : INavigationService
         }
 
         return false;
+    }
+
+    public void ReloadPage(string from)
+    {
+        if (from.Contains("Shell"))
+        {
+            return;
+        }
+
+        if (!from.Contains("Главная"))
+        {
+            NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+        }
+        else
+        {
+            NavigateTo(typeof(SettingsViewModel).FullName!, null, true);
+        }
+
+        NavigateTo(from, null, true);
     }
 
     private void OnNavigated(object sender, NavigationEventArgs e)
