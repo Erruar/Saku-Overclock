@@ -10,7 +10,11 @@ public class ActivationService(
     ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
     IEnumerable<IActivationHandler> activationHandlers,
     IThemeSelectorService themeSelectorService,
-    IAppSettingsService appSettingsService)
+    IAppSettingsService appSettingsService,
+    IUpdateCheckerService updateCheckerService,
+    IApplyerService applyerService,
+    IWindowStateManagerService windowStateManager,
+    ITrayMenuService trayMenuService)
     : IActivationService
 {
     private UIElement? _shell;
@@ -18,7 +22,7 @@ public class ActivationService(
     public async Task ActivateAsync(object activationArgs)
     {
         // Выполняется перед активацией
-        await InitializeAsync();
+        Initialize();
 
         // Установаить контент для MainWindow
         if (App.MainWindow.Content == null)
@@ -57,21 +61,35 @@ public class ActivationService(
     }
 
     /// <summary>
-    ///     Оптимизация тем перед активацией приложения
+    ///     Действия перед активацией приложения
     /// </summary>
-    private async Task InitializeAsync()
+    private void Initialize()
     {
-        await themeSelectorService.InitializeAsync().ConfigureAwait(false);
-        await Task.CompletedTask;
+        // 1. Загрузка настроек приложения
+        appSettingsService.LoadSettings();
+
+        // 2. Инициализация тем
+        themeSelectorService.Initialize();
+
+        // 3. Состояние окна и его скрытие в трей
+        windowStateManager.Initialize();
     }
 
     /// <summary>
-    ///     Загрузка тем и настроек приложения
+    ///     Загрузка тем и сервисов приложения
     /// </summary>
     private async Task StartupAsync()
     {
+        // 1. Установка выбранной темы приложения
         await themeSelectorService.SetRequestedThemeAsync();
-        appSettingsService.LoadSettings();
-        await Task.CompletedTask;
+
+        // 2. Авто-применение настроек разгона
+        await applyerService.AutoApplySettingsWithAppStart();
+
+        // 3. Трей иконка и меню
+        trayMenuService.Initialize();
+
+        // 4. Проверка наличия обновлений
+        await updateCheckerService.CheckForUpdates();
     }
 }
