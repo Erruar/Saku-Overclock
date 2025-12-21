@@ -1,11 +1,16 @@
 ﻿using Saku_Overclock.JsonContainers;
 using Saku_Overclock.Services;
+using static Saku_Overclock.Services.PresetManagerService;
 
 namespace Saku_Overclock.Contracts.Services;
-public interface IApplyerService
+public interface IApplyerService : IDisposable
 {
-    Task ApplyWithoutAdjLine(bool saveinfo);
-    Task Apply(string ryzenAdJline, bool saveinfo, bool reapplyOverclock, double reapplyOverclockTimer);
-    Task ApplyCustomPreset(Profile profile, bool saveInfo = false);
-    Task ApplyPremadePreset(PresetType presetType, OptimizationLevel optimizationLevel);
+    Task ApplySettings(bool saveinfo);
+    Task ApplyCustomPreset(Preset preset, bool saveInfo = false, bool onlyDebugFunctions = false);
+    Task ApplyPremadePreset(PresetType presetType, bool presetSelected = true);
+    Task AutoApplySettingsWithAppStart();
+    void ScheduleApplyPreset();
+    PresetId SwitchCustomPreset();
+    PresetId SwitchPremadePreset();
+    string GetSelectedPresetName();
 }
