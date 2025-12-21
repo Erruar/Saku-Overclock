@@ -1,4 +1,6 @@
-﻿namespace Saku_Overclock.Contracts.Services;
+﻿using Saku_Overclock.Services;
+
+namespace Saku_Overclock.Contracts.Services;
 
 public interface ISensorReader
 {
@@ -24,7 +26,7 @@ public interface ISensorReader
     /// Читает специальные значения, которые не находятся в основной таблице
     /// (например, MCLK, FCLK, VDDCR_SOC)
     /// </summary>
-    (bool success, double value) ReadSpecialValue(string fieldName);
+    (bool success, double value) ReadSpecialValue(SensorReader.SpecialValueType type);
 
     /// <summary>
     /// Получает температуру процессора напрямую

@@ -83,10 +83,17 @@ public class SensorReader : ISensorReader
         }
     }
 
+    public enum SpecialValueType
+    {
+        Mclk,
+        Fclk,
+        VddcrSoc
+    }
+
     /// <summary>
     /// Получает прямой доступ к полям powerTable для специальных значений (MCLK, FCLK, и т.д.)
     /// </summary>
-    public (bool success, double value) ReadSpecialValue(string fieldName)
+    public (bool success, double value) ReadSpecialValue(SpecialValueType type)
     {
         try
         {
@@ -95,11 +102,11 @@ public class SensorReader : ISensorReader
                 return (false, 0);
             }
 
-            return fieldName switch
+            return type switch
             {
-                "MCLK" => (true, _cpu.powerTable.MCLK),
-                "FCLK" => (true, _cpu.powerTable.FCLK),
-                "VDDCR_SOC" => (true, _cpu.powerTable.VDDCR_SOC),
+                SpecialValueType.Mclk => (true, _cpu.powerTable.MCLK),
+                SpecialValueType.Fclk => (true, _cpu.powerTable.FCLK),
+                SpecialValueType.VddcrSoc => (true, _cpu.powerTable.VDDCR_SOC),
                 _ => (false, 0)
             };
         }
@@ -205,19 +212,16 @@ public class SensorReader : ISensorReader
             tableVersion = 0x00380805;
         }
 
-        // Zen 4 override
-        if (_cpu.info.codeName is Cpu.CodeName.Raphael or Cpu.CodeName.DragonRange or Cpu.CodeName.StormPeak
-            && tableVersion != 0x00540004)
+        tableVersion = _cpu.info.codeName switch
         {
-            tableVersion = 0x00540004;
-        }
-
-        // Zen 5 override
-        if (_cpu.info.codeName is Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.Bergamo
-            && tableVersion != 0x00620205 && tableVersion != 0x00620105)
-        {
-            tableVersion = 0x00620205;
-        } 
+            // Zen 4 override
+            Cpu.CodeName.Raphael or Cpu.CodeName.DragonRange or Cpu.CodeName.StormPeak when
+                tableVersion != 0x00540004 && tableVersion != 0x00540104 && tableVersion != 0x00540208 => 0x00540004,
+            // Zen 5 override
+            Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.Bergamo when tableVersion != 0x00620205 &&
+                tableVersion != 0x00620105 => 0x00620205,
+            _ => tableVersion
+        };
 
         CurrentTableVersion = (int)tableVersion;
     }
