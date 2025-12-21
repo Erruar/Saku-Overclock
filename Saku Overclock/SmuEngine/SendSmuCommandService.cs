@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Globalization;
+using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
@@ -13,24 +14,24 @@ namespace Saku_Overclock.SmuEngine;
 public class SendSmuCommandService : ISendSmuCommandService
 {
     // Адреса
-    private static uint RsmuRsp;
-    private static uint RsmuArg;
-    private static uint RsmuCmd;
+    private static uint _rsmuRsp;
+    private static uint _rsmuArg;
+    private static uint _rsmuCmd;
 
-    private static uint Mp1Rsp;
-    private static uint Mp1Arg;
-    private static uint Mp1Cmd;
+    private static uint _mp1Rsp;
+    private static uint _mp1Arg;
+    private static uint _mp1Cmd;
 
     // Профили и команды
-    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
-    private Profile[] _profile = new Profile[1];
+    private readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
+    private readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>();
     private Smusettings _smuSettings = new();
 
     // Связанное с Hardware
     private Cpu? _cpu;
-    private static CodeName Codename;
+    private static CodeName _codename;
     private readonly Mailbox _testMailbox = new();
-    private static List<(string, bool, uint)>? Commands;
+    private static List<(string, bool, uint)>? _commands;
     private static string _codenameGeneration = "None";
 
     // Флаги
@@ -39,8 +40,8 @@ public class SendSmuCommandService : ISendSmuCommandService
     private string _checkAdjLine = string.Empty;
     private bool _dangerSettingsApplied;
     private readonly bool _isBatteryUnavailable = true;
-    private bool? _isOlderGeneration = null;
-    private bool _unsupportedPlatformMessage = false;
+    private bool? _isOlderGeneration;
+    private bool _unsupportedPlatformMessage;
     private bool _safeReapply = true;
 
     /// <summary>
@@ -86,7 +87,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         try
         {
             _cpu ??= CpuSingleton.GetInstance();
-            Codename = _cpu.info.codeName;
+            _codename = _cpu.info.codeName;
 
             _safeReapply = AppSettings.ReapplySafeOverclock;
 
@@ -94,7 +95,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
         catch (Exception ex)
         {
-            LogHelper.TraceIt_TraceError("[SendSmuCommand]@Launch_Failed - " + ex.ToString());
+            LogHelper.TraceIt_TraceError("[SendSmuCommand]@Launch_Failed - " + ex);
         }
     }
 
@@ -114,83 +115,36 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
         catch (Exception ex)
         {
-            JsonRepair('s');
+            JsonRepair();
             LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    /// <summary>
-    ///  Загрузка профилей пользователя
-    /// </summary>
-    private void ProfileLoad()
-    {
-        try
-        {
-            _profile = JsonConvert.DeserializeObject<Profile[]>(File.ReadAllText(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json")) ?? [];
-        }
-        catch
-        {
-            JsonRepair('p');
         }
     }
 
     /// <summary>
     ///  Восстановление настроек JSON
     /// </summary>
-    private void JsonRepair(char file)
+    private void JsonRepair()
     {
-        switch (file)
+        _smuSettings = new Smusettings();
+        try
         {
-            case 's':
-                {
-                    _smuSettings = new Smusettings();
-                    try
-                    {
-                        Directory.CreateDirectory(
-                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                        File.WriteAllText(
-                            Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                            @"\SakuOverclock\smusettings.json",
-                            JsonConvert.SerializeObject(_smuSettings, Formatting.Indented));
-                    }
-                    catch
-                    {
-                        File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                    @"\SakuOverclock\smusettings.json");
-                        Directory.CreateDirectory(
-                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                        File.WriteAllText(
-                            Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                            @"\SakuOverclock\smusettings.json",
-                            JsonConvert.SerializeObject(_smuSettings, Formatting.Indented));
-                    }
-
-                    break;
-                }
-            case 'p':
-
-                _profile = [];
-                try
-                {
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                        "[]");
-                }
-                catch
-                {
-                    File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                @"\SakuOverclock\profile.json");
-                    Directory.CreateDirectory(
-                        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
-                    File.WriteAllText(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\SakuOverclock\profile.json",
-                        "[]");
-                }
-
-                break;
+            Directory.CreateDirectory(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                @"\SakuOverclock\smusettings.json",
+                JsonConvert.SerializeObject(_smuSettings, Formatting.Indented));
+        }
+        catch
+        {
+            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                        @"\SakuOverclock\smusettings.json");
+            Directory.CreateDirectory(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SakuOverclock"));
+            File.WriteAllText(
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                @"\SakuOverclock\smusettings.json",
+                JsonConvert.SerializeObject(_smuSettings, Formatting.Indented));
         }
     }
 
@@ -207,8 +161,8 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         return uint.TryParse(
             text.Trim(),
-            System.Globalization.NumberStyles.HexNumber,
-            System.Globalization.CultureInfo.InvariantCulture,
+            NumberStyles.HexNumber,
+            CultureInfo.InvariantCulture,
             out address
         );
     }
@@ -220,14 +174,13 @@ public class SendSmuCommandService : ISendSmuCommandService
     public void ApplyQuickSmuCommand(bool startup)
     {
         SmuSettingsLoad();
-        ProfileLoad();
 
         if (_smuSettings.QuickSmuCommands == null)
         {
             return;
         }
 
-        if (AppSettings.Preset != -1 && _profile[AppSettings.Preset].SmuEnabled == false)
+        if (AppSettings.Preset != -1 && PresetManager.Presets[AppSettings.Preset].SmuEnabled == false)
         {
             return;
         }
@@ -282,19 +235,16 @@ public class SendSmuCommandService : ISendSmuCommandService
             };
 
             var args = Utils.MakeCmdArgs();
-            var userArgs = quickCommand.Argument?.Trim().Split(',');
+            var userArgs = quickCommand.Argument.Trim().Split(',');
 
-            if (userArgs != null)
+            for (var i = 0; i < userArgs.Length && i < args.Length; i++)
             {
-                for (var i = 0; i < userArgs.Length && i < args.Length; i++)
+                if (!TryConvertToUint(userArgs[i], out args[i]))
                 {
-                    if (!TryConvertToUint(userArgs[i], out args[i]))
-                    {
-                        LogHelper.LogError($"Failed to parse argument at position {i}: '{userArgs[i]}'");
-                        return;
-                    }
+                    LogHelper.LogError($"Failed to parse argument at position {i}: '{userArgs[i]}'");
+                    return;
                 }
-            }
+            }    
 
             var status = _cpu?.smu.SendSmuCommand(quickMailbox, command, ref args);
             if (status != SMU.Status.OK)
@@ -448,13 +398,13 @@ public class SendSmuCommandService : ISendSmuCommandService
                 args[2] = value2;
             }
 
-            if (Commands == null)
+            if (_commands == null)
             {
                 SetCodeNameGeneration();
             }
 
             // Найти код команды по имени
-            var matchingCommands = Commands?.Where(c => c.Item1 == commandName);
+            var matchingCommands = _commands?.Where(c => c.Item1 == commandName);
             var commands = matchingCommands?.ToList();
             if (commands != null && commands.Count != 0)
             {
@@ -476,11 +426,9 @@ public class SendSmuCommandService : ISendSmuCommandService
                             commandAppliedSuccessfully = true;
                             break;
                         }
-                        else
-                        {
-                            // Команда не применилась - ждем 20мс перед попыткой следующей
-                            await Task.Delay(20);
-                        }
+
+                        // Команда не применилась - ждем 20мс перед попыткой следующей
+                        await Task.Delay(20);
                     }
                     catch (Exception ex)
                     {
@@ -545,15 +493,15 @@ public class SendSmuCommandService : ISendSmuCommandService
 
             if (mailbox == 0)
             {
-                addrMsg = RsmuCmd;
-                addrRsp = RsmuRsp;
-                addrArg = RsmuArg;
+                addrMsg = _rsmuCmd;
+                addrRsp = _rsmuRsp;
+                addrArg = _rsmuArg;
             }
             else
             {
-                addrMsg = Mp1Cmd;
-                addrRsp = Mp1Rsp;
-                addrArg = Mp1Arg;
+                addrMsg = _mp1Cmd;
+                addrRsp = _mp1Rsp;
+                addrArg = _mp1Arg;
             }
 
             _testMailbox.SMU_ADDR_MSG = addrMsg;
@@ -564,7 +512,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             {
                 return SMU.Status.OK; // Пропускаем команду но возвращаем OK, для безопасности системы
             }
-            if (Codename == CodeName.RavenRidge &&
+            if (_codename == CodeName.RavenRidge &&
                 (commandName == "min-gfxclk" || commandName == "max-gfxclk"
                 || commandName == "min-socclk-frequency" || commandName == "max-socclk-frequency"
                 || commandName == "min-fclk-frequency" || commandName == "max-fclk-frequency"
@@ -593,7 +541,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         }
         catch (Exception ex)
         {
-            await LogHelper.TraceIt_TraceError("[SendSmuCommand]@SmuCommandsSafeApply - " + ex.ToString() + $"\nCMD: {command}.{commandName}, ARGS{args[0]}.{args[1]},MSG:{addrMsg}, ARG:{addrArg}, RSP: {addrRsp}");
+            await LogHelper.TraceIt_TraceError("[SendSmuCommand]@SmuCommandsSafeApply - " + ex + $"\nCMD: {command}.{commandName}, ARGS{args[0]}.{args[1]},MSG:{addrMsg}, ARG:{addrArg}, RSP: {addrRsp}");
             ПараметрыPage.ApplyInfo += "\n" + "Param_SMU_Command".GetLocalized() + CommandNameParser(commandName) +
                                        "Param_SMU_Command_Error".GetLocalized();
             return null;
@@ -603,7 +551,10 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// <summary>
     ///  Применяет параметры подсистем процессора на системах с процессорами RavenRidge, используя AMDGPU Smu
     /// </summary>
+    /// <param name="smu">smu instance</param>
     /// <param name="mode">0 - SoC-clk, 1 - Fclk, 2 - Vcn, 3 - Lclk, 4 - Gfx-clk</param>
+    /// <param name="args">command arguments</param>
+    /// <param name="setMax">set maximum or minimum limit</param>
     private void RavenSetSubsystemMinMaxFrequency(uint[] args, SMU smu, int mode = 0, bool setMax = false)
     {
         CheckCodeNameGeneration();
@@ -654,22 +605,15 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// </summary>
     private string CommandNameParser(string commandName)
     {
-        if (commandName == "enable-feature" || commandName == "disable-feature")
-        {
-            ProfileLoad();
-        }
-
-        var conditionMet = AppSettings.Preset >= 0 &&
-           _profile != null &&
-           AppSettings.Preset < _profile.Length &&
-           _profile[AppSettings.Preset] != null &&
-           _profile[AppSettings.Preset].Gpu16;
+        var isFixZeroFourGhz = AppSettings.Preset >= 0 &&
+           AppSettings.Preset < PresetManager.Presets.Length &&
+           PresetManager.Presets[AppSettings.Preset].Gpu16;
 
         static string L(string name) 
         {
             try
             {
-                return name.GetLocalized() ?? "Unknown";
+                return name.GetLocalized();
             }
             catch
             {
@@ -679,8 +623,8 @@ public class SendSmuCommandService : ISendSmuCommandService
 
         return commandName switch
         {
-            "enable-feature" => conditionMet ? L("Param_GPU_g16/Text") : L("Param_SMU_Func_Text/Text"),
-            "disable-feature" => conditionMet ? L("Param_GPU_g16/Text") : L("Param_SMU_Func_Text/Text"),
+            "enable-feature" => isFixZeroFourGhz ? L("Param_GPU_g16/Text") : L("Param_SMU_Func_Text/Text"),
+            "disable-feature" => isFixZeroFourGhz ? L("Param_GPU_g16/Text") : L("Param_SMU_Func_Text/Text"),
             "stapm-limit" => L("Param_CPU_c2/Text"),
             "vrm-current" => L("Param_VRM_v2/Text"),
             "vrmmax-current" => L("Param_VRM_v1/Text"),
@@ -868,15 +812,12 @@ public class SendSmuCommandService : ISendSmuCommandService
 
         if (_cpu == null)
         {
-            return Codename;
+            return _codename;
         }
 
-        if (Codename != _cpu.info.codeName)
-        {
-            Codename = _cpu.info.codeName;
-        }
+        _codename = _cpu.info.codeName;
 
-        return Codename;
+        return _codename;
     }
 
     /// <summary>
@@ -890,7 +831,7 @@ public class SendSmuCommandService : ISendSmuCommandService
         {
             Socket_FP4();
         }
-        else if (codeName == CodeName.SummitRidge || Codename == CodeName.SummitRidge ||
+        else if (codeName == CodeName.SummitRidge || _codename == CodeName.SummitRidge ||
             codeName == CodeName.PinnacleRidge)
         {
             Socket_AM4_V1();
@@ -992,7 +933,7 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         CheckCodeNameGeneration();
 
-        var matchingCommands = Commands?.Where(c => c.Item1 == "set-cogfx" && c.Item2 == isMp1);
+        var matchingCommands = _commands?.Where(c => c.Item1 == "set-cogfx" && c.Item2 == isMp1);
         var commands = matchingCommands!.ToList();
         if (commands.Count != 0)
         {
@@ -1009,7 +950,7 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         CheckCodeNameGeneration();
 
-        var matchingCommands = Commands?.Where(c => c.Item1 == "set-coper" && c.Item2 == isMp1);
+        var matchingCommands = _commands?.Where(c => c.Item1 == "set-coper" && c.Item2 == isMp1);
         var commands = matchingCommands!.ToList();
         if (commands.Count != 0)
         {
@@ -1027,8 +968,8 @@ public class SendSmuCommandService : ISendSmuCommandService
         CheckCodeNameGeneration();
 
         var actualCommand = 0x0U;
-        var matchingCommandsMp1 = Commands?.Where(c => c.Item1 == "get-sustained-power-and-thm-limit" && c.Item2 == true);
-        var matchingCommandsRsmu = Commands?.Where(c => c.Item1 == "get-sustained-power-and-thm-limit" && c.Item2 == false);
+        var matchingCommandsMp1 = _commands?.Where(c => c is { Item1: "get-sustained-power-and-thm-limit", Item2: true });
+        var matchingCommandsRsmu = _commands?.Where(c => c is { Item1: "get-sustained-power-and-thm-limit", Item2: false });
         var commands = matchingCommandsMp1!.ToList();
         var commands1 = matchingCommandsRsmu!.ToList();
         var mailbox = 1;
@@ -1051,15 +992,15 @@ public class SendSmuCommandService : ISendSmuCommandService
 
             if (mailbox == 0)
             {
-                addrMsg = RsmuCmd;
-                addrRsp = RsmuRsp;
-                addrArg = RsmuArg;
+                addrMsg = _rsmuCmd;
+                addrRsp = _rsmuRsp;
+                addrArg = _rsmuArg;
             }
             else
             {
-                addrMsg = Mp1Cmd;
-                addrRsp = Mp1Rsp;
-                addrArg = Mp1Arg;
+                addrMsg = _mp1Cmd;
+                addrRsp = _mp1Rsp;
+                addrArg = _mp1Arg;
             }
 
             Mailbox testMailbox1 = new()
@@ -1094,8 +1035,8 @@ public class SendSmuCommandService : ISendSmuCommandService
         CheckCodeNameGeneration();
 
         var actualCommand = 0x0U;
-        var matchingCommandsMp1 = Commands?.Where(c => c.Item1 == "get-coper-options" && c.Item2 == true);
-        var matchingCommandsRsmu = Commands?.Where(c => c.Item1 == "get-coper-options" && c.Item2 == false);
+        var matchingCommandsMp1 = _commands?.Where(c => c is { Item1: "get-coper-options", Item2: true });
+        var matchingCommandsRsmu = _commands?.Where(c => c is { Item1: "get-coper-options", Item2: false });
         var commands = matchingCommandsMp1!.ToList();
         var commands1 = matchingCommandsRsmu!.ToList();
         var mailbox = 1;
@@ -1118,15 +1059,15 @@ public class SendSmuCommandService : ISendSmuCommandService
 
             if (mailbox == 0)
             {
-                addrMsg = RsmuCmd;
-                addrRsp = RsmuRsp;
-                addrArg = RsmuArg;
+                addrMsg = _rsmuCmd;
+                addrRsp = _rsmuRsp;
+                addrArg = _rsmuArg;
             }
             else
             {
-                addrMsg = Mp1Cmd;
-                addrRsp = Mp1Rsp;
-                addrArg = Mp1Arg;
+                addrMsg = _mp1Cmd;
+                addrRsp = _mp1Rsp;
+                addrArg = _mp1Arg;
             }
 
             Mailbox testMailbox1 = new()
@@ -1148,20 +1089,16 @@ public class SendSmuCommandService : ISendSmuCommandService
             {
                 return true;
             }
-            else
-            {
-                return TrySetUndervolt(smu);
-            }
+
+            return TrySetUndervolt(smu);
         }
 
-        if (Codename == CodeName.RavenRidge || Codename == CodeName.FireFlight || Codename == CodeName.Dali || Codename == CodeName.Picasso)
+        if (_codename == CodeName.RavenRidge || _codename == CodeName.FireFlight || _codename == CodeName.Dali || _codename == CodeName.Picasso)
         {
             return true;
         }
-        else
-        {
-            return TrySetUndervolt(smu);
-        }
+
+        return TrySetUndervolt(smu);
     }
 
     /// <summary>
@@ -1170,8 +1107,8 @@ public class SendSmuCommandService : ISendSmuCommandService
     private static bool TrySetUndervolt(SMU smu)
     {
         var actualCommand = 0x0U;
-        var matchingCommandsMp1 = Commands?.Where(c => c.Item1 == "set-coall" && c.Item2 == true);
-        var matchingCommandsRsmu = Commands?.Where(c => c.Item1 == "set-coall" && c.Item2 == false);
+        var matchingCommandsMp1 = _commands?.Where(c => c is { Item1: "set-coall", Item2: true });
+        var matchingCommandsRsmu = _commands?.Where(c => c is { Item1: "set-coall", Item2: false });
         var commands = matchingCommandsMp1!.ToList();
         var commands1 = matchingCommandsRsmu!.ToList();
         var mailbox = 1;
@@ -1194,15 +1131,15 @@ public class SendSmuCommandService : ISendSmuCommandService
 
             if (mailbox == 0)
             {
-                addrMsg = RsmuCmd;
-                addrRsp = RsmuRsp;
-                addrArg = RsmuArg;
+                addrMsg = _rsmuCmd;
+                addrRsp = _rsmuRsp;
+                addrArg = _rsmuArg;
             }
             else
             {
-                addrMsg = Mp1Cmd;
-                addrRsp = Mp1Rsp;
-                addrArg = Mp1Arg;
+                addrMsg = _mp1Cmd;
+                addrRsp = _mp1Rsp;
+                addrArg = _mp1Arg;
             }
 
             Mailbox testMailbox1 = new()
@@ -1220,10 +1157,8 @@ public class SendSmuCommandService : ISendSmuCommandService
                 LogHelper.TraceIt_TraceError("[SendSmuCommand+OCFinder]@Unable_To_Set_CurveOptimizerUndervolting_STATUS - " + status);
                 return false;
             }
-            else
-            {
-                return true;
-            }
+
+            return true;
         }
 
         return false;
@@ -1235,9 +1170,9 @@ public class SendSmuCommandService : ISendSmuCommandService
     public bool? IsPlatformPc()
     {
         GetCodeName();
-        if (IsPlatformPCByCodename(Codename) == true)
+        if (IsPlatformPcByCodename(_codename) == true)
         {
-            if (Codename is CodeName.RavenRidge or CodeName.Picasso or CodeName.Renoir or CodeName.Cezanne or CodeName.Phoenix or CodeName.Phoenix2)
+            if (_codename is CodeName.RavenRidge or CodeName.Picasso or CodeName.Renoir or CodeName.Cezanne or CodeName.Phoenix or CodeName.Phoenix2)
             {
                 _cpu ??= CpuSingleton.GetInstance();
 
@@ -1260,10 +1195,8 @@ public class SendSmuCommandService : ISendSmuCommandService
                     }
                     return false;
                 }
-                else
-                {
-                    return true;
-                }
+
+                return true;
             }
             return true;
         }
@@ -1273,14 +1206,11 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// <summary>
     ///  Возвращает тип платформы по кодовому имени
     /// </summary>
-    public static bool? IsPlatformPCByCodename(CodeName codeName)
+    public static bool? IsPlatformPcByCodename(CodeName codeName)
     {
-        if (Codename != codeName)
-        {
-            Codename = codeName;
-        }
+        _codename = codeName;
 
-        return Codename switch
+        return _codename switch
         {
             CodeName.BristolRidge or CodeName.SummitRidge or CodeName.PinnacleRidge => true,
             CodeName.RavenRidge or CodeName.Picasso or CodeName.Dali or CodeName.FireFlight => false, // Raven Ridge, Picasso может быть PC!
@@ -1322,11 +1252,11 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         _codenameGeneration = "FP4";
 
-        Mp1Cmd = 0x13000000;
-        Mp1Rsp = 0x13000010;
-        Mp1Arg = 0x13000020;
+        _mp1Cmd = 0x13000000;
+        _mp1Rsp = 0x13000010;
+        _mp1Arg = 0x13000020;
 
-        Commands =
+        _commands =
         [
             // Store the commands
             // Those commands are 100% tested
@@ -1362,15 +1292,15 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         _codenameGeneration = "FP5";
 
-        Mp1Cmd = 0x3B10528;
-        Mp1Rsp = 0x3B10564;
-        Mp1Arg = 0x3B10998;
+        _mp1Cmd = 0x3B10528;
+        _mp1Rsp = 0x3B10564;
+        _mp1Arg = 0x3B10998;
 
-        RsmuCmd = 0x3B10A20;
-        RsmuRsp = 0x3B10A80;
-        RsmuArg = 0x3B10A88;
+        _rsmuCmd = 0x3B10A20;
+        _rsmuRsp = 0x3B10A80;
+        _rsmuArg = 0x3B10A88;
 
-        Commands =
+        _commands =
         [
             // Store the commands
             // true - Use MP1 address
@@ -1472,15 +1402,15 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         _codenameGeneration = "FP6";
 
-        Mp1Cmd = 0x3B10528;
-        Mp1Rsp = 0x3B10564;
-        Mp1Arg = 0x3B10998;
+        _mp1Cmd = 0x3B10528;
+        _mp1Rsp = 0x3B10564;
+        _mp1Arg = 0x3B10998;
 
-        RsmuCmd = 0x3B10A20;
-        RsmuRsp = 0x3B10A80;
-        RsmuArg = 0x3B10A88;
+        _rsmuCmd = 0x3B10A20;
+        _rsmuRsp = 0x3B10A80;
+        _rsmuArg = 0x3B10A88;
 
-        Commands =
+        _commands =
         [
             // Store the commands
             // Those commands are 100% tested
@@ -1567,15 +1497,15 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         _codenameGeneration = "FF3";
 
-        Mp1Cmd = 0x3B10528;
-        Mp1Rsp = 0x3B10578;
-        Mp1Arg = 0x3B10998;
+        _mp1Cmd = 0x3B10528;
+        _mp1Rsp = 0x3B10578;
+        _mp1Arg = 0x3B10998;
 
-        RsmuCmd = 0x3B10a20;
-        RsmuRsp = 0x3B10a80;
-        RsmuArg = 0x3B10a88;
+        _rsmuCmd = 0x3B10a20;
+        _rsmuRsp = 0x3B10a80;
+        _rsmuArg = 0x3B10a88;
 
-        Commands =
+        _commands =
         [
             // Store the commands
             // Those commands are 100% tested
@@ -1625,28 +1555,28 @@ public class SendSmuCommandService : ISendSmuCommandService
 
     private static void Socket_FT6_FP7_FP8_FP11()
     {
-        if (Codename == CodeName.StrixPoint || Codename == CodeName.StrixHalo)
+        if (_codename == CodeName.StrixPoint || _codename == CodeName.StrixHalo)
         {
             _codenameGeneration = "FP8";
 
-            Mp1Cmd = 0x3B10928;
-            Mp1Rsp = 0x3B10978;
-            Mp1Arg = 0x3B10998;
+            _mp1Cmd = 0x3B10928;
+            _mp1Rsp = 0x3B10978;
+            _mp1Arg = 0x3B10998;
         }
         else
         {
             _codenameGeneration = "FP7";
 
-            Mp1Cmd = 0x3B10528;
-            Mp1Rsp = 0x3B10578;
-            Mp1Arg = 0x3B10998;
+            _mp1Cmd = 0x3B10528;
+            _mp1Rsp = 0x3B10578;
+            _mp1Arg = 0x3B10998;
         }
 
-        RsmuCmd = 0x3B10a20;
-        RsmuRsp = 0x3B10a80;
-        RsmuArg = 0x3B10a88;
+        _rsmuCmd = 0x3B10a20;
+        _rsmuRsp = 0x3B10a80;
+        _rsmuArg = 0x3B10a88;
 
-        Commands =
+        _commands =
         [
             // Store the commands
             // Those commands are 100% tested
@@ -1729,15 +1659,15 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         _codenameGeneration = "AM4_V1";
 
-        Mp1Cmd = 0X3B10528;
-        Mp1Rsp = 0X3B10564;
-        Mp1Arg = 0X3B10598;
+        _mp1Cmd = 0X3B10528;
+        _mp1Rsp = 0X3B10564;
+        _mp1Arg = 0X3B10598;
 
-        RsmuCmd = 0x3B1051C;
-        RsmuRsp = 0X3B10568;
-        RsmuArg = 0X3B10590;
+        _rsmuCmd = 0x3B1051C;
+        _rsmuRsp = 0X3B10568;
+        _rsmuArg = 0X3B10590;
 
-        Commands =
+        _commands =
         [
             // Store the commands
             // Those commands are 100% tested
@@ -1769,15 +1699,15 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         _codenameGeneration = "AM4_V2";
 
-        Mp1Cmd = 0x3B10530;
-        Mp1Rsp = 0x3B1057C;
-        Mp1Arg = 0x3B109C4;
+        _mp1Cmd = 0x3B10530;
+        _mp1Rsp = 0x3B1057C;
+        _mp1Arg = 0x3B109C4;
 
-        RsmuCmd = 0x3B10524;
-        RsmuRsp = 0x3B10570;
-        RsmuArg = 0x3B10A40;
+        _rsmuCmd = 0x3B10524;
+        _rsmuRsp = 0x3B10570;
+        _rsmuArg = 0x3B10A40;
 
-        Commands =
+        _commands =
         [
             // Store the commands
             ("enable-feature",                    true,  0x03),
@@ -1818,15 +1748,15 @@ public class SendSmuCommandService : ISendSmuCommandService
     {
         _codenameGeneration = "AM5";
 
-        Mp1Cmd = 0x3B10530;
-        Mp1Rsp = 0x3B1057C;
-        Mp1Arg = 0x3B109C4;
+        _mp1Cmd = 0x3B10530;
+        _mp1Rsp = 0x3B1057C;
+        _mp1Arg = 0x3B109C4;
 
-        RsmuCmd = 0x3B10524;
-        RsmuRsp = 0x3B10570;
-        RsmuArg = 0x3B10A40;
+        _rsmuCmd = 0x3B10524;
+        _rsmuRsp = 0x3B10570;
+        _rsmuArg = 0x3B10A40;
 
-        Commands =
+        _commands =
         [
             // Store the commands
             // Those commands are 100% tested
