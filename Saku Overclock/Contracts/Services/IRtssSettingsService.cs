@@ -1,7 +1,7 @@
 ﻿using Saku_Overclock.Services;
 
 namespace Saku_Overclock.Contracts.Services;
-internal interface IRtssSettingsService
+public interface IRtssSettingsService
 {
     void SaveSettings();
     void LoadSettings();

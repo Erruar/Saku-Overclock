@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Numerics;
-using Windows.UI.Text;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.Themes;
@@ -10,33 +9,30 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Newtonsoft.Json;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
+using Saku_Overclock.Services;
 using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
-using ZenStates.Core;
+using Windows.UI.Text;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
-using Saku_Overclock.Services;
 
 namespace Saku_Overclock.Views;
 
 public sealed partial class ГлавнаяPage
 {
-    private readonly IBackgroundDataUpdater? _dataUpdater; // Обновление данных сенсоров системы
+    private readonly IBackgroundDataUpdater _dataUpdater = App.GetService<IBackgroundDataUpdater>(); // Обновление данных сенсоров системы
 
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
     private static readonly IApplyerService Applyer = App.GetService<IApplyerService>(); // Применения пресетов
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>(); // Пресеты
+    private readonly ICpuService Cpu = App.GetService<ICpuService>(); // Ядро приложения
 
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
-
-    private readonly Cpu?
-        _cpu; // Ядро приложения, здесь используется для получения информации о названии процессора, ядрах, SMT и пр.
 
     private int
         _currentMode; // Хранит режим, который выбрал пользователь, то, где стоял курсор при нажатии на блок, чтобы показать тултип с дополнительной информацией о просматриемом блоке
@@ -50,6 +46,8 @@ public sealed partial class ГлавнаяPage
     private string
         _doubleClickApplyPrev =
             string.Empty; // Проверка на имя прошлого пресета, если совпадает, то при двойном клике по пресету он применится
+
+    private int _selectedIndex = -1;
 
     private int
         _lastAppliedPreset = -2; // Начальное значение последнего применённого пресета, которое точно не совпадёт
@@ -75,22 +73,12 @@ public sealed partial class ГлавнаяPage
 
     public ГлавнаяPage()
     {
-        App.GetService<ГлавнаяViewModel>();
         InitializeComponent();
+
         PresetManager.LoadSettings();
-        _dataUpdater = App.BackgroundUpdater;
         if (_dataUpdater != null)
         {
             _dataUpdater.DataUpdated += OnDataUpdated;
-        }
-
-        try
-        {
-            _cpu = CpuSingleton.GetInstance();
-        }
-        catch (Exception e)
-        {
-            LogHelper.LogError(e);
         }
 
         Unloaded += ГлавнаяPage_Unloaded;
@@ -128,14 +116,14 @@ public sealed partial class ГлавнаяPage
                 config.AddDefaultTheme(requestedTheme: theme);
             });
 
-            if (_cpu == null)
+            if (!Cpu.IsAvailable)
             {
                 return;
             }
 
-            InfoCpuName.Text = _cpu.systemInfo.CpuName;
-            InfoCpuCores.Text = _cpu.info.topology.cores + "C/" +
-                                 _cpu.info.topology.logicalCores + "T";
+            InfoCpuName.Text = Cpu.CpuName;
+            InfoCpuCores.Text = Cpu.Cores + "C/" +
+                                 Environment.ProcessorCount + "T";
         }
         catch (Exception ex)
         {
@@ -176,15 +164,17 @@ public sealed partial class ГлавнаяPage
     private void LoadPresetsToPivot()
     {
         PresetCustom.Children.Clear();
-        foreach (var preset in PresetManager.Presets)
+        for (var i = 0; i < PresetManager.Presets.Length; i++)
         {
-            var isChecked = AppSettings.Preset != -1 &&
+            var preset = PresetManager.Presets[i];
+            var isChecked = AppSettings.Preset != -1 && AppSettings.Preset == i &&
                             PresetManager.Presets[AppSettings.Preset].Presetname == preset.Presetname &&
                             PresetManager.Presets[AppSettings.Preset].Presetdesc == preset.Presetdesc &&
                             PresetManager.Presets[AppSettings.Preset].Preseticon == preset.Preseticon;
 
             var toggleButton = new ToggleButton
             {
+                Tag = i,
                 Margin = new Thickness(0, 7, 0, 0),
                 CornerRadius = new CornerRadius(16),
                 HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -607,7 +597,8 @@ public sealed partial class ГлавнаяPage
 
             var name = string.Empty;
             var desc = string.Empty;
-            var textBlocks = VisualTreeHelper.FindVisualChildren<TextBlock>((sender as ToggleButton)!);
+            var toggle = sender as ToggleButton;
+            var textBlocks = VisualTreeHelper.FindVisualChildren<TextBlock>(toggle!);
             foreach (var block in textBlocks)
             {
                 if (block.FontWeight == new FontWeight(700))
@@ -623,12 +614,13 @@ public sealed partial class ГлавнаяPage
                 }
             }
 
-            if (_doubleClickApplyPrev == name + desc)
+            if (_doubleClickApplyPrev == name + desc + toggle?.Tag)
             {
                 Apply_Click(null, null);
             }
 
-            _doubleClickApplyPrev = name + desc;
+            _doubleClickApplyPrev = name + desc + toggle?.Tag;
+            _selectedIndex = (int?)toggle?.Tag ?? -1;
 
             await Task.Delay(20);
             _userSwitchPreset = false;
@@ -654,7 +646,7 @@ public sealed partial class ГлавнаяPage
             {
                 if (button.IsChecked == true)
                 {
-                    if (button.Tag != null && ((string)button.Tag).Contains("Preset_"))
+                    if (button.Tag is string premadeTag)
                     {
                         var presetValue = -1;
                         var presetType = PresetType.Balance;
@@ -690,12 +682,11 @@ public sealed partial class ГлавнаяPage
                             ApplyTeach.Subtitle = "";
                             ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
                             ApplyTeach.IsOpen = true;
-                            await LogHelper.Log("Apply_Success".GetLocalized());
                             await Task.Delay(3000);
                             ApplyTeach.IsOpen = false;
                         }
                     }
-                    else
+                    else if (button.Tag is int customTag)
                     {
                         var name = string.Empty;
                         var desc = string.Empty;
@@ -722,71 +713,87 @@ public sealed partial class ГлавнаяPage
                             icon = glyph.Glyph;
                         }
 
-                        for (var i = 0; i < PresetManager.Presets.Length; i++)
+                        Preset? requiredPreset = null;
+                        if (_selectedIndex > -1 && _selectedIndex < PresetManager.Presets.Length &&
+                            name == PresetManager.Presets[_selectedIndex].Presetname)
                         {
-                            var preset = PresetManager.Presets[i];
-                            if (preset.Presetname == name &&
-                                preset.Presetdesc == desc &&
-                                (preset.Preseticon == icon ||
-                                 preset.Preseticon == "\uE718"))
+                            requiredPreset = PresetManager.Presets[_selectedIndex];
+                            AppSettings.Preset = _selectedIndex;
+                        }
+                        else
+                        {
+                            for (var i = 0; i < PresetManager.Presets.Length; i++)
                             {
-                                // Проверяем, изменился ли пресет
-                                if (_lastAppliedPreset != i || _lastAppliedPresetName != name)
+                                var preset = PresetManager.Presets[i];
+                                if (preset.Presetname == name &&
+                                    preset.Presetdesc == desc &&
+                                    (preset.Preseticon == icon ||
+                                     preset.Preseticon == "\uE718"))
                                 {
-                                    _lastAppliedPreset = i;
-                                    _lastAppliedPresetName = name;
-
-                                    AppSettings.Preset = i;
-                                    AppSettings.SaveSettings();
-
-                                    ПараметрыPage.ApplyInfo = string.Empty;
-                                    await Applyer.ApplyCustomPreset(preset, true);
-
-                                    await Task.Delay(1000);
-                                    var timer = 1000;
-                                    var applyInfo = ПараметрыPage.ApplyInfo;
-                                    if (applyInfo != string.Empty)
+                                    // Проверяем, изменился ли пресет
+                                    if (_lastAppliedPreset != i || _lastAppliedPresetName != name)
                                     {
-                                        timer *= applyInfo.Split('\n').Length + 1;
+                                        _lastAppliedPreset = i;
+                                        _lastAppliedPresetName = name;
+
+                                        AppSettings.Preset = i;
+                                        AppSettings.SaveSettings();
+
+                                        requiredPreset = preset;
                                     }
 
-                                    ApplyTeach.Target = ApplyButton;
-                                    ApplyTeach.Title = "Apply_Success".GetLocalized();
-                                    ApplyTeach.Subtitle = "";
-                                    ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-                                    ApplyTeach.IsOpen = true;
-                                    var infoSet = InfoBarSeverity.Success;
-                                    if (applyInfo != string.Empty)
-                                    {
-                                        await LogHelper.Log(applyInfo);
-                                        ApplyTeach.Title = "Apply_Warn".GetLocalized();
-                                        ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + applyInfo;
-                                        ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
-                                        await Task.Delay(timer);
-                                        ApplyTeach.IsOpen = false;
-                                        infoSet = InfoBarSeverity.Warning;
-                                    }
-                                    else
-                                    {
-                                        await LogHelper.Log("Apply_Success".GetLocalized());
-                                        await Task.Delay(3000);
-                                        ApplyTeach.IsOpen = false;
-                                    }
-
-                                    NotificationsService.Notifies ??= [];
-                                    NotificationsService.Notifies.Add(new Notify
-                                    {
-                                        Title = ApplyTeach.Title,
-                                        Msg = ApplyTeach.Subtitle +
-                                              (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
-                                        Type = infoSet
-                                    });
-                                    NotificationsService.SaveNotificationsSettings();
+                                    break;
                                 }
-
-                                break;
                             }
                         }
+
+                        if (requiredPreset == null)
+                        {
+                            return;
+                        }
+
+                        ПараметрыPage.ApplyInfo = string.Empty;
+                        await Applyer.ApplyCustomPreset(requiredPreset, true);
+
+                        await Task.Delay(1000);
+                        var timer = 1000;
+                        var applyInfo = ПараметрыPage.ApplyInfo;
+                        if (applyInfo != string.Empty)
+                        {
+                            timer *= applyInfo.Split('\n').Length + 1;
+                        }
+
+                        ApplyTeach.Target = ApplyButton;
+                        ApplyTeach.Title = "Apply_Success".GetLocalized();
+                        ApplyTeach.Subtitle = "";
+                        ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                        ApplyTeach.IsOpen = true;
+                        var infoSet = InfoBarSeverity.Success;
+                        if (applyInfo != string.Empty)
+                        {
+                            await LogHelper.Log(applyInfo);
+                            ApplyTeach.Title = "Apply_Warn".GetLocalized();
+                            ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + applyInfo;
+                            ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
+                            await Task.Delay(timer);
+                            ApplyTeach.IsOpen = false;
+                            infoSet = InfoBarSeverity.Warning;
+                        }
+                        else
+                        {
+                            await Task.Delay(3000);
+                            ApplyTeach.IsOpen = false;
+                        }
+
+                        NotificationsService.Notifies ??= [];
+                        NotificationsService.Notifies.Add(new Notify
+                        {
+                            Title = ApplyTeach.Title,
+                            Msg = ApplyTeach.Subtitle +
+                                  (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                            Type = infoSet
+                        });
+                        NotificationsService.SaveNotificationsSettings();
                     }
                 }
             }
@@ -891,11 +898,12 @@ public sealed partial class ГлавнаяPage
                 MainAdditionalInfo3Desc.Text = "BIOS:";
                 try
                 {
-                    if (_cpu != null)
+                    if (Cpu.IsAvailable)
                     {
-                        MainAdditionalInfo1Name.Text = _cpu.systemInfo.MbName;
-                        MainAdditionalInfo2Name.Text = _cpu.systemInfo.MbVendor;
-                        MainAdditionalInfo3Name.Text = _cpu.systemInfo.BiosVersion;
+                        var motherBoardInfo = Cpu.MotherBoardInfo;
+                        MainAdditionalInfo1Name.Text = motherBoardInfo.MotherBoardName;
+                        MainAdditionalInfo2Name.Text = motherBoardInfo.MotherBoardVendor;
+                        MainAdditionalInfo3Name.Text = motherBoardInfo.BiosVersion;
                     }
                 }
                 catch (Exception ex)
@@ -919,10 +927,10 @@ public sealed partial class ГлавнаяPage
                 MainAdditionalInfo3Desc.Text = "SMT:";
                 try
                 {
-                    if (_cpu != null)
+                    if (Cpu.IsAvailable)
                     {
-                        MainAdditionalInfo2Name.Text = _cpu.info.topology.cores.ToString();
-                        MainAdditionalInfo3Name.Text = _cpu.systemInfo.SMT.ToString()
+                        MainAdditionalInfo2Name.Text = Cpu.Cores.ToString();
+                        MainAdditionalInfo3Name.Text = Cpu.Smt.ToString()
                             .Replace("True", "Cooler_Service_Enabled/Content".GetLocalized())
                             .Replace("False",
                                 "Cooler_Service_Disabled/Content"

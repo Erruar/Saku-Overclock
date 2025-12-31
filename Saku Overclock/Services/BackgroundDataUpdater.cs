@@ -17,9 +17,10 @@ using Icon = System.Drawing.Icon;
 
 namespace Saku_Overclock.Services;
 
-public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgroundDataUpdater
+public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuService cpuService) : IBackgroundDataUpdater
 {
     private readonly IDataProvider? _dataProvider = dataProvider;
+    private readonly ICpuService? _cpu = cpuService;
     private CancellationTokenSource? _cts;
     private Task? _updateTask;
 
@@ -689,7 +690,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
         int startIndex, int endIndex)
     {
         var estimatedLength = EstimateResultLength(editorText) +
-                              (int)(CpuSingleton.GetInstance().info.topology.cores * 50);
+                              ((int?)_cpu?.Cores ?? Environment.ProcessorCount * 50);
 
         var buffer = ArrayPool<char>.Shared.Rent(estimatedLength);
 
@@ -862,7 +863,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider) : IBackgr
             return 0;
         }
 
-        var cores = CpuSingleton.GetInstance().info.topology.cores;
+        var cores = (int?)_cpu?.Cores ?? Environment.ProcessorCount;
         var compactSizing = "<Br><S0>е" + (template.Contains("<S1>") ? "<S1>" : string.Empty);
         var outputPos = 0;
 

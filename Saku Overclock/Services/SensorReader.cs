@@ -1,35 +1,25 @@
 ﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.SmuEngine;
-using ZenStates.Core;
 
 namespace Saku_Overclock.Services;
 
 public class SensorReader : ISensorReader
 {
-    private readonly Cpu? _cpu;
     private float[]? _table;
+    private readonly ICpuService? Cpu;
 
     public int CurrentTableVersion
     {
         get; private set;
     }
 
-    public SensorReader()
+    public SensorReader(ICpuService cpuService)
     {
-        try
+        Cpu = cpuService;
+        if (Cpu != null)
         {
-            _cpu = CpuSingleton.GetInstance();
-
-            if (_cpu != null)
-            {
-                // Инициализируем версию таблицы
-                UpdateTableVersion();
-            }
-        }
-        catch (Exception e)
-        {
-            LogHelper.LogError("SensorReader initialization failed: " + e);
+            // Инициализируем версию таблицы
+            UpdateTableVersion();
         }
     }
 
@@ -37,16 +27,16 @@ public class SensorReader : ISensorReader
     {
         try
         {
-            if (_cpu == null)
+            if (Cpu == null)
             {
                 return false;
             }
 
             // Обновляем таблицу через ZenStates.Core
-            _cpu.RefreshPowerTable();
+            Cpu.RefreshPowerTable();
 
             // Получаем обновлённую таблицу
-            _table = _cpu.powerTable?.Table;
+            _table = Cpu.PowerTable;
 
             // Обновляем версию таблицы
             UpdateTableVersion();
@@ -64,7 +54,7 @@ public class SensorReader : ISensorReader
     {
         try
         {
-            if (_table == null || _cpu?.powerTable?.Table == null)
+            if (Cpu == null || _table == null)
             {
                 return (false, 0);
             }
@@ -97,16 +87,16 @@ public class SensorReader : ISensorReader
     {
         try
         {
-            if (_cpu?.powerTable == null)
+            if (Cpu == null || _table == null)
             {
                 return (false, 0);
             }
 
             return type switch
             {
-                SpecialValueType.Mclk => (true, _cpu.powerTable.MCLK),
-                SpecialValueType.Fclk => (true, _cpu.powerTable.FCLK),
-                SpecialValueType.VddcrSoc => (true, _cpu.powerTable.VDDCR_SOC),
+                SpecialValueType.Mclk => (true, Cpu.SocMemoryClock),
+                SpecialValueType.Fclk => (true, Cpu.SocFabricClock),
+                SpecialValueType.VddcrSoc => (true, Cpu.SocVoltage),
                 _ => (false, 0)
             };
         }
@@ -123,12 +113,12 @@ public class SensorReader : ISensorReader
     {
         try
         {
-            if (_cpu == null)
+            if (Cpu == null)
             {
                 return (false, 0);
             }
 
-            var temp = _cpu.GetCpuTemperature();
+            var temp = Cpu.GetCpuTemperature();
             return temp.HasValue ? (true, temp.Value) : (false, 0);
         }
         catch
@@ -144,13 +134,13 @@ public class SensorReader : ISensorReader
     {
         try
         {
-            if (_cpu == null)
+            if (Cpu == null)
             {
                 return (false, 0);
             }
 
-            var multi = _cpu.GetCoreMulti(coreIndex);
-            return (true, multi / 10.0); // Конвертируем в GHz
+            var multi = Cpu.GetCoreMultiplier(coreIndex);
+            return (true, multi);
         }
         catch
         {
@@ -163,12 +153,12 @@ public class SensorReader : ISensorReader
     /// </summary>
     public int GetTotalCoresTopology()
     {
-        if (_cpu?.info.topology == null)
+        if (Cpu == null)
         {
             return 0;
         }
 
-        return (int)_cpu.info.topology.cores;
+        return (int)Cpu.Cores;
     }
 
     /// <summary>
@@ -176,7 +166,7 @@ public class SensorReader : ISensorReader
     /// </summary>
     public string GetCodeName()
     {
-        return _cpu?.info.codeName.ToString() ?? "Unknown";
+        return Cpu?.CpuCodeName ?? "Unsupported";
     }
 
     /// <summary>
@@ -192,16 +182,18 @@ public class SensorReader : ISensorReader
     /// </summary>
     private void UpdateTableVersion()
     {
-        if (_cpu == null)
+        if (Cpu == null)
         {
             CurrentTableVersion = 0;
             return;
         }
 
-        var tableVersion = _cpu.smu.TableVersion;
+        var tableVersion = Cpu.PowerTableVersion;
+
+        var codenameGen = Cpu.GetCodenameGeneration();
 
         // Zen fallback
-        if (tableVersion == 0 && _cpu.info.codeName is Cpu.CodeName.SummitRidge or Cpu.CodeName.PinnacleRidge)
+        if (tableVersion == 0 && codenameGen == CpuService.CodenameGeneration.AM4_V1)
         {
             tableVersion = 0x00190001;
         }
@@ -212,16 +204,26 @@ public class SensorReader : ISensorReader
             tableVersion = 0x00380805;
         }
 
-        tableVersion = _cpu.info.codeName switch
+        if (codenameGen == CpuService.CodenameGeneration.AM5)
         {
-            // Zen 4 override
-            Cpu.CodeName.Raphael or Cpu.CodeName.DragonRange or Cpu.CodeName.StormPeak when
-                tableVersion != 0x00540004 && tableVersion != 0x00540104 && tableVersion != 0x00540208 => 0x00540004,
-            // Zen 5 override
-            Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.Bergamo when tableVersion != 0x00620205 &&
-                tableVersion != 0x00620105 => 0x00620205,
-            _ => tableVersion
-        };
+            var baseRevision = (tableVersion >> 16) & 0xFFFF;
+            if (baseRevision == 0x54 
+                && tableVersion != 0x00540004 
+                && tableVersion != 0x00540104 
+                && tableVersion != 0x00540208)
+            {
+                // Zen 4 override
+                tableVersion = 0x00540004;
+            }
+            else if (baseRevision == 0x62 
+                && tableVersion != 0x00620205 
+                && tableVersion != 0x00620105)
+            {
+                // Zen 5 override
+                tableVersion = 0x00620205;
+            }
+        }
+        
 
         CurrentTableVersion = (int)tableVersion;
     }

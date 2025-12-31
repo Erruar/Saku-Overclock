@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Microsoft.UI;
+﻿using Microsoft.UI;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -18,13 +17,7 @@ using Saku_Overclock.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation.Metadata;
 using Windows.UI;
-using ZenStates.Core;
-using Application = Microsoft.UI.Xaml.Application;
-using Button = Microsoft.UI.Xaml.Controls.Button;
-using CheckBox = Microsoft.UI.Xaml.Controls.CheckBox;
-using ComboBox = Microsoft.UI.Xaml.Controls.ComboBox;
-using Mailbox = ZenStates.Core.Mailbox;
-using TextBox = Microsoft.UI.Xaml.Controls.TextBox;
+using static Saku_Overclock.Services.CpuService;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
 namespace Saku_Overclock.Views;
@@ -32,27 +25,25 @@ namespace Saku_Overclock.Views;
 public sealed partial class ПараметрыPage
 {
     private FontIcon? _smuSymbol1; // тоже самое что и SMUSymbol
-    private List<SmuAddressSet>? _matches; // Совпадения адресов SMU 
     private Smusettings? _smusettings = new(); // Загрузка настроек быстрых команд SMU
     private readonly IAppNotificationService NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
     private readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private readonly IApplyerService Applyer = App.GetService<IApplyerService>();
     private readonly IOcFinderService OcFinder = App.GetService<IOcFinderService>();
+    private readonly ICpuService Cpu = App.GetService<ICpuService>();
     private int _indexpreset; // Выбранный пресет
     private readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Все настройки приложения
     private readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>(); // Менеджер пресетов разгона
     private bool _isSearching; // Флаг выполнения поиска чтобы не сканировать адреса SMU 
     private readonly List<string> _searchItems = [];
-    private bool _isStapmTuneRequired;
+    private readonly SmuAddressSet _testMailbox = new(0,0,0);
     private string
         _smuSymbol =
             "\uE8C8"; // Изначальный символ копирования, для секции Редактор параметров SMU. Используется для быстрых команд SMU
 
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений
     private bool _relay; // Задержка между изменениями ComboBox в секции Состояния CPU
-    private Cpu? _cpu; // Импорт Zen States core
     private bool _waitforload = true; // Ожидание окончательной смены пресета на другой. Активируется при смене пресета
-    private readonly Mailbox _testMailbox = new(); // Новый адрес SMU
     private bool _commandReturnedValue; // Флаг если команда вернула значение
     private readonly bool _isPremadePresetApplied; // Флаг применённого готового пресета для его восстановления после покидания страницы Разгон
 
@@ -81,15 +72,6 @@ public sealed partial class ПараметрыPage
         if (AppSettings.Preset == -1)
         {
             _isPremadePresetApplied = true;
-        }
-
-        try
-        {
-            _cpu ??= CpuSingleton.GetInstance();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
         }
 
         Loaded += ПараметрыPage_Loaded;
@@ -382,8 +364,9 @@ public sealed partial class ПараметрыPage
         {
             if (SettingsViewModel.VersionId != 5) // Если не дебаг. В дебаг версии отображаются все параметры
             {
+                var codenameGen = Cpu.GetCodenameGeneration();
                 /*                 F P 4    C P U                    */
-                if (_cpu?.info.codeName == Cpu.CodeName.BristolRidge)
+                if (codenameGen == CodenameGeneration.FP4)
                 {
                     LaptopCpu_FP5_HideUnavailableParameters();
 
@@ -414,10 +397,7 @@ public sealed partial class ПараметрыPage
                     }
                 }
                 /*                 F P 5    C P U                    */
-                if (_cpu?.info.codeName is Cpu.CodeName.RavenRidge 
-                    or Cpu.CodeName.FireFlight 
-                    or Cpu.CodeName.Dali 
-                    or Cpu.CodeName.Picasso)
+                if (codenameGen == CodenameGeneration.FP5)
                 {
                     LaptopCpu_FP5_HideUnavailableParameters();
                 }
@@ -427,9 +407,7 @@ public sealed partial class ПараметрыPage
                 }
 
                 /*                 F P 6    C P U                    */
-                if (_cpu?.info.codeName is Cpu.CodeName.Renoir 
-                    or Cpu.CodeName.Cezanne 
-                    or Cpu.CodeName.Lucienne)
+                if (codenameGen == CodenameGeneration.FP6)
                 {
                     LaptopsStapmLimit.Visibility = Visibility.Collapsed;
                     LaptopsStapmLimitDesc.Visibility = Visibility.Collapsed;
@@ -439,12 +417,10 @@ public sealed partial class ПараметрыPage
                     VrmLaptopsPsiCpuDesc.Visibility = Visibility.Collapsed;
                     VrmLaptopsPsiIGpu.Visibility = Visibility.Collapsed;
                     VrmLaptopsPsiIGpuDesc.Visibility = Visibility.Collapsed;
-
-                    _isStapmTuneRequired = true;
                 }
 
                 /*                 F F 3    C P U                    */
-                if (_cpu?.info.codeName == Cpu.CodeName.VanGogh)
+                if (codenameGen == CodenameGeneration.FF3)
                 {
                     LaptopsStapmLimit.Visibility = Visibility.Collapsed;
                     LaptopsStapmLimitDesc.Visibility = Visibility.Collapsed;
@@ -458,32 +434,19 @@ public sealed partial class ПараметрыPage
                     AdvLaptopPboScalarDesc.Visibility = Visibility.Collapsed;
                     AdvLaptopCpuVolt.Visibility = Visibility.Collapsed;
                     AdvLaptopCpuVoltDesc.Visibility = Visibility.Collapsed;
-
-                    _isStapmTuneRequired = true;
                 }
 
                 /*     F T 6   F P 7   F P 8   F P 11    C P U       */
-                if (_cpu?.info.codeName is Cpu.CodeName.Mendocino 
-                    or Cpu.CodeName.Rembrandt 
-                    or Cpu.CodeName.Phoenix 
-                    or Cpu.CodeName.Phoenix2 
-                    or Cpu.CodeName.HawkPoint 
-                    or Cpu.CodeName.StrixPoint 
-                    or Cpu.CodeName.StrixHalo 
-                    or Cpu.CodeName.KrackanPoint 
-                    or Cpu.CodeName.KrackanPoint2)
+                if (codenameGen is CodenameGeneration.FP7 or CodenameGeneration.FP8)
                 {
                     LaptopsStapmLimit.Visibility = Visibility.Collapsed;
                     LaptopsStapmLimitDesc.Visibility = Visibility.Collapsed;
                     LaptopsHtcTemp.Visibility = Visibility.Collapsed;
                     LaptopsHtcTempDesc.Visibility = Visibility.Collapsed;
-
-                    _isStapmTuneRequired = true;
                 }
 
                 /*              A M 4  v 1    C P U                  */
-                if (_cpu?.info.codeName is Cpu.CodeName.PinnacleRidge 
-                    or Cpu.CodeName.SummitRidge)
+                if (codenameGen == CodenameGeneration.AM4_V1)
                 {
                     Ccd1Expander.Visibility = Visibility.Collapsed; //Убрать Оптимизатор кривой
                     Ccd2Expander.Visibility = Visibility.Collapsed;
@@ -494,26 +457,18 @@ public sealed partial class ПараметрыPage
                 }
 
                 /*              A M 4  v 2    C P U                  */
-                if (_cpu?.info.codeName is Cpu.CodeName.Matisse 
-                    or Cpu.CodeName.Vermeer)
+                if (codenameGen == CodenameGeneration.AM4_V2)
                 {
                     DesktopCpu_AM4_HideUnavailableParameters();
                 }
                 /*                 A M 5    C P U                    */
-                if (_cpu?.info.codeName is Cpu.CodeName.Raphael 
-                    or Cpu.CodeName.Genoa 
-                    or Cpu.CodeName.GraniteRidge 
-                    or Cpu.CodeName.StormPeak 
-                    or Cpu.CodeName.DragonRange 
-                    or Cpu.CodeName.Bergamo)
+                if (codenameGen == CodenameGeneration.AM5)
                 {
                     DesktopCpu_AM5_HideUnavailableParameters();
-
-                    _isStapmTuneRequired = true;
                 }
 
 
-                if (_cpu == null || _cpu?.info.codeName == Cpu.CodeName.Unsupported)
+                if (codenameGen == CodenameGeneration.Unknown)
                 {
                     MainScroll.Visibility = Visibility.Collapsed;
                     ActionButtonApply.Visibility = Visibility.Collapsed;
@@ -531,17 +486,11 @@ public sealed partial class ПараметрыPage
                     return; // Остановить загрузку страницы
                 }
 
-                uint cores = 0;
 
-                if (_cpu != null)
-                {
-                    cores = _cpu.info.topology.physicalCores;
-                }
-
-                for (var i = 0; i < cores; i++)
+                for (var i = 0; i < Cpu.PhysicalCores; i++)
                 {
                     var mapIndex = i < 8 ? 0 : 1;
-                    if ((~_cpu?.info.topology.coreDisableMap[mapIndex] >> i % 8 & 1) == 0)
+                    if ((~Cpu.CoreDisableMap[mapIndex] >> i % 8 & 1) == 0)
                     {
                         try
                         {
@@ -617,7 +566,7 @@ public sealed partial class ПараметрыPage
                     Ccd2Grid61.Visibility = Visibility.Visible;
                     Ccd2Grid71.Visibility = Visibility.Visible;
 
-                    cores = _cpu?.info.topology.cores ?? 8;
+                    var cores = Cpu.Cores;
                     if (cores > 8)
                     {
                         if (cores <= 15)
@@ -1604,217 +1553,42 @@ public sealed partial class ПараметрыPage
 
     #region SMU Related voids and Quick SMU Commands
 
-    private static void RunBackgroundTask(DoWorkEventHandler task, RunWorkerCompletedEventHandler completedHandler)
-    {
-        try
-        {
-            var backgroundWorker1 = new BackgroundWorker();
-            backgroundWorker1.DoWork += task;
-            backgroundWorker1.RunWorkerCompleted += completedHandler;
-            backgroundWorker1.RunWorkerAsync();
-        }
-        catch
-        {
-            LogHelper.TraceIt_TraceError("Background Task Error");
-        }
-    }
-
     private void PopulateMailboxesList(ItemCollection l)
     {
         l.Clear();
-        l.Add(new MailboxListItem("RSMU", _cpu?.smu.Rsmu!));
-        l.Add(new MailboxListItem("MP1", _cpu?.smu.Mp1Smu!));
-        l.Add(new MailboxListItem("HSMP", _cpu?.smu.Hsmp!));
+        l.Add(new MailboxListItem("RSMU", Cpu.Rsmu));
+        l.Add(new MailboxListItem("MP1", Cpu.Mp1));
+        l.Add(new MailboxListItem("HSMP", Cpu.Hsmp));
     }
 
-    private void AddMailboxToList(string label, SmuAddressSet addressSet) =>
-        ComboBoxMailboxSelect.Items.Add(new MailboxListItem(label, addressSet));
-
-    private async void SmuScan_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+    private async void AddPopulatedSmuMailboxes()
     {
         try
         {
-            var index = ComboBoxMailboxSelect.SelectedIndex;
             PopulateMailboxesList(ComboBoxMailboxSelect.Items);
-            for (var i = 0; i < _matches?.Count; i++)
+            if (ComboBoxMailboxSelect.Items.Count > 0)
             {
-                AddMailboxToList($"Mailbox {i + 1}", _matches[i]);
+                ComboBoxMailboxSelect.SelectedIndex = 0;
+            }
+            else
+            {
+                ComboBoxMailboxSelect.SelectedIndex = -1;
             }
 
-            if (index > ComboBoxMailboxSelect.Items.Count)
-            {
-                index = 0;
-            }
-
-            ComboBoxMailboxSelect.SelectedIndex = index;
             QuickCommand.IsEnabled = true;
-            await Send_Message("SMUScanText".GetLocalized(), "SMUScanDesc".GetLocalized(), Symbol.Message);
         }
         catch (Exception exception)
         {
             await LogHelper.TraceIt_TraceError(exception);
         }
     }
-
-    private void BackgroundWorkerTrySettings_DoWork(object sender, DoWorkEventArgs e)
-    {
-        try
-        {
-            _cpu ??= new Cpu(CpuInitSettings.defaultSetttings);
-            switch (_cpu.info.codeName)
-            {
-                case Cpu.CodeName.BristolRidge:
-                    //ScanSmuRange(0x13000000, 0x13000F00, 4, 0x10);
-                    break;
-                case Cpu.CodeName.RavenRidge:
-                case Cpu.CodeName.Picasso:
-                case Cpu.CodeName.FireFlight:
-                case Cpu.CodeName.Dali:
-                case Cpu.CodeName.Renoir:
-                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
-                    ScanSmuRange(0x03B10A00, 0x03B10AFF, 4, 0x60);
-                    break;
-                case Cpu.CodeName.PinnacleRidge:
-                case Cpu.CodeName.SummitRidge:
-                case Cpu.CodeName.Matisse:
-                case Cpu.CodeName.Whitehaven:
-                case Cpu.CodeName.Naples:
-                case Cpu.CodeName.Colfax:
-                case Cpu.CodeName.Vermeer:
-                    //case Cpu.CodeName.Raphael:
-                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
-                    ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
-                    break;
-                case Cpu.CodeName.Raphael:
-                    ScanSmuRange(0x03B10500, 0x03B10998, 8, 0x3C);
-                    // ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
-                    break;
-                case Cpu.CodeName.Rome:
-                    ScanSmuRange(0x03B10500, 0x03B10AFF, 4, 0x4C);
-                    break;
-            }
-        }
-        catch (Exception ex)
-        {
-            LogHelper.TraceIt_TraceError(ex);
-        }
-    }
-
-    private void ScanSmuRange(uint start, uint end, uint step, uint offset)
-    {
-        _matches = [];
-        var keyPairs = new List<KeyValuePair<uint, uint>>();
-
-        while (start <= end)
-        {
-            var smuRspAddress = start + offset;
-
-            if (_cpu?.ReadDword(start) != 0xFFFFFFFF)
-            {
-                // Send unknown command 0xFF to each pair of this start and possible response addresses
-                if (_cpu?.RyzenSmu.SmuWriteReg(start, 0xFF) == true)
-                {
-                    Thread.Sleep(10);
-
-                    while (smuRspAddress <= end)
-                    {
-                        // Expect UNKNOWN_CMD status to be returned if the mailbox works
-                        if (_cpu?.ReadDword(smuRspAddress) == 0xFE)
-                        {
-                            // Send Get_SMU_Version command
-                            if (_cpu?.RyzenSmu.SmuWriteReg(start, 0x2) == true) 
-                            {
-                                Thread.Sleep(10);
-                                if (_cpu?.ReadDword(smuRspAddress) == 0x1)
-                                {
-                                    keyPairs.Add(new KeyValuePair<uint, uint>(start, smuRspAddress));
-                                }
-                            }
-                        }
-
-                        smuRspAddress += step;
-                    }
-                }
-            }
-
-            start += step;
-        }
-
-        if (keyPairs.Count > 0)
-        {
-            foreach (var keyPair in keyPairs)
-            {
-                Console.WriteLine($"{keyPair.Key:X8}: {keyPair.Value:X8}");
-            }
-            Console.WriteLine();
-        }
-
-        var possibleArgAddresses = new List<uint>();
-
-        foreach (var pair in keyPairs)
-        {
-            Console.WriteLine($"Testing {pair.Key:X8}: {pair.Value:X8}");
-            if (TrySettings(pair.Key, pair.Value, 0xFFFFFFAF, 0x2, 0xFF) == SMU.Status.OK) //ЗДЕСЬ БЫЛО FFFFFFFF
-            {
-                var smuArgAddress = pair.Value + 4;
-                while (smuArgAddress <= end)
-                {
-                    if (_cpu?.ReadDword(smuArgAddress) == _cpu?.smu.Version)
-                    {
-                        possibleArgAddresses.Add(smuArgAddress);
-                    }
-
-                    smuArgAddress += step;
-                }
-            }
-
-            // Verify the arg address returns correct value (should be test argument + 1)
-            foreach (var address in possibleArgAddresses)
-            {
-                var testArg = 0xFAFAFAFA;
-                var retries = 3;
-
-                while (retries > 0)
-                {
-                    testArg++;
-                    retries--;
-
-                    // Send test command
-                    if (TrySettings(pair.Key, pair.Value, address, 0x1, testArg) == SMU.Status.OK)
-                    {
-                        if (_cpu?.ReadDword(address) != testArg + 1)
-                        {
-                            retries = -1;
-                        }
-                    }
-                }
-
-                if (retries == 0)
-                {
-                    _matches.Add(new SmuAddressSet(pair.Key, pair.Value, address));
-                    break;
-                }
-            }
-        }
-    }
-
-    private SMU.Status? TrySettings(uint msgAddr, uint rspAddr, uint argAddr, uint cmd, uint value)
-    {
-        var args = new uint[6];
-        args[0] = value;
-
-        _testMailbox.SMU_ADDR_MSG = msgAddr;
-        _testMailbox.SMU_ADDR_RSP = rspAddr;
-        _testMailbox.SMU_ADDR_ARG = argAddr;
-
-        return _cpu?.smu.SendSmuCommand(_testMailbox, cmd, ref args);
-    }
+    
 
     private void ResetSmuAddresses()
     {
-        TextBoxCmdAddress.Text = $@"0x{Convert.ToString(_testMailbox.SMU_ADDR_MSG, 16).ToUpper()}";
-        TextBoxRspAddress.Text = $@"0x{Convert.ToString(_testMailbox.SMU_ADDR_RSP, 16).ToUpper()}";
-        TextBoxArgAddress.Text = $@"0x{Convert.ToString(_testMailbox.SMU_ADDR_ARG, 16).ToUpper()}";
+        TextBoxCmdAddress.Text = $@"0x{Convert.ToString(_testMailbox.MsgAddress, 16).ToUpper()}";
+        TextBoxRspAddress.Text = $@"0x{Convert.ToString(_testMailbox.RspAddress, 16).ToUpper()}";
+        TextBoxArgAddress.Text = $@"0x{Convert.ToString(_testMailbox.ArgAddress, 16).ToUpper()}";
     }
 
     private void PlayButton_Click(object sender, RoutedEventArgs e)
@@ -1851,7 +1625,7 @@ public sealed partial class ПараметрыPage
 
             if (mode != 0)
             {
-                args = Utils.MakeCmdArgs();
+                args = SendSmuCommandService.MakeCmdArgs();
                 userArgs = _smusettings.QuickSmuCommands![commandIndex].Argument.Trim().Split(',');
                 TryConvertToUint(_smusettings.MailBoxes![_smusettings.QuickSmuCommands![commandIndex].MailIndex].Cmd,
                     out addrMsg);
@@ -1863,7 +1637,7 @@ public sealed partial class ПараметрыPage
             }
             else
             {
-                args = Utils.MakeCmdArgs();
+                args = SendSmuCommandService.MakeCmdArgs();
                 userArgs = TextBoxArg0.Text.Trim().Split(',');
                 TryConvertToUint(TextBoxCmdAddress.Text, out addrMsg);
                 TryConvertToUint(TextBoxRspAddress.Text, out addrRsp);
@@ -1871,9 +1645,9 @@ public sealed partial class ПараметрыPage
                 TryConvertToUint(TextBoxCmd.Text, out command);
             }
 
-            _testMailbox.SMU_ADDR_MSG = addrMsg;
-            _testMailbox.SMU_ADDR_RSP = addrRsp;
-            _testMailbox.SMU_ADDR_ARG = addrArg;
+            _testMailbox.MsgAddress = addrMsg;
+            _testMailbox.RspAddress = addrRsp;
+            _testMailbox.ArgAddress = addrArg;
 
             for (var i = 0; i < userArgs.Length; i++)
             {
@@ -1892,12 +1666,12 @@ public sealed partial class ПараметрыPage
                 await LogHelper.Log(
                     $"Sending SMU Command: {_smusettings.QuickSmuCommands?[commandIndex].Command}\n" +
                     $"Args: {_smusettings.QuickSmuCommands?[commandIndex].Argument}\n" +
-                    $"Address MSG: {_testMailbox.SMU_ADDR_MSG}\n" +
-                    $"Address RSP: {_testMailbox.SMU_ADDR_RSP}\n" +
-                    $"Address ARG: {_testMailbox.SMU_ADDR_ARG}"));
+                    $"Address MSG: {_testMailbox.MsgAddress}\n" +
+                    $"Address RSP: {_testMailbox.RspAddress}\n" +
+                    $"Address ARG: {_testMailbox.ArgAddress}"));
 
-            var status = _cpu?.smu.SendSmuCommand(_testMailbox, command, ref args);
-            if (status != SMU.Status.OK)
+            var status = Cpu.SendSmuCommand(_testMailbox, command, ref args);
+            if (status != SmuStatus.OK)
             {
                 ApplyInfo += "\n" + "SMUErrorText".GetLocalized() + ": " +
                              (TextBoxCmd.Text.Contains("0x") ? TextBoxCmd.Text : "0x" + TextBoxCmd.Text)
@@ -1906,7 +1680,7 @@ public sealed partial class ПараметрыPage
                                  ? TextBoxArg0.Text
                                  : "0x" + TextBoxArg0.Text);
 
-                if (status == SMU.Status.CMD_REJECTED_PREREQ)
+                if (status == SmuStatus.CMD_REJECTED_PREREQ)
                 {
                     ApplyInfo += "\n" + "SMUErrorRejected".GetLocalized();
                 }
@@ -1943,8 +1717,12 @@ public sealed partial class ПараметрыPage
     }
     private void SMUOptions_Expander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
     {
-        if (_isSearching) { return; }
-        RunBackgroundTask(BackgroundWorkerTrySettings_DoWork!, SmuScan_WorkerCompleted!);
+        if (_isSearching) 
+        { 
+            return; 
+        }
+
+        AddPopulatedSmuMailboxes();
     }
 
     private void ComboBoxMailboxSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1957,9 +1735,9 @@ public sealed partial class ПараметрыPage
 
     private void InitTestMailbox(uint msgAddr, uint rspAddr, uint argAddr)
     {
-        _testMailbox.SMU_ADDR_MSG = msgAddr;
-        _testMailbox.SMU_ADDR_RSP = rspAddr;
-        _testMailbox.SMU_ADDR_ARG = argAddr;
+        _testMailbox.MsgAddress = msgAddr;
+        _testMailbox.RspAddress = rspAddr;
+        _testMailbox.ArgAddress = argAddr;
         ResetSmuAddresses();
     }
 
@@ -5241,9 +5019,7 @@ public sealed partial class ПараметрыPage
     {
         try
         {
-            var cpu = CpuSingleton.GetInstance();
-
-            if (cpu.info.family < Cpu.Family.FAMILY_17H) 
+            if (Cpu.Family < CpuFamily.FAMILY_17H) 
             {
                 return; // Жёсткая защита от старых поколений
             }
@@ -5264,10 +5040,9 @@ public sealed partial class ПараметрыPage
                     ReadPstate();
                     LogHelper.LogError("Corrupted P-States in config");
                 }
-
                 // Установка стандартных значений
                 uint eax = 0, edx = 0;
-                if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), ref eax, ref edx) == false)
+                if (Cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), ref eax, ref edx) == false)
                 {
                     LogHelper.LogError("Error reading P-States");
                     return;
@@ -5303,11 +5078,9 @@ public sealed partial class ПараметрыPage
                     return;
                 }
 
-                if (cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), eax, edx) == false)
+                if (Cpu.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), eax, edx) == false)
                 {
                     LogHelper.LogError($"Error writing P-State: {p}");
-                    App.GetService<IAppNotificationService>().Show(
-                        $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error writing PState! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                 }
             }
 
@@ -5338,11 +5111,9 @@ public sealed partial class ПараметрыPage
                 uint eax = 0, edx = 0;
                 var didtext = "12";
                 var fidtext = "102";
-                if (_cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), ref eax, ref edx) == false)
+                if (Cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), ref eax, ref edx) == false)
                 {
                     LogHelper.LogError("Error reading P-States");
-                    App.GetService<IAppNotificationService>().Show(
-                        $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error reading PState! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                     return;
                 }
 
@@ -5385,11 +5156,9 @@ public sealed partial class ПараметрыPage
                     return;
                 }
 
-                if (_cpu?.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), eax, edx) == false)
+                if (Cpu.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + p), eax, edx) == false)
                 {
                     LogHelper.LogError($"Error writing P-State: {p}");
-                    App.GetService<IAppNotificationService>().Show(
-                        $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error writing PState! ID = {p}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"{0}Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                 }
             }
 
@@ -5411,22 +5180,19 @@ public sealed partial class ПараметрыPage
         cpuFid = eax & 0xFF;
     }
 
-    private static bool ApplyTscWorkaround()
+    private bool ApplyTscWorkaround()
     {
         // P0 fix C001_0015 HWCR[21]=1
         // Fixes timer issues when not using HPET
         try
         {
-            var cpu = CpuSingleton.GetInstance();
             uint eax = 0, edx = 0;
-            if (cpu.ReadMsr(0xC0010015, ref eax, ref edx))
+            if (Cpu.ReadMsr(0xC0010015, ref eax, ref edx))
             {
                 eax |= 0x200000;
-                return cpu.WriteMsr(0xC0010015, eax, edx);
+                return Cpu.WriteMsr(0xC0010015, eax, edx);
             }
             LogHelper.LogError("Error applying TSC workaround");
-            App.GetService<IAppNotificationService>().Show(
-                "<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error applying TSC CPU P-States fix</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
             return false;
         }
         catch
@@ -5435,11 +5201,10 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private static bool WritePstateClick(int pstateId, uint eax, uint edx, int numanode = 0)
+    private bool WritePstateClick(int pstateId, uint eax, uint edx, int numanode = 0)
     {
         try
         {
-            var cpu = CpuSingleton.GetInstance();
             if (NumaUtil.HighestNumaNode > 0)
             {
                 NumaUtil.SetThreadProcessorAffinity((ushort)(numanode + 1),
@@ -5451,11 +5216,9 @@ public sealed partial class ПараметрыPage
                 return false;
             }
 
-            if (cpu.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false)
+            if (Cpu.WriteMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + pstateId), eax, edx) == false)
             {
                 LogHelper.LogError($"Error writing P-State: {pstateId}");
-                App.GetService<IAppNotificationService>().Show(
-                    $"<toast launch=\"action=ToastClick\">\r\n  <visual>\r\n    <binding template=\"ToastGeneric\">\r\n      <text>Critical app error</text>\r\n      <text>Error writing PState! ID = {pstateId}</text>\r\n      <image placement=\"appLogoOverride\" hint-crop=\"circle\" src=\"Assets/WindowIcon.ico\"/>\r\n    </binding>\r\n  </visual>\r\n  <actions>\r\n    <action content=\"Restart\" arguments=\"action=Settings\"/>\r\n    <action content=\"Support\" arguments=\"action=Message\"/>\r\n  </actions>\r\n</toast>");
                 return false;
             }
 
@@ -5468,21 +5231,18 @@ public sealed partial class ПараметрыPage
         }
     }
 
-    private static void ReadPstate()
+    private void ReadPstate()
     {
         try
         {
-            var cpu = CpuSingleton.GetInstance();
             for (var i = 0; i < 3; i++)
             {
                 uint eax = 0, edx = 0;
                 try
                 {
-                    if (cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + i), ref eax, ref edx) == false)
+                    if (Cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + i), ref eax, ref edx) == false)
                     {
                         LogHelper.LogError("Error reading P-States");
-
-                        App.MainWindow.ShowMessageDialogAsync("Error while reading CPU Pstate", "Critical Error");
                         return;
                     }
                 }
@@ -5524,10 +5284,9 @@ public sealed partial class ПараметрыPage
                 uint eax = 0, edx = 0;
                 try
                 {
-                    if (_cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + i), ref eax, ref edx) == false)
+                    if (Cpu.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + i), ref eax, ref edx) == false)
                     {
                         LogHelper.LogError("Error reading P-States");
-                        App.MainWindow.ShowMessageDialogAsync("Error while reading CPU Pstate", "Critical Error");
                         return;
                     }
                 }
@@ -5549,7 +5308,6 @@ public sealed partial class ПараметрыPage
                         {
                             mult0V = 0;
                             LogHelper.LogError("Error reading CPU multiply");
-                            App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
                         Mult0.SelectedIndex = mult0V;
@@ -5564,7 +5322,6 @@ public sealed partial class ПараметрыPage
                         {
                             mult1V = 0;
                             LogHelper.LogError("Error reading CPU multiply");
-                            App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
                         Mult1.SelectedIndex = mult1V;
@@ -5579,7 +5336,6 @@ public sealed partial class ПараметрыPage
                         {
                             mult2V = 0;
                             LogHelper.LogError("Error reading CPU multiply");
-                            App.MainWindow.ShowMessageDialogAsync("Error while reading CPU multiply", "Critical Error");
                         }
 
                         Mult2.SelectedIndex = mult2V;
@@ -5659,7 +5415,7 @@ public sealed partial class ПараметрыPage
         const uint mask = 33554432U;
 
         // Чтение текущего состояния регистра MSR 0xC0010015
-        _cpu?.ReadMsr(0xC0010015, ref eax, ref edx);
+        Cpu.ReadMsr(0xC0010015, ref eax, ref edx);
         // Маска для 25-го бита (CpbDis)
         if (enable)
         {
@@ -5675,7 +5431,7 @@ public sealed partial class ПараметрыPage
         }
 
         // Записываем обновленное значение обратно в MSR
-        _cpu?.WriteMsr(0xC0010015, eax, edx);
+        Cpu.WriteMsr(0xC0010015, eax, edx);
     }
 
     private void Autoapply()

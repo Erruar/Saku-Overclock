@@ -14,10 +14,10 @@
 	<Nullable>enable</Nullable>
 	<UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <AssemblyVersion>1.0.18.300</AssemblyVersion>
-    <FileVersion>1.0.18.300</FileVersion>
+    <AssemblyVersion>1.0.18.309</AssemblyVersion>
+    <FileVersion>1.0.18.309</FileVersion>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>  
-    <Version>1.0.18.300</Version>
+    <Version>1.0.18.309</Version>
     <Title>org.sakuoverclock.app</Title>
     <SignAssembly>False</SignAssembly>
     <UseWPF>False</UseWPF>
@@ -51,6 +51,8 @@
     <Content Remove="Assets\discord.png" />
     <Content Remove="Assets\InfoBadge\Saku-Overclock-Github-Issues.png" />
     <Content Remove="Assets\InfoBadge\Saku-Overclock-Github-Readme.png" />
+    <Content Remove="Assets\PawnIO\PawnIO.svg" />
+    <Content Remove="Assets\PawnIO\PawnIO_setup.exe" />
     <Content Remove="Assets\powermon.ico" />
     <Content Remove="Assets\ThemeBg\folder.png" />
     <Content Remove="Assets\ThemeBg\link.png" />
@@ -64,9 +66,6 @@
     <None Remove="Assets\AsusCoolerIcons\CoolerIcon.png" />
     <None Remove="Assets\AsusCoolerIcons\QuietSpeed.png" />
     <None Remove="Assets\AsusCoolerIcons\TurboSpeed.png" />
-    <None Remove="info.bat" />
-    <None Remove="PresetSwitcher\PresetSwitcher.xaml" />
-    <None Remove="Services\Cpu.cs.bak.zip" />
     <None Remove="Styles\ActiveButton.xaml" />
     <None Remove="Styles\ButtonCollapseLauncher.xaml" />
     <None Remove="Styles\ComboBoxCollapseLauncher.xaml" />
@@ -75,7 +74,9 @@
     <None Remove="Styles\OptionsVisualizer.xaml" />
     <None Remove="Styles\ToggleButtonCollapseLauncher.xaml" />
     <None Remove="Views\AdvancedКулерPage.xaml" />
-    <None Remove="Views\PowerWindow.xaml" />
+    <None Remove="Views\Windows\PowerMon\PowerWindow.xaml" />
+    <None Remove="Views\Windows\TaskDialog\TaskDialog.xaml" />
+    <None Remove="Views\Windows\PresetSwitcher\PresetSwitcher.xaml" />
     <None Remove="Views\КулерPage.xaml" />
     <None Remove="Views\ОбновлениеPage.xaml" />
     <None Remove="Views\ОбучениеPage.xaml" />
@@ -97,6 +98,7 @@
     <EmbeddedResource Include="Assets\AsusCoolerIcons\TurboSpeed.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Assets\PawnIO\PawnIO_setup.exe" />
     <EmbeddedResource Include="WindowIcon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -132,9 +134,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Management">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Management.dll</HintPath>
-    </Reference>
     <Reference Include="ZenStates-Core">
       <HintPath>ZenStates-Core.dll</HintPath>
     </Reference>
@@ -218,6 +217,9 @@
     <None Update="Assets\InfoBadge\Saku-Overclock-Github-Readme.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\PawnIO\PawnIO.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\powermon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -275,6 +277,9 @@
     <None Update="SakuRTSSCLI.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\Windows\TaskDialog\TaskDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\ActiveButton.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -305,7 +310,7 @@
     <Page Update="Styles\ComboBoxCollapseLauncher.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\PowerWindow.xaml">
+    <Page Update="Views\Windows\PowerMon\PowerWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -369,5 +374,9 @@
   
   <ItemGroup>
     <Resource Remove="Views\ОбновлениеPage.xaml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Views\Windows\" />
   </ItemGroup>
 </Project>

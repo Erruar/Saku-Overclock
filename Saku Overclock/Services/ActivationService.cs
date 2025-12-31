@@ -14,10 +14,14 @@ public class ActivationService(
     IUpdateCheckerService updateCheckerService,
     IApplyerService applyerService,
     IWindowStateManagerService windowStateManager,
-    ITrayMenuService trayMenuService)
+    ITrayMenuService trayMenuService,
+    IPstateService pstateService,
+    IBackgroundDataUpdater backgroundDataUpdater)
     : IActivationService
 {
     private UIElement? _shell;
+
+    private readonly CancellationTokenSource _globalCts = new();
 
     public async Task ActivateAsync(object activationArgs)
     {
@@ -68,10 +72,13 @@ public class ActivationService(
         // 1. Загрузка настроек приложения
         appSettingsService.LoadSettings();
 
-        // 2. Инициализация тем
+        // 2. Обновление данных
+        backgroundDataUpdater.StartAsync(_globalCts.Token);
+
+        // 3. Инициализация тем
         themeSelectorService.Initialize();
 
-        // 3. Состояние окна и его скрытие в трей
+        // 4. Состояние окна и его скрытие в трей
         windowStateManager.Initialize();
     }
 
@@ -86,10 +93,13 @@ public class ActivationService(
         // 2. Авто-применение настроек разгона
         await applyerService.AutoApplySettingsWithAppStart();
 
-        // 3. Трей иконка и меню
+        // 3. Установка стратегии работы с P-States
+        pstateService.Initialize();
+
+        // 4. Трей иконка и меню
         trayMenuService.Initialize();
 
-        // 4. Проверка наличия обновлений
+        // 5. Проверка наличия обновлений
         await updateCheckerService.CheckForUpdates();
     }
 }

@@ -49,6 +49,7 @@ public sealed partial class ShellPage
     }
 
     private bool _fixedTitleBar; // Флаг фиксированного тайтлбара 
+    private bool _isTitleBarInitialized; // Флаг инициализации тайтлбара 
     private readonly IThemeSelectorService _themeSelectorService = App.GetService<IThemeSelectorService>();
 
     public ShellViewModel ViewModel // ViewModel, установка нужной модели для UI страницы
@@ -103,7 +104,6 @@ public sealed partial class ShellPage
     {
         App.AppTitlebar = VersionNumberIndicator;
         AppTitleBar.Loaded += AppTitleBar_Loaded;
-        AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
     }
 
     /// <summary>
@@ -111,12 +111,6 @@ public sealed partial class ShellPage
     /// </summary>
     private void AppTitleBar_Loaded(object sender, RoutedEventArgs e) =>
         SetRegionsForCustomTitleBar(); //Установить регион взаимодействия
-
-    /// <summary>
-    ///     Помогает установить регион взаимодействия с программой (кликабельную кнопку уведомлений и лого)
-    /// </summary>
-    private void AppTitleBar_SizeChanged(object sender, SizeChangedEventArgs e) =>
-        App.MainWindow.DispatcherQueue.TryEnqueue(SetRegionsForCustomTitleBar);
 
     #endregion
 
@@ -901,46 +895,63 @@ public sealed partial class ShellPage
     /// </summary>
     private void SetRegionsForCustomTitleBar()
     {
+        if (_isTitleBarInitialized)
+        {
+            return;
+        }
+
         if (AppSettings.FixedTitleBar)
         {
             TitleIcon_PointerEntered(null, null);
             _fixedTitleBar = true;
         }
 
-        if (AppTitleBar?.XamlRoot == null)
-        {
-            LogHelper.LogError("AppTitleBar.XamlRoot is null!");
-            return;
-        }
-
-        if (MAppWindow.TitleBar == null)
-        {
-            LogHelper.LogError("MAppWindow.TitleBar is null!");
-            return;
-        }
-
         var scaleAdjustment = AppTitleBar.XamlRoot.RasterizationScale;
-        if (double.IsNaN(scaleAdjustment) || double.IsInfinity(scaleAdjustment))
-        {
-            LogHelper.LogError($"Invalid RasterizationScale: {scaleAdjustment}");
-            return;
-        }
 
         try
         {
-            RightPaddingColumn.Width = new GridLength(MAppWindow.TitleBar.RightInset / scaleAdjustment);
-            LeftPaddingColumn.Width = new GridLength(MAppWindow.TitleBar.LeftInset / scaleAdjustment);
+            const int titleIconActualWidth = 120;
+            const int titleIconActualHeight = 48;
+            const int RingerNotificationGridActualSize = 32;
+            const int RingerNotificationPositionX = 956;
+            const int RingerNotificationPositionY = 9;
+
+            var rightInset = MAppWindow.TitleBar.RightInset;
+            var leftInset = MAppWindow.TitleBar.LeftInset;
+            if (rightInset < 0)
+            {
+                rightInset = 138;
+            }
+            if (leftInset < 0)
+            {
+                leftInset = 0;
+            }
+
+            RightPaddingColumn.Width = new GridLength(rightInset / scaleAdjustment);
+            LeftPaddingColumn.Width = new GridLength(leftInset / scaleAdjustment);
 
             var transform = TitleIcon.TransformToVisual(null);
-            var bounds = transform.TransformBounds(new Rect(0, 0,
-                TitleIcon.ActualWidth,
-                TitleIcon.ActualHeight));
+
+            var bounds = new Rect()
+            {
+                Height = titleIconActualHeight,
+                Width = titleIconActualWidth,
+                X = titleIconActualHeight,
+                Y = 0
+            };
+
             var searchBoxRect = GetRect(bounds, scaleAdjustment);
 
             transform = RingerNotificationGrid.TransformToVisual(null);
-            bounds = transform.TransformBounds(new Rect(0, 0,
-                RingerNotificationGrid.ActualWidth,
-                RingerNotificationGrid.ActualHeight));
+
+            bounds = new Rect() 
+            {
+                Height = RingerNotificationGridActualSize,
+                Width = RingerNotificationGridActualSize,
+                X = RingerNotificationPositionX,
+                Y = RingerNotificationPositionY
+            };
+            
             var ringerNotifRect = GetRect(bounds, scaleAdjustment);
 
             var rectArray = new[] { searchBoxRect, ringerNotifRect };
@@ -952,6 +963,8 @@ public sealed partial class ShellPage
         {
             LogHelper.LogError(ex);
         }
+
+        _isTitleBarInitialized = true;
     }
 
     private static RectInt32 GetRect(Rect bounds, double scale)

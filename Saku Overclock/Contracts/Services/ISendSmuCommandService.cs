@@ -1,4 +1,4 @@
-﻿using ZenStates.Core;
+﻿using static Saku_Overclock.Services.CpuService;
 
 namespace Saku_Overclock.Contracts.Services;
 
@@ -10,10 +10,8 @@ public interface ISendSmuCommandService
     void CancelRange();
     void SendRange(string commandIndex, string startIndex, string endIndex, int mailbox, bool log);
     event EventHandler? RangeCompleted;
-    string GetCodeNameGeneration();
-    uint ReturnCoGfx(bool isMp1);
-    uint ReturnCoPer(bool isMp1);
-    double ReturnCpuPowerLimit(SMU smu);
-    bool ReturnUndervoltingAvailability(SMU smu);
-    bool? IsPlatformPc();
+    CodenameGeneration GetCodeNameGeneration();
+    uint ReturnCoPer(bool isMp1 = true);
+    double ReturnCpuPowerLimit();
+    bool ReturnUndervoltingAvailability();
 }

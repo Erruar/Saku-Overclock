@@ -5,9 +5,7 @@ using System.Runtime.Intrinsics.X86;
 using System.Text;
 using Microsoft.Win32;
 using Saku_Overclock.Helpers;
-using ZenStates.Core;
-using ZenStates.Core.DRAM;
-using static ZenStates.Core.DRAM.MemoryConfig;
+using static Saku_Overclock.Services.CpuService;
 
 namespace Saku_Overclock.SmuEngine;
 
@@ -384,11 +382,11 @@ internal class GetSystemInfo
     /// </summary>
     /// <returns>(CpuName, CpuBaseClock), IntegratedGpuName, DiscreteGpuName,
     /// (L1CacheSize, L2CacheSize, L3CacheSize), InstructionSets, CpuCaption</returns>
-    public static ((string, string), string?, string?, (double, double, double), string?, string?) GetCommonMetrics()
+    public static ((string, string), string?, string?, (double, double, double), string?, string?) GetCommonMetrics(bool avxAvailable)
     {
         return (ReadCpuInformation(), GetIntegratedGpuName(), GetDiscreteGpuName(),
             (CalculateCacheSize(CacheLevel.Level1), CalculateCacheSize(CacheLevel.Level2), CalculateCacheSize(CacheLevel.Level3)),
-            InstructionSets(), GetCpuCaption());
+            InstructionSets(avxAvailable), GetCpuCaption());
     }
 
     private static readonly Guid GuidDevclassDisplay = new("4d36e968-e325-11ce-bfc1-08002be10318");
@@ -754,9 +752,8 @@ internal class GetSystemInfo
         return sum / 1024.0;
     }
 
-    public static string GetBigLittle(int cores)
+    public static string GetBigLittle(string cpuName, int cores)
     {
-        var cpuName = CpuSingleton.GetInstance().info.cpuName;
         if (cpuName.Contains("7540U") || cpuName.Contains("7440U"))
         {
             var bigCores = 2;
@@ -766,7 +763,7 @@ internal class GetSystemInfo
         return cores.ToString();
     }
 
-    public static string InstructionSets()
+    public static string InstructionSets(bool avxAvailable)
     {
         var list = "AMD-V";
 
@@ -778,7 +775,7 @@ internal class GetSystemInfo
         {
             list += ", AVX2";
         }
-        if (CheckAvx512Support())
+        if (CheckAvx512Support(avxAvailable))
         {
             list += ", AVX512";
         }
@@ -790,11 +787,11 @@ internal class GetSystemInfo
         return list;
     }
 
-    private static bool CheckAvx512Support()
+    private static bool CheckAvx512Support(bool avxAvailable)
     {
         try
         {
-            if (CpuSingleton.GetInstance().info.codeName < Cpu.CodeName.Raphael)
+            if (!avxAvailable)
             {
                 return false;
             }
@@ -818,23 +815,18 @@ internal class GetSystemInfo
     /// <param name="umcOffset1">Значение адреса umcOffset1</param>
     /// <param name="umcOffset2">Значение адреса umcOffset2</param>
     /// <returns>Capacity, MemoryType, Speed, Producer, Model, ModulesCount, 
-    /// (tcl, trcdwr, trcdrd, tras, trp, trc)</returns>
-    public static (double, MemType, double, string?, string?, int, 
-        (uint, uint, uint, uint, uint, uint)) 
-        GetMemoryInformation(MemoryConfig memoryConfig, float? memorySpeed, 
-                             uint umcBase, uint umcOffset1, uint umcOffset2)
+    /// MemoryTimings</returns>
+    public static (string, string, string?, string?, string,
+        MemoryTimings) 
+        GetMemoryInformation(MemoryConfig memoryConfig)
     {
-        var capacity = memoryConfig.TotalCapacity.SizeInBytes / 1073741824;
+        var capacity = memoryConfig.TotalCapacity;
 
-        var speed = memorySpeed * 2 ?? 0;
-        var freqFromRatio = (memoryConfig.Type == MemType.DDR4 ?
-                             Utils.GetBits(umcBase, 0, 7) / 3 :
-                             Utils.GetBits(umcBase, 0, 16) / 100)
-                             * 200;
+        var speed = memoryConfig.MemorySpeed;
 
-        if (speed == 0 || freqFromRatio > speed)
+        if (speed == 0 || memoryConfig.FrequencyFromTimings > speed)
         {
-            speed = freqFromRatio;
+            speed = memoryConfig.FrequencyFromTimings;
         }
 
         var modules = memoryConfig.Modules;
@@ -842,25 +834,19 @@ internal class GetSystemInfo
         var producer = modules.Count == 0
             ? "Unknown"
             : string.Join(" / ", modules
-                .Select(m => m?.Manufacturer ?? "Unknown")
+                .Select(m => m.Manufacturer ?? "Unknown")
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .Distinct());
 
         var model = modules.Count == 0
             ? "Unknown"
             : string.Join(" / ", modules
-                .Select(m => m?.PartNumber ?? "Unknown")
+                .Select(m => m.PartNumber ?? "Unknown")
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .Distinct());
 
-        var tcl = Utils.GetBits(umcOffset1, 0, 6);
-        var trcdwr = Utils.GetBits(umcOffset1, 24, 6);
-        var trcdrd = Utils.GetBits(umcOffset1, 16, 6);
-        var tras = Utils.GetBits(umcOffset1, 8, 7);
-        var trp = Utils.GetBits(umcOffset2, 16, 6);
-        var trc = Utils.GetBits(umcOffset2, 0, 8);
-
-        return (capacity, memoryConfig.Type, speed, producer, model, modules.Count, (tcl, trcdwr, trcdrd, tras, trp, trc));
+        return ($"{capacity} GB {memoryConfig.Type} @ {speed} MT/s",
+            speed + "MT/s", producer, model, $"{modules.Count} * 64 bit", memoryConfig.MemoryTimings);
     }
 
     #endregion

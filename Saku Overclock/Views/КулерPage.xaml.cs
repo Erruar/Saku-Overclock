@@ -7,7 +7,6 @@ using Microsoft.UI.Xaml.Navigation;
 using Octokit;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.Services;
 using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
 using Saku_Overclock.Wrappers;
@@ -34,26 +33,27 @@ public sealed partial class КулерPage
     private static bool _unavailableFlag;
     private static int _setFanIndex = -1;
     private readonly DispatcherTimer? _fanUpdateTimer;
-    private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
-    private readonly IBackgroundDataUpdater _dataUpdater;
+    private readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
+    private readonly IBackgroundDataUpdater _dataUpdater = App.GetService<IBackgroundDataUpdater>();
     private bool _selectedModeAsus;
 
 
     public КулерPage()
     {
-        App.GetService<КулерViewModel>();
         InitializeComponent();
+
         FanInit();
         UpdatePageFanRpms();
+
         AppSettings.SaveSettings();
 
         Loaded += Page_Loaded;
+        Unloaded += Page_Unloaded;
+
         _fanUpdateTimer = new DispatcherTimer();
         _fanUpdateTimer.Tick += async (_, _) => await CheckFan();
         _fanUpdateTimer.Interval = TimeSpan.FromMilliseconds(6000);
-        _dataUpdater = App.BackgroundUpdater!;
         _dataUpdater.DataUpdated += OnDataUpdated;
-        Unloaded += Page_Unloaded;
     }
 
     #region Page Navigation and Window State

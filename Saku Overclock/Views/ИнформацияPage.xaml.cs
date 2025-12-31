@@ -1,7 +1,4 @@
 ﻿using System.Numerics;
-using Windows.Foundation;
-using Windows.UI;
-using Windows.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -12,7 +9,10 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SmuEngine;
 using Saku_Overclock.Wrappers;
-using ZenStates.Core;
+using Windows.Foundation;
+using Windows.UI;
+using Windows.UI.Text;
+using static Saku_Overclock.Services.CpuService;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using VisualTreeHelper = Saku_Overclock.Helpers.VisualTreeHelper;
 
@@ -30,12 +30,17 @@ public sealed partial class ИнформацияPage
     }
 
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
+    private readonly ICpuService Cpu = App.GetService<ICpuService>(); // Ядро приложения
+    private readonly IPstateService Pstates = App.GetService<IPstateService>(); // Производительные состояния процессора
     private double _busyRam; // Текущее использование ОЗУ и всего ОЗУ
     private double _totalRam;
     private bool _loaded; // Страница загружена
     private bool _doNotTrackBattery; // Флаг не использования батареи 
     private bool _isBatteryInformationLoaded; // Флаг обновления информации о батарее
     private bool _isDiscreteGpuInformationLoaded; // Флаг обновления информации о дискретной видеокарте
+    private string _ramStringCache = string.Empty; // Кешированная информация об ОЗУ
+    private List<MemoryModule> _cachedMemoryModules = [];
+    private string _cachedMemoryType = string.Empty;
     private readonly List<Point> _cpuPointer = []; // Лист графика использования процессора
     private readonly List<Point> _gpuPointer = []; // Лист графика частоты графического процессора
     private readonly List<Point> _ramPointer = []; // Лист графика занятой ОЗУ
@@ -66,9 +71,8 @@ public sealed partial class ИнформацияPage
     private int _numberOfCores; // Количество ядер
     private int _numberOfLogicalProcessors; // Количество потоков
     private DispatcherTimer? _dispatcherTimer; // Таймер для автообновления информации
-    private readonly IBackgroundDataUpdater? _dataUpdater = App.BackgroundUpdater; // Фоновое обновление информации
+    private readonly IBackgroundDataUpdater _dataUpdater = App.GetService<IBackgroundDataUpdater>(); // Фоновое обновление информации
     private SensorsInformation? _sensorsInformation; // Информация с датчиков
-    private readonly Cpu? _cpu = CpuSingleton.GetInstance(); // Инициализация ZenStates Core
 
     private static readonly string BatFromWall = "InfoBatteryAC".GetLocalized(); // Устройство от сети
     private static readonly string MhzFreq = "InfoFreqBoundsMHZ".GetLocalized(); // Частота МГц
@@ -185,12 +189,8 @@ public sealed partial class ИнформацияPage
                 }
             }
 
-            if (_cpu != null)
-            {
-                var memoryConfig = _cpu.GetMemoryConfig();
-                IntegratedVramType.Text = memoryConfig.Type.ToString();
-                IntegratedVramWidth.Text = memoryConfig.Modules.Count * 64 + " bit";
-            }
+            IntegratedVramType.Text = _cachedMemoryType;
+            IntegratedVramWidth.Text = _cachedMemoryModules.Count * 64 + " bit";
         }
         catch (Exception ex)
         {
@@ -222,39 +222,39 @@ public sealed partial class ИнформацияPage
     /// <summary>
     ///     Основной метод отображения характеристик процессора
     /// </summary>
-    private async Task LoadCpuInformation()
+    private void LoadCpuInformation()
     {
         try
         {
             _numberOfLogicalProcessors = Environment.ProcessorCount;
-            if (_cpu != null)
+            if (Cpu.IsAvailable)
             {
                 if (_numberOfCores == 0 || _numberOfLogicalProcessors == 0)
                 {
-                    _numberOfCores = (int)_cpu.info.topology.cores;
-                    _numberOfLogicalProcessors = (int)_cpu.info.topology.logicalCores;
+                    _numberOfCores = (int)Cpu.Cores;
+                    _numberOfLogicalProcessors = Environment.ProcessorCount;
                 }
 
-                CpuCodename.Text = $"{_cpu.info.codeName}";
-                SmuVersion.Text = _cpu.systemInfo?.GetSmuVersionString();
+                CpuCodename.Text = Cpu.CpuCodeName;
+                SmuVersion.Text = Cpu.SmuVersion;
             }
             else
             {
                 _numberOfCores = _numberOfLogicalProcessors / 2;
             }
 
-            await InfoCpuSectionGridBuilder();
+            InfoCpuSectionGridBuilder();
 
             var ((name, baseClock), integratedGpuName, discreteGpuName,
                     (l1Cache, l2Cache, l3Cache), instructionsSet, cpuCaption)
-                = GetSystemInfo.GetCommonMetrics();
+                = GetSystemInfo.GetCommonMetrics(Cpu.Avx512AvailableByCodename);
 
             CpuBaseClock.Text = $"{baseClock} MHz";
             ProcessorName.Text = _cpuName = name.TrimEnd();
 
             CpuCores.Text = _numberOfLogicalProcessors == _numberOfCores
                 ? _numberOfCores.ToString()
-                : GetSystemInfo.GetBigLittle(_numberOfCores);
+                : GetSystemInfo.GetBigLittle(Cpu.CpuName, _numberOfCores);
             CpuThreads.Text = $"{_numberOfLogicalProcessors:0}";
 
             IntegratedGpuName.Text = integratedGpuName;
@@ -267,7 +267,7 @@ public sealed partial class ИнформацияPage
         }
         catch (Exception ex)
         {
-            await LogHelper.TraceIt_TraceError(ex);
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 
@@ -309,109 +309,82 @@ public sealed partial class ИнформацияPage
     /// <summary>
     ///     Основной метод отображения характеристик оперативной памяти
     /// </summary>
-    private async Task LoadRamInformation()
+    private void LoadRamInformation()
     {
         try
         {
-            if (_cpu != null)
+            if (Cpu.IsAvailable)
             {
-                var (capacity, type, speed, producer, model, slots,
-                        (tcl, trcdwr, trcdrd, tras, trp, trc))
-                    = GetSystemInfo.GetMemoryInformation(
-                        _cpu.GetMemoryConfig(), _cpu.powerTable?.MCLK,
-                        _cpu.ReadDword(0x50200), _cpu.ReadDword(0x50204),
-                        _cpu.ReadDword(0x50208));
+                var memoryConfig = Cpu.GetMemoryConfig();
+                _cachedMemoryModules = memoryConfig.Modules;
+                _cachedMemoryType = memoryConfig.Type.ToString();
+                var (ramName, ramFrequency, producer, model, slots,
+                        memoryTimings)
+                    = GetSystemInfo.GetMemoryInformation(memoryConfig);
 
-                _ramName = $"{capacity} GB {type} @ {speed} MT/s";
-                RamFrequency.Text = speed + "MT/s";
+                _ramName = ramName;
+                RamFrequency.Text = ramFrequency;
                 RamProducer.Text = producer;
                 RamModel.Text = model;
-                RamSlots.Text = $"{slots} * 64 bit";
-                Tcl.Text = tcl + "T";
-                Trcdwr.Text = trcdwr + "T";
-                Trcdrd.Text = trcdrd + "T";
-                Tras.Text = tras + "T";
-                Trp.Text = trp + "T";
-                Trc.Text = trc + "T";
+                RamSlots.Text = slots;
+                Tcl.Text = memoryTimings.Tcl;
+                Trcdwr.Text = memoryTimings.Trcdwr;
+                Trcdrd.Text = memoryTimings.Trcdrd;
+                Tras.Text = memoryTimings.Tras;
+                Trp.Text = memoryTimings.Trp;
+                Trc.Text = memoryTimings.Trc;
             }
         }
         catch (Exception ex)
         {
-            await LogHelper.LogError(ex);
+            LogHelper.LogError(ex);
         }
     }
 
     #endregion
 
-    #region P-State voids
-
-    /// <summary>
-    ///     Вспомогательный метод для получения Fid/Did
-    /// </summary>
-    private static void CalculatePstateDetails(uint eax,
-        out uint cpuDfsId, out uint cpuFid)
-    {
-        cpuDfsId = (eax >> 8) & 0x3F;
-        cpuFid = eax & 0xFF;
-    }
+    #region P-States information
 
     /// <summary>
     ///     Основной метод чтения P-States
     /// </summary>
     private void ReadPowerStates()
     {
-        try
+        if (!Pstates.IsSupported)
         {
-            for (var i = 0; i < 3; i++)
-            {
-                uint eax = 0, edx = 0;
-                var textBlock = i switch
-                {
-                    0 => PowerState0,
-                    1 => PowerState1,
-                    _ => PowerState2
-                };
-                var textBlockDesc = i switch
-                {
-                    0 => PowerState0Desc,
-                    1 => PowerState1Desc,
-                    _ => PowerState2Desc
-                };
-
-                try
-                {
-                    if (_cpu?.ReadMsr(Convert.ToUInt32(Convert.ToInt64(0xC0010064) + i), ref eax, ref edx) ==
-                        false)
-                    {
-                        App.MainWindow.ShowMessageDialogAsync("Error while reading CPU Pstate", "Critical Error");
-                        return;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.TraceIt_TraceError(ex);
-                }
-
-                CalculatePstateDetails(eax, out var cpuDfsId, out var cpuFid);
-                if (cpuFid != 0)
-                {
-                    textBlock.Text =
-                        $"{cpuFid * 25 / (cpuDfsId * 12.5) / 10} {GhzFreq}";
-                    textBlockDesc.Text = $"(FID {
-                        Convert.ToString(cpuFid, 10)} / DID {
-                            Convert.ToString(cpuDfsId, 10)})";
-                }
-                else
-                {
-                    textBlock.Text = "Info_PowerSumInfo_DisabledPState".GetLocalized();
-                }
-
-                _pstatesList[i] = cpuFid * 25 / (cpuDfsId * 12.5) / 10;
-            }
+            PstBannerButton.Visibility = Visibility.Collapsed;
+            return;
         }
-        catch (Exception ex)
+
+        var pstates = Pstates.ReadAllPstates();
+        for (var i = 0; i < 3; i++)
         {
-            LogHelper.TraceIt_TraceError(ex);
+            var textBlock = i switch
+            {
+                0 => PowerState0,
+                1 => PowerState1,
+                _ => PowerState2
+            };
+            var textBlockDesc = i switch
+            {
+                0 => PowerState0Desc,
+                1 => PowerState1Desc,
+                _ => PowerState2Desc
+            };
+
+            if (pstates.Count > i && pstates[i].Success && pstates[i].Data.IsEnabled)
+            {
+
+                textBlock.Text =
+                    $"{pstates[i].Data.FrequencyMHz / 1000} {GhzFreq}";
+                textBlockDesc.Text = $"(FID {pstates[i].Data.Fid}" + (pstates[i].Data.Did > 0 ? $"/ DID {pstates[i].Data.Did})" : ")");
+                _pstatesList[i] = pstates[i].Data.FrequencyMHz / 1000;
+            }
+            else
+            {
+                textBlock.Text = "Info_PowerSumInfo_DisabledPState".GetLocalized();
+                _pstatesList[i] = 0;
+            }
         }
     }
 
@@ -482,9 +455,9 @@ public sealed partial class ИнформацияPage
 
             SetThemeAccentTextForeground();
 
-            await LoadCpuInformation();
+            LoadCpuInformation();
+            LoadRamInformation();
             LoadIntegratedGpuInformation();
-            await LoadRamInformation();
             ReadPowerStates();
 
             if (CpuBannerButton.Shadow != new ThemeShadow())
@@ -1353,10 +1326,15 @@ public sealed partial class ИнформацияPage
     /// </summary>
     private string GetRamText(uint index)
     {
-        var ramModels = _cpu?.GetMemoryConfig().Modules;
-        if (ramModels != null)
+        if (_ramStringCache != string.Empty)
         {
-            return index < ramModels.Count ? ramModels[(int)index].Capacity.ToString() : "Unknown";
+            return _ramStringCache;
+        }
+
+        if (_cachedMemoryModules != null)
+        {
+            _ramStringCache = index < _cachedMemoryModules.Count ? _cachedMemoryModules[(int)index].Capacity : "Unknown";
+            return _ramStringCache;
         }
 
         return "Unknown";
@@ -1565,7 +1543,7 @@ public sealed partial class ИнформацияPage
     /// <summary>
     ///     Основной метод для создания кнопок содержащих текущие показатели системы
     /// </summary>
-    private async Task InfoCpuSectionGridBuilder()
+    private void InfoCpuSectionGridBuilder()
     {
         try
         {
@@ -1574,7 +1552,7 @@ public sealed partial class ИнформацияPage
 
             var gpuCounter = GetSystemInfo.GetGpuNames().Count;
 
-            var memoryCount = _cpu?.GetMemoryConfig().Modules.Count ?? 1;
+            var memoryCount = _cachedMemoryModules.Count;
 
             if (memoryCount <= 0)
             {
@@ -1660,7 +1638,7 @@ public sealed partial class ИнформацияPage
         }
         catch (Exception e)
         {
-            await LogHelper.TraceIt_TraceError(e);
+            LogHelper.TraceIt_TraceError(e);
         }
     }
 
@@ -1763,7 +1741,7 @@ public sealed partial class ИнформацияPage
         try
         {
             MainSensorsGrid.Children.Clear();
-            _ = InfoCpuSectionGridBuilder();
+            InfoCpuSectionGridBuilder();
         }
         catch (Exception ex)
         {
@@ -1809,7 +1787,7 @@ public sealed partial class ИнформацияPage
     /// <summary>
     ///     Обработчик выбора отображения другой группы сенсоров
     /// </summary>
-    private async void BannerButton_Click(object sender, RoutedEventArgs e)
+    private void BannerButton_Click(object sender, RoutedEventArgs e)
     {
         try
         {
@@ -1833,14 +1811,14 @@ public sealed partial class ИнформацияPage
                     }
                     else
                     {
-                        await InfoCpuSectionGridBuilder();
+                        InfoCpuSectionGridBuilder();
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            await LogHelper.TraceIt_TraceError(ex);
+            LogHelper.TraceIt_TraceError(ex);
         }
     }
 

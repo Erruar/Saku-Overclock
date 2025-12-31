@@ -22,6 +22,7 @@
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Page Update="Styles\ActiveButton.xaml">
       <SubType>Designer</SubType>
@@ -56,9 +57,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="ProfileSwitcher\ProfileSwitcher.xaml">
-      <SubType>Designer</SubType>
-    </Page>
     <Page Update="Styles\ButtonCollapseLauncher.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -77,9 +75,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\PowerWindow.xaml">
-      <SubType>Designer</SubType>
-    </Page>
     <Page Update="Views\ОбновлениеPage.xaml">
       <SubType>Designer</SubType>
     </Page>

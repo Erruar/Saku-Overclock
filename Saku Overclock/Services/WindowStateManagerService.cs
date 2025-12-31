@@ -8,7 +8,8 @@ using Saku_Overclock.Helpers;
 namespace Saku_Overclock.Services;
 
 public class WindowStateManagerService(
-    IAppSettingsService settingsService)
+    IAppSettingsService settingsService,
+    IBackgroundDataUpdater backgroundDataUpdater)
     : IWindowStateManagerService
 {
     private DispatcherQueue? _dispatcherQueue;
@@ -121,7 +122,7 @@ public class WindowStateManagerService(
         }
         else
         {
-            App.BackgroundUpdater?.Stop();
+            backgroundDataUpdater.Stop();
         }
     }
 

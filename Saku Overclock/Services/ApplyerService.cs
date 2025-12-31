@@ -1,11 +1,8 @@
-﻿using Newtonsoft.Json;
-using Saku_Overclock.Contracts.Services;
+﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
-using Saku_Overclock.SmuEngine;
 using Saku_Overclock.ViewModels;
-using Saku_Overclock.Views;
-using ZenStates.Core;
+using static Saku_Overclock.Services.CpuService;
 using static Saku_Overclock.Services.PresetManagerService;
 
 namespace Saku_Overclock.Services;
@@ -14,7 +11,8 @@ public class ApplyerService(
     ISendSmuCommandService sendSmuCommand,
     IOcFinderService ocFinder,
     IPresetManagerService presetManager,
-    INavigationService navigationService)
+    INavigationService navigationService,
+    ICpuService cpuService)
     : IApplyerService
 {
     private Timer? _timer;
@@ -329,9 +327,11 @@ public class ApplyerService(
 
     private string ParseOverclockPreset(Preset preset, bool onlyDebugFunctions)
     {
-        var cpu = CpuSingleton.GetInstance();
-        var isBristol = cpu.info.codeName == Cpu.CodeName.BristolRidge;
-        var _isStapmTuneRequired = cpu.info.codeName > Cpu.CodeName.Dali;
+        var codenameGen = cpuService.GetCodenameGeneration();
+        var isBristol = codenameGen == CodenameGeneration.FP4;
+        var _isStapmTuneRequired = codenameGen is CodenameGeneration.FP6 
+            or CodenameGeneration.FF3 or CodenameGeneration.FP7 
+            or CodenameGeneration.FP8 or CodenameGeneration.AM5;
         var adjline = "";
 
         if (!onlyDebugFunctions)
@@ -463,12 +463,14 @@ public class ApplyerService(
 
             if (preset.Gpu16)
             {
-                adjline += cpu.info.codeName switch
+                var fp6FeaturesSet = preset.Gpu16Value != 0 ? " --disable-feature=0,32" : " --enable-feature=0,32";
+                var ryzen3000lineFix = preset.Gpu16Value != 0 ? " --setcpu-freqto-ramstate=0" : " --stopcpu-freqto-ramstate=0";
+                adjline += codenameGen switch
                 {
-                    Cpu.CodeName.RavenRidge or Cpu.CodeName.FireFlight or Cpu.CodeName.Cezanne or Cpu.CodeName.Renoir or Cpu.CodeName.Lucienne => preset.Gpu16Value != 0 ? " --disable-feature=0,32" : " --enable-feature=0,32",
-                    Cpu.CodeName.Rembrandt or Cpu.CodeName.Mendocino or Cpu.CodeName.Phoenix or Cpu.CodeName.Phoenix2 or Cpu.CodeName.HawkPoint or Cpu.CodeName.StrixPoint or Cpu.CodeName.StrixHalo or Cpu.CodeName.KrackanPoint => preset.Gpu16Value != 0 ? " --disable-feature=0,16" : " --enable-feature=0,16",
-                    Cpu.CodeName.Raphael or Cpu.CodeName.GraniteRidge or Cpu.CodeName.Genoa or Cpu.CodeName.StormPeak or Cpu.CodeName.DragonRange or Cpu.CodeName.Bergamo => preset.Gpu16Value != 0 ? " --disable-feature=128" : " --enable-feature=128",
-                    _ => preset.Gpu16Value != 0 ? " --setcpu-freqto-ramstate=0" : " --stopcpu-freqto-ramstate=0",
+                    CodenameGeneration.FP6 or CodenameGeneration.FF3 => fp6FeaturesSet,
+                    CodenameGeneration.FP7 or CodenameGeneration.FP8 => preset.Gpu16Value != 0 ? " --disable-feature=0,16" : " --enable-feature=0,16",
+                    CodenameGeneration.AM5 => preset.Gpu16Value != 0 ? " --disable-feature=128" : " --enable-feature=128",
+                    _ => cpuService.IsRaven ? fp6FeaturesSet : ryzen3000lineFix,
                 };
             }
 
@@ -512,9 +514,9 @@ public class ApplyerService(
             if (preset.Advncd10)
             {
                 var val = 0x480000 | (int)preset.Advncd10Value; // Всегда на 1.1V
-                adjline += cpu.info.codeName switch
+                adjline += codenameGen switch
                 {
-                    Cpu.CodeName.RavenRidge or Cpu.CodeName.FireFlight or Cpu.CodeName.Dali or Cpu.CodeName.Picasso => " --set-gpuclockoverdrive-byvid=" + val,
+                    CodenameGeneration.FP5 => " --set-gpuclockoverdrive-byvid=" + val,
                     _ => " --gfx-clk=" + preset.Advncd10Value,
                 };
             }
@@ -555,35 +557,19 @@ public class ApplyerService(
             // CO All
             if (preset.Coall)
             {
-                adjline += (preset.Coallvalue >= 0.0) ? $" --set-coall={preset.Coallvalue} " : $" --set-coall={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)preset.Coallvalue))} ";
+                adjline += ProcessCoallSettings(preset.Coallvalue);
             }
 
             // CO GFX
             if (preset.Cogfx)
             {
-                cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoGfx(false);
-                cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoGfx(true);
-
-                for (var i = 0; i < cpu.info.topology.physicalCores; i++)
-                {
-                    var mapIndex = i < 8 ? 0 : 1;
-                    if (((~cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1)
-                    {
-                        if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
-                        {
-                            cpu.SetPsmMarginSingleCore(GetCoreMask(cpu, i), Convert.ToInt32(preset.Cogfxvalue));
-                        }
-                    }
-                }
-
-                cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoPer(false);
-                cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoPer(true);
+                adjline += ProcessCoallSettings(preset.Cogfxvalue, true);
             }
 
             // CO Per Core
             if (preset.Comode && preset.Coprefmode != 0)
             {
-                adjline += ProcessCoperSettings(preset, cpu);
+                adjline += ProcessCoperSettings(preset, cpuService.IsDragonRange);
             }
         }
 
@@ -596,23 +582,31 @@ public class ApplyerService(
         return adjline + " ";
     }
 
-    private string ProcessCoperSettings(Preset preset, Cpu cpu)
+    private string ProcessCoallSettings(double value, bool cogfx = false)
+    {
+        var adjline = "";
+        var setString = cogfx ? "cogfx" : "coall";
+        adjline += (value >= 0.0) ? $" --set-{setString}={value} " : $" --set-{setString}={Convert.ToUInt32(0x100000 - (uint)(-1 * (int)value))} ";
+        return adjline;
+    }
+
+    private string ProcessCoperSettings(Preset preset, bool isDragonRange)
     {
         var adjline = "";
 
         switch (preset.Coprefmode)
         {
-            case 1 when cpu.info.codeName == Cpu.CodeName.DragonRange:
+            case 1 when isDragonRange:
                 adjline += ProcessDragonRangeCoper(preset);
                 break;
             case 1:
-                adjline += ProcessLaptopCoper(preset);
+                adjline += ProcessLaptopCoper(preset, cpuService.PhysicalCores);
                 break;
             case 2:
                 adjline += ProcessDesktopCoper(preset);
                 break;
             case 3:
-                ProcessIrusanovMethod(preset, cpu);
+                ProcessIrusanovMethod(preset);
                 break;
         }
 
@@ -643,7 +637,7 @@ public class ApplyerService(
         return adjline;
     }
 
-    private static string ProcessLaptopCoper(Preset preset)
+    private static string ProcessLaptopCoper(Preset preset, uint cores)
     {
         var adjline = "";
 
@@ -656,15 +650,33 @@ public class ApplyerService(
         if (preset.Coper6) { adjline += $" --set-coper={(6 << 20) | ((int)preset.Coper6Value & 0xFFFF)} "; }
         if (preset.Coper7) { adjline += $" --set-coper={(7 << 20) | ((int)preset.Coper7Value & 0xFFFF)} "; }
 
+        if (cores > 8)
+        {
+            if (preset.Coper8) { adjline += $" --set-coper={(0x100 << 20) | ((int)preset.Coper8Value & 0xFFFF)} "; }
+            if (preset.Coper9) { adjline += $" --set-coper={(0x101 << 20) | ((int)preset.Coper9Value & 0xFFFF)} "; }
+            if (preset.Coper10) { adjline += $" --set-coper={(0x102 << 20) | ((int)preset.Coper10Value & 0xFFFF)} "; }
+            if (preset.Coper11) { adjline += $" --set-coper={(0x103 << 20) | ((int)preset.Coper11Value & 0xFFFF)} "; }
+            if (preset.Coper12) { adjline += $" --set-coper={(0x104 << 20) | ((int)preset.Coper12Value & 0xFFFF)} "; }
+            if (preset.Coper13) { adjline += $" --set-coper={(0x105 << 20) | ((int)preset.Coper13Value & 0xFFFF)} "; }
+            if (preset.Coper14) { adjline += $" --set-coper={(0x106 << 20) | ((int)preset.Coper14Value & 0xFFFF)} "; }
+            if (preset.Coper15) { adjline += $" --set-coper={(0x107 << 20) | ((int)preset.Coper15Value & 0xFFFF)} "; }
+        }
+        
         return adjline;
     }
 
     private static string ProcessDesktopCoper(Preset preset) => ProcessDragonRangeCoper(preset);
 
-    private void ProcessIrusanovMethod(Preset preset, Cpu cpu)
+    private void ProcessIrusanovMethod(Preset preset)
     {
-        cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoPer(false);
-        cpu.smu.Mp1Smu.SMU_MSG_SetDldoPsmMargin = sendSmuCommand.ReturnCoPer(true);
+        if (cpuService.SmuCoperCommandRsmu == 0)
+        {
+            cpuService.SmuCoperCommandRsmu = sendSmuCommand.ReturnCoPer(false);
+        }
+        if (cpuService.SmuCoperCommandMp1 == 0)
+        {
+            cpuService.SmuCoperCommandMp1 = sendSmuCommand.ReturnCoPer();
+        }
 
         var options = new Dictionary<int, double>
         {
@@ -682,18 +694,18 @@ public class ApplyerService(
             { 12, preset.Coper12 }, { 13, preset.Coper13 }, { 14, preset.Coper14 }, { 15, preset.Coper15 }
         };
 
-        for (var i = 0; i < cpu.info.topology.physicalCores; i++)
+        for (var i = 0; i < cpuService.PhysicalCores; i++)
         {
             var checkbox = i < 16 && checks[i];
             if (checkbox)
             {
                 var setVal = options[i];
                 var mapIndex = i < 8 ? 0 : 1;
-                if (((~cpu.info.topology.coreDisableMap[mapIndex] >> i) & 1) == 1)
+                if (((~cpuService.CoreDisableMap[mapIndex] >> i) & 1) == 1)
                 {
-                    if (cpu.smu.Rsmu.SMU_MSG_SetDldoPsmMargin != 0U)
+                    if (cpuService.SmuCoperCommandRsmu != 0)
                     {
-                        cpu.SetPsmMarginSingleCore(GetCoreMask(cpu, i), Convert.ToInt32(setVal));
+                        cpuService.SetCoperSingleCore(GetCoreMask(i), Convert.ToInt32(setVal));
                     }
                 }
             }
@@ -740,15 +752,15 @@ public class ApplyerService(
         return adjline;
     }
 
-    private static uint GetCoreMask(Cpu cpu, int coreIndex)
+    private uint GetCoreMask(int coreIndex)
     {
-        var ccxInCcd = cpu.info.family >= Cpu.Family.FAMILY_19H ? 1U : 2U;
+        var ccxInCcd = cpuService.Family >= CpuFamily.FAMILY_19H ? 1U : 2U;
         var coresInCcx = 8 / ccxInCcd;
 
         var ccd = Convert.ToUInt32(coreIndex / 8);
         var ccx = Convert.ToUInt32(coreIndex / coresInCcx - ccxInCcd * ccd);
         var core = Convert.ToUInt32(coreIndex % coresInCcx);
-        var coreMask = cpu.MakeCoreMask(core, ccd, ccx);
+        var coreMask = cpuService.MakeCoreMask(core, ccd, ccx);
         return coreMask;
     }
 

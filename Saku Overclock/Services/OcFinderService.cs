@@ -1,9 +1,7 @@
 ﻿using System.Text;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
-using Saku_Overclock.SmuEngine;
-using ZenStates.Core;
-using static ZenStates.Core.Cpu;
+using static Saku_Overclock.Services.CpuService;
 
 namespace Saku_Overclock.Services;
 
@@ -247,7 +245,7 @@ public class OcFinderService : IOcFinderService
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
     private readonly IDataProvider? _dataProvider = App.GetService<IDataProvider>();
     private static readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
-    private readonly Cpu? _cpu;
+    private static readonly ICpuService Cpu = App.GetService<ICpuService>();
 
     private const bool ForceTraining = false;
     private bool _isInitialized;
@@ -261,6 +259,7 @@ public class OcFinderService : IOcFinderService
 
     private readonly SafetyLimits _safetyLimits = new();
     private readonly Dictionary<string, ArchitecturePreset> _architecturePresets = [];
+    private readonly CodenameGeneration _codenameGeneration = CodenameGeneration.Unknown;
 
     // Кэш для метрик
     private readonly Dictionary<string, PresetMetrics> _metricsCache = [];
@@ -268,15 +267,8 @@ public class OcFinderService : IOcFinderService
 
     public OcFinderService()
     {
-        try
-        {
-            _cpu = CpuSingleton.GetInstance();
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError(ex);
-        }
         InitializeArchitecturePresets();
+        _codenameGeneration = Cpu.GetCodenameGeneration();
     }
 
     /// <summary>
@@ -289,7 +281,7 @@ public class OcFinderService : IOcFinderService
             return;
         }
 
-        var cpuPower = _cpu != null ? SendSmuCommand.ReturnCpuPowerLimit(_cpu.smu) : 35;
+        var cpuPower = Cpu.IsAvailable ? SendSmuCommand.ReturnCpuPowerLimit() : -1;
         CheckUndervoltingFeature();
         var powerTable = _dataProvider?.GetPowerTable();
         var powerTableCheckError = false;
@@ -324,12 +316,18 @@ public class OcFinderService : IOcFinderService
             powerTableCheckError = true;
         }
 
-        if (!powerTableCheckError && cpuPower > checkupCpuPower)
+        if (!powerTableCheckError && cpuPower > checkupCpuPower || cpuPower < 0)
         {
             cpuPower = checkupCpuPower;
         }
 
-        _isPlatformPc = SendSmuCommand.IsPlatformPc() == true;
+        _isPlatformPc = Cpu.IsPlatformPc() == true;
+
+        if (cpuPower <= 0)
+        {
+            cpuPower = 35;
+        }
+
         _validatedCpuPower = cpuPower;
 
         // Ограничение для мобильных платформ
@@ -338,7 +336,7 @@ public class OcFinderService : IOcFinderService
             _validatedCpuPower = 45d;
         }
 
-        if (_cpu?.info.codeName == CodeName.BristolRidge)
+        if (_codenameGeneration == CodenameGeneration.FP4)
         {
             _validatedCpuPower = 35d;
         }
@@ -355,12 +353,12 @@ public class OcFinderService : IOcFinderService
         {
             return _isUndervoltingAvailable;
         }
-        if (_cpu == null)
+        if (!Cpu.IsAvailable)
         {
             return false;
         }
 
-        _isUndervoltingAvailable = SendSmuCommand.ReturnUndervoltingAvailability(_cpu.smu);
+        _isUndervoltingAvailable = SendSmuCommand.ReturnUndervoltingAvailability();
         _isUndervoltingChecked = true;
         return _isUndervoltingAvailable;
     }
@@ -463,18 +461,17 @@ public class OcFinderService : IOcFinderService
     /// </summary>
     private ArchitecturePreset GetArchitecturePreset()
     {
-        var codenameGeneration = SendSmuCommand.GetCodeNameGeneration();
-        return codenameGeneration switch
+        return _codenameGeneration switch
         {
-            "FP4" => _architecturePresets["PreZen"],
-            "FP5" => _architecturePresets["Zen"],
-            "FF3" => _architecturePresets["Zen2"],
-            "FP6" => _architecturePresets["Zen3"],
-            "FP7" => _architecturePresets["Zen4"],
-            "FP8" => _architecturePresets["Zen5"],
-            "AM4_V1" => _architecturePresets["Zen2"],
-            "AM4_V2" => _architecturePresets["Zen3"],
-            "AM5" => _architecturePresets["Zen"],
+            CodenameGeneration.FP4 => _architecturePresets["PreZen"],
+            CodenameGeneration.FP5 => _architecturePresets["Zen"],
+            CodenameGeneration.FF3 => _architecturePresets["Zen2"],
+            CodenameGeneration.FP6 => _architecturePresets["Zen3"],
+            CodenameGeneration.FP7 => _architecturePresets["Zen4"],
+            CodenameGeneration.FP8 => _architecturePresets["Zen5"],
+            CodenameGeneration.AM4_V1 => _architecturePresets["Zen2"],
+            CodenameGeneration.AM4_V2 => _architecturePresets["Zen3"],
+            CodenameGeneration.AM5 => _architecturePresets["Zen"],
             _ => _architecturePresets["Zen3"]
         };
     }
@@ -608,13 +605,12 @@ public class OcFinderService : IOcFinderService
 
         sb.Append($"--fast-limit={(int)(fast * 1000)} ");
 
-        if (_cpu?.info.codeName != CodeName.BristolRidge)
+        if (_codenameGeneration != CodenameGeneration.FP4)
         {
             sb.Append($"--tctl-temp={tempLimit} ");
 
             // DragonRange is laptop CPU but with Desktop silicon and has Stapm limit
-            var codenameGen = SendSmuCommand.GetCodeNameGeneration();
-            if ((codenameGen == "AM5" && _cpu?.info.codeName == CodeName.DragonRange) || codenameGen != "AM5")
+            if ((_codenameGeneration == CodenameGeneration.AM5 && Cpu.IsDragonRange) || _codenameGeneration != CodenameGeneration.AM5)
             {
                 sb.Append($"--stapm-limit={(int)(stapm * 1000)} ");
             }

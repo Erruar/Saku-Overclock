@@ -928,7 +928,7 @@ Get suggest on a possible configuration</value>
     <value>Enter new name</value>
   </data>
   <data name="Open" xml:space="preserve">
-    <value>Open!</value>
+    <value>Open</value>
   </data>
   <data name="Param_PowerMon.ToolTipService.ToolTip" xml:space="preserve">
     <value>Open Saku PowerMon Pro
@@ -1451,7 +1451,7 @@ With this function, you can adjust the level of undervolting (lowering and incre
 With this function, you can adjust the level of undervolting (lowering and increasing voltage) for each individual core, if you have not turned on any core, it will not be affected by the change, these changes will allow you to increase energy efficiency or increase the performance of your device. With the parameters enabled, Curve Optimizer for individual cores, parameters for all cores and iGPUs can be ignored. I AM NOT RESPONSIBLE FOR THE CONSEQUENCES OF THESE OPTIONS. Safe limits are from -50 to 30 but if you noticed any unstability immidiately set curves closer to 0 value</value>
   </data>
   <data name="TraceIt_Error" xml:space="preserve">
-    <value>TraceIt! system - I found an error when executing the program:</value>
+    <value>Something went wrong</value>
   </data>
   <data name="Param_SMU_Func_AAMode.Text" xml:space="preserve">
     <value>A+A Performance mode</value>
@@ -3275,5 +3275,35 @@ Set up a personalized undervolting level that will be applied to all premade pre
   </data>
   <data name="AdvancedCooler_CopyAllAction" xml:space="preserve">
     <value>Copy all</value>
+  </data>
+  <data name="OcFinderCpuPowerIsNotDetected" xml:space="preserve">
+    <value>Processor power could not be detected. Try restarting your device</value>
+  </data>
+  <data name="OcFinderUnableToGetUndervoltingStatus" xml:space="preserve">
+    <value>Current undervolting parameters are temporarily unavailable </value>
+  </data>
+  <data name="OcFinderUnableToSetUndervoltingStatus" xml:space="preserve">
+    <value>Undervolting is not available on this system. No changes will be applied</value>
+  </data>
+  <data name="PawnIoInstallDriver.Text" xml:space="preserve">
+    <value>Driver installation required</value>
+  </data>
+  <data name="PawnIoInstallTitle.Text" xml:space="preserve">
+    <value>PawnIO is required for Saku Overclock to function properly.</value>
+  </data>
+  <data name="PawnIoInstallInfo.Text" xml:space="preserve">
+    <value>PawnIO Driver</value>
+  </data>
+  <data name="PawnIoInstallAgree.Content" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="PawnIoInstallAdditionalInfo.Text" xml:space="preserve">
+    <value>The driver will be installed automatically and used only while Saku Overclock is running.</value>
+  </data>
+  <data name="PawnIoInstallDescription.Text" xml:space="preserve">
+    <value>Description: This driver provides the application with limited and secure access to computer hardware functions.</value>
+  </data>
+  <data name="UnsupportedPlatformMessage" xml:space="preserve">
+    <value>Platform is not supported. Settings cannot be applied</value>
   </data>
 </root>

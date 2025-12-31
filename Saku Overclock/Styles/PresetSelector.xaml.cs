@@ -17,6 +17,22 @@ public sealed partial class PresetSelector : UserControl
         set => SetValue(SelectedItemProperty, value);
     }
 
+    public int SelectedIndex => GetSelectedIndex();
+
+    private int GetSelectedIndex()
+    {
+        for (var index = 0; index < Items.Count; index++)
+        {
+            var item = Items[index];
+            if (item.IsSelected)
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
     public event SelectionChangedEventHandler? SelectionChanged;
 
     private int _visibleCount = 3;

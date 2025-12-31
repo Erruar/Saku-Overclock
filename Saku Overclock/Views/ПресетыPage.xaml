@@ -61,8 +61,6 @@
         </Flyout>
     </Page.Resources>
     <Grid Margin="-48,0,-50,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="1200">
-        <Button x:Name="HiddenButton" Visibility="Collapsed" />
-        <Button x:Name="HiddenAccentButton" Style="{ThemeResource AccentButtonStyle}" Visibility="Collapsed" />
         <TextBlock x:Uid="Preset_Name" Text="Пресеты" FontSize="30" Margin="0,-95,0,0" />
         <Grid HorizontalAlignment="Stretch" Margin="0,-44,0,0" CornerRadius="8">
             <Grid.ColumnDefinitions>
@@ -100,8 +98,8 @@
                         </Button>
                         <Grid Grid.Row="1" Margin="0,-8,0,7" CornerRadius="16" Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,20" Background="{ThemeResource ControlStrokeColorDefaultBrush}"
-                              BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
-                              BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
+                              BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                              BorderThickness="1">
                             <local:PresetSelector Margin="8,11,8,11"
                                                    SelectionChanged="PresetsControl_SelectionChanged"
                                                    x:Name="PresetsControl" VerticalAlignment="Stretch"
@@ -113,8 +111,8 @@
                                    Text="Киллер-фичи" Grid.Row="0" FontWeight="SemiBold" FontSize="16" />
                         <Grid Margin="0,32,0,12" CornerRadius="16" Shadow="{ThemeResource SharedShadow}"
                               Translation="0,0,20" Background="{ThemeResource ControlStrokeColorDefaultBrush}"
-                              BorderBrush="{Binding ElementName=Discrd, Path=BorderBrush}"
-                              BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
+                              BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                              BorderThickness="1">
                             <FlipView Background="Transparent" Margin="8,0,8,0">
                                 <FlipViewItem Margin="-8,0,-8,0">
                                     <ScrollViewer>
@@ -136,11 +134,11 @@
                                                                Text="Переприменять последние применённые параметры для избежания перезаписи другими приложениями" />
                                                 </StackPanel>
                                                 <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20"
-                                                        Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" />
+                                                        Background="{ThemeResource CircleElevationBorderBrush}" />
                                                 <Border Grid.Column="2" Height="32" HorizontalAlignment="Center"
-                                                        Background="{Binding ElementName=HiddenButton, Path=Background}"
-                                                        BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
-                                                        BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                                        Background="{ThemeResource ControlElevationBorderBrush}"
+                                                        BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                        BorderThickness="1"
                                                         CornerRadius="10" Margin="0,4,10,-4"
                                                         Shadow="{ThemeResource SharedShadow}"
                                                         Translation="0,0,10">
@@ -199,11 +197,11 @@
                                                                Text="Включает оверлей с системными показателями поверх игры" />
                                                 </StackPanel>
                                                 <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20"
-                                                        Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" />
+                                                        Background="{ThemeResource CircleElevationBorderBrush}" />
                                                 <Border Grid.Column="2" Height="32" HorizontalAlignment="Center"
-                                                        Background="{Binding ElementName=HiddenButton, Path=Background}"
-                                                        BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
-                                                        BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                                        Background="{ThemeResource ControlElevationBorderBrush}"
+                                                        BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                        BorderThickness="1"
                                                         CornerRadius="10" Margin="0,4,10,-4"
                                                         Shadow="{ThemeResource SharedShadow}"
                                                         Translation="0,0,10">
@@ -261,11 +259,11 @@
                                                                Text="Включает умный мониторинг показателей прямо в трее вашей системы" />
                                                 </StackPanel>
                                                 <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20"
-                                                        Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" />
+                                                        Background="{ThemeResource CircleElevationBorderBrush}" />
                                                 <Border Grid.Column="2" Height="32" HorizontalAlignment="Center"
-                                                        Background="{Binding ElementName=HiddenButton, Path=Background}"
-                                                        BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
-                                                        BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                                        Background="{ThemeResource ControlElevationBorderBrush}"
+                                                        BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                        BorderThickness="1"
                                                         CornerRadius="10" Margin="0,4,10,-4"
                                                         Shadow="{ThemeResource SharedShadow}"
                                                         Translation="0,0,10">
@@ -316,11 +314,11 @@
                                                                Text="Автоматически переприменять последние применённые параметры разгона после открытия программы" />
                                                 </StackPanel>
                                                 <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20"
-                                                        Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" />
+                                                        Background="{ThemeResource CircleElevationBorderBrush}" />
                                                 <Border Grid.Column="2" Height="32" HorizontalAlignment="Center"
-                                                        Background="{Binding ElementName=HiddenButton, Path=Background}"
-                                                        BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
-                                                        BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                                        Background="{ThemeResource ControlElevationBorderBrush}"
+                                                        BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                        BorderThickness="1"
                                                         CornerRadius="10" Margin="0,4,10,-4"
                                                         Shadow="{ThemeResource SharedShadow}"
                                                         Translation="0,0,10">
@@ -371,10 +369,10 @@
                                                                Text="Запускать программу при входе в систему. Режим запуска можно выбрать: в трее, с окном или не запускаться" />
                                                 </StackPanel>
                                                 <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20"
-                                                        Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" />
+                                                        Background="{ThemeResource CircleElevationBorderBrush}" />
                                                 <Border Grid.Column="2" Height="32" HorizontalAlignment="Center"
-                                                        BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
-                                                        BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                                        BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                        BorderThickness="1"
                                                         CornerRadius="10" Margin="0,4,10,-4"
                                                         Shadow="{ThemeResource SharedShadow}"
                                                         Translation="0,0,10">
@@ -421,10 +419,10 @@
                                                                Text="Скрывать программу в трей при закрытии или сворачивании или не скрывать программу вообще" />
                                                 </StackPanel>
                                                 <Border Grid.Column="1" Margin="-45,5,0,-5" Width="1" Height="20"
-                                                        Background="{Binding ElementName=HiddenButton, Path=BorderBrush}" />
+                                                        Background="{ThemeResource CircleElevationBorderBrush}" />
                                                 <Border Grid.Column="2" Height="32" HorizontalAlignment="Center"
-                                                        BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
-                                                        BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                                        BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                        BorderThickness="1"
                                                         CornerRadius="10" Margin="0,4,10,-4"
                                                         Shadow="{ThemeResource SharedShadow}"
                                                         Translation="0,0,10">
@@ -454,8 +452,8 @@
                           Shadow="{ThemeResource SharedShadow}"
                           Translation="0,0,20"
                           Background="{ThemeResource ControlStrokeColorDefaultBrush}"
-                          BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
-                          BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
+                          BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                          BorderThickness="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition />
@@ -484,8 +482,8 @@
                       Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,20" VerticalAlignment="Stretch"
                       Background="{ThemeResource ControlStrokeColorDefaultBrush}"
-                      BorderBrush="{Binding ElementName=Discrd, Path=BorderBrush}"
-                      BorderThickness="{Binding ElementName=Discrd, Path=BorderThickness}">
+                      BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                      BorderThickness="1">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition Height="42" />
@@ -1079,11 +1077,11 @@
                                                                    Text="20W" />
                                                     </StackPanel>
                                                     <TextBlock
-                                                        Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}"
+                                                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                                                         Margin="5,-8,0,0" VerticalAlignment="Top" Text="18"
                                                         FontWeight="Bold" FontSize="38" x:Name="TdpValueSensorText" />
                                                     <TextBlock
-                                                        Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}"
+                                                        Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                                                         Margin="1,14,0,0" Text="W" VerticalAlignment="Center" />
                                                 </StackPanel>
 
@@ -1106,10 +1104,10 @@
                                                                        x:Name="CpuTempSensorCaptionText" Text="CPU" />
                                                             <TextBlock FontWeight="SemiBold" x:Name="CpuTempSensorText"
                                                                        Margin="4,0,0,0" Text="44C"
-                                                                       Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}" />
+                                                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
                                                             <TextBlock Visibility="Collapsed"
                                                                        x:Name="CpuTempSensorBigCaptionText"
-                                                                       Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}"
+                                                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                                                                        Margin="1,19,0,0" VerticalAlignment="Center"
                                                                        Text="C" />
                                                         </StackPanel>
@@ -1118,13 +1116,13 @@
                                                             <TextBlock FontWeight="SemiBold" Text="GPU" />
                                                             <TextBlock FontWeight="SemiBold" x:Name="GpuTempSensorText"
                                                                        Margin="4,0,0,0" Text="37C"
-                                                                       Foreground="{Binding ElementName=HiddenAccentButton, Path=Background}" />
+                                                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
                                                         </StackPanel>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Grid>
                                             <Border Margin="2,-2,2,0"
-                                                    Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"
+                                                    Background="{ThemeResource CircleElevationBorderBrush}"
                                                     Height="1" HorizontalAlignment="Stretch" />
                                             <StackPanel x:Name="PresetSettingsBeginnerViewSettingsStackPanel"
                                                         Orientation="Vertical">
@@ -1154,7 +1152,7 @@
                                                                   Toggled="SmartTdp_Toggled" />
                                                 </Grid>
                                                 <Border Margin="2,5,2,0"
-                                                        Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"
+                                                        Background="{ThemeResource CircleElevationBorderBrush}"
                                                         Height="1" HorizontalAlignment="Stretch" />
                                                 <Grid Margin="0,3,0,0" HorizontalAlignment="Stretch">
                                                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
@@ -1180,7 +1178,7 @@
                                                     </ComboBox>
                                                 </Grid>
                                                 <Border Margin="2,5,2,0"
-                                                        Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"
+                                                        Background="{ThemeResource CircleElevationBorderBrush}"
                                                         Height="1" HorizontalAlignment="Stretch" />
                                                 <Grid Margin="0,3,0,0" HorizontalAlignment="Stretch">
                                                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
@@ -1196,9 +1194,9 @@
                                                         </FontIcon>
                                                     </StackPanel>
                                                     <Border Height="32" HorizontalAlignment="Right"
-                                                            Background="{Binding ElementName=HiddenButton, Path=Background}"
-                                                            BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
-                                                            BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                                            Background="{ThemeResource ControlElevationBorderBrush}"
+                                                            BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                            BorderThickness="1"
                                                             CornerRadius="10" Margin="0,5,0,4"
                                                             Shadow="{ThemeResource SharedShadow}"
                                                             Translation="0,0,10">
@@ -1235,7 +1233,7 @@
                                                     </Border>
                                                 </Grid>
                                                 <Border Margin="2,5,2,0"
-                                                        Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"
+                                                        Background="{ThemeResource CircleElevationBorderBrush}"
                                                         Height="1" HorizontalAlignment="Stretch" />
                                                 <Grid x:Name="CurveOptimizerCustomGrid" Margin="0,-1,0,0"
                                                       HorizontalAlignment="Stretch" Background="Transparent"
@@ -1266,7 +1264,7 @@
                                                         Value="0" VerticalAlignment="Center" />
                                                 </Grid>
                                                 <Border Margin="2,5,2,0" Visibility="{Binding ElementName=CurveOptimizerCustomGrid, Path=Visibility}"
-                                                        Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"
+                                                        Background="{ThemeResource CircleElevationBorderBrush}"
                                                         Height="1" HorizontalAlignment="Stretch" />
                                                 <Grid Margin="0,3,0,0" HorizontalAlignment="Stretch">
                                                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
@@ -1282,9 +1280,9 @@
                                                         </FontIcon>
                                                     </StackPanel>
                                                     <Border Height="32" HorizontalAlignment="Right"
-                                                            Background="{Binding ElementName=HiddenButton, Path=Background}"
-                                                            BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
-                                                            BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
+                                                            Background="{ThemeResource ControlElevationBorderBrush}"
+                                                            BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                                                            BorderThickness="1"
                                                             CornerRadius="10" Margin="0,5,0,4"
                                                             Shadow="{ThemeResource SharedShadow}"
                                                             Translation="0,0,10">
@@ -1343,9 +1341,9 @@
                                                                    ValueChanged="StreamStabilizerTargetMhz_ValueChanged"
                                                                    Minimum="400" Maximum="7000" Value="3000"
                                                                    SmallChange="100" LargeChange="500"
-                                                                   Background="{Binding ElementName=HiddenButton, Path=Background}"
-                                                                   BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                                                   BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
+                                                                   Background="{ThemeResource ControlElevationBorderBrush}"
+                                                                   BorderThickness="1"
+                                                                   BorderBrush="{ThemeResource CircleElevationBorderBrush}"
                                                                    CornerRadius="10" SpinButtonPlacementMode="Inline" />
                                                     </Grid>
                                                 </Grid>
@@ -1363,9 +1361,9 @@
                                                                    ValueChanged="StreamStabilizerTargetPercent_ValueChanged"
                                                                    Minimum="5" Maximum="100" Value="80" SmallChange="5"
                                                                    LargeChange="10"
-                                                                   Background="{Binding ElementName=HiddenButton, Path=Background}"
-                                                                   BorderThickness="{Binding ElementName=HiddenButton, Path=BorderThickness}"
-                                                                   BorderBrush="{Binding ElementName=HiddenButton, Path=BorderBrush}"
+                                                                   Background="{ThemeResource ControlElevationBorderBrush}"
+                                                                   BorderThickness="1"
+                                                                   BorderBrush="{ThemeResource CircleElevationBorderBrush}"
                                                                    CornerRadius="10" SpinButtonPlacementMode="Inline" />
                                                     </Grid>
                                                 </Grid>
@@ -1436,7 +1434,7 @@
                                                        FontSize="12" x:Uid="Preset_ForIllustrations"
                                                        Text="Только для иллюстрации" />
                                             <Border Margin="2,5,2,4"
-                                                    Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"
+                                                    Background="{ThemeResource CircleElevationBorderBrush}"
                                                     Height="1" HorizontalAlignment="Stretch" />
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock x:Uid="Preset_OptimizationLevel" Text="Уровень оптимизации:" />
@@ -1487,7 +1485,7 @@
                                                 </Grid>
                                             </StackPanel>
                                             <Border Margin="2,5,2,4"
-                                                    Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"
+                                                    Background="{ThemeResource CircleElevationBorderBrush}"
                                                     Height="1" HorizontalAlignment="Stretch" />
                                             <TextBlock x:Uid="Preset_HelpWith" Text="Для чего подходит этот пресет?" />
                                             <StackPanel Margin="0,5,0,7" Orientation="Vertical"
@@ -1556,7 +1554,7 @@
                                                 </Grid>
                                             </StackPanel>
                                             <Border Margin="2,0,2,4"
-                                                    Background="{Binding ElementName=HiddenButton, Path=BorderBrush}"
+                                                    Background="{ThemeResource CircleElevationBorderBrush}"
                                                     Height="1" HorizontalAlignment="Stretch" />
                                             <TextBlock x:Uid="Preset_ApplicableSettings" Text="Применяемые настройки" />
                                             <Grid Shadow="{ThemeResource SharedShadow}" Translation="0,0,8"

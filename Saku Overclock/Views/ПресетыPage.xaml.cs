@@ -15,7 +15,6 @@ using Saku_Overclock.Styles;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
 using Windows.UI.Text;
-using static ZenStates.Core.Cpu;
 using Task = System.Threading.Tasks.Task;
 
 namespace Saku_Overclock.Views;
@@ -29,22 +28,20 @@ public sealed partial class ПресетыPage
     private bool _isLoaded; // Загружена ли корректно страница для применения изменений 
     private bool _waitforload = true; // Ожидание окончательной смены пресета на другой. Активируется при смене пресета 
     private int _indexpreset; // Выбранный пресет
-    private readonly IBackgroundDataUpdater? _dataUpdater;
-    private CodeName? _codeName;
+    private readonly IBackgroundDataUpdater _dataUpdater = App.GetService<IBackgroundDataUpdater>();
 
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
 
-    private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
+    private static readonly ICpuService Cpu = App.GetService<ICpuService>();
     private static bool? _isPlatformPc = false;
-    private string _doubleClickApply = string.Empty;
+    private string _doubleClickApplyToken = string.Empty;
 
     public ПресетыPage()
     {
         InitializeComponent();
         PresetManager.LoadSettings();
         AppSettings.SaveSettings();
-        _dataUpdater = App.BackgroundUpdater!;
         _dataUpdater.DataUpdated += OnDataUpdated;
         Unloaded += (_, _) =>
         {
@@ -60,7 +57,7 @@ public sealed partial class ПресетыPage
 
         try
         {
-            _isPlatformPc = SendSmuCommand.IsPlatformPc();
+            _isPlatformPc = Cpu.IsPlatformPc();
         }
         catch (Exception ex)
         {
@@ -152,17 +149,14 @@ public sealed partial class ПресетыPage
 
         _isLoaded = true;
 
-        var cpu = CpuSingleton.GetInstance();
-        _codeName = cpu.info.codeName;
-        if (_codeName != CodeName.RavenRidge && _codeName != CodeName.Dali && _codeName != CodeName.Picasso &&
-            _codeName != CodeName.FireFlight && SettingsViewModel.VersionId != 5)
+        if (!IsRavenFamily() && SettingsViewModel.VersionId != 5)
         {
-            /*AdvancedGpuOptionsPanelGrid0.Visibility = Visibility.Collapsed;
+            AdvancedGpuOptionsPanelGrid0.Visibility = Visibility.Collapsed;
             AdvancedGpuOptionsPanelGrid1.Visibility = Visibility.Collapsed;
             AdvancedGpuOptionsPanel0.Visibility = Visibility.Collapsed;
             AdvancedGpuOptionsPanel1.Height = new GridLength(0);
             AdvancedGpuOptionsPanel2.Visibility = Visibility.Collapsed;
-            AdvancedGpuOptionsPanel3.Height = new GridLength(0);*/
+            AdvancedGpuOptionsPanel3.Height = new GridLength(0);
         }
     }
 
@@ -179,13 +173,19 @@ public sealed partial class ПресетыPage
         PresetsControl.Items.Clear();
 
         // Пройтись по каждому пресету и добавить их в PresetsControl
-        foreach (var preset in PresetManager.Presets)
+        var isOneSelected = false;
+        for (var i = 0; i < PresetManager.Presets.Length; i++)
         {
-            var isChecked = AppSettings.Preset != -1 &&
+            var preset = PresetManager.Presets[i];
+            var isChecked = AppSettings.Preset != -1 && AppSettings.Preset == i &&
                             PresetManager.Presets[AppSettings.Preset].Presetname == preset.Presetname &&
                             PresetManager.Presets[AppSettings.Preset].Presetdesc == preset.Presetdesc &&
                             PresetManager.Presets[AppSettings.Preset].Preseticon == preset.Preseticon;
 
+            if (isChecked)
+            {
+                isOneSelected = true;
+            }
 
             var toggleButton = new PresetItem
             {
@@ -197,7 +197,7 @@ public sealed partial class ПресетыPage
             PresetsControl.Items.Add(toggleButton);
         }
 
-        if (PresetManager.Presets.Length == 0 && AppSettings.Preset != -1)
+        if ((PresetManager.Presets.Length == 0 && AppSettings.Preset != -1) || !isOneSelected)
         {
             AppSettings.Preset = -1;
             AppSettings.SaveSettings();
@@ -376,7 +376,7 @@ public sealed partial class ПресетыPage
 
         if (AppSettings.Preset != -1)
         {
-            await MainInitAsync(AppSettings.Preset);
+            await InitializeCustomPresetSettings(AppSettings.Preset);
         }
     }
 
@@ -393,14 +393,14 @@ public sealed partial class ПресетыPage
         PresetHwOfficeWorkload.Visibility = Visibility.Collapsed;
         PresetHwLightGaming.Visibility = Visibility.Collapsed;
         PresetHwVideos.Visibility = Visibility.Collapsed;
-        PresetHwColumnHelper1.Width = GridLength.Auto;
-        PresetHwColumnHelper2.Width = GridLength.Auto;
+        var presetHwColumnHelper1 = GridLength.Auto;
+        var presetHwColumnHelper2 = GridLength.Auto;
         switch (type)
         {
             case PresetType.Min:
                 PresetHwOfficeWorkload.Visibility = Visibility.Visible;
                 PresetHwVideos.Visibility = Visibility.Visible;
-                PresetHwColumnHelper2.Width = new GridLength(0);
+                presetHwColumnHelper2 = new GridLength(0);
                 break;
             case PresetType.Eco:
                 PresetHwOfficeWorkload.Visibility = Visibility.Visible;
@@ -412,8 +412,8 @@ public sealed partial class ПресетыPage
                 PresetHwOfficeWorkload.Visibility = Visibility.Visible;
                 PresetHwVideos.Visibility = Visibility.Visible;
                 PresetHwStreaming.Visibility = Visibility.Visible;
-                PresetHwColumnHelper1.Width = new GridLength(0);
-                PresetHwColumnHelper2.Width = new GridLength(0);
+                presetHwColumnHelper1 = new GridLength(0);
+                presetHwColumnHelper2 = new GridLength(0);
                 break;
             case PresetType.Speed:
             case PresetType.Max:
@@ -424,9 +424,11 @@ public sealed partial class ПресетыPage
                 PresetHwHardWorkload.Visibility = Visibility.Visible;
                 break;
         }
+        PresetHwColumnHelper1.Width = presetHwColumnHelper1;
+        PresetHwColumnHelper2.Width = presetHwColumnHelper2;
     }
 
-    private async Task MainInitAsync(int index)
+    private async Task InitializeCustomPresetSettings(int index)
     {
         _waitforload = true;
         if (index > PresetManager.Presets.Length || index < 0)
@@ -1128,10 +1130,6 @@ public sealed partial class ПресетыPage
         }
 
         var index = AppSettings.Preset;
-        if (_codeName == null)
-        {
-            return;
-        }
 
         switch (IntegratedGpuEnchantmentCombo.SelectedIndex)
         {
@@ -1184,10 +1182,7 @@ public sealed partial class ПресетыPage
 
     #region Function Helpers
 
-    private bool IsRavenFamily() => _codeName == CodeName.RavenRidge ||
-                                    _codeName == CodeName.Dali ||
-                                    _codeName == CodeName.Picasso ||
-                                    _codeName == CodeName.FireFlight;
+    private bool IsRavenFamily() => Cpu.GetCodenameGeneration() == CpuService.CodenameGeneration.FP5;
 
     private void TryAdvancedButton_Click(object sender, RoutedEventArgs e)
     {
@@ -1618,10 +1613,6 @@ public sealed partial class ПресетыPage
                 return;
             }
 
-            // Корректное отображение описания, даже если оно маленькое (чтобы Grid изменил свой размер корректно и слова не обрывались)
-            PresetSettingsInfoRow.Height = new GridLength(0);
-            PresetSettingsInfoRow.Height = GridLength.Auto;
-
             SelectedPresetName.Text = selectedItem.Text;
 
             // Обход отсутствия описания, при помощи записывания имени пресета в описание. Чтобы не отображать два раза одну и ту же строку, описание пресета скрывается (так как его нет)
@@ -1631,12 +1622,12 @@ public sealed partial class ПресетыPage
 
             if (e != null)
             {
-                if (_doubleClickApply == SelectedPresetName.Text + SelectedPresetDescription.Text)
+                if (_doubleClickApplyToken == SelectedPresetName.Text + SelectedPresetDescription.Text + PresetsControl.SelectedIndex)
                 {
                     ApplyButton_Click(null, null);
                 }
 
-                _doubleClickApply = SelectedPresetName.Text + SelectedPresetDescription.Text;
+                _doubleClickApplyToken = SelectedPresetName.Text + SelectedPresetDescription.Text + PresetsControl.SelectedIndex;
             }
 
             if (selectedItem.Description == selectedItem.Text)
@@ -1756,20 +1747,31 @@ public sealed partial class ПресетыPage
                 EditPresetButton.Visibility = Visibility.Visible;
                 PresetSettingsChangeViewStackPanel.Visibility = Visibility.Visible;
 
-                for (var i = 0; i < PresetManager.Presets.Length; i++)
+                var selectedIndex = PresetsControl.SelectedIndex;
+                if (selectedIndex > -1 && selectedIndex < PresetManager.Presets.Length &&
+                    selectedItem.Text == PresetManager.Presets[selectedIndex].Presetname)
                 {
-                    if ((PresetManager.Presets[i].Presetdesc == selectedItem.Description ||
-                         PresetManager.Presets[i].Presetname == selectedItem.Description) &&
-                        PresetManager.Presets[i].Presetname == selectedItem.Text &&
-                        PresetManager.Presets[i].Preseticon == selectedItem.IconGlyph)
+                    AppSettings.Preset = selectedIndex;
+                }
+                else
+                {
+                    for (var presetIndex = 0; presetIndex < PresetManager.Presets.Length; presetIndex++)
                     {
-                        _indexpreset = i;
-                        AppSettings.Preset = i;
-                        AppSettings.SaveSettings();
-                        await MainInitAsync(i);
-                        break;
+                        var preset = PresetManager.Presets[presetIndex];
+                        if (preset.Presetname == selectedItem.Text &&
+                           (preset.Presetdesc == selectedItem.Description || preset.Presetname == selectedItem.Description) &&
+                           (preset.Preseticon == selectedItem.IconGlyph ||
+                            preset.Preseticon == "\uE718"))
+                        {
+                            AppSettings.Preset = presetIndex;
+                            break;
+                        }
                     }
                 }
+
+                _indexpreset = AppSettings.Preset;
+                AppSettings.SaveSettings();
+                await InitializeCustomPresetSettings(_indexpreset);
             }
         }
         catch (Exception ex)
@@ -1783,14 +1785,8 @@ public sealed partial class ПресетыPage
         try
         {
             var endMode = PresetType.Balance;
-            PresetItem? selectedItem = null;
-            foreach (var item in PresetsControl.Items)
-            {
-                if (item.IsSelected)
-                {
-                    selectedItem = item;
-                }
-            }
+            var selectedItem = PresetsControl.SelectedItem;
+            var selectedIndex = PresetsControl.SelectedIndex;
 
             if (selectedItem == null)
             {
@@ -1827,68 +1823,86 @@ public sealed partial class ПресетыPage
                 var name = selectedItem.Text;
                 var desc = selectedItem.Description;
                 var icon = selectedItem.IconGlyph;
-                foreach (var preset in PresetManager.Presets)
+                Preset? requiredPreset = null;
+                if (selectedIndex > -1 && selectedIndex < PresetManager.Presets.Length && 
+                    selectedItem.Text == PresetManager.Presets[selectedIndex].Presetname)
                 {
-                    if (preset.Presetname == name &&
-                        (preset.Presetdesc == desc || preset.Presetname == desc) &&
-                        (preset.Preseticon == icon ||
-                         preset.Preseticon == "\uE718"))
+                    requiredPreset = PresetManager.Presets[selectedIndex];
+                    AppSettings.Preset = selectedIndex;
+                }
+                else
+                {
+                    for (var presetIndex = 0; presetIndex < PresetManager.Presets.Length; presetIndex++)
                     {
-                        ПараметрыPage.ApplyInfo = string.Empty;
-                        await Applyer.ApplyCustomPreset(preset, true);
-
-                        await Task.Delay(1000);
-                        var timer = 1000;
-                        var applyInfo = ПараметрыPage.ApplyInfo;
-                        if (applyInfo != string.Empty)
+                        var preset = PresetManager.Presets[presetIndex];
+                        if (preset.Presetname == name &&
+                           (preset.Presetdesc == desc || preset.Presetname == desc) &&
+                           (preset.Preseticon == icon ||
+                            preset.Preseticon == "\uE718"))
                         {
-                            timer *= applyInfo.Split('\n').Length + 1;
+                            AppSettings.Preset = presetIndex;
+                            requiredPreset = preset;
+                            break;
                         }
-
-                        DispatcherQueue.TryEnqueue(async void () =>
-                        {
-                            try
-                            {
-                                ApplyTeach.Target = ApplyButton;
-                                ApplyTeach.Title = "Apply_Success".GetLocalized();
-                                ApplyTeach.Subtitle = "";
-                                ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
-                                ApplyTeach.IsOpen = true;
-                                var infoSet = InfoBarSeverity.Success;
-                                if (applyInfo != string.Empty)
-                                {
-                                    await LogHelper.Log(applyInfo);
-                                    ApplyTeach.Title = "Apply_Warn".GetLocalized();
-                                    ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + applyInfo;
-                                    ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
-                                    await Task.Delay(timer);
-                                    ApplyTeach.IsOpen = false;
-                                    infoSet = InfoBarSeverity.Warning;
-                                }
-                                else
-                                {
-                                    await LogHelper.Log("Apply_Success".GetLocalized());
-                                    await Task.Delay(3000);
-                                    ApplyTeach.IsOpen = false;
-                                }
-
-                                NotificationsService.Notifies ??= [];
-                                NotificationsService.Notifies.Add(new Notify
-                                {
-                                    Title = ApplyTeach.Title,
-                                    Msg = ApplyTeach.Subtitle + (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
-                                    Type = infoSet
-                                });
-                                NotificationsService.SaveNotificationsSettings();
-                            }
-                            catch (Exception ex)
-                            {
-                                await LogHelper.LogError(ex);
-                            }
-                        });
-                        return;
                     }
                 }
+                AppSettings.SaveSettings();
+                    
+                ПараметрыPage.ApplyInfo = string.Empty;
+                if (requiredPreset != null)
+                {
+                    await Applyer.ApplyCustomPreset(requiredPreset, true);
+                }
+
+                await Task.Delay(1000);
+                var timer = 1000;
+                var applyInfo = ПараметрыPage.ApplyInfo;
+                if (applyInfo != string.Empty)
+                {
+                    timer *= applyInfo.Split('\n').Length + 1;
+                }
+
+                DispatcherQueue.TryEnqueue(async void () =>
+                {
+                    try
+                    {
+                        ApplyTeach.Target = ApplyButton;
+                        ApplyTeach.Title = "Apply_Success".GetLocalized();
+                        ApplyTeach.Subtitle = "";
+                        ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
+                        ApplyTeach.IsOpen = true;
+                        var infoSet = InfoBarSeverity.Success;
+                        if (applyInfo != string.Empty)
+                        {
+                            await LogHelper.Log(applyInfo);
+                            ApplyTeach.Title = "Apply_Warn".GetLocalized();
+                            ApplyTeach.Subtitle = "Apply_Warn_Desc".GetLocalized() + applyInfo;
+                            ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.ReportHacked };
+                            await Task.Delay(timer);
+                            ApplyTeach.IsOpen = false;
+                            infoSet = InfoBarSeverity.Warning;
+                        }
+                        else
+                        {
+                            await Task.Delay(3000);
+                            ApplyTeach.IsOpen = false;
+                        }
+
+                        NotificationsService.Notifies ??= [];
+                        NotificationsService.Notifies.Add(new Notify
+                        {
+                            Title = ApplyTeach.Title,
+                            Msg = ApplyTeach.Subtitle + (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                            Type = infoSet
+                        });
+                        NotificationsService.SaveNotificationsSettings();
+                    }
+                    catch (Exception ex)
+                    {
+                        await LogHelper.LogError(ex);
+                    }
+                });
+                return;
             }
 
             await Applyer.ApplyPremadePreset(endMode);
@@ -1898,7 +1912,6 @@ public sealed partial class ПресетыPage
             ApplyTeach.Subtitle = "";
             ApplyTeach.IconSource = new SymbolIconSource { Symbol = Symbol.Accept };
             ApplyTeach.IsOpen = true;
-            await LogHelper.Log("Apply_Success".GetLocalized());
             await Task.Delay(3000);
             ApplyTeach.IsOpen = false;
         }

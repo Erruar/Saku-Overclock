@@ -52,14 +52,7 @@ public partial class App
             throw;
         }
     }
-
-    // Глобальный экземпляр фонового обновлятора, зарегистрированный как синглтон через DI.
-    public static IBackgroundDataUpdater? BackgroundUpdater
-    {
-        get; private set;
-    }
-    private static readonly CancellationTokenSource GlobalCts = new();
-
+    
     public static IntPtr Hwnd => WindowNative.GetWindowHandle(MainWindow);
 
     public static WindowEx MainWindow
@@ -91,6 +84,10 @@ public partial class App
                 // Core Services
                 services.AddSingleton<IFileService, FileService>();
                 // Services
+                services.AddSingleton<ICpuService, CpuService>(); 
+                services.AddSingleton<IPstateStrategy, Zen4PstateStrategy>();
+                services.AddSingleton<IPstateStrategy, Zen5PstateStrategy>();
+                services.AddSingleton<IPstateService, PstateService>();
                 services.AddSingleton<IAppNotificationService, AppNotificationService>();
                 services.AddSingleton<ILocalThemeSettingsService, LocalThemeSettingsService>();
                 services.AddSingleton<IAppSettingsService, AppSettingsService>();
@@ -169,8 +166,6 @@ public partial class App
     {
         try
         {
-            BackgroundUpdater = GetService<IBackgroundDataUpdater>();
-            _ = BackgroundUpdater.StartAsync(GlobalCts.Token);
             base.OnLaunched(args);
             GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(),
                 AppContext.BaseDirectory));

@@ -34,30 +34,20 @@ public sealed partial class SettingsPage
     public SettingsViewModel ViewModel
     {
         get;
-    }
+    } = App.GetService<SettingsViewModel>();
 
-    private static readonly IAppSettingsService
-        AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
-
-    private readonly IThemeSelectorService
-        _themeSelectorService = App.GetService<IThemeSelectorService>(); // Темы приложения
-
-    private static readonly IAppNotificationService
-        NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления
-
-    private static readonly ISendSmuCommandService
-        SendSmuCommand =
-            App.GetService<ISendSmuCommandService>(); // SendSmuService для определения состояния безопасного применения параметров разгона
-
-    private static readonly IRtssSettingsService
-        RtssSettings = App.GetService<IRtssSettingsService>(); // Настройки RTSS
+    private readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
+    private readonly IThemeSelectorService _themeSelectorService = App.GetService <IThemeSelectorService>(); // Темы приложения
+    private readonly IAppNotificationService NotificationsService = App.GetService <IAppNotificationService>(); // Уведомления
+    private readonly ISendSmuCommandService SendSmuCommand = App.GetService <ISendSmuCommandService>(); // SendSmuService для определения состояния безопасного применения параметров разгона
+    private readonly IRtssSettingsService RtssSettings = App.GetService <IRtssSettingsService>(); // Настройки RTSS
+    private readonly IBackgroundDataUpdater BackgroundDataUpdater = App.GetService <IBackgroundDataUpdater>(); // Обновление данных
 
     private NiIconsSettings _niicons = new(); // TrayMon иконки
     private bool _isLoaded; // Флаг загрузки страницы
 
     public SettingsPage()
     {
-        ViewModel = App.GetService<SettingsViewModel>();
         InitializeComponent();
         InitializePage();
         Loaded += LoadedApp;
@@ -360,7 +350,7 @@ public sealed partial class SettingsPage
     /// <summary>
     ///     Обновляет тему приложения в реальном времени
     /// </summary>
-    private static void UpdateTheme()
+    private void UpdateTheme()
     {
         NotificationsService.Notifies ??= [];
         NotificationsService.Notifies.Add(new Notify
@@ -1424,7 +1414,7 @@ public sealed partial class SettingsPage
         SettingsNiIconsGrid.CornerRadius =
             TrayMonIconsEnabled.IsOn ? new CornerRadius(15, 15, 0, 0) : new CornerRadius(15);
 
-        App.BackgroundUpdater?.UpdateNotifyIcons();
+        BackgroundDataUpdater.UpdateNotifyIcons();
     }
 
     /// <summary>
@@ -1783,7 +1773,7 @@ public sealed partial class SettingsPage
 
             await niAddIconDialog.ShowAsync();
 
-            App.BackgroundUpdater?.UpdateNotifyIcons();
+            BackgroundDataUpdater.UpdateNotifyIcons();
         }
         catch (Exception exception)
         {
@@ -1848,7 +1838,7 @@ public sealed partial class SettingsPage
         _niicons.Elements[AppSettings.NiIconsType].ContextMenuType = NiIconCombobox.SelectedIndex;
         NiSave();
 
-        App.BackgroundUpdater?.UpdateNotifyIcons();
+        BackgroundDataUpdater.UpdateNotifyIcons();
     }
 
     /// <summary>
@@ -1878,7 +1868,7 @@ public sealed partial class SettingsPage
         SettingsNiEnabledElementGrid.CornerRadius =
             IsTrayMonIconShowing.IsOn ? new CornerRadius(0) : new CornerRadius(0, 0, 15, 15);
 
-        App.BackgroundUpdater?.UpdateNotifyIcons();
+        BackgroundDataUpdater.UpdateNotifyIcons();
     }
 
     /// <summary>
@@ -1896,7 +1886,7 @@ public sealed partial class SettingsPage
             Convert.ToInt32(SettingsNiFontsize.Value);
         NiSave();
 
-        App.BackgroundUpdater?.UpdateNotifyIcons();
+        BackgroundDataUpdater.UpdateNotifyIcons();
     }
 
     /// <summary>
@@ -1913,7 +1903,7 @@ public sealed partial class SettingsPage
         _niicons.Elements[AppSettings.NiIconsType].BgOpacity = SettingsNiOpacity.Value;
         NiSave();
 
-        App.BackgroundUpdater?.UpdateNotifyIcons();
+        BackgroundDataUpdater.UpdateNotifyIcons();
     }
 
     /// <summary>
@@ -1940,7 +1930,7 @@ public sealed partial class SettingsPage
 
         NiSave();
 
-        App.BackgroundUpdater?.UpdateNotifyIcons();
+        BackgroundDataUpdater.UpdateNotifyIcons();
     }
 
     /// <summary>
@@ -1957,7 +1947,7 @@ public sealed partial class SettingsPage
         _niicons.Elements[AppSettings.NiIconsType].IsGradient = true;
         NiSave();
 
-        App.BackgroundUpdater?.UpdateNotifyIcons();
+        BackgroundDataUpdater.UpdateNotifyIcons();
     }
 
     /// <summary>
@@ -1987,7 +1977,7 @@ public sealed partial class SettingsPage
             }
         }
 
-        App.BackgroundUpdater?.UpdateNotifyIcons();
+        BackgroundDataUpdater.UpdateNotifyIcons();
     }
 
     /// <summary>
@@ -2004,7 +1994,7 @@ public sealed partial class SettingsPage
         _niicons.Elements[AppSettings.NiIconsType].IconShape = NiIconShapeCombobox.SelectedIndex;
         NiSave();
 
-        App.BackgroundUpdater?.UpdateNotifyIcons();
+        BackgroundDataUpdater.UpdateNotifyIcons();
     }
 
     /// <summary>
@@ -2026,7 +2016,7 @@ public sealed partial class SettingsPage
             AppSettings.SaveSettings();
             InitializeTrayMonIcons();
 
-            App.BackgroundUpdater?.UpdateNotifyIcons();
+            BackgroundDataUpdater.UpdateNotifyIcons();
         }
         catch (Exception ex)
         {
@@ -2054,7 +2044,7 @@ public sealed partial class SettingsPage
         NiSave();
         TrayMonIconElements_SelectionChanged(null, null);
 
-        App.BackgroundUpdater?.UpdateNotifyIcons();
+        BackgroundDataUpdater.UpdateNotifyIcons();
     }
 
     #endregion

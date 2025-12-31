@@ -940,7 +940,7 @@
     <value>Введите новое имя</value>
   </data>
   <data name="Open" xml:space="preserve">
-    <value>Открыть!</value>
+    <value>Открыть</value>
   </data>
   <data name="Param_PowerMon.ToolTipService.ToolTip" xml:space="preserve">
     <value>Открыть Saku PowerMon Pro
@@ -1470,7 +1470,7 @@
 Curve Optimizer для отдельных ядер, параметры для всех ядер и iGPU могут быть проигнорированы. Я НЕ НЕСУ ОТВЕТСТВЕННОСТИ ЗА ПОСЛЕДСТВИЯ ВЫПОЛНЕНИЯ ЭТИХ ПАРАМЕТРОВ. Допустимые пределы - от -50 до 30, но если вы заметили какую-либо нестабильность, немедленно установите значения кривых ближе к 0</value>
   </data>
   <data name="TraceIt_Error" xml:space="preserve">
-    <value>Система TraceIt! - Кажется что-то пошло не так:</value>
+    <value>Что-то пошло не так</value>
   </data>
   <data name="Param_SMU_Func_AAMode.Text" xml:space="preserve">
     <value>A+A Режим производительности</value>
@@ -3291,5 +3291,35 @@ Asus. Может не поддерживаться на
   </data>
   <data name="AdvancedCooler_CopyAllAction" xml:space="preserve">
     <value>Скопировать всё</value>
+  </data>
+  <data name="OcFinderCpuPowerIsNotDetected" xml:space="preserve">
+    <value>Мощность процессора не удалось обнаружить. Попробуйте перезагрузить устройство</value>
+  </data>
+  <data name="OcFinderUnableToGetUndervoltingStatus" xml:space="preserve">
+    <value>Текущие параметры андервольтинга временно недоступны </value>
+  </data>
+  <data name="OcFinderUnableToSetUndervoltingStatus" xml:space="preserve">
+    <value>Андервольтинг недоступен и не будет применён на данной системе</value>
+  </data>
+  <data name="PawnIoInstallDriver.Text" xml:space="preserve">
+    <value>Требуется установка драйвера</value>
+  </data>
+  <data name="PawnIoInstallTitle.Text" xml:space="preserve">
+    <value>Для корректной работы Saku Overclock необходим компонент PawnIO.</value>
+  </data>
+  <data name="PawnIoInstallInfo.Text" xml:space="preserve">
+    <value>Драйвер PawnIO</value>
+  </data>
+  <data name="PawnIoInstallAgree.Content" xml:space="preserve">
+    <value>ОК</value>
+  </data>
+  <data name="PawnIoInstallAdditionalInfo.Text" xml:space="preserve">
+    <value>Драйвер будет установлен автоматически и активен только во время работы Saku Overclock.</value>
+  </data>
+  <data name="PawnIoInstallDescription.Text" xml:space="preserve">
+    <value>Описание: Этот драйвер даёт приложению ограниченный и безопасный доступ к аппаратным функциям компьютера.</value>
+  </data>
+  <data name="UnsupportedPlatformMessage" xml:space="preserve">
+    <value>Платформа не поддерживается. Невозможно применить настройки</value>
   </data>
 </root>

@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.SmuEngine;
+using static ZenStates.Core.Cpu;
 
 namespace Saku_Overclock.Services;
 
@@ -14,6 +15,7 @@ public class CoreMetricsCalculator
 {
     private readonly ISensorReader _sensorReader;
     private readonly ISensorIndexResolver _indexResolver;
+    private readonly ICpuService _cpu;
     private int _coreCount;
 
     // Кэш массивов для предотвращения аллокаций
@@ -40,30 +42,22 @@ public class CoreMetricsCalculator
     private readonly bool _isRavenFamily;
     private readonly bool _isHawkPointFamily;
 
-    public CoreMetricsCalculator(ISensorReader sensorReader, ISensorIndexResolver indexResolver)
+    public CoreMetricsCalculator(ISensorReader sensorReader, ISensorIndexResolver indexResolver, ICpuService cpu)
     {
-        try
-        {
-            var codeName = CpuSingleton.GetInstance().info.codeName;
-            if (codeName is ZenStates.Core.Cpu.CodeName.RavenRidge
-                or ZenStates.Core.Cpu.CodeName.Picasso
-                or ZenStates.Core.Cpu.CodeName.Dali)
-            {
-                _isRavenFamily = true;
-            }
-
-            if (codeName == ZenStates.Core.Cpu.CodeName.HawkPoint)
-            {
-                _isHawkPointFamily = true;
-            }
-        }
-        catch
-        {
-            LogHelper.LogError("[CoreMetricsCalculator]@ Failed to get Cpu instance");
-        }
-
         _sensorReader = sensorReader;
         _indexResolver = indexResolver;
+        _cpu = cpu;
+
+        var codenameGen = cpu.GetCodenameGeneration();
+        if (codenameGen == CpuService.CodenameGeneration.FP5)
+        {
+            _isRavenFamily = true;
+        }
+
+        if (codenameGen == CpuService.CodenameGeneration.FP7)
+        {
+            _isHawkPointFamily = true;
+        }
     }
 
     /// <summary>

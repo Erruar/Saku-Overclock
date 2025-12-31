@@ -1,5 +1,4 @@
 ﻿using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers;
 using Saku_Overclock.SmuEngine;
 
 namespace Saku_Overclock.Services;
@@ -7,17 +6,9 @@ namespace Saku_Overclock.Services;
 public class SensorIndexResolver : ISensorIndexResolver
 {
     private static bool _isLaptop;
-    public SensorIndexResolver()
+    public SensorIndexResolver(ICpuService cpu)
     {
-        try
-        {
-            var codeName = CpuSingleton.GetInstance().info.codeName;
-            _isLaptop = SendSmuCommandService.IsPlatformPcByCodename(codeName) == false;
-        }
-        catch
-        {
-            LogHelper.LogError("[SensorIndexResolver]@ Failed to get Cpu instance");
-        }
+        _isLaptop = cpu.IsPlatformPcByCodename() == false;
     }
 
     public int ResolveIndex(int tableVersion, SensorId sensor)
@@ -1477,8 +1468,8 @@ public class SensorIndexResolver : ISensorIndexResolver
             // Raven and up → индекс 121
             0x001E0001 or
             0x001E0002 or
-            0x001E0003 or
-            0x001E0004 or
+            0x001E0003 => 121,
+            0x001E0004 => 120,
             0x001E0005 or
             0x001E000A or
             0x001E0101 => 121,
