@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Win32.TaskScheduler;
 using Saku_Overclock.Contracts.Services;
@@ -161,7 +159,7 @@ internal class AutoStartHelper
                 taskService.RootFolder.DeleteTask(taskName, false);
             }
         }
-        catch (Exception)
+        catch
         {
             // Игнорируем ошибки при удалении (задача может не существовать или нет прав доступа)
         }

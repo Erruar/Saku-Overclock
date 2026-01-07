@@ -4,15 +4,28 @@ namespace Saku_Overclock.Contracts.Services;
 
 public interface IOcFinderService
 {
-    void LazyInitTdp(); // Основной инит платформы
+    /// <summary>
+    ///     Основная инициализация OcFinder, получает значение мощности процессора и строит по нему готовые пресеты и подсказки
+    /// </summary>
+    void LazyInitTdp();
+
+    /// <summary>
+    ///     Создаёт готовый пресет
+    /// </summary>
+    /// <param name="type">Тип требуемого пресета</param>
+    /// <param name="level">Уровень оптимизации пресета</param>
+    /// <returns>Конфигурация пресета: RyzenAdjLine, PresetMetrics, PresetOptions, доступность андервольтинга</returns>
     PresetConfiguration CreatePreset(PresetType type, OptimizationLevel level);
-    PresetMetrics GetPresetMetrics(PresetType type, OptimizationLevel level);
-    PresetOptions GetPresetOptions(string preset);
 
-    void GeneratePremadePresets();
+    /// <summary>
+    ///     Получить рекомендации настроек пресета
+    /// </summary>
+    /// <returns>Рекомендации настроек</returns>
+    PresetRecommendations GetPerformanceRecommendationData();
+
+    /// <summary>
+    ///     Узнать доступность андервольтинга
+    /// </summary>
+    /// <returns>Доступность андервольтинга</returns>
     bool IsUndervoltingAvailable();
-    void ClearMetricsCache();
-    string CurveOptimizerGenerateStringHelper(int value);
-
-    (int[], int[], int[], int[], int[], int[], int[]) GetPerformanceRecommendationData();
 }

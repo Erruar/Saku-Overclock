@@ -22,10 +22,10 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     private readonly IDataProvider? _dataProvider = dataProvider;
     private readonly ICpuService? _cpu = cpuService;
     private CancellationTokenSource? _cts;
-    private Task? _updateTask;
 
     private readonly IRtssSettingsService
         _rtssSettings = App.GetService<IRtssSettingsService>(); // Конфиг с настройками модуля RTSS
+
     private readonly IApplyerService
         _applyer = App.GetService<IApplyerService>();
 
@@ -87,7 +87,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     private readonly string _niMinvalueText = "Settings_ni_Values_MinValue".GetLocalized();
     private readonly string _niMaxvalueText = "Settings_ni_Values_MaxValue".GetLocalized();
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    public void StartAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -107,7 +107,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
 
         _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        _updateTask = Task.Run(async () =>
+        Task.Run(async () =>
         {
             // Инициализируем статические данные один раз перед входом в цикл
             try
@@ -214,8 +214,6 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
                 }
             }
         }, _cts.Token);
-
-        return _updateTask;
     }
 
     public void Stop()
@@ -1098,7 +1096,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
     }
 
     /// <summary> Внешний метод для обновления иконок после изменения их в настройках приложения </summary>
-    public void UpdateNotifyIcons()
+    public void UpdateTrayMonIcons()
     {
         if (_isIconsUpdated)
         {
@@ -1207,7 +1205,7 @@ public partial class BackgroundDataUpdater(IDataProvider dataProvider, ICpuServi
 
                     try
                     {
-                        notifyIcon.ForceCreate(enablesEfficiencyMode: false);
+                        notifyIcon.ForceCreate(false);
                     }
                     catch
                     {

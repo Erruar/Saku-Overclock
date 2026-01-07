@@ -85,7 +85,7 @@ public class ZenstatesCoreProvider(
         sensorsInformation.MemFrequency = mclkSuccess ? mclkValue : 0;
         sensorsInformation.FabricFrequency = fclkSuccess ? fclkValue : 0;
 
-        
+
         var (socVoltSuccess, socVolt) = sensorReader.ReadSpecialValue(SensorReader.SpecialValueType.VddcrSoc);
         sensorsInformation.SocPower = GetSensorValue(SensorId.SocPower, socVoltSuccess ? (float)(socVolt * 10) : 0f);
         sensorsInformation.SocVoltage = socVoltSuccess ? socVolt : 0;
@@ -127,8 +127,8 @@ public class ZenstatesCoreProvider(
     /// </summary>
     private float GetSensorValue(SensorId sensorId, float fallbackValue = 0f)
     {
-        const int HawkPointPowerTableVerion = 0x004C0009;
-        const int HawkPointApuVoltageAltIndex = 39;
+        const int hawkPointPowerTableVerion = 0x004C0009;
+        const int hawkPointApuVoltageAltIndex = 39;
 
         var tableVersion = sensorReader.CurrentTableVersion;
         var index = indexResolver.ResolveIndex(tableVersion, sensorId);
@@ -140,9 +140,10 @@ public class ZenstatesCoreProvider(
 
         var (success, value) = sensorReader.ReadSensorByIndex(index);
 
-        if (sensorId == SensorId.ApuVoltage && value == 0 && sensorReader.CurrentTableVersion == HawkPointPowerTableVerion)
+        if (sensorId == SensorId.ApuVoltage && value == 0 &&
+            sensorReader.CurrentTableVersion == hawkPointPowerTableVerion)
         {
-            (success, value) = sensorReader.ReadSensorByIndex(HawkPointApuVoltageAltIndex);
+            (success, value) = sensorReader.ReadSensorByIndex(hawkPointApuVoltageAltIndex);
         }
 
         if (!success || value == 0)
@@ -161,50 +162,50 @@ public class ZenstatesCoreProvider(
         return tableVersion switch
         {
             0x001E0001 or // Raven, Dali, Picasso
-            0x001E0002 or
-            0x001E0003 or
-            0x001E0004 or
-            0x001E0005 or
-            0x001E000A or
-            0x001E0101 or // FireFlight
-            0x00190001 or // Summit Ridge, Pinnacle Ridge
-            0x00240803 or // Matisse
-            0x00240903 or
-            0x00370000 or // Renoir, Lucienne
-            0x00370001 or
-            0x00370002 or
-            0x00370003 or
-            0x00370004 or
-            0x00370005 or
-            0x00380005 or // Vermeer
-            0x00380505 or
-            0x00380605 or
-            0x00380705 or
-            0x00380804 or
-            0x00380805 or
-            0x00380904 or
-            0x00380905 or
-            0x003F0000 or // Van Gogh
-            0x00400001 or // Cezanne
-            0x00400002 or
-            0x00400003 or
-            0x00400004 or
-            0x00400005 or
-            0x00450004 or // Rembrandt, Mendocino
-            0x00450005 or
-            0x004C0003 or // Phoenix
-            0x004C0004 or
-            0x004C0005 or
-            0x004C0006 or // Phoenix, Phoenix 2
-            0x004C0007 or
-            0x004C0008 or // Phoenix, Krackan Point
-            0x004C0009 or // Hawk Point, Krackan Point 2
-            0x00540004 or // Raphael 7900
-            0x00540104 or // Raphael 7500, 7800
-            0x00540208 or // Dragon Range
-            0x00620105 or // Granite Ridge
-            0x00620205 or
-            0x0064020c => true, // Strix Halo
+                0x001E0002 or
+                0x001E0003 or
+                0x001E0004 or
+                0x001E0005 or
+                0x001E000A or
+                0x001E0101 or // FireFlight
+                0x00190001 or // Summit Ridge, Pinnacle Ridge
+                0x00240803 or // Matisse
+                0x00240903 or
+                0x00370000 or // Renoir, Lucienne
+                0x00370001 or
+                0x00370002 or
+                0x00370003 or
+                0x00370004 or
+                0x00370005 or
+                0x00380005 or // Vermeer
+                0x00380505 or
+                0x00380605 or
+                0x00380705 or
+                0x00380804 or
+                0x00380805 or
+                0x00380904 or
+                0x00380905 or
+                0x003F0000 or // Van Gogh
+                0x00400001 or // Cezanne
+                0x00400002 or
+                0x00400003 or
+                0x00400004 or
+                0x00400005 or
+                0x00450004 or // Rembrandt, Mendocino
+                0x00450005 or
+                0x004C0003 or // Phoenix
+                0x004C0004 or
+                0x004C0005 or
+                0x004C0006 or // Phoenix, Phoenix 2
+                0x004C0007 or
+                0x004C0008 or // Phoenix, Krackan Point
+                0x004C0009 or // Hawk Point, Krackan Point 2
+                0x00540004 or // Raphael 7900
+                0x00540104 or // Raphael 7500, 7800
+                0x00540208 or // Dragon Range
+                0x00620105 or // Granite Ridge
+                0x00620205 or
+                0x0064020c => true, // Strix Halo
             _ => false
         };
     }

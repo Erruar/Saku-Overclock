@@ -49,12 +49,12 @@ public class CoreMetricsCalculator
         _cpu = cpu;
 
         var codenameGen = cpu.GetCodenameGeneration();
-        if (codenameGen == CpuService.CodenameGeneration.FP5)
+        if (codenameGen == CpuService.CodenameGeneration.Fp5)
         {
             _isRavenFamily = true;
         }
 
-        if (codenameGen == CpuService.CodenameGeneration.FP7)
+        if (codenameGen == CpuService.CodenameGeneration.Fp7)
         {
             _isHawkPointFamily = true;
         }

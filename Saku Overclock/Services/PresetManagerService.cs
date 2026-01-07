@@ -10,8 +10,8 @@ public class PresetManagerService(IFileService fileService, IAppSettingsService 
     private const string FolderPath = "Saku Overclock/Presets";
     private const string FileName = "UserPresets.json";
 
-    private static readonly string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-    private readonly string _applicationDataFolder = Path.Combine(localAppData, FolderPath);
+    private static readonly string LocalAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    private readonly string _applicationDataFolder = Path.Combine(LocalAppData, FolderPath);
     
     // Состояние для отслеживания позиции при быстром переключении
     private int _virtualCustomPresetIndex = -1; // Виртуальная позиция в кастомных пресетах

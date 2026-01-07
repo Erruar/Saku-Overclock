@@ -6,7 +6,7 @@ namespace Saku_Overclock.Services;
 public class SensorReader : ISensorReader
 {
     private float[]? _table;
-    private readonly ICpuService? Cpu;
+    private readonly ICpuService? _cpu;
 
     public int CurrentTableVersion
     {
@@ -15,8 +15,8 @@ public class SensorReader : ISensorReader
 
     public SensorReader(ICpuService cpuService)
     {
-        Cpu = cpuService;
-        if (Cpu != null)
+        _cpu = cpuService;
+        if (_cpu != null)
         {
             // Инициализируем версию таблицы
             UpdateTableVersion();
@@ -27,16 +27,16 @@ public class SensorReader : ISensorReader
     {
         try
         {
-            if (Cpu == null)
+            if (_cpu == null)
             {
                 return false;
             }
 
             // Обновляем таблицу через ZenStates.Core
-            Cpu.RefreshPowerTable();
+            _cpu.RefreshPowerTable();
 
             // Получаем обновлённую таблицу
-            _table = Cpu.PowerTable;
+            _table = _cpu.PowerTable;
 
             // Обновляем версию таблицы
             UpdateTableVersion();
@@ -54,7 +54,7 @@ public class SensorReader : ISensorReader
     {
         try
         {
-            if (Cpu == null || _table == null)
+            if (_cpu == null || _table == null)
             {
                 return (false, 0);
             }
@@ -87,16 +87,16 @@ public class SensorReader : ISensorReader
     {
         try
         {
-            if (Cpu == null || _table == null)
+            if (_cpu == null || _table == null)
             {
                 return (false, 0);
             }
 
             return type switch
             {
-                SpecialValueType.Mclk => (true, Cpu.SocMemoryClock),
-                SpecialValueType.Fclk => (true, Cpu.SocFabricClock),
-                SpecialValueType.VddcrSoc => (true, Cpu.SocVoltage),
+                SpecialValueType.Mclk => (true, _cpu.SocMemoryClock),
+                SpecialValueType.Fclk => (true, _cpu.SocFabricClock),
+                SpecialValueType.VddcrSoc => (true, _cpu.SocVoltage),
                 _ => (false, 0)
             };
         }
@@ -113,12 +113,12 @@ public class SensorReader : ISensorReader
     {
         try
         {
-            if (Cpu == null)
+            if (_cpu == null)
             {
                 return (false, 0);
             }
 
-            var temp = Cpu.GetCpuTemperature();
+            var temp = _cpu.GetCpuTemperature();
             return temp.HasValue ? (true, temp.Value) : (false, 0);
         }
         catch
@@ -134,12 +134,12 @@ public class SensorReader : ISensorReader
     {
         try
         {
-            if (Cpu == null)
+            if (_cpu == null)
             {
                 return (false, 0);
             }
 
-            var multi = Cpu.GetCoreMultiplier(coreIndex);
+            var multi = _cpu.GetCoreMultiplier(coreIndex);
             return (true, multi);
         }
         catch
@@ -149,16 +149,16 @@ public class SensorReader : ISensorReader
     }
 
     /// <summary>
-    /// Получает информацию о топологии процессора
+    /// Получает информацию о количестве ядер процессора
     /// </summary>
     public int GetTotalCoresTopology()
     {
-        if (Cpu == null)
+        if (_cpu == null)
         {
             return 0;
         }
 
-        return (int)Cpu.Cores;
+        return (int)_cpu.Cores;
     }
 
     /// <summary>
@@ -166,7 +166,7 @@ public class SensorReader : ISensorReader
     /// </summary>
     public string GetCodeName()
     {
-        return Cpu?.CpuCodeName ?? "Unsupported";
+        return _cpu?.CpuCodeName ?? "Unsupported";
     }
 
     /// <summary>
@@ -182,18 +182,18 @@ public class SensorReader : ISensorReader
     /// </summary>
     private void UpdateTableVersion()
     {
-        if (Cpu == null)
+        if (_cpu == null)
         {
             CurrentTableVersion = 0;
             return;
         }
 
-        var tableVersion = Cpu.PowerTableVersion;
+        var tableVersion = _cpu.PowerTableVersion;
 
-        var codenameGen = Cpu.GetCodenameGeneration();
+        var codenameGen = _cpu.GetCodenameGeneration();
 
         // Zen fallback
-        if (tableVersion == 0 && codenameGen == CpuService.CodenameGeneration.AM4_V1)
+        if (tableVersion == 0 && codenameGen == CpuService.CodenameGeneration.Am4V1)
         {
             tableVersion = 0x00190001;
         }
@@ -204,7 +204,7 @@ public class SensorReader : ISensorReader
             tableVersion = 0x00380805;
         }
 
-        if (codenameGen == CpuService.CodenameGeneration.AM5)
+        if (codenameGen == CpuService.CodenameGeneration.Am5)
         {
             var baseRevision = (tableVersion >> 16) & 0xFFFF;
             if (baseRevision == 0x54 

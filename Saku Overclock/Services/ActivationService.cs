@@ -88,7 +88,7 @@ public class ActivationService(
     private async Task StartupAsync()
     {
         // 1. Установка выбранной темы приложения
-        await themeSelectorService.SetRequestedThemeAsync();
+        themeSelectorService.SetRequestedThemeAsync();
 
         // 2. Авто-применение настроек разгона
         await applyerService.AutoApplySettingsWithAppStart();

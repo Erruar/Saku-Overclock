@@ -10,9 +10,9 @@ namespace Saku_Overclock.Helpers;
 
 internal static class DriverHelper
 {
-    public static void InstallPawnIO()
+    public static void InstallPawnIo()
     {
-        var path = ExtractPawnIO();
+        var path = ExtractPawnIo();
         if (!string.IsNullOrEmpty(path))
         {
             var process = Process.Start(new ProcessStartInfo(path, "-install"));
@@ -22,7 +22,7 @@ internal static class DriverHelper
         }
     }
 
-    private static string? ExtractPawnIO()
+    private static string? ExtractPawnIo()
     {
         var destination = Path.Combine(Directory.GetCurrentDirectory(), "PawnIO_setup.exe");
 

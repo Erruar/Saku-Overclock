@@ -27,7 +27,7 @@ public class LocalThemeSettingsService : ILocalThemeSettingsService
         _themeSettingsFile = ThemeSettingsFile;
     }
 
-    public LocalThemeSettingsOptions LoadThemeSettings()
+    public LocalThemeSettingsOptions? LoadThemeSettings()
     {
         try
         {

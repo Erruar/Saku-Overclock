@@ -74,7 +74,7 @@ public class NavigationService(IPageService pageService) : INavigationService
         return false;
     }
 
-    public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false)
+    public void NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false)
     {
         var pageType = pageService.GetPageType(pageKey);
 
@@ -92,11 +92,7 @@ public class NavigationService(IPageService pageService) : INavigationService
                     navigationAware.OnNavigatedFrom();
                 }
             }
-
-            return navigated;
         }
-
-        return false;
     }
 
     public void ReloadPage(string from)

@@ -10,11 +10,7 @@ namespace Saku_Overclock.Services;
 
 public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsService) : IThemeSelectorService
 {
-    public ElementTheme Theme
-    {
-        get;
-        private set;
-    } = ElementTheme.Default;
+    private ElementTheme _theme = ElementTheme.Default;
 
     public List<ThemeClass> Themes
     {
@@ -27,24 +23,22 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
         LoadThemeFromSettings();
     }
 
-    public async Task SetThemeAsync(ElementTheme theme)
+    public void SetThemeAsync(ElementTheme theme)
     {
-        Theme = theme;
+        _theme = theme;
 
-        await SetRequestedThemeAsync();
+        SetRequestedThemeAsync();
         SaveThemeInSettings();
     }
 
-    public async Task SetRequestedThemeAsync()
+    public void SetRequestedThemeAsync()
     {
         if (App.MainWindow.Content is FrameworkElement rootElement)
         {
-            rootElement.RequestedTheme = Theme;
+            rootElement.RequestedTheme = _theme;
 
-            TitleBarHelper.UpdateTitleBar(Theme);
+            TitleBarHelper.UpdateTitleBar(_theme);
         }
-
-        await Task.CompletedTask;
     }
 
     public sealed class ThemeApplyResult
@@ -61,33 +55,28 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
         {
             get; init;
         }
-        public string? ThemeApplyMessage
-        {
-            get; init; 
-        }
     }
 
-    public async Task<ThemeApplyResult> UpdateAppliedTheme(int themeType)
+    public ThemeApplyResult UpdateAppliedTheme(int themeType)
     {
-        const int BuiltInThemesCount = 2;
+        const int builtInThemesCount = 2;
 
         ImageSource? imageSource = null;
         double themeOpacity = 1;
         double themeMaskOpacity = 1;
-        var message = string.Empty;
 
         if (themeType < Themes.Count && themeType > -1)
         {
             var themeLight = Themes[themeType].ThemeLight
                     ? ElementTheme.Light
                     : ElementTheme.Dark;
-            await SetThemeAsync(themeType == 0 ? ElementTheme.Default : themeLight);
+            SetThemeAsync(themeType == 0 ? ElementTheme.Default : themeLight);
             if (Themes[themeType].ThemeCustomBg ||
                 Themes[themeType].ThemeName.Contains("Theme_"))
             {
                 var themeBackground = Themes[themeType].ThemeBackground;
 
-                if (themeType > BuiltInThemesCount &&
+                if (themeType > builtInThemesCount &&
                     !string.IsNullOrEmpty(themeBackground) &&
                     (themeBackground.Contains("http") || themeBackground.Contains("appx") ||
                      File.Exists(themeBackground)))
@@ -98,7 +87,7 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
                     }
                     catch
                     {
-                        message = "ThemeNotFoundBg".GetLocalized();
+                        LogHelper.TraceIt_TraceError("ThemeNotFoundBg".GetLocalized());
                     }
                 }
             }
@@ -108,19 +97,18 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
         }
         else
         {
-            message = "ThemeNotFound".GetLocalized();
+            LogHelper.TraceIt_TraceError("ThemeNotFound".GetLocalized());
         }
 
-        return new ThemeApplyResult()
+        return new ThemeApplyResult
         {
             BackgroundImageSource = imageSource,
             ThemeOpacity = themeOpacity,
-            ThemeMaskOpacity = themeMaskOpacity,
-            ThemeApplyMessage = message
+            ThemeMaskOpacity = themeMaskOpacity
         };
     }
 
-    public void LoadThemeFromSettings()
+    private void LoadThemeFromSettings()
     {
         var retValue = localThemeSettingsService.LoadThemeSettings();
         if (retValue != null)
@@ -132,12 +120,12 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
                 if (Enum.TryParse(retValue.AppBackgroundRequestedTheme,
                         out ElementTheme cacheTheme))
                 {
-                    Theme = cacheTheme;
+                    _theme = cacheTheme;
                 }
             }
             catch
             {
-                Theme = ElementTheme.Default;
+                _theme = ElementTheme.Default;
             }
         }
     }
@@ -145,6 +133,9 @@ public class ThemeSelectorService(ILocalThemeSettingsService localThemeSettingsS
     public void SaveThemeInSettings()
     {
         localThemeSettingsService.SaveThemeSettings(new LocalThemeSettingsOptions
-            { CustomThemes = Themes, AppBackgroundRequestedTheme = Theme.ToString() });
+        {
+            CustomThemes = Themes, 
+            AppBackgroundRequestedTheme = _theme.ToString()
+        });
     }
 }

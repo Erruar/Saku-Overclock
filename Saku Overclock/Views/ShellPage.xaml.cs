@@ -1,10 +1,4 @@
 ﻿using System.Diagnostics;
-using Windows.Foundation;
-using Windows.Graphics;
-using Windows.System;
-using Windows.UI.Text;
-using Microsoft.UI.Input;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -12,44 +6,28 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.JsonContainers;
 using Saku_Overclock.ViewModels;
+using Windows.Foundation;
+using Windows.System;
+using Windows.UI.Text;
 using Action = System.Action;
 using Button = Microsoft.UI.Xaml.Controls.Button;
 using Task = System.Threading.Tasks.Task;
-using WindowActivatedEventArgs = Microsoft.UI.Xaml.WindowActivatedEventArgs;
-
-// ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
 
 namespace Saku_Overclock.Views;
 
 public sealed partial class ShellPage
 {
-   
-    private DispatcherTimer? _dispatcherTimer; // Таймер обновления уведомлений
     private bool _isNotificationPanelShow; // Флаг: Открыта ли панель уведомлений
-    private int? _compareList; // Нет новых уведомлений - пока
-
 
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления
-
     private static readonly IKeyboardHotkeysService KeyboardHotkeys = App.GetService<IKeyboardHotkeysService>();
     private static readonly IUpdateCheckerService UpdateChecker = App.GetService<IUpdateCheckerService>();
-
+    private static readonly IWindowStateManagerService WindowStateManager = App.GetService<IWindowStateManagerService>();
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
-
     private static readonly IPresetManagerService
         PresetManager = App.GetService<IPresetManagerService>(); // Настройки приложения
-
-    private Preset[]? _preset = []; // Класс с пресетами параметров разгона пользователя
-
-    private AppWindow MAppWindow
-    {
-        get;
-    }
-
-    private bool _fixedTitleBar; // Флаг фиксированного тайтлбара 
-    private bool _isTitleBarInitialized; // Флаг инициализации тайтлбара 
     private readonly IThemeSelectorService _themeSelectorService = App.GetService<IThemeSelectorService>();
 
     public ShellViewModel ViewModel // ViewModel, установка нужной модели для UI страницы
@@ -59,16 +37,13 @@ public sealed partial class ShellPage
 
     public ShellPage(ShellViewModel viewModel)
     {
-        MAppWindow = App.MainWindow.AppWindow; // AppWindow, нужен для тайтлбара приложения
         ViewModel = viewModel;
         InitializeComponent();
         ViewModel.NavigationService.Frame = NavigationFrame; // Выбранная пользователем страница
         ViewModel.NavigationViewService.Initialize(NavigationViewControl); // Инициализировать выбор страниц
-        Loaded += OnLoaded;
 
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(AppTitleBar);
-        App.MainWindow.Activated += MainWindow_Activated; // Приложение активировалось, загрузить параметры TitleBar
     }
 
     #region Page Initialization and User Presets
@@ -82,88 +57,41 @@ public sealed partial class ShellPage
     /// </summary>
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-       /* if (AppSettings.AppFirstRun)
-        {
-            HideNavigationBar();
-            Icon.Visibility = Visibility.Collapsed;
-            RingerNotificationGrid.Visibility = Visibility.Collapsed;
-        }*/
+        /* if (AppSettings.AppFirstRun)
+         {
+             HideNavigationBar();
+             Icon.Visibility = Visibility.Collapsed;
+             RingerNotificationGrid.Visibility = Visibility.Collapsed;
+         }*/
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
         KeyboardHotkeys.Initialize();
-        StartNotificationsUpdate();
-        _ = UpdateThemes();
+
+        App.AppTitlebar = VersionNumberIndicator;
+        AppTitleBar.Loaded += AppTitleBar_Loaded;
+
+        NotificationsService.NotificationAdded += NotificationsService_NotificationAdded;
+        UpdateThemes();
         AutoStartHelper.AutoStartCheckAndFix();
     }
 
+    private void NotificationsService_NotificationAdded(object? sender, Notify e) => GetNotify(e);
+
     /// <summary>
-    ///     Обработчик активации окна
+    ///     Помогает установить регион взаимодействия с программой (кликабельную кнопку уведомлений и лого), меняет состояние лого
     /// </summary>
-    private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
+    private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
     {
-        App.AppTitlebar = VersionNumberIndicator;
-        AppTitleBar.Loaded += AppTitleBar_Loaded;
-    }
-
-    /// <summary>
-    ///     Помогает установить регион взаимодействия с программой (кликабельную кнопку уведомлений и лого)
-    /// </summary>
-    private void AppTitleBar_Loaded(object sender, RoutedEventArgs e) =>
-        SetRegionsForCustomTitleBar(); //Установить регион взаимодействия
-
-    #endregion
-
-    #region Notifications
-
-    #region Window Definitions
-
-    /// <summary>
-    ///     Активирует или выключает проверку уведомлений в приложении, если пользователь переключился на окно программы
-    /// </summary>
-    private void Window_Activated(object sender, WindowActivatedEventArgs args)
-    {
-        if (args.WindowActivationState == WindowActivationState.CodeActivated ||
-            args.WindowActivationState == WindowActivationState.PointerActivated)
+        if (AppSettings.FixedTitleBar)
         {
-            _dispatcherTimer?.Start(); // Снова запускает проверку наличия новых уведомлений
+            TitleIcon_PointerEntered(null, null);
         }
-        else
-        {
-            _dispatcherTimer?.Stop();
-        }
-    }
 
-    /// <summary>
-    ///     Активирует или выключает проверку уведомлений в приложении, если пользователь свернул или развернул окно программы
-    /// </summary>
-    private void Window_VisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
-    {
-        if (args.Visible)
-        {
-            _dispatcherTimer?.Start(); // Снова запускает проверку наличия новых уведомлений
-        }
-        else
-        {
-            _dispatcherTimer?.Stop();
-        }
-    }
+        var (rightInset, leftInset) = WindowStateManager.SetWindowTitleBarBounds(AppTitleBar.XamlRoot.RasterizationScale);
 
-    #endregion
-
-    #region Notifications Update Timers
-
-    /// <summary>
-    ///     Начинает проверку наличия новых уведомлений
-    /// </summary>
-    private void StartNotificationsUpdate()
-    {
-        _dispatcherTimer = new DispatcherTimer();
-        _dispatcherTimer.Tick += async (_, _) => await GetNotify();
-        _dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1000);
-        App.MainWindow.VisibilityChanged += Window_VisibilityChanged;
-        App.MainWindow.Activated += Window_Activated;
-        _dispatcherTimer.Start();
+        RightPaddingColumn.Width = new GridLength(rightInset);
+        LeftPaddingColumn.Width = new GridLength(leftInset);
     }
 
     #endregion
@@ -173,7 +101,7 @@ public sealed partial class ShellPage
     /// <summary>
     ///     Главный метод проверки наличия новых уведомлений
     /// </summary>
-    private Task GetNotify()
+    private Task GetNotify(Notify notify)
     {
         if (_isNotificationPanelShow)
         {
@@ -185,52 +113,43 @@ public sealed partial class ShellPage
             return Task.CompletedTask;
         }
 
-        _ = (DispatcherQueue?.TryEnqueue(() =>
+        DispatcherQueue?.TryEnqueue(() =>
         {
-            if (_compareList == NotificationsService.Notifies.Count && NotificationContainer.Children.Count != 0)
+            Grid? subcontent = null;
+            switch (notify.Title)
             {
-                return;
-            } //нет новых уведомлений - пока
-
-            ClearAllNotification(null, null);
-            var index = 0;
-            foreach (var notify1 in NotificationsService.Notifies!)
-            {
-                Grid? subcontent = null;
-                switch (notify1.Title)
-                {
-                    //Если уведомление о изменении темы
-                    case "Theme applied!":
-                        _ = UpdateThemes();
-                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
-                        return; //Удалить и не показывать 
-                    case "UpdateNAVBAR":
-                        HideNavigationBar();
-                        Icon.Visibility = Visibility.Collapsed;
-                        RingerNotificationGrid.Visibility = Visibility.Collapsed;
-                        return; //Удалить и не показывать 
-                    case "FirstLaunch":
-                        HideNavigationBar();
-                        Icon.Visibility = Visibility.Collapsed;
-                        RingerNotificationGrid.Visibility = Visibility.Collapsed;
-                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
-                        return;
-                    case "ExitFirstLaunch":
-                        ShowNavigationBar();
-                        Icon.Visibility = Visibility.Visible;
-                        RingerNotificationGrid.Visibility = Visibility.Visible;
-                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
-                        return;
-                    case "UPDATE_REQUIRED":
-                        notify1.Title = "Shell_Update_App_Title".GetLocalized();
-                        notify1.Msg = "Shell_Update_App_Message".GetLocalized() + " " +
-                                      UpdateChecker.ParseVersion();
-                        var updateButton = new Button
+                //Если уведомление о изменении темы
+                case "Theme applied!":
+                    UpdateThemes();
+                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+                    return; //Удалить и не показывать 
+                case "UpdateNAVBAR":
+                    HideNavigationBar();
+                    Icon.Visibility = Visibility.Collapsed;
+                    RingerNotificationGrid.Visibility = Visibility.Collapsed;
+                    return; //Удалить и не показывать 
+                case "FirstLaunch":
+                    HideNavigationBar();
+                    Icon.Visibility = Visibility.Collapsed;
+                    RingerNotificationGrid.Visibility = Visibility.Collapsed;
+                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+                    return;
+                case "ExitFirstLaunch":
+                    ShowNavigationBar();
+                    Icon.Visibility = Visibility.Visible;
+                    RingerNotificationGrid.Visibility = Visibility.Visible;
+                    ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+                    return;
+                case "UPDATE_REQUIRED":
+                    notify.Title = "Shell_Update_App_Title".GetLocalized();
+                    notify.Msg = "Shell_Update_App_Message".GetLocalized() + " " +
+                                  UpdateChecker.ParseVersion();
+                    var updateButton = new Button
+                    {
+                        CornerRadius = new CornerRadius(15),
+                        Content = new Grid
                         {
-                            CornerRadius = new CornerRadius(15),
-                            Content = new Grid
-                            {
-                                Children =
+                            Children =
                                 {
                                     new FontIcon
                                     {
@@ -244,34 +163,34 @@ public sealed partial class ShellPage
                                         HorizontalAlignment = HorizontalAlignment.Center
                                     }
                                 }
-                            }
-                        };
-                        updateButton.Click += (_, _) =>
-                        {
-                            HideNavigationBar();
-                            Icon.Visibility = Visibility.Collapsed;
-                            RingerNotificationGrid.Visibility = Visibility.Collapsed;
-                            var navigationService = App.GetService<INavigationService>();
-                            navigationService.NavigateTo(typeof(ОбновлениеViewModel).FullName!, null, true);
-                            ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления 
-                        };
-                        subcontent = new Grid
-                        {
-                            Children = { updateButton }
-                        };
-                        break;
-                }
-
-                if (notify1.Msg.Contains("DELETEUNAVAILABLE"))
-                {
-                    if (notify1.Type != InfoBarSeverity.Success)
+                        }
+                    };
+                    updateButton.Click += (_, _) =>
                     {
-                        var but1 = new Button
+                        HideNavigationBar();
+                        Icon.Visibility = Visibility.Collapsed;
+                        RingerNotificationGrid.Visibility = Visibility.Collapsed;
+                        var navigationService = App.GetService<INavigationService>();
+                        navigationService.NavigateTo(typeof(ОбновлениеViewModel).FullName!, null, true);
+                        ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления 
+                    };
+                    subcontent = new Grid
+                    {
+                        Children = { updateButton }
+                    };
+                    break;
+            }
+
+            if (notify.Msg.Contains("DELETEUNAVAILABLE"))
+            {
+                if (notify.Type != InfoBarSeverity.Success)
+                {
+                    var but1 = new Button
+                    {
+                        CornerRadius = new CornerRadius(15),
+                        Content = new Grid
                         {
-                            CornerRadius = new CornerRadius(15),
-                            Content = new Grid
-                            {
-                                Children =
+                            Children =
                                 {
                                     new FontIcon
                                     {
@@ -285,16 +204,16 @@ public sealed partial class ShellPage
                                         HorizontalAlignment = HorizontalAlignment.Center
                                     }
                                 }
-                            }
-                        };
-                        var but2 = new Button
+                        }
+                    };
+                    var but2 = new Button
+                    {
+                        Tag = notify.Msg.Replace("DELETEUNAVAILABLE", ""),
+                        CornerRadius = new CornerRadius(15),
+                        Margin = new Thickness(10, 0, 0, 0),
+                        Content = new Grid
                         {
-                            Tag = notify1.Msg.Replace("DELETEUNAVAILABLE", ""),
-                            CornerRadius = new CornerRadius(15),
-                            Margin = new Thickness(10, 0, 0, 0),
-                            Content = new Grid
-                            {
-                                Children =
+                            Children =
                                 {
                                     new FontIcon
                                     {
@@ -308,276 +227,271 @@ public sealed partial class ShellPage
                                         HorizontalAlignment = HorizontalAlignment.Center
                                     }
                                 }
-                            }
-                        };
-                        but1.Click += (_, _) =>
-                        {
-                            Process.Start(
-                                new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/wiki/FAQ#error-handling")
-                                {
-                                    UseShellExecute = true
-                                });
-                        };
-                        but2.Click += async (_, _) =>
-                        {
-                            but2.IsEnabled = false;
-                            var navigationService = App.GetService<INavigationService>();
-                            if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel)
+                        }
+                    };
+                    but1.Click += (_, _) =>
+                    {
+                        Process.Start(
+                            new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/wiki/FAQ#error-handling")
                             {
-                                navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
-                            }
+                                UseShellExecute = true
+                            });
+                    };
+                    but2.Click += async (_, _) =>
+                    {
+                        but2.IsEnabled = false;
+                        var navigationService = App.GetService<INavigationService>();
+                        if (navigationService.Frame!.GetPageViewModel() is ПараметрыViewModel)
+                        {
+                            navigationService.NavigateTo(typeof(ГлавнаяViewModel).FullName!, null, true);
+                        }
 
-                            MandarinAddNotification("Shell_Notify_TaskCompleting".GetLocalized(),
-                                "Shell_Notify_TaskWait".GetLocalized(),
-                                InfoBarSeverity.Informational,
-                                true,
-                                new Grid
+                        MandarinAddNotification("Shell_Notify_TaskCompleting".GetLocalized(),
+                            "Shell_Notify_TaskWait".GetLocalized(),
+                            InfoBarSeverity.Informational,
+                            true,
+                            new Grid
+                            {
+                                HorizontalAlignment = HorizontalAlignment.Left,
+                                VerticalAlignment = VerticalAlignment.Top,
+                                Children =
                                 {
-                                    HorizontalAlignment = HorizontalAlignment.Left,
-                                    VerticalAlignment = VerticalAlignment.Top,
-                                    Children =
-                                    {
                                         new ProgressRing
                                         {
                                             IsActive = true
                                         }
-                                    }
-                                });
-                            var stringFrom = but2.Tag.ToString()?.Split('\"');
-                            if (stringFrom != null)
-                            {
-                                _preset ??= new Preset[1];
-                                var commandActions = new Dictionary<string, Action>
+                                }
+                            });
+                        var stringFrom = but2.Tag.ToString()?.Split('\"');
+                        if (stringFrom != null)
+                        {
+                            var presets = PresetManager.Presets;
+                            presets ??= [];
+                            var commandActions = new Dictionary<string, Action>
                                 {
                                     {
                                         "Param_SMU_Func_Text/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].SmuFunctionsEnabl = false
+                                        () => presets[AppSettings.Preset].SmuFunctionsEnabl = false
                                     },
                                     {
                                         "Param_CPU_c2/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Cpu2 = false
+                                        () => presets[AppSettings.Preset].Cpu2 = false
                                     },
                                     {
                                         "Param_VRM_v2/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Vrm2 = false
+                                        () => presets[AppSettings.Preset].Vrm2 = false
                                     },
                                     {
                                         "Param_VRM_v1/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Vrm1 = false
+                                        () => presets[AppSettings.Preset].Vrm1 = false
                                     },
                                     {
                                         "Param_CPU_c1/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Cpu1 = false
+                                        () => presets[AppSettings.Preset].Cpu1 = false
                                     },
                                     {
                                         "Param_ADV_a15/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd15 = false
+                                        () => presets[AppSettings.Preset].Advncd15 = false
                                     },
                                     {
                                         "Param_ADV_a11/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd11 = false
+                                        () => presets[AppSettings.Preset].Advncd11 = false
                                     },
                                     {
                                         "Param_ADV_a12/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd12 = false
+                                        () => presets[AppSettings.Preset].Advncd12 = false
                                     },
                                     {
                                         "Param_CO_O1/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Coall = false
+                                        () => presets[AppSettings.Preset].Coall = false
                                     },
                                     {
                                         "Param_CO_O2/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Cogfx = false
+                                        () => presets[AppSettings.Preset].Cogfx = false
                                     },
                                     {
                                         "Param_CCD1_CO_Section/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Coprefmode = 0
+                                        () => presets[AppSettings.Preset].Coprefmode = 0
                                     },
                                     {
                                         "Param_ADV_a14_E/Content".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd14 = false
+                                        () => presets[AppSettings.Preset].Advncd14 = false
                                     },
                                     {
                                         "Param_CPU_c5/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Cpu5 = false
+                                        () => presets[AppSettings.Preset].Cpu5 = false
                                     },
                                     {
                                         "Param_CPU_c3/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Cpu3 = false
+                                        () => presets[AppSettings.Preset].Cpu3 = false
                                     },
                                     {
                                         "Param_CPU_c4/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Cpu4 = false
+                                        () => presets[AppSettings.Preset].Cpu4 = false
                                     },
                                     {
                                         "Param_CPU_c6/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Cpu6 = false
+                                        () => presets[AppSettings.Preset].Cpu6 = false
                                     },
                                     {
                                         "Param_CPU_c7/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Cpu7 = false
+                                        () => presets[AppSettings.Preset].Cpu7 = false
                                     },
                                     {
                                         "Param_ADV_a6/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd6 = false
+                                        () => presets[AppSettings.Preset].Advncd6 = false
                                     },
                                     {
                                         "Param_VRM_v4/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Vrm4 = false
+                                        () => presets[AppSettings.Preset].Vrm4 = false
                                     },
                                     {
                                         "Param_VRM_v3/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Vrm3 = false
+                                        () => presets[AppSettings.Preset].Vrm3 = false
                                     },
                                     {
                                         "Param_ADV_a1/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd1 = false
+                                        () => presets[AppSettings.Preset].Advncd1 = false
                                     },
                                     {
                                         "Param_ADV_a3/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd3 = false
+                                        () => presets[AppSettings.Preset].Advncd3 = false
                                     },
                                     {
                                         "Param_VRM_v7/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Vrm7 = false
+                                        () => presets[AppSettings.Preset].Vrm7 = false
                                     },
                                     {
                                         "Param_ADV_a4/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd4 = false
+                                        () => presets[AppSettings.Preset].Advncd4 = false
                                     },
                                     {
                                         "Param_ADV_a5/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd5 = false
+                                        () => presets[AppSettings.Preset].Advncd5 = false
                                     },
                                     {
                                         "Param_ADV_a10/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd10 = false
+                                        () => presets[AppSettings.Preset].Advncd10 = false
                                     },
                                     {
                                         "Param_ADV_a13_E/Content".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd13 = false
+                                        () => presets[AppSettings.Preset].Advncd13 = false
                                     },
                                     {
                                         "Param_ADV_a13_U/Content".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd13 = false
+                                        () => presets[AppSettings.Preset].Advncd13 = false
                                     },
                                     {
                                         "Param_ADV_a8/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd8 = false
+                                        () => presets[AppSettings.Preset].Advncd8 = false
                                     },
                                     {
                                         "Param_ADV_a7/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd7 = false
+                                        () => presets[AppSettings.Preset].Advncd7 = false
                                     },
                                     {
                                         "Param_VRM_v5/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Vrm5 = false
+                                        () => presets[AppSettings.Preset].Vrm5 = false
                                     },
                                     {
                                         "Param_VRM_v6/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Vrm6 = false
+                                        () => presets[AppSettings.Preset].Vrm6 = false
                                     },
                                     {
                                         "Param_ADV_a9/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Advncd9 = false
+                                        () => presets[AppSettings.Preset].Advncd9 = false
                                     },
                                     {
                                         "Param_GPU_g12/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu12 = false
+                                        () => presets[AppSettings.Preset].Gpu12 = false
                                     },
                                     {
                                         "Param_GPU_g11/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu11 = false
+                                        () => presets[AppSettings.Preset].Gpu11 = false
                                     },
                                     {
                                         "Param_GPU_g10/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu10 = false
+                                        () => presets[AppSettings.Preset].Gpu10 = false
                                     },
                                     {
                                         "Param_GPU_g9/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu9 = false
+                                        () => presets[AppSettings.Preset].Gpu9 = false
                                     },
                                     {
                                         "Param_GPU_g2/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu2 = false
+                                        () => presets[AppSettings.Preset].Gpu2 = false
                                     },
                                     {
                                         "Param_GPU_g1/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu1 = false
+                                        () => presets[AppSettings.Preset].Gpu1 = false
                                     },
                                     {
                                         "Param_GPU_g4/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu4 = false
+                                        () => presets[AppSettings.Preset].Gpu4 = false
                                     },
                                     {
                                         "Param_GPU_g3/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu3 = false
+                                        () => presets[AppSettings.Preset].Gpu3 = false
                                     },
                                     {
                                         "Param_GPU_g6/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu6 = false
+                                        () => presets[AppSettings.Preset].Gpu6 = false
                                     },
                                     {
                                         "Param_GPU_g5/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu5 = false
+                                        () => presets[AppSettings.Preset].Gpu5 = false
                                     },
                                     {
                                         "Param_GPU_g8/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu8 = false
+                                        () => presets[AppSettings.Preset].Gpu8 = false
                                     },
                                     {
                                         "Param_GPU_g7/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu7 = false
-                                    },
-                                    {
-                                        "Param_GPU_g15/Text".GetLocalized(),
-                                        () =>
-                                        {
-                                        }
+                                        () => presets[AppSettings.Preset].Gpu7 = false
                                     },
                                     {
                                         "Param_GPU_g16/Text".GetLocalized(),
-                                        () => _preset[AppSettings.Preset].Gpu16 = false
+                                        () => presets[AppSettings.Preset].Gpu16 = false
                                     }
                                 };
-                                var loggingList = string.Empty;
-                                var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                                  @"\SakuOverclock\FixedFailingCommandsLog.txt";
-                                var sw = new StreamWriter(logFilePath, true);
-                                if (!File.Exists(logFilePath))
+                            var loggingList = string.Empty;
+                            var logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                                              @"\SakuOverclock\FixedFailingCommandsLog.txt";
+                            var sw = new StreamWriter(logFilePath, true);
+                            if (!File.Exists(logFilePath))
+                            {
+                                await sw.WriteLineAsync(@"//------Fixed Failing Commands Log------\\");
+                            }
+
+                            foreach (var currPos in stringFrom)
+                            {
+                                if (commandActions.TryGetValue(currPos, out var value))
                                 {
-                                    await sw.WriteLineAsync(@"//------Fixed Failing Commands Log------\\");
+                                    value.Invoke(); // Выполнение действия
+                                    await sw.WriteLineAsync("\n" + currPos);
+                                    loggingList += (loggingList == string.Empty ? "" : "\n") + currPos;
                                 }
+                            }
 
-                                foreach (var currPos in stringFrom)
+                            PresetManager.SaveSettings();
+
+                            ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
+                            await Task.Delay(2000);
+                            but2.IsEnabled = true;
+                            await sw.WriteLineAsync(@"//------OK------\\");
+                            sw.Close();
+
+                            navigationService.NavigateTo(
+                                navigationService.Frame!.GetPageViewModel() is not ГлавнаяViewModel
+                                    ? typeof(ГлавнаяViewModel).FullName!
+                                    : typeof(ПресетыViewModel).FullName!);
+
+                            var butLogs = new Button
+                            {
+                                CornerRadius = new CornerRadius(15),
+                                Content = new Grid
                                 {
-                                    if (commandActions.TryGetValue(currPos, out var value))
-                                    {
-                                        value.Invoke(); // Выполнение действия
-                                        await sw.WriteLineAsync("\n" + currPos);
-                                        loggingList += (loggingList == string.Empty ? "" : "\n") + currPos;
-                                    }
-                                }
-
-                                PresetManager.SaveSettings();
-
-                                ClearAllNotification(NotificationPanelClearAllBtn, null); //Удалить все уведомления
-                                await Task.Delay(2000);
-                                but2.IsEnabled = true;
-                                await sw.WriteLineAsync(@"//------OK------\\");
-                                sw.Close();
-
-                                navigationService.NavigateTo(
-                                    navigationService.Frame!.GetPageViewModel() is not ГлавнаяViewModel
-                                        ? typeof(ГлавнаяViewModel).FullName!
-                                        : typeof(ПресетыViewModel).FullName!);
-
-                                var butLogs = new Button
-                                {
-                                    CornerRadius = new CornerRadius(15),
-                                    Content = new Grid
-                                    {
-                                        Children =
+                                    Children =
                                         {
                                             new FontIcon
                                             {
@@ -591,15 +505,15 @@ public sealed partial class ShellPage
                                                 HorizontalAlignment = HorizontalAlignment.Center
                                             }
                                         }
-                                    }
-                                };
-                                var butSavedLogs = new Button
+                                }
+                            };
+                            var butSavedLogs = new Button
+                            {
+                                Margin = new Thickness(0, 20, 0, 0),
+                                CornerRadius = new CornerRadius(15),
+                                Content = new Grid
                                 {
-                                    Margin = new Thickness(0, 20, 0, 0),
-                                    CornerRadius = new CornerRadius(15),
-                                    Content = new Grid
-                                    {
-                                        Children =
+                                    Children =
                                         {
                                             new FontIcon
                                             {
@@ -613,26 +527,26 @@ public sealed partial class ShellPage
                                                 HorizontalAlignment = HorizontalAlignment.Center
                                             }
                                         }
-                                    }
-                                };
-                                butSavedLogs.Click += (_, _) =>
+                                }
+                            };
+                            butSavedLogs.Click += (_, _) =>
+                            {
+                                if (File.Exists(logFilePath))
                                 {
-                                    if (File.Exists(logFilePath))
-                                    {
-                                        var filePath = Path.GetFullPath(logFilePath);
-                                        Process.Start("explorer.exe", $"/select,\"{filePath}\"");
-                                    }
-                                };
-                                butLogs.Click += (_, _) =>
+                                    var filePath = Path.GetFullPath(logFilePath);
+                                    Process.Start("explorer.exe", $"/select,\"{filePath}\"");
+                                }
+                            };
+                            butLogs.Click += (_, _) =>
+                            {
+                                App.MainWindow.DispatcherQueue.TryEnqueue(() =>
                                 {
-                                    App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+                                    var flyout1 = new Flyout
                                     {
-                                        var flyout1 = new Flyout
+                                        Content = new StackPanel
                                         {
-                                            Content = new StackPanel
-                                            {
-                                                Orientation = Orientation.Vertical,
-                                                Children =
+                                            Orientation = Orientation.Vertical,
+                                            Children =
                                                 {
                                                     new ScrollViewer
                                                     {
@@ -659,19 +573,19 @@ public sealed partial class ShellPage
                                                     },
                                                     butSavedLogs
                                                 }
-                                            }
-                                        };
-                                        flyout1.ShowAt(butLogs);
-                                    });
-                                };
-                                MandarinAddNotification("Shell_Notify_ErrorsDisabled".GetLocalized(),
-                                    "Shell_Notify_ErrorsDisabledDesc".GetLocalized(),
-                                    InfoBarSeverity.Success,
-                                    true,
-                                    new Grid
+                                        }
+                                    };
+                                    flyout1.ShowAt(butLogs);
+                                });
+                            };
+                            MandarinAddNotification("Shell_Notify_ErrorsDisabled".GetLocalized(),
+                                "Shell_Notify_ErrorsDisabledDesc".GetLocalized(),
+                                InfoBarSeverity.Success,
+                                true,
+                                new Grid
+                                {
+                                    Children =
                                     {
-                                        Children =
-                                        {
                                             new StackPanel
                                             {
                                                 Orientation = Orientation.Horizontal,
@@ -680,13 +594,13 @@ public sealed partial class ShellPage
                                                     butLogs
                                                 }
                                             }
-                                        }
-                                    });
-                            }
-                        };
-                        subcontent = new Grid
-                        {
-                            Children =
+                                    }
+                                });
+                        }
+                    };
+                    subcontent = new Grid
+                    {
+                        Children =
                             {
                                 new StackPanel
                                 {
@@ -698,25 +612,20 @@ public sealed partial class ShellPage
                                     }
                                 }
                             }
-                        };
-                    }
-
-                    notify1.Msg = notify1.Msg.Replace("DELETEUNAVAILABLE", "");
+                    };
                 }
 
-                MandarinAddNotification(notify1.Title, notify1.Msg, notify1.Type, Notify.IsClosable, subcontent);
-
-                if (index > 8) // Если 9 уведомлений - очистить для оптимизации производительности
-                {
-                    ClearAllNotification(NotificationPanelClearAllBtn, null); // Удалить все уведомления
-                    return;
-                }
-
-                index++;
+                notify.Msg = notify.Msg.Replace("DELETEUNAVAILABLE", "");
             }
 
-            _compareList = NotificationsService.Notifies.Count;
-        }));
+            MandarinAddNotification(notify.Title, notify.Msg, notify.Type, Notify.IsClosable, subcontent);
+
+            if (NotificationContainer.Children.Count > 8) // Если 9 уведомлений - очистить
+            {
+                ClearAllNotification(NotificationPanelClearAllBtn, null); // Удалить все уведомления
+                return;
+            }
+        });
         return Task.CompletedTask;
     }
 
@@ -757,22 +666,14 @@ public sealed partial class ShellPage
 
     #endregion
 
-    #endregion
-
     #region Themes
 
     /// <summary>
     ///     Инициализирует активную тему приложения
     /// </summary>
-    private async Task UpdateThemes()
+    private void UpdateThemes()
     {
-        if (AppSettings.ThemeType < 0)
-        {
-            AppSettings.ThemeType = 0;
-            AppSettings.SaveSettings();
-        }
-
-        var themeApplyResult = await _themeSelectorService.UpdateAppliedTheme(AppSettings.ThemeType);
+        var themeApplyResult = _themeSelectorService.UpdateAppliedTheme(AppSettings.ThemeType);
 
         ThemeBackground.ImageSource = themeApplyResult.BackgroundImageSource;
         ThemeOpacity.Opacity = themeApplyResult.ThemeOpacity;
@@ -804,7 +705,7 @@ public sealed partial class ShellPage
 
     private void TitleIcon_PointerEntered(object? sender, PointerRoutedEventArgs? e)
     {
-        if (!NavigationViewControl.IsPaneOpen && !_fixedTitleBar)
+        if (!NavigationViewControl.IsPaneOpen && (!AppSettings.FixedTitleBar || sender == null))
         {
             //показать
             var curMargin = Icon.Margin;
@@ -817,7 +718,7 @@ public sealed partial class ShellPage
     private void TitleIcon_PointerExited(object sender, PointerRoutedEventArgs e)
     {
         //скрыть
-        if (!NavigationViewControl.IsPaneOpen && !_fixedTitleBar)
+        if (!NavigationViewControl.IsPaneOpen && !AppSettings.FixedTitleBar)
         {
             var curMargin = Icon.Margin;
             curMargin.Left = 3;
@@ -828,8 +729,7 @@ public sealed partial class ShellPage
 
     private void Icon_Click(object sender, RoutedEventArgs e)
     {
-        _fixedTitleBar = !_fixedTitleBar;
-        AppSettings.FixedTitleBar = _fixedTitleBar;
+        AppSettings.FixedTitleBar = !AppSettings.FixedTitleBar;
         AppSettings.SaveSettings();
     }
 
@@ -880,101 +780,14 @@ public sealed partial class ShellPage
 
     private void NavigationViewControl_PaneClosed(NavigationView sender, object args)
     {
-        if (!NavigationViewControl.IsPaneOpen && !_fixedTitleBar)
+        if (!NavigationViewControl.IsPaneOpen)
         {
             var curMargin = Icon.Margin;
             curMargin.Left = 3;
             Icon.Margin = curMargin;
-            ToggleTitleIcon(true);
+            ToggleTitleIcon(!AppSettings.FixedTitleBar);
             IconColumn.Width = new GridLength(120, GridUnitType.Pixel);
         }
-    }
-
-    /// <summary>
-    ///     Устанавливает интерактивные области в TitleBar окна, меняет состояние лого
-    /// </summary>
-    private void SetRegionsForCustomTitleBar()
-    {
-        if (_isTitleBarInitialized)
-        {
-            return;
-        }
-
-        if (AppSettings.FixedTitleBar)
-        {
-            TitleIcon_PointerEntered(null, null);
-            _fixedTitleBar = true;
-        }
-
-        var scaleAdjustment = AppTitleBar.XamlRoot.RasterizationScale;
-
-        try
-        {
-            const int titleIconActualWidth = 120;
-            const int titleIconActualHeight = 48;
-            const int RingerNotificationGridActualSize = 32;
-            const int RingerNotificationPositionX = 956;
-            const int RingerNotificationPositionY = 9;
-
-            var rightInset = MAppWindow.TitleBar.RightInset;
-            var leftInset = MAppWindow.TitleBar.LeftInset;
-            if (rightInset < 0)
-            {
-                rightInset = 138;
-            }
-            if (leftInset < 0)
-            {
-                leftInset = 0;
-            }
-
-            RightPaddingColumn.Width = new GridLength(rightInset / scaleAdjustment);
-            LeftPaddingColumn.Width = new GridLength(leftInset / scaleAdjustment);
-
-            var transform = TitleIcon.TransformToVisual(null);
-
-            var bounds = new Rect()
-            {
-                Height = titleIconActualHeight,
-                Width = titleIconActualWidth,
-                X = titleIconActualHeight,
-                Y = 0
-            };
-
-            var searchBoxRect = GetRect(bounds, scaleAdjustment);
-
-            transform = RingerNotificationGrid.TransformToVisual(null);
-
-            bounds = new Rect() 
-            {
-                Height = RingerNotificationGridActualSize,
-                Width = RingerNotificationGridActualSize,
-                X = RingerNotificationPositionX,
-                Y = RingerNotificationPositionY
-            };
-            
-            var ringerNotifRect = GetRect(bounds, scaleAdjustment);
-
-            var rectArray = new[] { searchBoxRect, ringerNotifRect };
-
-            var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(MAppWindow.Id);
-            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
-        }
-        catch (Exception ex)
-        {
-            LogHelper.LogError(ex);
-        }
-
-        _isTitleBarInitialized = true;
-    }
-
-    private static RectInt32 GetRect(Rect bounds, double scale)
-    {
-        return new RectInt32(
-            (int)Math.Round(bounds.X * scale),
-            (int)Math.Round(bounds.Y * scale),
-            (int)Math.Round(bounds.Width * scale),
-            (int)Math.Round(bounds.Height * scale)
-        );
     }
 
     #endregion

@@ -9,9 +9,9 @@ public class Zen5PstateStrategy : IPstateStrategy
 {
     private readonly ICpuService _cpuService;
 
-    private const uint MSR_PSTATE_BASE = 0xC0010064;
-    private const uint MSR_HWCR = 0xC0010015;
-    private const uint HWCR_TSC_FREQ_SEL = 0x200000;
+    private const uint MsrPstateBase = 0xC0010064;
+    private const uint MsrHwcr = 0xC0010015;
+    private const uint HwcrTscFreqSel = 0x200000;
 
     public bool IsSupportedFamily
     {
@@ -22,7 +22,7 @@ public class Zen5PstateStrategy : IPstateStrategy
         ICpuService cpuService)
     {
         _cpuService = cpuService;
-        IsSupportedFamily = _cpuService.Family > CpuFamily.FAMILY_19H;
+        IsSupportedFamily = _cpuService.Family > CpuFamily.Family19H;
     }
 
     public PstateOperationResult ReadPstate(int stateNumber)
@@ -35,7 +35,7 @@ public class Zen5PstateStrategy : IPstateStrategy
         try
         {
             uint eax = 0, edx = 0;
-            var msr = MSR_PSTATE_BASE + (uint)stateNumber;
+            var msr = MsrPstateBase + (uint)stateNumber;
 
             if (!_cpuService.ReadMsr(msr, ref eax, ref edx))
             {
@@ -76,14 +76,14 @@ public class Zen5PstateStrategy : IPstateStrategy
 
             // Zen 5: Voltage(uV) = 5000 * (Vid + 49), Vid = 0..511
             // Vid = Voltage(uV) / 5000 - 49
-            var voltageUV = parameters.VoltageMillivolts * 1000.0;
-            var vid = (uint)Math.Round(voltageUV / 5000.0 - 49.0);
+            var voltageUv = parameters.VoltageMillivolts * 1000.0;
+            var vid = (uint)Math.Round(voltageUv / 5000.0 - 49.0);
             vid = Math.Clamp(vid, 0u, 511u);
 
             var vidLow = vid & 0xFF;
             var vidHigh = (vid >> 8) & 0x1;
 
-            var eax = BuildZen5EAX(fid, vidLow, current.IddValue, current.IddDiv);
+            var eax = BuildZen5Eax(fid, vidLow, current.IddValue, current.IddDiv);
 
             // EDX: bit 1 (в младших 32 битах EDX) = VidHigh, bit 31 = PstateEn
             var edx = vidHigh << 1;
@@ -177,8 +177,8 @@ public class Zen5PstateStrategy : IPstateStrategy
         var frequencyMHz = 5.0 * fid;
 
         // Voltage = 5000 * (Vid + 49) uV
-        var voltageUV = 5000.0 * (vid + 49);
-        var voltageMillivolts = voltageUV / 1000.0;
+        var voltageUv = 5000.0 * (vid + 49);
+        var voltageMillivolts = voltageUv / 1000.0;
 
         return new PstateData
         {
@@ -194,7 +194,7 @@ public class Zen5PstateStrategy : IPstateStrategy
         };
     }
 
-    private static uint BuildZen5EAX(uint fid, uint vidLow, uint iddValue, uint iddDiv)
+    private static uint BuildZen5Eax(uint fid, uint vidLow, uint iddValue, uint iddDiv)
     {
         return (fid & 0xFFF) |
                ((vidLow & 0xFF) << 14) |
@@ -207,14 +207,14 @@ public class Zen5PstateStrategy : IPstateStrategy
         try
         {
             uint eax = 0, edx = 0;
-            if (!_cpuService.ReadMsr(MSR_HWCR, ref eax, ref edx))
+            if (!_cpuService.ReadMsr(MsrHwcr, ref eax, ref edx))
             {
                 LogHelper.LogError("Failed to read HWCR MSR");
                 return false;
             }
 
-            eax |= HWCR_TSC_FREQ_SEL;
-            return _cpuService.WriteMsr(MSR_HWCR, eax, edx);
+            eax |= HwcrTscFreqSel;
+            return _cpuService.WriteMsr(MsrHwcr, eax, edx);
         }
         catch (Exception ex)
         {
@@ -225,7 +225,7 @@ public class Zen5PstateStrategy : IPstateStrategy
 
     private bool WritePstateToAllNodes(int stateNumber, uint eax, uint edx)
     {
-        var msr = MSR_PSTATE_BASE + (uint)stateNumber;
+        var msr = MsrPstateBase + (uint)stateNumber;
 
         if (NumaUtil.HighestNumaNode > 0)
         {

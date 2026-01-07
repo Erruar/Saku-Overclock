@@ -143,14 +143,9 @@ internal static class LogHelper
             await LogError(error);
             if (error != string.Empty)
             {
-                NotificationsService.Notifies ??= [];
-                NotificationsService.Notifies.Add(new Notify
-                {
-                    Title = "TraceIt_Error".GetLocalized(),
-                    Msg = error,
-                    Type = InfoBarSeverity.Error
-                });
-                NotificationsService.SaveNotificationsSettings();
+                NotificationsService.ShowNotification("TraceIt_Error".GetLocalized(),
+                    error,
+                    InfoBarSeverity.Error);
             }
         }); 
         return Task.CompletedTask;
@@ -159,22 +154,7 @@ internal static class LogHelper
     public static Task TraceIt_TraceError(Exception exception)
     {
         var error = exception.ToString();
-        _ = Task.Run(async () => 
-        {
-            await LogError(error);
-            if (error != string.Empty)
-            {
-                NotificationsService.Notifies ??= [];
-                NotificationsService.Notifies.Add(new Notify
-                {
-                    Title = "TraceIt_Error".GetLocalized(),
-                    Msg = error,
-                    Type = InfoBarSeverity.Error
-                });
-                NotificationsService.SaveNotificationsSettings();
-            }
-        }); 
-        return Task.CompletedTask;
+        return TraceIt_TraceError(error);
     }
 
     public static Task Log(string message) => LogToFile($"[DEBUG] {message}", "Logs");

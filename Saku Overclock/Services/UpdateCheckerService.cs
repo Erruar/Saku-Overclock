@@ -203,14 +203,9 @@ public class UpdateCheckerService(
     /// </summary>
     private void NotifyUpdate()
     {
-        notificationsService.Notifies ??= [];
-        notificationsService.Notifies.Add(new Notify
-        {
-            Title = "UPDATE_REQUIRED",
-            Msg = "DEBUG MESSAGE",
-            Type = InfoBarSeverity.Informational
-        });
-        notificationsService.SaveNotificationsSettings();
+        notificationsService.ShowNotification("UPDATE_REQUIRED",
+            "DEBUG MESSAGE",
+            InfoBarSeverity.Informational);
     }
 
     /// <summary>

@@ -23,13 +23,14 @@ namespace Saku_Overclock.Views;
 public sealed partial class ГлавнаяPage
 {
     private readonly IBackgroundDataUpdater _dataUpdater = App.GetService<IBackgroundDataUpdater>(); // Обновление данных сенсоров системы
+    private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>(); // Сервис горячих клавиш
 
     private static readonly IAppSettingsService
         AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
 
     private static readonly IApplyerService Applyer = App.GetService<IApplyerService>(); // Применения пресетов
     private static readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>(); // Пресеты
-    private readonly ICpuService Cpu = App.GetService<ICpuService>(); // Ядро приложения
+    private readonly ICpuService _cpu = App.GetService<ICpuService>(); // Ядро приложения
 
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
@@ -81,10 +82,58 @@ public sealed partial class ГлавнаяPage
             _dataUpdater.DataUpdated += OnDataUpdated;
         }
 
+        _hotkeysService.PresetChanged += PresetChanged;
+
         Unloaded += ГлавнаяPage_Unloaded;
         Loaded += ГлавнаяPage_Loaded;
 
         App.MainWindow.WindowStateChanged += OnVisibilityChanged;
+    }
+
+    private void PresetChanged(object? sender, PresetManagerService.PresetId e)
+    {
+        var toggleButtons = VisualTreeHelper.FindVisualChildren<ToggleButton>(PresetPivot);
+        _userSwitchPreset = true;
+        var uncheckedThickness = new Thickness(1);
+        var checkedThickness = new Thickness(2);
+        if (e.PresetKey == "Custom")
+        {
+            _selectedIndex = e.PresetIndex;
+            foreach (var button in toggleButtons)
+            {
+                if (button.Tag is int index && index == _selectedIndex)
+                {
+                    button.IsChecked = true;
+                    button.BorderThickness = checkedThickness;
+                    button.BorderBrush = CheckedBrush;
+                }
+                else
+                {
+                    button.IsChecked = false;
+                    button.BorderThickness = uncheckedThickness;
+                    button.BorderBrush = UncheckedBrush;
+                }
+            }
+        }
+        else
+        {
+            foreach (var button in toggleButtons)
+            {
+                if (button.Tag is string premadeTag && premadeTag == "Preset_" + e.PresetKey)
+                {
+                    button.IsChecked = true;
+                    button.BorderThickness = checkedThickness;
+                    button.BorderBrush = CheckedBrush;
+                }
+                else
+                {
+                    button.IsChecked = false;
+                    button.BorderThickness = uncheckedThickness;
+                    button.BorderBrush = UncheckedBrush;
+                }
+            }
+        }
+        _userSwitchPreset = false;
     }
 
     #region Page Initialization
@@ -116,13 +165,13 @@ public sealed partial class ГлавнаяPage
                 config.AddDefaultTheme(requestedTheme: theme);
             });
 
-            if (!Cpu.IsAvailable)
+            if (!_cpu.IsAvailable)
             {
                 return;
             }
 
-            InfoCpuName.Text = Cpu.CpuName;
-            InfoCpuCores.Text = Cpu.Cores + "C/" +
+            InfoCpuName.Text = _cpu.CpuName;
+            InfoCpuCores.Text = _cpu.Cores + "C/" +
                                  Environment.ProcessorCount + "T";
         }
         catch (Exception ex)
@@ -147,6 +196,8 @@ public sealed partial class ГлавнаяPage
         {
             _dataUpdater.DataUpdated -= OnDataUpdated;
         }
+
+        _hotkeysService.PresetChanged -= PresetChanged;
 
         App.MainWindow.WindowStateChanged -= OnVisibilityChanged;
 
@@ -785,15 +836,11 @@ public sealed partial class ГлавнаяPage
                             ApplyTeach.IsOpen = false;
                         }
 
-                        NotificationsService.Notifies ??= [];
-                        NotificationsService.Notifies.Add(new Notify
-                        {
-                            Title = ApplyTeach.Title,
-                            Msg = ApplyTeach.Subtitle +
+                        NotificationsService.ShowNotification(ApplyTeach.Title,
+                            ApplyTeach.Subtitle +
                                   (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
-                            Type = infoSet
-                        });
-                        NotificationsService.SaveNotificationsSettings();
+                            infoSet,
+                            true);
                     }
                 }
             }
@@ -898,9 +945,9 @@ public sealed partial class ГлавнаяPage
                 MainAdditionalInfo3Desc.Text = "BIOS:";
                 try
                 {
-                    if (Cpu.IsAvailable)
+                    if (_cpu.IsAvailable)
                     {
-                        var motherBoardInfo = Cpu.MotherBoardInfo;
+                        var motherBoardInfo = _cpu.MotherBoardInfo;
                         MainAdditionalInfo1Name.Text = motherBoardInfo.MotherBoardName;
                         MainAdditionalInfo2Name.Text = motherBoardInfo.MotherBoardVendor;
                         MainAdditionalInfo3Name.Text = motherBoardInfo.BiosVersion;
@@ -927,10 +974,10 @@ public sealed partial class ГлавнаяPage
                 MainAdditionalInfo3Desc.Text = "SMT:";
                 try
                 {
-                    if (Cpu.IsAvailable)
+                    if (_cpu.IsAvailable)
                     {
-                        MainAdditionalInfo2Name.Text = Cpu.Cores.ToString();
-                        MainAdditionalInfo3Name.Text = Cpu.Smt.ToString()
+                        MainAdditionalInfo2Name.Text = _cpu.Cores.ToString();
+                        MainAdditionalInfo3Name.Text = _cpu.Smt.ToString()
                             .Replace("True", "Cooler_Service_Enabled/Content".GetLocalized())
                             .Replace("False",
                                 "Cooler_Service_Disabled/Content"

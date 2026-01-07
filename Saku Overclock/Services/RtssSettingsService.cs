@@ -24,7 +24,6 @@ public class RtssSettingsService : IRtssSettingsService
     public List<RtssElementsClass> RtssElements
     {
         get;
-        set;
     } =
     [
         new()

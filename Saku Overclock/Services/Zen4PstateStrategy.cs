@@ -9,9 +9,9 @@ public class Zen4PstateStrategy : IPstateStrategy
 {
     private readonly ICpuService _cpuService;
 
-    private const uint MSR_PSTATE_BASE = 0xC0010064;
-    private const uint MSR_HWCR = 0xC0010015;
-    private const uint HWCR_TSC_FREQ_SEL = 0x200000; // Bit 21
+    private const uint MsrPstateBase = 0xC0010064;
+    private const uint MsrHwcr = 0xC0010015;
+    private const uint HwcrTscFreqSel = 0x200000; // Bit 21
 
     public bool IsSupportedFamily
     {
@@ -22,7 +22,7 @@ public class Zen4PstateStrategy : IPstateStrategy
         ICpuService cpuService)
     {
         _cpuService = cpuService;
-        IsSupportedFamily =  _cpuService.Family is > CpuFamily.FAMILY_16H and < CpuFamily.FAMILY_1AH;
+        IsSupportedFamily =  _cpuService.Family is > CpuFamily.Family16H and < CpuFamily.Family1Ah;
     }
 
     public PstateOperationResult ReadPstate(int stateNumber)
@@ -35,7 +35,7 @@ public class Zen4PstateStrategy : IPstateStrategy
         try
         {
             uint eax = 0, edx = 0;
-            var msr = MSR_PSTATE_BASE + (uint)stateNumber;
+            var msr = MsrPstateBase + (uint)stateNumber;
 
             if (!_cpuService.ReadMsr(msr, ref eax, ref edx))
             {
@@ -77,7 +77,7 @@ public class Zen4PstateStrategy : IPstateStrategy
             var vid = CalculateVidFromVoltage(parameters.VoltageMillivolts);
 
             // Формируем EAX
-            var eax = BuildZen4EAX(
+            var eax = BuildZen4Eax(
                 fid: fid,
                 did: did,
                 vid: vid,
@@ -180,7 +180,7 @@ public class Zen4PstateStrategy : IPstateStrategy
         };
     }
 
-    private static uint BuildZen4EAX(uint fid, uint did, uint vid, uint iddValue, uint iddDiv)
+    private static uint BuildZen4Eax(uint fid, uint did, uint vid, uint iddValue, uint iddDiv)
     {
         return ((iddDiv & 0xFF) << 30) |
                ((iddValue & 0xFF) << 22) |
@@ -218,14 +218,14 @@ public class Zen4PstateStrategy : IPstateStrategy
         try
         {
             uint eax = 0, edx = 0;
-            if (!_cpuService.ReadMsr(MSR_HWCR, ref eax, ref edx))
+            if (!_cpuService.ReadMsr(MsrHwcr, ref eax, ref edx))
             {
                 LogHelper.LogError("Failed to read HWCR MSR");
                 return false;
             }
 
-            eax |= HWCR_TSC_FREQ_SEL; // Bit 21
-            return _cpuService.WriteMsr(MSR_HWCR, eax, edx);
+            eax |= HwcrTscFreqSel; // Bit 21
+            return _cpuService.WriteMsr(MsrHwcr, eax, edx);
         }
         catch (Exception ex)
         {
@@ -236,7 +236,7 @@ public class Zen4PstateStrategy : IPstateStrategy
 
     private bool WritePstateToAllNodes(int stateNumber, uint eax, uint edx)
     {
-        var msr = MSR_PSTATE_BASE + (uint)stateNumber;
+        var msr = MsrPstateBase + (uint)stateNumber;
 
         if (NumaUtil.HighestNumaNode > 0)
         {

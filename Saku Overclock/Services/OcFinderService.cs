@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using Saku_Overclock.Contracts.Services;
-using Saku_Overclock.Helpers;
 using static Saku_Overclock.Services.CpuService;
 
 namespace Saku_Overclock.Services;
@@ -240,6 +239,51 @@ public class SafetyLimits
     } = 900;
 }
 
+public class PresetRecommendations
+{
+    public string[] TemperatureLimits
+    {
+        get;
+        init;
+    } = ["80C","90C"];
+    
+    public string[] StapmLimits
+    {
+        get;
+        init;
+    } = ["30W", "35W"];
+
+    public string[] FastLimits
+    {
+        get;
+        init;
+    } = ["35W","45W"];
+    
+    public string[] SlowLimits
+    {
+        get;
+        init;
+    } = ["32W", "37W"];
+    
+    public string[] SlowTime
+    {
+        get;
+        init;
+    } = ["5s", "3s"];
+    
+    public string[] StapmTime
+    {
+        get;
+        init;
+    } = ["300s","700s"];
+    
+    public string[] ProchotRampTime
+    {
+        get;
+        init;
+    } = ["20ms","20ms"];
+}
+
 public class OcFinderService : IOcFinderService
 {
     private static readonly ISendSmuCommandService SendSmuCommand = App.GetService<ISendSmuCommandService>();
@@ -259,7 +303,7 @@ public class OcFinderService : IOcFinderService
 
     private readonly SafetyLimits _safetyLimits = new();
     private readonly Dictionary<string, ArchitecturePreset> _architecturePresets = [];
-    private readonly CodenameGeneration _codenameGeneration = CodenameGeneration.Unknown;
+    private readonly CodenameGeneration _codenameGeneration;
 
     // Кэш для метрик
     private readonly Dictionary<string, PresetMetrics> _metricsCache = [];
@@ -336,7 +380,7 @@ public class OcFinderService : IOcFinderService
             _validatedCpuPower = 45d;
         }
 
-        if (_codenameGeneration == CodenameGeneration.FP4)
+        if (_codenameGeneration == CodenameGeneration.Fp4)
         {
             _validatedCpuPower = 35d;
         }
@@ -463,15 +507,15 @@ public class OcFinderService : IOcFinderService
     {
         return _codenameGeneration switch
         {
-            CodenameGeneration.FP4 => _architecturePresets["PreZen"],
-            CodenameGeneration.FP5 => _architecturePresets["Zen"],
-            CodenameGeneration.FF3 => _architecturePresets["Zen2"],
-            CodenameGeneration.FP6 => _architecturePresets["Zen3"],
-            CodenameGeneration.FP7 => _architecturePresets["Zen4"],
-            CodenameGeneration.FP8 => _architecturePresets["Zen5"],
-            CodenameGeneration.AM4_V1 => _architecturePresets["Zen2"],
-            CodenameGeneration.AM4_V2 => _architecturePresets["Zen3"],
-            CodenameGeneration.AM5 => _architecturePresets["Zen"],
+            CodenameGeneration.Fp4 => _architecturePresets["PreZen"],
+            CodenameGeneration.Fp5 => _architecturePresets["Zen"],
+            CodenameGeneration.Ff3 => _architecturePresets["Zen2"],
+            CodenameGeneration.Fp6 => _architecturePresets["Zen3"],
+            CodenameGeneration.Fp7 => _architecturePresets["Zen4"],
+            CodenameGeneration.Fp8 => _architecturePresets["Zen5"],
+            CodenameGeneration.Am4V1 => _architecturePresets["Zen2"],
+            CodenameGeneration.Am4V2 => _architecturePresets["Zen3"],
+            CodenameGeneration.Am5 => _architecturePresets["Zen"],
             _ => _architecturePresets["Zen3"]
         };
     }
@@ -570,7 +614,7 @@ public class OcFinderService : IOcFinderService
     {
         PresetType.Min => 60,
         PresetType.Eco => 70,
-        PresetType.Balance => 90,
+        PresetType.Balance => 82,
         PresetType.Speed => 90,
         PresetType.Max => 100,
         _ => 80
@@ -605,12 +649,12 @@ public class OcFinderService : IOcFinderService
 
         sb.Append($"--fast-limit={(int)(fast * 1000)} ");
 
-        if (_codenameGeneration != CodenameGeneration.FP4)
+        if (_codenameGeneration != CodenameGeneration.Fp4)
         {
             sb.Append($"--tctl-temp={tempLimit} ");
 
             // DragonRange is laptop CPU but with Desktop silicon and has Stapm limit
-            if ((_codenameGeneration == CodenameGeneration.AM5 && Cpu.IsDragonRange) || _codenameGeneration != CodenameGeneration.AM5)
+            if ((_codenameGeneration == CodenameGeneration.Am5 && Cpu.IsDragonRange) || _codenameGeneration != CodenameGeneration.Am5)
             {
                 sb.Append($"--stapm-limit={(int)(stapm * 1000)} ");
             }
@@ -655,7 +699,7 @@ public class OcFinderService : IOcFinderService
         return sb.ToString().Trim();
     }
 
-    public string CurveOptimizerGenerateStringHelper(int value) =>
+    private static string CurveOptimizerGenerateStringHelper(int value) =>
         value >= 0
             ? $" --set-coall={value} "
             : $" --set-coall={0x100000U - (uint)-value} ";
@@ -872,12 +916,10 @@ public class OcFinderService : IOcFinderService
         return options;
     }
 
-    public void ClearMetricsCache() => _metricsCache.Clear();
-
     private static int FromValueToUpper(double value, int upper) => (int)Math.Ceiling(value / upper) * upper;
 
     // Legacy методы для совместимости
-    public void GeneratePremadePresets()
+    private void GeneratePremadePresets()
     {
         if (_isInitialized && !ForceTraining)
         {
@@ -888,7 +930,7 @@ public class OcFinderService : IOcFinderService
         _isInitialized = true;
     }
 
-    public (int[], int[], int[], int[], int[], int[], int[]) GetPerformanceRecommendationData()
+    public PresetRecommendations GetPerformanceRecommendationData()
     {
         if (!_isInitialized)
         {
@@ -899,48 +941,114 @@ public class OcFinderService : IOcFinderService
         var balancePreset = CreatePreset(PresetType.Balance, OptimizationLevel.Standard);
         var performancePreset = CreatePreset(PresetType.Speed, OptimizationLevel.Standard);
 
-        // Извлекаем значения из строк команд (упрощенно)
+        // Извлекаем значения из строк команд
         var balanceValues = ParseCommandString(balancePreset.CommandString);
         var performanceValues = ParseCommandString(performancePreset.CommandString);
 
-        return new ValueTuple<int[], int[], int[], int[], int[], int[], int[]>(
-            [balanceValues.TempLimit, performanceValues.TempLimit],
-            [balanceValues.StapmLimit, performanceValues.StapmLimit],
-            [balanceValues.FastLimit, performanceValues.FastLimit],
-            [balanceValues.SlowLimit, performanceValues.SlowLimit],
-            [balanceValues.SlowTime, performanceValues.SlowTime],
-            [balanceValues.StapmTime, performanceValues.StapmTime],
-            [balanceValues.ProchotRamp, performanceValues.ProchotRamp]
-        );
+        return new PresetRecommendations
+        {
+            TemperatureLimits = [balanceValues.TemperatureLimits[0], performanceValues.TemperatureLimits[0]],
+            StapmLimits = [balanceValues.StapmLimits[0], performanceValues.StapmLimits[0]],
+            FastLimits = [balanceValues.FastLimits[0], performanceValues.FastLimits[0]],
+            SlowLimits = [balanceValues.SlowLimits[0], performanceValues.SlowLimits[0]],
+            SlowTime = [balanceValues.SlowTime[0], performanceValues.SlowTime[0]],
+            StapmTime = [balanceValues.StapmTime[0], performanceValues.StapmTime[0]],
+            ProchotRampTime = [balanceValues.ProchotRampTime[0], performanceValues.ProchotRampTime[0]]
+        };
     }
-
-    private static (int TempLimit, int StapmLimit, int FastLimit, int SlowLimit, int SlowTime, int StapmTime, int
-        ProchotRamp) ParseCommandString(string commandString)
+    
+    private static PresetRecommendations ParseCommandString(string commandString)
     {
-        // Простой парсер для извлечения значений из строки команд
-        var parts = commandString.Split(' ');
-        var values = new Dictionary<string, int>();
+        var result = new PresetRecommendations();
+
+        var parts = commandString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        var map = new Dictionary<string, string>();
 
         foreach (var part in parts)
         {
-            if (part.Contains('='))
+            if (!part.StartsWith("--") || !part.Contains('='))
             {
-                var keyValue = part.Split('=');
-                if (keyValue.Length >= 2 && int.TryParse(keyValue[1], out var value))
-                {
-                    values[keyValue[0]] = value;
-                }
+                continue;
             }
+
+            var split = part.Split('=', 2);
+            map[split[0]] = split[1];
+        }
+        
+        // Температуры
+        if (map.TryGetValue("--tctl-temp", out var temp))
+        {
+            temp = CutComposite(temp);
+            if (temp.Length >= 4)
+            {
+                temp = CutLast3(temp);
+            }
+
+            Fill(result.TemperatureLimits, temp, "C");
         }
 
-        return (
-            values.GetValueOrDefault("--tctl-temp", 80),
-            values.GetValueOrDefault("--stapm-limit", 35000) / 1000,
-            values.GetValueOrDefault("--fast-limit", 35000) / 1000,
-            values.GetValueOrDefault("--slow-limit", 35000) / 1000,
-            values.GetValueOrDefault("--slow-time", 5),
-            values.GetValueOrDefault("--stapm-time", 300),
-            values.GetValueOrDefault("--prochot-deassertion-ramp", 20)
-        );
+        // Лимиты мощности
+        if (map.TryGetValue("--fast-limit", out var fast))
+        {
+            fast = CutLast3(CutComposite(fast));
+            Fill(result.FastLimits, fast, "W");
+            if (!commandString.Contains("--slow-limit"))
+            {
+                Fill(result.SlowLimits, fast, "W"); // slow = fast
+            }
+            
+            if (!commandString.Contains("--stapm-limit"))
+            {
+                Fill(result.StapmLimits, fast, "W"); // stapm = fast
+            }
+        }
+    
+        if (map.TryGetValue("--stapm-limit", out var stapm))
+        {
+            stapm = CutLast3(CutComposite(stapm));
+            Fill(result.StapmLimits, stapm, "W");
+        }
+
+        if (map.TryGetValue("--slow-limit", out var slow))
+        {
+            slow = CutLast3(CutComposite(slow));
+            Fill(result.SlowLimits, slow, "W");
+        }
+
+        // Тайминги Vrm
+        if (map.TryGetValue("--slow-time", out var slowTime))
+        {
+            Fill(result.SlowTime, slowTime, "s");
+        }
+
+        if (map.TryGetValue("--stapm-time", out var stapmTime))
+        {
+            Fill(result.StapmTime, stapmTime, "s");
+        }
+
+        if (map.TryGetValue("--prochot-deassertion-ramp", out var prochot))
+        {
+            Fill(result.ProchotRampTime, prochot, "ms");
+        }
+
+        return result;
+    }
+    
+    private static string CutComposite(string value)
+    {
+        var commaIndex = value.IndexOf(',');
+        return commaIndex >= 0 ? value[..commaIndex] : value;
+    }
+
+    private static string CutLast3(string value)
+    {
+        return value.Length > 3 ? value[..^3] : value;
+    }
+
+    private static void Fill(string[] target, string value, string suffix)
+    {
+        target[0] = value + suffix;
+        target[1] = value + suffix;
     }
 }

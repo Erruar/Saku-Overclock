@@ -4,47 +4,43 @@ using Saku_Overclock.Models;
 using static Saku_Overclock.Services.CpuService;
 
 namespace Saku_Overclock.Services;
+
 public class PstateService(
     ICpuService cpuService,
     IEnumerable<IPstateStrategy> strategies) : IPstateService
 {
-    private readonly ICpuService _cpuService = cpuService;
-    private readonly IEnumerable<IPstateStrategy> _strategies = strategies;
     private IPstateStrategy? _currentStrategy;
 
     public CpuFamily CurrentFamily
     {
-        get; private set;
+        get;
+        private set;
     }
+
     public bool IsSupported => _currentStrategy != null;
 
-    public bool Initialize()
+    public void Initialize()
     {
         try
         {
-            CurrentFamily = _cpuService.Family;
+            CurrentFamily = cpuService.Family;
 
-            if (CurrentFamily < CpuFamily.FAMILY_17H)
+            if (CurrentFamily < CpuFamily.Family17H)
             {
                 LogHelper.LogError($"P-States not supported for CPU family {CurrentFamily}");
-                return false;
             }
 
             // Определяем стратегию на основе семейства CPU
-            _currentStrategy = _strategies.FirstOrDefault(s => s.IsSupportedFamily == true);
+            _currentStrategy = strategies.FirstOrDefault(s => s.IsSupportedFamily);
 
             if (_currentStrategy == null)
             {
                 LogHelper.LogError($"No P-State strategy found for CPU family {CurrentFamily}");
-                return false;
             }
-
-            return true;
         }
         catch (Exception ex)
         {
             LogHelper.TraceIt_TraceError(ex);
-            return false;
         }
     }
 
@@ -60,6 +56,7 @@ public class PstateService(
         {
             results.Add(_currentStrategy.ReadPstate(i));
         }
+
         return results;
     }
 

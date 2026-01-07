@@ -23,9 +23,9 @@ public class SendSmuCommandService : ISendSmuCommandService
     private static uint _mp1Cmd;
 
     // Профили и команды
-    private readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
-    private readonly IPresetManagerService PresetManager = App.GetService<IPresetManagerService>();
-    private readonly ICpuService Cpu = App.GetService<ICpuService>();
+    private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>();
+    private readonly IPresetManagerService _presetManager = App.GetService<IPresetManagerService>();
+    private readonly ICpuService _cpu = App.GetService<ICpuService>();
     private Smusettings _smuSettings = new();
 
     // Связанное с железом
@@ -81,7 +81,7 @@ public class SendSmuCommandService : ISendSmuCommandService
 
     public SendSmuCommandService()
     {
-        _safeReapply = AppSettings.ReapplySafeOverclock;
+        _safeReapply = _appSettings.ReapplySafeOverclock;
         SetCodeNameGeneration();
     }
 
@@ -174,7 +174,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             return;
         }
 
-        if (AppSettings.Preset != -1 && PresetManager.Presets[AppSettings.Preset].SmuEnabled == false)
+        if (_appSettings.Preset != -1 && _presetManager.Presets[_appSettings.Preset].SmuEnabled == false)
         {
             return;
         }
@@ -235,8 +235,8 @@ public class SendSmuCommandService : ISendSmuCommandService
                 }
             }    
 
-            var status = Cpu.SendSmuCommand(quickMailbox, command, ref args);
-            if (status != SmuStatus.OK)
+            var status = _cpu.SendSmuCommand(quickMailbox, command, ref args);
+            if (status != SmuStatus.Ok)
             {
                 LogHelper.LogError(StatusCommandParser(status));
             }
@@ -429,7 +429,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                         var status = await ApplyThisWithStatus(command.Item2 ? 1 : 0, command.Item3, args, command.Item1);
                         lastStatus = status; // Сохраняем последний статус
 
-                        if (status == SmuStatus.OK)
+                        if (status == SmuStatus.Ok)
                         {
                             // Команда применилась успешно - выходим из цикла
                             commandAppliedSuccessfully = true;
@@ -450,7 +450,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                 // Если ни одна команда не применилась успешно - логируем это
                 if (!commandAppliedSuccessfully)
                 {
-                    if (lastStatus != null && lastStatus != SmuStatus.OK)
+                    if (lastStatus != null && lastStatus != SmuStatus.Ok)
                     {
                         // Показываем последний полученный статус ошибки
                         ПараметрыPage.ApplyInfo += "\n" + "Param_SMU_Command".GetLocalized() + "\"" +
@@ -513,9 +513,9 @@ public class SendSmuCommandService : ISendSmuCommandService
 
             if (!_saveInfo && commandName == "stopcpu-freqto-ramstate")
             {
-                return SmuStatus.OK; // Пропускаем команду но возвращаем OK, для безопасности системы
+                return SmuStatus.Ok; // Пропускаем команду но возвращаем OK, для безопасности системы
             }
-            if (Cpu.IsRaven &&
+            if (_cpu.IsRaven &&
                 (commandName == "min-gfxclk" || commandName == "max-gfxclk"
                 || commandName == "min-socclk-frequency" || commandName == "max-socclk-frequency"
                 || commandName == "min-fclk-frequency" || commandName == "max-fclk-frequency"
@@ -535,12 +535,12 @@ public class SendSmuCommandService : ISendSmuCommandService
 
                 RavenSetSubsystemMinMaxFrequency(args, mode, commandName.Contains("max"));
 
-                return SmuStatus.OK; // Команда применена, другим путём
+                return SmuStatus.Ok; // Команда применена, другим путём
             }
 
             var newMailbox = new SmuAddressSet(addrMsg, addrRsp, addrArg);
 
-            var status = Cpu.SendSmuCommand(newMailbox, command, ref args);
+            var status = _cpu.SendSmuCommand(newMailbox, command, ref args);
 
             return status;
         }
@@ -573,9 +573,9 @@ public class SendSmuCommandService : ISendSmuCommandService
             _ => setMax ? 0x30u : 0x31u,
         };
 
-        var status = Cpu.SendSmuCommand(amdGpuMailbox, command, ref args);
+        var status = _cpu.SendSmuCommand(amdGpuMailbox, command, ref args);
 
-        if (status != SmuStatus.OK)
+        if (status != SmuStatus.Ok)
         {
             LogHelper.TraceIt_TraceError("[SendSmuCommand+RavenCommands]@Raven_SetGpuMinMaxFrequency_StatusNotOK: - " + status);
         }
@@ -590,10 +590,10 @@ public class SendSmuCommandService : ISendSmuCommandService
         return status switch
         {
             null => "\"" + "SMUErrorPlatformDesc".GetLocalized() + "\"",
-            SmuStatus.CMD_REJECTED_PREREQ => "\"" + "SMUErrorPrereqDesc".GetLocalized() + "\"",
-            SmuStatus.CMD_REJECTED_BUSY => "\"" + "SMUErrorBusyDesc".GetLocalized() + "\"",
-            SmuStatus.FAILED => "\"" + "SMUErrorFailedDesc".GetLocalized() + "\"",
-            SmuStatus.UNKNOWN_CMD => "\"" + "SMUErrorUnknownDesc".GetLocalized() + "\"",
+            SmuStatus.CmdRejectedPrereq => "\"" + "SMUErrorPrereqDesc".GetLocalized() + "\"",
+            SmuStatus.CmdRejectedBusy => "\"" + "SMUErrorBusyDesc".GetLocalized() + "\"",
+            SmuStatus.Failed => "\"" + "SMUErrorFailedDesc".GetLocalized() + "\"",
+            SmuStatus.UnknownCmd => "\"" + "SMUErrorUnknownDesc".GetLocalized() + "\"",
             _ => "\"" + "SMUErrorStatusDesc".GetLocalized() + "\""
         };
     }
@@ -603,9 +603,9 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// </summary>
     private string CommandNameParser(string commandName)
     {
-        var isFixZeroFourGhz = AppSettings.Preset >= 0 &&
-           AppSettings.Preset < PresetManager.Presets.Length &&
-           PresetManager.Presets[AppSettings.Preset].Gpu16;
+        var isFixZeroFourGhz = _appSettings.Preset >= 0 &&
+           _appSettings.Preset < _presetManager.Presets.Length &&
+           _presetManager.Presets[_appSettings.Preset].Gpu16;
 
         static string L(string name) 
         {
@@ -734,7 +734,7 @@ public class SendSmuCommandService : ISendSmuCommandService
                         args[0] = j;
                         try
                         {
-                            var status = Cpu.SendSmuCommand(newMailbox, command, ref args);
+                            var status = _cpu.SendSmuCommand(newMailbox, command, ref args);
                             if (log)
                             {
                                 sw.WriteLine(
@@ -790,9 +790,9 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// </summary>
     private bool IsOlderGeneration()
     {
-        _isOlderGeneration ??= _codenameGeneration is CodenameGeneration.FP4
-            or CodenameGeneration.AM4_V1 or CodenameGeneration.AM4_V2
-            or CodenameGeneration.FP5 or CodenameGeneration.FP6;
+        _isOlderGeneration ??= _codenameGeneration is CodenameGeneration.Fp4
+            or CodenameGeneration.Am4V1 or CodenameGeneration.Am4V2
+            or CodenameGeneration.Fp5 or CodenameGeneration.Fp6;
 
         return _isOlderGeneration == true; // Использовать кешированное значение вместо постоянного прогона функций
     }
@@ -802,34 +802,34 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// </summary>
     private void SetCodeNameGeneration()
     {
-        _codenameGeneration = Cpu.GetCodenameGeneration();
+        _codenameGeneration = _cpu.GetCodenameGeneration();
         switch (_codenameGeneration)
         {
-            case CodenameGeneration.FP4: 
+            case CodenameGeneration.Fp4: 
                 Socket_FP4(); 
                 break;
-            case CodenameGeneration.FP5: 
+            case CodenameGeneration.Fp5: 
                 Socket_FP5(); 
                 break;
-            case CodenameGeneration.FP6: 
+            case CodenameGeneration.Fp6: 
                 Socket_FP6(); 
                 break;
-            case CodenameGeneration.FF3: 
+            case CodenameGeneration.Ff3: 
                 Socket_FF3(); 
                 break;
-            case CodenameGeneration.FP7: 
+            case CodenameGeneration.Fp7: 
                 Socket_FT6_FP7_FP8_FP11(false); 
                 break;
-            case CodenameGeneration.FP8: 
+            case CodenameGeneration.Fp8: 
                 Socket_FT6_FP7_FP8_FP11(true); 
                 break;
-            case CodenameGeneration.AM4_V1: 
+            case CodenameGeneration.Am4V1: 
                 Socket_AM4_V1(); 
                 break;
-            case CodenameGeneration.AM4_V2: 
+            case CodenameGeneration.Am4V2: 
                 Socket_AM4_V2(); 
                 break;
-            case CodenameGeneration.AM5: 
+            case CodenameGeneration.Am5: 
                 Socket_AM5_V1(); 
                 break;
             default: 
@@ -858,13 +858,9 @@ public class SendSmuCommandService : ISendSmuCommandService
     /// <summary>
     ///  Возвращает значение безопасного применения команд или назначает его
     /// </summary>
-    public bool GetSetSafeReapply(bool? value = null)
+    public bool SafeReapply
     {
-        if (value != null)
-        {
-            _safeReapply = value == true;
-        }
-        return _safeReapply;
+        set => _safeReapply = value;
     }
 
     /// <summary>
@@ -926,9 +922,9 @@ public class SendSmuCommandService : ISendSmuCommandService
             var newMailbox = new SmuAddressSet(addrMsg, addrRsp, addrArg);
 
             var args = MakeCmdArgs();
-            var status = Cpu.SendSmuCommand(newMailbox, actualCommand, ref args);
+            var status = _cpu.SendSmuCommand(newMailbox, actualCommand, ref args);
 
-            if (status != SmuStatus.OK)
+            if (status != SmuStatus.Ok)
             {
                 LogHelper.TraceIt_TraceError("OcFinderCpuPowerIsNotDetected".GetLocalized());
                 LogHelper.LogError(status.ToString());
@@ -987,9 +983,9 @@ public class SendSmuCommandService : ISendSmuCommandService
             var newMailbox = new SmuAddressSet(addrMsg, addrRsp, addrArg);
 
             var args = MakeCmdArgs();
-            var status = Cpu.SendSmuCommand(newMailbox, actualCommand, ref args);
+            var status = _cpu.SendSmuCommand(newMailbox, actualCommand, ref args);
 
-            if (status != SmuStatus.OK)
+            if (status != SmuStatus.Ok)
             {
                 LogHelper.LogError("OcFinderUnableToGetUndervoltingStatus".GetLocalized() + status);
             }
@@ -1002,7 +998,7 @@ public class SendSmuCommandService : ISendSmuCommandService
             return TrySetUndervolt();
         }
 
-        if (_codenameGeneration == CodenameGeneration.FP5)
+        if (_codenameGeneration == CodenameGeneration.Fp5)
         {
             return true;
         }
@@ -1054,9 +1050,9 @@ public class SendSmuCommandService : ISendSmuCommandService
             var newMailbox = new SmuAddressSet(addrMsg, addrRsp, addrArg);
 
             var args = MakeCmdArgs();
-            var status = Cpu.SendSmuCommand(newMailbox, actualCommand, ref args);
+            var status = _cpu.SendSmuCommand(newMailbox, actualCommand, ref args);
 
-            if (status != SmuStatus.OK)
+            if (status != SmuStatus.Ok)
             {
                 LogHelper.TraceIt_TraceError("OcFinderUnableToSetUndervoltingStatus".GetLocalized());
                 LogHelper.LogError(status.ToString());

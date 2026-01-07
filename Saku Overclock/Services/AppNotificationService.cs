@@ -1,7 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Web;
-
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppNotifications;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Core.Contracts.Services;
@@ -18,7 +18,9 @@ public class AppNotificationService : IAppNotificationService
     private const string FolderPath = "Saku Overclock/Notifications";
     private const string FileName = "AppNotifications.json";
 
-    private readonly string _localApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    private readonly string _localApplicationData =
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
     private readonly string _applicationDataFolder;
 
     public AppNotificationService(IFileService fileService, INavigationService navigationService)
@@ -30,7 +32,8 @@ public class AppNotificationService : IAppNotificationService
 
     public List<Notify>? Notifies
     {
-        get; set;
+        get;
+        set;
     } = [];
 
     ~AppNotificationService()
@@ -62,61 +65,57 @@ public class AppNotificationService : IAppNotificationService
             });
             Task.Delay(2000).ContinueWith(_ =>
             {
-                App.MainWindow.ShowMessageDialogAsync("Здесь вы сможете настроить ваш процессор как вам надо", "Настройки применены!");
+                App.MainWindow.ShowMessageDialogAsync("Здесь вы сможете настроить ваш процессор как вам надо",
+                    "Настройки применены!");
             });
-
         }
+
         if (ParseArguments(args.Argument)["action"] == "Message")
         {
             App.MainWindow.DispatcherQueue.TryEnqueue(() =>
             {
-                Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/issues/new/") { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo("https://github.com/Erruar/Saku-Overclock/issues/new/")
+                    { UseShellExecute = true });
             });
         }
     }
-    
-    /// <summary>
-    /// Отобразить уведомление в системных уведомлениях от имени приложения
-    /// </summary>
-    /// <param name="payload">Контент уведомления</param>
-    public bool Show(string payload)
+
+    public void Show(string payload)
     {
         var appNotification = new AppNotification(payload);
 
         AppNotificationManager.Default.Show(appNotification);
-
-        return appNotification.Id != 0;
+        //return appNotification.Id != 0;
     }
 
-    /// <summary>
-    /// Парсит XML реализацию уведомления
-    /// </summary>
-    public NameValueCollection ParseArguments(string arguments)
+    private NameValueCollection ParseArguments(string arguments) => HttpUtility.ParseQueryString(arguments);
+
+    private void Unregister() => AppNotificationManager.Default.Unregister();
+
+    private void LoadNotificationsSettings() =>
+        Notifies = _fileService.Read<List<Notify>>(_applicationDataFolder, FileName);
+
+    public void SaveNotificationsSettings() => _fileService.Save(_applicationDataFolder, FileName, Notifies);
+
+    public void ShowNotification(string title, string message, InfoBarSeverity severity, bool save = false)
     {
-        return HttpUtility.ParseQueryString(arguments);
+        var notify = 
+        new Notify
+        {
+            Title = title,
+            Msg = message,
+            Type = severity
+        };
+
+        if (save) 
+        {
+            Notifies ??= [];
+            Notifies.Add(notify);
+            SaveNotificationsSettings();
+        }
+
+        NotificationAdded?.Invoke(this, notify);
     }
 
-    /// <summary>
-    /// Выгружает модуль отправки уведомлений
-    /// </summary>
-    public void Unregister()
-    {
-        AppNotificationManager.Default.Unregister();
-    }
-
-    /// <summary>
-    /// Загрузка настроек уведомлений приложения
-    /// </summary>
-    public void LoadNotificationsSettings()
-    {
-        Notifies = _fileService.Read<List<Notify>>(_applicationDataFolder, FileName); 
-    }
-
-    /// <summary>
-    /// Сохранение настроек уведомлений приложения
-    /// </summary>
-    public void SaveNotificationsSettings()
-    {
-        _fileService.Save(_applicationDataFolder, FileName, Notifies);
-    }
+    public event EventHandler<Notify>? NotificationAdded;
 }

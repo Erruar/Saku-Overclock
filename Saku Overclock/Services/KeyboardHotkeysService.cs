@@ -1,7 +1,7 @@
-﻿using Windows.System;
-using Saku_Overclock.Contracts.Services;
+﻿using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.Wrappers;
+using Windows.System;
 using WinRT.Interop;
 using WinUIEx.Messaging;
 using static Saku_Overclock.Services.PresetManagerService;
@@ -89,11 +89,15 @@ public partial class KeyboardHotkeysService(IAppSettingsService settingsService,
         switch (e.Message.WParam)
         {
             case HkCustom:
-                HandlePreset(applyerService.SwitchCustomPreset());
+                var customPreset = applyerService.SwitchCustomPreset();
+                HandlePreset(customPreset);
+                PresetChanged?.Invoke(this, customPreset);
                 break;
 
             case HkPremade:
-                HandlePreset(applyerService.SwitchPremadePreset());
+                var premadePreset = applyerService.SwitchPremadePreset();
+                HandlePreset(premadePreset);
+                PresetChanged?.Invoke(this, premadePreset);
                 break;
 
             case HkRtss:
@@ -128,6 +132,8 @@ public partial class KeyboardHotkeysService(IAppSettingsService settingsService,
             }
         });
     }
+
+    public event EventHandler<PresetId>? PresetChanged;
 
     private void ToggleRtss()
     {

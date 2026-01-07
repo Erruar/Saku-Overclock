@@ -33,7 +33,7 @@ public sealed partial class КулерPage
     private static bool _unavailableFlag;
     private static int _setFanIndex = -1;
     private readonly DispatcherTimer? _fanUpdateTimer;
-    private readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>();
+    private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>();
     private readonly IBackgroundDataUpdater _dataUpdater = App.GetService<IBackgroundDataUpdater>();
     private bool _selectedModeAsus;
 
@@ -45,7 +45,7 @@ public sealed partial class КулерPage
         FanInit();
         UpdatePageFanRpms();
 
-        AppSettings.SaveSettings();
+        _appSettings.SaveSettings();
 
         Loaded += Page_Loaded;
         Unloaded += Page_Unloaded;
@@ -115,7 +115,7 @@ public sealed partial class КулерPage
     {
         try
         {
-            if (AppSettings.IsNbfcModeEnabled)
+            if (_appSettings.IsNbfcModeEnabled)
             {
                 AsusOptionsButton.IsChecked = true;
                 _selectedModeAsus = true;
@@ -146,7 +146,7 @@ public sealed partial class КулерPage
                     Tag = xmlFile
                 };
                 ConfigSelectorComboBox.Items.Add(item);
-                if (AppSettings.NbfcConfigXmlName == fileName)
+                if (_appSettings.NbfcConfigXmlName == fileName)
                 {
                     ConfigSelectorComboBox.SelectedItem = item;
                 }
@@ -167,48 +167,48 @@ public sealed partial class КулерPage
 
             if (_selectedModeAsus)
             {
-                if (AppSettings.AsusCoolerServiceType == 2 || ServiceCombo.SelectedIndex == 2)
+                if (_appSettings.AsusCoolerServiceType == 2 || ServiceCombo.SelectedIndex == 2)
                 {
-                    CoolerFan1Manual.Value = AppSettings.AsusModeFan1UserFanSpeedRpm;
-                    CoolerFan2Manual.Value = AppSettings.AsusModeFan2UserFanSpeedRpm;
+                    CoolerFan1Manual.Value = _appSettings.AsusModeFan1UserFanSpeedRpm;
+                    CoolerFan2Manual.Value = _appSettings.AsusModeFan2UserFanSpeedRpm;
 
                     NbfcFanSetSpeed();
                     if (CoolerFan1Manual.Value > 100)
                     {
                         UpdatePageFanRpms();
-                        AppSettings.AsusModeFan1UserFanSpeedRpm = 110.0;
+                        _appSettings.AsusModeFan1UserFanSpeedRpm = 110.0;
                     }
                     else
                     {
                         CpuFanRpm.Text = CoolerFan1Manual.Value.ToString(CultureInfo.InvariantCulture) + "%"; 
                     }
 
-                    AppSettings.SaveSettings();
+                    _appSettings.SaveSettings();
                 }
             }
             else
             {
-                if (AppSettings.NbfcServiceType == 2 || ServiceCombo.SelectedIndex == 2)
+                if (_appSettings.NbfcServiceType == 2 || ServiceCombo.SelectedIndex == 2)
                 {
-                    CoolerFan1Manual.Value = AppSettings.NbfcFan1UserFanSpeedRpm;
-                    CoolerFan2Manual.Value = AppSettings.NbfcFan2UserFanSpeedRpm;
+                    CoolerFan1Manual.Value = _appSettings.NbfcFan1UserFanSpeedRpm;
+                    CoolerFan2Manual.Value = _appSettings.NbfcFan2UserFanSpeedRpm;
 
                     NbfcFanSetSpeed();
                     if (CoolerFan1Manual.Value > 100)
                     {
                         UpdatePageFanRpms();
-                        AppSettings.NbfcFan1UserFanSpeedRpm = 110.0;
+                        _appSettings.NbfcFan1UserFanSpeedRpm = 110.0;
                     }
                     else
                     {
                         CpuFanRpm.Text = CoolerFan1Manual.Value.ToString(CultureInfo.InvariantCulture) + "%";
                     }
 
-                    AppSettings.SaveSettings();
+                    _appSettings.SaveSettings();
                 }
             }
 
-            if (AppSettings.AsusCoolerServiceType == 1 || AppSettings.NbfcServiceType == 1 || ServiceCombo.SelectedIndex == 1)
+            if (_appSettings.AsusCoolerServiceType == 1 || _appSettings.NbfcServiceType == 1 || ServiceCombo.SelectedIndex == 1)
             {
                 UpdatePageFanRpms();
             }
@@ -445,23 +445,23 @@ public sealed partial class КулерPage
             }
             try
             {
-                ServiceCombo.SelectedIndex = AppSettings.NbfcServiceType;
+                ServiceCombo.SelectedIndex = _appSettings.NbfcServiceType;
 
                 CurveCombo.SelectedIndex =
-                    AppSettings is { NbfcFan1UserFanSpeedRpm: > 100, NbfcFan2UserFanSpeedRpm: > 100 } ? 0 :
-                    AppSettings is { NbfcFan1UserFanSpeedRpm: <= 100, NbfcFan2UserFanSpeedRpm: > 100 } ? 1 :
-                    AppSettings is { NbfcFan1UserFanSpeedRpm: > 100, NbfcFan2UserFanSpeedRpm: <= 100 } ? 2 :
-                    AppSettings is { NbfcFan1UserFanSpeedRpm: <= 100, NbfcFan2UserFanSpeedRpm: <= 100 } &&
-                    AppSettings.NbfcFan1UserFanSpeedRpm - AppSettings.NbfcFan2UserFanSpeedRpm > 0 ? 3 :
-                    AppSettings is { NbfcFan1UserFanSpeedRpm: <= 100, NbfcFan2UserFanSpeedRpm: <= 100 } &&
-                    AppSettings.NbfcFan1UserFanSpeedRpm - AppSettings.NbfcFan2UserFanSpeedRpm == 0 ? 4 : 0;
+                    _appSettings is { NbfcFan1UserFanSpeedRpm: > 100, NbfcFan2UserFanSpeedRpm: > 100 } ? 0 :
+                    _appSettings is { NbfcFan1UserFanSpeedRpm: <= 100, NbfcFan2UserFanSpeedRpm: > 100 } ? 1 :
+                    _appSettings is { NbfcFan1UserFanSpeedRpm: > 100, NbfcFan2UserFanSpeedRpm: <= 100 } ? 2 :
+                    _appSettings is { NbfcFan1UserFanSpeedRpm: <= 100, NbfcFan2UserFanSpeedRpm: <= 100 } &&
+                    _appSettings.NbfcFan1UserFanSpeedRpm - _appSettings.NbfcFan2UserFanSpeedRpm > 0 ? 3 :
+                    _appSettings is { NbfcFan1UserFanSpeedRpm: <= 100, NbfcFan2UserFanSpeedRpm: <= 100 } &&
+                    _appSettings.NbfcFan1UserFanSpeedRpm - _appSettings.NbfcFan2UserFanSpeedRpm == 0 ? 4 : 0;
 
-                CoolerFan1Manual.Value = AppSettings.NbfcFan1UserFanSpeedRpm;
-                CoolerFan2Manual.Value = AppSettings.NbfcFan2UserFanSpeedRpm;
+                CoolerFan1Manual.Value = _appSettings.NbfcFan1UserFanSpeedRpm;
+                CoolerFan2Manual.Value = _appSettings.NbfcFan2UserFanSpeedRpm;
 
                 for (var i = 0; i < 2; i++)
                 {
-                    var doubleFan = i == 0 ? AppSettings.NbfcFan1UserFanSpeedRpm : AppSettings.NbfcFan2UserFanSpeedRpm;
+                    var doubleFan = i == 0 ? _appSettings.NbfcFan1UserFanSpeedRpm : _appSettings.NbfcFan2UserFanSpeedRpm;
                     switch (doubleFan)
                     {
                         case 90d:
@@ -602,8 +602,8 @@ public sealed partial class КулерPage
             }
 
             await Task.Delay(200);
-            AppSettings.NbfcConfigXmlName = (string)((ComboBoxItem)ConfigSelectorComboBox.SelectedItem).Content;
-            AppSettings.SaveSettings();
+            _appSettings.NbfcConfigXmlName = (string)((ComboBoxItem)ConfigSelectorComboBox.SelectedItem).Content;
+            _appSettings.SaveSettings();
             NbfcApplyFanConfig();
         }
         catch (Exception exception)
@@ -634,7 +634,7 @@ public sealed partial class КулерPage
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.FileName = "nbfc/nbfc.exe";
-        p.StartInfo.Arguments = AppSettings.NbfcServiceType switch
+        p.StartInfo.Arguments = _appSettings.NbfcServiceType switch
         {
             0 => " stop",
             2 => " start --enabled",
@@ -658,9 +658,9 @@ public sealed partial class КулерPage
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.FileName = "nbfc/nbfc.exe";
 
-            if (AppSettings.NbfcServiceType == 2)
+            if (_appSettings.NbfcServiceType == 2)
             {
-                var speedValue = fanNumber == 0 ? AppSettings.NbfcFan1UserFanSpeedRpm : AppSettings.NbfcFan2UserFanSpeedRpm;
+                var speedValue = fanNumber == 0 ? _appSettings.NbfcFan1UserFanSpeedRpm : _appSettings.NbfcFan2UserFanSpeedRpm;
 
                 p.StartInfo.Arguments = speedValue < 100 ? $" set --fan {fanNumber} --speed {speedValue}" : $" set --fan {fanNumber} --auto";
             }
@@ -684,7 +684,7 @@ public sealed partial class КулерPage
         var p = new Process();
         p.StartInfo.UseShellExecute = false;
         p.StartInfo.FileName = "nbfc/nbfc.exe";
-        p.StartInfo.Arguments = " config --apply " + quote + AppSettings.NbfcConfigXmlName + quote;
+        p.StartInfo.Arguments = " config --apply " + quote + _appSettings.NbfcConfigXmlName + quote;
         p.StartInfo.CreateNoWindow = true;
         p.StartInfo.RedirectStandardError = true;
         p.StartInfo.RedirectStandardInput = true;
@@ -731,9 +731,9 @@ public sealed partial class КулерPage
         var fan1Task = GetFanSpeedAsync(0);
         var fan2Task = GetFanSpeedAsync(1);
 
-        AppSettings.NbfcAnswerSpeedFan1 = await fan1Task;
-        AppSettings.NbfcAnswerSpeedFan2 = await fan2Task;
-        AppSettings.SaveSettings();
+        _appSettings.NbfcAnswerSpeedFan1 = await fan1Task;
+        _appSettings.NbfcAnswerSpeedFan2 = await fan2Task;
+        _appSettings.SaveSettings();
 
         UpdatePageFanRpms();
         return;
@@ -780,8 +780,8 @@ public sealed partial class КулерPage
 
     private void UpdatePageFanRpms()
     {
-        CpuFanRpm.Text = AppSettings.NbfcAnswerSpeedFan1 == string.Empty ? "N/A" : SpeedHelper(AppSettings.NbfcAnswerSpeedFan1) + "%";
-        GpuFanRpm.Text = AppSettings.NbfcAnswerSpeedFan2 == string.Empty ? "N/A" : SpeedHelper(AppSettings.NbfcAnswerSpeedFan2) + "%";
+        CpuFanRpm.Text = _appSettings.NbfcAnswerSpeedFan1 == string.Empty ? "N/A" : SpeedHelper(_appSettings.NbfcAnswerSpeedFan1) + "%";
+        GpuFanRpm.Text = _appSettings.NbfcAnswerSpeedFan2 == string.Empty ? "N/A" : SpeedHelper(_appSettings.NbfcAnswerSpeedFan2) + "%";
     }
 
     private async Task SuggestClickAsync()
@@ -925,15 +925,15 @@ public sealed partial class КулерPage
         if (!_isPageLoaded) { return; }
         if (_selectedModeAsus)
         {
-            AppSettings.AsusCoolerServiceType = ServiceCombo.SelectedIndex;
+            _appSettings.AsusCoolerServiceType = ServiceCombo.SelectedIndex;
 
         }
         else
         {
-            AppSettings.NbfcServiceType = ServiceCombo.SelectedIndex;
+            _appSettings.NbfcServiceType = ServiceCombo.SelectedIndex;
         }
 
-        AppSettings.SaveSettings();
+        _appSettings.SaveSettings();
 
         NbfcEnable();
 
@@ -968,11 +968,11 @@ public sealed partial class КулерPage
 
                     if (CurveCombo.SelectedIndex == 4)
                     {
-                        AppSettings.NbfcFan2UserFanSpeedRpm = CoolerFan1Manual.Value;
+                        _appSettings.NbfcFan2UserFanSpeedRpm = CoolerFan1Manual.Value;
                         CoolerFan2Manual.Value = CoolerFan1Manual.Value;
                     }
-                    AppSettings.NbfcFan1UserFanSpeedRpm = CoolerFan1Manual.Value;
-                    AppSettings.SaveSettings();
+                    _appSettings.NbfcFan1UserFanSpeedRpm = CoolerFan1Manual.Value;
+                    _appSettings.SaveSettings();
                     NbfcFanSetSpeed();
                     break;
                 case "NbfcTurboToggle":
@@ -983,12 +983,12 @@ public sealed partial class КулерPage
 
                     if (CurveCombo.SelectedIndex == 4)
                     {
-                        AppSettings.NbfcFan2UserFanSpeedRpm = 90d;
+                        _appSettings.NbfcFan2UserFanSpeedRpm = 90d;
                         CoolerFan2Manual.Value = 90d;
                     }
-                    AppSettings.NbfcFan1UserFanSpeedRpm = 90d;
+                    _appSettings.NbfcFan1UserFanSpeedRpm = 90d;
                     CoolerFan1Manual.Value = 90d;
-                    AppSettings.SaveSettings();
+                    _appSettings.SaveSettings();
                     NbfcFanSetSpeed();
                     break;
                 case "NbfcBalanceToggle":
@@ -1000,11 +1000,11 @@ public sealed partial class КулерPage
                     if (CurveCombo.SelectedIndex == 4)
                     {
                         CoolerFan2Manual.Value = 57d;
-                        AppSettings.NbfcFan2UserFanSpeedRpm = 57d;
+                        _appSettings.NbfcFan2UserFanSpeedRpm = 57d;
                     }
                     CoolerFan1Manual.Value = 57d;
-                    AppSettings.NbfcFan1UserFanSpeedRpm = 57d;
-                    AppSettings.SaveSettings();
+                    _appSettings.NbfcFan1UserFanSpeedRpm = 57d;
+                    _appSettings.SaveSettings();
                     NbfcFanSetSpeed();
                     break;
                 case "NbfcQuietToggle":
@@ -1016,11 +1016,11 @@ public sealed partial class КулерPage
                     if (CurveCombo.SelectedIndex == 4)
                     {
                         CoolerFan2Manual.Value = 37d;
-                        AppSettings.NbfcFan2UserFanSpeedRpm = 37d;
+                        _appSettings.NbfcFan2UserFanSpeedRpm = 37d;
                     }
                     CoolerFan1Manual.Value = 37d;
-                    AppSettings.NbfcFan1UserFanSpeedRpm = 37d;
-                    AppSettings.SaveSettings();
+                    _appSettings.NbfcFan1UserFanSpeedRpm = 37d;
+                    _appSettings.SaveSettings();
                     NbfcFanSetSpeed();
                     break;
 
@@ -1030,8 +1030,8 @@ public sealed partial class КулерPage
                     NbfcQuietToggle1.IsChecked = false;
                     CoolerFan2SliderGrid.Visibility = Visibility.Visible;
 
-                    AppSettings.NbfcFan2UserFanSpeedRpm = CoolerFan2Manual.Value;
-                    AppSettings.SaveSettings();
+                    _appSettings.NbfcFan2UserFanSpeedRpm = CoolerFan2Manual.Value;
+                    _appSettings.SaveSettings();
                     NbfcFanSetSpeed(1);
                     break;
                 case "NbfcTurboToggle1":
@@ -1041,8 +1041,8 @@ public sealed partial class КулерPage
                     CoolerFan2SliderGrid.Visibility = Visibility.Collapsed;
 
                     CoolerFan2Manual.Value = 90d;
-                    AppSettings.NbfcFan2UserFanSpeedRpm = 90d;
-                    AppSettings.SaveSettings();
+                    _appSettings.NbfcFan2UserFanSpeedRpm = 90d;
+                    _appSettings.SaveSettings();
                     NbfcFanSetSpeed(1);
                     break;
                 case "NbfcBalanceToggle1":
@@ -1052,8 +1052,8 @@ public sealed partial class КулерPage
                     CoolerFan2SliderGrid.Visibility = Visibility.Collapsed;
 
                     CoolerFan2Manual.Value = 57d;
-                    AppSettings.NbfcFan2UserFanSpeedRpm = 57d;
-                    AppSettings.SaveSettings();
+                    _appSettings.NbfcFan2UserFanSpeedRpm = 57d;
+                    _appSettings.SaveSettings();
                     NbfcFanSetSpeed(1);
                     break;
                 case "NbfcQuietToggle1":
@@ -1063,13 +1063,13 @@ public sealed partial class КулерPage
                     CoolerFan2SliderGrid.Visibility = Visibility.Collapsed;
 
                     CoolerFan2Manual.Value = 37d;
-                    AppSettings.NbfcFan2UserFanSpeedRpm = 37d;
-                    AppSettings.SaveSettings();
+                    _appSettings.NbfcFan2UserFanSpeedRpm = 37d;
+                    _appSettings.SaveSettings();
                     NbfcFanSetSpeed(1);
                     break;
             }
 
-            AppSettings.SaveSettings();
+            _appSettings.SaveSettings();
         }
 
         if ((NbfcQuietToggle.IsChecked == false && NbfcBalanceToggle.IsChecked == false &&
@@ -1090,38 +1090,38 @@ public sealed partial class КулерPage
             case 0: // Оба авто
                 CoolerCurveFan1.Visibility = Visibility.Collapsed;
                 CoolerCurveFan2.Visibility = Visibility.Collapsed;
-                AppSettings.NbfcFan1UserFanSpeedRpm = 110;
-                AppSettings.NbfcFan2UserFanSpeedRpm = 110;
+                _appSettings.NbfcFan1UserFanSpeedRpm = 110;
+                _appSettings.NbfcFan2UserFanSpeedRpm = 110;
                 break;
             case 1: // Фиксированный только первый 
 
                 CoolerCurveFanText.Text += "Cooler_Curve_Fan1_Part".GetLocalized();
                 CoolerCurveFan1.Visibility = Visibility.Visible;
                 CoolerCurveFan2.Visibility = Visibility.Collapsed;
-                AppSettings.NbfcFan1UserFanSpeedRpm = AppSettings.NbfcFan1UserFanSpeedRpm > 100 ? 70 : AppSettings.NbfcFan1UserFanSpeedRpm;
-                AppSettings.NbfcFan2UserFanSpeedRpm = 110;
+                _appSettings.NbfcFan1UserFanSpeedRpm = _appSettings.NbfcFan1UserFanSpeedRpm > 100 ? 70 : _appSettings.NbfcFan1UserFanSpeedRpm;
+                _appSettings.NbfcFan2UserFanSpeedRpm = 110;
                 break;
             case 2: // Фиксированный только второй 
                 CoolerCurveFan1.Visibility = Visibility.Collapsed;
                 CoolerCurveFan2.Visibility = Visibility.Visible;
-                AppSettings.NbfcFan1UserFanSpeedRpm = 110;
-                AppSettings.NbfcFan2UserFanSpeedRpm = AppSettings.NbfcFan2UserFanSpeedRpm > 100 ? 70 : AppSettings.NbfcFan2UserFanSpeedRpm;
+                _appSettings.NbfcFan1UserFanSpeedRpm = 110;
+                _appSettings.NbfcFan2UserFanSpeedRpm = _appSettings.NbfcFan2UserFanSpeedRpm > 100 ? 70 : _appSettings.NbfcFan2UserFanSpeedRpm;
                 break;
             case 3: // Оба фиксированные но различные
                 CoolerCurveFanText.Text += "Cooler_Curve_Fan1_Part".GetLocalized();
                 CoolerCurveFan1.Visibility = Visibility.Visible;
                 CoolerCurveFan2.Visibility = Visibility.Visible; // Потому что оба будут управляться с одного месте, с первого блока настроек
-                AppSettings.NbfcFan1UserFanSpeedRpm = AppSettings.NbfcFan1UserFanSpeedRpm > 100 ? 70 : AppSettings.NbfcFan1UserFanSpeedRpm;
-                AppSettings.NbfcFan2UserFanSpeedRpm = AppSettings.NbfcFan2UserFanSpeedRpm > 100 ? 50 : AppSettings.NbfcFan2UserFanSpeedRpm;
+                _appSettings.NbfcFan1UserFanSpeedRpm = _appSettings.NbfcFan1UserFanSpeedRpm > 100 ? 70 : _appSettings.NbfcFan1UserFanSpeedRpm;
+                _appSettings.NbfcFan2UserFanSpeedRpm = _appSettings.NbfcFan2UserFanSpeedRpm > 100 ? 50 : _appSettings.NbfcFan2UserFanSpeedRpm;
                 break;
             case 4: // Оба фиксированные
                 CoolerCurveFan1.Visibility = Visibility.Visible;
                 CoolerCurveFan2.Visibility = Visibility.Collapsed; // Потому что оба будут управляться с одного месте, с первого блока настроек
-                AppSettings.NbfcFan1UserFanSpeedRpm = AppSettings.NbfcFan1UserFanSpeedRpm > 100 ? 70 : AppSettings.NbfcFan1UserFanSpeedRpm;
-                AppSettings.NbfcFan2UserFanSpeedRpm = AppSettings.NbfcFan2UserFanSpeedRpm > 100 ? 70 : AppSettings.NbfcFan1UserFanSpeedRpm;
+                _appSettings.NbfcFan1UserFanSpeedRpm = _appSettings.NbfcFan1UserFanSpeedRpm > 100 ? 70 : _appSettings.NbfcFan1UserFanSpeedRpm;
+                _appSettings.NbfcFan2UserFanSpeedRpm = _appSettings.NbfcFan2UserFanSpeedRpm > 100 ? 70 : _appSettings.NbfcFan1UserFanSpeedRpm;
                 break;
         }
-        AppSettings.SaveSettings();
+        _appSettings.SaveSettings();
         NbfcFanSetSpeed();
         NbfcFanSetSpeed(1);
     }
@@ -1132,16 +1132,16 @@ public sealed partial class КулерPage
         {
             NbfcOptionsButton.IsChecked = true;
             AsusOptionsButton.IsChecked = false;
-            AppSettings.IsNbfcModeEnabled = false;
-            AppSettings.SaveSettings();
+            _appSettings.IsNbfcModeEnabled = false;
+            _appSettings.SaveSettings();
             return;
         }
-        AppSettings.IsNbfcModeEnabled = !AppSettings.IsNbfcModeEnabled;
-        AppSettings.SaveSettings();
+        _appSettings.IsNbfcModeEnabled = !_appSettings.IsNbfcModeEnabled;
+        _appSettings.SaveSettings();
 
-        AsusOptionsButton.IsChecked = AppSettings.IsNbfcModeEnabled;
-        NbfcOptionsButton.IsChecked = !AppSettings.IsNbfcModeEnabled;
-        _selectedModeAsus = AppSettings.IsNbfcModeEnabled;
+        AsusOptionsButton.IsChecked = _appSettings.IsNbfcModeEnabled;
+        NbfcOptionsButton.IsChecked = !_appSettings.IsNbfcModeEnabled;
+        _selectedModeAsus = _appSettings.IsNbfcModeEnabled;
 
         CoolerConfig.Visibility = _selectedModeAsus ? Visibility.Collapsed : Visibility.Visible;
         if (NbfcUnavailable.Visibility == Visibility.Visible && _selectedModeAsus)
@@ -1193,22 +1193,22 @@ public sealed partial class КулерPage
                 {
                     if (_selectedModeAsus)
                     {
-                        AppSettings.AsusModeFan1UserFanSpeedRpm = fanValue;
+                        _appSettings.AsusModeFan1UserFanSpeedRpm = fanValue;
                     }
                     else
                     {
-                        AppSettings.NbfcFan1UserFanSpeedRpm = fanValue;
+                        _appSettings.NbfcFan1UserFanSpeedRpm = fanValue;
                     }
 
                     if (CurveCombo.SelectedIndex == 4)
                     {
                         if (_selectedModeAsus)
                         {
-                            AppSettings.AsusModeFan2UserFanSpeedRpm = fanValue;
+                            _appSettings.AsusModeFan2UserFanSpeedRpm = fanValue;
                         }
                         else
                         {
-                            AppSettings.NbfcFan2UserFanSpeedRpm = fanValue;
+                            _appSettings.NbfcFan2UserFanSpeedRpm = fanValue;
                         }
                         CoolerFan2Manual.Value = fanValue;
                     }
@@ -1217,17 +1217,17 @@ public sealed partial class КулерPage
                 {
                     if (_selectedModeAsus)
                     {
-                        AppSettings.AsusModeFan2UserFanSpeedRpm = fanValue;
+                        _appSettings.AsusModeFan2UserFanSpeedRpm = fanValue;
                     }
                     else
                     {
-                        AppSettings.NbfcFan2UserFanSpeedRpm = fanValue;
+                        _appSettings.NbfcFan2UserFanSpeedRpm = fanValue;
                     }
                 }
 
                 fanRpmTextBlock.Text = fanInvar + "%";
 
-                AppSettings.SaveSettings();
+                _appSettings.SaveSettings();
             }
 
             if (ServiceCombo.SelectedIndex == 1)

@@ -6,7 +6,7 @@ namespace Saku_Overclock.Helpers;
 public static class CredentialDialogHelper
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    private struct CREDUI_INFO
+    private struct CreduiInfo
     {
         public int cbSize;
         public IntPtr hwndParent;
@@ -18,19 +18,19 @@ public static class CredentialDialogHelper
     [Flags]
     private enum PromptForWindowsCredentialsFlags
     {
-        CREDUIWIN_GENERIC = 0x1,
-        CREDUIWIN_CHECKBOX = 0x2,
-        CREDUIWIN_AUTHPACKAGE_ONLY = 0x10,
-        CREDUIWIN_IN_CRED_ONLY = 0x20,
-        CREDUIWIN_ENUMERATE_ADMINS = 0x100,
-        CREDUIWIN_ENUMERATE_CURRENT_USER = 0x200,
-        CREDUIWIN_SECURE_PROMPT = 0x1000,
-        CREDUIWIN_PACK_32_WOW = 0x10000000,
+        CreduiwinGeneric = 0x1,
+        CreduiwinCheckbox = 0x2,
+        CreduiwinAuthpackageOnly = 0x10,
+        CreduiwinInCredOnly = 0x20,
+        CreduiwinEnumerateAdmins = 0x100,
+        CreduiwinEnumerateCurrentUser = 0x200,
+        CreduiwinSecurePrompt = 0x1000,
+        CreduiwinPack32Wow = 0x10000000,
     }
 
     [DllImport("credui.dll", CharSet = CharSet.Unicode)]
     private static extern uint CredUIPromptForWindowsCredentials(
-        ref CREDUI_INFO pUiInfo,
+        ref CreduiInfo pUiInfo,
         uint dwAuthError,
         ref uint pulAuthPackage,
         IntPtr pvInAuthBuffer,
@@ -64,7 +64,7 @@ public static class CredentialDialogHelper
     [DllImport("user32.dll")]
     private static extern IntPtr GetThreadDesktop(uint dwThreadId);
 
-    private const uint RESULT_SUCCESS = 0;
+    private const uint ResultSuccess = 0;
 
     /// <summary>
     /// Результат диалога учетных данных
@@ -110,9 +110,9 @@ public static class CredentialDialogHelper
             parentWindowHandle = GetForegroundWindow();
         }
 
-        var credui = new CREDUI_INFO
+        var credui = new CreduiInfo
         {
-            cbSize = Marshal.SizeOf<CREDUI_INFO>(),
+            cbSize = Marshal.SizeOf<CreduiInfo>(),
             hwndParent = parentWindowHandle,
             pszMessageText = message,
             pszCaptionText = caption,
@@ -124,7 +124,7 @@ public static class CredentialDialogHelper
         var outCredBuffer = IntPtr.Zero;
 
         // Используем GENERIC флаг для отображения диалога
-        var flags = PromptForWindowsCredentialsFlags.CREDUIWIN_ENUMERATE_CURRENT_USER;
+        var flags = PromptForWindowsCredentialsFlags.CreduiwinEnumerateCurrentUser;
 
         try
         {
@@ -139,7 +139,7 @@ public static class CredentialDialogHelper
                 ref save,
                 flags);
 
-            return result == RESULT_SUCCESS;
+            return result == ResultSuccess;
         }
         finally
         {

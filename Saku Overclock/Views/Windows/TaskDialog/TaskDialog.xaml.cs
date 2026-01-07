@@ -8,7 +8,7 @@ namespace Saku_Overclock.Views.Windows.TaskDialog;
 
 public sealed partial class TaskDialog : Window
 {
-    private readonly IAppNotificationService notificationService = App.GetService<IAppNotificationService>();
+    private readonly IAppNotificationService _notificationService = App.GetService<IAppNotificationService>();
     public TaskDialog()
     {
         InitializeComponent();
@@ -25,7 +25,6 @@ public sealed partial class TaskDialog : Window
         this.ToggleWindowStyle(true, WindowStyle.SysMenu);
         var hwnd = WindowNative.GetWindowHandle(this);
 
-        // ”станавливаем стиль окна как POPUP (убираем заголовок)
         WindowAttributesWrapper.SetWindowStyle(hwnd);
     }
 
@@ -34,10 +33,10 @@ public sealed partial class TaskDialog : Window
     private void AgreeButton_Click(object sender, RoutedEventArgs e)
     {
         this.Hide();
-        DriverHelper.InstallPawnIO();
+        DriverHelper.InstallPawnIo();
 
-        notificationService.Notifies = [];
-        notificationService.SaveNotificationsSettings();
+        _notificationService.Notifies = [];
+        _notificationService.SaveNotificationsSettings();
 
         Microsoft.Windows.AppLifecycle.AppInstance.Restart(string.Empty);
     }

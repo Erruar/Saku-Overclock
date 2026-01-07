@@ -5,7 +5,6 @@ using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
 using Saku_Overclock.ViewModels;
 using Windows.Foundation.Metadata;
-using Saku_Overclock.JsonContainers;
 
 namespace Saku_Overclock.Views;
 
@@ -26,14 +25,9 @@ public sealed partial class ОбучениеPage : Page
 
     public static void ShowNavbarAndControls()
     {
-        NotificationsService.Notifies ??= [];
-        NotificationsService.Notifies.Add(new Notify
-        {
-            Title = "ExitFirstLaunch",
-            Msg = "DEBUG MESSAGE",
-            Type = InfoBarSeverity.Informational
-        });
-        NotificationsService.SaveNotificationsSettings();
+        NotificationsService.ShowNotification("ExitFirstLaunch",
+            "DEBUG MESSAGE",
+            InfoBarSeverity.Informational);
         TrayMenuService.RestoreDefaultMenu();
     }
     

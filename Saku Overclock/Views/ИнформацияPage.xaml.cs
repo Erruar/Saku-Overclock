@@ -30,8 +30,8 @@ public sealed partial class ИнформацияPage
     }
 
     private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
-    private readonly ICpuService Cpu = App.GetService<ICpuService>(); // Ядро приложения
-    private readonly IPstateService Pstates = App.GetService<IPstateService>(); // Производительные состояния процессора
+    private readonly ICpuService _cpu = App.GetService<ICpuService>(); // Ядро приложения
+    private readonly IPstateService _pstates = App.GetService<IPstateService>(); // Производительные состояния процессора
     private double _busyRam; // Текущее использование ОЗУ и всего ОЗУ
     private double _totalRam;
     private bool _loaded; // Страница загружена
@@ -227,16 +227,16 @@ public sealed partial class ИнформацияPage
         try
         {
             _numberOfLogicalProcessors = Environment.ProcessorCount;
-            if (Cpu.IsAvailable)
+            if (_cpu.IsAvailable)
             {
                 if (_numberOfCores == 0 || _numberOfLogicalProcessors == 0)
                 {
-                    _numberOfCores = (int)Cpu.Cores;
+                    _numberOfCores = (int)_cpu.Cores;
                     _numberOfLogicalProcessors = Environment.ProcessorCount;
                 }
 
-                CpuCodename.Text = Cpu.CpuCodeName;
-                SmuVersion.Text = Cpu.SmuVersion;
+                CpuCodename.Text = _cpu.CpuCodeName;
+                SmuVersion.Text = _cpu.SmuVersion;
             }
             else
             {
@@ -247,14 +247,14 @@ public sealed partial class ИнформацияPage
 
             var ((name, baseClock), integratedGpuName, discreteGpuName,
                     (l1Cache, l2Cache, l3Cache), instructionsSet, cpuCaption)
-                = GetSystemInfo.GetCommonMetrics(Cpu.Avx512AvailableByCodename);
+                = GetSystemInfo.GetCommonMetrics(_cpu.Avx512AvailableByCodename);
 
             CpuBaseClock.Text = $"{baseClock} MHz";
             ProcessorName.Text = _cpuName = name.TrimEnd();
 
             CpuCores.Text = _numberOfLogicalProcessors == _numberOfCores
                 ? _numberOfCores.ToString()
-                : GetSystemInfo.GetBigLittle(Cpu.CpuName, _numberOfCores);
+                : GetSystemInfo.GetBigLittle(_cpu.CpuName, _numberOfCores);
             CpuThreads.Text = $"{_numberOfLogicalProcessors:0}";
 
             IntegratedGpuName.Text = integratedGpuName;
@@ -313,9 +313,9 @@ public sealed partial class ИнформацияPage
     {
         try
         {
-            if (Cpu.IsAvailable)
+            if (_cpu.IsAvailable)
             {
-                var memoryConfig = Cpu.GetMemoryConfig();
+                var memoryConfig = _cpu.GetMemoryConfig();
                 _cachedMemoryModules = memoryConfig.Modules;
                 _cachedMemoryType = memoryConfig.Type.ToString();
                 var (ramName, ramFrequency, producer, model, slots,
@@ -350,13 +350,13 @@ public sealed partial class ИнформацияPage
     /// </summary>
     private void ReadPowerStates()
     {
-        if (!Pstates.IsSupported)
+        if (!_pstates.IsSupported)
         {
             PstBannerButton.Visibility = Visibility.Collapsed;
             return;
         }
 
-        var pstates = Pstates.ReadAllPstates();
+        var pstates = _pstates.ReadAllPstates();
         for (var i = 0; i < 3; i++)
         {
             var textBlock = i switch

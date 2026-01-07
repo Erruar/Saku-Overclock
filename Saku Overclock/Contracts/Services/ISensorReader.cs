@@ -5,17 +5,17 @@ namespace Saku_Overclock.Contracts.Services;
 public interface ISensorReader
 {
     /// <summary>
-    /// Обновляет таблицу сенсоров из SMU
+    ///     Обновляет таблицу сенсоров устройства из Smu
     /// </summary>
     bool RefreshTable();
 
     /// <summary>
-    /// Читает значение сенсора по индексу в таблице
+    ///     Читает значение сенсора по индексу в таблице
     /// </summary>
     (bool success, double value) ReadSensorByIndex(int index);
 
     /// <summary>
-    /// Текущая версия таблицы PM
+    ///     Текущая версия таблицы сенсоров устройства
     /// </summary>
     int CurrentTableVersion
     {
@@ -23,33 +23,33 @@ public interface ISensorReader
     }
 
     /// <summary>
-    /// Читает специальные значения, которые не находятся в основной таблице
-    /// (например, MCLK, FCLK, VDDCR_SOC)
+    ///     Читает специальные значения, которые не находятся в основной таблице
+    ///     (например, MCLK, FCLK, VDDCR_SOC)
     /// </summary>
     (bool success, double value) ReadSpecialValue(SensorReader.SpecialValueType type);
 
     /// <summary>
-    /// Получает температуру процессора напрямую
+    ///     Получает температуру процессора для fallback
     /// </summary>
     (bool success, double value) GetCpuTemperature();
 
     /// <summary>
-    /// Получает множитель ядра для fallback вычислений
+    ///     Получает множитель ядра для fallback
     /// </summary>
     (bool success, double value) GetCoreMulti(int coreIndex);
 
     /// <summary>
-    /// Получает информацию о топологии процессора
+    ///     Получает информацию о количестве ядер процессора
     /// </summary>
     int GetTotalCoresTopology();
 
     /// <summary>
-    /// Получает кодовое имя процессора
+    ///     Получает кодовое имя процессора
     /// </summary>
     string GetCodeName();
 
     /// <summary>
-    /// Возвращает полную таблицу (для специальных случаев)
+    ///     Возвращает полную таблицу (для вычисления нескольких значений: частота, напряжение, температура по ядрам...)
     /// </summary>
     float[]? GetFullTable();
 }

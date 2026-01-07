@@ -1,9 +1,12 @@
-﻿using Windows.UI.ViewManagement;
-using Microsoft.UI.Dispatching;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Saku_Overclock.Contracts.Services;
 using Saku_Overclock.Helpers;
+using Windows.Foundation;
+using Windows.Graphics;
+using Windows.UI.ViewManagement;
 
 namespace Saku_Overclock.Services;
 
@@ -49,6 +52,78 @@ public class WindowStateManagerService(
         App.MainWindow.Show();
         App.MainWindow.BringToFront();
         App.MainWindow.WindowState = WindowState.Normal;
+    }
+
+    public (double, double) SetWindowTitleBarBounds(double scaleAdjustment)
+    {
+        try
+        {
+            const int titleIconActualWidth = 120;
+            const int titleIconActualHeight = 48;
+            const int ringerNotificationGridActualSize = 32;
+            const int ringerNotificationPositionX = 956;
+            const int ringerNotificationPositionY = 9;
+
+            var rightInset = App.MainWindow.AppWindow.TitleBar.RightInset;
+            var leftInset = App.MainWindow.AppWindow.TitleBar.LeftInset;
+            if (rightInset < 0)
+            {
+                rightInset = 138;
+            }
+
+            if (leftInset < 0)
+            {
+                leftInset = 0;
+            }
+
+            var bounds = new Rect
+            {
+                Height = titleIconActualHeight,
+                Width = titleIconActualWidth,
+                X = titleIconActualHeight,
+                Y = 0
+            };
+
+            var searchBoxRect = GetRect(bounds, scaleAdjustment);
+
+            bounds = new Rect
+            {
+                Height = ringerNotificationGridActualSize,
+                Width = ringerNotificationGridActualSize,
+                X = ringerNotificationPositionX,
+                Y = ringerNotificationPositionY
+            };
+
+            var ringerNotifRect = GetRect(bounds, scaleAdjustment);
+
+            var rectArray = new[] { searchBoxRect, ringerNotifRect };
+
+            var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(App.MainWindow.AppWindow.Id);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
+
+            if (rightInset < 0 || leftInset < 0)
+            {
+                throw new InvalidDataException("TitleBar tnset value incorrect");
+            }
+
+            return (rightInset / scaleAdjustment, 
+                    leftInset / scaleAdjustment);
+        }
+        catch (Exception ex)
+        {
+            LogHelper.LogError(ex);
+        }
+
+        return (130, 0);
+    }
+    private static RectInt32 GetRect(Rect bounds, double scale)
+    {
+        return new RectInt32(
+            (int)Math.Round(bounds.X * scale),
+            (int)Math.Round(bounds.Y * scale),
+            (int)Math.Round(bounds.Width * scale),
+            (int)Math.Round(bounds.Height * scale)
+        );
     }
 
     // this handles updating the caption button colors correctly when Windows system theme is changed

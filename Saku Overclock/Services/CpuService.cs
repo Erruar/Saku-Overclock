@@ -102,22 +102,22 @@ public class CpuService : ICpuService
 
     public enum SmuStatus : byte
     {
-        OK = 1,
-        FAILED = byte.MaxValue,
-        UNKNOWN_CMD = 254,
-        CMD_REJECTED_PREREQ = 253,
-        CMD_REJECTED_BUSY = 252,
-        TIMEOUT_MUTEX_LOCK = 48,
-        TIMEOUT_MAILBOX_READY = 49,
-        TIMEOUT_MAILBOX_MSG_WRITE = 50,
-        PCI_FAILED = 51
+        Ok = 1,
+        Failed = byte.MaxValue,
+        UnknownCmd = 254,
+        CmdRejectedPrereq = 253,
+        CmdRejectedBusy = 252,
+        TimeoutMutexLock = 48,
+        TimeoutMailboxReady = 49,
+        TimeoutMailboxMsgWrite = 50,
+        PciFailed = 51
     }
 
     public SmuStatus SendSmuCommand(SmuAddressSet mailbox, uint command, ref uint[] arguments)
     {
         if (_cpu == null)
         {
-            return SmuStatus.TIMEOUT_MUTEX_LOCK;
+            return SmuStatus.TimeoutMutexLock;
         }
 
         var normalizedMailbox = new Mailbox
@@ -133,15 +133,15 @@ public class CpuService : ICpuService
     public enum CodenameGeneration
     {
         Unknown,
-        FP4,
-        FP5,
-        FP6,
-        FF3,
-        FP7,
-        FP8,
-        AM4_V1,
-        AM4_V2,
-        AM5,
+        Fp4,
+        Fp5,
+        Fp6,
+        Ff3,
+        Fp7,
+        Fp8,
+        Am4V1,
+        Am4V2,
+        Am5,
     }
 
     public CodenameGeneration GetCodenameGeneration()
@@ -149,24 +149,24 @@ public class CpuService : ICpuService
         switch (_codeName)
         {
             case CodeName.BristolRidge:
-                return CodenameGeneration.FP4;
+                return CodenameGeneration.Fp4;
             case CodeName.SummitRidge:
             case CodeName.PinnacleRidge:
-                return CodenameGeneration.AM4_V1;
+                return CodenameGeneration.Am4V1;
             case CodeName.RavenRidge:
             case CodeName.Picasso:
             case CodeName.Dali:
             case CodeName.FireFlight:
-                return CodenameGeneration.FP5;
+                return CodenameGeneration.Fp5;
             case CodeName.Matisse:
             case CodeName.Vermeer:
-                return CodenameGeneration.AM4_V2;
+                return CodenameGeneration.Am4V2;
             case CodeName.Renoir:
             case CodeName.Lucienne:
             case CodeName.Cezanne:
-                return CodenameGeneration.FP6;
+                return CodenameGeneration.Fp6;
             case CodeName.VanGogh:
-                return CodenameGeneration.FF3;
+                return CodenameGeneration.Ff3;
             case CodeName.Mendocino:
             case CodeName.Rembrandt:
             case CodeName.Phoenix:
@@ -174,17 +174,17 @@ public class CpuService : ICpuService
             case CodeName.HawkPoint:
             case CodeName.KrackanPoint:
             case CodeName.KrackanPoint2:
-                return CodenameGeneration.FP7;
+                return CodenameGeneration.Fp7;
             case CodeName.StrixPoint:
             case CodeName.StrixHalo:
-                return CodenameGeneration.FP8;
+                return CodenameGeneration.Fp8;
             case CodeName.Raphael:
             case CodeName.GraniteRidge:
             case CodeName.Genoa:
             case CodeName.StormPeak:
             case CodeName.DragonRange:
             case CodeName.Bergamo:
-                return CodenameGeneration.AM5;
+                return CodenameGeneration.Am5;
             default:
                 if (!_unsupportedPlatformMessage)
                 {
@@ -245,19 +245,19 @@ public class CpuService : ICpuService
 
     public enum CpuFamily
     {
-        UNSUPPORTED = 0,
-        FAMILY_0FH = 15,
-        FAMILY_10H = 16,
-        FAMILY_12H = 18,
-        FAMILY_15H = 21,
-        FAMILY_16H = 22,
-        FAMILY_17H = 23,
-        FAMILY_18H = 24,
-        FAMILY_19H = 25,
-        FAMILY_1AH = 26
+        Unsupported = 0,
+        Family0Fh = 15,
+        Family10H = 16,
+        Family12H = 18,
+        Family15H = 21,
+        Family16H = 22,
+        Family17H = 23,
+        Family18H = 24,
+        Family19H = 25,
+        Family1Ah = 26
     }
 
-    public CpuFamily Family => (CpuFamily?)_cpu?.info.family ?? CpuFamily.UNSUPPORTED;
+    public CpuFamily Family => (CpuFamily?)_cpu?.info.family ?? CpuFamily.Unsupported;
     public bool ReadMsr(uint index, ref uint eax, ref uint edx) => _cpu?.ReadMsr(index, ref eax, ref edx) ?? false;
     public bool WriteMsr(uint msr, uint eax, uint edx) => _cpu?.WriteMsr(msr, eax, edx) ?? false;
 
@@ -282,10 +282,10 @@ public class CpuService : ICpuService
 
     public enum MemType
     {
-        UNKNOWN = -1,
-        DDR4,
-        DDR5,
-        LPDDR5
+        Unknown = -1,
+        Ddr4,
+        Ddr5,
+        Lpddr5
     }
 
     public struct MemoryModule
@@ -351,7 +351,7 @@ public class CpuService : ICpuService
             var umcOffset1 = GetUmcAddressValue(UmcAddress.UmcOffset1);
             var umcOffset2 = GetUmcAddressValue(UmcAddress.UmcOffset2);
 
-            var freqFromRatio = ((MemType)memoryConfig.Type == MemType.DDR4 ?
+            var freqFromRatio = ((MemType)memoryConfig.Type == MemType.Ddr4 ?
                                  GetBits(umcBase, 0, 7) / 3 :
                                  GetBits(umcBase, 0, 16) / 100)
                                  * 200;
@@ -387,7 +387,7 @@ public class CpuService : ICpuService
         {
             return new MemoryConfig
             {
-                Type = MemType.UNKNOWN,
+                Type = MemType.Unknown,
                 TotalCapacity = 0,
                 Modules = [],
                 MemorySpeed = 0,
@@ -455,7 +455,7 @@ public class CpuService : ICpuService
         }
     }
 
-    public bool SetCoperSingleCore(uint coreMask, int margin) => _cpu?.SetPsmMarginSingleCore(coreMask, margin) ?? false;
+    public void SetCoperSingleCore(uint coreMask, int margin) => _cpu?.SetPsmMarginSingleCore(coreMask, margin);
     public void RefreshPowerTable() => _cpu?.RefreshPowerTable();
 
     public float[] PowerTable => _cpu?.powerTable?.Table ?? [];

@@ -4,4 +4,5 @@ public interface IWindowStateManagerService
     void Initialize();
     void ToggleWindowVisibility();
     void ShowMainWindow();
+    (double, double) SetWindowTitleBarBounds(double scaleAdjustment);
 }

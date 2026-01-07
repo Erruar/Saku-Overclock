@@ -4,7 +4,10 @@ namespace Saku_Overclock.Contracts.Services;
 
 public interface ISendSmuCommandService
 {
-    bool GetSetSafeReapply(bool? value = null);
+    bool SafeReapply
+    {
+        set;
+    }
     void ApplyQuickSmuCommand(bool startup);
     void Translate(string ryzenAdjString, bool save);
     void CancelRange();

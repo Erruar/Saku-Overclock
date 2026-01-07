@@ -29,6 +29,7 @@ public sealed partial class ПресетыPage
     private bool _waitforload = true; // Ожидание окончательной смены пресета на другой. Активируется при смене пресета 
     private int _indexpreset; // Выбранный пресет
     private readonly IBackgroundDataUpdater _dataUpdater = App.GetService<IBackgroundDataUpdater>();
+    private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>();
 
     private static readonly IAppNotificationService
         NotificationsService = App.GetService<IAppNotificationService>(); // Уведомления приложения
@@ -40,14 +41,24 @@ public sealed partial class ПресетыPage
     public ПресетыPage()
     {
         InitializeComponent();
+
         PresetManager.LoadSettings();
         AppSettings.SaveSettings();
+
         _dataUpdater.DataUpdated += OnDataUpdated;
-        Unloaded += (_, _) =>
-        {
-            _dataUpdater.DataUpdated -= OnDataUpdated;
-        };
+        _hotkeysService.PresetChanged += PresetChanged;
+
+        Unloaded += ПресетыPage_Unloaded;
         Loaded += ПресетыPage_Loaded;
+    }
+
+    private void ПресетыPage_Unloaded(object sender, RoutedEventArgs e)
+    {
+        _dataUpdater.DataUpdated -= OnDataUpdated;
+        _hotkeysService.PresetChanged -= PresetChanged;
+
+        Unloaded -= ПресетыPage_Unloaded;
+        Loaded -= ПресетыPage_Loaded;
     }
 
     private void ПресетыPage_Loaded(object sender, RoutedEventArgs e)
@@ -64,7 +75,7 @@ public sealed partial class ПресетыPage
             LogHelper.LogError(ex);
         }
 
-        _ = LoadPresets();
+        LoadPresets();
 
         // Загрузить остальные UI элементы, функции блока "Дополнительно"
         try
@@ -164,7 +175,7 @@ public sealed partial class ПресетыPage
 
     #region Initialization
 
-    private async Task LoadPresets()
+    private void LoadPresets()
     {
         // Загрузить пресеты перед началом работы с ними
         PresetManager.LoadSettings();
@@ -300,27 +311,27 @@ public sealed partial class ПресетыPage
                     if (item.Text == "Preset_Max_Name/Text".GetLocalized())
                     {
                         presetConfiguration = OcFinder.CreatePreset(PresetType.Max, optimizationLevel);
-                        await HelpWithShowPreset(PresetType.Max);
+                        HelpWithShowPreset(PresetType.Max);
                     }
                     else if (item.Text == "Preset_Speed_Name/Text".GetLocalized())
                     {
                         presetConfiguration = OcFinder.CreatePreset(PresetType.Speed, optimizationLevel);
-                        await HelpWithShowPreset(PresetType.Speed);
+                        HelpWithShowPreset(PresetType.Speed);
                     }
                     else if (item.Text == "Preset_Balance_Name/Text".GetLocalized())
                     {
                         presetConfiguration = OcFinder.CreatePreset(PresetType.Balance, optimizationLevel);
-                        await HelpWithShowPreset(PresetType.Balance);
+                        HelpWithShowPreset(PresetType.Balance);
                     }
                     else if (item.Text == "Preset_Eco_Name/Text".GetLocalized())
                     {
                         presetConfiguration = OcFinder.CreatePreset(PresetType.Eco, optimizationLevel);
-                        await HelpWithShowPreset(PresetType.Eco);
+                        HelpWithShowPreset(PresetType.Eco);
                     }
                     else
                     {
                         presetConfiguration = OcFinder.CreatePreset(PresetType.Min, optimizationLevel);
-                        await HelpWithShowPreset(PresetType.Min);
+                        HelpWithShowPreset(PresetType.Min);
                     }
 
                     PresetPerformanceBar.Value = 50 + presetConfiguration.Metrics.PerformanceScore;
@@ -376,15 +387,15 @@ public sealed partial class ПресетыPage
 
         if (AppSettings.Preset != -1)
         {
-            await InitializeCustomPresetSettings(AppSettings.Preset);
+            InitializeCustomPresetSettings(AppSettings.Preset);
         }
     }
 
-    private async Task HelpWithShowPreset(PresetType type)
+    private void HelpWithShowPreset(PresetType type)
     {
         if (!_isLoaded)
         {
-            await Task.Delay(700);
+            return;
         }
 
         PresetHwGaming.Visibility = Visibility.Collapsed;
@@ -428,7 +439,7 @@ public sealed partial class ПресетыPage
         PresetHwColumnHelper2.Width = presetHwColumnHelper2;
     }
 
-    private async Task InitializeCustomPresetSettings(int index)
+    private void InitializeCustomPresetSettings(int index)
     {
         _waitforload = true;
         if (index > PresetManager.Presets.Length || index < 0)
@@ -506,7 +517,7 @@ public sealed partial class ПресетыPage
         }
         catch (Exception ex)
         {
-            await LogHelper.TraceIt_TraceError(ex);
+            LogHelper.TraceIt_TraceError(ex);
         }
 
         try
@@ -649,7 +660,7 @@ public sealed partial class ПресетыPage
         }
         catch
         {
-            await LogHelper.LogError("Preset contains error. Creating new preset.");
+            LogHelper.LogError("Preset contains error. Creating new preset.");
 
             PresetManager.Presets = new Preset[1];
             PresetManager.Presets[0] = new Preset();
@@ -706,6 +717,20 @@ public sealed partial class ПресетыPage
         AutoApplyOptionsEnabled.IsChecked = false;
 
         button.IsChecked = true;
+    }
+
+
+    private void PresetChanged(object? sender, PresetManagerService.PresetId e)
+    {
+        if (e.PresetKey == "Custom")
+        {
+            AppSettings.Preset = e.PresetIndex;
+        }
+        else
+        {
+            AppSettings.Preset = -1;
+        }
+        LoadPresets();
     }
 
     private void OnDataUpdated(object? sender, SensorsInformation info)
@@ -1182,7 +1207,7 @@ public sealed partial class ПресетыPage
 
     #region Function Helpers
 
-    private bool IsRavenFamily() => Cpu.GetCodenameGeneration() == CpuService.CodenameGeneration.FP5;
+    private bool IsRavenFamily() => Cpu.GetCodenameGeneration() == CpuService.CodenameGeneration.Fp5;
 
     private void TryAdvancedButton_Click(object sender, RoutedEventArgs e)
     {
@@ -1343,14 +1368,9 @@ public sealed partial class ПресетыPage
                 }
 
                 _waitforload = false;
-                NotificationsService.Notifies ??= [];
-                NotificationsService.Notifies.Add(new Notify
-                {
-                    Title = "SaveSuccessTitle".GetLocalized(),
-                    Msg = "SaveSuccessDesc".GetLocalized() + " " + presetName,
-                    Type = InfoBarSeverity.Success
-                });
-                NotificationsService.SaveNotificationsSettings();
+                NotificationsService.ShowNotification("SaveSuccessTitle".GetLocalized(),
+                    "SaveSuccessDesc".GetLocalized() + " " + presetName,
+                    InfoBarSeverity.Success);
             }
             catch
             {
@@ -1359,26 +1379,21 @@ public sealed partial class ПресетыPage
         }
         else
         {
-            NotificationsService.Notifies ??= [];
-            NotificationsService.Notifies.Add(new Notify
-            {
-                Title = "Add_Target_Error/Title".GetLocalized(),
-                Msg = "Add_Target_Error/Subtitle".GetLocalized(),
-                Type = InfoBarSeverity.Error
-            });
-            NotificationsService.SaveNotificationsSettings();
+            NotificationsService.ShowNotification("Add_Target_Error/Title".GetLocalized(),
+                "Add_Target_Error/Subtitle".GetLocalized(),
+                InfoBarSeverity.Error);
         }
 
         AppSettings.SaveSettings();
         PresetManager.SaveSettings();
-        await LoadPresets();
+        LoadPresets();
     }
 
-    private async void EditPresetButton_Click(string presetName, string presetDesc, string glyph)
+    private void EditPresetButton_Click(string presetName, string presetDesc, string glyph)
     {
         try
         {
-            await LogHelper.Log(
+            LogHelper.Log(
                 $"Editing preset name: From \"{PresetManager.Presets[_indexpreset].Presetname}\" To \"{presetName}\"");
             if (presetName != "")
             {
@@ -1388,32 +1403,22 @@ public sealed partial class ПресетыPage
                 PresetManager.Presets[_indexpreset].Preseticon = glyph;
                 PresetManager.SaveSettings();
                 _waitforload = true;
-                await LoadPresets();
+                LoadPresets();
                 _waitforload = false;
-                NotificationsService.Notifies ??= [];
-                NotificationsService.Notifies.Add(new Notify
-                {
-                    Title = "Edit_Target/Title".GetLocalized(),
-                    Msg = "Edit_Target/Subtitle".GetLocalized() + " " + presetName,
-                    Type = InfoBarSeverity.Success
-                });
+                NotificationsService.ShowNotification("Edit_Target/Title".GetLocalized(),
+                    "Edit_Target/Subtitle".GetLocalized() + " " + presetName,
+                    InfoBarSeverity.Success);
             }
             else
             {
-                NotificationsService.Notifies ??= [];
-                NotificationsService.Notifies.Add(new Notify
-                {
-                    Title = "Edit_Target_Error/Title".GetLocalized(),
-                    Msg = "Edit_Target_Error/Subtitle".GetLocalized(),
-                    Type = InfoBarSeverity.Error
-                });
+                NotificationsService.ShowNotification("Edit_Target_Error/Title".GetLocalized(),
+                    "Edit_Target_Error/Subtitle".GetLocalized(),
+                    InfoBarSeverity.Error);
             }
-
-            NotificationsService.SaveNotificationsSettings();
         }
         catch (Exception exception)
         {
-            await LogHelper.TraceIt_TraceError(exception);
+            LogHelper.TraceIt_TraceError(exception);
         }
     }
 
@@ -1458,18 +1463,12 @@ public sealed partial class ПресетыPage
                 AppSettings.Preset = PresetManager.Presets.Length > 0 ? 0 : -1;
                 _indexpreset = AppSettings.Preset;
 
-
-                NotificationsService.Notifies ??= [];
-                NotificationsService.Notifies.Add(new Notify
-                {
-                    Title = "DeleteSuccessTitle".GetLocalized(),
-                    Msg = "DeleteSuccessDesc".GetLocalized(),
-                    Type = InfoBarSeverity.Success
-                });
-                NotificationsService.SaveNotificationsSettings();
+                NotificationsService.ShowNotification("DeleteSuccessTitle".GetLocalized(),
+                    "DeleteSuccessDesc".GetLocalized(),
+                    InfoBarSeverity.Success);
 
                 PresetManager.SaveSettings();
-                await LoadPresets();
+                LoadPresets();
             }
         }
         catch (Exception exception)
@@ -1602,7 +1601,7 @@ public sealed partial class ПресетыPage
 
     #region Preset Settings Events
 
-    private async void PresetsControl_SelectionChanged(object sender, SelectionChangedEventArgs? e)
+    private void PresetsControl_SelectionChanged(object sender, SelectionChangedEventArgs? e)
     {
         try
         {
@@ -1670,27 +1669,27 @@ public sealed partial class ПресетыPage
                 if (selectedItem.Text == "Preset_Max_Name/Text".GetLocalized())
                 {
                     preset = OcFinder.CreatePreset(PresetType.Max, optimizationLevel);
-                    await HelpWithShowPreset(PresetType.Max);
+                    HelpWithShowPreset(PresetType.Max);
                 }
                 else if (selectedItem.Text == "Preset_Speed_Name/Text".GetLocalized())
                 {
                     preset = OcFinder.CreatePreset(PresetType.Speed, optimizationLevel);
-                    await HelpWithShowPreset(PresetType.Speed);
+                    HelpWithShowPreset(PresetType.Speed);
                 }
                 else if (selectedItem.Text == "Preset_Balance_Name/Text".GetLocalized())
                 {
                     preset = OcFinder.CreatePreset(PresetType.Balance, optimizationLevel);
-                    await HelpWithShowPreset(PresetType.Balance);
+                    HelpWithShowPreset(PresetType.Balance);
                 }
                 else if (selectedItem.Text == "Preset_Eco_Name/Text".GetLocalized())
                 {
                     preset = OcFinder.CreatePreset(PresetType.Eco, optimizationLevel);
-                    await HelpWithShowPreset(PresetType.Eco);
+                    HelpWithShowPreset(PresetType.Eco);
                 }
                 else
                 {
                     preset = OcFinder.CreatePreset(PresetType.Min, optimizationLevel);
-                    await HelpWithShowPreset(PresetType.Min);
+                    HelpWithShowPreset(PresetType.Min);
                 }
 
                 PresetPerformanceBar.Value = 50 + preset.Metrics.PerformanceScore;
@@ -1771,12 +1770,12 @@ public sealed partial class ПресетыPage
 
                 _indexpreset = AppSettings.Preset;
                 AppSettings.SaveSettings();
-                await InitializeCustomPresetSettings(_indexpreset);
+                InitializeCustomPresetSettings(_indexpreset);
             }
         }
         catch (Exception ex)
         {
-            await LogHelper.LogWarn(ex);
+            LogHelper.LogWarn(ex);
         }
     }
 
@@ -1888,14 +1887,10 @@ public sealed partial class ПресетыPage
                             ApplyTeach.IsOpen = false;
                         }
 
-                        NotificationsService.Notifies ??= [];
-                        NotificationsService.Notifies.Add(new Notify
-                        {
-                            Title = ApplyTeach.Title,
-                            Msg = ApplyTeach.Subtitle + (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
-                            Type = infoSet
-                        });
-                        NotificationsService.SaveNotificationsSettings();
+                        NotificationsService.ShowNotification(ApplyTeach.Title,
+                            ApplyTeach.Subtitle + (applyInfo != string.Empty ? "DELETEUNAVAILABLE" : ""),
+                            infoSet,
+                            true);
                     }
                     catch (Exception ex)
                     {

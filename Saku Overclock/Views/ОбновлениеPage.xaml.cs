@@ -29,10 +29,6 @@ public sealed partial class ОбновлениеPage
         {
             GetUpdates();
         };
-        Unloaded += (_, _) =>
-        {
-            HideNavigationBar();
-        };
     }
 
     #region Updater
@@ -77,10 +73,9 @@ public sealed partial class ОбновлениеPage
     /// </summary>
     private static void HideNavigationBar()
     {
-        NotificationsService.Notifies ??= [];
-        NotificationsService.Notifies.Add(new Notify
-            { Title = "UpdateNAVBAR", Msg = "true", Type = InfoBarSeverity.Informational });
-        NotificationsService.SaveNotificationsSettings();
+        NotificationsService.ShowNotification("UpdateNAVBAR",
+            "true",
+            InfoBarSeverity.Informational);
     }
 
     #endregion

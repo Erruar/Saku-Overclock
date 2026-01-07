@@ -36,12 +36,13 @@ public sealed partial class SettingsPage
         get;
     } = App.GetService<SettingsViewModel>();
 
-    private readonly IAppSettingsService AppSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
-    private readonly IThemeSelectorService _themeSelectorService = App.GetService <IThemeSelectorService>(); // Темы приложения
-    private readonly IAppNotificationService NotificationsService = App.GetService <IAppNotificationService>(); // Уведомления
-    private readonly ISendSmuCommandService SendSmuCommand = App.GetService <ISendSmuCommandService>(); // SendSmuService для определения состояния безопасного применения параметров разгона
-    private readonly IRtssSettingsService RtssSettings = App.GetService <IRtssSettingsService>(); // Настройки RTSS
-    private readonly IBackgroundDataUpdater BackgroundDataUpdater = App.GetService <IBackgroundDataUpdater>(); // Обновление данных
+    private readonly IAppSettingsService _appSettings = App.GetService<IAppSettingsService>(); // Настройки приложения
+    private readonly IThemeSelectorService _themeSelectorService = App.GetService<IThemeSelectorService>(); // Темы приложения
+    private readonly IAppNotificationService _notificationsService = App.GetService<IAppNotificationService>(); // Уведомления
+    private readonly ISendSmuCommandService _sendSmuCommand = App.GetService<ISendSmuCommandService>(); // SendSmuService для определения состояния безопасного применения параметров разгона
+    private readonly IRtssSettingsService _rtssSettings = App.GetService<IRtssSettingsService>(); // Настройки RTSS
+    private readonly IBackgroundDataUpdater _backgroundDataUpdater = App.GetService<IBackgroundDataUpdater>(); // Обновление данных
+    private readonly IKeyboardHotkeysService _hotkeysService = App.GetService<IKeyboardHotkeysService>(); // Горячие клавиши
 
     private NiIconsSettings _niicons = new(); // TrayMon иконки
     private bool _isLoaded; // Флаг загрузки страницы
@@ -67,21 +68,21 @@ public sealed partial class SettingsPage
     {
         try
         {
-            AutoStartComboBox.SelectedIndex = AppSettings.AutostartType is > -1 and < 4 ? AppSettings.AutostartType : 0;
+            AutoStartComboBox.SelectedIndex = _appSettings.AutostartType is > -1 and < 4 ? _appSettings.AutostartType : 0;
             AppHideTypeComboBox.SelectedIndex =
-                AppHideTypeComboBox.SelectedIndex is > -1 and < 3 ? AppSettings.HidingType : 2;
+                AppHideTypeComboBox.SelectedIndex is > -1 and < 3 ? _appSettings.HidingType : 2;
 
-            ApplyStart.IsOn = AppSettings.ReapplyLatestSettingsOnAppLaunch;
-            AutoCheckUpdates.IsOn = AppSettings.CheckForUpdates;
-            AutoReapply.IsOn = AppSettings.ReapplyOverclock;
-            AutoReapplyNumberBox.Value = AppSettings.ReapplyOverclockTimer;
+            ApplyStart.IsOn = _appSettings.ReapplyLatestSettingsOnAppLaunch;
+            AutoCheckUpdates.IsOn = _appSettings.CheckForUpdates;
+            AutoReapply.IsOn = _appSettings.ReapplyOverclock;
+            AutoReapplyNumberBox.Value = _appSettings.ReapplyOverclockTimer;
             AutoReapplyNumberBoxPanel.Visibility = AutoReapply.IsOn ? Visibility.Visible : Visibility.Collapsed;
-            SafeReapply.IsOn = AppSettings.ReapplySafeOverclock;
-            ThemeType.Visibility = AppSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
-            ThemeCustomBg.Visibility = AppSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
-            RtssSettingsEnable.IsOn = AppSettings.RtssMetricsEnabled;
-            RtssAdvancedCodeEditor.IsOn = RtssSettings.IsAdvancedCodeEditorEnabled;
-            EnableKeybindingsSetting.IsOn = AppSettings.HotkeysEnabled;
+            SafeReapply.IsOn = _appSettings.ReapplySafeOverclock;
+            ThemeType.Visibility = _appSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
+            ThemeCustomBg.Visibility = _appSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
+            RtssSettingsEnable.IsOn = _appSettings.RtssMetricsEnabled;
+            RtssAdvancedCodeEditor.IsOn = _rtssSettings.IsAdvancedCodeEditorEnabled;
+            EnableKeybindingsSetting.IsOn = _appSettings.HotkeysEnabled;
 
             InitializeRtss();
             InitializeThemeSettings();
@@ -108,7 +109,7 @@ public sealed partial class SettingsPage
             ? new CornerRadius(15, 15, 0, 0)
             : new CornerRadius(15);
 
-        LoadAndFormatAdvancedCodeEditor(RtssSettings.AdvancedCodeEditor);
+        LoadAndFormatAdvancedCodeEditor(_rtssSettings.AdvancedCodeEditor);
 
         // Проход по элементам RTSS_Elements
         LoadRtssElements();
@@ -147,15 +148,15 @@ public sealed partial class SettingsPage
             }
 
             // Проверяем индекс темы
-            if (AppSettings.ThemeType < 0 || AppSettings.ThemeType >= _themeSelectorService.Themes.Count)
+            if (_appSettings.ThemeType < 0 || _appSettings.ThemeType >= _themeSelectorService.Themes.Count)
             {
                 // Сбрасываем на дефолтную тему
-                AppSettings.ThemeType = 0;
-                AppSettings.SaveSettings();
+                _appSettings.ThemeType = 0;
+                _appSettings.SaveSettings();
             }
 
             // Загружаем параметры выбранной темы
-            var selectedTheme = _themeSelectorService.Themes[AppSettings.ThemeType];
+            var selectedTheme = _themeSelectorService.Themes[_appSettings.ThemeType];
             ThemeOpacity.Value = selectedTheme.ThemeOpacity;
             ThemeMaskOpacity.Value = selectedTheme.ThemeMaskOpacity;
             AdvancedThemeOptions.IsOn = selectedTheme.ThemeCustom;
@@ -164,10 +165,10 @@ public sealed partial class SettingsPage
             UpdateThemeCustomInterface();
 
             // Устанавливаем выбранную тему
-            ThemeComboBox.SelectedIndex = AppSettings.ThemeType;
+            ThemeComboBox.SelectedIndex = _appSettings.ThemeType;
 
             // Настройка типа темы - тёмный, светлый, показываем только для тем пользователя (больше 7)
-            ThemeType.Visibility = AppSettings.ThemeType > 7
+            ThemeType.Visibility = _appSettings.ThemeType > 7
                 ? Visibility.Visible
                 : Visibility.Collapsed;
         }
@@ -176,8 +177,8 @@ public sealed partial class SettingsPage
             LogHelper.LogError(ex);
 
             // Сбрасываем на безопасные значения
-            AppSettings.ThemeType = 0;
-            AppSettings.SaveSettings();
+            _appSettings.ThemeType = 0;
+            _appSettings.SaveSettings();
         }
     }
 
@@ -340,7 +341,7 @@ public sealed partial class SettingsPage
             ThemeOpacity.Visibility = Visibility.Visible;
             ThemeMaskOpacity.Visibility = Visibility.Visible;
             ThemeMaskOpacity.Visibility = Visibility.Visible;
-            ThemeCustomBg.Visibility = AppSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
+            ThemeCustomBg.Visibility = _appSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
             ThemeType.Visibility = Visibility.Visible;
             ThemeBgButton.Visibility = Visibility.Visible;
             ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
@@ -352,22 +353,17 @@ public sealed partial class SettingsPage
     /// </summary>
     private void UpdateTheme()
     {
-        NotificationsService.Notifies ??= [];
-        NotificationsService.Notifies.Add(new Notify
-        {
-            Title = "Theme applied!",
-            Msg = "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS",
-            Type = InfoBarSeverity.Success
-        });
-        NotificationsService.SaveNotificationsSettings();
+        _notificationsService.ShowNotification("Theme applied!",
+            "DEBUG MESSAGE. YOU SHOULDN'T SEE THIS",
+            InfoBarSeverity.Success);
     }
 
     /// <summary>
     ///     Проверяет корректность и доступность выбранной темы
     /// </summary>
     private bool CheckThemeType() => _isLoaded
-                                     && AppSettings.ThemeType > -1
-                                     && AppSettings.ThemeType < _themeSelectorService.Themes.Count;
+                                     && _appSettings.ThemeType > -1
+                                     && _appSettings.ThemeType < _themeSelectorService.Themes.Count;
 
     #endregion
 
@@ -383,9 +379,27 @@ public sealed partial class SettingsPage
             return;
         }
 
-        SettingsKeybindingsTooltip.IsOpen = true;
-        AppSettings.HotkeysEnabled = EnableKeybindingsSetting.IsOn;
-        AppSettings.SaveSettings();
+        //SettingsKeybindingsTooltip.IsOpen = true;
+
+        var hotkeysDisabled = false;
+        if (!_appSettings.HotkeysEnabled)
+        {
+            hotkeysDisabled = true;
+        }
+
+        _appSettings.HotkeysEnabled = EnableKeybindingsSetting.IsOn;
+
+        if (_appSettings.HotkeysEnabled && hotkeysDisabled)
+        {
+            _hotkeysService.Enable();
+        }
+
+        if (!_appSettings.HotkeysEnabled)
+        {
+            _hotkeysService.Disable();
+        }
+
+        _appSettings.SaveSettings();
     }
 
     /// <summary>
@@ -398,7 +412,7 @@ public sealed partial class SettingsPage
             return;
         }
 
-        AppSettings.AutostartType = AutoStartComboBox.SelectedIndex;
+        _appSettings.AutostartType = AutoStartComboBox.SelectedIndex;
         if (AutoStartComboBox.SelectedIndex is 2 or 3)
         {
             AutoStartHelper.SetStartupTask();
@@ -408,7 +422,7 @@ public sealed partial class SettingsPage
             AutoStartHelper.RemoveStartupTask();
         }
 
-        AppSettings.SaveSettings();
+        _appSettings.SaveSettings();
     }
 
     /// <summary>
@@ -421,8 +435,8 @@ public sealed partial class SettingsPage
             return;
         }
 
-        AppSettings.HidingType = AppHideTypeComboBox.SelectedIndex;
-        AppSettings.SaveSettings();
+        _appSettings.HidingType = AppHideTypeComboBox.SelectedIndex;
+        _appSettings.SaveSettings();
     }
 
     /// <summary>
@@ -436,9 +450,9 @@ public sealed partial class SettingsPage
             return;
         }
 
-        AppSettings.ReapplyLatestSettingsOnAppLaunch = ApplyStart.IsOn;
+        _appSettings.ReapplyLatestSettingsOnAppLaunch = ApplyStart.IsOn;
 
-        AppSettings.SaveSettings();
+        _appSettings.SaveSettings();
     }
 
     /// <summary>
@@ -454,17 +468,17 @@ public sealed partial class SettingsPage
         if (AutoReapply.IsOn)
         {
             AutoReapplyNumberBoxPanel.Visibility = Visibility.Visible;
-            AppSettings.ReapplyOverclock = true;
-            AppSettings.ReapplyOverclockTimer = AutoReapplyNumberBox.Value;
+            _appSettings.ReapplyOverclock = true;
+            _appSettings.ReapplyOverclockTimer = AutoReapplyNumberBox.Value;
         }
         else
         {
             AutoReapplyNumberBoxPanel.Visibility = Visibility.Collapsed;
-            AppSettings.ReapplyOverclock = false;
-            AppSettings.ReapplyOverclockTimer = 3;
+            _appSettings.ReapplyOverclock = false;
+            _appSettings.ReapplyOverclockTimer = 3;
         }
 
-        AppSettings.SaveSettings();
+        _appSettings.SaveSettings();
     }
 
     /// <summary>
@@ -480,9 +494,9 @@ public sealed partial class SettingsPage
                 return;
             }
 
-            AppSettings.ReapplyOverclock = true;
-            AppSettings.ReapplyOverclockTimer = AutoReapplyNumberBox.Value;
-            AppSettings.SaveSettings();
+            _appSettings.ReapplyOverclock = true;
+            _appSettings.ReapplyOverclockTimer = AutoReapplyNumberBox.Value;
+            _appSettings.SaveSettings();
         }
         catch (Exception ex)
         {
@@ -500,9 +514,9 @@ public sealed partial class SettingsPage
             return;
         }
 
-        AppSettings.CheckForUpdates = AutoCheckUpdates.IsOn;
+        _appSettings.CheckForUpdates = AutoCheckUpdates.IsOn;
 
-        AppSettings.SaveSettings();
+        _appSettings.SaveSettings();
     }
 
     /// <summary>
@@ -517,9 +531,9 @@ public sealed partial class SettingsPage
                 return;
             }
 
-            AppSettings.ReapplySafeOverclock = SafeReapply.IsOn;
-            SendSmuCommand.GetSetSafeReapply(SafeReapply.IsOn);
-            AppSettings.SaveSettings();
+            _appSettings.ReapplySafeOverclock = SafeReapply.IsOn;
+            _sendSmuCommand.SafeReapply = SafeReapply.IsOn;
+            _appSettings.SaveSettings();
         }
         catch (Exception ex)
         {
@@ -541,8 +555,8 @@ public sealed partial class SettingsPage
             return;
         }
 
-        AppSettings.ThemeType = ThemeComboBox.SelectedIndex > -1 ? ThemeComboBox.SelectedIndex : 0;
-        AppSettings.SaveSettings();
+        _appSettings.ThemeType = ThemeComboBox.SelectedIndex > -1 ? ThemeComboBox.SelectedIndex : 0;
+        _appSettings.SaveSettings();
 
         if (_themeSelectorService.Themes.Count == 0)
         {
@@ -550,16 +564,16 @@ public sealed partial class SettingsPage
             return;
         }
 
-        if (AppSettings.ThemeType < 0 ||
-            AppSettings.ThemeType >= _themeSelectorService.Themes.Count) // Защита от некорректного индекса
+        if (_appSettings.ThemeType < 0 ||
+            _appSettings.ThemeType >= _themeSelectorService.Themes.Count) // Защита от некорректного индекса
         {
-            AppSettings.ThemeType = 0;
-            AppSettings.SaveSettings();
+            _appSettings.ThemeType = 0;
+            _appSettings.SaveSettings();
         }
 
-        var selectedTheme = _themeSelectorService.Themes[AppSettings.ThemeType];
+        var selectedTheme = _themeSelectorService.Themes[_appSettings.ThemeType];
 
-        if (AppSettings.ThemeType == 0)
+        if (_appSettings.ThemeType == 0)
         {
             _themeSelectorService.SetThemeAsync(ElementTheme.Default);
         }
@@ -571,7 +585,7 @@ public sealed partial class SettingsPage
         }
 
         // Обновляем UI-элементы
-        var customThemeVisibility = AppSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
+        var customThemeVisibility = _appSettings.ThemeType > 7 ? Visibility.Visible : Visibility.Collapsed;
         AdvancedThemeOptions.IsOn = selectedTheme.ThemeCustom;
         ThemeOpacity.Value = selectedTheme.ThemeOpacity;
         ThemeMaskOpacity.Value = selectedTheme.ThemeMaskOpacity;
@@ -592,7 +606,7 @@ public sealed partial class SettingsPage
     {
         if (CheckThemeType())
         {
-            _themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustom = AdvancedThemeOptions.IsOn;
+            _themeSelectorService.Themes[_appSettings.ThemeType].ThemeCustom = AdvancedThemeOptions.IsOn;
             _themeSelectorService.SaveThemeInSettings();
             UpdateThemeCustomInterface();
         }
@@ -605,7 +619,7 @@ public sealed partial class SettingsPage
     {
         if (CheckThemeType())
         {
-            _themeSelectorService.Themes[AppSettings.ThemeType].ThemeLight = ThemeType.IsOn;
+            _themeSelectorService.Themes[_appSettings.ThemeType].ThemeLight = ThemeType.IsOn;
             _themeSelectorService.SaveThemeInSettings();
             UpdateTheme();
         }
@@ -618,7 +632,7 @@ public sealed partial class SettingsPage
     {
         if (CheckThemeType())
         {
-            _themeSelectorService.Themes[AppSettings.ThemeType].ThemeOpacity = ThemeOpacity.Value;
+            _themeSelectorService.Themes[_appSettings.ThemeType].ThemeOpacity = ThemeOpacity.Value;
             _themeSelectorService.SaveThemeInSettings();
             UpdateTheme();
         }
@@ -631,7 +645,7 @@ public sealed partial class SettingsPage
     {
         if (CheckThemeType())
         {
-            _themeSelectorService.Themes[AppSettings.ThemeType].ThemeMaskOpacity = ThemeMaskOpacity.Value;
+            _themeSelectorService.Themes[_appSettings.ThemeType].ThemeMaskOpacity = ThemeMaskOpacity.Value;
             _themeSelectorService.SaveThemeInSettings();
             UpdateTheme();
         }
@@ -644,7 +658,7 @@ public sealed partial class SettingsPage
     {
         if (CheckThemeType())
         {
-            _themeSelectorService.Themes[AppSettings.ThemeType].ThemeCustomBg = ThemeCustomBg.IsOn;
+            _themeSelectorService.Themes[_appSettings.ThemeType].ThemeCustomBg = ThemeCustomBg.IsOn;
             _themeSelectorService.SaveThemeInSettings();
             ThemeBgButton.Visibility = ThemeCustomBg.IsOn ? Visibility.Visible : Visibility.Collapsed;
             UpdateTheme();
@@ -1102,8 +1116,8 @@ public sealed partial class SettingsPage
                             {
                                 _themeSelectorService.Themes.RemoveAt(int.Parse(sureDelete.Name));
                                 _themeSelectorService.SaveThemeInSettings();
-                                AppSettings.ThemeType = 0;
-                                AppSettings.SaveSettings();
+                                _appSettings.ThemeType = 0;
+                                _appSettings.SaveSettings();
                                 InitializePage();
                                 themeLoaderPanel.Children.Remove(eachButton);
                             }
@@ -1217,7 +1231,7 @@ public sealed partial class SettingsPage
         NiLoad();
         try
         {
-            TrayMonIconsEnabled.IsOn = AppSettings.NiIconsEnabled;
+            TrayMonIconsEnabled.IsOn = _appSettings.NiIconsEnabled;
             UpdateIconsGridCornerRadius();
 
             LoadTrayMonIconElements();
@@ -1236,8 +1250,8 @@ public sealed partial class SettingsPage
         }
         catch
         {
-            AppSettings.NiIconsType = -1; // Нет сохранённых
-            AppSettings.SaveSettings();
+            _appSettings.NiIconsType = -1; // Нет сохранённых
+            _appSettings.SaveSettings();
         }
     }
 
@@ -1266,7 +1280,7 @@ public sealed partial class SettingsPage
             }
         }
 
-        NiIconComboboxElements.SelectedIndex = AppSettings.NiIconsType;
+        NiIconComboboxElements.SelectedIndex = _appSettings.NiIconsType;
 
         // Показываем элементы если есть выбранный индекс
         if (NiIconComboboxElements.SelectedIndex >= 0)
@@ -1285,12 +1299,12 @@ public sealed partial class SettingsPage
     /// </summary>
     private void LoadSelectedTrayMonIconSettings()
     {
-        if (AppSettings.NiIconsType < 0 || AppSettings.NiIconsType >= _niicons.Elements.Count)
+        if (_appSettings.NiIconsType < 0 || _appSettings.NiIconsType >= _niicons.Elements.Count)
         {
             return;
         }
 
-        var selectedIcon = _niicons.Elements[AppSettings.NiIconsType];
+        var selectedIcon = _niicons.Elements[_appSettings.NiIconsType];
 
         IsTrayMonIconShowing.IsOn = selectedIcon.IsEnabled;
         UpdateEnabledElementCornerRadius();
@@ -1376,8 +1390,8 @@ public sealed partial class SettingsPage
             return;
         }
 
-        AppSettings.NiIconsEnabled = TrayMonIconsEnabled.IsOn;
-        AppSettings.SaveSettings();
+        _appSettings.NiIconsEnabled = TrayMonIconsEnabled.IsOn;
+        _appSettings.SaveSettings();
         if (TrayMonIconsEnabled.IsOn)
         {
             NiIconComboboxElements.Visibility = Visibility.Visible;
@@ -1414,7 +1428,7 @@ public sealed partial class SettingsPage
         SettingsNiIconsGrid.CornerRadius =
             TrayMonIconsEnabled.IsOn ? new CornerRadius(15, 15, 0, 0) : new CornerRadius(15);
 
-        BackgroundDataUpdater.UpdateNotifyIcons();
+        _backgroundDataUpdater.UpdateTrayMonIcons();
     }
 
     /// <summary>
@@ -1773,7 +1787,7 @@ public sealed partial class SettingsPage
 
             await niAddIconDialog.ShowAsync();
 
-            BackgroundDataUpdater.UpdateNotifyIcons();
+            _backgroundDataUpdater.UpdateTrayMonIcons();
         }
         catch (Exception exception)
         {
@@ -1791,10 +1805,10 @@ public sealed partial class SettingsPage
             return;
         }
 
-        AppSettings.NiIconsType = NiIconComboboxElements.SelectedIndex;
-        AppSettings.SaveSettings();
+        _appSettings.NiIconsType = NiIconComboboxElements.SelectedIndex;
+        _appSettings.SaveSettings();
         NiLoad();
-        if (_niicons.Elements.Count != 0 && AppSettings.NiIconsType != -1)
+        if (_niicons.Elements.Count != 0 && _appSettings.NiIconsType != -1)
         {
             if (NiIconComboboxElements.SelectedIndex >= 0)
             {
@@ -1803,24 +1817,24 @@ public sealed partial class SettingsPage
                 IsTrayMonIconShowing.Visibility = Visibility.Visible;
             }
 
-            IsTrayMonIconShowing.IsOn = _niicons.Elements[AppSettings.NiIconsType].IsEnabled;
+            IsTrayMonIconShowing.IsOn = _niicons.Elements[_appSettings.NiIconsType].IsEnabled;
             SettingsNiEnabledElementGrid.CornerRadius = IsTrayMonIconShowing.IsOn
                 ? new CornerRadius(0)
                 : new CornerRadius(0, 0, 15, 15);
 
-            if (!_niicons.Elements[AppSettings.NiIconsType].IsEnabled)
+            if (!_niicons.Elements[_appSettings.NiIconsType].IsEnabled)
             {
                 NiIconStackPanel.Visibility = Visibility.Collapsed;
                 SettingsNiContextMenu.Visibility = Visibility.Collapsed;
             }
 
-            NiIconCombobox.SelectedIndex = _niicons.Elements[AppSettings.NiIconsType].ContextMenuType;
+            NiIconCombobox.SelectedIndex = _niicons.Elements[_appSettings.NiIconsType].ContextMenuType;
             NiIconsColorPickerColorPicker.Color =
-                ParseColor(_niicons.Elements[AppSettings.NiIconsType].Color);
-            SettingsNiGradientToggle.IsOn = _niicons.Elements[AppSettings.NiIconsType].IsGradient;
-            NiIconShapeCombobox.SelectedIndex = _niicons.Elements[AppSettings.NiIconsType].IconShape;
-            SettingsNiFontsize.Value = _niicons.Elements[AppSettings.NiIconsType].FontSize;
-            SettingsNiOpacity.Value = _niicons.Elements[AppSettings.NiIconsType].BgOpacity;
+                ParseColor(_niicons.Elements[_appSettings.NiIconsType].Color);
+            SettingsNiGradientToggle.IsOn = _niicons.Elements[_appSettings.NiIconsType].IsGradient;
+            NiIconShapeCombobox.SelectedIndex = _niicons.Elements[_appSettings.NiIconsType].IconShape;
+            SettingsNiFontsize.Value = _niicons.Elements[_appSettings.NiIconsType].FontSize;
+            SettingsNiOpacity.Value = _niicons.Elements[_appSettings.NiIconsType].BgOpacity;
         }
     }
 
@@ -1835,10 +1849,10 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[AppSettings.NiIconsType].ContextMenuType = NiIconCombobox.SelectedIndex;
+        _niicons.Elements[_appSettings.NiIconsType].ContextMenuType = NiIconCombobox.SelectedIndex;
         NiSave();
 
-        BackgroundDataUpdater.UpdateNotifyIcons();
+        _backgroundDataUpdater.UpdateTrayMonIcons();
     }
 
     /// <summary>
@@ -1852,7 +1866,7 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[AppSettings.NiIconsType].IsEnabled = IsTrayMonIconShowing.IsOn;
+        _niicons.Elements[_appSettings.NiIconsType].IsEnabled = IsTrayMonIconShowing.IsOn;
         NiSave();
         if (NiIconComboboxElements.SelectedIndex >= 0 && IsTrayMonIconShowing.IsOn)
         {
@@ -1868,7 +1882,7 @@ public sealed partial class SettingsPage
         SettingsNiEnabledElementGrid.CornerRadius =
             IsTrayMonIconShowing.IsOn ? new CornerRadius(0) : new CornerRadius(0, 0, 15, 15);
 
-        BackgroundDataUpdater.UpdateNotifyIcons();
+        _backgroundDataUpdater.UpdateTrayMonIcons();
     }
 
     /// <summary>
@@ -1882,11 +1896,11 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[AppSettings.NiIconsType].FontSize =
+        _niicons.Elements[_appSettings.NiIconsType].FontSize =
             Convert.ToInt32(SettingsNiFontsize.Value);
         NiSave();
 
-        BackgroundDataUpdater.UpdateNotifyIcons();
+        _backgroundDataUpdater.UpdateTrayMonIcons();
     }
 
     /// <summary>
@@ -1900,10 +1914,10 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[AppSettings.NiIconsType].BgOpacity = SettingsNiOpacity.Value;
+        _niicons.Elements[_appSettings.NiIconsType].BgOpacity = SettingsNiOpacity.Value;
         NiSave();
 
-        BackgroundDataUpdater.UpdateNotifyIcons();
+        _backgroundDataUpdater.UpdateTrayMonIcons();
     }
 
     /// <summary>
@@ -1919,18 +1933,18 @@ public sealed partial class SettingsPage
         NiLoad();
         if (SettingsNiGradientColorSwitcher.IsChecked == false)
         {
-            _niicons.Elements[AppSettings.NiIconsType].Color =
+            _niicons.Elements[_appSettings.NiIconsType].Color =
                 $"{NiIconsColorPickerColorPicker.Color.R:X2}{NiIconsColorPickerColorPicker.Color.G:X2}{NiIconsColorPickerColorPicker.Color.B:X2}";
         }
         else if (SettingsNiGradientColorSwitcher.IsChecked == true)
         {
-            _niicons.Elements[AppSettings.NiIconsType].SecondColor =
+            _niicons.Elements[_appSettings.NiIconsType].SecondColor =
                 $"{NiIconsColorPickerColorPicker.Color.R:X2}{NiIconsColorPickerColorPicker.Color.G:X2}{NiIconsColorPickerColorPicker.Color.B:X2}";
         }
 
         NiSave();
 
-        BackgroundDataUpdater.UpdateNotifyIcons();
+        _backgroundDataUpdater.UpdateTrayMonIcons();
     }
 
     /// <summary>
@@ -1944,10 +1958,10 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[AppSettings.NiIconsType].IsGradient = true;
+        _niicons.Elements[_appSettings.NiIconsType].IsGradient = true;
         NiSave();
 
-        BackgroundDataUpdater.UpdateNotifyIcons();
+        _backgroundDataUpdater.UpdateTrayMonIcons();
     }
 
     /// <summary>
@@ -1967,17 +1981,17 @@ public sealed partial class SettingsPage
             {
                 button.Content = "Settings_ni_TrayMonGradientColorSwitch/Content".GetLocalized() + "2";
                 NiIconsColorPickerColorPicker.Color =
-                    ParseColor(_niicons.Elements[AppSettings.NiIconsType].SecondColor);
+                    ParseColor(_niicons.Elements[_appSettings.NiIconsType].SecondColor);
             }
             else
             {
                 button.Content = "Settings_ni_TrayMonGradientColorSwitch/Content".GetLocalized() + "1";
                 NiIconsColorPickerColorPicker.Color =
-                    ParseColor(_niicons.Elements[AppSettings.NiIconsType].Color);
+                    ParseColor(_niicons.Elements[_appSettings.NiIconsType].Color);
             }
         }
 
-        BackgroundDataUpdater.UpdateNotifyIcons();
+        _backgroundDataUpdater.UpdateTrayMonIcons();
     }
 
     /// <summary>
@@ -1991,10 +2005,10 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[AppSettings.NiIconsType].IconShape = NiIconShapeCombobox.SelectedIndex;
+        _niicons.Elements[_appSettings.NiIconsType].IconShape = NiIconShapeCombobox.SelectedIndex;
         NiSave();
 
-        BackgroundDataUpdater.UpdateNotifyIcons();
+        _backgroundDataUpdater.UpdateTrayMonIcons();
     }
 
     /// <summary>
@@ -2010,13 +2024,13 @@ public sealed partial class SettingsPage
         try
         {
             NiLoad();
-            _niicons.Elements.RemoveAt(AppSettings.NiIconsType);
+            _niicons.Elements.RemoveAt(_appSettings.NiIconsType);
             NiSave();
-            AppSettings.NiIconsType = -1;
-            AppSettings.SaveSettings();
+            _appSettings.NiIconsType = -1;
+            _appSettings.SaveSettings();
             InitializeTrayMonIcons();
 
-            BackgroundDataUpdater.UpdateNotifyIcons();
+            _backgroundDataUpdater.UpdateTrayMonIcons();
         }
         catch (Exception ex)
         {
@@ -2035,16 +2049,16 @@ public sealed partial class SettingsPage
         }
 
         NiLoad();
-        _niicons.Elements[AppSettings.NiIconsType].IsEnabled = true;
-        _niicons.Elements[AppSettings.NiIconsType].ContextMenuType = 1;
-        _niicons.Elements[AppSettings.NiIconsType].Color = "FF6ACF";
-        _niicons.Elements[AppSettings.NiIconsType].IconShape = 0;
-        _niicons.Elements[AppSettings.NiIconsType].FontSize = 9;
-        _niicons.Elements[AppSettings.NiIconsType].BgOpacity = 0.5d;
+        _niicons.Elements[_appSettings.NiIconsType].IsEnabled = true;
+        _niicons.Elements[_appSettings.NiIconsType].ContextMenuType = 1;
+        _niicons.Elements[_appSettings.NiIconsType].Color = "FF6ACF";
+        _niicons.Elements[_appSettings.NiIconsType].IconShape = 0;
+        _niicons.Elements[_appSettings.NiIconsType].FontSize = 9;
+        _niicons.Elements[_appSettings.NiIconsType].BgOpacity = 0.5d;
         NiSave();
         TrayMonIconElements_SelectionChanged(null, null);
 
-        BackgroundDataUpdater.UpdateNotifyIcons();
+        _backgroundDataUpdater.UpdateTrayMonIcons();
     }
 
     #endregion
@@ -2056,7 +2070,7 @@ public sealed partial class SettingsPage
     /// </summary>
     private void LoadRtssElements()
     {
-        for (var i = 0; i < RtssSettings.RtssElements.Count; i++)
+        for (var i = 0; i < _rtssSettings.RtssElements.Count; i++)
         {
             // Получаем элементы в зависимости от текущего значения i
             var toggleButton = RtssMainColorCompactToggle;
@@ -2125,25 +2139,25 @@ public sealed partial class SettingsPage
             // Применение значения ToggleButton
             if (toggleButton != null)
             {
-                toggleButton.IsChecked = RtssSettings.RtssElements[i].UseCompact;
+                toggleButton.IsChecked = _rtssSettings.RtssElements[i].UseCompact;
             }
 
             // Применение значения CheckBox
             if (checkBox != null)
             {
-                checkBox.IsChecked = RtssSettings.RtssElements[i].Enabled;
+                checkBox.IsChecked = _rtssSettings.RtssElements[i].Enabled;
             }
 
             // Применение значения TextBox
             if (textBox != null)
             {
-                textBox.Text = RtssSettings.RtssElements[i].Name;
+                textBox.Text = _rtssSettings.RtssElements[i].Name;
             }
 
             // Применение значения ColorPicker
             if (colorPicker != null)
             {
-                var color = RtssSettings.RtssElements[i].Color;
+                var color = _rtssSettings.RtssElements[i].Color;
                 var r = Convert.ToByte(color.Substring(1, 2), 16);
                 var g = Convert.ToByte(color.Substring(3, 2), 16);
                 var b = Convert.ToByte(color.Substring(5, 2), 16);
@@ -2163,63 +2177,63 @@ public sealed partial class SettingsPage
             "FFFFFF" // Добавляем белый цвет по умолчанию
         };
 
-        AddColorIfUnique(RtssSettings.RtssElements[0].Color);
-        AddColorIfUnique(RtssSettings.RtssElements[1].Color);
-        AddColorIfUnique(RtssSettings.RtssElements[2].Color);
-        AddColorIfUnique(RtssSettings.RtssElements[3].Color);
-        AddColorIfUnique(RtssSettings.RtssElements[4].Color);
-        AddColorIfUnique(RtssSettings.RtssElements[5].Color);
-        AddColorIfUnique(RtssSettings.RtssElements[6].Color);
-        AddColorIfUnique(RtssSettings.RtssElements[7].Color);
-        AddColorIfUnique(RtssSettings.RtssElements[8].Color);
+        AddColorIfUnique(_rtssSettings.RtssElements[0].Color);
+        AddColorIfUnique(_rtssSettings.RtssElements[1].Color);
+        AddColorIfUnique(_rtssSettings.RtssElements[2].Color);
+        AddColorIfUnique(_rtssSettings.RtssElements[3].Color);
+        AddColorIfUnique(_rtssSettings.RtssElements[4].Color);
+        AddColorIfUnique(_rtssSettings.RtssElements[5].Color);
+        AddColorIfUnique(_rtssSettings.RtssElements[6].Color);
+        AddColorIfUnique(_rtssSettings.RtssElements[7].Color);
+        AddColorIfUnique(_rtssSettings.RtssElements[8].Color);
 
         // Шаг 2: Создание CompactLib
         var compactLib = new bool[9];
-        compactLib[0] = RtssSettings.RtssElements[0].UseCompact;
-        compactLib[1] = RtssSettings.RtssElements[1].UseCompact;
-        compactLib[2] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
-            ? RtssSettings.RtssElements[1].UseCompact
-            : RtssSettings.RtssElements[2].UseCompact;
-        compactLib[3] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
-            ? RtssSettings.RtssElements[1].UseCompact
-            : RtssSettings.RtssElements[3].UseCompact;
-        compactLib[4] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
-            ? RtssSettings.RtssElements[1].UseCompact
-            : RtssSettings.RtssElements[4].UseCompact;
-        compactLib[5] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
-            ? RtssSettings.RtssElements[1].UseCompact
-            : RtssSettings.RtssElements[5].UseCompact;
-        compactLib[6] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
-            ? RtssSettings.RtssElements[1].UseCompact
-            : RtssSettings.RtssElements[6].UseCompact;
-        compactLib[7] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
-            ? RtssSettings.RtssElements[1].UseCompact
-            : RtssSettings.RtssElements[7].UseCompact;
-        compactLib[8] = RtssSettings.RtssElements[1].UseCompact && RtssSettings.RtssElements[1].Enabled
-            ? RtssSettings.RtssElements[1].UseCompact
-            : RtssSettings.RtssElements[8].UseCompact;
+        compactLib[0] = _rtssSettings.RtssElements[0].UseCompact;
+        compactLib[1] = _rtssSettings.RtssElements[1].UseCompact;
+        compactLib[2] = _rtssSettings.RtssElements[1].UseCompact && _rtssSettings.RtssElements[1].Enabled
+            ? _rtssSettings.RtssElements[1].UseCompact
+            : _rtssSettings.RtssElements[2].UseCompact;
+        compactLib[3] = _rtssSettings.RtssElements[1].UseCompact && _rtssSettings.RtssElements[1].Enabled
+            ? _rtssSettings.RtssElements[1].UseCompact
+            : _rtssSettings.RtssElements[3].UseCompact;
+        compactLib[4] = _rtssSettings.RtssElements[1].UseCompact && _rtssSettings.RtssElements[1].Enabled
+            ? _rtssSettings.RtssElements[1].UseCompact
+            : _rtssSettings.RtssElements[4].UseCompact;
+        compactLib[5] = _rtssSettings.RtssElements[1].UseCompact && _rtssSettings.RtssElements[1].Enabled
+            ? _rtssSettings.RtssElements[1].UseCompact
+            : _rtssSettings.RtssElements[5].UseCompact;
+        compactLib[6] = _rtssSettings.RtssElements[1].UseCompact && _rtssSettings.RtssElements[1].Enabled
+            ? _rtssSettings.RtssElements[1].UseCompact
+            : _rtssSettings.RtssElements[6].UseCompact;
+        compactLib[7] = _rtssSettings.RtssElements[1].UseCompact && _rtssSettings.RtssElements[1].Enabled
+            ? _rtssSettings.RtssElements[1].UseCompact
+            : _rtssSettings.RtssElements[7].UseCompact;
+        compactLib[8] = _rtssSettings.RtssElements[1].UseCompact && _rtssSettings.RtssElements[1].Enabled
+            ? _rtssSettings.RtssElements[1].UseCompact
+            : _rtssSettings.RtssElements[8].UseCompact;
 
         // Шаг 3: Создание EnableLib
         var enableLib = new bool[9];
-        enableLib[0] = RtssSettings.RtssElements[0].Enabled;
-        enableLib[1] = RtssSettings.RtssElements[1].Enabled;
-        enableLib[2] = RtssSettings.RtssElements[2].Enabled;
-        enableLib[3] = RtssSettings.RtssElements[3].Enabled;
-        enableLib[4] = RtssSettings.RtssElements[4].Enabled;
-        enableLib[5] = RtssSettings.RtssElements[5].Enabled;
-        enableLib[6] = RtssSettings.RtssElements[6].Enabled;
-        enableLib[7] = RtssSettings.RtssElements[7].Enabled;
-        enableLib[8] = RtssSettings.RtssElements[8].Enabled;
+        enableLib[0] = _rtssSettings.RtssElements[0].Enabled;
+        enableLib[1] = _rtssSettings.RtssElements[1].Enabled;
+        enableLib[2] = _rtssSettings.RtssElements[2].Enabled;
+        enableLib[3] = _rtssSettings.RtssElements[3].Enabled;
+        enableLib[4] = _rtssSettings.RtssElements[4].Enabled;
+        enableLib[5] = _rtssSettings.RtssElements[5].Enabled;
+        enableLib[6] = _rtssSettings.RtssElements[6].Enabled;
+        enableLib[7] = _rtssSettings.RtssElements[7].Enabled;
+        enableLib[8] = _rtssSettings.RtssElements[8].Enabled;
 
         // Шаг 4: Создание TextLib
         var textLib = new string[7];
-        textLib[0] = RtssSettings.RtssElements[2].Name.TrimEnd(); // Saku Overclock Preset
-        textLib[1] = RtssSettings.RtssElements[3].Name.TrimEnd(); // STAPM Fast Slow
-        textLib[2] = RtssSettings.RtssElements[4].Name.TrimEnd(); // EDC Therm CPU Usage
-        textLib[3] = RtssSettings.RtssElements[5].Name.TrimEnd(); // CPU Clocks
-        textLib[4] = RtssSettings.RtssElements[6].Name.TrimEnd(); // AVG Clock Volt
-        textLib[5] = RtssSettings.RtssElements[7].Name.TrimEnd(); // APU Clock Volt Temp
-        textLib[6] = RtssSettings.RtssElements[8].Name.TrimEnd(); // Frame Rate
+        textLib[0] = _rtssSettings.RtssElements[2].Name.TrimEnd(); // Saku Overclock Preset
+        textLib[1] = _rtssSettings.RtssElements[3].Name.TrimEnd(); // STAPM Fast Slow
+        textLib[2] = _rtssSettings.RtssElements[4].Name.TrimEnd(); // EDC Therm CPU Usage
+        textLib[3] = _rtssSettings.RtssElements[5].Name.TrimEnd(); // CPU Clocks
+        textLib[4] = _rtssSettings.RtssElements[6].Name.TrimEnd(); // AVG Clock Volt
+        textLib[5] = _rtssSettings.RtssElements[7].Name.TrimEnd(); // APU Clock Volt Temp
+        textLib[6] = _rtssSettings.RtssElements[8].Name.TrimEnd(); // Frame Rate
 
         // Шаг 5: Генерация строки AdvancedCodeEditor
         var advancedCodeEditor = new StringBuilder();
@@ -2249,13 +2263,13 @@ public sealed partial class SettingsPage
         // "<C0>Saku Overclock <C1>" + ViewModels.ГлавнаяViewModel.GetVersion() + ": <S0>$SelectedPreset$\n" +
         if (enableLib[2])
         {
-            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[2].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[2].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RtssElements[0].Enabled
+            var colorIndexMain = _rtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[2].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = _rtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[2].Color.Replace("#", "")).ToString();
+            var compactMain = _rtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[2]
                     ? "<S1>"
@@ -2270,19 +2284,19 @@ public sealed partial class SettingsPage
         // "<S1><C2>STAPM, Fast, Slow: <C3><S0>$stapm_value$<S2>W<S1>$stapm_limit$W <S0>$fast_value$<S2>W<S1>$fast_limit$W <S0>$slow_value$<S2>W<S1>$slow_limit$W\n" +
         if (enableLib[3])
         {
-            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[3].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[3].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RtssElements[0].Enabled
+            var colorIndexMain = _rtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[3].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = _rtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[3].Color.Replace("#", "")).ToString();
+            var compactMain = _rtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[3]
                     ? "<S1>"
                     : "<S0>";
             var compactSecond = compactLib[3] ? "<S2>" : "<S0>";
-            var compactSign = RtssSettings.RtssElements[1].Enabled
+            var compactSign = _rtssSettings.RtssElements[1].Enabled
                 ? compactLib[1] ? "" : "/"
                 : compactLib[3]
                     ? ""
@@ -2296,19 +2310,19 @@ public sealed partial class SettingsPage
         // "<C2>EDC, Therm, CPU Usage: <C3><S0>$vrmedc_value$<S2>A<S1>$vrmedc_max$A <C3><S0>$cpu_temp_value$<S2>C<S1>$cpu_temp_max$C<C3><S0> $cpu_usage$<S2>%<S1>\n" +
         if (enableLib[4])
         {
-            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[4].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[4].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RtssElements[0].Enabled
+            var colorIndexMain = _rtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[4].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = _rtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[4].Color.Replace("#", "")).ToString();
+            var compactMain = _rtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[4]
                     ? "<S1>"
                     : "<S0>";
             var compactSecond = compactLib[4] ? "<S2>" : "<S0>";
-            var compactSign = RtssSettings.RtssElements[1].Enabled
+            var compactSign = _rtssSettings.RtssElements[1].Enabled
                 ? compactLib[1] ? "" : "/"
                 : compactLib[4]
                     ? ""
@@ -2322,19 +2336,19 @@ public sealed partial class SettingsPage
         // "<S1><C2>Clocks: $cpu_clock_cycle$<S1><C2>$currCore$:<S0><C3> $cpu_core_clock$<S2>GHz<S1>$cpu_core_voltage$V $cpu_clock_cycle_end$\n" +
         if (enableLib[5])
         {
-            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[5].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[5].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RtssElements[0].Enabled
+            var colorIndexMain = _rtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[5].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = _rtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[5].Color.Replace("#", "")).ToString();
+            var compactMain = _rtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[5]
                     ? "<S1>"
                     : "<S0>";
             var compactSecond = compactLib[5] ? "<S2>" : "<S0>";
-            var compactSign = RtssSettings.RtssElements[1].Enabled
+            var compactSign = _rtssSettings.RtssElements[1].Enabled
                 ? compactLib[1] ? "" : "/"
                 : compactLib[5]
                     ? ""
@@ -2348,19 +2362,19 @@ public sealed partial class SettingsPage
         // "<C2>AVG Clock, Volt: <C3><S0>$average_cpu_clock$<S2>GHz<S1>$average_cpu_voltage$V" +
         if (enableLib[6])
         {
-            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[6].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[6].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RtssElements[0].Enabled
+            var colorIndexMain = _rtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[6].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = _rtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[6].Color.Replace("#", "")).ToString();
+            var compactMain = _rtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[6]
                     ? "<S1>"
                     : "<S0>";
             var compactSecond = compactLib[6] ? "<S2>" : "<S0>";
-            var compactSign = RtssSettings.RtssElements[1].Enabled
+            var compactSign = _rtssSettings.RtssElements[1].Enabled
                 ? compactLib[1] ? "" : "/"
                 : compactLib[6]
                     ? ""
@@ -2374,19 +2388,19 @@ public sealed partial class SettingsPage
         // "<C2>APU Clock, Volt, Temp: <C3><S0>$gfx_clock$<S2>MHz<S1>$gfx_volt$V <S0>$gfx_temp$<S1>C\n" +
         if (enableLib[7])
         {
-            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[7].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[7].Color.Replace("#", "")).ToString();
-            var compactMain = RtssSettings.RtssElements[0].Enabled
+            var colorIndexMain = _rtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[7].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = _rtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[7].Color.Replace("#", "")).ToString();
+            var compactMain = _rtssSettings.RtssElements[0].Enabled
                 ? compactLib[0] ? "<S1>" : "<S0>"
                 : compactLib[7]
                     ? "<S1>"
                     : "<S0>";
             var compactSecond = compactLib[7] ? "<S2>" : "<S0>";
-            var compactSign = RtssSettings.RtssElements[1].Enabled
+            var compactSign = _rtssSettings.RtssElements[1].Enabled
                 ? compactLib[1] ? "" : "/"
                 : compactLib[7]
                     ? ""
@@ -2400,22 +2414,22 @@ public sealed partial class SettingsPage
         // "<C2>Framerate <C3><S0>%FRAMERATE% %FRAMETIME%";*/
         if (enableLib[8])
         {
-            var colorIndexMain = RtssSettings.RtssElements[0].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[8].Color.Replace("#", "")).ToString();
-            var colorIndexSecond = RtssSettings.RtssElements[1].Enabled
-                ? colorLib.IndexOf(RtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
-                : colorLib.IndexOf(RtssSettings.RtssElements[8].Color.Replace("#", "")).ToString();
+            var colorIndexMain = _rtssSettings.RtssElements[0].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[0].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[8].Color.Replace("#", "")).ToString();
+            var colorIndexSecond = _rtssSettings.RtssElements[1].Enabled
+                ? colorLib.IndexOf(_rtssSettings.RtssElements[1].Color.Replace("#", "")).ToString()
+                : colorLib.IndexOf(_rtssSettings.RtssElements[8].Color.Replace("#", "")).ToString();
             var compactMain = compactLib[8] ? "<S1>" : "<S0>";
             advancedCodeEditor.Append(
                 $"<C{colorIndexMain}>{compactMain}{textLib[6]}: <C{colorIndexSecond}><S0>%FRAMERATE% %FRAMETIME%");
         }
 
         // Финальная строка присваивается в AdvancedCodeEditor
-        RtssSettings.AdvancedCodeEditor = advancedCodeEditor.ToString();
-        LoadAndFormatAdvancedCodeEditor(RtssSettings.AdvancedCodeEditor);
-        RtssHandler.ChangeOsdText(RtssSettings.AdvancedCodeEditor);
-        RtssSettings.SaveSettings();
+        _rtssSettings.AdvancedCodeEditor = advancedCodeEditor.ToString();
+        LoadAndFormatAdvancedCodeEditor(_rtssSettings.AdvancedCodeEditor);
+        RtssHandler.ChangeOsdText(_rtssSettings.AdvancedCodeEditor);
+        _rtssSettings.SaveSettings();
         return;
 
         void AddColorIfUnique(string color)
@@ -2444,8 +2458,8 @@ public sealed partial class SettingsPage
         RtssAdvancedCodeEditorEditBox.Visibility =
             RtssAdvancedCodeEditor.IsOn ? rtssVisibility : Visibility.Collapsed;
 
-        AppSettings.RtssMetricsEnabled = RtssSettingsEnable.IsOn;
-        AppSettings.SaveSettings();
+        _appSettings.RtssMetricsEnabled = RtssSettingsEnable.IsOn;
+        _appSettings.SaveSettings();
     }
 
     /// <summary>
@@ -2471,14 +2485,14 @@ public sealed partial class SettingsPage
                 RtssApuClockVoltTempCompactToggle.IsChecked = RtssAllCompactToggle.IsChecked;
                 RtssFrameRateCompactToggle.IsChecked = RtssAllCompactToggle.IsChecked;
 
-                RtssSettings.RtssElements[1].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RtssElements[2].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RtssElements[3].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RtssElements[4].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RtssElements[5].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RtssElements[6].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RtssElements[7].UseCompact = toggleButton.IsChecked == true;
-                RtssSettings.RtssElements[8].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[1].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[2].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[3].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[4].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[5].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[6].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[7].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[8].UseCompact = toggleButton.IsChecked == true;
                 _isLoaded = true;
             }
             else
@@ -2496,47 +2510,47 @@ public sealed partial class SettingsPage
 
             if (toggleButton.Name == "RtssMainColorCompactToggle")
             {
-                RtssSettings.RtssElements[0].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[0].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssAllCompactToggle")
             {
-                RtssSettings.RtssElements[1].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[1].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssSakuPresetCompactToggle")
             {
-                RtssSettings.RtssElements[2].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[2].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssStapmFastSlowCompactToggle")
             {
-                RtssSettings.RtssElements[3].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[3].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssEdcThermUsageCompactToggle")
             {
-                RtssSettings.RtssElements[4].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[4].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssCpuClocksCompactToggle")
             {
-                RtssSettings.RtssElements[5].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[5].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssAvgCpuClockVoltCompactToggle")
             {
-                RtssSettings.RtssElements[6].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[6].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssApuClockVoltTempCompactToggle")
             {
-                RtssSettings.RtssElements[7].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[7].UseCompact = toggleButton.IsChecked == true;
             }
 
             if (toggleButton.Name == "RtssFrameRateCompactToggle")
             {
-                RtssSettings.RtssElements[8].UseCompact = toggleButton.IsChecked == true;
+                _rtssSettings.RtssElements[8].UseCompact = toggleButton.IsChecked == true;
             }
         }
 
@@ -2544,47 +2558,47 @@ public sealed partial class SettingsPage
         {
             if (checkBox.Name == "RtssMainColorCheckbox")
             {
-                RtssSettings.RtssElements[0].Enabled = checkBox.IsChecked == true;
+                _rtssSettings.RtssElements[0].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssSecondColorCheckbox")
             {
-                RtssSettings.RtssElements[1].Enabled = checkBox.IsChecked == true;
+                _rtssSettings.RtssElements[1].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssSakuOverclockPresetCheckbox")
             {
-                RtssSettings.RtssElements[2].Enabled = checkBox.IsChecked == true;
+                _rtssSettings.RtssElements[2].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssStapmFastSlowCheckbox")
             {
-                RtssSettings.RtssElements[3].Enabled = checkBox.IsChecked == true;
+                _rtssSettings.RtssElements[3].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssEdcThermUsageCheckbox")
             {
-                RtssSettings.RtssElements[4].Enabled = checkBox.IsChecked == true;
+                _rtssSettings.RtssElements[4].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssCpuClocksCheckbox")
             {
-                RtssSettings.RtssElements[5].Enabled = checkBox.IsChecked == true;
+                _rtssSettings.RtssElements[5].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssAvgCpuClockVoltCheckbox")
             {
-                RtssSettings.RtssElements[6].Enabled = checkBox.IsChecked == true;
+                _rtssSettings.RtssElements[6].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssApuClockVoltTempCheckbox")
             {
-                RtssSettings.RtssElements[7].Enabled = checkBox.IsChecked == true;
+                _rtssSettings.RtssElements[7].Enabled = checkBox.IsChecked == true;
             }
 
             if (checkBox.Name == "RtssFrameRateCheckbox")
             {
-                RtssSettings.RtssElements[8].Enabled = checkBox.IsChecked == true;
+                _rtssSettings.RtssElements[8].Enabled = checkBox.IsChecked == true;
             }
         }
 
@@ -2592,37 +2606,37 @@ public sealed partial class SettingsPage
         {
             if (textBox.Name == "RtssSakuOverclockPresetTextBox")
             {
-                RtssSettings.RtssElements[2].Name = textBox.Text;
+                _rtssSettings.RtssElements[2].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssStapmFastSlowTextBox")
             {
-                RtssSettings.RtssElements[3].Name = textBox.Text;
+                _rtssSettings.RtssElements[3].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssEdcThermUsageTextBox")
             {
-                RtssSettings.RtssElements[4].Name = textBox.Text;
+                _rtssSettings.RtssElements[4].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssCpuClocksTextBox")
             {
-                RtssSettings.RtssElements[5].Name = textBox.Text;
+                _rtssSettings.RtssElements[5].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssAvgCpuClockVoltTextBox")
             {
-                RtssSettings.RtssElements[6].Name = textBox.Text;
+                _rtssSettings.RtssElements[6].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssApuClockVoltTempTextBox")
             {
-                RtssSettings.RtssElements[7].Name = textBox.Text;
+                _rtssSettings.RtssElements[7].Name = textBox.Text;
             }
 
             if (textBox.Name == "RtssFrameRateTextBox")
             {
-                RtssSettings.RtssElements[8].Name = textBox.Text;
+                _rtssSettings.RtssElements[8].Name = textBox.Text;
             }
         }
 
@@ -2630,61 +2644,61 @@ public sealed partial class SettingsPage
         {
             if (colorPicker.Name == "RtssMainColorColorPicker")
             {
-                RtssSettings.RtssElements[0].Color =
+                _rtssSettings.RtssElements[0].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssSecondColorColorPicker")
             {
-                RtssSettings.RtssElements[1].Color =
+                _rtssSettings.RtssElements[1].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssSakuOverclockPresetColorPicker")
             {
-                RtssSettings.RtssElements[2].Color =
+                _rtssSettings.RtssElements[2].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssStapmFastSlowColorPicker")
             {
-                RtssSettings.RtssElements[3].Color =
+                _rtssSettings.RtssElements[3].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssEdcThermUsageColorPicker")
             {
-                RtssSettings.RtssElements[4].Color =
+                _rtssSettings.RtssElements[4].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssCpuClocksColorPicker")
             {
-                RtssSettings.RtssElements[5].Color =
+                _rtssSettings.RtssElements[5].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssAvgCpuClockVoltColorPicker")
             {
-                RtssSettings.RtssElements[6].Color =
+                _rtssSettings.RtssElements[6].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssApuClockVoltTempColorPicker")
             {
-                RtssSettings.RtssElements[7].Color =
+                _rtssSettings.RtssElements[7].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
 
             if (colorPicker.Name == "RtssFrameRateColorPicker")
             {
-                RtssSettings.RtssElements[8].Color =
+                _rtssSettings.RtssElements[8].Color =
                     $"#{colorPicker.Color.R:X2}{colorPicker.Color.G:X2}{colorPicker.Color.B:X2}";
             }
         }
 
         GenerateAdvancedCodeEditor();
-        RtssSettings.SaveSettings();
+        _rtssSettings.SaveSettings();
     }
 
     /// <summary>
@@ -2703,8 +2717,8 @@ public sealed partial class SettingsPage
             ? new CornerRadius(15, 15, 0, 0)
             : new CornerRadius(15);
 
-        RtssSettings.IsAdvancedCodeEditorEnabled = RtssAdvancedCodeEditor.IsOn;
-        RtssSettings.SaveSettings();
+        _rtssSettings.IsAdvancedCodeEditorEnabled = RtssAdvancedCodeEditor.IsOn;
+        _rtssSettings.SaveSettings();
     }
 
     /// <summary>
@@ -2713,8 +2727,8 @@ public sealed partial class SettingsPage
     private void Rtss_AdvancedCodeEditor_EditBox_TextChanged(object sender, RoutedEventArgs e)
     {
         RtssAdvancedCodeEditorEditBox.Document.GetText(TextGetOptions.None, out var newString);
-        RtssSettings.AdvancedCodeEditor = newString.Replace("\r", "\n").TrimEnd();
-        RtssSettings.SaveSettings();
+        _rtssSettings.AdvancedCodeEditor = newString.Replace("\r", "\n").TrimEnd();
+        _rtssSettings.SaveSettings();
     }
 
     #endregion
